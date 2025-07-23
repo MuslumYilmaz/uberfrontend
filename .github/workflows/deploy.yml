@@ -28,10 +28,9 @@ jobs:
       - name: Copy 404
         run: cp dist/uberfrontend/browser/index.html dist/uberfrontend/browser/404.html
 
-      - name: Configure git identity
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
       - name: Deploy to GitHub Pages
-        run: npx angular-cli-ghpages --dir=dist/uberfrontend/browser --no-silent
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist/uberfrontend/browser
+          force_orphan: true
