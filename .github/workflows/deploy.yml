@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Clean dist
-        run: rm -rf dist
-
       - name: Build Angular app
         run: |
           echo "Running Angular Build..."
