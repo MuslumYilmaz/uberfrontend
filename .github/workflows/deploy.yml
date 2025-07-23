@@ -21,8 +21,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Clean dist
+        run: rm -rf dist
+
       - name: Build Angular app
-        run: npx ng build --configuration production --base-href=/uberfrontend/
+        run: |
+          echo "Running Angular Build..."
+          npx ng build --configuration production --base-href=/uberfrontend/
+          echo "Build output:"
+          ls -la dist/uberfrontend
 
       - name: Deploy to GitHub Pages
         run: npx angular-cli-ghpages --dir=dist/uberfrontend
