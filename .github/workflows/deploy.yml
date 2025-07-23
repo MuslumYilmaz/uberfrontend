@@ -2,31 +2,28 @@ name: Deploy Angular App to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
       - name: Build Angular app
         run: |
-          echo "🔨 Building Angular..."
           npx ng build --configuration production --base-href=/uberfrontend/
-          echo "📂 Build output:"
-          ls -la dist/uberfrontend
+          ls -R dist/uberfrontend
+
+      - name: Copy 404
+        run: cp dist/uberfrontend/browser/index.html dist/uberfrontend/browser/404.html
 
       - name: Deploy to GitHub Pages
-        run: npx angular-cli-ghpages --dir=dist/uberfrontend
+        run: npx angular-cli-ghpages --dir=dist/uberfrontend/browser --no-silent
