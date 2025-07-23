@@ -22,7 +22,7 @@ jobs:
         run: npm ci
 
       - name: Build Angular app
-        run: ng build --configuration production --base-href=/uberfrontend/
+        run: npx ng build --configuration production --base-href=/uberfrontend/
 
       - name: Deploy to GitHub Pages
         run: npx angular-cli-ghpages --dir=dist/uberfrontend
