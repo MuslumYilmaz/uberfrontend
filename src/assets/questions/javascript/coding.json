@@ -1,0 +1,39 @@
+[
+    {
+      "id": "js-promise-all",
+      "title": "Implement promiseAll",
+      "description": "Write your own `Promise.all()` implementation that takes an iterable of promises and resolves to an array of results, or rejects on the first error.",
+      "type": "coding",
+      "technology": "javascript",
+      "difficulty": "intermediate",
+      "tags": ["promise", "async"],
+      "importance": 4,
+      "stackblitzEmbedUrl": "https://stackblitz.com/edit/js-promise-all?embed=1&file=index.js",
+      "stackblitzSolutionUrl": "https://stackblitz.com/edit/js-promise-all-solution?embed=1&file=index.js"
+    },
+    {
+      "id": "js-debounce",
+      "title": "Create a debounce function",
+      "description": "Implement a `debounce(fn, wait)` utility that delays invoking `fn` until after `wait` milliseconds have elapsed since the last call.",
+      "type": "coding",
+      "technology": "javascript",
+      "difficulty": "beginner",
+      "tags": ["debounce", "timers"],
+      "importance": 3,
+      "stackblitzEmbedUrl": "https://stackblitz.com/edit/js-debounce?embed=1&file=index.js",
+      "stackblitzSolutionUrl": "https://stackblitz.com/edit/js-debounce-solution?embed=1&file=index.js"
+    },
+    {
+      "id": "js-array-flatten",
+      "title": "Flatten a nested array",
+      "description": "Write a function `flatten(arr, depth)` that flattens `arr` up to the specified `depth`.",
+      "type": "coding",
+      "technology": "javascript",
+      "difficulty": "intermediate",
+      "tags": ["array", "recursion"],
+      "importance": 4,
+      "stackblitzEmbedUrl": "https://stackblitz.com/edit/js-flatten-array?embed=1&file=index.js",
+      "stackblitzSolutionUrl": "https://stackblitz.com/edit/js-flatten-array-solution?embed=1&file=index.js"
+    }
+  ]
+  

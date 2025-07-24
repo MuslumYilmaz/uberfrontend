@@ -1,1 +1,12 @@
-<h1 class="text-4xl font-bold text-emerald-600">Tailwind is working 🎉</h1>
+<!-- Optional: your header/nav goes here -->
+<nav class="bg-white shadow p-4">
+    <a routerLink="/coding/javascript" class="mr-4 text-indigo-600 hover:underline">JS Coding</a>
+    <a routerLink="/trivia/javascript" class="mr-4 text-indigo-600 hover:underline">JS Trivia</a>
+    <a routerLink="/coding/angular" class="mr-4 text-green-600 hover:underline">Angular Coding</a>
+    <a routerLink="/trivia/angular" class="text-green-600 hover:underline">Angular Trivia</a>
+  </nav>
+  
+  <main class="p-6">
+    <router-outlet></router-outlet>
+  </main>
+  
