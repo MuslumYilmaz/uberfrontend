@@ -1,3 +1,18 @@
+/* src/styles.scss */
+
+/* PrimeNG theme */
+@import 'primeng/resources/themes/saga-blue/theme.css';
+
+/* PrimeNG core */
+@import 'primeng/resources/primeng.min.css';
+
+/* PrimeIcons */
+@import 'primeicons/primeicons.css';
+
+/* Optional PrimeFlex utilities */
+@import 'primeflex/primeflex.css';
+
+/* If you still need Tailwind, leave these */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
