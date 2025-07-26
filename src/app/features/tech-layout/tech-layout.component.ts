@@ -1,7 +1,7 @@
 // src/app/features/tech-layout/tech-layout.component.ts
-import { Component } from '@angular/core';
-import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
   imports: [CommonModule, RouterModule],
   selector: 'app-tech-layout',
   template: `
-    <div class="container mx-auto px-4 py-6">
+    <div class="container flex flex-col h-full mx-auto px-4 py-6">
       <!-- Sub‑tabs -->
       <nav class="flex space-x-6 mb-6 border-b pb-2">
         <a
@@ -31,12 +31,12 @@ import { map } from 'rxjs/operators';
       </nav>
 
       <!-- Render whichever child matches -->
-      <router-outlet></router-outlet>
+       <router-outlet></router-outlet>
     </div>
   `
 })
 export class TechLayoutComponent {
   // if you need the tech param inside the layout, you can grab it:
   tech$ = this.route.paramMap.pipe(map(pm => pm.get('tech')));
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute) { }
 }
