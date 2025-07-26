@@ -1,11 +1,12 @@
-<!-- src/app/features/coding/coding-detail.component.html -->
 <div class="flex flex-col h-full">
-  <!-- Drawer toggle -->
+  <!-- Drawer toggle with dynamic label -->
   <button
     (click)="toggleExplanation()"
     class="flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200"
   >
-    <span class="font-medium">Problem Description</span>
+    <span class="font-medium">
+      {{ isSolutionView() ? 'Solution Explanation' : 'Problem Description' }}
+    </span>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       class="w-5 h-5 transform transition-transform"
@@ -25,14 +26,14 @@
     <button
       pButton
       type="button"
-      label="View Solution"
+      [label]="isSolutionView() ? 'Back to Problem' : 'View Solution'"
       icon="pi pi-external-link"
-      (click)="openSolution()"
+      (click)="toggleSolution()"
     ></button>
   </div>
 
   <!-- Editor fills remaining space -->
-  <div class="flex-1 overflow-hidden h-full">
+  <div class="flex-1 overflow-auto min-h-0">
     <ng-container *ngIf="editorUrl() as url; else noEditor">
       <iframe
         [src]="url"
