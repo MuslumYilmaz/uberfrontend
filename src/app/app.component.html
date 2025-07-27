@@ -1,20 +1,32 @@
-<!-- src/app/app.component.html -->
 <header class="bg-white border-b">
-  <div class="container mx-auto px-4 py-3 flex space-x-8">
+  <div class="container mx-auto flex items-center space-x-8 px-4 py-3">
+    <!-- JavaScript -->
     <a
       routerLink="/javascript"
-      routerLinkActive="text-blue-600 font-bold"
+      routerLinkActive="text-brand-blue font-semibold"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="text-gray-700 hover:text-blue-600"
+      class="flex items-center text-gray-700 hover:text-brand-blue"
     >
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg"
+        alt="JS"
+        class="h-5 w-5 mr-1"
+      />
       JavaScript
     </a>
+
+    <!-- Angular -->
     <a
       routerLink="/angular"
-      routerLinkActive="text-green-600 font-bold"
+      routerLinkActive="text-green-600 font-semibold"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="text-gray-700 hover:text-green-600"
+      class="flex items-center text-gray-700 hover:text-green-600"
     >
+      <img
+        src="https://angular.io/assets/images/logos/angular/angular.svg"
+        alt="Angular"
+        class="h-5 w-5 mr-1"
+      />
       Angular
     </a>
   </div>

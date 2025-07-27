@@ -16,10 +16,22 @@
 
 html, body {
     height: 100%;
+    font-family: theme("fontFamily.sans");
   }
   app-root {
     display: block;
     height: 100%;
   }
-  
-  
+
+@layer components {
+  /* the “filled” track */
+  .p-slider .p-slider-range {
+    background-color: theme("colors.brand-blue");
+  }
+
+  /* the draggable thumb */
+  .p-slider .p-slider-handle {
+    background-color: theme("colors.brand-blue");
+    border: 2px solid theme("colors.brand-blue-dark");
+  }
+}
