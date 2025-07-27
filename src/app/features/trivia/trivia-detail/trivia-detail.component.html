@@ -1,0 +1,25 @@
+<div class="container mx-auto px-4 py-6 space-y-6">
+    <!-- Question Drawer (always open) -->
+    <p-card [header]="question()?.title" class="surface-card shadow-lg">
+        <div class="text-gray-800">
+            {{ question()?.description }}
+        </div>
+    </p-card>
+
+    <!-- Answer Drawer (toggle) -->
+    <div class="surface-card shadow-lg rounded-lg overflow-hidden">
+        <button pButton type="button" class="w-full flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200"
+            (click)="toggleAnswer()">
+            <span class="font-medium">
+                {{ showAnswer() ? 'Hide Answer' : 'Show Answer' }}
+            </span>
+            <i class="pi transition-transform" [ngClass]="showAnswer() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+        </button>
+
+        <div *ngIf="showAnswer()" class="p-6 border-t">
+            <div class="text-green-700 font-medium">
+                {{ question()?.answer }}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,16 +1,17 @@
 export type QuestionType = 'trivia' | 'coding';
 export type Technology = 'javascript' | 'angular';
-export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
+export type Difficulty = 'easy' | 'intermediate' | 'hard';
 
 export interface Question {
   id: string;
   title: string;
   description: string;
-  type: QuestionType;
-  technology: Technology;
-  difficulty: Difficulty;
+  answer?: string;
+  type: 'coding' | 'trivia';
+  technology: string;
+  difficulty: Difficulty;    // ← now a union, not just `string`
   tags: string[];
-  importance: number;           // 1–5
-  stackblitzEmbedUrl?: string;  // for coding challenges
+  importance: number;        // ← required
+  stackblitzEmbedUrl?: string;
   stackblitzSolutionUrl?: string;
 }
