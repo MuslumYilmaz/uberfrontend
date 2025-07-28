@@ -12,6 +12,6 @@ export interface Question {
   difficulty: Difficulty;    // ← now a union, not just `string`
   tags: string[];
   importance: number;        // ← required
-  stackblitzEmbedUrl?: string;
-  stackblitzSolutionUrl?: string;
+  code?: string;
+  solution?: string;
 }

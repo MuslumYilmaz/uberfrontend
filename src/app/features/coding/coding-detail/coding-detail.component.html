@@ -1,5 +1,5 @@
 <div class="flex flex-col h-full">
-  <!-- Drawer toggle with dynamic label -->
+  <!-- Drawer toggle -->
   <button
     (click)="toggleExplanation()"
     class="flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200"
@@ -32,20 +32,8 @@
     ></button>
   </div>
 
-  <!-- Editor fills remaining space -->
+  <!-- Monaco Editor -->
   <div class="flex-1 overflow-auto min-h-0">
-    <ng-container *ngIf="editorUrl() as url; else noEditor">
-      <iframe
-        [src]="url"
-        class="w-full h-full"
-        frameborder="0"
-        allow="clipboard-read; clipboard-write"
-      ></iframe>
-    </ng-container>
-    <ng-template #noEditor>
-      <div class="h-full flex items-center justify-center text-gray-500">
-        No embedded editor available.
-      </div>
-    </ng-template>
+    <app-monaco-editor [code]="editorContent()"></app-monaco-editor>
   </div>
 </div>
