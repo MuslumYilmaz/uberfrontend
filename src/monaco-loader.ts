@@ -1,6 +1,7 @@
-// @ts-ignore
-self.MonacoEnvironment = {
-    getWorkerUrl: function (_moduleId: string, label: string) {
+// src/monaco-loader.ts
+// tell Monaco where to find its web workers
+; (window as any).MonacoEnvironment = {
+    getWorkerUrl: (moduleId: string, label: string) => {
         if (label === 'json') {
             return './assets/monaco/json.worker.js';
         }

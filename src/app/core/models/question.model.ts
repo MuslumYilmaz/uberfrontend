@@ -14,4 +14,5 @@ export interface Question {
   importance: number;        // ← required
   code?: string;
   solution?: string;
+  starterCode?: string;
 }

@@ -17,6 +17,9 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
+    "types": [
+      "monaco-editor"      // ← pull in the Monaco types
+    ],
     "module": "ES2022",
     "useDefineForClassFields": false,
     "lib": [
