@@ -1,10 +1,10 @@
-// src/app/features/coding/coding-detail.component.ts
-import { CommonModule }                from '@angular/common';
-import { Component, OnInit, signal }   from '@angular/core';
-import { ActivatedRoute }              from '@angular/router';
-import { ButtonModule }                from 'primeng/button';
-import { Question }                    from '../../../core/models/question.model';
-import { QuestionService }             from '../../../core/services/question.service';
+import { Component, OnInit, signal }     from '@angular/core';
+import { CommonModule }                   from '@angular/common';
+import { ActivatedRoute, RouterModule }   from '@angular/router';
+import { ButtonModule }                   from 'primeng/button';
+import { AccordionModule }                from 'primeng/accordion';
+import { QuestionService }                from '../../../core/services/question.service';
+import type { Question }                  from '../../../core/models/question.model';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 
 @Component({
@@ -12,6 +12,8 @@ import { MonacoEditorComponent } from '../../../monaco-editor.component';
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
+    AccordionModule,
     ButtonModule,
     MonacoEditorComponent
   ],
@@ -19,12 +21,14 @@ import { MonacoEditorComponent } from '../../../monaco-editor.component';
   styleUrls: ['./coding-detail.component.scss']
 })
 export class CodingDetailComponent implements OnInit {
-  drawerOpen     = signal(false);
-  isSolutionView = signal(false);
-
   tech!: string;
-  question       = signal<Question|null>(null);
-  editorContent  = signal<string>('');
+  question      = signal<Question|null>(null);
+  editorContent = signal<string>('');
+  // control which panel is open: 0 = description, 1 = explanation, 2 = tests
+  activePanel   = signal<number>(0);
+
+  allQuestions: Question[] = [];
+  currentIndex = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,27 +36,66 @@ export class CodingDetailComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.tech = params.get('tech') ?? 'javascript';
-      const id = params.get('id')!;
-      this.qs.loadQuestions(this.tech, 'coding').subscribe(all => {
-        const q = all.find(x => x.id === id) ?? null;
-        this.question.set(q);
-        // show starter code by default
-        this.editorContent.set(q?.starterCode ?? '');
-      });
+    this.route.paramMap.subscribe(pm => {
+      this.tech = pm.get('tech')! || 'javascript';
+      this.qs.loadQuestions(this.tech, 'coding')
+        .subscribe(list => {
+          this.allQuestions = list;
+          const id = pm.get('id')!;
+          this.loadQuestion(id);
+        });
     });
   }
 
-  toggleExplanation() {
-    this.drawerOpen.update(v => !v);
+  private loadQuestion(id: string) {
+    const idx = this.allQuestions.findIndex(q => q.id === id);
+    if (idx < 0) return;
+    this.currentIndex = idx;
+    const q = this.allQuestions[idx];
+    this.question.set(q);
+    this.editorContent.set(q.starterCode ?? '');
+    this.activePanel.set(0);
   }
 
-  toggleSolution() {
-    this.isSolutionView.update(v => !v);
+  showSolution() {
     const q = this.question();
-    this.editorContent.set(
-      this.isSolutionView() ? q?.solution ?? '' : q?.starterCode ?? ''
-    );
+    if (!q) return;
+    this.editorContent.set(q.solution ?? '');
+    this.activePanel.set(1);
+  }
+
+  showProblem() {
+    const q = this.question();
+    if (!q) return;
+    this.editorContent.set(q.starterCode ?? '');
+    this.activePanel.set(0);
+  }
+
+  prev() {
+    if (this.currentIndex > 0) {
+      const prevId = this.allQuestions[this.currentIndex - 1].id;
+      location.pathname = `/${this.tech}/coding/${prevId}`;
+    }
+  }
+
+  next() {
+    if (this.currentIndex + 1 < this.allQuestions.length) {
+      const nextId = this.allQuestions[this.currentIndex + 1].id;
+      location.pathname = `/${this.tech}/coding/${nextId}`;
+    }
+  }
+
+  runCode() {
+    // TODO: wire up your test runner here
+    console.log('Run:', this.editorContent());
+  }
+
+  submitCode() {
+    // TODO: submission logic
+    console.log('Submit:', this.editorContent());
+  }
+
+  get progressText() {
+    return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
 }
