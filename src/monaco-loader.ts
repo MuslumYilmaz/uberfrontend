@@ -1,6 +1,3 @@
-// src/monaco-loader.ts
-// Monaco Environment override for Web Worker loading
-
 // @ts-ignore
 self.MonacoEnvironment = {
     getWorkerUrl: function (_moduleId: string, label: string) {

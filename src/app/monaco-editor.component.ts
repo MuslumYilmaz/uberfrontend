@@ -8,7 +8,7 @@ import {
   Input,
   ViewChild
 } from '@angular/core';
-import '../monaco.loader';
+import '../monaco-loader';
 // src/app/monaco-editor.component.ts
 // ← must be the very first line
 
