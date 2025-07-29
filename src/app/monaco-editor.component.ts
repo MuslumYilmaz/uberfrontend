@@ -1,8 +1,8 @@
 // src/app/monaco-editor.component.ts
-import '../monaco-loader';                // ← MUST be first
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { CommonModule }                from '@angular/common';
-import * as monaco                      from 'monaco-editor';
+import * as monaco from 'monaco-editor';
+import '../monaco-loader'; // ← MUST be first
 
 @Component({
   selector: 'app-monaco-editor',
@@ -70,8 +70,12 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges {
       this.editorInstance = monaco.editor.create(this.container.nativeElement, {
         value: this.code,
         language: this.language,
-        ...this.options
+        theme: this.theme || 'vs-dark'
       });
+
+      // one last layout in case it initialized before the flex chain had real size
+      setTimeout(() => this.editorInstance.layout(), 0);
+
     });
   }
 }

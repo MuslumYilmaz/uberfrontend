@@ -33,9 +33,9 @@
   </aside>
 
   <!-- RIGHT COLUMN -->
-  <main class="flex-1 flex flex-col overflow-hidden">
+  <main class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
     <!-- 3) Editor grows and scrolls if needed -->
-    <app-monaco-editor class="flex-1" [code]="editorContent()"
+    <app-monaco-editor class="flex-1 h-screen" [code]="editorContent()"
       [language]="tech === 'angular' ? 'typescript' : 'javascript'"></app-monaco-editor>
 
     <!-- 4) Editor actions never flex -->
