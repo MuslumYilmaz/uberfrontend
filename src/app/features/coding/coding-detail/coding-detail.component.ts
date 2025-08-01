@@ -1,11 +1,17 @@
-import { Component, OnInit, signal }     from '@angular/core';
-import { CommonModule }                   from '@angular/common';
-import { ActivatedRoute, RouterModule }   from '@angular/router';
-import { ButtonModule }                   from 'primeng/button';
-import { AccordionModule }                from 'primeng/accordion';
-import { QuestionService }                from '../../../core/services/question.service';
-import type { Question }                  from '../../../core/models/question.model';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  signal,
+  ViewChild
+} from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { AccordionModule } from 'primeng/accordion';
+import { ButtonModule } from 'primeng/button';
+import type { Question } from '../../../core/models/question.model';
+import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
+import { ConsoleLoggerComponent } from '../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-detail',
@@ -15,40 +21,41 @@ import { MonacoEditorComponent } from '../../../monaco-editor.component';
     RouterModule,
     AccordionModule,
     ButtonModule,
-    MonacoEditorComponent
+    MonacoEditorComponent,
+    ConsoleLoggerComponent,
   ],
   templateUrl: './coding-detail.component.html',
-  styleUrls: ['./coding-detail.component.scss']
+  styleUrls: ['./coding-detail.component.scss'],
 })
 export class CodingDetailComponent implements OnInit {
   tech!: string;
-  question      = signal<Question|null>(null);
+  question = signal<Question | null>(null);
   editorContent = signal<string>('');
-  // control which panel is open: 0 = description, 1 = explanation, 2 = tests
-  activePanel   = signal<number>(0);
+  activePanel = signal<number>(0);
 
   allQuestions: Question[] = [];
   currentIndex = 0;
 
+  @ViewChild(ConsoleLoggerComponent) consoleLogger!: ConsoleLoggerComponent;
+
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(pm => {
+    this.route.paramMap.subscribe((pm) => {
       this.tech = pm.get('tech')! || 'javascript';
-      this.qs.loadQuestions(this.tech, 'coding')
-        .subscribe(list => {
-          this.allQuestions = list;
-          const id = pm.get('id')!;
-          this.loadQuestion(id);
-        });
+      this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
+        this.allQuestions = list;
+        const id = pm.get('id')!;
+        this.loadQuestion(id);
+      });
     });
   }
 
   private loadQuestion(id: string) {
-    const idx = this.allQuestions.findIndex(q => q.id === id);
+    const idx = this.allQuestions.findIndex((q) => q.id === id);
     if (idx < 0) return;
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
@@ -86,13 +93,29 @@ export class CodingDetailComponent implements OnInit {
   }
 
   runCode() {
-    // TODO: wire up your test runner here
-    console.log('Run:', this.editorContent());
+    const code = this.editorContent();
+    if (!this.consoleLogger || !this.consoleLogger.ready()) {
+      console.warn('Console sandbox not ready yet');
+      return;
+    }
+
+    // Ensure user-defined functions are invoked if they expect output manually.
+    // We don't auto-call anything; it's up to their code (like hello();)
+    const wrapped = `
+      (async () => {
+        try {
+          ${code}
+        } catch (e) {
+          console.error('User code thrown:', e);
+        }
+      })();
+    `;
+    this.consoleLogger.runCode(wrapped);
   }
 
   submitCode() {
-    // TODO: submission logic
     console.log('Submit:', this.editorContent());
+    // placeholder submission logic
   }
 
   get progressText() {
