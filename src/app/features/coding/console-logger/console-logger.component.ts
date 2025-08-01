@@ -3,11 +3,19 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   OnDestroy,
+  Output,
   signal,
 } from '@angular/core';
 
 type LogLevel = 'log' | 'warn' | 'error' | 'info' | 'clear';
+
+export interface TestResult {
+  name: string;
+  passed: boolean;
+  error?: string;
+}
 
 interface ConsoleEntry {
   level: LogLevel;
@@ -25,7 +33,7 @@ const iframeHTML = `
     try {
       if (typeof arg === 'object') return JSON.stringify(arg, null, 2);
       return String(arg);
-    } catch (e) {
+    } catch {
       return String(arg);
     }
   }
@@ -50,34 +58,87 @@ const iframeHTML = `
     send('error', 'UnhandledPromiseRejection: ' + reason);
   });
 
-  window.addEventListener('message', (ev) => {
-    if (!ev.data || ev.data.type !== 'runCode') return;
-    try {
-      // execute in an async IIFE so top-level await-ish behavior is supported
-      (async () => {
-        try {
-          // eslint-disable-next-line no-eval
-          const result = eval(ev.data.code);
-        if (result instanceof Promise) {
-          result
-            .then(res => {
-              if (res !== undefined) {
-                console.log('Promise resolved with', res);
-              }
-            })
-            .catch(err => console.error('Promise rejected with', err));
-        }
+  // --- minimal test framework ---
+  const results = [];
+  const pendingPromises = [];
 
-        } catch (inner) {
-          console.error('Execution error:', inner);
+  function expect(actual) {
+    return {
+      toEqual(expected) {
+        const pass = actual === expected;
+        if (!pass) throw new Error(\`Expected \${JSON.stringify(actual)} to equal \${JSON.stringify(expected)}\`);
+      },
+      toBeNaN() {
+        if (!Number.isNaN(actual)) throw new Error(\`Expected \${actual} to be NaN\`);
+      },
+      toBeCloseTo(expected, precision = 2) {
+        const diff = Math.abs(actual - expected);
+        const threshold = Math.pow(10, -precision) / 2;
+        if (diff > threshold) {
+          throw new Error(\`Expected \${actual} to be close to \${expected} with precision \${precision}\`);
         }
-      })();
+      },
+    };
+  }
+
+  function test(name, fn) {
+    try {
+      const maybe = fn();
+      if (maybe instanceof Promise) {
+        const p = maybe
+          .then(() => {
+            results.push({ name, passed: true });
+          })
+          .catch((err) => {
+            results.push({ name, passed: false, error: err.message });
+          });
+        pendingPromises.push(p);
+      } else {
+        results.push({ name, passed: true });
+      }
     } catch (err) {
-      console.error('Eval wrapper error:', err);
+      results.push({ name, passed: false, error: err.message });
+    }
+  }
+
+  function describe(_name, fn) {
+    fn();
+  }
+
+  async function runTestsAndReport() {
+    await Promise.all(pendingPromises);
+    parent.postMessage({ type: 'testResults', results }, '*');
+  }
+
+  window.addEventListener('message', async (ev) => {
+    if (!ev.data || typeof ev.data !== 'object') return;
+
+    if (ev.data.type === 'readyCheck') {
+      parent.postMessage({ type: 'ready' }, '*');
+    }
+
+    if (ev.data.type === 'runWithTests') {
+      results.length = 0;
+      pendingPromises.length = 0;
+
+      try {
+        eval(ev.data.userCode);
+      } catch (e) {
+        const msg = e && e.stack ? e.stack : (e && e.message) ? e.message : String(e);
+        console.error('Error in user code:', msg);
+      }
+
+      try {
+        eval(ev.data.testCode);
+      } catch (e) {
+        const msg = e && e.stack ? e.stack : (e && e.message) ? e.message : String(e);
+        console.error('Error in test definitions:', msg);
+      }
+
+      await runTestsAndReport();
     }
   });
 
-  // signal readiness
   parent.postMessage({ type: 'ready' }, '*');
 </script>
 </body>
@@ -106,12 +167,15 @@ const iframeHTML = `
         </div>
       </div>
     </div>
-    <!-- hidden iframe used for sandbox execution -->
     <iframe #sandbox style="display:none" sandbox="allow-scripts"></iframe>
   `,
   styles: [
     `
-      :host { display: block; height: 300px; } /* adjust externally as needed */
+      :host {
+        display: block;
+        height: 100%;
+        min-height: 200px;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -119,29 +183,37 @@ const iframeHTML = `
 export class ConsoleLoggerComponent implements AfterViewInit, OnDestroy {
   entries = signal<ConsoleEntry[]>([]);
   ready = signal(false);
-  private iframeEl?: HTMLIFrameElement;
-  private blobUrl?: string;
+  testResults: TestResult[] = [];
+  @Output() testsFinished = new EventEmitter<TestResult[]>();
+
+  iframeEl?: HTMLIFrameElement;
+  private readyTimeoutId?: number;
   private boundMessage = this.onMessage.bind(this);
 
   ngAfterViewInit() {
-    // create blob URL
-    const blob = new Blob([iframeHTML], { type: 'text/html' });
-    this.blobUrl = URL.createObjectURL(blob);
-
-    // build iframe
     this.iframeEl = document.createElement('iframe');
     this.iframeEl.sandbox.add('allow-scripts');
     this.iframeEl.style.display = 'none';
-    this.iframeEl.src = this.blobUrl;
+    this.iframeEl.srcdoc = iframeHTML;
     document.body.appendChild(this.iframeEl);
 
     window.addEventListener('message', this.boundMessage);
+
+    this.readyTimeoutId = window.setTimeout(() => {
+      if (!this.ready()) {
+        this.append({
+          level: 'error',
+          message: 'Sandbox failed to initialize (possible srcdoc/load issue)',
+          timestamp: Date.now(),
+        });
+      }
+    }, 2000);
   }
 
   ngOnDestroy() {
     window.removeEventListener('message', this.boundMessage);
     if (this.iframeEl) this.iframeEl.remove();
-    if (this.blobUrl) URL.revokeObjectURL(this.blobUrl);
+    if (this.readyTimeoutId) window.clearTimeout(this.readyTimeoutId);
   }
 
   private onMessage(ev: MessageEvent) {
@@ -150,7 +222,7 @@ export class ConsoleLoggerComponent implements AfterViewInit, OnDestroy {
 
     if (data.type === 'ready') {
       this.ready.set(true);
-      this.append({ level: 'info', message: 'Sandbox initialized', timestamp: Date.now() });
+      this.append({ level: 'info', message: 'Sandbox ready', timestamp: Date.now() });
     } else if (data.type === 'console') {
       if (data.level === 'clear') {
         this.entries.set([]);
@@ -161,23 +233,35 @@ export class ConsoleLoggerComponent implements AfterViewInit, OnDestroy {
         message: data.message,
         timestamp: data.timestamp || Date.now(),
       });
+    } else if (data.type === 'testResults') {
+      this.testResults = data.results || [];
+      this.testsFinished.emit(this.testResults);
     }
   }
 
   private append(entry: ConsoleEntry) {
     this.entries.set([...this.entries(), entry]);
-    // optional: auto-scroll logic could be added via ViewChild if you expose scroll container
   }
 
   runCode(code: string) {
-    if (!this.iframeEl?.contentWindow) return;
-    this.iframeEl.contentWindow.postMessage({ type: 'runCode', code }, '*');
+    if (this.iframeEl?.contentWindow) {
+      this.iframeEl.contentWindow.postMessage({ type: 'runWithTests', userCode: code, testCode: '' }, '*');
+    }
+  }
+
+  runWithTests(userCode: string, testCode: string) {
+    if (this.iframeEl?.contentWindow) {
+      this.testResults = [];
+      this.entries.set([]);
+      this.iframeEl.contentWindow.postMessage({ type: 'runWithTests', userCode, testCode }, '*');
+    }
   }
 
   clear() {
     this.entries.set([]);
+    this.testResults = [];
     if (this.iframeEl?.contentWindow) {
-      this.iframeEl.contentWindow.postMessage({ type: 'clear' }, '*');
+      this.iframeEl.contentWindow.postMessage({ type: 'readyCheck' }, '*');
     }
   }
 

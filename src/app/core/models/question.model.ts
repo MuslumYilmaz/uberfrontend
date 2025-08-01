@@ -15,4 +15,5 @@ export interface Question {
   code?: string;
   solution?: string;
   starterCode?: string;
+  tests?: string; // <-- needed for test code
 }
