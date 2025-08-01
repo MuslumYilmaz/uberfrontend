@@ -12,6 +12,38 @@
 
 <body>
   <app-root></app-root>
+
+  <!-- Monaco loader + worker proxy setup -->
+  <script>
+    // Worker proxy that works cross-origin / with bundlers: returns a blob URL
+    window.MonacoEnvironment = {
+      getWorkerUrl: function (moduleId, label) {
+        // Use a proxied worker that bootstraps the real workerMain.js from CDN
+        const proxy = URL.createObjectURL(
+          new Blob(
+            [
+              `
+            self.MonacoEnvironment = {
+              baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/'
+            };
+            importScripts('https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs/base/worker/workerMain.js');
+          `,
+            ],
+            { type: 'application/javascript' }
+          )
+        );
+        return proxy;
+      },
+    };
+  </script>
+
+  <!-- Load AMD loader from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs/loader.js"></script>
+  <script>
+    // Point require to the CDN copy
+    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs' } });
+  </script>
+
 </body>
 
 </html>
