@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   Component,
+  computed,
   OnDestroy,
   OnInit,
   signal,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
@@ -33,10 +33,12 @@ import {
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.scss'],
 })
-export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CodingDetailComponent implements OnInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
-  editorContent = signal<string>('');
+  editorContent = signal<string>(''); // user code
+  testCode = signal<string>(''); // test code editable
+  topTab = signal<'code' | 'tests'>('code'); // top editor tabs
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
 
@@ -47,7 +49,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   hasRunTests = false;
   private testsSub?: Subscription;
 
-  // ViewChild via setter to subscribe when available
   private _consoleLogger?: ConsoleLoggerComponent;
   @ViewChild(ConsoleLoggerComponent)
   set consoleLogger(c: ConsoleLoggerComponent | undefined) {
@@ -62,6 +63,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   get consoleLogger() {
     return this._consoleLogger;
   }
+
+  // computed for template
+  passedCount = computed(() => this.testResults.filter((r) => r.passed).length);
+  totalCount = computed(() => this.testResults.length);
+  failedCount = computed(() => this.testResults.filter((r) => !r.passed).length);
+  allPassing = computed(() => this.totalCount() > 0 && this.failedCount() === 0);
+  isTestsTab = computed(() => this.subTab() === 'tests');
+  isConsoleTab = computed(() => this.subTab() === 'console');
+  isTopCodeTab = computed(() => this.topTab() === 'code');
+  isTopTestsTab = computed(() => this.topTab() === 'tests');
 
   constructor(
     private route: ActivatedRoute,
@@ -78,11 +89,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
   }
-
-  ngAfterViewInit() {
-    // nothing extra; setter handles subscription
-  }
-
   ngOnDestroy() {
     this.testsSub?.unsubscribe();
   }
@@ -94,10 +100,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
     this.editorContent.set(q.starterCode ?? '');
+    this.testCode.set(((q as any).tests as string) ?? '');
     this.activePanel.set(0);
+    this.topTab.set('code');
+    this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults = [];
-    this.subTab.set('tests');
   }
 
   showSolution() {
@@ -105,13 +113,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!q) return;
     this.editorContent.set(q.solution ?? '');
     this.activePanel.set(1);
-  }
-
-  showProblem() {
-    const q = this.question();
-    if (!q) return;
-    this.editorContent.set(q.starterCode ?? '');
-    this.activePanel.set(0);
+    this.topTab.set('code');
   }
 
   prev() {
@@ -126,25 +128,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const nextId = this.allQuestions[this.currentIndex + 1].id;
       location.pathname = `/${this.tech}/coding/${nextId}`;
     }
-  }
-
-  private waitForConsoleLogger(timeoutMs = 2000): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.consoleLogger) {
-        resolve();
-        return;
-      }
-      const start = Date.now();
-      const interval = setInterval(() => {
-        if (this.consoleLogger) {
-          clearInterval(interval);
-          resolve();
-        } else if (Date.now() - start > timeoutMs) {
-          clearInterval(interval);
-          reject(new Error('ConsoleLoggerComponent not available'));
-        }
-      }, 50);
-    });
   }
 
   private waitForSandboxReady(timeoutMs = 3000): Promise<void> {
@@ -168,13 +151,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async runTests() {
     const q = this.question();
-    try {
-      await this.waitForConsoleLogger();
-    } catch (e) {
-      console.warn('Console logger not available', e);
+    if (!q) return;
+
+    // Ensure console logger is mounted by activating console tab first.
+    this.subTab.set('console');
+
+    // Wait a tick so the console logger child actually instantiates and setter fires.
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+    if (!this.consoleLogger) {
+      console.warn('Console logger not available');
       return;
     }
-    if (!q || !this.consoleLogger) return;
 
     try {
       await this.waitForSandboxReady();
@@ -183,12 +171,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    const rawTestCode = (q as any).tests ?? '';
-    const testCode = this.transformTestCode(rawTestCode, q.id);
+    const rawTestCode = this.testCode();
+    const testCodeTransformed = this.transformTestCode(rawTestCode, q.id);
     const wrappedUserCode = this.wrapExportDefault(this.editorContent(), q.id);
 
-    this.consoleLogger.runWithTests(wrappedUserCode, testCode);
+    this.consoleLogger.runWithTests(wrappedUserCode, testCodeTransformed);
     this.hasRunTests = true;
+
+    // Show test summary panel
     this.subTab.set('tests');
   }
 
@@ -198,30 +188,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get progressText() {
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
-  }
-
-  get passedCount() {
-    return this.testResults.filter((r) => r.passed).length;
-  }
-
-  get totalCount() {
-    return this.testResults.length;
-  }
-
-  get failedCount() {
-    return this.testResults.filter((r) => !r.passed).length;
-  }
-
-  get allPassing() {
-    return this.totalCount > 0 && this.failedCount === 0;
-  }
-
-  get isTestsTab() {
-    return this.subTab() === 'tests';
-  }
-
-  get isConsoleTab() {
-    return this.subTab() === 'console';
   }
 
   // -------------- helpers -----------------
@@ -282,34 +248,5 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private toCamelCase(str: string) {
     return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
-  }
-
-  private stripExportDefault(code: string) {
-    let transformed = code;
-    transformed = transformed.replace(/export\s+default\s+function\s+([\w$]+)\s*\(/, 'function $1(');
-    transformed = transformed.replace(/export\s+default\s+async\s+function\s+([\w$]+)\s*\(/, 'async function $1(');
-    transformed = transformed.replace(/export\s+default\s+/, '');
-    return transformed;
-  }
-
-  private inferAndAutoInvoke(code: string, questionId: string) {
-    let transformed = this.stripExportDefault(code);
-    const fnMatch = transformed.match(/(?:function\s+([\w$]+)\s*\(|async\s+function\s+([\w$]+)\s*\()/);
-    let fnName: string | null = null;
-    if (fnMatch) {
-      fnName = fnMatch[1] || fnMatch[2] || null;
-    } else {
-      fnName = this.sanitizeGlobalName(questionId);
-    }
-
-    if (fnName && new RegExp(`\\b${fnName}\\s*\\(`).test(transformed)) {
-      return transformed;
-    }
-
-    if (fnName) {
-      transformed += `\ntry { if (typeof ${fnName} === 'function') { ${fnName}(); } } catch (e) { console.error('Auto-invoke error:', e); }`;
-    }
-
-    return transformed;
   }
 }

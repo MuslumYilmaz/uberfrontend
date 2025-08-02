@@ -7,7 +7,8 @@
       </p-accordionTab>
       <p-accordionTab header="Solution Explanation">
         <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
-        <button pButton label="Load Solution Code" icon="pi pi-code" class="mt-3" (click)="showSolution()"></button>
+        <button pButton label="Load Solution Code" icon="pi pi-code" class="mt-3" (click)="showSolution()">
+        </button>
       </p-accordionTab>
       <p-accordionTab header="Test Cases">
         <ul class="list-disc pl-5">
@@ -16,56 +17,78 @@
       </p-accordionTab>
     </p-accordion>
     <div class="flex-none p-4 border-t flex items-center justify-between">
-      <button pButton label="← Prev" icon="pi pi-arrow-left" (click)="prev()" [disabled]="currentIndex===0"></button>
+      <button pButton label="← Prev" icon="pi pi-arrow-left" (click)="prev()" [disabled]="currentIndex === 0"></button>
       <span>{{ progressText }}</span>
       <button pButton label="Next →" icon="pi pi-arrow-right" iconPos="right" (click)="next()"
-        [disabled]="currentIndex+1>=allQuestions.length"></button>
+        [disabled]="currentIndex + 1 >= allQuestions.length"></button>
     </div>
   </aside>
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
+    <!-- Top tabs for code / test cases -->
+    <div class="flex border-b">
+      <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTopCodeTab()"
+        [class.text-blue-600]="isTopCodeTab()" [class.text-gray-600]="!isTopCodeTab()" (click)="topTab.set('code')">
+        Code
+      </button>
+      <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTopTestsTab()"
+        [class.text-blue-600]="isTopTestsTab()" [class.text-gray-600]="!isTopTestsTab()" (click)="topTab.set('tests')">
+        Test Cases
+      </button>
+    </div>
+
+    <!-- Editor area -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Editor -->
       <div class="flex-1 relative">
-        <app-monaco-editor class="h-full" [code]="editorContent()"
-          [language]="tech==='angular'?'typescript':'javascript'"
-          (codeChange)="editorContent.set($event)"></app-monaco-editor>
+        <!-- Code editor -->
+        <div *ngIf="isTopCodeTab()" class="h-full">
+          <app-monaco-editor class="h-full" [code]="editorContent()"
+            [language]="tech === 'angular' ? 'typescript' : 'javascript'"
+            (codeChange)="editorContent.set($event)"></app-monaco-editor>
+        </div>
+
+        <!-- Test code editor -->
+        <div *ngIf="isTopTestsTab()" class="h-full">
+          <app-monaco-editor class="h-full" [code]="testCode()" [language]="'javascript'"
+            (codeChange)="testCode.set($event)"></app-monaco-editor>
+        </div>
       </div>
 
       <!-- Action bar -->
-      <div class="flex-none p-4 border-t bg-gray-50 flex justify-between items-start space-x-2">
+      <div class="flex-none p-4 border-t bg-gray-50 flex justify-between items-center">
         <div class="flex gap-2 items-center">
-          <button pButton label="Run" icon="pi pi-play" (click)="runTests()"></button>
+          <button pButton label="Run Tests" icon="pi pi-flask" (click)="runTests()"></button>
           <div class="text-sm" *ngIf="hasRunTests">
-            Passed: <strong>{{ passedCount }}</strong> / <strong>{{ totalCount }}</strong>
+            Passed: <strong>{{ passedCount() }}</strong> / <strong>{{ totalCount() }}</strong>
           </div>
         </div>
-        <div class="flex-none">
+        <div>
           <button pButton label="Submit" icon="pi pi-check" (click)="submitCode()"></button>
         </div>
       </div>
 
-      <!-- Sub-tabs -->
+      <!-- Sub-tabs for results -->
       <div class="flex-none border-b flex">
-        <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTestsTab" [class.text-blue-600]="isTestsTab"
-          [class.text-gray-600]="!isTestsTab" (click)="subTab.set('tests')">
+        <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTestsTab()" [class.text-blue-600]="isTestsTab()"
+          [class.text-gray-600]="!isTestsTab()" (click)="subTab.set('tests')">
           Tests
         </button>
-        <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isConsoleTab" [class.text-blue-600]="isConsoleTab"
-          [class.text-gray-600]="!isConsoleTab" (click)="subTab.set('console')">
+        <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isConsoleTab()"
+          [class.text-blue-600]="isConsoleTab()" [class.text-gray-600]="!isConsoleTab()"
+          (click)="subTab.set('console')">
           Console
         </button>
       </div>
 
-      <!-- Tab content -->
+      <!-- Result panes -->
       <div class="flex-1 overflow-auto p-4">
         <!-- Tests panel -->
-        <div *ngIf="isTestsTab">
+        <div *ngIf="isTestsTab()">
           <div *ngIf="hasRunTests" class="mb-3">
-            <strong>{{ passedCount }}</strong> / <strong>{{ totalCount }}</strong> passed
-            <span *ngIf="allPassing" class="text-green-600 ml-2">Correct ✓</span>
-            <span *ngIf="!allPassing" class="text-red-600 ml-2">Wrong answer ❌</span>
+            <strong>{{ passedCount() }}</strong> / <strong>{{ totalCount() }}</strong> passed
+            <span *ngIf="allPassing()" class="text-green-600 ml-2">Correct ✓</span>
+            <span *ngIf="!allPassing()" class="text-red-600 ml-2">Wrong answer ❌</span>
           </div>
           <div class="space-y-2">
             <div *ngFor="let t of testResults" class="p-2 rounded border"
@@ -79,9 +102,11 @@
         </div>
 
         <!-- Console panel -->
-        <div class="h-full flex flex-col" [style.display]="isConsoleTab ? 'flex' : 'none'">
+        <!-- Console panel -->
+        <div class="h-full flex flex-col" [style.display]="isConsoleTab() ? 'flex' : 'none'">
           <app-console-logger class="flex-1"></app-console-logger>
         </div>
+
       </div>
     </div>
   </main>
