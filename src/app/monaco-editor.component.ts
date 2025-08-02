@@ -37,6 +37,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges {
   @Input() language = 'javascript';
   @Input() theme = 'vs-dark';
   @Input() options: any = { automaticLayout: true };
+  @Input() readOnly = false; // new input to make it non-editable
 
   @Output() codeChange = new EventEmitter<string>();
 
@@ -55,10 +56,14 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges {
         language: this.language,
         theme: this.theme,
         automaticLayout: true,
+        readOnly: this.readOnly,
         ...this.options,
       });
 
       this.editorInstance.onDidChangeModelContent(() => {
+        if (this.readOnly) {
+          return; // do not emit when in read-only mode
+        }
         const val = this.editorInstance.getValue();
         if (this.suppressNextModelUpdate) {
           this.suppressNextModelUpdate = false;
@@ -96,6 +101,15 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges {
 
     if (changes['options'] && !changes['options'].isFirstChange()) {
       this.editorInstance.updateOptions(this.options);
+    }
+
+    if (changes['readOnly'] && !changes['readOnly'].isFirstChange()) {
+      const model = this.editorInstance.getModel();
+      this.editorInstance.updateOptions({ readOnly: this.readOnly });
+      // ensure the internal flag is synced
+      if (model) {
+        // nothing special needed; updateOptions already applied
+      }
     }
   }
 }

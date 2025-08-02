@@ -26,11 +26,32 @@
         <div class="text-sm text-gray-400 mb-2">
           <span *ngIf="question()?.difficulty" class="mr-2 capitalize">{{ question()?.difficulty }}</span>
         </div>
-        <div class="whitespace-pre-wrap text-base">{{ question()?.description }}</div>
+
+        <!-- Narrative -->
+        <div class="whitespace-pre-wrap text-base">{{ descriptionText() }}</div>
+
+        <!-- Examples -->
+<!-- inside the Description panel, after narrative -->
+<div *ngIf="combinedExamples()" class="mt-6">
+  <div class="text-xs uppercase font-semibold mb-1">Examples</div>
+  <div class="h-48">
+    <app-monaco-editor
+      [code]="combinedExamples()"
+      [language]="tech === 'angular' ? 'typescript' : 'javascript'"
+      [theme]="'vs-dark'"
+      [readOnly]="true"
+      class="h-full rounded border"
+      [options]="{ minimap: { enabled: false }, lineNumbers: 'on', folding: false }"
+    ></app-monaco-editor>
+  </div>
+</div>
+
+
+
+
         <div class="mt-6">
           <div class="text-xs uppercase font-semibold mb-1">Resources</div>
           <ul class="list-disc pl-5 text-sm">
-            <!-- Example, adapt if you have real resource list -->
             <li>Function: length | MDN</li>
           </ul>
         </div>
@@ -44,7 +65,7 @@
       </div>
     </div>
 
-    <!-- Navigation footer -->
+    <!-- Footer navigation -->
     <div class="flex-none p-4 border-t flex items-center justify-between bg-neutral-800 text-white">
       <button pButton label="← Prev" icon="pi pi-arrow-left" (click)="prev()" [disabled]="currentIndex === 0"></button>
       <span>{{ progressText }}</span>
@@ -53,7 +74,7 @@
     </div>
   </aside>
 
-  <!-- RIGHT COLUMN -->
+  <!-- RIGHT COLUMN: editor + results -->
   <main class="flex-1 flex flex-col overflow-hidden bg-gray-800 text-white">
     <!-- Top tabs for code / test cases -->
     <div class="flex border-b items-center px-4 bg-neutral-900">
@@ -72,26 +93,24 @@
 
     <!-- Editor + results split -->
     <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
-      <!-- Editor area -->
       <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio() * 100) + '%'" style="min-height:120px;">
         <div class="h-full relative">
           <div *ngIf="isTopCodeTab()" class="h-full">
             <app-monaco-editor class="h-full" [code]="editorContent()"
-              [language]="tech === 'angular' ? 'typescript' : 'javascript'" (codeChange)="editorContent.set($event)">
-            </app-monaco-editor>
+              [language]="tech === 'angular' ? 'typescript' : 'javascript'"
+              (codeChange)="editorContent.set($event)"></app-monaco-editor>
           </div>
           <div *ngIf="isTopTestsTab()" class="h-full">
             <app-monaco-editor class="h-full" [code]="testCode()" [language]="'javascript'"
-              (codeChange)="testCode.set($event)">
-            </app-monaco-editor>
+              (codeChange)="testCode.set($event)"></app-monaco-editor>
           </div>
         </div>
       </div>
 
-      <!-- Splitter -->
+      <!-- Splitter bar -->
       <div class="h-1 cursor-row-resize bg-gray-700" (pointerdown)="startDrag($event)" style="user-select:none;"></div>
 
-      <!-- Results / Console -->
+      <!-- Results / console -->
       <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Action bar -->
         <div class="flex-none p-4 border-t bg-neutral-900 flex justify-between items-center">
@@ -106,22 +125,19 @@
           </div>
         </div>
 
-        <!-- Sub-tabs for results -->
+        <!-- Sub-tabs -->
         <div class="flex-none border-b flex bg-neutral-900">
           <button class="px-4 py-2 border-b-2" [class.border-blue-500]="isTestsTab()"
-            [class.text-blue-400]="isTestsTab()" [class.text-gray-400]="!isTestsTab()" (click)="subTab.set('tests')">
-            Tests
-          </button>
+            [class.text-blue-400]="isTestsTab()" [class.text-gray-400]="!isTestsTab()"
+            (click)="subTab.set('tests')">Tests</button>
           <button class="px-4 py-2 border-b-2" [class.border-blue-500]="isConsoleTab()"
             [class.text-blue-400]="isConsoleTab()" [class.text-gray-400]="!isConsoleTab()"
-            (click)="subTab.set('console')">
-            Console
-          </button>
+            (click)="subTab.set('console')">Console</button>
         </div>
 
         <!-- Panels -->
         <div class="flex-1 overflow-auto p-4 flex flex-col">
-          <!-- Tests panel -->
+          <!-- Tests -->
           <div *ngIf="isTestsTab()" class="flex-1 overflow-auto">
             <div *ngIf="hasRunTests" class="mb-3 flex items-center gap-2">
               <strong>{{ passedCount() }}</strong> / <strong>{{ totalCount() }}</strong> passed
@@ -144,7 +160,7 @@
             </div>
           </div>
 
-          <!-- Console panel -->
+          <!-- Console -->
           <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="h-full flex flex-col">
             <app-console-logger class="flex-1"></app-console-logger>
           </div>

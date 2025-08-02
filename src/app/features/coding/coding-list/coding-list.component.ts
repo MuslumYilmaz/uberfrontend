@@ -13,6 +13,11 @@ import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Difficulty, Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
 
+type StructuredDescription = {
+  text: string;
+  examples?: string[];
+};
+
 @Component({
   selector: 'app-coding-list',
   standalone: true,
@@ -31,7 +36,6 @@ import { QuestionService } from '../../../core/services/question.service';
   styleUrls: ['./coding-list.component.scss']
 })
 export class CodingListComponent {
-  // filter subjects
   public search$ = new BehaviorSubject<string>('');
   public diffs$ = new BehaviorSubject<Difficulty[]>([]);
   public maxImp$ = new BehaviorSubject<number>(5);
@@ -39,7 +43,6 @@ export class CodingListComponent {
 
   tech!: string;
 
-  // raw questions stream
   public rawQuestions$ = this.route.parent!.paramMap.pipe(
     map(p => p.get('tech') ?? 'javascript'),
     tap(t => (this.tech = t)),
@@ -47,7 +50,6 @@ export class CodingListComponent {
     startWith<Question[]>([])
   );
 
-  // filtered questions
   filtered$ = combineLatest([
     this.rawQuestions$,
     this.search$,
@@ -62,7 +64,6 @@ export class CodingListComponent {
           q.importance <= maxImp
         )
         .sort((a, b) => {
-          // optional: sort by importance desc then title
           if (a.importance !== b.importance) return b.importance - a.importance;
           return a.title.localeCompare(b.title);
         })
@@ -70,13 +71,21 @@ export class CodingListComponent {
   );
 
   difficultyOptions = [
-    { label: 'Beginner', value: 'beginner' as Difficulty },
+    { label: 'Beginner', value: 'easy' as Difficulty },
     { label: 'Intermediate', value: 'intermediate' as Difficulty },
-    { label: 'Advanced', value: 'advanced' as Difficulty }
+    { label: 'Advanced', value: 'hard' as Difficulty }
   ];
 
   constructor(
     public route: ActivatedRoute,
     public qs: QuestionService
   ) { }
+
+  descriptionText(q: Question): string {
+    const desc: any = (q as any).description;
+    if (typeof desc === 'object' && desc !== null) {
+      return (desc as StructuredDescription).text || '';
+    }
+    return q.description || '';
+  }
 }

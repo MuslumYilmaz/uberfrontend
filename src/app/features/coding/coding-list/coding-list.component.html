@@ -1,12 +1,10 @@
 <div class="container mx-auto max-w-7xl px-4 py-6">
-  <!-- Page title -->
   <h1 class="text-4xl font-extrabold text-white mb-6">
     {{ tech | titlecase }} Coding Challenges
   </h1>
 
   <!-- Filter Bar -->
   <div class="bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col md:flex-row items-center md:space-x-6 mb-8 gap-4">
-    <!-- Search -->
     <div class="flex-1 w-full md:w-1/2">
       <div class="relative">
         <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
@@ -16,13 +14,11 @@
       </div>
     </div>
 
-    <!-- Difficulty -->
     <div class="w-full md:w-auto flex-1">
       <p-multiSelect [options]="difficultyOptions" placeholder="Difficulty" display="chip" class="w-full"
         panelStyleClass="rounded-lg" (onChange)="diffs$.next($event.value)"></p-multiSelect>
     </div>
 
-    <!-- Importance -->
     <div class="w-full md:w-auto flex-1">
       <label class="block mb-1 text-sm font-medium text-gray-300">Max Importance</label>
       <p-slider [(ngModel)]="sliderValue" [min]="1" [max]="5" [step]="1" class="w-full"
@@ -30,7 +26,7 @@
     </div>
   </div>
 
-  <!-- List / Table style -->
+  <!-- Table-style list -->
   <div class="bg-gray-800 rounded-xl overflow-hidden">
     <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-700 text-gray-400 text-sm font-semibold">
       <div class="col-span-5">Title</div>
@@ -56,7 +52,7 @@
           class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900">
           <div class="col-span-5">
             <div class="text-lg font-semibold text-white">{{ q.title }}</div>
-            <div class="text-xs text-gray-400 mt-0.5">{{ q.description | slice:0:80 }}...</div>
+            <div class="text-xs text-gray-400 mt-0.5">{{ descriptionText(q) | slice:0:80 }}...</div>
           </div>
           <div class="col-span-2">
             <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{

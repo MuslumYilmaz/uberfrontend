@@ -1,3 +1,4 @@
+// src/app/features/coding-detail/coding-detail.component.ts
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -14,7 +15,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { Subscription } from 'rxjs';
-import type { Question } from '../../../core/models/question.model';
+import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import {
@@ -39,14 +40,12 @@ import {
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
-  editorContent = signal<string>(''); // user code
-  testCode = signal<string>(''); // editable test code
-  topTab = signal<'code' | 'tests'>('code'); // top editor file tabs
+  editorContent = signal<string>('');
+  testCode = signal<string>('');
+  topTab = signal<'code' | 'tests'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
-
-  // vertical split ratio: fraction of height taken by editor area
-  editorRatio = signal(0.6); // start with 60% top
+  editorRatio = signal(0.6);
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -70,13 +69,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._consoleLogger;
   }
 
-  // For splitter
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
   private dragging = false;
   private startY = 0;
   private startRatio = 0;
 
-  // computed for template
+  // computed
   passedCount = computed(() => this.testResults().filter((r) => r.passed).length);
   totalCount = computed(() => this.testResults().length);
   failedCount = computed(() => this.testResults().filter((r) => !r.passed).length);
@@ -85,6 +83,33 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isConsoleTab = computed(() => this.subTab() === 'console');
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
+
+  // normalized description / examples
+  descriptionText = computed(() => {
+    const q = this.question();
+    if (!q) return '';
+    if (typeof q.description === 'object' && q.description !== null) {
+      return (q.description as StructuredDescription).text || '';
+    }
+    return q.description || '';
+  });
+  descriptionExamples = computed(() => {
+    const q = this.question();
+    if (!q) return [] as string[];
+    if (typeof q.description === 'object' && q.description !== null) {
+      return ((q.description as StructuredDescription).examples || []) as string[];
+    }
+    return (q as any).examples || [];
+  });
+
+  // combined single block with separators for examples
+  combinedExamples = computed(() => {
+    const exs = this.descriptionExamples();
+    if (!exs || exs.length === 0) return '';
+    return exs
+      .map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`)
+      .join('\n\n// --------\n\n');
+  });
 
   constructor(
     private route: ActivatedRoute,
@@ -104,7 +129,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // global pointer listeners for dragging
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMove);
       window.addEventListener('pointerup', this.onPointerUp);
@@ -177,7 +201,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
-    // ensure console logger is mounted
     this.subTab.set('console');
     await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
@@ -235,8 +258,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  // -------------- helpers -----------------
-
+  // helpers for code transformation
   private sanitizeGlobalName(id: string) {
     return id.replace(/[^a-zA-Z0-9_]/g, '_');
   }
