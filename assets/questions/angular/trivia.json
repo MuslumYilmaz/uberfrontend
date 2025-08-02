@@ -1,0 +1,41 @@
+[
+    {
+        "id": "angular-ngzone",
+        "title": "What is NgZone?",
+        "description": "Explain the purpose of `NgZone` in Angular and how you can use it to run code outside of Angular's change detection.",
+        "type": "trivia",
+        "technology": "angular",
+        "difficulty": "advanced",
+        "tags": [
+            "ngzone",
+            "change-detection"
+        ],
+        "importance": 5
+    },
+    {
+        "id": "angular-lifecycle",
+        "title": "Lifecycle Hooks Order",
+        "description": "List the Angular component lifecycle hooks in the order they are called from creation to destruction.",
+        "type": "trivia",
+        "technology": "angular",
+        "difficulty": "intermediate",
+        "tags": [
+            "lifecycle",
+            "hooks"
+        ],
+        "importance": 4
+    },
+    {
+        "id": "angular-change-strategy",
+        "title": "Change Detection Strategies",
+        "description": "Compare `OnPush` and default change detection strategies in Angular. When and why would you use `OnPush`?",
+        "type": "trivia",
+        "technology": "angular",
+        "difficulty": "intermediate",
+        "tags": [
+            "change-detection",
+            "performance"
+        ],
+        "importance": 3
+    }
+]
