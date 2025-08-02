@@ -2,12 +2,104 @@
   display: block;
 }
 
-/* Optionally soften the list background so it’s distinct but not too bright */
-.bg-gray-800 {
-  background: #1f2230;
+/* Make the trigger wider and prevent it from shrinking */
+::ng-deep .difficulty-filter {
+  flex: 0 0 auto;
+  min-width: 240px; /* give it more breathing room */
 }
 
-/* Ensure the header row stays visible */
-.grid > .font-semibold {
-  letter-spacing: 0.5px;
+/* Trigger box sizing */
+::ng-deep .difficulty-filter .p-multiselect {
+  display: flex;
+  flex: 1;
+}
+
+/* Ensure the panel is at least as wide as the trigger or wider */
+::ng-deep .dark-multiselect-panel {
+  min-width: 260px;
+  width: auto; /* allow it to expand if needed */
+}
+
+
+/* Trigger box */
+::ng-deep .difficulty-filter .p-multiselect {
+  background: #1f2737;
+  border: 1px solid #2f3750;
+  border-radius: 8px;
+  color: #e3e8ff;
+}
+
+/* Label area (when nothing selected) and tokens container */
+::ng-deep .difficulty-filter .p-multiselect .p-multiselect-label,
+::ng-deep .difficulty-filter .p-multiselect .p-placeholder {
+  background: transparent;
+  color: #cdd6f4;
+}
+
+/* Caret and trigger arrow */
+::ng-deep .difficulty-filter .p-multiselect .p-multiselect-trigger {
+  color: #cdd6f4;
+}
+
+/* Selected tokens */
+::ng-deep .difficulty-filter .p-multiselect-token {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e3e8ff;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  margin-right: 4px;
+  font-size: 0.85rem;
+}
+
+/* Dropdown panel */
+::ng-deep .dark-multiselect-panel {
+  background: #1f2737 !important;
+  border: 1px solid #2f3750 !important;
+  color: #e3e8ff !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Header / filter row inside panel */
+::ng-deep .dark-multiselect-panel .p-multiselect-header {
+  background: #1f2737;
+  border-bottom: 1px solid #2f3750;
+  padding: 6px 8px;
+}
+
+/* Search input inside panel */
+::ng-deep .dark-multiselect-panel .p-multiselect-filter-container input {
+  background: #273046;
+  border: 1px solid #2f3750;
+  color: #e3e8ff;
+}
+
+/* List items: remove default white; give subtle hover/selection */
+::ng-deep .dark-multiselect-panel .p-multiselect-item {
+  background: transparent;
+  padding: 0.5rem 1rem;
+  color: #e3e8ff;
+}
+
+::ng-deep .dark-multiselect-panel .p-multiselect-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Close icon */
+::ng-deep .dark-multiselect-panel .p-multiselect-close {
+  color: #e3e8ff;
+}
+
+/* Checkbox square in list: make border/light for visibility */
+::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
+  background: transparent;
+  border: 1px solid #2f3750;
+}
+
+::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox-box {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #5a9df9;
 }
