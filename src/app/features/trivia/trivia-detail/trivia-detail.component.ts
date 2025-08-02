@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  OnInit,
   OnDestroy,
+  OnInit,
   signal,
 } from '@angular/core';
 import {
@@ -11,9 +11,9 @@ import {
 } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { Subscription } from 'rxjs';
 import { Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-trivia-detail',
@@ -30,13 +30,8 @@ import { Subscription } from 'rxjs';
 export class TriviaDetailComponent implements OnInit, OnDestroy {
   tech!: string;
 
-  // full list of questions for this tech/trivia
   questionsList: Question[] = [];
-
-  // currently selected question
   question = signal<Question | null>(null);
-
-  // drawer open state for answer
   showAnswer = signal(false);
 
   private sub!: Subscription;
@@ -44,14 +39,13 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.sub = this.route.paramMap.subscribe((params) => {
       this.tech = params.get('tech') || 'javascript';
       const id = params.get('id')!;
 
-      // load all trivia questions for this tech
       this.qs.loadQuestions(this.tech, 'trivia').subscribe((all) => {
         this.questionsList = all;
         this.selectQuestion(id);
@@ -63,7 +57,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
-  /** pick out and signal the current question by id */
   private selectQuestion(id: string) {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
@@ -71,6 +64,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   toggleAnswer() {
-    this.showAnswer.update((v) => !v);
+    this.showAnswer.update(v => !v);
+  }
+
+  // convenience to determine if a question is currently active
+  isActive(q: Question) {
+    return this.question()?.id === q.id;
+  }
+
+  // navigate by clicking row
+  onSelect(q: Question) {
+    // assuming router outlet path structure: /{tech}/trivia/{id}
+    window.history.pushState(null, '', `/${this.tech}/trivia/${q.id}`);
+    this.selectQuestion(q.id);
   }
 }
