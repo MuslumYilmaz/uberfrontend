@@ -1,3 +1,13 @@
 :host {
   display: block;
 }
+
+/* Optionally soften the list background so it’s distinct but not too bright */
+.bg-gray-800 {
+  background: #1f2230;
+}
+
+/* Ensure the header row stays visible */
+.grid > .font-semibold {
+  letter-spacing: 0.5px;
+}

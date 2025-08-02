@@ -14,25 +14,25 @@ import { filter, map, startWith } from 'rxjs';
   imports: [CommonModule, RouterModule],
   selector: 'app-tech-layout',
   template: `
-    <div class="flex flex-col flex-1 w-screen h-full px-4 py-6">
+    <div class="flex flex-col flex-1 w-full h-full px-4 py-6 bg-neutral-900 text-gray-200">
       <!-- only show on list pages -->
       <nav
         *ngIf="showSubTabs$ | async"
-        class="flex space-x-6 mb-6 border-b pb-2"
+        class="flex space-x-6 mb-6 border-b border-neutral-700 pb-2"
       >
         <a
           routerLink="coding"
-          routerLinkActive="text-blue-600 font-bold border-b-2 border-blue-600 pb-1"
+          routerLinkActive="text-white font-bold border-b-2 border-white pb-1"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="text-gray-600 hover:text-blue-600"
+          class="text-gray-400 hover:text-white"
         >
           Coding
         </a>
         <a
           routerLink="trivia"
-          routerLinkActive="text-blue-600 font-bold border-b-2 border-blue-600 pb-1"
+          routerLinkActive="text-white font-bold border-b-2 border-white pb-1"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="text-gray-600 hover:text-blue-600"
+          class="text-gray-400 hover:text-white"
         >
           Trivia
         </a>
@@ -45,9 +45,11 @@ import { filter, map, startWith } from 'rxjs';
   `,
   styles: [
     `
-    :host {
-      class: 'h-full w-full'
-    }
+      :host {
+        display: flex;
+        flex: 1;
+        min-height: 0; /* allow internal scroll container to work properly */
+      }
     `
   ]
 })

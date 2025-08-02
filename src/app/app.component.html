@@ -1,20 +1,21 @@
 <div class="flex flex-col h-screen">
-  <header class="bg-white border-b flex-none">
-    <div class="container mx-auto px-4 py-3 flex items-center space-x-8
-             text-gray-800 dark:text-gray-200">
-      <a routerLink="/javascript" routerLinkActive="text-brand-blue font-semibold"
-        [routerLinkActiveOptions]="{ exact: true }" class="flex items-center hover:text-brand-blue">
+  <header class="bg-neutral-900 border-b flex-none">
+    <div class="container mx-auto px-4 py-3 flex items-center space-x-8 text-gray-200">
+      <a routerLink="/javascript" routerLinkActive="text-white font-semibold"
+        [routerLinkActiveOptions]="{ exact: true }" class="flex items-center hover:text-white/90">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg"
-          class="h-5 w-5 mr-1" /> JavaScript
+          class="h-5 w-5 mr-1" alt="JavaScript" />
+        JavaScript
       </a>
-      <a routerLink="/angular" routerLinkActive="text-green-600 font-semibold"
-        [routerLinkActiveOptions]="{ exact: true }" class="flex items-center hover:text-green-600">
-        <img src="https://angular.io/assets/images/logos/angular/angular.svg" class="h-5 w-5 mr-1" /> Angular
+      <a routerLink="/angular" routerLinkActive="text-white font-semibold" [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center hover:text-white/90">
+        <img src="https://angular.io/assets/images/logos/angular/angular.svg" class="h-5 w-5 mr-1" alt="Angular" />
+        Angular
       </a>
     </div>
   </header>
 
   <main class="flex-1 flex overflow-hidden">
-       <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
   </main>
 </div>

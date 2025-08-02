@@ -1,22 +1,51 @@
 <div class="flex h-full">
-  <!-- LEFT COLUMN -->
-  <aside class="w-80 border-r flex flex-col">
-    <p-accordion class="flex-1 overflow-auto" [multiple]="false" [activeIndex]="activePanel()">
-      <p-accordionTab header="Problem Description">
-        <div class="whitespace-pre-wrap">{{ question()?.description }}</div>
-      </p-accordionTab>
-      <p-accordionTab header="Solution Explanation">
-        <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
-        <button pButton label="Load Solution Code" icon="pi pi-code" class="mt-3" (click)="showSolution()">
-        </button>
-      </p-accordionTab>
-      <p-accordionTab header="Test Cases">
-        <ul class="list-disc pl-5">
-          <li *ngFor="let t of question()?.tags">{{ t }}</li>
-        </ul>
-      </p-accordionTab>
-    </p-accordion>
-    <div class="flex-none p-4 border-t flex items-center justify-between">
+  <!-- LEFT COLUMN: description / solution -->
+  <aside class="flex flex-col"
+    style="flex: 0 0 45%; min-width: 300px; border-right: 1px solid var(--tw-border-opacity, #2d2d2d);">
+    <!-- Tabs -->
+    <div class="flex border-b bg-neutral-900 text-white">
+      <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel() === 0"
+        [class.text-blue-400]="activePanel() === 0" [class.text-gray-300]="activePanel() !== 0"
+        (click)="activePanel.set(0)">
+        Description
+      </button>
+      <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel() === 1"
+        [class.text-blue-400]="activePanel() === 1" [class.text-gray-300]="activePanel() !== 1"
+        (click)="activePanel.set(1)">
+        Solution
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-auto p-6 bg-black text-white">
+      <!-- Description -->
+      <div *ngIf="activePanel() === 0" class="space-y-4">
+        <div class="flex items-center gap-2 mb-2">
+          <h1 class="text-2xl font-bold flex-1">{{ question()?.title }}</h1>
+        </div>
+        <div class="text-sm text-gray-400 mb-2">
+          <span *ngIf="question()?.difficulty" class="mr-2 capitalize">{{ question()?.difficulty }}</span>
+        </div>
+        <div class="whitespace-pre-wrap text-base">{{ question()?.description }}</div>
+        <div class="mt-6">
+          <div class="text-xs uppercase font-semibold mb-1">Resources</div>
+          <ul class="list-disc pl-5 text-sm">
+            <!-- Example, adapt if you have real resource list -->
+            <li>Function: length | MDN</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Solution -->
+      <div *ngIf="activePanel() === 1" class="space-y-4">
+        <h2 class="text-xl font-semibold">Solution Explanation</h2>
+        <div class="whitespace-pre-wrap text-base">{{ question()?.solution }}</div>
+        <button pButton label="Load Solution Code" icon="pi pi-code" class="mt-2" (click)="showSolution()"></button>
+      </div>
+    </div>
+
+    <!-- Navigation footer -->
+    <div class="flex-none p-4 border-t flex items-center justify-between bg-neutral-800 text-white">
       <button pButton label="← Prev" icon="pi pi-arrow-left" (click)="prev()" [disabled]="currentIndex === 0"></button>
       <span>{{ progressText }}</span>
       <button pButton label="Next →" icon="pi pi-arrow-right" iconPos="right" (click)="next()"
@@ -25,43 +54,47 @@
   </aside>
 
   <!-- RIGHT COLUMN -->
-  <main class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
+  <main class="flex-1 flex flex-col overflow-hidden bg-gray-800 text-white">
     <!-- Top tabs for code / test cases -->
-    <div class="flex border-b">
-      <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTopCodeTab()"
-        [class.text-blue-600]="isTopCodeTab()" [class.text-gray-600]="!isTopCodeTab()" (click)="topTab.set('code')">
-        Code
-      </button>
-      <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTopTestsTab()"
-        [class.text-blue-600]="isTopTestsTab()" [class.text-gray-600]="!isTopTestsTab()" (click)="topTab.set('tests')">
-        Test Cases
-      </button>
+    <div class="flex border-b items-center px-4 bg-neutral-900">
+      <div class="flex gap-2">
+        <button class="px-4 py-2 font-medium flex items-center" [class.opacity-100]="isTopCodeTab()"
+          [class.opacity-60]="!isTopCodeTab()" (click)="topTab.set('code')">
+          <span class="mr-1">&lt;/&gt;</span> Code
+        </button>
+        <button class="px-4 py-2 font-medium flex items-center" [class.opacity-100]="isTopTestsTab()"
+          [class.opacity-60]="!isTopTestsTab()" (click)="topTab.set('tests')">
+          <span class="mr-1">⚗️</span> Test cases
+        </button>
+      </div>
+      <div class="flex-1"></div>
     </div>
 
-    <!-- Editor area with resize -->
+    <!-- Editor + results split -->
     <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
-      <!-- Editor/Test code area -->
-      <div class="overflow-hidden" [style.flex]=" '0 0 ' + (editorRatio() * 100) + '%'" style="min-height: 120px;">
+      <!-- Editor area -->
+      <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio() * 100) + '%'" style="min-height:120px;">
         <div class="h-full relative">
           <div *ngIf="isTopCodeTab()" class="h-full">
             <app-monaco-editor class="h-full" [code]="editorContent()"
-              [language]="tech === 'angular' ? 'typescript' : 'javascript'"
-              (codeChange)="editorContent.set($event)"></app-monaco-editor>
+              [language]="tech === 'angular' ? 'typescript' : 'javascript'" (codeChange)="editorContent.set($event)">
+            </app-monaco-editor>
           </div>
           <div *ngIf="isTopTestsTab()" class="h-full">
             <app-monaco-editor class="h-full" [code]="testCode()" [language]="'javascript'"
-              (codeChange)="testCode.set($event)"></app-monaco-editor>
+              (codeChange)="testCode.set($event)">
+            </app-monaco-editor>
           </div>
         </div>
       </div>
 
-      <!-- splitter bar -->
-      <div class="h-1 cursor-row-resize bg-gray-300" (pointerdown)="startDrag($event)" style="user-select: none;"></div>
+      <!-- Splitter -->
+      <div class="h-1 cursor-row-resize bg-gray-700" (pointerdown)="startDrag($event)" style="user-select:none;"></div>
 
-      <!-- Results and console -->
+      <!-- Results / Console -->
       <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Action bar -->
-        <div class="flex-none p-4 border-t bg-gray-50 flex justify-between items-center">
+        <div class="flex-none p-4 border-t bg-neutral-900 flex justify-between items-center">
           <div class="flex gap-2 items-center">
             <button pButton label="Run Tests" icon="pi pi-flask" (click)="runTests()"></button>
             <div class="text-sm" *ngIf="hasRunTests">
@@ -74,48 +107,45 @@
         </div>
 
         <!-- Sub-tabs for results -->
-        <div class="flex-none border-b flex">
-          <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isTestsTab()"
-            [class.text-blue-600]="isTestsTab()" [class.text-gray-600]="!isTestsTab()" (click)="subTab.set('tests')">
+        <div class="flex-none border-b flex bg-neutral-900">
+          <button class="px-4 py-2 border-b-2" [class.border-blue-500]="isTestsTab()"
+            [class.text-blue-400]="isTestsTab()" [class.text-gray-400]="!isTestsTab()" (click)="subTab.set('tests')">
             Tests
           </button>
-          <button class="px-4 py-2 border-b-2" [class.border-blue-600]="isConsoleTab()"
-            [class.text-blue-600]="isConsoleTab()" [class.text-gray-600]="!isConsoleTab()"
+          <button class="px-4 py-2 border-b-2" [class.border-blue-500]="isConsoleTab()"
+            [class.text-blue-400]="isConsoleTab()" [class.text-gray-400]="!isConsoleTab()"
             (click)="subTab.set('console')">
             Console
           </button>
         </div>
 
-        <!-- Result panes -->
+        <!-- Panels -->
         <div class="flex-1 overflow-auto p-4 flex flex-col">
           <!-- Tests panel -->
-          <!-- Summary bar above test list -->
           <div *ngIf="isTestsTab()" class="flex-1 overflow-auto">
             <div *ngIf="hasRunTests" class="mb-3 flex items-center gap-2">
               <strong>{{ passedCount() }}</strong> / <strong>{{ totalCount() }}</strong> passed
               <ng-container *ngIf="totalCount() > 0">
-                <span *ngIf="allPassing()" class="text-green-600 ml-2">Correct ✓</span>
-                <span *ngIf="!allPassing()" class="text-red-600 ml-2">Wrong answer ❌</span>
+                <span *ngIf="allPassing()" class="text-green-500 ml-2">Correct ✓</span>
+                <span *ngIf="!allPassing()" class="text-red-500 ml-2">Wrong answer ❌</span>
               </ng-container>
               <ng-container *ngIf="totalCount() === 0">
-                <span class="text-yellow-500 ml-2">No tests reported</span>
+                <span class="text-yellow-400 ml-2">No tests reported</span>
               </ng-container>
             </div>
-
             <div class="space-y-2">
               <div *ngFor="let t of testResults()" class="p-2 rounded border"
-                [ngClass]="t.passed ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'">
+                [ngClass]="t.passed ? 'border-green-500 bg-green-100/20' : 'border-red-500 bg-red-100/20'">
                 <div class="flex justify-between">
                   <div><strong>{{ t.passed ? '✅' : '❌' }} {{ t.name }}</strong></div>
                 </div>
-                <div *ngIf="t.error" class="mt-1 text-sm text-red-700">{{ t.error }}</div>
+                <div *ngIf="t.error" class="mt-1 text-sm text-red-300">{{ t.error }}</div>
               </div>
             </div>
           </div>
 
-
           <!-- Console panel -->
-          <div class="h-full flex flex-col" [style.display]="isConsoleTab() ? 'flex' : 'none'">
+          <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="h-full flex flex-col">
             <app-console-logger class="flex-1"></app-console-logger>
           </div>
         </div>

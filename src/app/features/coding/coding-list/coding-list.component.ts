@@ -1,18 +1,17 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { SliderModule } from 'primeng/slider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SliderModule } from 'primeng/slider';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, switchMap, tap, startWith } from 'rxjs/operators';
+import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Difficulty, Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-coding-list',
@@ -20,14 +19,13 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     RouterModule,
-    CardModule,
     ButtonModule,
-    ChipModule,
-    FormsModule,
-    InputTextModule,
     MultiSelectModule,
     SliderModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    InputTextModule,
+    ChipModule,
+    FormsModule
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
@@ -38,6 +36,8 @@ export class CodingListComponent {
   public diffs$ = new BehaviorSubject<Difficulty[]>([]);
   public maxImp$ = new BehaviorSubject<number>(5);
   sliderValue = 5;
+
+  tech!: string;
 
   // raw questions stream
   public rawQuestions$ = this.route.parent!.paramMap.pipe(
@@ -55,23 +55,28 @@ export class CodingListComponent {
     this.maxImp$
   ]).pipe(
     map(([questions, term, diffs, maxImp]) =>
-      questions.filter(q =>
-        q.title.toLowerCase().includes(term.toLowerCase()) &&
-        (diffs.length === 0 || diffs.includes(q.difficulty)) &&
-        q.importance <= maxImp
-      )
+      questions
+        .filter(q =>
+          q.title.toLowerCase().includes(term.toLowerCase()) &&
+          (diffs.length === 0 || diffs.includes(q.difficulty)) &&
+          q.importance <= maxImp
+        )
+        .sort((a, b) => {
+          // optional: sort by importance desc then title
+          if (a.importance !== b.importance) return b.importance - a.importance;
+          return a.title.localeCompare(b.title);
+        })
     )
   );
 
-  tech!: string;
   difficultyOptions = [
-    { label: 'Beginner', value: 'beginner' },
-    { label: 'Intermediate', value: 'intermediate' },
-    { label: 'Advanced', value: 'advanced' }
+    { label: 'Beginner', value: 'beginner' as Difficulty },
+    { label: 'Intermediate', value: 'intermediate' as Difficulty },
+    { label: 'Advanced', value: 'advanced' as Difficulty }
   ];
 
   constructor(
     public route: ActivatedRoute,
     public qs: QuestionService
-  ) {}
+  ) { }
 }
