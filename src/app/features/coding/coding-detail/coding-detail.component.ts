@@ -46,6 +46,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
+  copiedExamples = signal(false);
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -315,5 +316,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private toCamelCase(str: string) {
     return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
+  }
+
+
+  copyExamples() {
+    const examples = this.combinedExamples();
+    if (!examples) return;
+    navigator.clipboard.writeText(examples).then(() => {
+      this.copiedExamples.set(true);
+      // reset after a short delay
+      setTimeout(() => this.copiedExamples.set(false), 1200);
+    }).catch((e) => {
+      console.warn('Copy failed', e);
+    });
   }
 }
