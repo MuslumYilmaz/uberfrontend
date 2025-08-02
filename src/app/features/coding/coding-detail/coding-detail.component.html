@@ -1,7 +1,7 @@
 <div class="flex h-full">
   <!-- LEFT COLUMN: description / solution -->
-  <aside class="flex flex-col"
-    style="flex: 0 0 45%; min-width: 300px; border-right: 1px solid var(--tw-border-opacity, #2d2d2d);">
+  <aside class="flex flex-col" [style.flex]="'0 0 ' + (horizontalRatio() * 100) + '%'"
+    style="min-width: 300px; border-right: 1px solid var(--tw-border-opacity, #2d2d2d);">
     <!-- Tabs -->
     <div class="flex border-b bg-neutral-900 text-white">
       <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel() === 0"
@@ -80,7 +80,7 @@
         </div>
       </div>
 
-      <!-- Solution -->
+      <!-- Solutiozn -->
       <div *ngIf="activePanel() === 1" class="space-y-4">
         <h2 class="text-xl font-semibold">Solution Explanation</h2>
         <div class="whitespace-pre-wrap text-base">{{ question()?.solution }}</div>
@@ -96,6 +96,10 @@
         [disabled]="currentIndex + 1 >= allQuestions.length"></button>
     </div>
   </aside>
+
+  <!-- horizontal splitter -->
+  <div class="w-1 cursor-col-resize bg-gray-700" (pointerdown)="startHorizontalDrag($event)" style="user-select: none;">
+  </div>
 
   <!-- RIGHT COLUMN: editor + results -->
   <main class="flex-1 flex flex-col overflow-hidden bg-gray-800 text-white">

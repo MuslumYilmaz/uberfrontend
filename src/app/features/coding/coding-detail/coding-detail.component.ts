@@ -46,6 +46,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
+  horizontalRatio = signal(0.45); // left/right splitter
   copiedExamples = signal(false);
 
   allQuestions: Question[] = [];
@@ -71,9 +72,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
+
+  // vertical drag state
   private dragging = false;
   private startY = 0;
   private startRatio = 0;
+
+  // horizontal drag state
+  private draggingHorizontal = false;
+  private startX = 0;
+  private startRatioH = 0;
 
   // computed
   passedCount = computed(() => this.testResults().filter((r) => r.passed).length);
@@ -103,7 +111,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return (q as any).examples || [];
   });
 
-  // combined single block with separators for examples
   combinedExamples = computed(() => {
     const exs = this.descriptionExamples();
     if (!exs || exs.length === 0) return '';
@@ -234,7 +241,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
 
-  // splitter drag handlers
+  // vertical drag handlers
   startDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.dragging = true;
@@ -244,6 +251,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   private onPointerMove = (ev: PointerEvent) => {
+    if (this.draggingHorizontal) {
+      this.onPointerMoveHorizontal(ev);
+      return;
+    }
     if (!this.dragging || !this.splitContainer) return;
     const rect = this.splitContainer.nativeElement.getBoundingClientRect();
     const delta = ev.clientY - this.startY;
@@ -257,6 +268,27 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.dragging) {
       this.dragging = false;
     }
+    if (this.draggingHorizontal) {
+      this.draggingHorizontal = false;
+    }
+  };
+
+  // horizontal drag
+  startHorizontalDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.draggingHorizontal = true;
+    this.startX = ev.clientX;
+    this.startRatioH = this.horizontalRatio();
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+  };
+
+  private onPointerMoveHorizontal = (ev: PointerEvent) => {
+    if (!this.draggingHorizontal) return;
+    const totalWidth = window.innerWidth;
+    const delta = ev.clientX - this.startX;
+    let newRatio = this.startRatioH + delta / totalWidth;
+    newRatio = Math.max(0.2, Math.min(0.8, newRatio));
+    this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
   // helpers for code transformation
@@ -318,13 +350,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
   }
 
-
   copyExamples() {
     const examples = this.combinedExamples();
     if (!examples) return;
     navigator.clipboard.writeText(examples).then(() => {
       this.copiedExamples.set(true);
-      // reset after a short delay
       setTimeout(() => this.copiedExamples.set(false), 1200);
     }).catch((e) => {
       console.warn('Copy failed', e);
