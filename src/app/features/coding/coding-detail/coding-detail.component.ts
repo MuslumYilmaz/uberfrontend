@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
+  AfterViewInit,
   Component,
   computed,
+  ElementRef,
+  NgZone,
   OnDestroy,
   OnInit,
   signal,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
@@ -33,19 +36,22 @@ import {
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.scss'],
 })
-export class CodingDetailComponent implements OnInit, OnDestroy {
+export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
   editorContent = signal<string>(''); // user code
-  testCode = signal<string>(''); // test code editable
-  topTab = signal<'code' | 'tests'>('code'); // top editor tabs
+  testCode = signal<string>(''); // editable test code
+  topTab = signal<'code' | 'tests'>('code'); // top editor file tabs
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
+
+  // vertical split ratio: fraction of height taken by editor area
+  editorRatio = signal(0.6); // start with 60% top
 
   allQuestions: Question[] = [];
   currentIndex = 0;
 
-  testResults: TestResult[] = [];
+  testResults = signal<TestResult[]>([]);
   hasRunTests = false;
   private testsSub?: Subscription;
 
@@ -56,7 +62,7 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
     if (c) {
       this.testsSub?.unsubscribe();
       this.testsSub = c.testsFinished.subscribe((results) => {
-        this.testResults = results;
+        this.testResults.set(results);
       });
     }
   }
@@ -64,10 +70,16 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
     return this._consoleLogger;
   }
 
+  // For splitter
+  @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
+  private dragging = false;
+  private startY = 0;
+  private startRatio = 0;
+
   // computed for template
-  passedCount = computed(() => this.testResults.filter((r) => r.passed).length);
-  totalCount = computed(() => this.testResults.length);
-  failedCount = computed(() => this.testResults.filter((r) => !r.passed).length);
+  passedCount = computed(() => this.testResults().filter((r) => r.passed).length);
+  totalCount = computed(() => this.testResults().length);
+  failedCount = computed(() => this.testResults().filter((r) => !r.passed).length);
   allPassing = computed(() => this.totalCount() > 0 && this.failedCount() === 0);
   isTestsTab = computed(() => this.subTab() === 'tests');
   isConsoleTab = computed(() => this.subTab() === 'console');
@@ -76,7 +88,8 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private qs: QuestionService
+    private qs: QuestionService,
+    private zone: NgZone
   ) { }
 
   ngOnInit() {
@@ -89,8 +102,19 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
       });
     });
   }
+
+  ngAfterViewInit() {
+    // global pointer listeners for dragging
+    this.zone.runOutsideAngular(() => {
+      window.addEventListener('pointermove', this.onPointerMove);
+      window.addEventListener('pointerup', this.onPointerUp);
+    });
+  }
+
   ngOnDestroy() {
     this.testsSub?.unsubscribe();
+    window.removeEventListener('pointermove', this.onPointerMove);
+    window.removeEventListener('pointerup', this.onPointerUp);
   }
 
   private loadQuestion(id: string) {
@@ -105,7 +129,7 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests = false;
-    this.testResults = [];
+    this.testResults.set([]);
   }
 
   showSolution() {
@@ -153,11 +177,9 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
-    // Ensure console logger is mounted by activating console tab first.
+    // ensure console logger is mounted
     this.subTab.set('console');
-
-    // Wait a tick so the console logger child actually instantiates and setter fires.
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
     if (!this.consoleLogger) {
       console.warn('Console logger not available');
@@ -177,8 +199,6 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
 
     this.consoleLogger.runWithTests(wrappedUserCode, testCodeTransformed);
     this.hasRunTests = true;
-
-    // Show test summary panel
     this.subTab.set('tests');
   }
 
@@ -189,6 +209,31 @@ export class CodingDetailComponent implements OnInit, OnDestroy {
   get progressText() {
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
+
+  // splitter drag handlers
+  startDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.dragging = true;
+    this.startY = ev.clientY;
+    this.startRatio = this.editorRatio();
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+  };
+
+  private onPointerMove = (ev: PointerEvent) => {
+    if (!this.dragging || !this.splitContainer) return;
+    const rect = this.splitContainer.nativeElement.getBoundingClientRect();
+    const delta = ev.clientY - this.startY;
+    const newEditorPx = rect.height * this.startRatio + delta;
+    let newRatio = newEditorPx / rect.height;
+    newRatio = Math.max(0.2, Math.min(0.9, newRatio));
+    this.zone.run(() => this.editorRatio.set(newRatio));
+  };
+
+  private onPointerUp = (_: PointerEvent) => {
+    if (this.dragging) {
+      this.dragging = false;
+    }
+  };
 
   // -------------- helpers -----------------
 
