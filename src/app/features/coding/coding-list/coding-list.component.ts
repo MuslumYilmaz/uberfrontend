@@ -39,6 +39,7 @@ export class CodingListComponent {
   public search$ = new BehaviorSubject<string>('');
   public diffs$ = new BehaviorSubject<Difficulty[]>([]);
   public maxImp$ = new BehaviorSubject<number>(5);
+  searchTerm = ''; 
   sliderValue = 5;
 
   tech!: string;

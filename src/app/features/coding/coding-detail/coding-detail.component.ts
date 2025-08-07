@@ -10,11 +10,13 @@ import {
   OnInit,
   signal,
   ViewChild,
+  WritableSignal,
 } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -40,13 +42,14 @@ import {
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
+  embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
   editorContent = signal<string>('');
   testCode = signal<string>('');
   topTab = signal<'code' | 'tests'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
-  horizontalRatio = signal(0.45); // left/right splitter
+  horizontalRatio = signal(0.3); // left/right splitter
   copiedExamples = signal(false);
 
   allQuestions: Question[] = [];
@@ -122,20 +125,36 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService,
+    private sanitizer: DomSanitizer,
     private zone: NgZone
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((pm) => {
-      this.tech = pm.get('tech')! || 'javascript';
-      this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
-        this.allQuestions = list;
-        const id = pm.get('id')!;
-        this.loadQuestion(id);
-      });
-    });
-  }
+    // parent has `:tech`, child has `:id`
+    combineLatest([this.route.parent!.paramMap, this.route.paramMap])
+      .subscribe(([parentPm, childPm]) => {
+        // 1) pull tech from the *parent* route
+        this.tech = parentPm.get('tech')!;
 
+        // 👉 set left pane width: JS = 50%, Angular (anything else) = 30%
+        this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
+
+        // 2) now that we know tech, load questions
+        const id = childPm.get('id')!;
+        this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
+          this.allQuestions = list;
+          this.loadQuestion(id);
+
+          if (this.tech === 'angular') {
+            const url =
+              'https://stackblitz.com/edit/angular-playground-v13-2?embed=1&file=src%2Fapp%2Fapp.component.ts&hideNavigation=1&open=src%2Fapp%2Fapp.component.ts,preview';
+            this.embedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+          } else {
+            this.embedUrl.set(null);
+          }
+        });
+      });
+  }
   ngAfterViewInit() {
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMove);
