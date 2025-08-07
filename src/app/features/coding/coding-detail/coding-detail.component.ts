@@ -402,9 +402,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const u = new URL(base);
     u.searchParams.set('embed', '1');
     u.searchParams.set('view', 'both');
-    u.searchParams.set('hideExplorer', '1');
     u.searchParams.set('hideNavigation', '1');
-    u.searchParams.set('hideDevTools', '1');
     u.searchParams.set('terminalHeight', '0');
     u.searchParams.set('forceEmbedLayout', '1');
     return u.toString();
