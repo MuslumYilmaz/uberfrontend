@@ -50,14 +50,30 @@
             </div>
           </div>
         </ng-container>
-
-        <div class="mt-6">
-          <span class="text-xs uppercase font-semibold">Resources</span>
-          <ul class="list-disc pl-5 text-sm">
-            <li>Function: length | MDN</li>
-          </ul>
+        <div>
+          <button *ngIf="tech === 'angular'" pButton label="Preview what you need to build" icon="pi pi-eye"
+            class="mt-6" (click)="openPreview()">
+          </button>
         </div>
       </div>
+
+      <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false"
+        [draggable]="false" [resizable]="false" [style]="{ width: '90vw', maxWidth: '1400px' }"
+        [contentStyle]="{ padding: '0', height: '80vh' }">
+        <!-- custom header with close -->
+        <ng-template pTemplate="header">
+          <div class="flex items-center justify-between w-full">
+            <div class="font-semibold">Preview</div>
+            <button pButton icon="pi pi-times" class="p-button-text" (click)="closePreview()"></button>
+          </div>
+        </ng-template>
+
+        <div class="w-full h-full">
+          <iframe *ngIf="previewOnlyUrl" class="w-full h-full border-0" [src]="previewOnlyUrl"
+            allow="accelerometer; autoplay; camera; encrypted-media; geolocation;"
+            sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"></iframe>
+        </div>
+      </p-dialog>
 
       <!-- Solution Panel -->
       <div *ngIf="activePanel() === 1" class="space-y-4">
@@ -84,11 +100,19 @@
 
     <!-- ANGULAR EMBED -->
     <ng-container *ngIf="tech === 'angular'">
-      <iframe *ngIf="embedUrl()" [src]="embedUrl()" class="w-full h-full border-0"
-        allow="accelerometer; ambient-light-sensor; autoplay; camera; encrypted-media; geolocation;"
-        sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin">
-      </iframe>
+      <div class="relative w-full h-full">
+        <iframe *ngIf="embedUrl()" [src]="embedUrl()" class="w-full h-full border-0"
+          allow="accelerometer; ambient-light-sensor; autoplay; camera; encrypted-media; geolocation;"
+          sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"
+          (load)="onEmbedLoad()"></iframe>
+
+        <!-- overlay spinner -->
+        <div *ngIf="embedLoading()" class="absolute inset-0 grid place-items-center bg-black/40">
+          <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+        </div>
+      </div>
     </ng-container>
+
 
     <!-- JAVASCRIPT EDITOR & TESTS (unchanged) -->
     <ng-container *ngIf="tech !== 'angular'">

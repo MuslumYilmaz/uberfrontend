@@ -16,6 +16,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { combineLatest, Subscription } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
@@ -33,6 +35,8 @@ import {
     RouterModule,
     AccordionModule,
     ButtonModule,
+    DialogModule,
+    ProgressSpinnerModule,
     MonacoEditorComponent,
     ConsoleLoggerComponent,
   ],
@@ -42,15 +46,31 @@ import {
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
+
+  // Main right-pane embed (Angular only)
   embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
+
+  // JS editor/test state
   editorContent = signal<string>('');
   testCode = signal<string>('');
+
+  // UI state
   topTab = signal<'code' | 'tests'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
-  horizontalRatio = signal(0.3); // left/right splitter
+  horizontalRatio = signal(0.3);
   copiedExamples = signal(false);
+
+  // loading spinners
+  embedLoading = signal(false);
+  previewLoading = signal(false);
+
+  // spinner timing guards (to avoid flicker)
+  private embedSpinnerStartedAt = 0;
+  private previewSpinnerStartedAt = 0;
+  private readonly EMBED_MIN_SPINNER_MS = 1200;
+  private readonly PREVIEW_MIN_SPINNER_MS = 1200;
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -76,15 +96,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
 
-  // vertical drag state
+  // drag state
   private dragging = false;
   private startY = 0;
   private startRatio = 0;
 
-  // horizontal drag state
   private draggingHorizontal = false;
   private startX = 0;
   private startRatioH = 0;
+
+  // Preview modal
+  previewVisible = false;
+  previewOnlyUrl: SafeResourceUrl | null = null;
 
   // computed
   passedCount = computed(() => this.testResults().filter((r) => r.passed).length);
@@ -105,6 +128,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return q.description || '';
   });
+
   descriptionExamples = computed(() => {
     const q = this.question();
     if (!q) return [] as string[];
@@ -117,9 +141,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   combinedExamples = computed(() => {
     const exs = this.descriptionExamples();
     if (!exs || exs.length === 0) return '';
-    return exs
-      .map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`)
-      .join('\n\n// --------\n\n');
+    return exs.map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`).join('\n\n// --------\n\n');
   });
 
   constructor(
@@ -130,31 +152,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // parent has `:tech`, child has `:id`
-    combineLatest([this.route.parent!.paramMap, this.route.paramMap])
-      .subscribe(([parentPm, childPm]) => {
-        // 1) pull tech from the *parent* route
-        this.tech = parentPm.get('tech')!;
+    combineLatest([this.route.parent!.paramMap, this.route.paramMap]).subscribe(([parentPm, childPm]) => {
+      this.tech = parentPm.get('tech')!;
+      this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
-        // 👉 set left pane width: JS = 50%, Angular (anything else) = 30%
-        this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
-
-        // 2) now that we know tech, load questions
-        const id = childPm.get('id')!;
-        this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
-          this.allQuestions = list;
-          this.loadQuestion(id);
-
-          if (this.tech === 'angular') {
-            const url =
-              'https://stackblitz.com/edit/angular-playground-v13-2?embed=1&file=src%2Fapp%2Fapp.component.ts&hideNavigation=1&open=src%2Fapp%2Fapp.component.ts,preview';
-            this.embedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
-          } else {
-            this.embedUrl.set(null);
-          }
-        });
+      const id = childPm.get('id')!;
+      this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
+        this.allQuestions = list;
+        this.loadQuestion(id);
       });
+    });
   }
+
   ngAfterViewInit() {
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMove);
@@ -171,9 +180,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex((q) => q.id === id);
     if (idx < 0) return;
+
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
     this.question.set(q);
+
+    // JS editor/test state
     this.editorContent.set(q.starterCode ?? '');
     this.testCode.set(((q as any).tests as string) ?? '');
     this.activePanel.set(0);
@@ -181,6 +193,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
+
+    // Main embed for Angular (code + preview)
+    if (this.tech === 'angular' && (q as any).stackblitzEmbedUrl) {
+      this.embedSpinnerStartedAt = performance.now();
+      this.embedLoading.set(true);
+      const main = this.toMainEmbed((q as any).stackblitzEmbedUrl as string);
+      this.embedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(main));
+    } else {
+      this.embedUrl.set(null);
+      this.embedLoading.set(false);
+    }
   }
 
   showSolution() {
@@ -275,7 +298,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     if (!this.dragging || !this.splitContainer) return;
-    const rect = this.splitContainer.nativeElement.getBoundingClientRect();
+    const rect = this.splitContainer!.nativeElement.getBoundingClientRect();
     const delta = ev.clientY - this.startY;
     const newEditorPx = rect.height * this.startRatio + delta;
     let newRatio = newEditorPx / rect.height;
@@ -284,12 +307,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   private onPointerUp = (_: PointerEvent) => {
-    if (this.dragging) {
-      this.dragging = false;
-    }
-    if (this.draggingHorizontal) {
-      this.draggingHorizontal = false;
-    }
+    if (this.dragging) this.dragging = false;
+    if (this.draggingHorizontal) this.draggingHorizontal = false;
   };
 
   // horizontal drag
@@ -319,18 +338,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const globalName = this.sanitizeGlobalName(id);
     let transformed = code;
 
-    transformed = transformed.replace(
-      /export\s+default\s+function\s+([\w$]+)\s*\(/,
-      (_m, name) => `function ${name}(`
-    );
+    transformed = transformed.replace(/export\s+default\s+function\s+([\w$]+)\s*\(/, (_m, name) => `function ${name}(`);
 
     const namedDefaultMatch = code.match(/export\s+default\s+function\s+([\w$]+)\s*\(/);
     if (namedDefaultMatch) {
       const fnName = namedDefaultMatch[1];
-      transformed = transformed.replace(
-        /export\s+default\s+function\s+([\w$]+)\s*\(/,
-        (_m, name) => `function ${name}(`
-      );
+      transformed = transformed.replace(/export\s+default\s+function\s+([\w$]+)\s*\(/, (_m, name) => `function ${name}(`);
       transformed += `\nif (typeof ${fnName} !== 'undefined') { globalThis.${globalName} = ${fnName}; }`;
       return transformed;
     }
@@ -372,11 +385,83 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   copyExamples() {
     const examples = this.combinedExamples();
     if (!examples) return;
-    navigator.clipboard.writeText(examples).then(() => {
-      this.copiedExamples.set(true);
-      setTimeout(() => this.copiedExamples.set(false), 1200);
-    }).catch((e) => {
-      console.warn('Copy failed', e);
-    });
+    navigator.clipboard
+      .writeText(examples)
+      .then(() => {
+        this.copiedExamples.set(true);
+        setTimeout(() => this.copiedExamples.set(false), 1200);
+      })
+      .catch((e) => {
+        console.warn('Copy failed', e);
+      });
+  }
+
+  // ---------- StackBlitz URL helpers ----------
+  // Main embed: code + preview, hide explorer/header/footer
+  private toMainEmbed(base: string): string {
+    const u = new URL(base);
+    u.searchParams.set('embed', '1');
+    u.searchParams.set('view', 'both');
+    u.searchParams.set('hideExplorer', '1');
+    u.searchParams.set('hideNavigation', '1');
+    u.searchParams.set('hideDevTools', '1');
+    u.searchParams.set('terminalHeight', '0');
+    u.searchParams.set('forceEmbedLayout', '1');
+    return u.toString();
+  }
+
+  // Preview-only modal: uses **stackblitzSolutionUrl**
+  private toPreviewOnly(base: string): string {
+    const u = new URL(base);
+    u.searchParams.set('embed', '1');
+    u.searchParams.set('view', 'preview');        // preview-only
+    u.searchParams.set('hideExplorer', '1');
+    u.searchParams.set('hideNavigation', '1');
+    u.searchParams.set('hideDevTools', '1');
+    u.searchParams.set('terminalHeight', '0');
+    u.searchParams.set('forceEmbedLayout', '1');
+    u.searchParams.set('ctl', '0');               // hide view controls if present
+    u.searchParams.delete('file');                // ensure no editor view is forced
+    return u.toString();
+  }
+
+  openPreview() {
+    const q = this.question();
+    if (!q || this.tech !== 'angular') return;
+
+    const base =
+      ((q as any).stackblitzSolutionUrl as string | undefined) ??
+      ((q as any).stackblitzEmbedUrl as string | undefined);
+    if (!base) return;
+
+    this.previewSpinnerStartedAt = performance.now();
+    this.previewLoading.set(true);
+
+    const url = this.toPreviewOnly(base);
+    this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.previewVisible = true;
+  }
+
+  closePreview() {
+    this.previewVisible = false;
+    // clear iframe after close
+    setTimeout(() => {
+      this.previewOnlyUrl = null;
+      this.previewLoading.set(false);
+    }, 200);
+  }
+
+  // called by (load) on main iframe
+  onEmbedLoad() {
+    const elapsed = performance.now() - this.embedSpinnerStartedAt;
+    const remaining = Math.max(0, this.EMBED_MIN_SPINNER_MS - elapsed);
+    setTimeout(() => this.embedLoading.set(false), remaining);
+  }
+
+  // called by (load) on preview iframe
+  onPreviewLoad() {
+    const elapsed = performance.now() - this.previewSpinnerStartedAt;
+    const remaining = Math.max(0, this.PREVIEW_MIN_SPINNER_MS - elapsed);
+    setTimeout(() => this.previewLoading.set(false), remaining);
   }
 }
