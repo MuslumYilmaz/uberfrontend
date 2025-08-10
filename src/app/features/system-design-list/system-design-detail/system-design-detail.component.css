@@ -1,0 +1,30 @@
+:host{
+  display: block;
+  height: 100%;
+}
+
+/* subtle chip look */
+:host ::ng-deep .p-chip{
+  background:#1f2937;
+  color:#e5e7eb;
+  border-radius:9999px;
+}
+
+/* Dark accordion styling so headers/content are visible */
+:host ::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link{
+  background:#1f2937;
+  color:#e5e7eb;
+  border:1px solid rgba(255,255,255,.06);
+}
+:host ::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link:hover{
+  background:#243040;
+}
+:host ::ng-deep .p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link{
+  background:#1e293b;
+  color:#ffffff;
+}
+:host ::ng-deep .p-accordion .p-accordion-content{
+  background:#0f172a;
+  color:#e5e7eb;
+  border:1px solid rgba(255,255,255,.06);
+}

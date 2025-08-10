@@ -1,0 +1,58 @@
+<div class="flex h-full min-h-0">
+    <!-- LEFT -->
+    <aside class="flex flex-col min-h-0" [style.flex]="'0 0 ' + (leftRatio() * 100) + '%'"
+        style="min-width:280px; border-right:1px solid rgba(255,255,255,.08)">
+        <div class="flex items-center justify-between px-5 py-4 bg-neutral-900 text-white">
+            <h1 class="text-xl font-bold truncate">{{ title() }}</h1>
+        </div>
+
+        <div class="flex-1 overflow-auto p-6 bg-black text-white">
+            <div class="text-sm text-gray-300 whitespace-pre-line">{{ description() }}</div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+                <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
+            </div>
+
+            <div class="mt-6 p-3 rounded bg-neutral-800/70 text-sm text-gray-300">
+                New to RADIO?
+                <a routerLink="/guides/radio" class="text-blue-300 underline">Read the guide</a> first.
+            </div>
+        </div>
+
+        <div class="flex-none px-4 py-3 bg-neutral-800 text-white flex items-center justify-between">
+            <button pButton label="← Prev" (click)="prev()" [disabled]="idx===0"></button>
+            <div class="text-sm">{{ idx + 1 }} / {{ all.length }}</div>
+            <button pButton label="Next →" iconPos="right" (click)="next()" [disabled]="idx + 1 >= all.length"></button>
+        </div>
+    </aside>
+
+    <!-- RIGHT -->
+    <main class="flex-1 min-w-0 min-h-0 flex flex-col bg-gray-800 text-white">
+        <!-- fixed header -->
+        <div class="px-5 py-3 flex items-center justify-between border-b border-white/10">
+            <div class="font-semibold">Solution (RADIO)</div>
+            <div class="flex gap-2">
+                <a routerLink="/guides/radio" class="text-xs text-blue-300 underline">What is RADIO?</a>
+                <button pButton size="small" label="Expand all" (click)="expandAll()"></button>
+                <button pButton size="small" label="Collapse all" class="p-button-secondary"
+                    (click)="collapseAll()"></button>
+            </div>
+        </div>
+
+        <!-- scrollable body -->
+        <div class="flex-1 overflow-auto p-5">
+            <p-accordion [multiple]="true" [activeIndex]="activeIndexes()"
+                (activeIndexChange)="onActiveIndexChange($event)">
+                <p-accordionTab *ngFor="let s of sections(); let i = index" [header]="s.title">
+                    <div class="prose prose-invert max-w-none whitespace-pre-wrap leading-6">
+                        {{ s.content }}
+                    </div>
+                </p-accordionTab>
+
+                <div *ngIf="sections().length === 0" class="text-gray-300">
+                    No RADIO sections found for this question yet.
+                </div>
+            </p-accordion>
+        </div>
+    </main>
+</div>

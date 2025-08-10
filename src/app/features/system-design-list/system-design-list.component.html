@@ -1,0 +1,72 @@
+<div class="container mx-auto max-w-7xl px-4 py-6">
+    <h1 class="text-4xl font-extrabold text-white mb-6">
+        System Design
+    </h1>
+
+    <!-- Filter Bar -->
+    <div class="bg-gray-800 p-4 rounded-xl shadow-sm flex flex-col md:flex-row items-center md:space-x-6 mb-8 gap-4">
+        <!-- Search -->
+        <div class="flex-1 w-full md:w-1/2">
+            <div class="relative">
+                <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input pInputText type="text" placeholder="Search by title or tag…" class="w-full pl-10 pr-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg
+                   focus:outline-none focus:ring-2 focus:ring-blue-500" [(ngModel)]="searchTerm"
+                    (ngModelChange)="search$.next($event)" [ngModelOptions]="{ standalone: true }" />
+            </div>
+        </div>
+
+        <!-- Tag filter -->
+        <div class="w-full md:w-auto flex-1">
+            <p-multiSelect class="tag-filter w-full" [options]="(tagOptions$ | async) ?? []" placeholder="Tags"
+                display="chip" panelStyleClass="dark-multiselect-panel rounded-lg" (onChange)="tags$.next($event.value)"
+                optionLabel="label" optionValue="value">
+            </p-multiSelect>
+
+
+        </div>
+    </div>
+
+    <!-- List / Table style -->
+    <div class="bg-gray-800 rounded-xl overflow-hidden">
+        <div class="grid grid-cols-12 gap-4 px-6 py-3 border-b border-gray-700 text-gray-400 text-sm font-semibold">
+            <div class="col-span-8">Title</div>
+            <div class="col-span-3">Tags</div>
+            <div class="col-span-1 text-right">Action</div>
+        </div>
+
+        <ng-container *ngIf="(rawQuestions$ | async) === null; else loaded">
+            <div class="py-10 flex justify-center">
+                <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
+            </div>
+        </ng-container>
+
+        <ng-template #loaded>
+            <ng-container *ngIf="filtered$ | async as questions">
+                <div *ngIf="questions.length === 0" class="py-6 text-center italic text-gray-500">
+                    No questions match your filters.
+                </div>
+
+                <div *ngFor="let q of questions; trackBy: trackById"
+                    class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
+                    <!-- full-row clickable overlay (relative link keeps :tech prefix) -->
+                    <a [routerLink]="[q.id]" class="absolute inset-0 z-10"></a>
+
+                    <div class="col-span-8">
+                        <div class="text-lg font-semibold text-white">{{ q.title }}</div>
+                        <div class="text-xs text-gray-400 mt-0.5">{{ q.description | slice:0:120 }}...</div>
+                    </div>
+
+                    <div class="col-span-3 flex flex-wrap gap-2">
+                        <p-chip *ngFor="let tag of q.tags" [label]="tag" styleClass="custom-chip"></p-chip>
+                    </div>
+
+                    <div class="col-span-1 text-right">
+                        <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
+                            <span>→</span><span>Open</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-template>
+    </div>
+</div>

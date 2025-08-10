@@ -1,0 +1,40 @@
+[
+  {
+    "id": "pinterest-masonry",
+    "title": "Pinterest homepage (masonry layout)",
+    "type": "system-design",
+    "tags": [
+      "feed",
+      "layout",
+      "caching"
+    ],
+    "description": "Design the Pinterest homepage…",
+    "radio": [
+      {
+        "key": "R",
+        "title": "Reflect & Requirements",
+        "content": "Functional + non-functional…"
+      },
+      {
+        "key": "A",
+        "title": "Assumptions & Constraints",
+        "content": "Traffic, media sizes…"
+      },
+      {
+        "key": "D",
+        "title": "Diagram / Architecture",
+        "content": "CDN, edge cache, services…"
+      },
+      {
+        "key": "I",
+        "title": "Interfaces & APIs",
+        "content": "GET /feed?…"
+      },
+      {
+        "key": "O",
+        "title": "Operations & Trade-offs",
+        "content": "Backfill, consistency…"
+      }
+    ]
+  }
+]

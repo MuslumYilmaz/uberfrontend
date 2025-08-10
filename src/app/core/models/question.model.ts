@@ -1,5 +1,4 @@
-// src/app/core/models/question.model.ts
-export type QuestionType = 'trivia' | 'coding';
+export type QuestionType = 'trivia' | 'coding' | 'system-design';
 export type Technology = 'javascript' | 'angular';
 export type Difficulty = 'easy' | 'intermediate' | 'hard';
 
