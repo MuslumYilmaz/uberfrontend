@@ -13,27 +13,48 @@
       {
         "key": "R",
         "title": "Reflect & Requirements",
-        "content": "Functional + non-functional…"
-      },
-      {
-        "key": "A",
-        "title": "Assumptions & Constraints",
-        "content": "Traffic, media sizes…"
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Primary goal: fast, visually rich feed…"
+          },
+          {
+            "type": "image",
+            "src": "system-design/pinterest/masonry-example.png",
+            "alt": "Masonry grid",
+            "caption": "Masonry layout at a glance"
+          }
+        ]
       },
       {
         "key": "D",
         "title": "Diagram / Architecture",
-        "content": "CDN, edge cache, services…"
+        "blocks": [
+          {
+            "type": "image",
+            "src": "system-design/pinterest/high-level.png",
+            "alt": "High level diagram"
+          },
+          {
+            "type": "text",
+            "text": "Edge cache → API → Feed service → Ranker → Storage…"
+          }
+        ]
       },
       {
         "key": "I",
         "title": "Interfaces & APIs",
-        "content": "GET /feed?…"
-      },
-      {
-        "key": "O",
-        "title": "Operations & Trade-offs",
-        "content": "Backfill, consistency…"
+        "blocks": [
+          {
+            "type": "code",
+            "language": "http",
+            "code": "GET /api/feed?cursor=abc&columns=5&width=1200"
+          },
+          {
+            "type": "text",
+            "text": "Params:\n• cursor: opaque paging token\n• columns: masonry columns\n• width: viewport width"
+          }
+        ]
       }
     ]
   }

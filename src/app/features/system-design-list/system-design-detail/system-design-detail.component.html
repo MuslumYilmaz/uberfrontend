@@ -44,8 +44,42 @@
             <p-accordion [multiple]="true" [activeIndex]="activeIndexes()"
                 (activeIndexChange)="onActiveIndexChange($event)">
                 <p-accordionTab *ngFor="let s of sections(); let i = index" [header]="s.title">
-                    <div class="prose prose-invert max-w-none whitespace-pre-wrap leading-6">
-                        {{ s.content }}
+                    <div class="space-y-4">
+                        <!-- Prefer blocks; fall back to legacy content if no blocks -->
+                        <ng-container *ngIf="s.blocks?.length; else legacyText">
+                            <ng-container *ngFor="let b of s.blocks">
+                                <!-- TEXT -->
+                                <div *ngIf="b.type === 'text'" class="whitespace-pre-wrap leading-6 text-gray-200">
+                                    {{ b.text }}
+                                </div>
+
+                                <!-- CODE (Monaco read-only) -->
+                                <div *ngIf="b.type === 'code'">
+                                    <app-monaco-editor class="rounded border border-white/10"
+                                        [language]="b.language || 'typescript'" [code]="b.code" [readOnly]="true"
+                                        [options]="{ minimap:{enabled:false}, lineNumbers:'on', folding:true }"
+                                        [style.height.px]="b.height || 280">
+                                    </app-monaco-editor>
+                                </div>
+
+                                <!-- IMAGE -->
+                                <figure *ngIf="b.type === 'image'" class="space-y-2">
+                                    <img [src]="asset(b.src)" [alt]="b.alt || ''"
+                                        class="max-w-full rounded-lg border border-white/10"
+                                        [style.width.px]="b.width || null" />
+                                    <figcaption *ngIf="b.caption" class="text-sm text-gray-400">
+                                        {{ b.caption }}
+                                    </figcaption>
+                                </figure>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- Legacy single-string content -->
+                        <ng-template #legacyText>
+                            <div class="prose prose-invert max-w-none whitespace-pre-wrap leading-6">
+                                {{ s.content }}
+                            </div>
+                        </ng-template>
                     </div>
                 </p-accordionTab>
 

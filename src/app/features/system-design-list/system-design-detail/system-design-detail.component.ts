@@ -6,10 +6,22 @@ import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
+import { MonacoEditorComponent } from '../../../monaco-editor.component';
 
-type RadioSection = { key: string; title: string; content: string };
+type Block =
+  | { type: 'text'; text: string }
+  | { type: 'code'; language?: string; code: string; height?: number }
+  | { type: 'image'; src: string; alt?: string; caption?: string; width?: number };
+
+type RadioSection = {
+  key: string;
+  title: string;
+  content?: string;
+  blocks?: Block[];
+};
+
 type SDQuestion = Question & {
-  radio?: RadioSection[];  
+  radio?: RadioSection[];
   reflect?: string;
   assumptions?: string;
   diagram?: string;
@@ -20,7 +32,7 @@ type SDQuestion = Question & {
 @Component({
   selector: 'app-system-design-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, AccordionModule, ButtonModule, ChipModule],
+  imports: [CommonModule, RouterModule, AccordionModule, ButtonModule, ChipModule, MonacoEditorComponent],
   templateUrl: './system-design-detail.component.html',
   styleUrls: ['./system-design-detail.component.css']
 })
@@ -41,20 +53,39 @@ export class SystemDesignDetailComponent implements OnInit, OnDestroy {
   tags = computed(() => this.q()?.tags ?? []);
 
   // resolve RADIO sections from question structure
-  sections = computed<RadioSection[]>(() => {
+  sections = computed<Required<RadioSection>[]>(() => {
     const item = this.q();
     if (!item) return [];
-    if (item.radio && item.radio.length) return item.radio;
 
-    // fallback – build from individual fields if present
+    const normalize = (s: RadioSection): Required<RadioSection> => ({
+      key: s.key,
+      title: s.title,
+      content: s.content ?? '',
+      blocks: s.blocks && s.blocks.length
+        ? s.blocks
+        : s.content
+          ? [{ type: 'text', text: s.content }]
+          : []
+    });
+
+    if (item.radio?.length) return item.radio.map(normalize);
+
+    // fallback from individual string fields (if you ever use them)
     const out: RadioSection[] = [];
     if (item.reflect) out.push({ key: 'R', title: 'Reflect & Requirements', content: item.reflect });
     if (item.assumptions) out.push({ key: 'A', title: 'Assumptions & Constraints', content: item.assumptions });
     if (item.diagram) out.push({ key: 'D', title: 'Diagram / Architecture', content: item.diagram });
     if (item.interface) out.push({ key: 'I', title: 'Interfaces & APIs', content: item.interface });
     if (item.operations) out.push({ key: 'O', title: 'Operations & Trade-offs', content: item.operations });
-    return out;
+    return out.map(normalize);
   });
+
+  // tiny helper so we can write short paths in JSON
+  asset(path: string) {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `assets/${path.replace(/^\/+/, '')}`;
+  }
+
 
   constructor(
     private route: ActivatedRoute,
