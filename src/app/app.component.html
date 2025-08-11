@@ -1,5 +1,6 @@
-<div class="flex flex-col h-screen">
-  <header class="bg-neutral-900 border-b flex-none">
+<div class="flex flex-col min-h-screen bg-neutral-900 text-gray-200">
+  <!-- Top tech header: only when not on the dashboard -->
+  <header *ngIf="showHeader$ | async" class="bg-neutral-900 border-b flex-none">
     <div class="container mx-auto px-4 py-3 flex items-center space-x-8 text-gray-200">
       <a routerLink="/javascript" routerLinkActive="text-white font-semibold"
         [routerLinkActiveOptions]="{ exact: true }" class="flex items-center hover:text-white/90">
@@ -7,6 +8,7 @@
           class="h-5 w-5 mr-1" alt="JavaScript" />
         JavaScript
       </a>
+
       <a routerLink="/angular" routerLinkActive="text-white font-semibold" [routerLinkActiveOptions]="{ exact: true }"
         class="flex items-center hover:text-white/90">
         <img src="https://angular.io/assets/images/logos/angular/angular.svg" class="h-5 w-5 mr-1" alt="Angular" />
@@ -21,7 +23,7 @@
     </div>
   </header>
 
-  <main class="flex-1 flex overflow-hidden">
+  <main class="flex-1 flex justify-center overflow-auto">
     <router-outlet></router-outlet>
   </main>
 </div>

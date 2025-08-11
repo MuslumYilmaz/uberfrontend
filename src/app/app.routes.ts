@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'javascript' },
+  // Landing page at /
+  {
+    path: '',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component')
+        .then(m => m.DashboardComponent)
+  },
 
-  // System Design under the same layout, no tabs, no redirect
+  // System design (list + detail)
   {
     path: 'system-design',
     loadComponent: () =>
@@ -24,13 +30,14 @@ export const routes: Routes = [
     ]
   },
 
-  // JS / Angular under :tech → default to coding
+  // Tech sections with their own tabs/layout
   {
     path: ':tech',
     loadComponent: () =>
-      import('./features/tech-layout/tech-layout.component').then(m => m.TechLayoutComponent),
+      import('./features/tech-layout/tech-layout.component')
+        .then(m => m.TechLayoutComponent),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'coding' },   // only affects :tech branch
+      { path: '', pathMatch: 'full', redirectTo: 'coding' },
       {
         path: 'coding',
         loadComponent: () =>
