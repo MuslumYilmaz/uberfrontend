@@ -1,29 +1,16 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  signal,
-} from '@angular/core';
-import {
-  ActivatedRoute,
-  RouterModule,
-} from '@angular/router';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest, map, switchMap, tap } from 'rxjs';
 import { Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
 
 @Component({
   selector: 'app-trivia-detail',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    CardModule,
-    ButtonModule,
-  ],
+  imports: [CommonModule, RouterModule, CardModule, ButtonModule],
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.scss'],
 })
@@ -34,27 +21,40 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   question = signal<Question | null>(null);
   showAnswer = signal(false);
 
-  private sub!: Subscription;
+  private sub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private qs: QuestionService
   ) { }
 
   ngOnInit() {
-    this.sub = this.route.paramMap.subscribe((params) => {
-      this.tech = params.get('tech') || 'javascript';
-      const id = params.get('id')!;
-
-      this.qs.loadQuestions(this.tech, 'trivia').subscribe((all) => {
-        this.questionsList = all;
-        this.selectQuestion(id);
-      });
-    });
+    // tech is on the parent (/:tech), id is on the child (/trivia/:id)
+    this.sub = combineLatest([
+      this.route.parent!.paramMap,
+      this.route.paramMap
+    ])
+      .pipe(
+        map(([parentPm, childPm]) => ({
+          tech: parentPm.get('tech')!,        // e.g. 'angular'
+          id: childPm.get('id')!               // current question id
+        })),
+        tap(({ tech }) => (this.tech = tech)),
+        switchMap(({ tech, id }) =>
+          this.qs.loadQuestions(tech, 'trivia').pipe(
+            tap((all) => {
+              this.questionsList = all;
+              this.selectQuestion(id);
+            })
+          )
+        )
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    this.sub?.unsubscribe();
   }
 
   private selectQuestion(id: string) {
@@ -64,18 +64,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   toggleAnswer() {
-    this.showAnswer.update(v => !v);
+    this.showAnswer.update((v) => !v);
   }
 
-  // convenience to determine if a question is currently active
   isActive(q: Question) {
     return this.question()?.id === q.id;
   }
 
-  // navigate by clicking row
   onSelect(q: Question) {
-    // assuming router outlet path structure: /{tech}/trivia/{id}
-    window.history.pushState(null, '', `/${this.tech}/trivia/${q.id}`);
-    this.selectQuestion(q.id);
+    // Navigate properly so Angular updates the route + params
+    this.router.navigate(['/', this.tech, 'trivia', q.id]);
   }
 }
