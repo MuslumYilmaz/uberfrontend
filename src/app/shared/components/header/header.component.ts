@@ -1,0 +1,217 @@
+import { CommonModule } from '@angular/common';
+import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter, startWith } from 'rxjs';
+
+type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule],
+  styleUrls: ['./header.component.scss'],
+  template: `
+    <div class="topbar bg-neutral-900/95 text-gray-200">
+      <!-- Keep center column auto so the middle trigger stays perfectly centered -->
+      <div class="max-w-7xl mx-auto px-4 h-12 grid [grid-template-columns:1fr_auto_1fr] items-center gap-4">
+
+        <!-- LEFT: logo + (tabs on lists) OR (Back on details) -->
+        <div class="flex items-center gap-6 min-w-0">
+          <a class="font-semibold text-white hover:opacity-90 whitespace-nowrap" routerLink="/">UberFrontend</a>
+
+          <!-- On detail pages, show Back on the LEFT -->
+          <a *ngIf="isDetailPage()"
+             class="pill px-3 py-1 rounded hover:bg-white/10 whitespace-nowrap"
+             [routerLink]="backLink()">← Back</a>
+
+          <!-- On list pages, show the tech tabs -->
+          <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
+            <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
+              [class.tab-active]="currentTech()==='javascript'">JavaScript</a>
+
+            <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
+              [class.tab-active]="currentTech()==='angular'">Angular</a>
+
+            <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
+              [class.tab-active]="isSystemDesign()">System design</a>
+          </nav>
+
+        </div>
+
+        <!-- CENTER: Prepare (only on detail pages) -->
+        <div class="flex items-center justify-center">
+          <button *ngIf="isDetailPage()"
+                  class="pill px-3 py-1.5 rounded hover:bg-white/10"
+                  (click)="toggleMega()"
+                  aria-haspopup="menu"
+                  [attr.aria-expanded]="megaOpen()"
+                  aria-controls="prepare-mega">
+            Prepare ▾
+          </button>
+        </div>
+
+        <!-- RIGHT: Dashboard shortcut -->
+        <div class="flex items-center justify-end">
+          <a routerLink="/" class="hidden sm:inline text-sm pill px-3 py-1 rounded hover:opacity-90">Dashboard</a>
+        </div>
+
+        <!-- MEGA MENU (centered) -->
+        <ng-container *ngIf="megaOpen()">
+          <!-- backdrop -->
+          <div class="fixed inset-0 z-40" (click)="closeMega()"></div>
+
+          <!-- panel -->
+          <div id="prepare-mega"
+               class="fixed left-1/2 -translate-x-1/2 top-12 mt-2 z-50 w-[min(92vw,940px)]"
+               (click)="$event.stopPropagation()"
+               (keydown.escape)="closeMega()" tabindex="-1">
+            <div class="rounded-xl bg-neutral-900 border border-white/10 shadow-2xl p-3 sm:p-4 space-y-3">
+
+              <!-- 1) Playbook (disabled for now) -->
+              <div class="card-row rounded-xl p-4 sm:p-5 disabled">
+                <div class="flex items-start gap-4">
+                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">📘</div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <div class="font-semibold">Front End Interview Playbook</div>
+                      <span class="row-badge">Coming soon</span>
+                    </div>
+                    <div class="text-sm text-gray-400 mt-1">
+                      A starter guide to preparing for front end interviews
+                    </div>
+                    <div class="skeleton-bar mt-3"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2) GFE 75 (disabled for now) -->
+              <div class="card-row rounded-xl p-4 sm:p-5 disabled">
+                <div class="flex items-start gap-4">
+                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">🔢</div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <div class="font-semibold">GFE 75</div>
+                      <span class="row-badge">Coming soon</span>
+                    </div>
+                    <div class="text-sm text-gray-400 mt-1">
+                      The 75 most important front end interview questions.
+                    </div>
+                    <div class="skeleton-bar mt-3"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3) System Design Playbook -->
+              <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
+                 routerLink="/system-design" (click)="closeMega()" role="link">
+                <div class="flex items-start gap-4">
+                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">🧩</div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-semibold">Front End System Design Playbook</div>
+                    <div class="text-sm text-gray-400 mt-1">
+                      Core System Design techniques and deep dives into social feeds, autocomplete, e-commerce, and more.
+                    </div>
+                    <div class="skeleton-bar mt-3"></div>
+                  </div>
+                  <div class="ml-2 opacity-60">→</div>
+                </div>
+              </a>
+
+              <!-- 4) Free Practice -->
+              <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
+                 routerLink="/javascript" (click)="closeMega()" role="link">
+                <div class="flex items-start gap-4">
+                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">📝</div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-semibold">Free Practice</div>
+                    <div class="text-sm text-gray-400 mt-1">
+                      Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.
+                    </div>
+                    <div class="skeleton-bar mt-3"></div>
+                  </div>
+                  <div class="ml-2 opacity-60">→</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Context strip (not on dashboard or detail pages) -->
+      <div class="context" *ngIf="showContextStrip()">
+        <div class="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <ng-container *ngIf="mode()==='tech-list'">
+              <div class="flex">
+                <a class="pill pill-tab px-3 py-2 rounded-l hover:bg-white/10"
+                  [ngClass]="{'pill-tab-active': section()==='coding'}"
+                  [routerLink]="['/', currentTech(), 'coding']">Coding</a>
+
+                <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
+                  [ngClass]="{'pill-tab-active': section()==='trivia'}"
+                  [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+})
+export class HeaderComponent {
+  mode = signal<Mode>('dashboard');
+  currentTech = signal<'javascript' | 'angular' | null>(null);
+  section = signal<'coding' | 'trivia' | null>(null);
+
+  isSystemDesign = computed(() =>
+    this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
+  );
+  isListPage = computed(() => this.mode() === 'tech-list' || this.mode() === 'sd-list');
+  isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
+  showContextStrip = computed(() => this.mode() !== 'dashboard' && !this.isDetailPage());
+
+  backLink = computed(() => {
+    if (this.mode() === 'sd-detail') return ['/system-design'];
+    const tech = this.currentTech() ?? 'javascript';
+    const sec = this.section() ?? 'coding';
+    return ['/', tech, sec];
+  });
+
+  megaOpen = signal(false);
+  searchTerm = '';
+
+  constructor(private router: Router) {
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      startWith(null)
+    ).subscribe(() => {
+      this.parseUrl(this.router.url);
+      this.megaOpen.set(false); // close on navigation
+    });
+  }
+
+  private parseUrl(url: string) {
+    const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
+    this.mode.set('dashboard'); this.currentTech.set(null); this.section.set(null);
+
+    if (segs.length === 0) { this.mode.set('dashboard'); return; }
+
+    if (segs[0] === 'system-design') {
+      this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail');
+      return;
+    }
+
+    const tech = segs[0] as 'javascript' | 'angular';
+    this.currentTech.set(tech);
+
+    if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
+
+    const sec = segs[1] as 'coding' | 'trivia';
+    this.section.set(sec);
+    this.mode.set(segs.length === 2 ? 'tech-list' : 'tech-detail');
+  }
+
+  toggleMega() { this.megaOpen.update(v => !v); }
+  closeMega() { this.megaOpen.set(false); }
+}

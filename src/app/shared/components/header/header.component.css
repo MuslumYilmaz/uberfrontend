@@ -1,0 +1,41 @@
+:host { display:block; position:sticky; top:0; z-index:40; }
+.topbar { backdrop-filter:saturate(180%) blur(6px); }
+.pill { background:rgba(255,255,255,.08); }
+.context { border-top:1px solid rgba(255,255,255,.08); }
+.search-input { background:#0f172a; border:1px solid rgba(148,163,184,.25); color:#e5e7eb; }
+
+/* --- Tech tabs (top row) --- */
+.topbar a.tab{
+  color:#cbd5e1;
+  transition:background-color .15s ease, color .15s ease;
+  padding:.25rem .6rem;           /* make them pill-like */
+  border-radius:.5rem;
+  display:inline-flex;
+  align-items:center;
+}
+.topbar a.tab:hover{ color:#fff; background:rgba(255,255,255,.06); }
+.topbar a.tab.tab-active{
+  color:#fff;
+  background:rgba(255,255,255,.12); /* 🔹 active bg */
+  border-bottom:none;               /* remove old underline */
+}
+
+/* --- Context strip (Coding/Trivia) --- */
+.pill-tab{
+  color:#cbd5e1;
+  transition:background-color .15s ease, color .15s ease;
+}
+.pill-tab:hover{ color:#fff; background:rgba(255,255,255,.06); }
+.pill-tab-active{
+  color:#fff;
+  background:rgba(255,255,255,.16); /* 🔹 active bg a bit stronger */
+}
+
+/* Mega menu cards */
+.card-row{ border:1px solid rgba(255,255,255,.08); background:#0b1322; }
+.card-row:hover{ background:#0e1729; }
+.row-badge{ font-size:.72rem; padding:.125rem .5rem; border-radius:9999px; background:#2b354a; color:#cbd5e1; }
+.disabled{ opacity:.5; cursor:not-allowed; }
+.skeleton-bar{ height:6px; width:150px; border-radius:9999px;
+  background:linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.12), rgba(255,255,255,.06));
+}

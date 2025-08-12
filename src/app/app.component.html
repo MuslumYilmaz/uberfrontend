@@ -1,29 +1,9 @@
 <div class="flex flex-col min-h-screen bg-neutral-900 text-gray-200">
-  <!-- Top tech header: only when not on the dashboard -->
-  <header *ngIf="showHeader$ | async" class="bg-neutral-900 border-b flex-none">
-    <div class="container mx-auto px-4 py-3 flex items-center space-x-8 text-gray-200">
-      <a routerLink="/javascript" routerLinkActive="text-white font-semibold"
-        [routerLinkActiveOptions]="{ exact: true }" class="flex items-center hover:text-white/90">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg"
-          class="h-5 w-5 mr-1" alt="JavaScript" />
-        JavaScript
-      </a>
+  <!-- Global header (it hides itself on the dashboard route) -->
+  <app-header></app-header>
 
-      <a routerLink="/angular" routerLinkActive="text-white font-semibold" [routerLinkActiveOptions]="{ exact: true }"
-        class="flex items-center hover:text-white/90">
-        <img src="https://angular.io/assets/images/logos/angular/angular.svg" class="h-5 w-5 mr-1" alt="Angular" />
-        Angular
-      </a>
-
-      <a routerLink="/system-design" routerLinkActive="text-white font-semibold"
-        [routerLinkActiveOptions]="{ exact: true }" class="flex items-center hover:text-white/90">
-        <span class="h-5 w-5 mr-1">🧩</span>
-        System design
-      </a>
-    </div>
-  </header>
-
-  <main class="flex-1 flex justify-center overflow-auto">
+  <!-- Let each page own its layout; don't center the whole app -->
+  <main class="flex-1 min-h-0 flex justify-center overflow-hidden">
     <router-outlet></router-outlet>
   </main>
 </div>
