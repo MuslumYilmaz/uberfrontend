@@ -163,6 +163,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadQuestion(id);
       });
     });
+
+    document.body.style.overflow = 'hidden';
   }
 
   ngAfterViewInit() {
@@ -176,6 +178,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testsSub?.unsubscribe();
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
+    document.body.style.overflow = '';
   }
 
   private loadQuestion(id: string) {
