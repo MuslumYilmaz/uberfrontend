@@ -1,0 +1,61 @@
+[
+  {
+    "id": "pinterest-masonry",
+    "title": "Pinterest homepage (masonry layout)",
+    "type": "system-design",
+    "tags": [
+      "feed",
+      "layout",
+      "caching"
+    ],
+    "description": "Design the Pinterest homepage…",
+    "radio": [
+      {
+        "key": "R",
+        "title": "Reflect & Requirements",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Primary goal: fast, visually rich feed…"
+          },
+          {
+            "type": "image",
+            "src": "system-design/pinterest/masonry-example.png",
+            "alt": "Masonry grid",
+            "caption": "Masonry layout at a glance"
+          }
+        ]
+      },
+      {
+        "key": "D",
+        "title": "Diagram / Architecture",
+        "blocks": [
+          {
+            "type": "image",
+            "src": "system-design/pinterest/high-level.png",
+            "alt": "High level diagram"
+          },
+          {
+            "type": "text",
+            "text": "Edge cache → API → Feed service → Ranker → Storage…"
+          }
+        ]
+      },
+      {
+        "key": "I",
+        "title": "Interfaces & APIs",
+        "blocks": [
+          {
+            "type": "code",
+            "language": "http",
+            "code": "GET /api/feed?cursor=abc&columns=5&width=1200"
+          },
+          {
+            "type": "text",
+            "text": "Params:\n• cursor: opaque paging token\n• columns: masonry columns\n• width: viewport width"
+          }
+        ]
+      }
+    ]
+  }
+]
