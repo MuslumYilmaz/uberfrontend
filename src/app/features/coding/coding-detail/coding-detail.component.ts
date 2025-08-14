@@ -61,7 +61,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   editorRatio = signal(0.6);
   horizontalRatio = signal(0.3);
   copiedExamples = signal(false);
-
+  isDraggingVertical = signal(false);
+  isDraggingHorizontal = signal(false);
   // loading spinners
   embedLoading = signal(false);
   previewLoading = signal(false);
@@ -287,10 +288,20 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   startDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.dragging = true;
+    this.isDraggingHorizontal.set(true);
     this.startY = ev.clientY;
     this.startRatio = this.editorRatio();
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+
+    const stopDragging = () => {
+      this.dragging = false;
+      this.isDraggingHorizontal.set(false);
+      document.removeEventListener('pointerup', stopDragging);
+    };
+
+    document.addEventListener('pointerup', stopDragging);
   };
+
 
   private onPointerMove = (ev: PointerEvent) => {
     if (this.draggingHorizontal) {
@@ -317,8 +328,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.draggingHorizontal = true;
     this.startX = ev.clientX;
     this.startRatioH = this.horizontalRatio();
+
+    // Show splitter while dragging
+    this.copiedExamples.set(true);
+
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+
+    const stopDragging = () => {
+      this.draggingHorizontal = false;
+      this.copiedExamples.set(false);
+      document.removeEventListener('pointerup', stopDragging);
+    };
+
+    document.addEventListener('pointerup', stopDragging);
   };
+
 
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
@@ -461,5 +485,35 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const elapsed = performance.now() - this.previewSpinnerStartedAt;
     const remaining = Math.max(0, this.PREVIEW_MIN_SPINNER_MS - elapsed);
     setTimeout(() => this.previewLoading.set(false), remaining);
+  }
+
+  /** Jump to the custom test cases editor (the top "Test cases" tab) */
+  goToCustomTests(e?: Event) {
+    if (e) e.preventDefault();
+    this.topTab.set('tests');       // switch the top-right editor to "Test cases"
+    this.subTab.set('tests');       // ensure bottom panel is on "Tests"
+  }
+
+  resetQuestion() {
+    const q = this.question();
+    if (!q) return;
+
+    // Restore starter code / tests
+    this.editorContent.set(q.starterCode ?? '');
+    this.testCode.set(((q as any).tests as string) ?? '');
+
+    // Reset state
+    this.hasRunTests = false;
+    this.testResults.set([]);
+    this.subTab.set('tests');      // go back to Tests tab in the bottom area
+    this.topTab.set('code');       // show code editor on top area
+
+    // Best-effort: clear console if the component exposes a clear/reset API
+    try {
+      (this.consoleLogger as any)?.clear?.();
+      (this.consoleLogger as any)?.reset?.();
+    } catch {
+      // noop
+    }
   }
 }

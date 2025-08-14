@@ -12,7 +12,7 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
   imports: [CommonModule, RouterModule, FormsModule],
   styleUrls: ['./header.component.scss'],
   template: `
-    <div class="topbar bg-neutral-900/95 text-gray-200">
+    <div class="topbar bg-neutral-900/95 text-gray-200 pb-2">
       <!-- Keep center column auto so the middle trigger stays perfectly centered -->
       <div class="max-w-7xl mx-auto px-4 h-12 grid [grid-template-columns:1fr_auto_1fr] items-center gap-4">
 

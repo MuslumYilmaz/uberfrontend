@@ -1,4 +1,34 @@
-:host {
-  display: block;
-  height: 100%;
+:host { display: block; height: calc(100vh - 48px) }
+
+.splitter {
+  width: 5px;
+  background-color: transparent;
+  border-radius: 25px;
+  cursor: col-resize;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #3b82f6;
+  }
+
+  &.dragging {
+    background-color: #3b82f6;
+  }
+}
+
+.horizontal-splitter {
+  height: 5px; /* gap size */
+  background-color: transparent;
+  border-radius: 25px;
+  cursor: row-resize;
+  transition: background-color 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    background-color: #3b82f6;
+  }
+
+  &.dragging {
+    background-color: #3b82f6;
+  }
 }

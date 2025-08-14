@@ -1,5 +1,10 @@
 :host { display:block; position:sticky; top:0; z-index:40; }
-.topbar { backdrop-filter:saturate(180%) blur(6px); }
+.topbar {
+  backdrop-filter: saturate(180%) blur(6px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 0.75rem 0.75rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
 .pill { background:rgba(255,255,255,.08); }
 .context { border-top:1px solid rgba(255,255,255,.08); }
 .search-input { background:#0f172a; border:1px solid rgba(148,163,184,.25); color:#e5e7eb; }
@@ -32,8 +37,13 @@
 }
 
 /* Mega menu cards */
-.card-row{ border:1px solid rgba(255,255,255,.08); background:#0b1322; }
-.card-row:hover{ background:#0e1729; }
+.card-row {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1a1a1a; /* neutral dark gray */
+}
+.card-row:hover {
+  background: #202020; /* slightly lighter on hover */
+}
 .row-badge{ font-size:.72rem; padding:.125rem .5rem; border-radius:9999px; background:#2b354a; color:#cbd5e1; }
 .disabled{ opacity:.5; cursor:not-allowed; }
 .skeleton-bar{ height:6px; width:150px; border-radius:9999px;
