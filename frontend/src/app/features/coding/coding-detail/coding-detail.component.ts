@@ -4,13 +4,14 @@ import {
   AfterViewInit,
   Component,
   computed,
+  effect,
   ElementRef,
   NgZone,
   OnDestroy,
   OnInit,
   signal,
   ViewChild,
-  WritableSignal,
+  WritableSignal
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -239,10 +240,32 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 350);
   }
 
+  private persistJsEffect = effect(() => {
+    const q = this.question();
+    if (!q || this.tech === 'angular') return;
+
+    const code = this.editorContent();         // re-run on every edit & on loadSolution
+    const key = `v1:code:js:${q.id}`;
+    try {
+      localStorage.setItem(key, JSON.stringify({ code }));
+    } catch {
+      // ignore quota errors etc.
+    }
+  });
+
   showSolution() {
     const q = this.question();
     if (!q) return;
-    this.editorContent.set(q.solution ?? '');
+
+    const solution = q.solution ?? '';
+    this.editorContent.set(solution);  // autosave effect will also catch this
+
+    // Explicit save (redundant with the effect, but makes it immediate & obvious)
+    if (this.tech !== 'angular') {
+      const key = `v1:code:js:${q.id}`;
+      try { localStorage.setItem(key, JSON.stringify({ code: solution })); } catch { }
+    }
+
     this.activePanel.set(1);
     this.topTab.set('code');
   }
