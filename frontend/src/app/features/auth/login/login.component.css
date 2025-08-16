@@ -1,0 +1,9 @@
+:host {
+  display: block;           /* custom element acts like a block */
+  min-height: 100vh;        /* ensure the host spans the viewport */
+}
+
+/* the page wrapper itself */
+.auth-page {
+  min-height: 100vh;        /* full viewport height */
+}

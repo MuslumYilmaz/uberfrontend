@@ -1,0 +1,127 @@
+<div class="auth-page flex min-h-screen w-full text-gray-200">
+
+    <!-- LEFT: form -->
+    <section class="flex-1 flex items-center justify-center px-6 md:px-10">
+        <div class="w-full max-w-md">
+            <h1 class="text-2xl font-semibold mb-6">Create a new account</h1>
+
+            <div class="grid gap-3 mb-6">
+                <button type="button"
+                    class="w-full rounded-lg bg-neutral-800/60 hover:bg-neutral-700/60 border border-white/10 py-2.5 text-white/90 transition">
+                    🔑 Continue with Google
+                </button>
+                <button type="button"
+                    class="w-full rounded-lg bg-neutral-800/60 hover:bg-neutral-700/60 border border-white/10 py-2.5 text-white/90 transition">
+                    🐙 Continue with GitHub
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3 mb-6">
+                <div class="h-px flex-1 bg-white/10"></div>
+                <span class="text-xs uppercase tracking-widest text-white/60">or</span>
+                <div class="h-px flex-1 bg-white/10"></div>
+            </div>
+
+            <form [formGroup]="form" (ngSubmit)="submit()" class="grid gap-4">
+                <div>
+                    <label class="block text-sm mb-1 text-white/80">Email</label>
+                    <input formControlName="email" type="email" placeholder="you@example.com" class="w-full rounded-lg bg-neutral-800/80 border border-white/10 px-4 py-2.5
+                            outline-none placeholder-white/40 focus:border-blue-400/60" />
+                </div>
+
+                <div>
+                    <label class="block text-sm mb-1 text-white/80">Username</label>
+                    <input formControlName="username" type="text" placeholder="jane_doe" class="w-full rounded-lg bg-neutral-800/80 border border-white/10 px-4 py-2.5
+                            outline-none placeholder-white/40 focus:border-blue-400/60" />
+                </div>
+
+                <div formGroupName="passwords" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm mb-1 text-white/80">Password</label>
+                        <input formControlName="password" type="password" placeholder="••••••••" class="w-full rounded-lg bg-neutral-800/80 border border-white/10 px-4 py-2.5
+                              outline-none placeholder-white/40 focus:border-blue-400/60" />
+                    </div>
+                    <div>
+                        <label class="block text-sm mb-1 text-white/80">Confirm Password</label>
+                        <input formControlName="confirmPassword" type="password" placeholder="••••••••" class="w-full rounded-lg bg-neutral-800/80 border border-white/10 px-4 py-2.5
+                              outline-none placeholder-white/40 focus:border-blue-400/60" />
+                        <div class="text-xs text-red-400 mt-1"
+                            *ngIf="form.get('passwords')?.hasError('mismatch') && confirmCtrl?.touched">
+                            Passwords do not match
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full rounded-lg bg-lime-500 hover:bg-lime-400 text-black font-medium py-2.5 transition disabled:opacity-60"
+                    [disabled]="loading">
+                    {{ loading ? 'Creating account…' : 'Sign Up' }}
+                </button>
+
+                <div *ngIf="error" class="text-sm text-red-400">{{ error }}</div>
+            </form>
+
+            <p class="mt-6 text-sm text-white/70">
+                Already have an account?
+                <a routerLink="/auth/login" class="text-lime-400 hover:text-lime-300 font-medium">Sign in</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- RIGHT: testimonial -->
+    <!-- RIGHT: product value (replaces testimonial) -->
+    <aside class="hidden lg:flex w-[54%] items-center justify-center p-12 bg-neutral-900/60 border-l border-white/10">
+        <div class="max-w-lg space-y-6">
+            <header>
+                <div class="text-xs uppercase tracking-widest text-white/50">UberFrontend • What you’ll get</div>
+                <h2 class="text-2xl font-semibold text-white mt-2">Practice smarter, ship faster</h2>
+            </header>
+
+            <ul class="space-y-3 text-white/80">
+                <li class="flex gap-3">
+                    <span class="shrink-0">⚙️</span>
+                    <div>
+                        <span class="font-medium">Hands-on coding</span> — Angular embed + JS Monaco editor with live
+                        preview.
+                    </div>
+                </li>
+
+                <li class="flex gap-3">
+                    <span class="shrink-0">🧪</span>
+                    <div>
+                        <span class="font-medium">Built-in test runner</span> — run tests, view results, and add custom
+                        cases.
+                    </div>
+                </li>
+
+                <li class="flex gap-3">
+                    <span class="shrink-0">📚</span>
+                    <div>
+                        <span class="font-medium">System design & trivia</span> — quick drills and deep dives to round
+                        out skills.
+                    </div>
+                </li>
+
+                <li class="flex gap-3">
+                    <span class="shrink-0">💾</span>
+                    <div>
+                        <span class="font-medium">Save & resume</span> — your work persists; reset to the starter
+                        anytime.
+                    </div>
+                </li>
+
+                <li class="flex gap-3">
+                    <span class="shrink-0">📈</span>
+                    <div>
+                        <span class="font-medium">Progress tracking</span> — profiles & stats <span
+                            class="opacity-80">coming soon</span>.
+                    </div>
+                </li>
+            </ul>
+
+            <p class="text-sm text-white/60">
+                A focused, no-fluff workspace to prep for real frontend interviews.
+            </p>
+        </div>
+    </aside>
+</div>

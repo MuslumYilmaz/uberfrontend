@@ -9,6 +9,15 @@ export const routes: Routes = [
         .then(m => m.DashboardComponent)
   },
 
+  // 🔑 auth pages
+  {
+    path: 'auth',
+    children: [
+      { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
+      { path: 'signup', loadComponent: () => import('./features/auth/signup/signup.component').then(m => m.SignupComponent) },
+    ]
+  },
+
   // System design (list + detail)
   {
     path: 'system-design',

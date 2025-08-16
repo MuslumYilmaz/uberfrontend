@@ -1,9 +1,16 @@
-<div class="flex flex-col min-h-screen bg-neutral-900 text-gray-200">
-  <!-- Global header (it hides itself on the dashboard route) -->
-  <app-header></app-header>
+<div class="min-h-screen bg-neutral-900 text-gray-200">
+  <!-- Hide header on /auth/* -->
+  <app-header *ngIf="showHeader()"></app-header>
 
-  <!-- Let each page own its layout; don't center the whole app -->
-  <main class="flex-1 min-h-0 flex justify-center overflow-hidden">
+  <!-- Full-bleed layout for auth routes -->
+  <ng-container *ngIf="isAuthRoute(); else regularLayout">
     <router-outlet></router-outlet>
-  </main>
+  </ng-container>
+
+  <!-- Regular app pages -->
+  <ng-template #regularLayout>
+    <main class="flex-1 min-h-0 overflow-hidden">
+      <router-outlet></router-outlet>
+    </main>
+  </ng-template>
 </div>
