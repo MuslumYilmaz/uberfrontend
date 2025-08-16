@@ -20,6 +20,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { combineLatest, Subscription } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
+import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import {
@@ -66,6 +67,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // loading spinners
   embedLoading = signal(false);
   previewLoading = signal(false);
+  private jsSaveTimer: any = null;
 
   // spinner timing guards (to avoid flicker)
   private embedSpinnerStartedAt = 0;
@@ -149,7 +151,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
-    private zone: NgZone
+    private zone: NgZone,
+    private codeStore: CodeStorageService
   ) { }
 
   ngOnInit() {
@@ -189,16 +192,29 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
-    // JS editor/test state
-    this.editorContent.set(q.starterCode ?? '');
+    // ----- Restore user code for JS (persisted in localStorage) -----
+    // Key shape: v1:code:js:<questionId>
+    const jsKey = `v1:code:js:${q.id}`;
+    const savedJsRaw = (this.tech !== 'angular') ? localStorage.getItem(jsKey) : null;
+    const savedJs = savedJsRaw ? (() => { try { return JSON.parse(savedJsRaw); } catch { return null; } })() : null;
+
+    if (this.tech !== 'angular' && savedJs?.code) {
+      this.editorContent.set(savedJs.code as string);
+    } else {
+      this.editorContent.set(q.starterCode ?? '');
+    }
+
+    // Tests (no persistence yet)
     this.testCode.set(((q as any).tests as string) ?? '');
+
+    // UI state
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
 
-    // Main embed for Angular (code + preview)
+    // ----- Angular embed (iframe) -----
     if (this.tech === 'angular' && (q as any).stackblitzEmbedUrl) {
       this.embedSpinnerStartedAt = performance.now();
       this.embedLoading.set(true);
@@ -208,6 +224,19 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.embedUrl.set(null);
       this.embedLoading.set(false);
     }
+  }
+
+  // called by template on every code edit
+  onJsCodeChange(code: string) {
+    this.editorContent.set(code);
+    const q = this.question();
+    if (!q || this.tech === 'angular') return;
+
+    // debounce saves so we don’t hammer storage
+    clearTimeout(this.jsSaveTimer);
+    this.jsSaveTimer = setTimeout(() => {
+      this.codeStore.saveJs(q.id, code, 'js');
+    }, 350);
   }
 
   showSolution() {
@@ -501,22 +530,40 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
+    // ----- Clear saved JS progress (if any) -----
+    if (this.tech !== 'angular') {
+      const jsKey = `v1:code:js:${q.id}`;
+      localStorage.removeItem(jsKey);
+    }
+
     // Restore starter code / tests
     this.editorContent.set(q.starterCode ?? '');
     this.testCode.set(((q as any).tests as string) ?? '');
 
-    // Reset state
+    // Reset UI state
     this.hasRunTests = false;
     this.testResults.set([]);
-    this.subTab.set('tests');      // go back to Tests tab in the bottom area
-    this.topTab.set('code');       // show code editor on top area
+    this.subTab.set('tests');   // bottom area back to Tests
+    this.topTab.set('code');    // top area shows Code
 
     // Best-effort: clear console if the component exposes a clear/reset API
     try {
       (this.consoleLogger as any)?.clear?.();
       (this.consoleLogger as any)?.reset?.();
-    } catch {
-      // noop
+    } catch { /* noop */ }
+
+    // ----- For Angular: force a fresh embed load so the sandbox resets -----
+    if (this.tech === 'angular' && (q as any).stackblitzEmbedUrl) {
+      this.embedSpinnerStartedAt = performance.now();
+      this.embedLoading.set(true);
+      const main = this.toMainEmbed((q as any).stackblitzEmbedUrl as string);
+      // Nuke then re-set to guarantee a hard reload of the iframe
+      this.embedUrl.set(null);
+      // next tick
+      setTimeout(() => {
+        this.embedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(main));
+      }, 0);
     }
   }
+
 }

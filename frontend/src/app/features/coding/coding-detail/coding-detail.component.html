@@ -97,7 +97,7 @@
         <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()" [language]="'javascript'"
-              (codeChange)="editorContent.set($event)"></app-monaco-editor>
+              (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
 
             <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
               (codeChange)="testCode.set($event)"></app-monaco-editor>
