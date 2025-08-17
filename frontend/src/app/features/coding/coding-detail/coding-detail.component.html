@@ -60,20 +60,17 @@
   </aside>
 
   <!-- VERTICAL SPLITTER -->
-  <div class="splitter" [class.dragging]="isDraggingVertical()" (pointerdown)="startHorizontalDrag($event)">
-  </div>
+  <div class="splitter" [class.dragging]="isDraggingVertical()" (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
 
-    <!-- ANGULAR EMBED -->
+    <!-- ANGULAR via StackBlitz SDK -->
     <ng-container *ngIf="tech==='angular'">
       <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden">
         <div class="relative flex-1">
-          <iframe *ngIf="embedUrl()" [src]="embedUrl()" class="w-full h-full border-0"
-            allow="accelerometer; ambient-light-sensor; autoplay; camera; encrypted-media; geolocation;"
-            sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"
-            (load)="onEmbedLoad()"></iframe>
+          <!-- host element for the SDK embed -->
+          <div #sbHost class="w-full h-full"></div>
 
           <div *ngIf="embedLoading()" class="absolute inset-0 grid place-items-center bg-black/40">
             <p-progressSpinner strokeWidth="4"></p-progressSpinner>
@@ -104,10 +101,8 @@
           </div>
 
           <!-- Horizontal splitter -->
-          <!-- Horizontal splitter -->
           <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()" (pointerdown)="startDrag($event)">
           </div>
-
 
           <!-- Results / Console -->
           <div class="flex-1 flex flex-col overflow-hidden min-h-0">
@@ -198,7 +193,7 @@
   </div>
 </footer>
 
-<!-- Preview dialog -->
+<!-- Preview dialog (optional) -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
   [resizable]="false" [style]="{ width: '90vw', maxWidth: '1400px' }" [contentStyle]="{ padding: '0', height: '80vh' }">
   <ng-template pTemplate="header">
@@ -210,6 +205,6 @@
   <div class="w-full h-full">
     <iframe *ngIf="previewOnlyUrl" class="w-full h-full border-0" [src]="previewOnlyUrl"
       allow="accelerometer; autoplay; camera; encrypted-media; geolocation;"
-      sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin"></iframe>
+      sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin" (load)="onPreviewLoad()"></iframe>
   </div>
 </p-dialog>

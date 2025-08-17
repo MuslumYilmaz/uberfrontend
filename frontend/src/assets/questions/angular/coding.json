@@ -1,39 +1,64 @@
 [
-    {
-      "id": "angular-form-validator",
-      "title": "Custom Form Validator",
-      "description": "Build an Angular reactive form with a custom validator that checks two fields match (e.g., password and confirm password).",
-      "type": "coding",
-      "technology": "angular",
-      "difficulty": "advanced",
-      "tags": ["forms", "validation", "reactive-forms"],
-      "importance": 5,
-      "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-custom-validator?embed=1&file=src/app/app.component.ts",
-      "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-custom-validator-solution?embed=1&file=src/app/app.component.ts"
+  {
+    "id": "angular-form-validator",
+    "title": "Custom Form Validator",
+    "description": "Build an Angular reactive form with a custom validator that checks two fields match (e.g., password and confirm password).",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "tags": [
+      "forms",
+      "validation",
+      "reactive-forms"
+    ],
+    "importance": 5,
+    "sdk": {
+      "asset": "assets/sb/angular-form-validator.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-form-validator"
     },
-    {
-      "id": "angular-pipe",
-      "title": "Create a Custom Pipe",
-      "description": "Implement an Angular pipe named `truncate` that abbreviates a string to a given length and adds ellipsis.",
-      "type": "coding",
-      "technology": "angular",
-      "difficulty": "intermediate",
-      "tags": ["pipes", "angular"],
-      "importance": 3,
-      "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-truncate-pipe?embed=1&file=src/app/truncate.pipe.ts",
-      "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-truncate-pipe-solution?embed=1&file=src/app/truncate.pipe.ts"
+    "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-custom-validator?embed=1&file=src/app/app.component.ts",
+    "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-custom-validator-solution?embed=1&file=src/app/app.component.ts"
+  },
+  {
+    "id": "angular-pipe",
+    "title": "Create a Custom Pipe",
+    "description": "Implement an Angular pipe named `truncate` that abbreviates a string to a given length and adds ellipsis.",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "tags": [
+      "pipes",
+      "angular"
+    ],
+    "importance": 3,
+    "sdk": {
+      "asset": "assets/sb/angular-pipe.v2.json",
+      "openFile": "/src/app/truncate.pipe.ts",
+      "storageKey": "v2:ui:angular:angular-pipe"
     },
-    {
-      "id": "angular-interceptor",
-      "title": "Implement an HTTP Interceptor",
-      "description": "Write an Angular `HttpInterceptor` that adds an `Authorization` header to all outgoing HTTP requests.",
-      "type": "coding",
-      "technology": "angular",
-      "difficulty": "advanced",
-      "tags": ["http", "interceptor", "angular"],
-      "importance": 4,
-      "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-http-interceptor?embed=1&file=src/app/auth.interceptor.ts",
-      "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-http-interceptor-solution?embed=1&file=src/app/auth.interceptor.ts"
-    }
-  ]
-  
+    "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-truncate-pipe?embed=1&file=src/app/truncate.pipe.ts",
+    "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-truncate-pipe-solution?embed=1&file=src/app/truncate.pipe.ts"
+  },
+  {
+    "id": "angular-interceptor",
+    "title": "Implement an HTTP Interceptor",
+    "description": "Write an Angular `HttpInterceptor` that adds an `Authorization` header to all outgoing HTTP requests.",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "tags": [
+      "http",
+      "interceptor",
+      "angular"
+    ],
+    "importance": 4,
+    "sdk": {
+      "asset": "assets/sb/angular-interceptor.v2.json",
+      "openFile": "/src/app/auth.interceptor.ts",
+      "storageKey": "v2:ui:angular:angular-interceptor"
+    },
+    "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-http-interceptor?embed=1&file=src/app/auth.interceptor.ts",
+    "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-http-interceptor-solution?embed=1&file=src/app/auth.interceptor.ts"
+  }
+]

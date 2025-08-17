@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "17.3.12",
     "@angular/router": "17.3.12",
     "@primeuix/themes": "^1.2.1",
+    "@stackblitz/sdk": "^1.11.0",
     "monaco-editor": "^0.52.2",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",

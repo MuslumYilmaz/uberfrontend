@@ -1,4 +1,3 @@
-// src/app/features/coding-detail/coding-detail.component.ts
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
@@ -29,6 +28,9 @@ import {
   TestResult,
 } from '../console-logger/console-logger.component';
 
+// --- StackBlitz SDK ---
+import sdk from '@stackblitz/sdk';
+
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
@@ -49,7 +51,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
 
-  // Main right-pane embed (Angular only)
+  // Main right-pane embed (Angular only - now SDK host)
+  @ViewChild('sbHost', { read: ElementRef }) sbHost?: ElementRef<HTMLDivElement>;
+  private sbVm: any | null = null;
+  private sbSaveTimer: any = null;
+  private sbBeforeUnload?: () => void;
+
+  // (kept) for preview modal (optional)
   embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
 
   // JS editor/test state
@@ -65,12 +73,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   copiedExamples = signal(false);
   isDraggingVertical = signal(false);
   isDraggingHorizontal = signal(false);
+
   // loading spinners
   embedLoading = signal(false);
   previewLoading = signal(false);
   private jsSaveTimer: any = null;
 
-  // spinner timing guards (to avoid flicker)
+  // spinner timing guards (to avoid flicker for iframe preview modal)
   private embedSpinnerStartedAt = 0;
   private previewSpinnerStartedAt = 0;
   private readonly EMBED_MIN_SPINNER_MS = 1200;
@@ -109,7 +118,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private startX = 0;
   private startRatioH = 0;
 
-  // Preview modal
+  // Preview modal (kept for your preview-only dialog)
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
 
@@ -183,9 +192,24 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
     document.body.style.overflow = '';
+
+    if (this.sbSaveTimer) clearInterval(this.sbSaveTimer);
+    if (this.sbBeforeUnload) {
+      window.removeEventListener('beforeunload', this.sbBeforeUnload);
+    }
   }
 
-  private loadQuestion(id: string) {
+  // ---------- keys & defaults (Angular via SDK) ----------
+  private angularKey(id: string) {
+    return `v1:code:ng:${id}`;
+  }
+
+  private defaultAngularFiles(title: string) {
+
+  }
+
+  // ---------- load question ----------
+  private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex((q) => q.id === id);
     if (idx < 0) return;
 
@@ -193,8 +217,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
-    // ----- Restore user code for JS (persisted in localStorage) -----
-    // Key shape: v1:code:js:<questionId>
+    // ----- JS state / restore -----
     const jsKey = `v1:code:js:${q.id}`;
     const savedJsRaw = (this.tech !== 'angular') ? localStorage.getItem(jsKey) : null;
     const savedJs = savedJsRaw ? (() => { try { return JSON.parse(savedJsRaw); } catch { return null; } })() : null;
@@ -204,68 +227,193 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.editorContent.set(q.starterCode ?? '');
     }
-
-    // Tests (no persistence yet)
     this.testCode.set(((q as any).tests as string) ?? '');
 
-    // UI state
+    // ----- UI reset -----
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
 
-    // ----- Angular embed (iframe) -----
-    if (this.tech === 'angular' && (q as any).stackblitzEmbedUrl) {
-      this.embedSpinnerStartedAt = performance.now();
+    // ----- Angular via StackBlitz SDK (asset-driven) -----
+    if (this.tech === 'angular') {
       this.embedLoading.set(true);
-      const main = this.toMainEmbed((q as any).stackblitzEmbedUrl as string);
-      this.embedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(main));
+
+      const host = this.sbHost?.nativeElement;
+      if (!host) {
+        requestAnimationFrame(() => this.loadQuestion(id));
+        return;
+      }
+
+      // cleanup autosave/listeners
+      if (this.sbSaveTimer) clearInterval(this.sbSaveTimer);
+      if (this.sbBeforeUnload) {
+        window.removeEventListener('beforeunload', this.sbBeforeUnload);
+        this.sbBeforeUnload = undefined;
+      }
+
+      const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
+      const storageKey = this.getNgStorageKey(q);
+
+      // 1) try saved snapshot first
+      let files = this.loadSavedFiles(storageKey);
+      let dependencies: Record<string, string> | undefined;
+      let openFileFromAsset: string | undefined;
+
+      // 2) else seed from asset
+      if (!files && meta?.asset) {
+        const asset = await this.fetchSdkAsset(meta.asset);
+        if (asset) {
+          files = asset.files;
+          dependencies = asset.dependencies;
+          openFileFromAsset = asset.openFile;
+          localStorage.setItem(storageKey, JSON.stringify(files)); // persist initial seed
+        }
+      }
+
+      // 3) last-resort tiny inline fallback (only if asset is missing/unreachable)
+      if (!files) {
+        files = {};
+      }
+
+      // clear host & embed
+      host.innerHTML = '';
+      const openFile =
+        (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
+
+      sdk.embedProject(
+        host,
+        {
+          title: q.title || 'Angular question',
+          description: 'Embedded via StackBlitz SDK',
+          template: 'angular-cli',
+          files,
+          dependencies // <-- from asset if present
+        },
+        {
+          height: '100%',
+          openFile
+        }
+      )
+        .then((vm: any) => {
+          this.sbVm = vm;
+
+          const saveNow = async () => {
+            try {
+              const snap = await vm.getFsSnapshot();
+              localStorage.setItem(storageKey, JSON.stringify(snap));
+            } catch { /* ignore */ }
+          };
+
+          // periodic snapshot
+          this.sbSaveTimer = window.setInterval(saveNow, 5000);
+
+          // save on page unload
+          this.sbBeforeUnload = () => { try { void saveNow(); } catch { } };
+          window.addEventListener('beforeunload', this.sbBeforeUnload);
+
+          this.embedLoading.set(false);
+        })
+        .catch((e) => {
+          console.error('StackBlitz embed failed', e);
+          this.embedLoading.set(false);
+        });
     } else {
-      this.embedUrl.set(null);
+      // Non-Angular
+      this.sbVm = null;
       this.embedLoading.set(false);
     }
   }
 
-  // called by template on every code edit
+  // --- helpers for Angular SDK storage ---
+  private getNgStorageKey(q: Question) {
+    const meta = (q as any).sdk as { storageKey?: string } | undefined;
+    return meta?.storageKey ?? `v2:ui:angular:${q.id}`;
+  }
+
+  /** Accepts either a pure snapshot { 'src/...': 'code' }
+   *  or a v2 asset { version:'v2', files:{ '/src/...': {code:''} } }
+   *  and normalizes to { 'src/...': 'code' } for embedProject.
+   */
+  private normalizeSdkFiles(raw: any): Record<string, string> {
+    const source = raw?.files ?? raw ?? {};
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(source)) {
+      const path = k.replace(/^\/+/, ''); // drop any leading slash
+      const code = typeof v === 'string' ? v : (v as any)?.code ?? '';
+      out[path] = code;
+    }
+    // Make sure zone.js is imported in main.ts
+    if (out['src/main.ts'] && !/zone\.js/.test(out['src/main.ts'])) {
+      out['src/main.ts'] = `import 'zone.js';\n${out['src/main.ts']}`;
+    }
+    return out;
+  }
+
+  private loadSavedFiles(storageKey: string): Record<string, string> | null {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return null;
+      return this.normalizeSdkFiles(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  }
+
+  // --- helpers for Angular SDK storage ---
+  private async fetchSdkAsset(assetUrl: string): Promise<{
+    files: Record<string, string>;
+    dependencies?: Record<string, string>;
+    openFile?: string;
+  } | null> {
+    try {
+      const res = await fetch(assetUrl, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const json = await res.json();
+      const files = this.normalizeSdkFiles(json);
+      const dependencies = (json?.dependencies ?? undefined) as Record<string, string> | undefined;
+      const openFile = (json?.openFile as string | undefined) ?? undefined;
+      return { files, dependencies, openFile };
+    } catch {
+      return null;
+    }
+  }
+
+  // ---------- JS code save on edit ----------
   onJsCodeChange(code: string) {
     this.editorContent.set(code);
     const q = this.question();
     if (!q || this.tech === 'angular') return;
 
-    // debounce saves so we don’t hammer storage
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
       this.codeStore.saveJs(q.id, code, 'js');
+      try { localStorage.setItem(`v1:code:js:${q.id}`, JSON.stringify({ code })); } catch { }
     }, 350);
   }
 
+  // extra: reactive persistence (also catches loadSolution)
   private persistJsEffect = effect(() => {
     const q = this.question();
     if (!q || this.tech === 'angular') return;
 
-    const code = this.editorContent();         // re-run on every edit & on loadSolution
-    const key = `v1:code:js:${q.id}`;
+    const code = this.editorContent();
     try {
-      localStorage.setItem(key, JSON.stringify({ code }));
-    } catch {
-      // ignore quota errors etc.
-    }
+      localStorage.setItem(`v1:code:js:${q.id}`, JSON.stringify({ code }));
+    } catch { /* ignore */ }
   });
 
+  // ---------- misc actions ----------
   showSolution() {
     const q = this.question();
     if (!q) return;
 
     const solution = q.solution ?? '';
-    this.editorContent.set(solution);  // autosave effect will also catch this
-
-    // Explicit save (redundant with the effect, but makes it immediate & obvious)
+    this.editorContent.set(solution);
     if (this.tech !== 'angular') {
-      const key = `v1:code:js:${q.id}`;
-      try { localStorage.setItem(key, JSON.stringify({ code: solution })); } catch { }
+      try { localStorage.setItem(`v1:code:js:${q.id}`, JSON.stringify({ code: solution })); } catch { }
     }
-
     this.activePanel.set(1);
     this.topTab.set('code');
   }
@@ -339,7 +487,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
   }
 
-  // vertical drag handlers
+  // ---------- drag splitters ----------
   startDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.dragging = true;
@@ -356,7 +504,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.addEventListener('pointerup', stopDragging);
   };
-
 
   private onPointerMove = (ev: PointerEvent) => {
     if (this.draggingHorizontal) {
@@ -377,7 +524,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.draggingHorizontal) this.draggingHorizontal = false;
   };
 
-  // horizontal drag
   startHorizontalDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.draggingHorizontal = true;
@@ -398,7 +544,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     document.addEventListener('pointerup', stopDragging);
   };
 
-
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
@@ -408,7 +553,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
-  // helpers for code transformation
+  // ---------- helpers for test scaffolding ----------
   private sanitizeGlobalName(id: string) {
     return id.replace(/[^a-zA-Z0-9_]/g, '_');
   }
@@ -475,8 +620,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  // ---------- StackBlitz URL helpers ----------
-  // Main embed: code + preview, hide explorer/header/footer
+  // ---------- StackBlitz URL helpers (kept for preview modal) ----------
   private toMainEmbed(base: string): string {
     const u = new URL(base);
     u.searchParams.set('embed', '1');
@@ -487,18 +631,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return u.toString();
   }
 
-  // Preview-only modal: uses **stackblitzSolutionUrl**
   private toPreviewOnly(base: string): string {
     const u = new URL(base);
     u.searchParams.set('embed', '1');
-    u.searchParams.set('view', 'preview');        // preview-only
+    u.searchParams.set('view', 'preview');
     u.searchParams.set('hideExplorer', '1');
     u.searchParams.set('hideNavigation', '1');
     u.searchParams.set('hideDevTools', '1');
     u.searchParams.set('terminalHeight', '0');
     u.searchParams.set('forceEmbedLayout', '1');
-    u.searchParams.set('ctl', '0');               // hide view controls if present
-    u.searchParams.delete('file');                // ensure no editor view is forced
+    u.searchParams.set('ctl', '0');
+    u.searchParams.delete('file');
     return u.toString();
   }
 
@@ -521,72 +664,115 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   closePreview() {
     this.previewVisible = false;
-    // clear iframe after close
     setTimeout(() => {
       this.previewOnlyUrl = null;
       this.previewLoading.set(false);
     }, 200);
   }
 
-  // called by (load) on main iframe
   onEmbedLoad() {
     const elapsed = performance.now() - this.embedSpinnerStartedAt;
     const remaining = Math.max(0, this.EMBED_MIN_SPINNER_MS - elapsed);
     setTimeout(() => this.embedLoading.set(false), remaining);
   }
 
-  // called by (load) on preview iframe
   onPreviewLoad() {
     const elapsed = performance.now() - this.previewSpinnerStartedAt;
     const remaining = Math.max(0, this.PREVIEW_MIN_SPINNER_MS - elapsed);
     setTimeout(() => this.previewLoading.set(false), remaining);
   }
 
-  /** Jump to the custom test cases editor (the top "Test cases" tab) */
-  goToCustomTests(e?: Event) {
-    if (e) e.preventDefault();
-    this.topTab.set('tests');       // switch the top-right editor to "Test cases"
-    this.subTab.set('tests');       // ensure bottom panel is on "Tests"
+  /** Replace the running SDK project's files with the original asset snapshot. */
+  private async replaceAngularFromAsset(q: Question) {
+    const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
+    if (!this.sbVm || !meta?.asset) return;
+
+    // fresh asset snapshot
+    const asset = await this.fetchSdkAsset(meta.asset);
+    if (!asset?.files) return;
+
+    const storageKey = this.getNgStorageKey(q);
+    const newFiles = asset.files; // { 'src/...': 'code' }
+    const openFile = (meta.openFile ?? asset.openFile ?? 'src/app/app.component.ts').replace(/^\/+/, '');
+
+    // current snapshot
+    const current = await this.sbVm.getFsSnapshot(); // { 'src/...': 'code' }
+
+    // only destroy files that are NOT in newFiles
+    const destroy = Object.keys(current).filter((p) => !(p in newFiles));
+
+    // apply diff
+    await this.sbVm.applyFsDiff({
+      create: newFiles,   // overrides existing files
+      destroy             // removes truly stale ones
+    });
+
+    // persist seed so autosave continues from this baseline
+    localStorage.setItem(storageKey, JSON.stringify(newFiles));
+
+    // Force the editor to “see” the file again:
+    // 1) hop to a different file that exists
+    const alt = Object.keys(newFiles).find(p => p !== openFile) || 'src/main.ts';
+    try {
+      await this.sbVm.setCurrentFile(alt);
+      await new Promise(r => setTimeout(r, 16)); // let Monaco settle one frame
+      await this.sbVm.setCurrentFile(openFile);
+      // (optional) poke layout if available
+      this.sbVm.editor?.layout?.();
+    } catch { /* ignore */ }
+
+    this.embedLoading.set(false);
   }
 
-  resetQuestion() {
+  /** Reset current question */
+  async resetQuestion() {
     const q = this.question();
     if (!q) return;
 
-    // ----- Clear saved JS progress (if any) -----
+    // JS track: clear saved code and restore starter
     if (this.tech !== 'angular') {
-      const jsKey = `v1:code:js:${q.id}`;
-      localStorage.removeItem(jsKey);
+      localStorage.removeItem(`v1:code:js:${q.id}`);
+      this.editorContent.set(q.starterCode ?? '');
+      this.testCode.set(((q as any).tests as string) ?? '');
+    } else {
+      // Angular (SDK) track: hard reset to asset files
+      const storageKey = this.getNgStorageKey(q);
+      localStorage.removeItem(storageKey);
+
+      this.embedLoading.set(true);
+
+      // If the VM is alive, do an in-place replacement for a snappy reset
+      if (this.sbVm) {
+        try {
+          await this.replaceAngularFromAsset(q);
+        } catch (e) {
+          console.warn('In-place reset failed, re-embedding…', e);
+          // Fallback: re-embed from scratch
+          requestAnimationFrame(() => this.loadQuestion(q.id));
+        }
+      } else {
+        // If no VM yet, just re-embed (it will seed from asset)
+        requestAnimationFrame(() => this.loadQuestion(q.id));
+      }
     }
 
-    // Restore starter code / tests
-    this.editorContent.set(q.starterCode ?? '');
-    this.testCode.set(((q as any).tests as string) ?? '');
-
-    // Reset UI state
+    // Common UI resets
     this.hasRunTests = false;
     this.testResults.set([]);
-    this.subTab.set('tests');   // bottom area back to Tests
-    this.topTab.set('code');    // top area shows Code
+    this.subTab.set('tests');
+    this.topTab.set('code');
 
-    // Best-effort: clear console if the component exposes a clear/reset API
     try {
       (this.consoleLogger as any)?.clear?.();
       (this.consoleLogger as any)?.reset?.();
     } catch { /* noop */ }
+  }
 
-    // ----- For Angular: force a fresh embed load so the sandbox resets -----
-    if (this.tech === 'angular' && (q as any).stackblitzEmbedUrl) {
-      this.embedSpinnerStartedAt = performance.now();
-      this.embedLoading.set(true);
-      const main = this.toMainEmbed((q as any).stackblitzEmbedUrl as string);
-      // Nuke then re-set to guarantee a hard reload of the iframe
-      this.embedUrl.set(null);
-      // next tick
-      setTimeout(() => {
-        this.embedUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(main));
-      }, 0);
-    }
+  // add inside CodingDetailComponent class
+  goToCustomTests(e?: Event) {
+    if (e) e.preventDefault();
+    this.topTab.set('tests');   // switch the top editor to "Test cases"
+    this.subTab.set('tests');   // bottom panel => "Results"
   }
 
 }
