@@ -223,6 +223,6 @@
   <div class="w-full h-full">
     <iframe *ngIf="previewOnlyUrl" class="w-full h-full border-0" [src]="previewOnlyUrl"
       allow="accelerometer; autoplay; camera; encrypted-media; geolocation;"
-      sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin" (load)="onPreviewLoad()"></iframe>
+      sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin" (load)="previewLoading()"></iframe>
   </div>
 </p-dialog>

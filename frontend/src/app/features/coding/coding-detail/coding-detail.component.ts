@@ -1,20 +1,10 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  signal,
-  ViewChild,
-  WritableSignal,
+  AfterViewInit, Component, computed, effect, ElementRef, NgZone,
+  OnDestroy, OnInit, signal, ViewChild, WritableSignal
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import sdk from '@stackblitz/sdk';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -23,24 +13,18 @@ import { combineLatest, Subscription } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
+import { StackBlitzEmbed } from '../../../core/services/stackblitz-embed.service';
+import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
+import { getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey } from '../../../core/utils/storage-keys';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
-import {
-  ConsoleLoggerComponent,
-  TestResult,
-} from '../console-logger/console-logger.component';
+import { ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
-    AccordionModule,
-    ButtonModule,
-    DialogModule,
-    ProgressSpinnerModule,
-    MonacoEditorComponent,
-    ConsoleLoggerComponent,
+    CommonModule, RouterModule, AccordionModule, ButtonModule, DialogModule,
+    ProgressSpinnerModule, MonacoEditorComponent, ConsoleLoggerComponent,
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.scss'],
@@ -51,9 +35,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('sbHost', { read: ElementRef }) sbHost?: ElementRef<HTMLDivElement>;
   private sbVm: any | null = null;
-  private sbSaveTimer: any = null;
-  private sbBeforeUnload?: () => void;
-  private sbEmbedding: Promise<any> | null = null;
+  private embedCleanup?: () => void;
 
   embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
 
@@ -76,15 +58,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   previewLoading = signal(false);
   resetting = signal(false);
 
-  // “restored from storage” banner
+  // banner
   showRestoreBanner = signal(false);
-  private jsSaveTimer: any = null;
 
-  // spinner min durations
-  private embedSpinnerStartedAt = 0;
-  private previewSpinnerStartedAt = 0;
-  private readonly EMBED_MIN_SPINNER_MS = 1200;
-  private readonly PREVIEW_MIN_SPINNER_MS = 1200;
+  private jsSaveTimer: any = null;
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -99,14 +76,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this._consoleLogger = c;
     if (c) {
       this.testsSub?.unsubscribe();
-      this.testsSub = c.testsFinished.subscribe((results) => {
-        this.testResults.set(results);
-      });
+      this.testsSub = c.testsFinished.subscribe((results) => this.testResults.set(results));
     }
   }
-  get consoleLogger() {
-    return this._consoleLogger;
-  }
+  get consoleLogger() { return this._consoleLogger; }
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
 
@@ -114,7 +87,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private dragging = false;
   private startY = 0;
   private startRatio = 0;
-
   private draggingHorizontal = false;
   private startX = 0;
   private startRatioH = 0;
@@ -124,16 +96,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   previewOnlyUrl: SafeResourceUrl | null = null;
 
   // computed
-  passedCount = computed(() => this.testResults().filter((r) => r.passed).length);
+  passedCount = computed(() => this.testResults().filter(r => r.passed).length);
   totalCount = computed(() => this.testResults().length);
-  failedCount = computed(() => this.testResults().filter((r) => !r.passed).length);
+  failedCount = computed(() => this.testResults().filter(r => !r.passed).length);
   allPassing = computed(() => this.totalCount() > 0 && this.failedCount() === 0);
   isTestsTab = computed(() => this.subTab() === 'tests');
   isConsoleTab = computed(() => this.subTab() === 'console');
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
 
-  // description / examples
   descriptionText = computed(() => {
     const q = this.question();
     if (!q) return '';
@@ -142,7 +113,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return q.description || '';
   });
-
   descriptionExamples = computed(() => {
     const q = this.question();
     if (!q) return [] as string[];
@@ -151,7 +121,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return (q as any).examples || [];
   });
-
   combinedExamples = computed(() => {
     const exs = this.descriptionExamples();
     if (!exs || exs.length === 0) return '';
@@ -163,7 +132,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
     private zone: NgZone,
-    private codeStore: CodeStorageService
+    private codeStore: CodeStorageService,
+    private ngEmbed: StackBlitzEmbed
   ) { }
 
   ngOnInit() {
@@ -177,7 +147,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadQuestion(id);
       });
     });
-
     document.body.style.overflow = 'hidden';
   }
 
@@ -193,26 +162,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
     document.body.style.overflow = '';
-
-    if (this.sbSaveTimer) clearInterval(this.sbSaveTimer);
-    if (this.sbBeforeUnload) {
-      window.removeEventListener('beforeunload', this.sbBeforeUnload);
-    }
+    if (this.embedCleanup) this.embedCleanup();
   }
 
-  // ---------- keys ----------
-  private getJsKey(id: string) { return `v1:code:js:${id}`; }
-  private getJsBaselineKey(id: string) { return `v1:code:js:baseline:${id}`; }
-
-  private getNgStorageKey(q: Question) {
-    const meta = (q as any).sdk as { storageKey?: string } | undefined;
-    return meta?.storageKey ?? `v2:ui:angular:${q.id}`;
-  }
-  private getNgBaselineKey(q: Question) {
-    return `${this.getNgStorageKey(q)}:baseline`;
-  }
-
-  // ---------- load question (banner without justNavigated) ----------
+  // ---------- load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex((q) => q.id === id);
     if (idx < 0) return;
@@ -223,12 +176,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let shouldShowBanner = false;
 
-    // ----- JS track -----
     if (this.tech !== 'angular') {
-      const jsKey = this.getJsKey(q.id);
-      const baseKey = this.getJsBaselineKey(q.id);
+      // ----- JavaScript track -----
+      const jsKey = getJsKey(q.id);
+      const baseKey = getJsBaselineKey(q.id);
 
-      // ensure baseline exists
       const starter = q.starterCode ?? '';
       if (!localStorage.getItem(baseKey)) {
         try { localStorage.setItem(baseKey, JSON.stringify({ code: starter })); } catch { }
@@ -244,34 +196,31 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.editorContent.set(starter);
       }
-      this.testCode.set(((q as any).tests as string) ?? '');
 
-      // clear Angular state
+      this.testCode.set(((q as any).tests as string) ?? '');
+      // make sure any Angular VM is cleaned up
+      if (this.embedCleanup) this.embedCleanup();
       this.sbVm = null;
       this.embedLoading.set(false);
-    }
-
-    // ----- Angular (StackBlitz SDK) -----
-    else {
+    } else {
+      // ----- Angular (StackBlitz SDK) -----
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
       if (!host) { requestAnimationFrame(() => this.loadQuestion(id)); return; }
 
-      if (this.sbSaveTimer) clearInterval(this.sbSaveTimer);
-      if (this.sbBeforeUnload) { window.removeEventListener('beforeunload', this.sbBeforeUnload); this.sbBeforeUnload = undefined; }
+      if (this.embedCleanup) { this.embedCleanup(); this.embedCleanup = undefined; } // cleanup previous
 
       const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
-      const storageKey = this.getNgStorageKey(q);
-      const baselineKey = this.getNgBaselineKey(q);
+      const storageKey = getNgStorageKey(q);
+      const baselineKey = getNgBaselineKey(q);
 
       let files = this.loadSavedFiles(storageKey);
       let dependencies: Record<string, string> | undefined;
       let openFileFromAsset: string | undefined;
 
-      // seed from asset (and capture baseline once)
       if (!files && meta?.asset) {
-        const asset = await this.fetchSdkAsset(meta.asset);
+        const asset = await this.ngEmbed.fetchAsset(meta.asset);
         if (asset) {
           files = asset.files;
           dependencies = asset.dependencies;
@@ -281,24 +230,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!localStorage.getItem(baselineKey)) {
               localStorage.setItem(baselineKey, JSON.stringify(files));
             }
-          } catch { }
+          } catch { /* ignore */ }
         }
       }
 
-      // compute diff vs baseline (or asset as fallback)
       if (files) {
+        // compare vs baseline
         let baseline: Record<string, string> | null = null;
         const baseRaw = localStorage.getItem(baselineKey);
-        if (baseRaw) {
-          baseline = this.normalizeSdkFiles(JSON.parse(baseRaw));
-        } else if (meta?.asset) {
-          const asset = await this.fetchSdkAsset(meta.asset);
+        if (baseRaw) baseline = normalizeSdkFiles(JSON.parse(baseRaw));
+        if (!baseline && meta?.asset) {
+          const asset = await this.ngEmbed.fetchAsset(meta.asset);
           baseline = asset?.files ?? null;
           try { if (asset?.files) localStorage.setItem(baselineKey, JSON.stringify(asset.files)); } catch { }
         }
-        if (baseline && !this.matchesBaseline(files, baseline)) {
-          shouldShowBanner = true;
-        }
+        if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       }
 
       if (!files) files = {};
@@ -306,126 +252,32 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       host.innerHTML = '';
       const openFile = (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
 
-      const p = sdk.embedProject(
-        host,
-        {
-          title: q.title || 'Angular question',
-          description: 'Embedded via StackBlitz SDK',
-          template: 'angular-cli',
-          files,
-          dependencies
-        },
-        { height: '100%', openFile }
-      );
-      this.sbEmbedding = p;
-
-      p.then((vm: any) => {
-        this.sbVm = vm;
-
-        const saveNow = async () => {
-          try {
-            const snap = await vm.getFsSnapshot();
-            localStorage.setItem(storageKey, JSON.stringify(snap));
-          } catch { }
-        };
-        this.sbSaveTimer = window.setInterval(saveNow, 5000);
-        this.sbBeforeUnload = () => { try { void saveNow(); } catch { } };
-        window.addEventListener('beforeunload', this.sbBeforeUnload);
-
-        this.embedLoading.set(false);
-      }).catch(() => {
-        this.embedLoading.set(false);
-      }).finally(() => { this.sbEmbedding = null; });
+      const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
+        title: q.title || 'Angular question',
+        files, dependencies, openFile, storageKey
+      });
+      this.sbVm = vm;
+      this.embedCleanup = cleanup;
+      this.embedLoading.set(false);
     }
 
-    // Reset misc UI
+    // reset UI + set banner
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
-
-    // Show banner only once per question per SPA session
-    const qid = q.id;
     this.showRestoreBanner.set(shouldShowBanner);
   }
 
-  // --- helpers for Angular SDK storage ---
-  private normalizeSdkFiles(raw: any): Record<string, string> {
-    const source = raw?.files ?? raw ?? {};
-    const out: Record<string, string> = {};
-    for (const [k, v] of Object.entries(source)) {
-      const path = k.replace(/^\/+/, '');
-      const code = typeof v === 'string' ? v : (v as any)?.code ?? '';
-      out[path] = code;
-    }
-    if (out['src/main.ts'] && !/zone\.js/.test(out['src/main.ts'])) {
-      out['src/main.ts'] = `import 'zone.js';\n${out['src/main.ts']}`;
-    }
-    return out;
-  }
   private loadSavedFiles(storageKey: string): Record<string, string> | null {
     try {
       const raw = localStorage.getItem(storageKey);
       if (!raw) return null;
-      return this.normalizeSdkFiles(JSON.parse(raw));
+      return normalizeSdkFiles(JSON.parse(raw));
     } catch {
       return null;
     }
-  }
-  private async fetchSdkAsset(assetUrl: string): Promise<{
-    files: Record<string, string>;
-    dependencies?: Record<string, string>;
-    openFile?: string;
-  } | null> {
-    try {
-      const res = await fetch(assetUrl, { cache: 'no-store' });
-      if (!res.ok) return null;
-      const json = await res.json();
-      const files = this.normalizeSdkFiles(json);
-      const dependencies = (json?.dependencies ?? undefined) as Record<string, string> | undefined;
-      const openFile = (json?.openFile as string | undefined) ?? undefined;
-      return { files, dependencies, openFile };
-    } catch {
-      return null;
-    }
-  }
-
-  /** Normalize code so cosmetic diffs don’t trigger the banner. */
-  private normalizeForCompare(path: string, code: string): string {
-    // unify line endings
-    let s = (code ?? '').replace(/\r\n/g, '\n');
-
-    // drop trailing whitespace on each line
-    s = s.replace(/[ \t]+$/gm, '');
-
-    // JSON files: compare canonical JSON so spacing/order doesn't matter
-    if (path.endsWith('.json')) {
-      try { return JSON.stringify(JSON.parse(s)); } catch { /* fallthrough */ }
-    }
-
-    // TS/HTML: trim ending newlines only
-    return s.trimEnd();
-  }
-
-  /**
-   * Compare current snapshot against a baseline.
-   * Only check files that exist in the baseline (e.g. src/**), ignore extras.
-   */
-  private matchesBaseline(
-    current: Record<string, string>,
-    baseline: Record<string, string>
-  ): boolean {
-    const keys = Object.keys(baseline)
-      // limit to source files; avoids noise from config, lockfiles, etc.
-      .filter(k => k.startsWith('src/'));
-
-    for (const k of keys) {
-      const a = this.normalizeForCompare(k, current[k] ?? '');
-      const b = this.normalizeForCompare(k, baseline[k] ?? '');
-      if (a !== b) return false;
-    }
-    return true;
   }
 
   // ---------- JS code save on edit ----------
@@ -437,14 +289,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
       this.codeStore.saveJs(q.id, code, 'js');
-      try { localStorage.setItem(this.getJsKey(q.id), JSON.stringify({ code })); } catch { }
+      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code })); } catch { }
     }, 350);
   }
   private persistJsEffect = effect(() => {
     const q = this.question();
     if (!q || this.tech === 'angular') return;
-    const code = this.editorContent();
-    try { localStorage.setItem(this.getJsKey(q.id), JSON.stringify({ code })); } catch { }
+    try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: this.editorContent() })); } catch { }
   });
 
   // ---------- banner actions ----------
@@ -458,7 +309,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const solution = q.solution ?? '';
     this.editorContent.set(solution);
     if (this.tech !== 'angular') {
-      try { localStorage.setItem(this.getJsKey(q.id), JSON.stringify({ code: solution })); } catch { }
+      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: solution })); } catch { }
     }
     this.activePanel.set(1);
     this.topTab.set('code');
@@ -479,19 +330,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private waitForSandboxReady(timeoutMs = 3000): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (this.consoleLogger?.ready && this.consoleLogger.ready()) {
-        resolve();
-        return;
-      }
+      if (this.consoleLogger?.ready && this.consoleLogger.ready()) { resolve(); return; }
       const start = Date.now();
-      const interval = setInterval(() => {
-        if (this.consoleLogger?.ready && this.consoleLogger.ready()) {
-          clearInterval(interval);
-          resolve();
-        } else if (Date.now() - start > timeoutMs) {
-          clearInterval(interval);
-          reject(new Error('Sandbox not ready after timeout'));
-        }
+      const timer = setInterval(() => {
+        if (this.consoleLogger?.ready && this.consoleLogger.ready()) { clearInterval(timer); resolve(); }
+        else if (Date.now() - start > timeoutMs) { clearInterval(timer); reject(new Error('Sandbox not ready')); }
       }, 50);
     });
   }
@@ -503,17 +346,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('console');
     await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
-    if (!this.consoleLogger) {
-      console.warn('Console logger not available');
-      return;
-    }
-
-    try {
-      await this.waitForSandboxReady();
-    } catch (e) {
-      console.warn('Sandbox not ready', e);
-      return;
-    }
+    if (!this.consoleLogger) return;
+    try { await this.waitForSandboxReady(); } catch { return; }
 
     const rawTestCode = this.testCode();
     const testCodeTransformed = this.transformTestCode(rawTestCode, q.id);
@@ -524,13 +358,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
   }
 
-  submitCode() {
-    console.log('Submit:', this.editorContent());
-  }
-
-  get progressText() {
-    return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
-  }
+  submitCode() { console.log('Submit:', this.editorContent()); }
+  get progressText() { return `${this.currentIndex + 1} / ${this.allQuestions.length}`; }
 
   // ---------- drag splitters ----------
   startDrag = (ev: PointerEvent) => {
@@ -540,20 +369,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startY = ev.clientY;
     this.startRatio = this.editorRatio();
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-
-    const stopDragging = () => {
-      this.dragging = false;
-      this.isDraggingHorizontal.set(false);
-      document.removeEventListener('pointerup', stopDragging);
-    };
-    document.addEventListener('pointerup', stopDragging);
+    const stop = () => { this.dragging = false; this.isDraggingHorizontal.set(false); document.removeEventListener('pointerup', stop); };
+    document.addEventListener('pointerup', stop);
   };
-
   private onPointerMove = (ev: PointerEvent) => {
-    if (this.draggingHorizontal) {
-      this.onPointerMoveHorizontal(ev);
-      return;
-    }
+    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; }
     if (!this.dragging || !this.splitContainer) return;
     const rect = this.splitContainer!.nativeElement.getBoundingClientRect();
     const delta = ev.clientY - this.startY;
@@ -562,29 +382,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     newRatio = Math.max(0.2, Math.min(0.9, newRatio));
     this.zone.run(() => this.editorRatio.set(newRatio));
   };
-
-  private onPointerUp = (_: PointerEvent) => {
-    if (this.dragging) this.dragging = false;
-    if (this.draggingHorizontal) this.draggingHorizontal = false;
-  };
+  private onPointerUp = () => { if (this.dragging) this.dragging = false; if (this.draggingHorizontal) this.draggingHorizontal = false; };
 
   startHorizontalDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.draggingHorizontal = true;
     this.startX = ev.clientX;
     this.startRatioH = this.horizontalRatio();
-
     this.copiedExamples.set(true);
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-
-    const stopDragging = () => {
-      this.draggingHorizontal = false;
-      this.copiedExamples.set(false);
-      document.removeEventListener('pointerup', stopDragging);
-    };
-    document.addEventListener('pointerup', stopDragging);
+    const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
+    document.addEventListener('pointerup', stop);
   };
-
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
@@ -595,68 +404,31 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   // ---------- helpers for test scaffolding ----------
-  private sanitizeGlobalName(id: string) {
-    return id.replace(/[^a-zA-Z0-9_]/g, '_');
-  }
+  private sanitizeGlobalName(id: string) { return id.replace(/[^a-zA-Z0-9_]/g, '_'); }
   private wrapExportDefault(code: string, id: string) {
     const globalName = this.sanitizeGlobalName(id);
     let transformed = code;
-
     transformed = transformed.replace(/export\s+default\s+function\s+([\w$]+)\s*\(/, (_m, name) => `function ${name}(`);
-
-    const namedDefaultMatch = code.match(/export\s+default\s+function\s+([\w$]+)\s*\(/);
-    if (namedDefaultMatch) {
-      const fnName = namedDefaultMatch[1];
-      transformed = transformed.replace(/export\s+default\s+function\s+([\w$]+)\s*\(/, (_m, name) => `function ${name}(`);
-      transformed += `\nif (typeof ${fnName} !== 'undefined') { globalThis.${globalName} = ${fnName}; }`;
-      return transformed;
-    }
-
-    transformed = transformed.replace(
-      /export\s+default\s+async\s+function\s+([\w$]+)\s*\(/,
-      (_m, name) => `async function ${name}(`
-    );
-    const asyncNamedMatch = code.match(/export\s+default\s+async\s+function\s+([\w$]+)\s*\(/);
-    if (asyncNamedMatch) {
-      const fnName = asyncNamedMatch[1];
-      transformed += `\nif (typeof ${fnName} !== 'undefined') { globalThis.${globalName} = ${fnName}; }`;
-      return transformed;
-    }
-
+    const named = code.match(/export\s+default\s+function\s+([\w$]+)\s*\(/);
+    if (named) { const fn = named[1]; transformed += `\nif (typeof ${fn} !== 'undefined') { globalThis.${globalName} = ${fn}; }`; return transformed; }
+    transformed = transformed.replace(/export\s+default\s+async\s+function\s+([\w$]+)\s*\(/, (_m, name) => `async function ${name}(`);
+    const asyncNamed = code.match(/export\s+default\s+async\s+function\s+([\w$]+)\s*\(/);
+    if (asyncNamed) { const fn = asyncNamed[1]; transformed += `\nif (typeof ${fn} !== 'undefined') { globalThis.${globalName} = ${fn}; }`; return transformed; }
     if (/export\s+default/.test(transformed)) {
       transformed = transformed.replace(/export\s+default\s+/, `globalThis.${globalName} = `);
     }
-
     return transformed;
   }
   private transformTestCode(raw: string, questionId: string) {
     let code = raw.replace(/^import\s+([\w$]+)\s+from\s+['"][^'"]+['"];?\s*$/gm, () => '');
     const globalName = this.sanitizeGlobalName(questionId);
-    code = code.replace(/\b([A-Za-z_$][\w$]*)\b/g, (identifier) => {
-      if (identifier === questionId || identifier === this.toCamelCase(questionId)) {
-        return `globalThis.${globalName}`;
-      }
-      return identifier;
+    code = code.replace(/\b([A-Za-z_$][\w$]*)\b/g, (id) => {
+      if (id === questionId || id === this.toCamelCase(questionId)) return `globalThis.${globalName}`;
+      return id;
     });
     return code;
   }
-  private toCamelCase(str: string) {
-    return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
-  }
-
-  copyExamples() {
-    const examples = this.combinedExamples();
-    if (!examples) return;
-    navigator.clipboard
-      .writeText(examples)
-      .then(() => {
-        this.copiedExamples.set(true);
-        setTimeout(() => this.copiedExamples.set(false), 1200);
-      })
-      .catch((e) => {
-        console.warn('Copy failed', e);
-      });
-  }
+  private toCamelCase(str: string) { return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : '')); }
 
   // ---------- preview helpers ----------
   private toPreviewOnly(base: string): string {
@@ -675,61 +447,19 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   openPreview() {
     const q = this.question();
     if (!q || this.tech !== 'angular') return;
-
-    const base =
-      ((q as any).stackblitzSolutionUrl as string | undefined) ??
-      ((q as any).stackblitzEmbedUrl as string | undefined);
+    const base = ((q as any).stackblitzSolutionUrl as string | undefined) ?? ((q as any).stackblitzEmbedUrl as string | undefined);
     if (!base) return;
-
-    this.previewSpinnerStartedAt = performance.now();
     this.previewLoading.set(true);
-
     const url = this.toPreviewOnly(base);
     this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.previewVisible = true;
   }
   closePreview() {
     this.previewVisible = false;
-    setTimeout(() => {
-      this.previewOnlyUrl = null;
-      this.previewLoading.set(false);
-    }, 200);
-  }
-  onPreviewLoad() {
-    const elapsed = performance.now() - this.previewSpinnerStartedAt;
-    const remaining = Math.max(0, this.PREVIEW_MIN_SPINNER_MS - elapsed);
-    setTimeout(() => this.previewLoading.set(false), remaining);
+    setTimeout(() => { this.previewOnlyUrl = null; this.previewLoading.set(false); }, 200);
   }
 
-  // ---------- Angular reset ----------
-  private async replaceAngularFromAsset(q: Question) {
-    const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
-    if (!this.sbVm || !meta?.asset) return;
-
-    const asset = await this.fetchSdkAsset(meta.asset);
-    if (!asset?.files) return;
-
-    const storageKey = this.getNgStorageKey(q);
-    const newFiles = asset.files;
-    const openFile = (meta.openFile ?? asset.openFile ?? 'src/app/app.component.ts').replace(/^\/+/, '');
-
-    const current = await this.sbVm.getFsSnapshot();
-    const destroy = Object.keys(current).filter((p) => !(p in newFiles));
-
-    await this.sbVm.applyFsDiff({ create: newFiles, destroy });
-    localStorage.setItem(storageKey, JSON.stringify(newFiles));
-
-    const alt = Object.keys(newFiles).find(p => p !== openFile) || 'src/main.ts';
-    try {
-      await this.sbVm.setCurrentFile(alt);
-      await new Promise(r => setTimeout(r, 16));
-      await this.sbVm.setCurrentFile(openFile);
-      this.sbVm.editor?.layout?.();
-    } catch { }
-
-    this.embedLoading.set(false);
-  }
-
+  // ---------- resets ----------
   async resetQuestion() {
     const q = this.question();
     if (!q || this.resetting()) return;
@@ -737,20 +467,29 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resetting.set(true);
     try {
       if (this.tech !== 'angular') {
-        localStorage.removeItem(this.getJsKey(q.id));
+        localStorage.removeItem(getJsKey(q.id));
         this.editorContent.set(q.starterCode ?? '');
         this.testCode.set(((q as any).tests as string) ?? '');
       } else {
-        const storageKey = this.getNgStorageKey(q);
+        const storageKey = getNgStorageKey(q);
         localStorage.removeItem(storageKey);
-
         this.embedLoading.set(true);
-        if (this.sbVm) {
-          await this.replaceAngularFromAsset(q);
+
+        const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
+        if (this.sbVm && meta?.asset) {
+          try {
+            const asset = await this.ngEmbed.fetchAsset(meta.asset);
+            const openFile = (meta.openFile ?? asset?.openFile ?? 'src/app/app.component.ts').replace(/^\/+/, '');
+            if (asset?.files) {
+              await this.ngEmbed.replaceFromAsset(this.sbVm, asset.files, openFile, storageKey);
+            }
+          } finally {
+            // 🔧 ensure spinner clears even if fetch/apply fails
+            this.embedLoading.set(false);
+          }
         } else {
+          // Re-embed from scratch; loadQuestion will clear embedLoading on completion (see fix #2)
           requestAnimationFrame(() => this.loadQuestion(q.id));
-          await new Promise(r => setTimeout(r, 0));
-          if (this.sbEmbedding) { try { await this.sbEmbedding; } catch { } }
         }
       }
 
@@ -758,26 +497,29 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.testResults.set([]);
       this.subTab.set('tests');
       this.topTab.set('code');
+      this.showRestoreBanner.set(false);
 
-      try {
-        (this.consoleLogger as any)?.clear?.();
-        (this.consoleLogger as any)?.reset?.();
-      } catch { }
+      (this.consoleLogger as any)?.clear?.();
+      (this.consoleLogger as any)?.reset?.();
     } finally {
       this.resetting.set(false);
     }
   }
 
-  // ---------- embed spinner helpers ----------
-  onEmbedLoad() {
-    const elapsed = performance.now() - this.embedSpinnerStartedAt;
-    const remaining = Math.max(0, this.EMBED_MIN_SPINNER_MS - elapsed);
-    setTimeout(() => this.embedLoading.set(false), remaining);
+  copyExamples() {
+    const examples = this.combinedExamples();
+    if (!examples) return;
+    navigator.clipboard
+      .writeText(examples)
+      .then(() => {
+        this.copiedExamples.set(true);
+        setTimeout(() => this.copiedExamples.set(false), 1200);
+      })
+      .catch((e) => {
+        console.warn('Copy failed', e);
+      });
   }
 
-  goToCustomTests(e?: Event) {
-    if (e) e.preventDefault();
-    this.topTab.set('tests');   // switch the top editor to "Test cases"
-    this.subTab.set('tests');   // bottom panel => "Results"
-  }
+  // CTA helper
+  goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 }
