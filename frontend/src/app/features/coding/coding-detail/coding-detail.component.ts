@@ -10,10 +10,11 @@ import {
   OnInit,
   signal,
   ViewChild,
-  WritableSignal
+  WritableSignal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import sdk from '@stackblitz/sdk';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -27,9 +28,6 @@ import {
   ConsoleLoggerComponent,
   TestResult,
 } from '../console-logger/console-logger.component';
-
-// --- StackBlitz SDK ---
-import sdk from '@stackblitz/sdk';
 
 @Component({
   selector: 'app-coding-detail',
@@ -51,13 +49,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: string;
   question = signal<Question | null>(null);
 
-  // Main right-pane embed (Angular only - now SDK host)
   @ViewChild('sbHost', { read: ElementRef }) sbHost?: ElementRef<HTMLDivElement>;
   private sbVm: any | null = null;
   private sbSaveTimer: any = null;
   private sbBeforeUnload?: () => void;
+  private sbEmbedding: Promise<any> | null = null;
 
-  // (kept) for preview modal (optional)
   embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
 
   // JS editor/test state
@@ -74,12 +71,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isDraggingVertical = signal(false);
   isDraggingHorizontal = signal(false);
 
-  // loading spinners
+  // loading / reset
   embedLoading = signal(false);
   previewLoading = signal(false);
+  resetting = signal(false);
+
+  // “restored from storage” banner
+  showRestoreBanner = signal(false);
   private jsSaveTimer: any = null;
 
-  // spinner timing guards (to avoid flicker for iframe preview modal)
+  // spinner min durations
   private embedSpinnerStartedAt = 0;
   private previewSpinnerStartedAt = 0;
   private readonly EMBED_MIN_SPINNER_MS = 1200;
@@ -118,7 +119,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private startX = 0;
   private startRatioH = 0;
 
-  // Preview modal (kept for your preview-only dialog)
+  // Preview modal
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
 
@@ -132,7 +133,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
 
-  // normalized description / examples
+  // description / examples
   descriptionText = computed(() => {
     const q = this.question();
     if (!q) return '';
@@ -199,16 +200,19 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- keys & defaults (Angular via SDK) ----------
-  private angularKey(id: string) {
-    return `v1:code:ng:${id}`;
+  // ---------- keys ----------
+  private getJsKey(id: string) { return `v1:code:js:${id}`; }
+  private getJsBaselineKey(id: string) { return `v1:code:js:baseline:${id}`; }
+
+  private getNgStorageKey(q: Question) {
+    const meta = (q as any).sdk as { storageKey?: string } | undefined;
+    return meta?.storageKey ?? `v2:ui:angular:${q.id}`;
+  }
+  private getNgBaselineKey(q: Question) {
+    return `${this.getNgStorageKey(q)}:baseline`;
   }
 
-  private defaultAngularFiles(title: string) {
-
-  }
-
-  // ---------- load question ----------
+  // ---------- load question (banner without justNavigated) ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex((q) => q.id === id);
     if (idx < 0) return;
@@ -217,140 +221,149 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
-    // ----- JS state / restore -----
-    const jsKey = `v1:code:js:${q.id}`;
-    const savedJsRaw = (this.tech !== 'angular') ? localStorage.getItem(jsKey) : null;
-    const savedJs = savedJsRaw ? (() => { try { return JSON.parse(savedJsRaw); } catch { return null; } })() : null;
+    let shouldShowBanner = false;
 
-    if (this.tech !== 'angular' && savedJs?.code) {
-      this.editorContent.set(savedJs.code as string);
-    } else {
-      this.editorContent.set(q.starterCode ?? '');
+    // ----- JS track -----
+    if (this.tech !== 'angular') {
+      const jsKey = this.getJsKey(q.id);
+      const baseKey = this.getJsBaselineKey(q.id);
+
+      // ensure baseline exists
+      const starter = q.starterCode ?? '';
+      if (!localStorage.getItem(baseKey)) {
+        try { localStorage.setItem(baseKey, JSON.stringify({ code: starter })); } catch { }
+      }
+
+      const savedRaw = localStorage.getItem(jsKey);
+      const saved = savedRaw ? (() => { try { return JSON.parse(savedRaw); } catch { return null; } })() : null;
+
+      if (saved?.code != null) {
+        this.editorContent.set(saved.code);
+        const base = JSON.parse(localStorage.getItem(baseKey) || '{"code":""}');
+        if (saved.code !== base.code) shouldShowBanner = true;
+      } else {
+        this.editorContent.set(starter);
+      }
+      this.testCode.set(((q as any).tests as string) ?? '');
+
+      // clear Angular state
+      this.sbVm = null;
+      this.embedLoading.set(false);
     }
-    this.testCode.set(((q as any).tests as string) ?? '');
 
-    // ----- UI reset -----
-    this.activePanel.set(0);
-    this.topTab.set('code');
-    this.subTab.set('tests');
-    this.hasRunTests = false;
-    this.testResults.set([]);
-
-    // ----- Angular via StackBlitz SDK (asset-driven) -----
-    if (this.tech === 'angular') {
+    // ----- Angular (StackBlitz SDK) -----
+    else {
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
-      if (!host) {
-        requestAnimationFrame(() => this.loadQuestion(id));
-        return;
-      }
+      if (!host) { requestAnimationFrame(() => this.loadQuestion(id)); return; }
 
-      // cleanup autosave/listeners
       if (this.sbSaveTimer) clearInterval(this.sbSaveTimer);
-      if (this.sbBeforeUnload) {
-        window.removeEventListener('beforeunload', this.sbBeforeUnload);
-        this.sbBeforeUnload = undefined;
-      }
+      if (this.sbBeforeUnload) { window.removeEventListener('beforeunload', this.sbBeforeUnload); this.sbBeforeUnload = undefined; }
 
       const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
       const storageKey = this.getNgStorageKey(q);
+      const baselineKey = this.getNgBaselineKey(q);
 
-      // 1) try saved snapshot first
       let files = this.loadSavedFiles(storageKey);
       let dependencies: Record<string, string> | undefined;
       let openFileFromAsset: string | undefined;
 
-      // 2) else seed from asset
+      // seed from asset (and capture baseline once)
       if (!files && meta?.asset) {
         const asset = await this.fetchSdkAsset(meta.asset);
         if (asset) {
           files = asset.files;
           dependencies = asset.dependencies;
           openFileFromAsset = asset.openFile;
-          localStorage.setItem(storageKey, JSON.stringify(files)); // persist initial seed
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(files));
+            if (!localStorage.getItem(baselineKey)) {
+              localStorage.setItem(baselineKey, JSON.stringify(files));
+            }
+          } catch { }
         }
       }
 
-      // 3) last-resort tiny inline fallback (only if asset is missing/unreachable)
-      if (!files) {
-        files = {};
+      // compute diff vs baseline (or asset as fallback)
+      if (files) {
+        let baseline: Record<string, string> | null = null;
+        const baseRaw = localStorage.getItem(baselineKey);
+        if (baseRaw) {
+          baseline = this.normalizeSdkFiles(JSON.parse(baseRaw));
+        } else if (meta?.asset) {
+          const asset = await this.fetchSdkAsset(meta.asset);
+          baseline = asset?.files ?? null;
+          try { if (asset?.files) localStorage.setItem(baselineKey, JSON.stringify(asset.files)); } catch { }
+        }
+        if (baseline && !this.matchesBaseline(files, baseline)) {
+          shouldShowBanner = true;
+        }
       }
 
-      // clear host & embed
-      host.innerHTML = '';
-      const openFile =
-        (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
+      if (!files) files = {};
 
-      sdk.embedProject(
+      host.innerHTML = '';
+      const openFile = (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
+
+      const p = sdk.embedProject(
         host,
         {
           title: q.title || 'Angular question',
           description: 'Embedded via StackBlitz SDK',
           template: 'angular-cli',
           files,
-          dependencies // <-- from asset if present
+          dependencies
         },
-        {
-          height: '100%',
-          openFile
-        }
-      )
-        .then((vm: any) => {
-          this.sbVm = vm;
+        { height: '100%', openFile }
+      );
+      this.sbEmbedding = p;
 
-          const saveNow = async () => {
-            try {
-              const snap = await vm.getFsSnapshot();
-              localStorage.setItem(storageKey, JSON.stringify(snap));
-            } catch { /* ignore */ }
-          };
+      p.then((vm: any) => {
+        this.sbVm = vm;
 
-          // periodic snapshot
-          this.sbSaveTimer = window.setInterval(saveNow, 5000);
+        const saveNow = async () => {
+          try {
+            const snap = await vm.getFsSnapshot();
+            localStorage.setItem(storageKey, JSON.stringify(snap));
+          } catch { }
+        };
+        this.sbSaveTimer = window.setInterval(saveNow, 5000);
+        this.sbBeforeUnload = () => { try { void saveNow(); } catch { } };
+        window.addEventListener('beforeunload', this.sbBeforeUnload);
 
-          // save on page unload
-          this.sbBeforeUnload = () => { try { void saveNow(); } catch { } };
-          window.addEventListener('beforeunload', this.sbBeforeUnload);
-
-          this.embedLoading.set(false);
-        })
-        .catch((e) => {
-          console.error('StackBlitz embed failed', e);
-          this.embedLoading.set(false);
-        });
-    } else {
-      // Non-Angular
-      this.sbVm = null;
-      this.embedLoading.set(false);
+        this.embedLoading.set(false);
+      }).catch(() => {
+        this.embedLoading.set(false);
+      }).finally(() => { this.sbEmbedding = null; });
     }
+
+    // Reset misc UI
+    this.activePanel.set(0);
+    this.topTab.set('code');
+    this.subTab.set('tests');
+    this.hasRunTests = false;
+    this.testResults.set([]);
+
+    // Show banner only once per question per SPA session
+    const qid = q.id;
+    this.showRestoreBanner.set(shouldShowBanner);
   }
 
   // --- helpers for Angular SDK storage ---
-  private getNgStorageKey(q: Question) {
-    const meta = (q as any).sdk as { storageKey?: string } | undefined;
-    return meta?.storageKey ?? `v2:ui:angular:${q.id}`;
-  }
-
-  /** Accepts either a pure snapshot { 'src/...': 'code' }
-   *  or a v2 asset { version:'v2', files:{ '/src/...': {code:''} } }
-   *  and normalizes to { 'src/...': 'code' } for embedProject.
-   */
   private normalizeSdkFiles(raw: any): Record<string, string> {
     const source = raw?.files ?? raw ?? {};
     const out: Record<string, string> = {};
     for (const [k, v] of Object.entries(source)) {
-      const path = k.replace(/^\/+/, ''); // drop any leading slash
+      const path = k.replace(/^\/+/, '');
       const code = typeof v === 'string' ? v : (v as any)?.code ?? '';
       out[path] = code;
     }
-    // Make sure zone.js is imported in main.ts
     if (out['src/main.ts'] && !/zone\.js/.test(out['src/main.ts'])) {
       out['src/main.ts'] = `import 'zone.js';\n${out['src/main.ts']}`;
     }
     return out;
   }
-
   private loadSavedFiles(storageKey: string): Record<string, string> | null {
     try {
       const raw = localStorage.getItem(storageKey);
@@ -360,8 +373,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return null;
     }
   }
-
-  // --- helpers for Angular SDK storage ---
   private async fetchSdkAsset(assetUrl: string): Promise<{
     files: Record<string, string>;
     dependencies?: Record<string, string>;
@@ -380,6 +391,43 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /** Normalize code so cosmetic diffs don’t trigger the banner. */
+  private normalizeForCompare(path: string, code: string): string {
+    // unify line endings
+    let s = (code ?? '').replace(/\r\n/g, '\n');
+
+    // drop trailing whitespace on each line
+    s = s.replace(/[ \t]+$/gm, '');
+
+    // JSON files: compare canonical JSON so spacing/order doesn't matter
+    if (path.endsWith('.json')) {
+      try { return JSON.stringify(JSON.parse(s)); } catch { /* fallthrough */ }
+    }
+
+    // TS/HTML: trim ending newlines only
+    return s.trimEnd();
+  }
+
+  /**
+   * Compare current snapshot against a baseline.
+   * Only check files that exist in the baseline (e.g. src/**), ignore extras.
+   */
+  private matchesBaseline(
+    current: Record<string, string>,
+    baseline: Record<string, string>
+  ): boolean {
+    const keys = Object.keys(baseline)
+      // limit to source files; avoids noise from config, lockfiles, etc.
+      .filter(k => k.startsWith('src/'));
+
+    for (const k of keys) {
+      const a = this.normalizeForCompare(k, current[k] ?? '');
+      const b = this.normalizeForCompare(k, baseline[k] ?? '');
+      if (a !== b) return false;
+    }
+    return true;
+  }
+
   // ---------- JS code save on edit ----------
   onJsCodeChange(code: string) {
     this.editorContent.set(code);
@@ -389,30 +437,28 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
       this.codeStore.saveJs(q.id, code, 'js');
-      try { localStorage.setItem(`v1:code:js:${q.id}`, JSON.stringify({ code })); } catch { }
+      try { localStorage.setItem(this.getJsKey(q.id), JSON.stringify({ code })); } catch { }
     }, 350);
   }
-
-  // extra: reactive persistence (also catches loadSolution)
   private persistJsEffect = effect(() => {
     const q = this.question();
     if (!q || this.tech === 'angular') return;
-
     const code = this.editorContent();
-    try {
-      localStorage.setItem(`v1:code:js:${q.id}`, JSON.stringify({ code }));
-    } catch { /* ignore */ }
+    try { localStorage.setItem(this.getJsKey(q.id), JSON.stringify({ code })); } catch { }
   });
+
+  // ---------- banner actions ----------
+  dismissRestoreBanner() { this.showRestoreBanner.set(false); }
+  async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
 
   // ---------- misc actions ----------
   showSolution() {
     const q = this.question();
     if (!q) return;
-
     const solution = q.solution ?? '';
     this.editorContent.set(solution);
     if (this.tech !== 'angular') {
-      try { localStorage.setItem(`v1:code:js:${q.id}`, JSON.stringify({ code: solution })); } catch { }
+      try { localStorage.setItem(this.getJsKey(q.id), JSON.stringify({ code: solution })); } catch { }
     }
     this.activePanel.set(1);
     this.topTab.set('code');
@@ -424,7 +470,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       location.pathname = `/${this.tech}/coding/${prevId}`;
     }
   }
-
   next() {
     if (this.currentIndex + 1 < this.allQuestions.length) {
       const nextId = this.allQuestions[this.currentIndex + 1].id;
@@ -501,7 +546,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isDraggingHorizontal.set(false);
       document.removeEventListener('pointerup', stopDragging);
     };
-
     document.addEventListener('pointerup', stopDragging);
   };
 
@@ -530,9 +574,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startX = ev.clientX;
     this.startRatioH = this.horizontalRatio();
 
-    // Show splitter while dragging
     this.copiedExamples.set(true);
-
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
 
     const stopDragging = () => {
@@ -540,7 +582,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.copiedExamples.set(false);
       document.removeEventListener('pointerup', stopDragging);
     };
-
     document.addEventListener('pointerup', stopDragging);
   };
 
@@ -557,7 +598,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private sanitizeGlobalName(id: string) {
     return id.replace(/[^a-zA-Z0-9_]/g, '_');
   }
-
   private wrapExportDefault(code: string, id: string) {
     const globalName = this.sanitizeGlobalName(id);
     let transformed = code;
@@ -589,7 +629,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     return transformed;
   }
-
   private transformTestCode(raw: string, questionId: string) {
     let code = raw.replace(/^import\s+([\w$]+)\s+from\s+['"][^'"]+['"];?\s*$/gm, () => '');
     const globalName = this.sanitizeGlobalName(questionId);
@@ -601,7 +640,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     return code;
   }
-
   private toCamelCase(str: string) {
     return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
   }
@@ -620,17 +658,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  // ---------- StackBlitz URL helpers (kept for preview modal) ----------
-  private toMainEmbed(base: string): string {
-    const u = new URL(base);
-    u.searchParams.set('embed', '1');
-    u.searchParams.set('view', 'both');
-    u.searchParams.set('hideNavigation', '1');
-    u.searchParams.set('terminalHeight', '0');
-    u.searchParams.set('forceEmbedLayout', '1');
-    return u.toString();
-  }
-
+  // ---------- preview helpers ----------
   private toPreviewOnly(base: string): string {
     const u = new URL(base);
     u.searchParams.set('embed', '1');
@@ -644,7 +672,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     u.searchParams.delete('file');
     return u.toString();
   }
-
   openPreview() {
     const q = this.question();
     if (!q || this.tech !== 'angular') return;
@@ -661,7 +688,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.previewVisible = true;
   }
-
   closePreview() {
     this.previewVisible = false;
     setTimeout(() => {
@@ -669,110 +695,89 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.previewLoading.set(false);
     }, 200);
   }
-
-  onEmbedLoad() {
-    const elapsed = performance.now() - this.embedSpinnerStartedAt;
-    const remaining = Math.max(0, this.EMBED_MIN_SPINNER_MS - elapsed);
-    setTimeout(() => this.embedLoading.set(false), remaining);
-  }
-
   onPreviewLoad() {
     const elapsed = performance.now() - this.previewSpinnerStartedAt;
     const remaining = Math.max(0, this.PREVIEW_MIN_SPINNER_MS - elapsed);
     setTimeout(() => this.previewLoading.set(false), remaining);
   }
 
-  /** Replace the running SDK project's files with the original asset snapshot. */
+  // ---------- Angular reset ----------
   private async replaceAngularFromAsset(q: Question) {
     const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
     if (!this.sbVm || !meta?.asset) return;
 
-    // fresh asset snapshot
     const asset = await this.fetchSdkAsset(meta.asset);
     if (!asset?.files) return;
 
     const storageKey = this.getNgStorageKey(q);
-    const newFiles = asset.files; // { 'src/...': 'code' }
+    const newFiles = asset.files;
     const openFile = (meta.openFile ?? asset.openFile ?? 'src/app/app.component.ts').replace(/^\/+/, '');
 
-    // current snapshot
-    const current = await this.sbVm.getFsSnapshot(); // { 'src/...': 'code' }
-
-    // only destroy files that are NOT in newFiles
+    const current = await this.sbVm.getFsSnapshot();
     const destroy = Object.keys(current).filter((p) => !(p in newFiles));
 
-    // apply diff
-    await this.sbVm.applyFsDiff({
-      create: newFiles,   // overrides existing files
-      destroy             // removes truly stale ones
-    });
-
-    // persist seed so autosave continues from this baseline
+    await this.sbVm.applyFsDiff({ create: newFiles, destroy });
     localStorage.setItem(storageKey, JSON.stringify(newFiles));
 
-    // Force the editor to “see” the file again:
-    // 1) hop to a different file that exists
     const alt = Object.keys(newFiles).find(p => p !== openFile) || 'src/main.ts';
     try {
       await this.sbVm.setCurrentFile(alt);
-      await new Promise(r => setTimeout(r, 16)); // let Monaco settle one frame
+      await new Promise(r => setTimeout(r, 16));
       await this.sbVm.setCurrentFile(openFile);
-      // (optional) poke layout if available
       this.sbVm.editor?.layout?.();
-    } catch { /* ignore */ }
+    } catch { }
 
     this.embedLoading.set(false);
   }
 
-  /** Reset current question */
   async resetQuestion() {
     const q = this.question();
-    if (!q) return;
+    if (!q || this.resetting()) return;
 
-    // JS track: clear saved code and restore starter
-    if (this.tech !== 'angular') {
-      localStorage.removeItem(`v1:code:js:${q.id}`);
-      this.editorContent.set(q.starterCode ?? '');
-      this.testCode.set(((q as any).tests as string) ?? '');
-    } else {
-      // Angular (SDK) track: hard reset to asset files
-      const storageKey = this.getNgStorageKey(q);
-      localStorage.removeItem(storageKey);
-
-      this.embedLoading.set(true);
-
-      // If the VM is alive, do an in-place replacement for a snappy reset
-      if (this.sbVm) {
-        try {
-          await this.replaceAngularFromAsset(q);
-        } catch (e) {
-          console.warn('In-place reset failed, re-embedding…', e);
-          // Fallback: re-embed from scratch
-          requestAnimationFrame(() => this.loadQuestion(q.id));
-        }
-      } else {
-        // If no VM yet, just re-embed (it will seed from asset)
-        requestAnimationFrame(() => this.loadQuestion(q.id));
-      }
-    }
-
-    // Common UI resets
-    this.hasRunTests = false;
-    this.testResults.set([]);
-    this.subTab.set('tests');
-    this.topTab.set('code');
-
+    this.resetting.set(true);
     try {
-      (this.consoleLogger as any)?.clear?.();
-      (this.consoleLogger as any)?.reset?.();
-    } catch { /* noop */ }
+      if (this.tech !== 'angular') {
+        localStorage.removeItem(this.getJsKey(q.id));
+        this.editorContent.set(q.starterCode ?? '');
+        this.testCode.set(((q as any).tests as string) ?? '');
+      } else {
+        const storageKey = this.getNgStorageKey(q);
+        localStorage.removeItem(storageKey);
+
+        this.embedLoading.set(true);
+        if (this.sbVm) {
+          await this.replaceAngularFromAsset(q);
+        } else {
+          requestAnimationFrame(() => this.loadQuestion(q.id));
+          await new Promise(r => setTimeout(r, 0));
+          if (this.sbEmbedding) { try { await this.sbEmbedding; } catch { } }
+        }
+      }
+
+      this.hasRunTests = false;
+      this.testResults.set([]);
+      this.subTab.set('tests');
+      this.topTab.set('code');
+
+      try {
+        (this.consoleLogger as any)?.clear?.();
+        (this.consoleLogger as any)?.reset?.();
+      } catch { }
+    } finally {
+      this.resetting.set(false);
+    }
   }
 
-  // add inside CodingDetailComponent class
+  // ---------- embed spinner helpers ----------
+  onEmbedLoad() {
+    const elapsed = performance.now() - this.embedSpinnerStartedAt;
+    const remaining = Math.max(0, this.EMBED_MIN_SPINNER_MS - elapsed);
+    setTimeout(() => this.embedLoading.set(false), remaining);
+  }
+
   goToCustomTests(e?: Event) {
     if (e) e.preventDefault();
     this.topTab.set('tests');   // switch the top editor to "Test cases"
     this.subTab.set('tests');   // bottom panel => "Results"
   }
-
 }

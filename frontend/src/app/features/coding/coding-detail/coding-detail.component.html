@@ -1,7 +1,7 @@
 <!-- NOTE: added bottom padding so the fixed footer never overlaps the content -->
 <div class="flex gap-[5px] h-[calc(100vh-64px-85px)]">
 
-  <!-- LEFT COLUMN: description / solution -->
+  <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
     [style.flex]="'0 0 ' + (horizontalRatio() * 100) + '%'" style="min-width:0;">
 
@@ -65,13 +65,28 @@
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
 
+    <!-- JS banner -->
+    <div *ngIf="tech!=='angular' && showRestoreBanner()"
+      class="px-4 py-2 bg-yellow-200 text-black text-sm flex items-center gap-3">
+      <span class="truncate">Your code was restored from client storage.</span>
+      <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
+      <button class="ml-auto opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+    </div>
+
     <!-- ANGULAR via StackBlitz SDK -->
     <ng-container *ngIf="tech==='angular'">
-      <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden">
-        <div class="relative flex-1">
-          <!-- host element for the SDK embed -->
-          <div #sbHost class="w-full h-full"></div>
+      <div
+        class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
+        <!-- Angular banner -->
+        <div *ngIf="showRestoreBanner()"
+          class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 flex items-center gap-3 shadow">
+          <span class="truncate">Your code was restored from client storage.</span>
+          <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
+          <button class="ml-auto opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+        </div>
 
+        <div class="relative flex-1">
+          <div #sbHost class="w-full h-full"></div>
           <div *ngIf="embedLoading()" class="absolute inset-0 grid place-items-center bg-black/40">
             <p-progressSpinner strokeWidth="4"></p-progressSpinner>
           </div>
@@ -172,16 +187,19 @@
 <!-- ✅ FIXED GLOBAL FOOTER -->
 <footer class="fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
   <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
-    <div class="flex items-center gap-2">
-      <button pButton label="Reset question" icon="pi pi-refresh" class="p-button-sm p-button-secondary"
-        (click)="resetQuestion()"></button>
+    <div class="flex items-center gap-2" [class.hidden]="showRestoreBanner()">
+      <button pButton label="will be replaced" icon="pi pi-refresh"
+        class="p-button-sm p-button-secondary">
+      </button>
     </div>
+
     <div class="flex items-center gap-2">
       <button pButton label="← Prev" class="p-button-sm" (click)="prev()" [disabled]="currentIndex===0"></button>
       <span class="opacity-70 text-sm">{{ progressText }}</span>
       <button pButton label="Next →" iconPos="right" class="p-button-sm" (click)="next()"
         [disabled]="currentIndex + 1 >= allQuestions.length"></button>
     </div>
+
     <div class="flex items-center gap-2">
       <ng-container *ngIf="tech!=='angular'; else angularActions">
         <button pButton label="Submit" icon="pi pi-check" class="p-button-sm" (click)="submitCode()"></button>
