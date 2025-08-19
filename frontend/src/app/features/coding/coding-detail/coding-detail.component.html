@@ -1,66 +1,95 @@
-<!-- NOTE: added bottom padding so the fixed footer never overlaps the content -->
 <div class="flex gap-[5px] h-[calc(100vh-64px-85px)]">
 
-  <!-- LEFT COLUMN -->
+  <!-- LEFT COLUMN (collapsible → side navbar when collapsed) -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
-    [style.flex]="'0 0 ' + (horizontalRatio() * 100) + '%'" style="min-width:0;">
+    [style.flex]="asideFlex()" style="min-width:0;">
 
-    <!-- Tabs -->
-    <div class="flex border-b border-white/10 text-white">
-      <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
-        [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
-        (click)="activePanel.set(0)">Description</button>
+    <!-- Collapsed rail -->
+    <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
+      <!-- top controls -->
+      <div class="flex flex-col items-center gap-2">
+        <button pButton type="button" icon="pi pi-chevron-right" class="p-button-rounded p-button-text"
+          (click)="toggleDescription()" aria-label="Expand description"></button>
 
-      <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===1"
-        [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-        (click)="activePanel.set(1)">Solution</button>
+        <button pButton type="button" icon="pi pi-file" class="p-button-rounded p-button-text"
+          [ngClass]="{'text-white': activePanel()===0, 'opacity-60': activePanel()!==0}"
+          (click)="activePanel.set(0); toggleDescription()" aria-label="Description"></button>
+
+        <button pButton type="button" icon="pi pi-code" class="p-button-rounded p-button-text"
+          [ngClass]="{'text-white': activePanel()===1, 'opacity-60': activePanel()!==1}"
+          (click)="activePanel.set(1); toggleDescription()" aria-label="Solution"></button>
+      </div>
+
+      <!-- bottom spacer / future nav -->
+      <div></div>
     </div>
 
-    <!-- Content -->
-    <div class="flex-1 overflow-auto p-6 text-white">
-      <!-- Description Panel -->
-      <div *ngIf="activePanel()===0" class="space-y-4">
-        <h1 class="text-2xl font-bold">{{ question()?.title }}</h1>
-        <div class="text-sm text-gray-400 capitalize">{{ question()?.difficulty }}</div>
-        <div class="whitespace-pre-wrap">{{ descriptionText() }}</div>
+    <!-- Expanded content -->
+    <ng-container *ngIf="!descCollapsed()">
+      <!-- Tabs + collapse button -->
+      <div class="flex items-center border-b border-white/10 text-white">
+        <div class="flex-1 flex">
+          <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
+            [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
+            (click)="activePanel.set(0)">Description</button>
 
-        <ng-container *ngIf="combinedExamples()">
-          <div class="mt-6">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs uppercase font-semibold">Examples</span>
-              <button
-                class="flex items-center gap-1 bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-sm border border-gray-600"
-                (click)="copyExamples()">
-                <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
-                <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
-              </button>
+          <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===1"
+            [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
+            (click)="activePanel.set(1)">Solution</button>
+        </div>
+
+        <button class="px-3 py-2 text-gray-300 hover:text-white" pButton type="button" icon="pi pi-chevron-left"
+          class="p-button-text" (click)="toggleDescription()" aria-label="Hide description"></button>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 overflow-auto p-6 text-white">
+        <!-- Description Panel -->
+        <div *ngIf="activePanel()===0" class="space-y-4">
+          <h1 class="text-2xl font-bold">{{ question()?.title }}</h1>
+          <div class="text-sm text-gray-400 capitalize">{{ question()?.difficulty }}</div>
+          <div class="whitespace-pre-wrap">{{ descriptionText() }}</div>
+
+          <ng-container *ngIf="combinedExamples()">
+            <div class="mt-6">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs uppercase font-semibold">Examples</span>
+                <button
+                  class="flex items-center gap-1 bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-sm border border-gray-600"
+                  (click)="copyExamples()">
+                  <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
+                  <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
+                </button>
+              </div>
+              <div class="h-48">
+                <app-monaco-editor [code]="combinedExamples()"
+                  [language]="tech==='angular' ? 'typescript' : 'javascript'" [readOnly]="true"
+                  class="h-full rounded border border-white/10"
+                  [options]="{ minimap:{enabled:false}, lineNumbers:'on', folding:false }">
+                </app-monaco-editor>
+              </div>
             </div>
-            <div class="h-48">
-              <app-monaco-editor [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
-                [readOnly]="true" class="h-full rounded border border-white/10"
-                [options]="{ minimap:{enabled:false}, lineNumbers:'on', folding:false }">
-              </app-monaco-editor>
-            </div>
+          </ng-container>
+
+          <div>
+            <button *ngIf="tech==='angular'" pButton label="Preview what you need to build" icon="pi pi-eye"
+              class="mt-6" (click)="openPreview()"></button>
           </div>
-        </ng-container>
+        </div>
 
-        <div>
-          <button *ngIf="tech==='angular'" pButton label="Preview what you need to build" icon="pi pi-eye" class="mt-6"
-            (click)="openPreview()"></button>
+        <!-- Solution Panel -->
+        <div *ngIf="activePanel()===1" class="space-y-4">
+          <h2 class="text-xl font-semibold">Solution Explanation</h2>
+          <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
+          <button pButton label="Load Solution Code" icon="pi pi-code" (click)="showSolution()"></button>
         </div>
       </div>
-
-      <!-- Solution Panel -->
-      <div *ngIf="activePanel()===1" class="space-y-4">
-        <h2 class="text-xl font-semibold">Solution Explanation</h2>
-        <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
-        <button pButton label="Load Solution Code" icon="pi pi-code" (click)="showSolution()"></button>
-      </div>
-    </div>
+    </ng-container>
   </aside>
 
-  <!-- VERTICAL SPLITTER -->
-  <div class="splitter" [class.dragging]="isDraggingVertical()" (pointerdown)="startHorizontalDrag($event)"></div>
+  <!-- VERTICAL SPLITTER (disabled when collapsed) -->
+  <div *ngIf="!descCollapsed()" class="splitter" [class.dragging]="isDraggingVertical()"
+    (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
@@ -77,7 +106,6 @@
     <ng-container *ngIf="tech==='angular'">
       <div
         class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
-        <!-- Angular banner -->
         <div *ngIf="showRestoreBanner()"
           class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 flex items-center gap-3 shadow">
           <span class="truncate">Your code was restored from client storage.</span>
@@ -97,7 +125,6 @@
     <!-- JAVASCRIPT EDITOR & TESTS -->
     <ng-container *ngIf="tech!=='angular'">
       <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-        <!-- Top tabs -->
         <div class="flex border-b border-white/10 px-4">
           <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
             (click)="topTab.set('code')">&lt;/&gt; Code</button>
@@ -105,7 +132,6 @@
             (click)="topTab.set('tests')">⚗️ Test cases</button>
         </div>
 
-        <!-- Editor / Results split -->
         <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()" [language]="'javascript'"
@@ -115,11 +141,9 @@
               (codeChange)="testCode.set($event)"></app-monaco-editor>
           </div>
 
-          <!-- Horizontal splitter -->
           <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()" (pointerdown)="startDrag($event)">
           </div>
 
-          <!-- Results / Console -->
           <div class="flex-1 flex flex-col overflow-hidden min-h-0">
             <div class="flex items-center gap-6 px-3 py-2 text-sm border-b border-white/10 bg-neutral-900/60">
               <button class="font-medium" (click)="runTests()">▶ Run tests</button>
@@ -167,7 +191,9 @@
                     <div class="font-medium">
                       {{ t.passed ? '✅' : '❌' }} {{ t.name }}
                     </div>
-                    <div *ngIf="t.error" class="mt-1 text-sm text-red-300">{{ t.error }}</div>
+                    <div *ngIf="t.error" class="mt-1 text-sm text-red-300 whitespace-pre-wrap break-words">
+                      {{ t.error }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -188,18 +214,13 @@
 <!-- ✅ FIXED GLOBAL FOOTER -->
 <footer class="fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
   <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
-    <div class="flex items-center gap-2" [class.hidden]="showRestoreBanner()">
-      <button pButton label="will be replaced" icon="pi pi-refresh" class="p-button-sm p-button-secondary">
-      </button>
-    </div>
-
+    <div class="flex items-center gap-2"></div>
     <div class="flex items-center gap-2">
       <button pButton label="← Prev" class="p-button-sm" (click)="prev()" [disabled]="currentIndex===0"></button>
       <span class="opacity-70 text-sm">{{ progressText }}</span>
       <button pButton label="Next →" iconPos="right" class="p-button-sm" (click)="next()"
         [disabled]="currentIndex + 1 >= allQuestions.length"></button>
     </div>
-
     <div class="flex items-center gap-2">
       <ng-container *ngIf="tech!=='angular'; else angularActions">
         <button pButton label="Submit" icon="pi pi-check" class="p-button-sm" (click)="submitCode()"></button>
@@ -211,7 +232,7 @@
   </div>
 </footer>
 
-<!-- Preview dialog (optional) -->
+<!-- Preview dialog unchanged -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
   [resizable]="false" [style]="{ width: '90vw', maxWidth: '1400px' }" [contentStyle]="{ padding: '0', height: '80vh' }">
   <ng-template pTemplate="header">

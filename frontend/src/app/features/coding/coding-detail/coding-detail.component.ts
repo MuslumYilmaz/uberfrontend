@@ -48,8 +48,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   topTab = signal<'code' | 'tests'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
+
+  // Layout ratios
   editorRatio = signal(0.6);
   horizontalRatio = signal(0.3);
+
+  // Collapsible Description/Solution column
+  private readonly COLLAPSED_PX = 48;
+  descCollapsed = signal(false);
+  private lastAsideRatio = 0.3;
+  asideFlex = computed(
+    () => this.descCollapsed()
+      ? `0 0 ${this.COLLAPSED_PX}px`
+      : `0 0 ${this.horizontalRatio() * 100}%`
+  );
+
   copiedExamples = signal(false);
   isDraggingVertical = signal(false);
   isDraggingHorizontal = signal(false);
@@ -67,7 +80,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   allQuestions: Question[] = [];
   currentIndex = 0;
 
-  // Results + console (fed into the dumb console view)
+  // Results + console
   testResults = signal<TestResult[]>([]);
   consoleEntries = signal<ConsoleEntry[]>([]);
   hasRunTests = false;
@@ -128,10 +141,33 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngEmbed: StackBlitzEmbed
   ) { }
 
+  // --- collapse persistence helpers ---
+  private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
+  private loadCollapsePref(q: Question) {
+    try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
+    catch { this.descCollapsed.set(false); }
+  }
+  private saveCollapsePref(q: Question, v: boolean) {
+    try { localStorage.setItem(this.collapseKey(q), JSON.stringify(v)); } catch { }
+  }
+  toggleDescription() {
+    const q = this.question(); if (!q) return;
+    if (this.descCollapsed()) {
+      // expand
+      this.descCollapsed.set(false);
+      this.horizontalRatio.set(this.lastAsideRatio || 0.3);
+      this.saveCollapsePref(q, false);
+    } else {
+      // collapse
+      this.lastAsideRatio = this.horizontalRatio();
+      this.descCollapsed.set(true);
+      this.saveCollapsePref(q, true);
+    }
+  }
+
   ngOnInit() {
-    // parent/child route: /:tech/coding/:id
-    this.route.parent!.paramMap.subscribe(() => { /* noop: just to ensure parent is ready */ });
-    this.route.paramMap.subscribe(async (childPm) => {
+    this.route.parent!.paramMap.subscribe(() => { /* ensure parent ready */ });
+    this.route.paramMap.subscribe((childPm) => {
       this.tech = this.route.parent!.snapshot.paramMap.get('tech')!;
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
@@ -168,10 +204,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
+    // set collapse state per question
+    this.loadCollapsePref(q);
+
     let shouldShowBanner = false;
 
     if (this.tech !== 'angular') {
-      // ----- JavaScript track -----
       const jsKey = getJsKey(q.id);
       const baseKey = getJsBaselineKey(q.id);
 
@@ -192,18 +230,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       this.testCode.set(((q as any).tests as string) ?? '');
-      // make sure any Angular VM is cleaned up
       if (this.embedCleanup) this.embedCleanup();
       this.sbVm = null;
       this.embedLoading.set(false);
     } else {
-      // ----- Angular (StackBlitz SDK) -----
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
       if (!host) { requestAnimationFrame(() => this.loadQuestion(id)); return; }
 
-      if (this.embedCleanup) { this.embedCleanup(); this.embedCleanup = undefined; } // cleanup previous
+      if (this.embedCleanup) { this.embedCleanup(); this.embedCleanup = undefined; }
 
       const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
       const storageKey = getNgStorageKey(q);
@@ -224,12 +260,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!localStorage.getItem(baselineKey)) {
               localStorage.setItem(baselineKey, JSON.stringify(files));
             }
-          } catch { /* ignore */ }
+          } catch { }
         }
       }
 
       if (files) {
-        // compare vs baseline
         let baseline: Record<string, string> | null = null;
         const baseRaw = localStorage.getItem(baselineKey);
         if (baseRaw) baseline = normalizeSdkFiles(JSON.parse(baseRaw));
@@ -323,12 +358,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- run tests (worker source of truth) ----------
+  // ---------- run tests ----------
   async runTests() {
     const q = this.question(); if (!q) return;
     if (this.tech === 'angular') return;
 
-    // show console while running
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
@@ -343,7 +377,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
 
-    // show results panel after run
     this.subTab.set('tests');
   }
 
@@ -352,13 +385,35 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- drag splitters ----------
   startDrag = (ev: PointerEvent) => {
+    // ✅ allow dragging regardless of left rail state
     ev.preventDefault();
     this.dragging = true;
     this.isDraggingHorizontal.set(true);
     this.startY = ev.clientY;
     this.startRatio = this.editorRatio();
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-    const stop = () => { this.dragging = false; this.isDraggingHorizontal.set(false); document.removeEventListener('pointerup', stop); };
+    const stop = () => {
+      this.dragging = false;
+      this.isDraggingHorizontal.set(false);
+      document.removeEventListener('pointerup', stop);
+    };
+    document.addEventListener('pointerup', stop);
+  };
+
+  // Keep the vertical/column splitter disabled when collapsed (unchanged)
+  startHorizontalDrag = (ev: PointerEvent) => {
+    if (this.descCollapsed()) return; // ✅ only block the vertical splitter
+    ev.preventDefault();
+    this.draggingHorizontal = true;
+    this.startX = ev.clientX;
+    this.startRatioH = this.horizontalRatio();
+    this.copiedExamples.set(true);
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+    const stop = () => {
+      this.draggingHorizontal = false;
+      this.copiedExamples.set(false);
+      document.removeEventListener('pointerup', stop);
+    };
     document.addEventListener('pointerup', stop);
   };
   private onPointerMove = (ev: PointerEvent) => {
@@ -373,16 +428,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   private onPointerUp = () => { if (this.dragging) this.dragging = false; if (this.draggingHorizontal) this.draggingHorizontal = false; };
 
-  startHorizontalDrag = (ev: PointerEvent) => {
-    ev.preventDefault();
-    this.draggingHorizontal = true;
-    this.startX = ev.clientX;
-    this.startRatioH = this.horizontalRatio();
-    this.copiedExamples.set(true);
-    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-    const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
-    document.addEventListener('pointerup', stop);
-  };
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
@@ -463,6 +508,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.resetting.set(false);
     }
   }
+
   copyExamples() {
     const examples = this.combinedExamples();
     if (!examples) return;
@@ -472,10 +518,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.copiedExamples.set(true);
         setTimeout(() => this.copiedExamples.set(false), 1200);
       })
-      .catch((e) => {
-        console.warn('Copy failed', e);
-      });
+      .catch((e) => console.warn('Copy failed', e));
   }
-  // CTA helper
+
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 }
