@@ -14,34 +14,27 @@
   <app-root></app-root>
 
   <!-- Monaco loader + worker proxy setup -->
+
+
   <script>
-    // Worker proxy that works cross-origin / with bundlers: returns a blob URL
+    // Preconfigure AMD loader
+    window.require = { paths: { vs: 'assets/monaco/min/vs' } };
+
+    // Self-hosted worker bootstrap
     window.MonacoEnvironment = {
-      getWorkerUrl: function (moduleId, label) {
-        // Use a proxied worker that bootstraps the real workerMain.js from CDN
-        const proxy = URL.createObjectURL(
-          new Blob(
-            [
-              `
-            self.MonacoEnvironment = {
-              baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/'
-            };
-            importScripts('https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs/base/worker/workerMain.js');
-          `,
-            ],
-            { type: 'application/javascript' }
-          )
-        );
-        return proxy;
-      },
+      getWorkerUrl() {
+        const src = `
+          self.MonacoEnvironment = { baseUrl: 'assets/monaco/min/' };
+          importScripts('assets/monaco/min/vs/base/worker/workerMain.js');
+        `;
+        return URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
+      }
     };
   </script>
-
-  <!-- Load AMD loader from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs/loader.js"></script>
+  <script src="assets/monaco/min/vs/loader.js"></script>
   <script>
-    // Point require to the CDN copy
-    require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs' } });
+    // optional warm-up so editor.main is cached before your component mounts
+    window.require(['vs/editor/editor.main'], function () { });
   </script>
 
 </body>

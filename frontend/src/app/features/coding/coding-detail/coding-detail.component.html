@@ -174,7 +174,8 @@
 
               <!-- Console -->
               <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
-                <app-console-logger class="flex-1"></app-console-logger>
+                <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()">
+                </app-console-logger>
               </div>
             </div>
           </div>
@@ -188,8 +189,7 @@
 <footer class="fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
   <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
     <div class="flex items-center gap-2" [class.hidden]="showRestoreBanner()">
-      <button pButton label="will be replaced" icon="pi pi-refresh"
-        class="p-button-sm p-button-secondary">
+      <button pButton label="will be replaced" icon="pi pi-refresh" class="p-button-sm p-button-secondary">
       </button>
     </div>
 
@@ -222,7 +222,8 @@
   </ng-template>
   <div class="w-full h-full">
     <iframe *ngIf="previewOnlyUrl" class="w-full h-full border-0" [src]="previewOnlyUrl"
-      allow="accelerometer; autoplay; camera; encrypted-media; geolocation;"
-      sandbox="allow-forms allow-modals allow-popups allow-scripts allow-same-origin" (load)="previewLoading()"></iframe>
+      [attr.sandbox]="'allow-scripts allow-popups allow-modals'" [attr.allow]="''" referrerpolicy="no-referrer"
+      (load)="previewLoading()">
+    </iframe>
   </div>
 </p-dialog>

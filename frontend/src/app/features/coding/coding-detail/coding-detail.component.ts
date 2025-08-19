@@ -9,15 +9,16 @@ import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { combineLatest, Subscription } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { StackBlitzEmbed } from '../../../core/services/stackblitz-embed.service';
+import { UserCodeSandboxService } from '../../../core/services/user-code-sandbox.service';
 import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
 import { getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey } from '../../../core/utils/storage-keys';
+import { transformTestCode, wrapExportDefault } from '../../../core/utils/test-transform';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
-import { ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
+import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-detail',
@@ -66,20 +67,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   allQuestions: Question[] = [];
   currentIndex = 0;
 
+  // Results + console (fed into the dumb console view)
   testResults = signal<TestResult[]>([]);
+  consoleEntries = signal<ConsoleEntry[]>([]);
   hasRunTests = false;
-  private testsSub?: Subscription;
-
-  private _consoleLogger?: ConsoleLoggerComponent;
-  @ViewChild(ConsoleLoggerComponent)
-  set consoleLogger(c: ConsoleLoggerComponent | undefined) {
-    this._consoleLogger = c;
-    if (c) {
-      this.testsSub?.unsubscribe();
-      this.testsSub = c.testsFinished.subscribe((results) => this.testResults.set(results));
-    }
-  }
-  get consoleLogger() { return this._consoleLogger; }
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
 
@@ -133,12 +124,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private zone: NgZone,
     private codeStore: CodeStorageService,
+    private runner: UserCodeSandboxService,
     private ngEmbed: StackBlitzEmbed
   ) { }
 
   ngOnInit() {
-    combineLatest([this.route.parent!.paramMap, this.route.paramMap]).subscribe(([parentPm, childPm]) => {
-      this.tech = parentPm.get('tech')!;
+    // parent/child route: /:tech/coding/:id
+    this.route.parent!.paramMap.subscribe(() => { /* noop: just to ensure parent is ready */ });
+    this.route.paramMap.subscribe(async (childPm) => {
+      this.tech = this.route.parent!.snapshot.paramMap.get('tech')!;
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
       const id = childPm.get('id')!;
@@ -147,6 +141,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadQuestion(id);
       });
     });
+
     document.body.style.overflow = 'hidden';
   }
 
@@ -158,7 +153,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.testsSub?.unsubscribe();
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
     document.body.style.overflow = '';
@@ -267,6 +261,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
+    this.consoleEntries.set([]);
     this.showRestoreBanner.set(shouldShowBanner);
   }
 
@@ -328,33 +323,27 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private waitForSandboxReady(timeoutMs = 3000): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.consoleLogger?.ready && this.consoleLogger.ready()) { resolve(); return; }
-      const start = Date.now();
-      const timer = setInterval(() => {
-        if (this.consoleLogger?.ready && this.consoleLogger.ready()) { clearInterval(timer); resolve(); }
-        else if (Date.now() - start > timeoutMs) { clearInterval(timer); reject(new Error('Sandbox not ready')); }
-      }, 50);
-    });
-  }
-
+  // ---------- run tests (worker source of truth) ----------
   async runTests() {
-    const q = this.question();
-    if (!q) return;
+    const q = this.question(); if (!q) return;
+    if (this.tech === 'angular') return;
 
+    // show console while running
     this.subTab.set('console');
-    await new Promise<void>((r) => requestAnimationFrame(() => r()));
+    this.hasRunTests = false;
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
 
-    if (!this.consoleLogger) return;
-    try { await this.waitForSandboxReady(); } catch { return; }
+    const wrapped = wrapExportDefault(this.editorContent(), q.id);
+    const tests = transformTestCode(this.testCode(), q.id);
 
-    const rawTestCode = this.testCode();
-    const testCodeTransformed = this.transformTestCode(rawTestCode, q.id);
-    const wrappedUserCode = this.wrapExportDefault(this.editorContent(), q.id);
+    const out = await this.runner.runWithTests({ userCode: wrapped, testCode: tests, timeoutMs: 1500 });
 
-    this.consoleLogger.runWithTests(wrappedUserCode, testCodeTransformed);
+    this.consoleEntries.set(out.entries ?? []);
+    this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
+
+    // show results panel after run
     this.subTab.set('tests');
   }
 
@@ -402,33 +391,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     newRatio = Math.max(0.2, Math.min(0.8, newRatio));
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
-
-  // ---------- helpers for test scaffolding ----------
-  private sanitizeGlobalName(id: string) { return id.replace(/[^a-zA-Z0-9_]/g, '_'); }
-  private wrapExportDefault(code: string, id: string) {
-    const globalName = this.sanitizeGlobalName(id);
-    let transformed = code;
-    transformed = transformed.replace(/export\s+default\s+function\s+([\w$]+)\s*\(/, (_m, name) => `function ${name}(`);
-    const named = code.match(/export\s+default\s+function\s+([\w$]+)\s*\(/);
-    if (named) { const fn = named[1]; transformed += `\nif (typeof ${fn} !== 'undefined') { globalThis.${globalName} = ${fn}; }`; return transformed; }
-    transformed = transformed.replace(/export\s+default\s+async\s+function\s+([\w$]+)\s*\(/, (_m, name) => `async function ${name}(`);
-    const asyncNamed = code.match(/export\s+default\s+async\s+function\s+([\w$]+)\s*\(/);
-    if (asyncNamed) { const fn = asyncNamed[1]; transformed += `\nif (typeof ${fn} !== 'undefined') { globalThis.${globalName} = ${fn}; }`; return transformed; }
-    if (/export\s+default/.test(transformed)) {
-      transformed = transformed.replace(/export\s+default\s+/, `globalThis.${globalName} = `);
-    }
-    return transformed;
-  }
-  private transformTestCode(raw: string, questionId: string) {
-    let code = raw.replace(/^import\s+([\w$]+)\s+from\s+['"][^'"]+['"];?\s*$/gm, () => '');
-    const globalName = this.sanitizeGlobalName(questionId);
-    code = code.replace(/\b([A-Za-z_$][\w$]*)\b/g, (id) => {
-      if (id === questionId || id === this.toCamelCase(questionId)) return `globalThis.${globalName}`;
-      return id;
-    });
-    return code;
-  }
-  private toCamelCase(str: string) { return str.replace(/[-_](\w)/g, (_, c) => (c ? c.toUpperCase() : '')); }
 
   // ---------- preview helpers ----------
   private toPreviewOnly(base: string): string {
@@ -484,28 +446,23 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
               await this.ngEmbed.replaceFromAsset(this.sbVm, asset.files, openFile, storageKey);
             }
           } finally {
-            // 🔧 ensure spinner clears even if fetch/apply fails
             this.embedLoading.set(false);
           }
         } else {
-          // Re-embed from scratch; loadQuestion will clear embedLoading on completion (see fix #2)
           requestAnimationFrame(() => this.loadQuestion(q.id));
         }
       }
 
       this.hasRunTests = false;
       this.testResults.set([]);
+      this.consoleEntries.set([]);
       this.subTab.set('tests');
       this.topTab.set('code');
       this.showRestoreBanner.set(false);
-
-      (this.consoleLogger as any)?.clear?.();
-      (this.consoleLogger as any)?.reset?.();
     } finally {
       this.resetting.set(false);
     }
   }
-
   copyExamples() {
     const examples = this.combinedExamples();
     if (!examples) return;
@@ -519,7 +476,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         console.warn('Copy failed', e);
       });
   }
-
   // CTA helper
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 }
