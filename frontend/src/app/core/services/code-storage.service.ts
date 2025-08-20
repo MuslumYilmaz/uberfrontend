@@ -1,3 +1,4 @@
+// src/app/core/services/code-storage.service.ts
 import { Injectable } from '@angular/core';
 
 type JsLang = 'js' | 'ts';
@@ -12,15 +13,15 @@ export interface JsSave {
 }
 
 export interface NgSave {
-  // GFE-style: path -> { code }
   files: Record<string, { code: string }>;
-  projectId?: string; // optional stackblitz id (if you use SDK)
+  projectId?: string;
   version: 'v1';
   updatedAt: string;
 }
 
-const DATA_VERSION = '1'; // bump when you change schema
-const PREFIX = `v${DATA_VERSION}:code:`; // v1:code:...
+const DATA_VERSION = '1'; // bump if your *schema* changes
+const BASE = 'code:';     // common base lets us match "any version"
+const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v1:code:
 
 @Injectable({ providedIn: 'root' })
 export class CodeStorageService {
@@ -44,9 +45,7 @@ export class CodeStorageService {
     localStorage.setItem(this.keyJs(qid), JSON.stringify(payload));
   }
 
-  clearJs(qid: string) {
-    localStorage.removeItem(this.keyJs(qid));
-  }
+  clearJs(qid: string) { localStorage.removeItem(this.keyJs(qid)); }
 
   // ---------- Angular (StackBlitz via SDK) ----------
   private keyNg(qid: string) { return `${PREFIX}ng:${qid}`; }
@@ -57,20 +56,28 @@ export class CodeStorageService {
     try { return JSON.parse(raw) as NgSave; } catch { return null; }
   }
 
-  // filesSnapshot: Record<path, code>
   saveNg(qid: string, filesSnapshot: Record<string, string>, projectId?: string) {
     const files: Record<string, { code: string }> = {};
     for (const [path, code] of Object.entries(filesSnapshot)) files[path] = { code };
-    const payload: NgSave = {
-      files,
-      projectId,
-      version: 'v1',
-      updatedAt: new Date().toISOString(),
-    };
+    const payload: NgSave = { files, projectId, version: 'v1', updatedAt: new Date().toISOString() };
     localStorage.setItem(this.keyNg(qid), JSON.stringify(payload));
   }
 
-  clearNg(qid: string) {
-    localStorage.removeItem(this.keyNg(qid));
+  clearNg(qid: string) { localStorage.removeItem(this.keyNg(qid)); }
+
+  // ---------- NEW: purge helpers (used by startup version gate) ----------
+  /** Matches *any* versioned code keys like `vX:code:js:...` or `vX:code:ng:...` */
+  static isOurKey(k: string): boolean {
+    return /^v\d+:code:(js|ng):/.test(k);
+  }
+
+  /** Remove everything created by this service (all versions). */
+  static purgeAll(): void {
+    try {
+      const keys = Object.keys(localStorage);
+      for (const k of keys) {
+        if (CodeStorageService.isOurKey(k)) localStorage.removeItem(k);
+      }
+    } catch { }
   }
 }
