@@ -20,6 +20,10 @@ import { transformTestCode, wrapExportDefault } from '../../../core/utils/test-t
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
+declare const monaco: any; // Monaco global (loaded in index.html)
+
+type JsLang = 'js' | 'ts';
+
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
@@ -40,20 +44,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
 
-  // JS editor/test state
+  // JS/TS editor + tests
   editorContent = signal<string>('');
   testCode = signal<string>('');
+
+  // JS/TS language toggle (persisted per question)
+  jsLang = signal<JsLang>('js');
 
   // UI state
   topTab = signal<'code' | 'tests'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
-
-  // Layout ratios
   editorRatio = signal(0.6);
   horizontalRatio = signal(0.3);
 
-  // Collapsible Description/Solution column
+  // Collapsible left column
   private readonly COLLAPSED_PX = 48;
   descCollapsed = signal(false);
   private lastAsideRatio = 0.3;
@@ -141,7 +146,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngEmbed: StackBlitzEmbed
   ) { }
 
-  // --- collapse persistence helpers ---
+  // ---------- collapse prefs ----------
   private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
     try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
@@ -153,25 +158,25 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleDescription() {
     const q = this.question(); if (!q) return;
     if (this.descCollapsed()) {
-      // expand
       this.descCollapsed.set(false);
       this.horizontalRatio.set(this.lastAsideRatio || 0.3);
       this.saveCollapsePref(q, false);
     } else {
-      // collapse
       this.lastAsideRatio = this.horizontalRatio();
       this.descCollapsed.set(true);
       this.saveCollapsePref(q, true);
     }
   }
 
+  // ---------- init ----------
   ngOnInit() {
-    this.route.parent!.paramMap.subscribe(() => { /* ensure parent ready */ });
-    this.route.paramMap.subscribe((childPm) => {
+    // route shape: /:tech/coding/:id
+    this.route.parent!.paramMap.subscribe(() => { /* noop */ });
+    this.route.paramMap.subscribe((pm) => {
       this.tech = this.route.parent!.snapshot.paramMap.get('tech')!;
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
-      const id = childPm.get('id')!;
+      const id = pm.get('id')!;
       this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
         this.allQuestions = list;
         this.loadQuestion(id);
@@ -186,6 +191,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       window.addEventListener('pointermove', this.onPointerMove);
       window.addEventListener('pointerup', this.onPointerUp);
     });
+
+    // TS compiler defaults for Monaco (emit ES modules)
+    try {
+      monaco?.languages?.typescript?.typescriptDefaults?.setCompilerOptions?.({
+        module: monaco.languages.typescript.ModuleKind.ESNext,
+        target: monaco.languages.typescript.ScriptTarget.ES2020,
+        strict: false,
+        noEmitOnError: false,
+        allowJs: true,
+        isolatedModules: true,
+      });
+    } catch { /* ignore */ }
   }
 
   ngOnDestroy() {
@@ -194,6 +211,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.style.overflow = '';
     if (this.embedCleanup) this.embedCleanup();
   }
+
+  // ---------- helpers to pick code by language ----------
+  private getDefaultLang(q: Question): JsLang {
+    const v = (q as any).languageDefault;
+    return v === 'ts' ? 'ts' : 'js';
+  }
+  private getStarter(q: any, lang: JsLang) {
+    return lang === 'ts' ? (q.starterCodeTs ?? q.starterCode ?? '') : (q.starterCode ?? q.starterCodeTs ?? '');
+  }
+  private getSolution(q: any, lang: JsLang) {
+    return lang === 'ts' ? (q.solutionTs ?? q.solution ?? '') : (q.solution ?? q.solutionTs ?? '');
+  }
+  private getTests(q: any, lang: JsLang) {
+    return lang === 'ts' ? (q.testsTs ?? q.tests ?? '') : (q.tests ?? q.testsTs ?? '');
+  }
+  private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
   // ---------- load question ----------
   private async loadQuestion(id: string) {
@@ -204,36 +237,53 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
-    // set collapse state per question
     this.loadCollapsePref(q);
 
     let shouldShowBanner = false;
 
     if (this.tech !== 'angular') {
+      // JS/TS track
       const jsKey = getJsKey(q.id);
       const baseKey = getJsBaselineKey(q.id);
 
-      const starter = q.starterCode ?? '';
+      // language preference
+      const savedPref = (localStorage.getItem(this.langPrefKey(q)) as JsLang | null);
+      const defaultLang = this.getDefaultLang(q);
+      // if we have a CodeStorageService save with language, respect that first
+      const svcSaved = this.codeStore.getJs(q.id);
+      const langFromSvc = svcSaved?.language as JsLang | undefined;
+      const resolvedLang: JsLang = langFromSvc ?? savedPref ?? defaultLang;
+      this.jsLang.set(resolvedLang);
+
+      // set baselines (for legacy banner check)
+      const starterForResolved = this.getStarter(q, resolvedLang);
       if (!localStorage.getItem(baseKey)) {
-        try { localStorage.setItem(baseKey, JSON.stringify({ code: starter })); } catch { }
+        try { localStorage.setItem(baseKey, JSON.stringify({ code: starterForResolved })); } catch { }
       }
 
-      const savedRaw = localStorage.getItem(jsKey);
-      const saved = savedRaw ? (() => { try { return JSON.parse(savedRaw); } catch { return null; } })() : null;
+      // restore saved user code if any
+      const savedSvcCode = svcSaved?.code;
+      const savedLegacyRaw = localStorage.getItem(jsKey);
+      const savedLegacy = savedLegacyRaw ? (() => { try { return JSON.parse(savedLegacyRaw); } catch { return null; } })() : null;
+      const restored = savedSvcCode ?? savedLegacy?.code ?? null;
 
-      if (saved?.code != null) {
-        this.editorContent.set(saved.code);
+      if (restored != null) {
+        this.editorContent.set(restored);
         const base = JSON.parse(localStorage.getItem(baseKey) || '{"code":""}');
-        if (saved.code !== base.code) shouldShowBanner = true;
+        if (restored !== base.code) shouldShowBanner = true;
       } else {
-        this.editorContent.set(starter);
+        this.editorContent.set(starterForResolved);
       }
 
-      this.testCode.set(((q as any).tests as string) ?? '');
+      // tests default by lang
+      this.testCode.set(this.getTests(q, resolvedLang));
+
+      // cleanup any Angular VM
       if (this.embedCleanup) this.embedCleanup();
       this.sbVm = null;
       this.embedLoading.set(false);
     } else {
+      // Angular track
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
@@ -260,7 +310,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!localStorage.getItem(baselineKey)) {
               localStorage.setItem(baselineKey, JSON.stringify(files));
             }
-          } catch { }
+          } catch { /* ignore */ }
         }
       }
 
@@ -310,7 +360,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- JS code save on edit ----------
+  // ---------- code saving ----------
   onJsCodeChange(code: string) {
     this.editorContent.set(code);
     const q = this.question();
@@ -318,9 +368,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
-      this.codeStore.saveJs(q.id, code, 'js');
+      // canonical save
+      this.codeStore.saveJs(q.id, code, this.jsLang());
+      // legacy key (kept for banner compare/reset paths)
       try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code })); } catch { }
-    }, 350);
+    }, 300);
   }
   private persistJsEffect = effect(() => {
     const q = this.question();
@@ -328,23 +380,64 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: this.editorContent() })); } catch { }
   });
 
+  // ---------- language toggle ----------
+  setLanguage(lang: JsLang) {
+    const q = this.question(); if (!q) return;
+    const prevLang = this.jsLang();
+    if (lang === prevLang) return;
+
+    // Persist preference
+    try { localStorage.setItem(this.langPrefKey(q), lang); } catch { }
+    this.jsLang.set(lang);
+
+    // Swap boilerplate to matching variant *only if* current content looks like baseline of the previous lang
+    const prevStarter = this.getStarter(q, prevLang);
+    const nextStarter = this.getStarter(q, lang);
+    const prevSolution = this.getSolution(q, prevLang);
+    const nextSolution = this.getSolution(q, lang);
+
+    const current = this.editorContent();
+    if (current.trim() === prevStarter.trim()) {
+      this.editorContent.set(nextStarter);
+    } else if (prevSolution && current.trim() === prevSolution.trim()) {
+      this.editorContent.set(nextSolution || nextStarter);
+    }
+    // Swap tests similarly if they match previous baseline
+    const prevTests = this.getTests(q, prevLang);
+    const nextTests = this.getTests(q, lang);
+    if (this.testCode().trim() === prevTests.trim()) {
+      this.testCode.set(nextTests);
+    }
+
+    // Update baseline key used by the restore banner (so it compares against correct lang)
+    try { localStorage.setItem(getJsBaselineKey(q.id), JSON.stringify({ code: this.getStarter(q, lang) })); } catch { }
+
+    // Save current content under service with new lang
+    this.codeStore.saveJs(q.id, this.editorContent(), lang);
+  }
+
   // ---------- banner actions ----------
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
   async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
 
-  // ---------- misc actions ----------
+  // ---------- show solution (respect lang) ----------
   showSolution() {
     const q = this.question();
     if (!q) return;
-    const solution = q.solution ?? '';
-    this.editorContent.set(solution);
+    const lang = this.jsLang();
+    const solution = this.getSolution(q, lang);
+    const fallback = this.getSolution(q, lang === 'ts' ? 'js' : 'ts');
+    const value = solution || fallback || '';
+    this.editorContent.set(value);
     if (this.tech !== 'angular') {
-      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: solution })); } catch { }
+      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: value })); } catch { }
+      this.codeStore.saveJs(q.id, value, lang);
     }
     this.activePanel.set(1);
     this.topTab.set('code');
   }
 
+  // ---------- navigation ----------
   prev() {
     if (this.currentIndex > 0) {
       const prevId = this.allQuestions[this.currentIndex - 1].id;
@@ -358,20 +451,48 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- run tests ----------
+  // ---------- TS -> JS transpile with Monaco ----------
+  private async transpileTsToJs(code: string, fileName: string): Promise<string> {
+    if (!monaco?.languages?.typescript || typeof code !== 'string') return code;
+    const uri = monaco.Uri.parse(`inmemory://model/${fileName}`);
+    const model = monaco.editor.createModel(code, 'typescript', uri);
+    try {
+      const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
+      const svc = await getWorker(uri);
+      const out = await svc.getEmitOutput(uri.toString());
+      const js = out?.outputFiles?.[0]?.text ?? '';
+      return js || '';
+    } catch {
+      return code; // fallback: runner will report syntax error
+    } finally {
+      model.dispose();
+    }
+  }
+
+  // ---------- run tests (worker) ----------
   async runTests() {
     const q = this.question(); if (!q) return;
     if (this.tech === 'angular') return;
 
+    // shift UI
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
-    const wrapped = wrapExportDefault(this.editorContent(), q.id);
-    const tests = transformTestCode(this.testCode(), q.id);
+    const lang = this.jsLang();
+    const userSrc = this.editorContent();
+    const testsSrc = this.testCode();
 
-    const out = await this.runner.runWithTests({ userCode: wrapped, testCode: tests, timeoutMs: 1500 });
+    // transpile if TS
+    const userJs = lang === 'ts' ? await this.transpileTsToJs(userSrc, `${q.id}.ts`) : userSrc;
+    const testsLangLooksTs = (lang === 'ts'); // we bound tests to lang when loading/toggling
+    const testsJs = testsLangLooksTs ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
+
+    const wrapped = wrapExportDefault(userJs, q.id);
+    const testsPrepared = transformTestCode(testsJs, q.id);
+
+    const out = await this.runner.runWithTests({ userCode: wrapped, testCode: testsPrepared, timeoutMs: 1500 });
 
     this.consoleEntries.set(out.entries ?? []);
     this.testResults.set(out.results ?? []);
@@ -383,37 +504,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   submitCode() { console.log('Submit:', this.editorContent()); }
   get progressText() { return `${this.currentIndex + 1} / ${this.allQuestions.length}`; }
 
-  // ---------- drag splitters ----------
+  // ---------- splitters ----------
   startDrag = (ev: PointerEvent) => {
-    // ✅ allow dragging regardless of left rail state
     ev.preventDefault();
     this.dragging = true;
     this.isDraggingHorizontal.set(true);
     this.startY = ev.clientY;
     this.startRatio = this.editorRatio();
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-    const stop = () => {
-      this.dragging = false;
-      this.isDraggingHorizontal.set(false);
-      document.removeEventListener('pointerup', stop);
-    };
-    document.addEventListener('pointerup', stop);
-  };
-
-  // Keep the vertical/column splitter disabled when collapsed (unchanged)
-  startHorizontalDrag = (ev: PointerEvent) => {
-    if (this.descCollapsed()) return; // ✅ only block the vertical splitter
-    ev.preventDefault();
-    this.draggingHorizontal = true;
-    this.startX = ev.clientX;
-    this.startRatioH = this.horizontalRatio();
-    this.copiedExamples.set(true);
-    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-    const stop = () => {
-      this.draggingHorizontal = false;
-      this.copiedExamples.set(false);
-      document.removeEventListener('pointerup', stop);
-    };
+    const stop = () => { this.dragging = false; this.isDraggingHorizontal.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
   private onPointerMove = (ev: PointerEvent) => {
@@ -428,6 +527,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   private onPointerUp = () => { if (this.dragging) this.dragging = false; if (this.draggingHorizontal) this.draggingHorizontal = false; };
 
+  startHorizontalDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.draggingHorizontal = true;
+    this.startX = ev.clientX;
+    this.startRatioH = this.horizontalRatio();
+    this.copiedExamples.set(true);
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+    const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
+    document.addEventListener('pointerup', stop);
+  };
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
@@ -466,7 +575,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => { this.previewOnlyUrl = null; this.previewLoading.set(false); }, 200);
   }
 
-  // ---------- resets ----------
+  // ---------- reset ----------
   async resetQuestion() {
     const q = this.question();
     if (!q || this.resetting()) return;
@@ -475,8 +584,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       if (this.tech !== 'angular') {
         localStorage.removeItem(getJsKey(q.id));
-        this.editorContent.set(q.starterCode ?? '');
-        this.testCode.set(((q as any).tests as string) ?? '');
+        // reset to current language baseline
+        const lang = this.jsLang();
+        this.editorContent.set(this.getStarter(q, lang));
+        this.testCode.set(this.getTests(q, lang));
       } else {
         const storageKey = getNgStorageKey(q);
         localStorage.removeItem(storageKey);
@@ -509,6 +620,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // ---------- misc ----------
   copyExamples() {
     const examples = this.combinedExamples();
     if (!examples) return;
@@ -518,8 +630,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.copiedExamples.set(true);
         setTimeout(() => this.copiedExamples.set(false), 1200);
       })
-      .catch((e) => console.warn('Copy failed', e));
+      .catch((e) => {
+        console.warn('Copy failed', e);
+      });
   }
-
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 }

@@ -38,8 +38,8 @@
             (click)="activePanel.set(1)">Solution</button>
         </div>
 
-        <button class="px-3 py-2 text-gray-300 hover:text-white" pButton type="button" icon="pi pi-chevron-left"
-          class="p-button-text" (click)="toggleDescription()" aria-label="Hide description"></button>
+        <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" pButton type="button"
+          icon="pi pi-chevron-left" (click)="toggleDescription()" aria-label="Hide description"></button>
       </div>
 
       <!-- Content -->
@@ -87,7 +87,7 @@
     </ng-container>
   </aside>
 
-  <!-- VERTICAL SPLITTER (disabled when collapsed) -->
+  <!-- VERTICAL SPLITTER (hidden when collapsed) -->
   <div *ngIf="!descCollapsed()" class="splitter" [class.dragging]="isDraggingVertical()"
     (pointerdown)="startHorizontalDrag($event)"></div>
 
@@ -122,28 +122,48 @@
       </div>
     </ng-container>
 
-    <!-- JAVASCRIPT EDITOR & TESTS -->
+    <!-- JAVASCRIPT / TYPESCRIPT EDITOR & TESTS -->
     <ng-container *ngIf="tech!=='angular'">
       <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-        <div class="flex border-b border-white/10 px-4">
-          <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
-            (click)="topTab.set('code')">&lt;/&gt; Code</button>
-          <button class="px-4 py-2" [class.opacity-100]="isTopTestsTab()" [class.opacity-60]="!isTopTestsTab()"
-            (click)="topTab.set('tests')">⚗️ Test cases</button>
-        </div>
 
-        <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
-          <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
-            <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()" [language]="'javascript'"
-              (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
-
-            <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
-              (codeChange)="testCode.set($event)"></app-monaco-editor>
+        <!-- Top tabs + language selector -->
+        <div class="flex items-center border-b border-white/10 px-4">
+          <div class="flex">
+            <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
+              (click)="topTab.set('code')">&lt;/&gt; Code</button>
+            <button class="px-4 py-2" [class.opacity-100]="isTopTestsTab()" [class.opacity-60]="!isTopTestsTab()"
+              (click)="topTab.set('tests')">⚗️ Test cases</button>
           </div>
 
+          <div class="ml-auto flex items-center gap-2">
+            <span class="text-xs opacity-70">Language</span>
+            <select #langSel class="bg-neutral-800 border border-white/10 rounded px-2 py-1 text-sm" [value]="jsLang()"
+              (change)="setLanguage($any(langSel).value)" aria-label="Editor language">
+              <option value="js">JavaScript</option>
+              <option value="ts">TypeScript</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Editor / Results split -->
+        <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
+          <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
+            <!-- Code editor -->
+            <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
+              [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" (codeChange)="onJsCodeChange($event)">
+            </app-monaco-editor>
+
+            <!-- Tests editor (always JS) -->
+            <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
+              (codeChange)="testCode.set($event)">
+            </app-monaco-editor>
+          </div>
+
+          <!-- Horizontal splitter -->
           <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()" (pointerdown)="startDrag($event)">
           </div>
 
+          <!-- Results / Console -->
           <div class="flex-1 flex flex-col overflow-hidden min-h-0">
             <div class="flex items-center gap-6 px-3 py-2 text-sm border-b border-white/10 bg-neutral-900/60">
               <button class="font-medium" (click)="runTests()">▶ Run tests</button>
@@ -215,12 +235,14 @@
 <footer class="fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
   <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
     <div class="flex items-center gap-2"></div>
+
     <div class="flex items-center gap-2">
       <button pButton label="← Prev" class="p-button-sm" (click)="prev()" [disabled]="currentIndex===0"></button>
       <span class="opacity-70 text-sm">{{ progressText }}</span>
       <button pButton label="Next →" iconPos="right" class="p-button-sm" (click)="next()"
         [disabled]="currentIndex + 1 >= allQuestions.length"></button>
     </div>
+
     <div class="flex items-center gap-2">
       <ng-container *ngIf="tech!=='angular'; else angularActions">
         <button pButton label="Submit" icon="pi pi-check" class="p-button-sm" (click)="submitCode()"></button>
@@ -232,7 +254,7 @@
   </div>
 </footer>
 
-<!-- Preview dialog unchanged -->
+<!-- Preview dialog -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
   [resizable]="false" [style]="{ width: '90vw', maxWidth: '1400px' }" [contentStyle]="{ padding: '0', height: '80vh' }">
   <ng-template pTemplate="header">
