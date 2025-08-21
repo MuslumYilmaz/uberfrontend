@@ -1,12 +1,10 @@
+<!-- coding-detail.component.html -->
 <div class="flex gap-[5px] h-[calc(100vh-64px-85px)]">
-
   <!-- LEFT COLUMN (collapsible → side navbar when collapsed) -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
     [style.flex]="asideFlex()" style="min-width:0;">
-
     <!-- Collapsed rail -->
     <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
-      <!-- top controls -->
       <div class="flex flex-col items-center gap-2">
         <button pButton type="button" icon="pi pi-chevron-right" class="p-button-rounded p-button-text"
           (click)="toggleDescription()" aria-label="Expand description"></button>
@@ -19,14 +17,11 @@
           [ngClass]="{'text-white': activePanel()===1, 'opacity-60': activePanel()!==1}"
           (click)="activePanel.set(1); toggleDescription()" aria-label="Solution"></button>
       </div>
-
-      <!-- bottom spacer / future nav -->
       <div></div>
     </div>
 
     <!-- Expanded content -->
     <ng-container *ngIf="!descCollapsed()">
-      <!-- Tabs + collapse button -->
       <div class="flex items-center border-b border-white/10 text-white">
         <div class="flex-1 flex">
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
@@ -42,7 +37,6 @@
           icon="pi pi-chevron-left" (click)="toggleDescription()" aria-label="Hide description"></button>
       </div>
 
-      <!-- Content -->
       <div class="flex-1 overflow-auto p-6 text-white">
         <!-- Description Panel -->
         <div *ngIf="activePanel()===0" class="space-y-4">
@@ -125,7 +119,6 @@
     <!-- JAVASCRIPT / TYPESCRIPT EDITOR & TESTS -->
     <ng-container *ngIf="tech!=='angular'">
       <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-
         <!-- Top tabs + language selector -->
         <div class="flex items-center border-b border-white/10 px-4">
           <div class="flex">
@@ -150,13 +143,12 @@
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <!-- Code editor -->
             <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
-              [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" (codeChange)="onJsCodeChange($event)">
-            </app-monaco-editor>
+              [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+              (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
 
             <!-- Tests editor (always JS) -->
             <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
-              (codeChange)="testCode.set($event)">
-            </app-monaco-editor>
+              (codeChange)="testCode.set($event)"></app-monaco-editor>
           </div>
 
           <!-- Horizontal splitter -->
@@ -220,8 +212,8 @@
 
               <!-- Console -->
               <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
-                <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()">
-                </app-console-logger>
+                <app-console-logger class="flex-1" [entries]="consoleEntries()"
+                  [results]="testResults()"></app-console-logger>
               </div>
             </div>
           </div>
@@ -231,28 +223,18 @@
   </main>
 </div>
 
-<!-- ✅ FIXED GLOBAL FOOTER -->
-<footer class="fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
-  <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
-    <div class="flex items-center gap-2"></div>
+<!-- Shared Footer -->
+<app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
+  [prevDisabled]="currentIndex === 0" [nextDisabled]="currentIndex + 1 >= allQuestions.length"
+  [breadcrumbLabel]="courseCrumbLabel()" [coursePrevLabel]="coursePrevLabel()" [courseNextLabel]="courseNextLabel()"
+  [middleSuffixLabel]="middleSuffixLabel" [showSubmit]="true"
+  [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" [leftCourseLabel]="leftDrawerLabel"
+  [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" (prev)="prev()" (next)="next()"
+  (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
+  (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
+</app-footer>
 
-    <div class="flex items-center gap-2">
-      <button pButton label="← Prev" class="p-button-sm" (click)="prev()" [disabled]="currentIndex===0"></button>
-      <span class="opacity-70 text-sm">{{ progressText }}</span>
-      <button pButton label="Next →" iconPos="right" class="p-button-sm" (click)="next()"
-        [disabled]="currentIndex + 1 >= allQuestions.length"></button>
-    </div>
 
-    <div class="flex items-center gap-2">
-      <ng-container *ngIf="tech!=='angular'; else angularActions">
-        <button pButton label="Submit" icon="pi pi-check" class="p-button-sm" (click)="submitCode()"></button>
-      </ng-container>
-      <ng-template #angularActions>
-        <button pButton label="Mark as complete" icon="pi pi-check" class="p-button-sm" (click)="submitCode()"></button>
-      </ng-template>
-    </div>
-  </div>
-</footer>
 
 <!-- Preview dialog -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"

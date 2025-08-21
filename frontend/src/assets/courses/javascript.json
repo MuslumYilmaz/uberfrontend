@@ -1,0 +1,57 @@
+{
+    "id": "javascript",
+    "title": "Learn JavaScript",
+    "blurb": "Learn modern JavaScript by reading short lessons and practicing challenges.",
+    "technology": "javascript",
+    "heroColor": "#ffd300",
+    "topics": [
+        {
+            "id": "functions",
+            "title": "Functions",
+            "lessons": [
+                {
+                    "id": "basic-functions",
+                    "type": "read",
+                    "title": "Basic functions",
+                    "html": "<h2>Basic functions</h2><p>Let's start with a simple function:</p><pre><code>function sum(a, b){ return a + b; }</code></pre><p>Call it like <code>sum(2,5)</code>.</p>"
+                },
+                {
+                    "id": "practice-basic-sum",
+                    "type": "code",
+                    "title": "Practice: mean()",
+                    "questionId": "mean"
+                }
+            ]
+        },
+        {
+            "id": "arrays",
+            "title": "Arrays & Loops",
+            "lessons": [
+                {
+                    "id": "arrays-intro",
+                    "type": "read",
+                    "title": "Arrays 101",
+                    "html": "<h2>Arrays</h2><p>Arrays store ordered values.</p>"
+                },
+                {
+                    "id": "practice-flatten",
+                    "type": "code",
+                    "title": "Practice: Deep Clone",
+                    "questionId": "deepClone"
+                }
+            ]
+        },
+        {
+            "id": "objects",
+            "title": "Objects",
+            "lessons": [
+                {
+                    "id": "objects-intro",
+                    "type": "read",
+                    "title": "Objects 101",
+                    "html": "<h2>Objects</h2><p>Objects are key/value maps.</p>"
+                }
+            ]
+        }
+    ]
+}

@@ -1,10 +1,17 @@
+// src/app/shared/header/header.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 
-type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
+type Mode =
+  | 'dashboard'
+  | 'tech-list'
+  | 'tech-detail'
+  | 'sd-list'
+  | 'sd-detail'
+  | 'course'; // 👈 add a course mode
 
 @Component({
   selector: 'app-header',
@@ -13,30 +20,20 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
   styleUrls: ['./header.component.scss'],
   template: `
     <div class="topbar bg-neutral-900/95 text-gray-200 pb-2">
-      <!-- Keep center column auto so the middle trigger stays perfectly centered -->
       <div class="max-w-7xl mx-auto px-4 h-12 grid [grid-template-columns:1fr_auto_1fr] items-center gap-4">
-
-        <!-- LEFT: logo + (tabs on lists) OR (Back on details) -->
+        <!-- LEFT -->
         <div class="flex items-center gap-6 min-w-0">
           <a class="font-semibold text-white hover:opacity-90 whitespace-nowrap" routerLink="/">UberFrontend</a>
 
-          <!-- On detail pages, show Back on the LEFT -->
-          <a *ngIf="isDetailPage()"
-             class="pill px-3 py-1 rounded hover:bg-white/10 whitespace-nowrap"
-             [routerLink]="backLink()">← Back</a>
-
-          <!-- On list pages, show the tech tabs -->
+          <!-- Tech tabs only on list pages (JS/Angular/System Design lists) -->
           <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
             <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
-              [class.tab-active]="currentTech()==='javascript'">JavaScript</a>
-
+               [class.tab-active]="currentTech()==='javascript'">JavaScript</a>
             <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
-              [class.tab-active]="currentTech()==='angular'">Angular</a>
-
+               [class.tab-active]="currentTech()==='angular'">Angular</a>
             <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
-              [class.tab-active]="isSystemDesign()">System design</a>
+               [class.tab-active]="isSystemDesign()">System design</a>
           </nav>
-
         </div>
 
         <!-- CENTER: Prepare (only on detail pages) -->
@@ -51,24 +48,19 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
           </button>
         </div>
 
-        <!-- RIGHT: Dashboard shortcut -->
+        <!-- RIGHT -->
         <div class="flex items-center justify-end">
           <a routerLink="/" class="hidden sm:inline text-sm pill px-3 py-1 rounded hover:opacity-90">Dashboard</a>
         </div>
 
-        <!-- MEGA MENU (centered) -->
+        <!-- MEGA MENU -->
         <ng-container *ngIf="megaOpen()">
-          <!-- backdrop -->
           <div class="fixed inset-0 z-40" (click)="closeMega()"></div>
-
-          <!-- panel -->
           <div id="prepare-mega"
                class="fixed left-1/2 -translate-x-1/2 top-12 mt-2 z-50 w-[min(92vw,940px)]"
                (click)="$event.stopPropagation()"
                (keydown.escape)="closeMega()" tabindex="-1">
             <div class="rounded-xl bg-neutral-900 border border-white/10 shadow-2xl p-3 sm:p-4 space-y-3">
-
-              <!-- 1) Playbook (disabled for now) -->
               <div class="card-row rounded-xl p-4 sm:p-5 disabled">
                 <div class="flex items-start gap-4">
                   <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">📘</div>
@@ -85,7 +77,6 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
                 </div>
               </div>
 
-              <!-- 2) GFE 75 (disabled for now) -->
               <div class="card-row rounded-xl p-4 sm:p-5 disabled">
                 <div class="flex items-start gap-4">
                   <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">🔢</div>
@@ -102,7 +93,6 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
                 </div>
               </div>
 
-              <!-- 3) System Design Playbook -->
               <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
                  routerLink="/system-design" (click)="closeMega()" role="link">
                 <div class="flex items-start gap-4">
@@ -118,7 +108,6 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
                 </div>
               </a>
 
-              <!-- 4) Free Practice -->
               <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
                  routerLink="/javascript" (click)="closeMega()" role="link">
                 <div class="flex items-start gap-4">
@@ -138,19 +127,19 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail';
         </ng-container>
       </div>
 
-      <!-- Context strip (not on dashboard or detail pages) -->
+      <!-- Context strip: ONLY on tech list pages (not dashboard, not details, not SD, not courses) -->
       <div class="context" *ngIf="showContextStrip()">
         <div class="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
             <ng-container *ngIf="mode()==='tech-list'">
               <div class="flex">
                 <a class="pill pill-tab px-3 py-2 rounded-l hover:bg-white/10"
-                  [ngClass]="{'pill-tab-active': section()==='coding'}"
-                  [routerLink]="['/', currentTech(), 'coding']">Coding</a>
+                   [ngClass]="{'pill-tab-active': section()==='coding'}"
+                   [routerLink]="['/', currentTech(), 'coding']">Coding</a>
 
                 <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
-                  [ngClass]="{'pill-tab-active': section()==='trivia'}"
-                  [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
+                   [ngClass]="{'pill-tab-active': section()==='trivia'}"
+                   [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
               </div>
             </ng-container>
           </div>
@@ -167,9 +156,9 @@ export class HeaderComponent {
   isSystemDesign = computed(() =>
     this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
   );
-  isListPage = computed(() => this.mode() === 'tech-list' || this.mode() === 'sd-list');
   isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
-  showContextStrip = computed(() => this.mode() !== 'dashboard' && !this.isDetailPage());
+  // 👍 show the Coding/Trivia strip only on tech list pages
+  showContextStrip = computed(() => this.mode() === 'tech-list');
 
   backLink = computed(() => {
     if (this.mode() === 'sd-detail') return ['/system-design'];
@@ -187,7 +176,7 @@ export class HeaderComponent {
       startWith(null)
     ).subscribe(() => {
       this.parseUrl(this.router.url);
-      this.megaOpen.set(false); // close on navigation
+      this.megaOpen.set(false);
     });
   }
 
@@ -196,6 +185,12 @@ export class HeaderComponent {
     this.mode.set('dashboard'); this.currentTech.set(null); this.section.set(null);
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
+
+    // NEW: courses pages
+    if (segs[0] === 'courses') {
+      this.mode.set('course'); // hides Coding/Trivia strip
+      return;
+    }
 
     if (segs[0] === 'system-design') {
       this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail');

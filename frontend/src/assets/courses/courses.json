@@ -1,0 +1,38 @@
+[
+    {
+        "id": "javascript-basics",
+        "title": "Learn JavaScript",
+        "subtitle": "Step-by-step, practice-first",
+        "description": "Short lessons and hands-on exercises.",
+        "topics": [
+            {
+                "id": "functions",
+                "title": "Functions",
+                "lessons": [
+                    {
+                        "id": "basic-functions",
+                        "title": "Basic functions",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "sum-exercise",
+                        "title": "Sum (coding)",
+                        "type": "coding",
+                        "ref": "mean"
+                    }
+                ]
+            },
+            {
+                "id": "arrays",
+                "title": "Arrays",
+                "lessons": [
+                    {
+                        "id": "array-basics",
+                        "title": "Array basics",
+                        "type": "reading"
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -1,0 +1,59 @@
+.footer { /* wrapper already fixed by parent */ }
+
+.pbtn-sm {
+  @apply bg-neutral-800 border border-white/10 rounded px-3 py-1 text-sm hover:bg-neutral-700 disabled:opacity-50;
+}
+.crumb { @apply text-sm opacity-80; }
+
+.left-trigger {
+  @apply flex items-center gap-2 px-2 py-1 rounded text-sm border border-white/10 bg-neutral-800 hover:bg-neutral-700;
+}
+.left-trigger .icon { @apply opacity-70; }
+
+.drawer-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.35);
+  z-index: 50;
+  display: flex;
+}
+.drawer {
+  width: min(360px, 90vw);
+  height: 100%;
+  background: #0a0a0a;
+  border-right: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 0 30px rgba(0,0,0,.5);
+  animation: slideIn .15s ease-out;
+}
+@keyframes slideIn { from { transform: translateX(-12px); opacity: .7; } to { transform: translateX(0); opacity: 1; } }
+
+.drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .75rem 1rem; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.drawer-header .title { @apply font-semibold; }
+.drawer-header .close {
+  @apply px-2 py-1 rounded bg-neutral-800 border border-white/10 hover:bg-neutral-700;
+}
+
+.drawer-content {
+  height: calc(100% - 48px);
+  overflow: auto;
+  padding: .5rem .25rem .75rem .25rem;
+}
+
+.topic { padding: .25rem .5rem .75rem .5rem; }
+.topic-title { @apply text-sm font-semibold opacity-90 px-2 py-1; }
+
+.lessons { list-style: none; padding: 0; margin: .25rem 0 0 0; }
+.lesson-row {
+  @apply w-full text-left flex items-center gap-2 px-2 py-1 rounded hover:bg-white/5;
+}
+.lesson-title { @apply truncate; }
+
+.pill {
+  @apply text-[10px] uppercase px-2 py-0.5 rounded border border-white/10 opacity-70;
+}
+.pill.reading { @apply bg-blue-900/40 text-blue-200; }
+.pill.coding { @apply bg-emerald-900/40 text-emerald-200; }
+
+li.active .lesson-row { @apply bg-white/10; }

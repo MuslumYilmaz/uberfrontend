@@ -4,11 +4,12 @@ import {
   OnDestroy, OnInit, signal, ViewChild, WritableSignal
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { filter } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
@@ -18,18 +19,25 @@ import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot
 import { getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey } from '../../../core/utils/storage-keys';
 import { transformTestCode, wrapExportDefault } from '../../../core/utils/test-transform';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
+import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
-declare const monaco: any; // Monaco global (loaded in index.html)
+declare const monaco: any;
 
 type JsLang = 'js' | 'ts';
+
+type CourseNavState = {
+  breadcrumb?: { to: any[]; label: string };
+  prev?: { to: any[]; label: string } | null;
+  next?: { to: any[]; label: string } | null;
+} | null;
 
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
   imports: [
     CommonModule, RouterModule, AccordionModule, ButtonModule, DialogModule,
-    ProgressSpinnerModule, MonacoEditorComponent, ConsoleLoggerComponent,
+    ProgressSpinnerModule, MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.scss'],
@@ -68,6 +76,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       : `0 0 ${this.horizontalRatio() * 100}%`
   );
 
+  // Context flags
+  isCourseContext = signal(false);
+
   copiedExamples = signal(false);
   isDraggingVertical = signal(false);
   isDraggingHorizontal = signal(false);
@@ -89,6 +100,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   testResults = signal<TestResult[]>([]);
   consoleEntries = signal<ConsoleEntry[]>([]);
   hasRunTests = false;
+
+  // Course breadcrumb + lesson-to-lesson nav
+  courseNav = signal<CourseNavState>(null);
+  returnLabel = signal<string | null>(null);
+  private returnTo: any[] | null = null;
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
 
@@ -114,6 +130,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
 
+  // Convenience getters for course-footer labels (course context only)
+  readonly coursePrevLabel = computed(() => this.courseNav()?.prev?.label ?? null);
+  readonly courseNextLabel = computed(() => this.courseNav()?.next?.label ?? null);
+  readonly courseCrumbLabel = computed(
+    () => this.courseNav()?.breadcrumb?.label ?? this.returnLabel() ?? null
+  );
+  readonly middleSuffixLabel = 'Coding task';
+
+  // --- course footer/drawer state (when opened from a course) ---
+  courseIdFromState: string | null = null;
+  courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
+  leftDrawerLabel: string | null = null;
+  currentCourseLessonId: string | null = null;
+
+
   descriptionText = computed(() => {
     const q = this.question();
     if (!q) return '';
@@ -138,6 +169,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
     private zone: NgZone,
@@ -146,7 +178,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngEmbed: StackBlitzEmbed
   ) { }
 
-  // ---------- collapse prefs ----------
+  // ---------- helpers ----------
+  private static sortForPractice(a: Question, b: Question): number {
+    const ia = Number((a as any).importance ?? 0);
+    const ib = Number((b as any).importance ?? 0);
+    if (ia !== ib) return ib - ia; // importance DESC
+    return (a.title || '').localeCompare(b.title || ''); // title ASC
+  }
+
+  // collapse prefs
   private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
     try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
@@ -168,22 +208,88 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // Read navigation state (works on first hit & after redirects)
+  private hydrateReturnInfo() {
+    const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
+
+    const cn: CourseNavState = s?.courseNav ?? null;
+    this.courseNav.set(cn);
+
+    // existing breadcrumb/return info...
+    if (cn?.breadcrumb) {
+      this.returnTo = cn.breadcrumb.to;
+      this.returnLabel.set(cn.breadcrumb.label ?? 'Back to course');
+    } else if (s?.returnTo) {
+      this.returnTo = s.returnTo as any[];
+      this.returnLabel.set(s.returnLabel ?? 'Back to course');
+    } else {
+      this.returnTo = null;
+      this.returnLabel.set(null);
+    }
+
+    // ✨ NEW: drawer data
+    this.courseIdFromState = s?.courseId ?? null;
+    this.courseOutline = s?.outline ?? null;
+    this.leftDrawerLabel = s?.leftCourseLabel ?? null;
+    this.currentCourseLessonId = s?.currentLessonId ?? null;
+  }
+
+  onSelectFromFooter(ev: { topicId: string; lessonId: string }) {
+    if (!this.courseIdFromState) return;
+    // Let the course player decide if it’s reading or coding and redirect accordingly.
+    this.router.navigate(['/courses', this.courseIdFromState, ev.topicId, ev.lessonId]);
+  }
+
   // ---------- init ----------
   ngOnInit() {
-    // route shape: /:tech/coding/:id
-    this.route.parent!.paramMap.subscribe(() => { /* noop */ });
+    const recompute = () => {
+      this.hydrateReturnInfo();
+      this.isCourseContext.set(this.computeIsCourseContext());
+    };
+    recompute();
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
+
+    // route shapes:
+    //  - practice: /:tech/coding/:id
+    //  - course redirect: navigate to /:tech/coding/:id with course state
     this.route.paramMap.subscribe((pm) => {
-      this.tech = this.route.parent!.snapshot.paramMap.get('tech')!;
+      // find nearest ancestor with :tech
+      let p: ActivatedRoute | null = this.route;
+      let tech: string | null = null;
+      while (p && !tech) {
+        tech = p.snapshot.paramMap.get('tech');
+        p = p.parent!;
+      }
+      this.tech = (tech || 'javascript') as string;
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
       const id = pm.get('id')!;
       this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
-        this.allQuestions = list;
+        // IMPORTANT: keep ordering identical to the list page
+        this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
         this.loadQuestion(id);
       });
     });
 
     document.body.style.overflow = 'hidden';
+  }
+
+  private computeIsCourseContext(): boolean {
+    if (this.courseNav()) return true;
+    if (this.returnTo) return true;
+
+    // fallback checks (deep links etc.)
+    const url = this.router.url.split('?')[0];
+    if (url.includes('/courses/')) return true;
+
+    const inTree = this.route.pathFromRoot.some(r =>
+      r.snapshot.url.some(s => s.path === 'courses') ||
+      (r.snapshot.routeConfig?.path ?? '').includes('courses') ||
+      !!r.snapshot.paramMap.get('course') ||
+      !!r.snapshot.paramMap.get('courseSlug') ||
+      !!r.snapshot.paramMap.get('slug')
+    );
+    return inTree;
   }
 
   ngAfterViewInit() {
@@ -242,26 +348,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     let shouldShowBanner = false;
 
     if (this.tech !== 'angular') {
-      // JS/TS track
       const jsKey = getJsKey(q.id);
       const baseKey = getJsBaselineKey(q.id);
 
-      // language preference
       const savedPref = (localStorage.getItem(this.langPrefKey(q)) as JsLang | null);
       const defaultLang = this.getDefaultLang(q);
-      // if we have a CodeStorageService save with language, respect that first
       const svcSaved = this.codeStore.getJs(q.id);
       const langFromSvc = svcSaved?.language as JsLang | undefined;
       const resolvedLang: JsLang = langFromSvc ?? savedPref ?? defaultLang;
       this.jsLang.set(resolvedLang);
 
-      // set baselines (for legacy banner check)
       const starterForResolved = this.getStarter(q, resolvedLang);
       if (!localStorage.getItem(baseKey)) {
         try { localStorage.setItem(baseKey, JSON.stringify({ code: starterForResolved })); } catch { }
       }
 
-      // restore saved user code if any
       const savedSvcCode = svcSaved?.code;
       const savedLegacyRaw = localStorage.getItem(jsKey);
       const savedLegacy = savedLegacyRaw ? (() => { try { return JSON.parse(savedLegacyRaw); } catch { return null; } })() : null;
@@ -275,15 +376,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.editorContent.set(starterForResolved);
       }
 
-      // tests default by lang
       this.testCode.set(this.getTests(q, resolvedLang));
 
-      // cleanup any Angular VM
       if (this.embedCleanup) this.embedCleanup();
       this.sbVm = null;
       this.embedLoading.set(false);
     } else {
-      // Angular track
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
@@ -368,9 +466,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
-      // canonical save
       this.codeStore.saveJs(q.id, code, this.jsLang());
-      // legacy key (kept for banner compare/reset paths)
       try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code })); } catch { }
     }, 300);
   }
@@ -386,11 +482,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const prevLang = this.jsLang();
     if (lang === prevLang) return;
 
-    // Persist preference
     try { localStorage.setItem(this.langPrefKey(q), lang); } catch { }
     this.jsLang.set(lang);
 
-    // Swap boilerplate to matching variant *only if* current content looks like baseline of the previous lang
     const prevStarter = this.getStarter(q, prevLang);
     const nextStarter = this.getStarter(q, lang);
     const prevSolution = this.getSolution(q, prevLang);
@@ -402,17 +496,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (prevSolution && current.trim() === prevSolution.trim()) {
       this.editorContent.set(nextSolution || nextStarter);
     }
-    // Swap tests similarly if they match previous baseline
+
     const prevTests = this.getTests(q, prevLang);
     const nextTests = this.getTests(q, lang);
     if (this.testCode().trim() === prevTests.trim()) {
       this.testCode.set(nextTests);
     }
 
-    // Update baseline key used by the restore banner (so it compares against correct lang)
     try { localStorage.setItem(getJsBaselineKey(q.id), JSON.stringify({ code: this.getStarter(q, lang) })); } catch { }
-
-    // Save current content under service with new lang
     this.codeStore.saveJs(q.id, this.editorContent(), lang);
   }
 
@@ -437,17 +528,39 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.topTab.set('code');
   }
 
-  // ---------- navigation ----------
+  // ---------- navigation (practice) ----------
   prev() {
     if (this.currentIndex > 0) {
       const prevId = this.allQuestions[this.currentIndex - 1].id;
-      location.pathname = `/${this.tech}/coding/${prevId}`;
+      this.router.navigate(['/', this.tech, 'coding', prevId]);
     }
   }
   next() {
     if (this.currentIndex + 1 < this.allQuestions.length) {
       const nextId = this.allQuestions[this.currentIndex + 1].id;
-      location.pathname = `/${this.tech}/coding/${nextId}`;
+      this.router.navigate(['/', this.tech, 'coding', nextId]);
+    }
+  }
+
+  // ---------- navigation (course) ----------
+  goCoursePrev() {
+    const c = this.courseNav();
+    if (c?.prev) this.router.navigate(c.prev.to);
+    else this.backToReturn(); // fallback to course root
+  }
+  goCourseNext() {
+    const c = this.courseNav();
+    if (c?.next) this.router.navigate(c.next.to);
+  }
+  backToReturn() {
+    if (this.courseNav()?.breadcrumb?.to) {
+      this.router.navigate(this.courseNav()!.breadcrumb!.to);
+    } else if (this.returnTo) {
+      this.router.navigate(this.returnTo);
+    } else if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/courses']);
     }
   }
 
@@ -463,7 +576,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const js = out?.outputFiles?.[0]?.text ?? '';
       return js || '';
     } catch {
-      return code; // fallback: runner will report syntax error
+      return code;
     } finally {
       model.dispose();
     }
@@ -474,7 +587,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question(); if (!q) return;
     if (this.tech === 'angular') return;
 
-    // shift UI
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
@@ -484,10 +596,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const userSrc = this.editorContent();
     const testsSrc = this.testCode();
 
-    // transpile if TS
     const userJs = lang === 'ts' ? await this.transpileTsToJs(userSrc, `${q.id}.ts`) : userSrc;
-    const testsLangLooksTs = (lang === 'ts'); // we bound tests to lang when loading/toggling
-    const testsJs = testsLangLooksTs ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
+    const testsJs = lang === 'ts' ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
 
     const wrapped = wrapExportDefault(userJs, q.id);
     const testsPrepared = transformTestCode(testsJs, q.id);
@@ -584,7 +694,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       if (this.tech !== 'angular') {
         localStorage.removeItem(getJsKey(q.id));
-        // reset to current language baseline
         const lang = this.jsLang();
         this.editorContent.set(this.getStarter(q, lang));
         this.testCode.set(this.getTests(q, lang));

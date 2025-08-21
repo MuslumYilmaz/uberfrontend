@@ -1,4 +1,3 @@
-// src/app/features/tech-layout/tech-layout.component.ts
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';

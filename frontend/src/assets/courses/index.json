@@ -1,0 +1,9 @@
+[
+    {
+        "id": "javascript",
+        "title": "Learn JavaScript",
+        "blurb": "Learn modern JavaScript by reading short lessons and practicing challenges.",
+        "technology": "javascript",
+        "heroColor": "#ffd300"
+    }
+]

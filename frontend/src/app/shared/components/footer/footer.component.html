@@ -1,0 +1,81 @@
+<footer class="footer fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
+    <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
+
+        <!-- LEFT: Course drawer trigger (only when in course mode AND outline is available) -->
+        <div class="flex items-center gap-2 min-w-0">
+            <button *ngIf="mode==='course' && outline?.length && leftCourseLabel" class="left-trigger"
+                (click)="openMenu()" type="button" aria-label="Open course outline">
+                <span class="icon">☰</span>
+                <span class="truncate">{{ leftCourseLabel }}</span>
+            </button>
+        </div>
+
+        <!-- MIDDLE: practice vs course controls -->
+        <div class="flex items-center gap-2">
+            <!-- Practice -->
+            <ng-container *ngIf="mode==='practice'; else courseContent">
+                <button class="pbtn-sm" (click)="prev.emit()" [disabled]="prevDisabled">← Prev</button>
+                <span class="opacity-70 text-sm" *ngIf="progressText">{{ progressText }}</span>
+                <button class="pbtn-sm" (click)="next.emit()" [disabled]="nextDisabled">Next →</button>
+            </ng-container>
+
+            <!-- Course -->
+            <ng-template #courseContent>
+                <div class="flex items-center gap-3">
+                    <button class="pbtn-sm" (click)="coursePrev.emit()" [disabled]="!coursePrevLabel" type="button">
+                        ← {{ coursePrevLabel || 'Back' }}
+                    </button>
+
+                    <span class="opacity-60 text-sm">/</span>
+
+                    <button class="crumb underline decoration-dotted" *ngIf="breadcrumbLabel" (click)="back.emit()"
+                        type="button">
+                        {{ breadcrumbLabel }}
+                    </button>
+
+                    <span class="opacity-80 text-sm truncate max-w-[30vw]">
+                        {{ middleSuffixLabel || '' }}
+                    </span>
+
+                    <button class="pbtn-sm ml-2" (click)="courseNext.emit()" [disabled]="!courseNextLabel"
+                        type="button">
+                        {{ courseNextLabel ? ('Next: ' + courseNextLabel) : 'Next' }} →
+                    </button>
+                </div>
+            </ng-template>
+        </div>
+
+        <!-- RIGHT: submit -->
+        <div class="flex items-center gap-2">
+            <button *ngIf="showSubmit" class="pbtn-sm" (click)="submit.emit()" type="button">
+                {{ submitLabel }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Drawer -->
+    <div class="drawer-backdrop" *ngIf="menuOpen()" (click)="closeMenu()">
+        <aside class="drawer" (click)="$event.stopPropagation()">
+            <header class="drawer-header">
+                <div class="title">Course outline</div>
+                <button class="close" (click)="closeMenu()" aria-label="Close">✕</button>
+            </header>
+            <div class="drawer-content">
+                <section class="topic" *ngFor="let t of outline; trackBy: trackTopic">
+                    <div class="topic-title">{{ t.title }}</div>
+                    <ul class="lessons">
+                        <li *ngFor="let l of t.lessons; trackBy: trackLesson" [class.active]="l.id === currentLessonId">
+                            <button class="lesson-row" (click)="onSelect(t.id, l.id)">
+                                <span class="pill" [class.reading]="l.type==='reading'"
+                                    [class.coding]="l.type==='coding'">
+                                    {{ l.type }}
+                                </span>
+                                <span class="lesson-title">{{ l.title }}</span>
+                            </button>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </aside>
+    </div>
+</footer>
