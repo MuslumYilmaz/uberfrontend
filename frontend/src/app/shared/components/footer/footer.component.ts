@@ -60,16 +60,28 @@ export class FooterComponent {
   @Output() selectLesson = new EventEmitter<{ topicId: string; lessonId: string }>();
 
   menuOpen = signal(false);
+  menuVisible = signal(false);
+
+  private readonly DRAWER_MS = 180;
 
   openMenu() {
     if (this.mode !== 'course' || !this.outline?.length) return;
-    this.menuOpen.set(true);
+    this.menuVisible.set(true);
+    requestAnimationFrame(() => this.menuOpen.set(true));
   }
-  closeMenu() { this.menuOpen.set(false); }
+
+  closeMenu() {
+    this.menuOpen.set(false);
+    setTimeout(() => this.menuVisible.set(false), this.DRAWER_MS);
+  }
 
   onSelect(topicId: string, lessonId: string) {
-    this.selectLesson.emit({ topicId, lessonId });
-    this.closeMenu();
+    // close first (animate), then emit so the parent navigates after fade/slide
+    this.menuOpen.set(false);
+    setTimeout(() => {
+      this.menuVisible.set(false);
+      this.selectLesson.emit({ topicId, lessonId });
+    }, this.DRAWER_MS);
   }
 
   trackTopic(_: number, t: OutlineTopic) { return t.id; }

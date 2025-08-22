@@ -13,10 +13,18 @@
 .topbar a.tab{
   color:#cbd5e1;
   transition:background-color .15s ease, color .15s ease;
-  padding:.25rem .6rem;           /* make them pill-like */
+  padding:.25rem .6rem;
   border-radius:.5rem;
   display:inline-flex;
   align-items:center;
+  gap:.4rem;                 /* ensure space between icon and label */
+}
+.tab-icon{
+  width:16px;
+  height:16px;
+  display:inline-block;
+  flex:0 0 16px;
+  vertical-align:middle;
 }
 .topbar a.tab:hover{ color:#fff; background:rgba(255,255,255,.06); }
 .topbar a.tab.tab-active{

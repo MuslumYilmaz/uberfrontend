@@ -40,3 +40,7 @@ html, body {
   border: 1px solid #e5e7eb /* Tailwind’s gray-200 hex */;
   border-radius: 0.5rem;     /* matches rounded-lg */
 }
+
+/* Only affect widgets inside this page */
+.coding-detail :where(.p-component) { font-size: .875rem; } /* 14px */
+.coding-detail :where(.p-dialog .p-dialog-header, .p-dialog .p-dialog-content) { font-size: .875rem; }

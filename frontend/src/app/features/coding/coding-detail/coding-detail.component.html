@@ -1,4 +1,5 @@
-<div class="flex gap-[5px] h-[calc(100vh-64px-85px)]">
+<!-- coding-detail.component.html -->
+<div class="coding-detail flex gap-[5px] h-[calc(100vh-64px-85px)]">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
     [style.flex]="asideFlex()" style="min-width:0;">
@@ -9,12 +10,12 @@
           (click)="toggleDescription()" aria-label="Expand description"></button>
 
         <button pButton type="button" icon="pi pi-file" class="p-button-rounded p-button-text"
-          [ngClass]="{'text-white': activePanel()===0, 'opacity-60': activePanel()!==0}"
+          [ngClass]="{ 'text-white': activePanel()===0, 'opacity-60': activePanel()!==0 }"
           (click)="activePanel.set(0); toggleDescription()" aria-label="Description"></button>
 
         <button pButton type="button" icon="pi pi-code" class="p-button-rounded p-button-text"
-          [ngClass]="{'text-white': activePanel()===1, 'opacity-60': activePanel()!==1}" (click)="onSolutionTabClick()"
-          aria-label="Solution"></button>
+          [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
+          (click)="onSolutionTabClick()" aria-label="Solution"></button>
       </div>
       <div></div>
     </div>
@@ -25,11 +26,15 @@
         <div class="flex-1 flex">
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
             [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
-            (click)="activePanel.set(0)">Description</button>
+            (click)="activePanel.set(0)">
+            Description
+          </button>
 
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-            (click)="onSolutionTabClick()">Solution</button>
+            (click)="onSolutionTabClick()">
+            Solution
+          </button>
         </div>
 
         <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" pButton type="button"
@@ -39,9 +44,12 @@
       <div class="flex-1 overflow-auto p-6 text-white">
         <!-- Description Panel -->
         <div *ngIf="activePanel()===0" class="space-y-4">
-          <h1 class="text-2xl font-bold">{{ question()?.title }}</h1>
-          <div class="text-sm text-gray-400 capitalize">{{ question()?.difficulty }}</div>
-          <div class="whitespace-pre-wrap">{{ descriptionText() }}</div>
+          <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
+          <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
+
+          <div class="whitespace-pre-wrap text-sm leading-6">
+            {{ descriptionText() }}
+          </div>
 
           <ng-container *ngIf="combinedExamples()">
             <div class="mt-6">
@@ -54,11 +62,12 @@
                   <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
                 </button>
               </div>
-              <div class="h-48">
-                <app-monaco-editor [code]="combinedExamples()"
-                  [language]="tech==='angular' ? 'typescript' : 'javascript'" [readOnly]="true"
-                  class="h-full rounded border border-white/10"
-                  [options]="{ minimap:{enabled:false}, lineNumbers:'on', folding:false }">
+
+              <!-- Monaco preview (unclickable, no scrollbars, preserved syntax colors) -->
+              <div class="h-48 relative overflow-hidden">
+                <app-monaco-editor class="h-full rounded border border-white/10 pointer-events-none select-none"
+                  [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
+                  [readOnly]="true" [options]="examplesMonacoOptions">
                 </app-monaco-editor>
               </div>
             </div>
@@ -75,7 +84,9 @@
           <!-- If warning is on, show confirm -->
           <ng-container *ngIf="showSolutionWarning(); else solutionContent">
             <div class="solution-warning rounded border border-yellow-400 bg-yellow-100/10 p-4 flex gap-3">
-              <div class="icon text-2xl">⚠️</div>
+              <div class="icon-warning">
+                <i class="pi pi-exclamation-triangle"></i>
+              </div>
               <div class="content">
                 <h3 class="font-semibold mb-2">Are you sure you want to see the solution?</h3>
                 <p class="mb-3">
@@ -92,11 +103,12 @@
 
           <!-- After confirming, we show the explanation (code is already applied) -->
           <ng-template #solutionContent>
-            <h2 class="text-xl font-semibold">Solution Explanation</h2>
-            <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
+            <h2 class="text-base font-semibold">Solution Explanation</h2>
+            <div class="whitespace-pre-wrap text-xs leading-5">
+              {{ question()?.solution }}
+            </div>
           </ng-template>
         </div>
-
       </div>
     </ng-container>
   </aside>
@@ -107,15 +119,13 @@
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
-
     <!-- JS banner -->
     <div *ngIf="tech!=='angular' && showRestoreBanner()"
-      class="px-4 py-2 bg-yellow-200 text-black text-sm flex items-center gap-3">
+      class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs flex items-center gap-2">
       <span class="truncate">Your code was restored from client storage.</span>
       <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
       <button class="ml-auto opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
     </div>
-
     <!-- ANGULAR via StackBlitz SDK -->
     <ng-container *ngIf="tech==='angular'">
       <div
@@ -143,9 +153,14 @@
         <div class="flex items-center border-b border-white/10 px-4">
           <div class="flex">
             <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
-              (click)="topTab.set('code')">&lt;/&gt; Code</button>
+              (click)="topTab.set('code')">
+              &lt;/&gt; Code
+            </button>
             <button class="px-4 py-2" [class.opacity-100]="isTopTestsTab()" [class.opacity-60]="!isTopTestsTab()"
-              (click)="topTab.set('tests')">⚗️ Test cases</button>
+              (click)="topTab.set('tests')">
+              <i class="pi pi-clipboard mr-2"></i> Test cases
+            </button>
+
           </div>
 
           <div class="ml-auto flex items-center gap-2">
@@ -163,12 +178,12 @@
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <!-- Code editor -->
             <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
-              [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+              [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorMonacoOptions"
               (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
 
             <!-- Tests editor (always JS) -->
             <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
-              (codeChange)="testCode.set($event)"></app-monaco-editor>
+              [options]="editorMonacoOptions" (codeChange)="testCode.set($event)"></app-monaco-editor>
           </div>
 
           <!-- Horizontal splitter -->
@@ -177,25 +192,33 @@
 
           <!-- Results / Console -->
           <div class="flex-1 flex flex-col overflow-hidden min-h-0">
-            <div class="flex items-center gap-6 px-3 py-2 text-sm border-b border-white/10 bg-neutral-900/60">
+            <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
               <button class="font-medium" (click)="runTests()">▶ Run tests</button>
               <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
-                (click)="subTab.set('tests')">Results</button>
+                (click)="subTab.set('tests')">
+                Results
+              </button>
               <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
-                (click)="subTab.set('console')">Console</button>
-              <span class="ml-auto text-sm opacity-80" *ngIf="hasRunTests">
+                (click)="subTab.set('console')">
+                Console
+              </button>
+              <span class="ml-auto opacity-80" *ngIf="hasRunTests">
                 {{ passedCount() }}/{{ totalCount() }} passed
               </span>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
               <!-- Results -->
-              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-6">
+              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
                 <div *ngIf="!hasRunTests" class="h-full grid place-items-center">
                   <div class="text-center">
-                    <div class="text-6xl leading-none mb-4">🧪</div>
-                    <h3 class="text-xl font-semibold mb-2">Test your code</h3>
-                    <p class="text-gray-400 mb-5">
+                    <!-- BEFORE: <div class="text-4xl leading-none mb-3">🧪</div> -->
+                    <div class="icon-hero mb-3">
+                      <i class="pi pi-play"></i>
+                    </div>
+
+                    <h3 class="text-base font-semibold mb-2">Test your code</h3>
+                    <p class="text-gray-400 mb-4 text-xs">
                       Run your code with
                       <a href="" class="text-yellow-300 underline" (click)="goToCustomTests($event)">custom test
                         cases</a>
@@ -205,8 +228,9 @@
                   </div>
                 </div>
 
-                <div *ngIf="hasRunTests" class="space-y-3">
-                  <div class="mb-2 text-sm">
+
+                <div *ngIf="hasRunTests" class="space-y-2">
+                  <div class="summary mb-2">
                     <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
                     <ng-container *ngIf="totalCount() > 0">
                       <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
@@ -217,12 +241,14 @@
                     </ng-container>
                   </div>
 
-                  <div *ngFor="let t of testResults()" class="p-3 rounded border"
+                  <div *ngFor="let t of testResults()" class="test-card border rounded-md"
                     [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
-                    <div class="font-medium">
-                      {{ t.passed ? '✅' : '❌' }} {{ t.name }}
+                    <div class="test-name">
+                      <i [ngClass]="t.passed ? 'pi pi-check-circle text-green-400'
+                           : 'pi pi-times-circle text-red-400'"></i>
+                      <span>{{ t.name }}</span>
                     </div>
-                    <div *ngIf="t.error" class="mt-1 text-sm text-red-300 whitespace-pre-wrap break-words">
+                    <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
                       {{ t.error }}
                     </div>
                   </div>

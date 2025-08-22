@@ -64,30 +64,31 @@
         </div>
     </div>
 
-    <!-- Drawer -->
-    <div class="drawer-backdrop" *ngIf="menuOpen()" (click)="closeMenu()">
-        <aside class="drawer" (click)="$event.stopPropagation()">
-            <header class="drawer-header">
-                <div class="title">Course outline</div>
-                <button class="close" (click)="closeMenu()" aria-label="Close">✕</button>
-            </header>
-
-            <div class="drawer-content">
-                <section class="topic" *ngFor="let t of outline; trackBy: trackTopic">
-                    <div class="topic-title">{{ t.title }}</div>
-                    <ul class="lessons">
-                        <li *ngFor="let l of t.lessons; trackBy: trackLesson" [class.active]="l.id === currentLessonId">
-                            <button class="lesson-row" (click)="onSelect(t.id, l.id)" type="button">
-                                <span class="pill" [class.reading]="l.type==='reading'"
-                                    [class.coding]="l.type==='coding'">
-                                    {{ l.type }}
-                                </span>
-                                <span class="lesson-title">{{ l.title }}</span>
-                            </button>
-                        </li>
-                    </ul>
-                </section>
-            </div>
-        </aside>
-    </div>
 </footer>
+
+<!-- Drawer -->
+<!-- Drawer -->
+<div class="drawer-backdrop" *ngIf="menuVisible()" [class.show]="menuOpen()" (click)="closeMenu()">
+    <aside class="drawer" [class.show]="menuOpen()" (click)="$event.stopPropagation()">
+        <header class="drawer-header">
+            <div class="title">Course outline</div>
+            <button class="close" (click)="closeMenu()" aria-label="Close">✕</button>
+        </header>
+
+        <div class="drawer-content">
+            <section class="topic" *ngFor="let t of outline; trackBy: trackTopic">
+                <div class="topic-title">{{ t.title }}</div>
+                <ul class="lessons">
+                    <li *ngFor="let l of t.lessons; trackBy: trackLesson" [class.active]="l.id === currentLessonId">
+                        <button class="lesson-row" (click)="onSelect(t.id, l.id)" type="button">
+                            <span class="pill" [class.reading]="l.type==='reading'" [class.coding]="l.type==='coding'">
+                                {{ l.type }}
+                            </span>
+                            <span class="lesson-title">{{ l.title }}</span>
+                        </button>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </aside>
+</div>

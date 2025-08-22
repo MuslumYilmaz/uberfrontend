@@ -25,15 +25,42 @@ type Mode =
         <div class="flex items-center gap-6 min-w-0">
           <a class="font-semibold text-white hover:opacity-90 whitespace-nowrap" routerLink="/">UberFrontend</a>
 
-          <!-- Tech tabs only on list pages (JS/Angular/System Design lists) -->
-          <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
-            <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
-               [class.tab-active]="currentTech()==='javascript'">JavaScript</a>
-            <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
-               [class.tab-active]="currentTech()==='angular'">Angular</a>
-            <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
-               [class.tab-active]="isSystemDesign()">System design</a>
-          </nav>
+<!-- Tech tabs only on list pages (JS/Angular/System Design lists) -->
+<nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
+  <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
+     [class.tab-active]="currentTech()==='javascript'">
+    <!-- JS icon -->
+    <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
+      <text x="16" y="21" text-anchor="middle"
+            font-size="14" font-weight="700"
+            font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'"
+            fill="#111">JS</text>
+    </svg>
+    JavaScript
+  </a>
+
+  <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
+     [class.tab-active]="currentTech()==='angular'">
+    <!-- Angular icon -->
+    <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <!-- shield -->
+      <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
+      <!-- inner -->
+      <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
+      <!-- A (letter) -->
+      <text x="16" y="21" text-anchor="middle"
+            font-size="14" font-weight="800"
+            font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'"
+            fill="#fff">A</text>
+    </svg>
+    Angular
+  </a>
+
+  <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
+     [class.tab-active]="isSystemDesign()">System design</a>
+</nav>
+
         </div>
 
         <!-- CENTER: Prepare (only on detail pages) -->

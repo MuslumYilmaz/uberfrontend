@@ -173,6 +173,34 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return exs.map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`).join('\n\n// --------\n\n');
   });
 
+  // ---- Monaco options for the read-only "Examples" block (unclickable + no scrollbars)
+  editorMonacoOptions = {
+    fontSize: 12,
+    lineHeight: 18,
+    minimap: { enabled: false },
+    tabSize: 2,
+  };
+
+  examplesMonacoOptions = {
+    readOnly: true,
+    fontSize: 12,
+    lineHeight: 18,
+    minimap: { enabled: false },
+    lineNumbers: 'on' as const,
+    folding: false,
+    renderLineHighlight: 'none' as const,
+    scrollBeyondLastLine: false,
+    overviewRulerLanes: 0,
+    scrollbar: {
+      vertical: 'hidden' as const,
+      horizontal: 'hidden' as const,
+      useShadows: false,
+      verticalScrollbarSize: 0,
+      horizontalScrollbarSize: 0,
+      alwaysConsumeMouseWheel: false,
+    },
+  };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -214,7 +242,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Read navigation state (works on first hit & after redirects)
+  // Read navigation state
   private hydrateReturnInfo() {
     const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
 
@@ -525,7 +553,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
   async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
 
-  // ---------- solution warning (legacy API kept; handler below now drives the flow) ----------
+  // ---------- solution warning ----------
   private shouldWarnForSolution(): boolean {
     return this.isCourseContext() && localStorage.getItem(this.SOLUTION_WARN_SKIP_KEY) !== 'true';
   }
@@ -543,7 +571,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showSolutionWarning.set(true);
       return;
     }
-
     this.loadSolutionCode();
   }
 
@@ -817,16 +844,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** When the user clicks the Solution tab */
   onSolutionTabClick() {
-    // expand the left pane if it was collapsed
-    if (this.descCollapsed()) this.toggleDescription();
-    // switch to the Solution panel and show the warning (always gate through here)
+    if (this.descCollapsed()) this.toggleDescription(); // ensure left pane visible
     this.activePanel.set(1);
     this.showSolutionWarning.set(true);
   }
 
   /** Confirm reveal: apply solution code and keep Solution tab active */
   confirmSolutionReveal() {
-    this.loadSolutionCode(); // auto-applies the solution and keeps Solution tab active
+    this.loadSolutionCode();
     this.showSolutionWarning.set(false);
   }
 
