@@ -15,11 +15,6 @@ export interface TestResult {
   error?: string;
 }
 
-/**
- * DUMB VIEW ONLY
- * Renders logs and (optionally) shows results summary if you want to extend it.
- * No iframes, no execution, no postMessage.
- */
 @Component({
   selector: 'app-console-logger',
   standalone: true,
@@ -41,9 +36,7 @@ export interface TestResult {
       </div>
     </div>
   `,
-  styles: [`
-    :host { display:block; height:100%; min-height:200px; }
-  `],
+  styles: [`:host { display:block; height:100%; min-height:200px; }`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleLoggerComponent {
@@ -51,7 +44,6 @@ export class ConsoleLoggerComponent {
   @Input() results: TestResult[] = [];
 
   formatTime(ts: number) { return new Date(ts).toLocaleTimeString(); }
-
   levelClass(level: LogLevel) {
     switch (level) {
       case 'error': return 'text-red-400';

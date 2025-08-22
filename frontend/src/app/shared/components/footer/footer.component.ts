@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { TooltipModule } from 'primeng/tooltip';
 
 type Mode = 'practice' | 'course';
 
@@ -19,7 +20,7 @@ type OutlineTopic = {
 @Component({
   standalone: true,
   selector: 'app-footer',
-  imports: [CommonModule],
+  imports: [CommonModule, TooltipModule],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })
@@ -32,6 +33,7 @@ export class FooterComponent {
   @Input() showPrevNext = false;
   @Input() prevDisabled = false;
   @Input() nextDisabled = false;
+  @Input() nextDisabledTooltip: string | null = null;
 
   // Course (reading/coding with breadcrumb)
   @Input() backLabel?: string | null;           // “Back to course”
@@ -40,11 +42,11 @@ export class FooterComponent {
   @Input() coursePrevLabel?: string | null;
   @Input() courseNextLabel?: string | null;
 
-  // Submit area
+  // Optional right-side submit/action (used by reading lessons)
   @Input() showSubmit = false;
   @Input() submitLabel = 'Submit';
 
-  // NEW: left-side course-outline menu (courses only)
+  // Left-side course-outline menu (courses only)
   @Input() leftCourseLabel?: string | null;     // “1. Basic functions”
   @Input() outline?: OutlineTopic[] | null;     // topics + lessons
   @Input() currentLessonId?: string | null;     // to highlight current
@@ -54,9 +56,7 @@ export class FooterComponent {
   @Output() back = new EventEmitter<void>();
   @Output() coursePrev = new EventEmitter<void>();
   @Output() courseNext = new EventEmitter<void>();
-  @Output() submit = new EventEmitter<void>();
-
-  // When a lesson is clicked inside the drawer
+  @Output() submit = new EventEmitter<void>();  // reading “Mark as complete”
   @Output() selectLesson = new EventEmitter<{ topicId: string; lessonId: string }>();
 
   menuOpen = signal(false);

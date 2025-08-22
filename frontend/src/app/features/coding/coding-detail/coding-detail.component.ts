@@ -106,6 +106,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;
 
+  // Solution warning
+  showSolutionWarning = signal(false);
+  private readonly SOLUTION_WARN_SKIP_KEY = 'uf:coding:skipSolutionWarning';
+
+  // Solved persistence (unlocks Next across visits)
+  solved = signal(false);
+
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
 
   // drag state
@@ -143,7 +150,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
   leftDrawerLabel: string | null = null;
   currentCourseLessonId: string | null = null;
-
 
   descriptionText = computed(() => {
     const q = this.question();
@@ -215,7 +221,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const cn: CourseNavState = s?.courseNav ?? null;
     this.courseNav.set(cn);
 
-    // existing breadcrumb/return info...
     if (cn?.breadcrumb) {
       this.returnTo = cn.breadcrumb.to;
       this.returnLabel.set(cn.breadcrumb.label ?? 'Back to course');
@@ -227,7 +232,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.returnLabel.set(null);
     }
 
-    // ✨ NEW: drawer data
+    // drawer data
     this.courseIdFromState = s?.courseId ?? null;
     this.courseOutline = s?.outline ?? null;
     this.leftDrawerLabel = s?.leftCourseLabel ?? null;
@@ -236,7 +241,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSelectFromFooter(ev: { topicId: string; lessonId: string }) {
     if (!this.courseIdFromState) return;
-    // Let the course player decide if it’s reading or coding and redirect accordingly.
     this.router.navigate(['/courses', this.courseIdFromState, ev.topicId, ev.lessonId]);
   }
 
@@ -265,7 +269,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const id = pm.get('id')!;
       this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
-        // IMPORTANT: keep ordering identical to the list page
         this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
         this.loadQuestion(id);
       });
@@ -278,7 +281,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.courseNav()) return true;
     if (this.returnTo) return true;
 
-    // fallback checks (deep links etc.)
     const url = this.router.url.split('?')[0];
     if (url.includes('/courses/')) return true;
 
@@ -298,7 +300,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       window.addEventListener('pointerup', this.onPointerUp);
     });
 
-    // TS compiler defaults for Monaco (emit ES modules)
     try {
       monaco?.languages?.typescript?.typescriptDefaults?.setCompilerOptions?.({
         module: monaco.languages.typescript.ModuleKind.ESNext,
@@ -334,6 +335,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
+  // ---------- solved persistence ----------
+  private solvedKey(q: Question) { return `uf:coding:solved:${this.tech}:${q.id}`; }
+  private loadSolvedFlag(q: Question) {
+    try { return localStorage.getItem(this.solvedKey(q)) === 'true'; } catch { return false; }
+  }
+  private saveSolvedFlag(q: Question, v: boolean) {
+    try { localStorage.setItem(this.solvedKey(q), String(!!v)); } catch { }
+  }
+  private clearSolvedFlag(q: Question) {
+    try { localStorage.removeItem(this.solvedKey(q)); } catch { }
+  }
+
   // ---------- load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex((q) => q.id === id);
@@ -342,6 +355,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
     this.question.set(q);
+
+    // restore "solved" status for gating
+    this.solved.set(this.loadSolvedFlag(q));
 
     this.loadCollapsePref(q);
 
@@ -426,9 +442,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (!files) files = {};
 
-      host.innerHTML = '';
       const openFile = (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
-
       const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
         title: q.title || 'Angular question',
         files, dependencies, openFile, storageKey
@@ -511,21 +525,26 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
   async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
 
+  // ---------- solution warning (legacy API kept; handler below now drives the flow) ----------
+  private shouldWarnForSolution(): boolean {
+    return this.isCourseContext() && localStorage.getItem(this.SOLUTION_WARN_SKIP_KEY) !== 'true';
+  }
+  skipSolutionWarningForever() {
+    try { localStorage.setItem(this.SOLUTION_WARN_SKIP_KEY, 'true'); } catch { }
+    this.showSolutionWarning.set(false);
+  }
+
   // ---------- show solution (respect lang) ----------
   showSolution() {
     const q = this.question();
     if (!q) return;
-    const lang = this.jsLang();
-    const solution = this.getSolution(q, lang);
-    const fallback = this.getSolution(q, lang === 'ts' ? 'js' : 'ts');
-    const value = solution || fallback || '';
-    this.editorContent.set(value);
-    if (this.tech !== 'angular') {
-      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: value })); } catch { }
-      this.codeStore.saveJs(q.id, value, lang);
+
+    if (this.shouldWarnForSolution()) {
+      this.showSolutionWarning.set(true);
+      return;
     }
-    this.activePanel.set(1);
-    this.topTab.set('code');
+
+    this.loadSolutionCode();
   }
 
   // ---------- navigation (practice) ----------
@@ -546,9 +565,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   goCoursePrev() {
     const c = this.courseNav();
     if (c?.prev) this.router.navigate(c.prev.to);
-    else this.backToReturn(); // fallback to course root
+    else this.backToReturn();
   }
   goCourseNext() {
+    if (this.isCourseContext() && this.tech !== 'angular' && !this.solved() && !this.allPassing()) {
+      this.topTab.set('tests');
+      this.subTab.set('tests');
+      return;
+    }
     const c = this.courseNav();
     if (c?.next) this.router.navigate(c.next.to);
   }
@@ -608,10 +632,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
 
+    // persist "solved" if all passing
+    const passing = this.allPassing();
+    this.solved.set(passing);
+    this.saveSolvedFlag(q, passing);
+
     this.subTab.set('tests');
   }
 
-  submitCode() { console.log('Submit:', this.editorContent()); }
+  submitCode() {
+    // practice-only CTA; no-op placeholder or hook into your backend
+    console.log('Submit:', this.editorContent());
+  }
   get progressText() { return `${this.currentIndex + 1} / ${this.allQuestions.length}`; }
 
   // ---------- splitters ----------
@@ -718,6 +750,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+      // clear solved on reset
+      this.solved.set(false);
+      this.clearSolvedFlag(q);
+
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
@@ -744,4 +780,59 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
+
+  loadSolutionCode() {
+    const q = this.question();
+    if (!q) return;
+    const lang = this.jsLang();
+    const solution = this.getSolution(q, lang);
+    const fallback = this.getSolution(q, lang === 'ts' ? 'js' : 'ts');
+    const value = solution || fallback || '';
+    this.editorContent.set(value);
+
+    if (this.tech !== 'angular') {
+      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: value })); } catch { }
+      this.codeStore.saveJs(q.id, value, lang);
+    }
+
+    this.activePanel.set(1);
+    this.topTab.set('code');
+  }
+
+  // --- gating + tooltip ---
+  courseNextDisabled = computed(() => {
+    if (!this.isCourseContext() || this.tech === 'angular') return false;
+    if (this.solved()) return false;
+    return !this.allPassing();
+  });
+
+  courseNextTooltip = computed(() => {
+    if (!this.isCourseContext() || this.tech === 'angular') return null;
+    if (!this.courseNextDisabled()) return null;
+    if (this.solved()) return null;
+    return this.hasRunTests
+      ? 'Pass all test cases to continue'
+      : 'Run tests and pass them to unlock Next';
+  });
+
+  /** When the user clicks the Solution tab */
+  onSolutionTabClick() {
+    // expand the left pane if it was collapsed
+    if (this.descCollapsed()) this.toggleDescription();
+    // switch to the Solution panel and show the warning (always gate through here)
+    this.activePanel.set(1);
+    this.showSolutionWarning.set(true);
+  }
+
+  /** Confirm reveal: apply solution code and keep Solution tab active */
+  confirmSolutionReveal() {
+    this.loadSolutionCode(); // auto-applies the solution and keeps Solution tab active
+    this.showSolutionWarning.set(false);
+  }
+
+  /** Cancel reveal: go back to Description tab */
+  cancelSolutionReveal() {
+    this.showSolutionWarning.set(false);
+    this.activePanel.set(0);
+  }
 }

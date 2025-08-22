@@ -1,7 +1,7 @@
 <footer class="footer fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
     <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
 
-        <!-- LEFT: Course drawer trigger (only when in course mode AND outline is available) -->
+        <!-- LEFT: Course drawer trigger (only course mode with outline) -->
         <div class="flex items-center gap-2 min-w-0">
             <button *ngIf="mode==='course' && outline?.length && leftCourseLabel" class="left-trigger"
                 (click)="openMenu()" type="button" aria-label="Open course outline">
@@ -14,15 +14,23 @@
         <div class="flex items-center gap-2">
             <!-- Practice -->
             <ng-container *ngIf="mode==='practice'; else courseContent">
-                <button class="pbtn-sm" (click)="prev.emit()" [disabled]="prevDisabled">← Prev</button>
+                <button class="pbtn-sm" type="button" (click)="prev.emit()" [disabled]="prevDisabled">
+                    ← Prev
+                </button>
+
                 <span class="opacity-70 text-sm" *ngIf="progressText">{{ progressText }}</span>
-                <button class="pbtn-sm" (click)="next.emit()" [disabled]="nextDisabled">Next →</button>
+
+                <button class="pbtn-sm" type="button" (click)="next.emit()" [disabled]="nextDisabled"
+                    [ngClass]="{ 'is-disabled': nextDisabled }" [pTooltip]="nextDisabledTooltip || ''"
+                    [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
+                    Next →
+                </button>
             </ng-container>
 
             <!-- Course -->
             <ng-template #courseContent>
                 <div class="flex items-center gap-3">
-                    <button class="pbtn-sm" (click)="coursePrev.emit()" [disabled]="!coursePrevLabel" type="button">
+                    <button class="pbtn-sm" type="button" (click)="coursePrev.emit()" [disabled]="!coursePrevLabel">
                         ← {{ coursePrevLabel || 'Back' }}
                     </button>
 
@@ -37,17 +45,20 @@
                         {{ middleSuffixLabel || '' }}
                     </span>
 
-                    <button class="pbtn-sm ml-2" (click)="courseNext.emit()" [disabled]="!courseNextLabel"
-                        type="button">
+                    <button class="pbtn-sm ml-2" type="button" (click)="courseNext.emit()"
+                        [disabled]="!courseNextLabel || nextDisabled"
+                        [ngClass]="{ 'is-disabled': !courseNextLabel || nextDisabled }"
+                        [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
+                        [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
                         {{ courseNextLabel ? ('Next: ' + courseNextLabel) : 'Next' }} →
                     </button>
                 </div>
             </ng-template>
         </div>
 
-        <!-- RIGHT: submit -->
+        <!-- RIGHT: optional submit / mark complete (reading lessons) -->
         <div class="flex items-center gap-2">
-            <button *ngIf="showSubmit" class="pbtn-sm" (click)="submit.emit()" type="button">
+            <button *ngIf="showSubmit" class="pbtn-sm" type="button" (click)="submit.emit()">
                 {{ submitLabel }}
             </button>
         </div>
@@ -60,12 +71,13 @@
                 <div class="title">Course outline</div>
                 <button class="close" (click)="closeMenu()" aria-label="Close">✕</button>
             </header>
+
             <div class="drawer-content">
                 <section class="topic" *ngFor="let t of outline; trackBy: trackTopic">
                     <div class="topic-title">{{ t.title }}</div>
                     <ul class="lessons">
                         <li *ngFor="let l of t.lessons; trackBy: trackLesson" [class.active]="l.id === currentLessonId">
-                            <button class="lesson-row" (click)="onSelect(t.id, l.id)">
+                            <button class="lesson-row" (click)="onSelect(t.id, l.id)" type="button">
                                 <span class="pill" [class.reading]="l.type==='reading'"
                                     [class.coding]="l.type==='coding'">
                                     {{ l.type }}

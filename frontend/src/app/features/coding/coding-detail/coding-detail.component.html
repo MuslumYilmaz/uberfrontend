@@ -1,6 +1,5 @@
-<!-- coding-detail.component.html -->
 <div class="flex gap-[5px] h-[calc(100vh-64px-85px)]">
-  <!-- LEFT COLUMN (collapsible → side navbar when collapsed) -->
+  <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
     [style.flex]="asideFlex()" style="min-width:0;">
     <!-- Collapsed rail -->
@@ -14,8 +13,8 @@
           (click)="activePanel.set(0); toggleDescription()" aria-label="Description"></button>
 
         <button pButton type="button" icon="pi pi-code" class="p-button-rounded p-button-text"
-          [ngClass]="{'text-white': activePanel()===1, 'opacity-60': activePanel()!==1}"
-          (click)="activePanel.set(1); toggleDescription()" aria-label="Solution"></button>
+          [ngClass]="{'text-white': activePanel()===1, 'opacity-60': activePanel()!==1}" (click)="onSolutionTabClick()"
+          aria-label="Solution"></button>
       </div>
       <div></div>
     </div>
@@ -30,7 +29,7 @@
 
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-            (click)="activePanel.set(1)">Solution</button>
+            (click)="onSolutionTabClick()">Solution</button>
         </div>
 
         <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" pButton type="button"
@@ -73,15 +72,36 @@
 
         <!-- Solution Panel -->
         <div *ngIf="activePanel()===1" class="space-y-4">
-          <h2 class="text-xl font-semibold">Solution Explanation</h2>
-          <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
-          <button pButton label="Load Solution Code" icon="pi pi-code" (click)="showSolution()"></button>
+          <!-- If warning is on, show confirm -->
+          <ng-container *ngIf="showSolutionWarning(); else solutionContent">
+            <div class="solution-warning rounded border border-yellow-400 bg-yellow-100/10 p-4 flex gap-3">
+              <div class="icon text-2xl">⚠️</div>
+              <div class="content">
+                <h3 class="font-semibold mb-2">Are you sure you want to see the solution?</h3>
+                <p class="mb-3">
+                  You’re about to reveal the full answer and overwrite your editor with the solution code.
+                </p>
+                <div class="actions flex items-center gap-3">
+                  <button pButton label="Show solution" class="p-button-danger"
+                    (click)="confirmSolutionReveal()"></button>
+                  <button pButton label="Cancel" class="p-button-text" (click)="cancelSolutionReveal()"></button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- After confirming, we show the explanation (code is already applied) -->
+          <ng-template #solutionContent>
+            <h2 class="text-xl font-semibold">Solution Explanation</h2>
+            <div class="whitespace-pre-wrap">{{ question()?.solution }}</div>
+          </ng-template>
         </div>
+
       </div>
     </ng-container>
   </aside>
 
-  <!-- VERTICAL SPLITTER (hidden when collapsed) -->
+  <!-- VERTICAL SPLITTER -->
   <div *ngIf="!descCollapsed()" class="splitter" [class.dragging]="isDraggingVertical()"
     (pointerdown)="startHorizontalDrag($event)"></div>
 
@@ -166,7 +186,6 @@
               <span class="ml-auto text-sm opacity-80" *ngIf="hasRunTests">
                 {{ passedCount() }}/{{ totalCount() }} passed
               </span>
-              <button class="text-gray-300 hover:text-white" (click)="submitCode()">☑ Submit</button>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
@@ -225,16 +244,15 @@
 
 <!-- Shared Footer -->
 <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
-  [prevDisabled]="currentIndex === 0" [nextDisabled]="currentIndex + 1 >= allQuestions.length"
-  [breadcrumbLabel]="courseCrumbLabel()" [coursePrevLabel]="coursePrevLabel()" [courseNextLabel]="courseNextLabel()"
-  [middleSuffixLabel]="middleSuffixLabel" [showSubmit]="true"
-  [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" [leftCourseLabel]="leftDrawerLabel"
-  [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" (prev)="prev()" (next)="next()"
-  (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
+  [prevDisabled]="currentIndex === 0"
+  [nextDisabled]="isCourseContext() ? courseNextDisabled() : (currentIndex + 1 >= allQuestions.length)"
+  [nextDisabledTooltip]="courseNextTooltip()" [breadcrumbLabel]="courseCrumbLabel()"
+  [coursePrevLabel]="coursePrevLabel()" [courseNextLabel]="courseNextLabel()" [middleSuffixLabel]="middleSuffixLabel"
+  [leftCourseLabel]="leftDrawerLabel" [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId"
+  [showSubmit]="!isCourseContext()" [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()"
+  (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
   (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>
-
-
 
 <!-- Preview dialog -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"

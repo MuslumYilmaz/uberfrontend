@@ -27,27 +27,22 @@ type FlatEntry = { tId: string; lesson: Lesson; topicTitle: string };
     </div>
 
     <!-- Footer (reading only; coding lessons redirect to coding page) -->
-    <app-footer
-      *ngIf="lesson && lesson.type==='reading'"
-      mode="course"
-      [backLabel]="course?.title || 'Back to course'"
-      [breadcrumbLabel]="course?.title || 'Course'"
-      [middleSuffixLabel]="'Reading lesson'"
-      [coursePrevLabel]="prevLabel"
-      [courseNextLabel]="nextLabel"
-      [showSubmit]="true"
-      [submitLabel]="'Mark as complete'"
-
-      [leftCourseLabel]="currentTopicTitle"
-      [outline]="course?.topics || []"
-      [currentLessonId]="lesson?.id || null"
-
-      (back)="backToCourse()"
-      (coursePrev)="goPrev()"
-      (courseNext)="goNext()"
-      (submit)="markComplete()"
-      (selectLesson)="navigateTo($event.topicId, $event.lessonId)"
-    ></app-footer>
+<app-footer
+  mode="course"
+  [backLabel]="course?.title || 'Back to course'"
+  [breadcrumbLabel]="course?.title || 'Course'"
+  [middleSuffixLabel]="'Reading lesson'"
+  [coursePrevLabel]="prevLabel"
+  [courseNextLabel]="nextLabel"
+  [leftCourseLabel]="currentTopicTitle"
+  [outline]="course?.topics || []"
+  [currentLessonId]="lesson?.id || null"
+  (back)="backToCourse()"
+  (coursePrev)="goPrev()"
+  (courseNext)="goNext()"
+  (submit)="markComplete()"
+  (selectLesson)="navigateTo($event.topicId, $event.lessonId)"
+/>
   `,
 })
 export class CoursePlayerComponent {
