@@ -1,4 +1,3 @@
-// src/app/shared/header/header.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +10,16 @@ type Mode =
   | 'tech-detail'
   | 'sd-list'
   | 'sd-detail'
-  | 'course'; // 👈 add a course mode
+  | 'course';
+
+type PrepareItem = {
+  key: string;
+  icon: string;          // emoji or small svg as text
+  label: string;
+  description: string;
+  route?: string;        // if missing → disabled row
+  badge?: string;        // e.g., "Coming soon"
+};
 
 @Component({
   selector: 'app-header',
@@ -25,42 +33,36 @@ type Mode =
         <div class="flex items-center gap-6 min-w-0">
           <a class="font-semibold text-white hover:opacity-90 whitespace-nowrap" routerLink="/">UberFrontend</a>
 
-<!-- Tech tabs only on list pages (JS/Angular/System Design lists) -->
-<nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
-  <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
-     [class.tab-active]="currentTech()==='javascript'">
-    <!-- JS icon -->
-    <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
-      <text x="16" y="21" text-anchor="middle"
-            font-size="14" font-weight="700"
-            font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'"
-            fill="#111">JS</text>
-    </svg>
-    JavaScript
-  </a>
+          <!-- Tech tabs only on list pages -->
+          <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
+            <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
+               [class.tab-active]="currentTech()==='javascript'">
+              <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
+                <text x="16" y="21" text-anchor="middle"
+                      font-size="14" font-weight="700"
+                      font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'"
+                      fill="#111">JS</text>
+              </svg>
+              JavaScript
+            </a>
 
-  <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
-     [class.tab-active]="currentTech()==='angular'">
-    <!-- Angular icon -->
-    <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <!-- shield -->
-      <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
-      <!-- inner -->
-      <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
-      <!-- A (letter) -->
-      <text x="16" y="21" text-anchor="middle"
-            font-size="14" font-weight="800"
-            font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'"
-            fill="#fff">A</text>
-    </svg>
-    Angular
-  </a>
+            <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
+               [class.tab-active]="currentTech()==='angular'">
+              <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true">
+                <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
+                <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
+                <text x="16" y="21" text-anchor="middle"
+                      font-size="14" font-weight="800"
+                      font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'"
+                      fill="#fff">A</text>
+              </svg>
+              Angular
+            </a>
 
-  <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
-     [class.tab-active]="isSystemDesign()">System design</a>
-</nav>
-
+            <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
+               [class.tab-active]="isSystemDesign()">System design</a>
+          </nav>
         </div>
 
         <!-- CENTER: Prepare (only on detail pages) -->
@@ -88,73 +90,43 @@ type Mode =
                (click)="$event.stopPropagation()"
                (keydown.escape)="closeMega()" tabindex="-1">
             <div class="rounded-xl bg-neutral-900 border border-white/10 shadow-2xl p-3 sm:p-4 space-y-3">
-              <div class="card-row rounded-xl p-4 sm:p-5 disabled">
+
+              <!-- Single ngFor for all rows -->
+              <div *ngFor="let item of prepareItems"
+                   class="card-row rounded-xl p-4 sm:p-5"
+                   [ngClass]="{
+                     'disabled opacity-50 cursor-not-allowed': !item.route,
+                     'hover:bg-white/5 transition cursor-pointer': !!item.route
+                   }"
+                   role="link"
+                   [attr.aria-disabled]="!item.route ? true : null"
+                   tabindex="0"
+                   (click)="onPrepareClick(item, $event)"
+                   (keydown.enter)="onPrepareClick(item, $event)"
+                   (keydown.space)="onPrepareKeySpace(item, $event)">
+
                 <div class="flex items-start gap-4">
-                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">📘</div>
-                  <div class="min-w-0">
+                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">{{ item.icon }}</div>
+
+                  <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-2">
-                      <div class="font-semibold">Front End Interview Playbook</div>
-                      <span class="row-badge">Coming soon</span>
+                      <div class="font-semibold">{{ item.label }}</div>
+                      <span *ngIf="item.badge" class="row-badge">{{ item.badge }}</span>
                     </div>
-                    <div class="text-sm text-gray-400 mt-1">
-                      A starter guide to preparing for front end interviews
-                    </div>
+                    <div class="text-sm text-gray-400 mt-1">{{ item.description }}</div>
                     <div class="skeleton-bar mt-3"></div>
                   </div>
+
+                  <div class="ml-2 opacity-60" *ngIf="item.route">→</div>
                 </div>
               </div>
 
-              <div class="card-row rounded-xl p-4 sm:p-5 disabled">
-                <div class="flex items-start gap-4">
-                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">🔢</div>
-                  <div class="min-w-0">
-                    <div class="flex items-center gap-2">
-                      <div class="font-semibold">GFE 75</div>
-                      <span class="row-badge">Coming soon</span>
-                    </div>
-                    <div class="text-sm text-gray-400 mt-1">
-                      The 75 most important front end interview questions.
-                    </div>
-                    <div class="skeleton-bar mt-3"></div>
-                  </div>
-                </div>
-              </div>
-
-              <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
-                 routerLink="/system-design" (click)="closeMega()" role="link">
-                <div class="flex items-start gap-4">
-                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">🧩</div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-semibold">Front End System Design Playbook</div>
-                    <div class="text-sm text-gray-400 mt-1">
-                      Core System Design techniques and deep dives into social feeds, autocomplete, e-commerce, and more.
-                    </div>
-                    <div class="skeleton-bar mt-3"></div>
-                  </div>
-                  <div class="ml-2 opacity-60">→</div>
-                </div>
-              </a>
-
-              <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
-                 routerLink="/javascript" (click)="closeMega()" role="link">
-                <div class="flex items-start gap-4">
-                  <div class="h-9 w-9 grid place-items-center rounded-lg bg-white/5">📝</div>
-                  <div class="min-w-0 flex-1">
-                    <div class="font-semibold">Free Practice</div>
-                    <div class="text-sm text-gray-400 mt-1">
-                      Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.
-                    </div>
-                    <div class="skeleton-bar mt-3"></div>
-                  </div>
-                  <div class="ml-2 opacity-60">→</div>
-                </div>
-              </a>
             </div>
           </div>
         </ng-container>
       </div>
 
-      <!-- Context strip: ONLY on tech list pages (not dashboard, not details, not SD, not courses) -->
+      <!-- Context strip: ONLY on tech list pages -->
       <div class="context" *ngIf="showContextStrip()">
         <div class="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
@@ -180,11 +152,49 @@ export class HeaderComponent {
   currentTech = signal<'javascript' | 'angular' | null>(null);
   section = signal<'coding' | 'trivia' | null>(null);
 
+  // Data-driven prepare rows
+  prepareItems: PrepareItem[] = [
+    {
+      key: 'playbook',
+      icon: '📘',
+      label: 'Front End Interview Playbook',
+      description: 'A starter guide to preparing for front end interviews',
+      badge: 'Coming soon'
+    },
+    {
+      key: 'gfe75',
+      icon: '🔢',
+      label: 'GFE 75',
+      description: 'The 75 most important front end interview questions.',
+      badge: 'Coming soon'
+    },
+    {
+      key: 'system-design',
+      icon: '🧩',
+      label: 'Front End System Design Playbook',
+      description: 'Core System Design techniques and deep dives into social feeds, autocomplete, e-commerce, and more.',
+      route: '/system-design'
+    },
+    {
+      key: 'practice',
+      icon: '📝',
+      label: 'Free Practice',
+      description: 'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.',
+      route: '/javascript'
+    },
+    {
+      key: 'courses',
+      icon: '🎓',
+      label: 'Courses',
+      description: 'Structured lessons with progress tracking and a course outline.',
+      route: '/courses'
+    }
+  ];
+
   isSystemDesign = computed(() =>
     this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
   );
   isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
-  // 👍 show the Coding/Trivia strip only on tech list pages
   showContextStrip = computed(() => this.mode() === 'tech-list');
 
   backLink = computed(() => {
@@ -198,13 +208,11 @@ export class HeaderComponent {
   searchTerm = '';
 
   constructor(private router: Router) {
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
-      startWith(null)
-    ).subscribe(() => {
-      this.parseUrl(this.router.url);
-      this.megaOpen.set(false);
-    });
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
+      .subscribe(() => {
+        this.parseUrl(this.router.url);
+        this.megaOpen.set(false);
+      });
   }
 
   private parseUrl(url: string) {
@@ -213,9 +221,8 @@ export class HeaderComponent {
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
 
-    // NEW: courses pages
     if (segs[0] === 'courses') {
-      this.mode.set('course'); // hides Coding/Trivia strip
+      this.mode.set('course');
       return;
     }
 
@@ -236,4 +243,16 @@ export class HeaderComponent {
 
   toggleMega() { this.megaOpen.update(v => !v); }
   closeMega() { this.megaOpen.set(false); }
+
+  onPrepareKeySpace(item: PrepareItem, ev: Event) {
+    ev.preventDefault();               // works on Event
+    this.onPrepareClick(item, ev);     // reuse the click path
+  }
+
+  // (optional) keep this generic too
+  onPrepareClick(item: PrepareItem, ev?: Event) {
+    if (!item.route) { ev?.preventDefault(); return; }
+    this.closeMega();
+    this.router.navigateByUrl(item.route);
+  }
 }

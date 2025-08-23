@@ -594,15 +594,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (c?.prev) this.router.navigate(c.prev.to);
     else this.backToReturn();
   }
+  
   goCourseNext() {
-    if (this.isCourseContext() && this.tech !== 'angular' && !this.solved() && !this.allPassing()) {
-      this.topTab.set('tests');
-      this.subTab.set('tests');
-      return;
-    }
     const c = this.courseNav();
     if (c?.next) this.router.navigate(c.next.to);
   }
+
   backToReturn() {
     if (this.courseNav()?.breadcrumb?.to) {
       this.router.navigate(this.courseNav()!.breadcrumb!.to);
@@ -825,22 +822,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePanel.set(1);
     this.topTab.set('code');
   }
-
-  // --- gating + tooltip ---
-  courseNextDisabled = computed(() => {
-    if (!this.isCourseContext() || this.tech === 'angular') return false;
-    if (this.solved()) return false;
-    return !this.allPassing();
-  });
-
-  courseNextTooltip = computed(() => {
-    if (!this.isCourseContext() || this.tech === 'angular') return null;
-    if (!this.courseNextDisabled()) return null;
-    if (this.solved()) return null;
-    return this.hasRunTests
-      ? 'Pass all test cases to continue'
-      : 'Run tests and pass them to unlock Next';
-  });
 
   /** When the user clicks the Solution tab */
   onSolutionTabClick() {

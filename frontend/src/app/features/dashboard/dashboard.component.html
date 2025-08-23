@@ -9,95 +9,73 @@
             </p>
 
             <div class="space-y-4">
-                <!-- disabled -->
-                <div class="card disabled">
-                    <div class="step">1</div>
-                    <div class="icon" aria-hidden="true">
-                        <!-- book icon -->
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <ng-template #iconTpl let-icon>
+                    <ng-container [ngSwitch]="icon">
+                        <!-- book -->
+                        <svg *ngSwitchCase="'book'" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M18 2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10v2H8a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4h10v2z" />
                             <path d="M20 22h-8a2 2 0 0 1-2-2V4h10a2 2 0 0 1 2 2v16z" />
                         </svg>
-                    </div>
-                    <div class="content">
-                        <div class="title-row">
-                            <div class="title">Front End Interview Playbook</div>
-                            <span class="badge secondary">Coming soon</span>
-                        </div>
-                        <div class="subtitle">A starter guide to preparing for front end interviews</div>
-                        <div class="skeleton">
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- disabled -->
-                <div class="card disabled">
-                    <div class="step">2</div>
-                    <div class="icon" aria-hidden="true">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M18 2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10v2H8a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4h10v2z" />
-                            <path d="M20 22h-8a2 2 0 0 1-2-2V4h10a2 2 0 0 1 2 2v16z" />
-                        </svg>
-                    </div>
-                    <div class="content">
-                        <div class="title-row">
-                            <div class="title">GFE 75</div>
-                            <span class="badge secondary">Coming soon</span>
-                        </div>
-                        <div class="subtitle">The 75 most important front end interview questions.</div>
-                        <div class="skeleton">
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- system design -->
-                <a class="card hoverable" routerLink="/system-design">
-                    <div class="step">3</div>
-                    <div class="icon" aria-hidden="true">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <!-- grid -->
+                        <svg *ngSwitchCase="'grid'" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z" />
                         </svg>
-                    </div>
-                    <div class="content">
-                        <div class="title-row">
-                            <div class="title">Front End System Design Playbook</div>
-                        </div>
-                        <div class="subtitle">
-                            Core System Design techniques and deep dives into common questions like social feeds,
-                            autocomplete, e-commerce, and more.
-                        </div>
-                        <div class="skeleton">
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                    <div class="chevron">→</div>
-                </a>
-
-                <!-- free practice -->
-                <a class="card hoverable" routerLink="/javascript">
-                    <div class="step">4</div>
-                    <div class="icon" aria-hidden="true">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <!-- list -->
+                        <svg *ngSwitchCase="'list'" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M8 5h8v2H8zM8 9h8v2H8zM8 13h5v2H8zM4 19h16v2H4z" />
                         </svg>
-                    </div>
-                    <div class="content">
-                        <div class="title-row">
-                            <div class="title">Free Practice</div>
+                        <!-- graduation cap -->
+                        <svg *ngSwitchCase="'cap'" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 3 1 8l11 5 10-4.55V17h-2v-6.07L12 12.73 3.7 9.03 12 5.3 20.3 9.03l.7-1.58L12 3z" />
+                            <path d="M6 12.9V16c0 1.93 3.13 3.5 7 3.5s7-1.57 7-3.5v-3.1l-7 3.19-7-3.19z" />
+                        </svg>
+                    </ng-container>
+                </ng-template>
+
+                <ng-container *ngFor="let it of items; index as i; trackBy: trackByTitle">
+                    <!-- Enabled (link) -->
+                    <a *ngIf="!it.disabled; else disabledCard" class="card hoverable" [routerLink]="it.route"
+                        [attr.aria-label]="it.title">
+                        <div class="step">{{ i + 1 }}</div>
+                        <div class="icon" aria-hidden="true">
+                            <ng-container [ngTemplateOutlet]="iconTpl"
+                                [ngTemplateOutletContext]="{ $implicit: it.icon }"></ng-container>
                         </div>
-                        <div class="subtitle">
-                            Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.
+                        <div class="content">
+                            <div class="title-row">
+                                <div class="title">{{ it.title }}</div>
+                            </div>
+                            <div class="subtitle">{{ it.subtitle }}</div>
+                            <div class="skeleton">
+                                <div class="bar"></div>
+                            </div>
                         </div>
-                        <div class="skeleton">
-                            <div class="bar"></div>
+                        <div class="chevron">→</div>
+                    </a>
+
+                    <!-- Disabled -->
+                    <ng-template #disabledCard>
+                        <div class="card disabled">
+                            <div class="step">{{ i + 1 }}</div>
+                            <div class="icon" aria-hidden="true">
+                                <ng-container [ngTemplateOutlet]="iconTpl"
+                                    [ngTemplateOutletContext]="{ $implicit: it.icon }"></ng-container>
+                            </div>
+                            <div class="content">
+                                <div class="title-row">
+                                    <div class="title">{{ it.title }}</div>
+                                    <span *ngIf="it.badge" class="badge secondary">{{ it.badge }}</span>
+                                </div>
+                                <div class="subtitle">{{ it.subtitle }}</div>
+                                <div class="skeleton">
+                                    <div class="bar"></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="chevron">→</div>
-                </a>
+                    </ng-template>
+                </ng-container>
             </div>
         </section>
     </div>

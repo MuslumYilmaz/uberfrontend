@@ -121,21 +121,30 @@
   <main class="flex-1 flex flex-col overflow-hidden">
     <!-- JS banner -->
     <div *ngIf="tech!=='angular' && showRestoreBanner()"
-      class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs flex items-center gap-2">
-      <span class="truncate">Your code was restored from client storage.</span>
-      <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
-      <button class="ml-auto opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+      class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
+      <span class="font-medium">Your code was restored from client storage.</span>
+
+      <!-- actions pinned to the right -->
+      <div class="absolute right-2 inset-y-0 flex items-center gap-3">
+        <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
+        <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+      </div>
     </div>
     <!-- ANGULAR via StackBlitz SDK -->
     <ng-container *ngIf="tech==='angular'">
       <div
         class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
-        <div *ngIf="showRestoreBanner()"
-          class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 flex items-center gap-3 shadow">
-          <span class="truncate">Your code was restored from client storage.</span>
-          <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
-          <button class="ml-auto opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+        <!-- Angular (overlay) banner -->
+        <div *ngIf="showRestoreBanner()" class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 shadow
+            relative text-center">
+          <span class="font-medium">Your code was restored from client storage.</span>
+
+          <div class="absolute right-3 inset-y-0 flex items-center gap-3">
+            <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
+            <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+          </div>
         </div>
+
 
         <div class="relative flex-1">
           <div #sbHost class="w-full h-full"></div>
@@ -270,13 +279,12 @@
 
 <!-- Shared Footer -->
 <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
-  [prevDisabled]="currentIndex === 0"
-  [nextDisabled]="isCourseContext() ? courseNextDisabled() : (currentIndex + 1 >= allQuestions.length)"
-  [nextDisabledTooltip]="courseNextTooltip()" [breadcrumbLabel]="courseCrumbLabel()"
-  [coursePrevLabel]="coursePrevLabel()" [courseNextLabel]="courseNextLabel()" [middleSuffixLabel]="middleSuffixLabel"
-  [leftCourseLabel]="leftDrawerLabel" [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId"
-  [showSubmit]="!isCourseContext()" [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()"
-  (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
+  [prevDisabled]="currentIndex === 0" [nextDisabled]="!isCourseContext() && (currentIndex + 1 >= allQuestions.length)"
+  [nextDisabledTooltip]="null" [breadcrumbLabel]="courseCrumbLabel()" [coursePrevLabel]="coursePrevLabel()"
+  [courseNextLabel]="courseNextLabel()" [middleSuffixLabel]="middleSuffixLabel" [leftCourseLabel]="leftDrawerLabel"
+  [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
+  [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()" (next)="next()"
+  (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
   (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>
 

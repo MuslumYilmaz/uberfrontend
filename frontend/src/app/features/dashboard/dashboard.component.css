@@ -7,7 +7,7 @@
   gap: 16px;
   padding: 18px 20px;
   border-radius: 14px;
-  background: #0f172a; /* slate-900 */
+  background: #0f172a;
   border: 1px solid rgba(255,255,255,0.06);
   color: #e5e7eb;
   text-decoration: none;
@@ -37,7 +37,7 @@
   width: 40px; height: 40px;
   display: grid; place-items: center;
   border-radius: 10px;
-  background: #111827;  /* neutral-900 */
+  background: #111827;
   color: #cbd5e1;
   border: 1px solid rgba(255,255,255,0.06);
 }
