@@ -22,4 +22,5 @@ export interface Question {
   starterCode?: string;
   tests?: string;
   examples?: string[]; // fallback if structured description lacks examples
+  companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
 }

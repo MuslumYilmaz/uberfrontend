@@ -25,12 +25,15 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-log
 declare const monaco: any;
 
 type JsLang = 'js' | 'ts';
-
 type CourseNavState = {
   breadcrumb?: { to: any[]; label: string };
   prev?: { to: any[]; label: string } | null;
   next?: { to: any[]; label: string } | null;
 } | null;
+
+type Tech = 'javascript' | 'angular';
+type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia'; id: string };
+type PracticeSession = { items: PracticeItem[]; index: number } | null;
 
 @Component({
   selector: 'app-coding-detail',
@@ -43,7 +46,7 @@ type CourseNavState = {
   styleUrls: ['./coding-detail.component.scss'],
 })
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
-  tech!: string;
+  tech!: Tech;
   question = signal<Question | null>(null);
 
   @ViewChild('sbHost', { read: ElementRef }) sbHost?: ElementRef<HTMLDivElement>;
@@ -68,6 +71,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
+  // Convenience labels for course footer (course context only)
   descCollapsed = signal(false);
   private lastAsideRatio = 0.3;
   asideFlex = computed(
@@ -75,6 +79,19 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       ? `0 0 ${this.COLLAPSED_PX}px`
       : `0 0 ${this.horizontalRatio() * 100}%`
   );
+
+  // add inside the class
+  get courseCrumbLabel(): string | null {
+    return this.courseNav()?.breadcrumb?.label ?? this.returnLabel() ?? null;
+  }
+  get coursePrevLabel(): string | null {
+    return this.courseNav()?.prev?.label ?? null;
+  }
+  get courseNextLabel(): string | null {
+    return this.courseNav()?.next?.label ?? null;
+  }
+
+
 
   // Context flags
   isCourseContext = signal(false);
@@ -106,11 +123,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;
 
+  // Practice session (from list/company pages)
+  private practice: PracticeSession = null;
+
   // Solution warning
   showSolutionWarning = signal(false);
   private readonly SOLUTION_WARN_SKIP_KEY = 'uf:coding:skipSolutionWarning';
 
-  // Solved persistence (unlocks Next across visits)
+  // Solved persistence
   solved = signal(false);
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
@@ -137,15 +157,20 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
 
-  // Convenience getters for course-footer labels (course context only)
-  readonly coursePrevLabel = computed(() => this.courseNav()?.prev?.label ?? null);
-  readonly courseNextLabel = computed(() => this.courseNav()?.next?.label ?? null);
-  readonly courseCrumbLabel = computed(
-    () => this.courseNav()?.breadcrumb?.label ?? this.returnLabel() ?? null
-  );
-  readonly middleSuffixLabel = 'Coding task';
+  // Footer helpers
+  get progressText() {
+    if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
+    return `${this.currentIndex + 1} / ${this.allQuestions.length}`;
+  }
+  hasPrev(): boolean {
+    return this.practice ? this.practice.index > 0 : this.currentIndex > 0;
+  }
+  hasNext(): boolean {
+    return this.practice ? (this.practice.index + 1 < this.practice.items.length)
+      : (this.currentIndex + 1 < this.allQuestions.length);
+  }
 
-  // --- course footer/drawer state (when opened from a course) ---
+  // --- course footer/drawer state (kept for course context) ---
   courseIdFromState: string | null = null;
   courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
   leftDrawerLabel: string | null = null;
@@ -173,14 +198,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return exs.map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`).join('\n\n// --------\n\n');
   });
 
-  // ---- Monaco options for the read-only "Examples" block (unclickable + no scrollbars)
   editorMonacoOptions = {
     fontSize: 12,
     lineHeight: 18,
     minimap: { enabled: false },
     tabSize: 2,
   };
-
   examplesMonacoOptions = {
     readOnly: true,
     fontSize: 12,
@@ -220,7 +243,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return (a.title || '').localeCompare(b.title || ''); // title ASC
   }
 
-  // collapse prefs
   private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
     try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
@@ -242,25 +264,24 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Read navigation state
   private hydrateReturnInfo() {
     const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
 
-    const cn: CourseNavState = s?.courseNav ?? null;
-    this.courseNav.set(cn);
+    this.courseNav.set(s?.courseNav ?? null);
+    this.practice = (s?.session ?? null) as PracticeSession;
 
-    if (cn?.breadcrumb) {
-      this.returnTo = cn.breadcrumb.to;
-      this.returnLabel.set(cn.breadcrumb.label ?? 'Back to course');
+    if (s?.courseNav?.breadcrumb) {
+      this.returnTo = s.courseNav.breadcrumb.to;
+      this.returnLabel.set(s.courseNav.breadcrumb.label ?? 'Back to course');
     } else if (s?.returnTo) {
       this.returnTo = s.returnTo as any[];
-      this.returnLabel.set(s.returnLabel ?? 'Back to course');
+      this.returnLabel.set(s.returnLabel ?? 'Back');
     } else {
       this.returnTo = null;
       this.returnLabel.set(null);
     }
 
-    // drawer data
+    // drawer data (course)
     this.courseIdFromState = s?.courseId ?? null;
     this.courseOutline = s?.outline ?? null;
     this.leftDrawerLabel = s?.leftCourseLabel ?? null;
@@ -281,18 +302,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     recompute();
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
 
-    // route shapes:
-    //  - practice: /:tech/coding/:id
-    //  - course redirect: navigate to /:tech/coding/:id with course state
+    // determine :tech up the tree
     this.route.paramMap.subscribe((pm) => {
-      // find nearest ancestor with :tech
       let p: ActivatedRoute | null = this.route;
       let tech: string | null = null;
       while (p && !tech) {
         tech = p.snapshot.paramMap.get('tech');
         p = p.parent!;
       }
-      this.tech = (tech || 'javascript') as string;
+      this.tech = ((tech || 'javascript') as Tech);
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
       const id = pm.get('id')!;
@@ -305,10 +323,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.style.overflow = 'hidden';
   }
 
+  /** Practice vs Course detection – do NOT treat plain returnTo (company) as course. */
   private computeIsCourseContext(): boolean {
     if (this.courseNav()) return true;
-    if (this.returnTo) return true;
-
     const url = this.router.url.split('?')[0];
     if (url.includes('/courses/')) return true;
 
@@ -316,8 +333,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       r.snapshot.url.some(s => s.path === 'courses') ||
       (r.snapshot.routeConfig?.path ?? '').includes('courses') ||
       !!r.snapshot.paramMap.get('course') ||
-      !!r.snapshot.paramMap.get('courseSlug') ||
-      !!r.snapshot.paramMap.get('slug')
+      !!r.snapshot.paramMap.get('courseSlug')
     );
     return inTree;
   }
@@ -378,15 +394,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // ---------- load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex((q) => q.id === id);
-    if (idx < 0) return;
+    if (idx >= 0) this.currentIndex = idx;
 
-    this.currentIndex = idx;
-    const q = this.allQuestions[idx];
+    const q = idx >= 0 ? this.allQuestions[idx] : null;
+    if (!q) { this.question.set(null); return; }
     this.question.set(q);
 
-    // restore "solved" status for gating
+    // restore "solved"
     this.solved.set(this.loadSolvedFlag(q));
-
     this.loadCollapsePref(q);
 
     let shouldShowBanner = false;
@@ -553,7 +568,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
   async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
 
-  // ---------- solution warning ----------
   private shouldWarnForSolution(): boolean {
     return this.isCourseContext() && localStorage.getItem(this.SOLUTION_WARN_SKIP_KEY) !== 'true';
   }
@@ -562,7 +576,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showSolutionWarning.set(false);
   }
 
-  // ---------- show solution (respect lang) ----------
   showSolution() {
     const q = this.question();
     if (!q) return;
@@ -574,27 +587,47 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadSolutionCode();
   }
 
+  // ---------- navigation helpers ----------
+  private navToPracticeIndex(newIndex: number) {
+    if (!this.practice) return;
+    const it = this.practice.items[newIndex];
+    this.router.navigate(['/', it.tech, it.kind, it.id], {
+      state: {
+        session: { items: this.practice.items, index: newIndex },
+        returnTo: this.returnTo ?? undefined,
+        returnLabel: this.returnLabel() ?? undefined
+      }
+    });
+  }
+
   // ---------- navigation (practice) ----------
   prev() {
+    if (this.practice) {
+      if (this.practice.index > 0) this.navToPracticeIndex(this.practice.index - 1);
+      return;
+    }
     if (this.currentIndex > 0) {
       const prevId = this.allQuestions[this.currentIndex - 1].id;
       this.router.navigate(['/', this.tech, 'coding', prevId]);
     }
   }
   next() {
+    if (this.practice) {
+      if (this.practice.index + 1 < this.practice.items.length) this.navToPracticeIndex(this.practice.index + 1);
+      return;
+    }
     if (this.currentIndex + 1 < this.allQuestions.length) {
       const nextId = this.allQuestions[this.currentIndex + 1].id;
       this.router.navigate(['/', this.tech, 'coding', nextId]);
     }
   }
 
-  // ---------- navigation (course) ----------
+  // ---------- course navigations (unchanged) ----------
   goCoursePrev() {
     const c = this.courseNav();
     if (c?.prev) this.router.navigate(c.prev.to);
     else this.backToReturn();
   }
-  
   goCourseNext() {
     const c = this.courseNav();
     if (c?.next) this.router.navigate(c.next.to);
@@ -612,7 +645,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- TS -> JS transpile with Monaco ----------
+  // ---------- TS -> JS transpile ----------
   private async transpileTsToJs(code: string, fileName: string): Promise<string> {
     if (!monaco?.languages?.typescript || typeof code !== 'string') return code;
     const uri = monaco.Uri.parse(`inmemory://model/${fileName}`);
@@ -630,7 +663,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- run tests (worker) ----------
+  // ---------- run tests ----------
   async runTests() {
     const q = this.question(); if (!q) return;
     if (this.tech === 'angular') return;
@@ -656,7 +689,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
 
-    // persist "solved" if all passing
     const passing = this.allPassing();
     this.solved.set(passing);
     this.saveSolvedFlag(q, passing);
@@ -664,11 +696,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
   }
 
-  submitCode() {
-    // practice-only CTA; no-op placeholder or hook into your backend
-    console.log('Submit:', this.editorContent());
-  }
-  get progressText() { return `${this.currentIndex + 1} / ${this.allQuestions.length}`; }
+  submitCode() { /* hook for backend if needed */ }
 
   // ---------- splitters ----------
   startDrag = (ev: PointerEvent) => {
@@ -774,7 +802,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
-      // clear solved on reset
       this.solved.set(false);
       this.clearSolvedFlag(q);
 
@@ -789,7 +816,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- misc ----------
   copyExamples() {
     const examples = this.combinedExamples();
     if (!examples) return;
@@ -823,20 +849,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.topTab.set('code');
   }
 
-  /** When the user clicks the Solution tab */
   onSolutionTabClick() {
-    if (this.descCollapsed()) this.toggleDescription(); // ensure left pane visible
+    if (this.descCollapsed()) this.toggleDescription();
     this.activePanel.set(1);
     this.showSolutionWarning.set(true);
   }
-
-  /** Confirm reveal: apply solution code and keep Solution tab active */
   confirmSolutionReveal() {
     this.loadSolutionCode();
     this.showSolutionWarning.set(false);
   }
-
-  /** Cancel reveal: go back to Description tab */
   cancelSolutionReveal() {
     this.showSolutionWarning.set(false);
     this.activePanel.set(0);

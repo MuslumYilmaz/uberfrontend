@@ -1,33 +1,62 @@
 [
-    {
-      "id": "js-event-loop",
-      "title": "Explain the JavaScript Event Loop",
-      "description": "What is the event loop in JavaScript? How do macrotasks and microtasks interact?",
-      "type": "trivia",
-      "technology": "javascript",
-      "difficulty": "advanced",
-      "tags": ["event-loop", "async", "microtasks"],
-      "importance": 5
-    },
-    {
-      "id": "js-this-binding",
-      "title": "Describe `this` Binding",
-      "description": "In JavaScript, how is the value of `this` determined in a function call? Give examples for default, implicit, explicit, and new binding.",
-      "type": "trivia",
-      "technology": "javascript",
-      "difficulty": "intermediate",
-      "tags": ["this", "call", "bind", "apply"],
-      "importance": 4
-    },
-    {
-      "id": "js-closures",
-      "title": "What Are Closures?",
-      "description": "Define a closure in JavaScript and provide a use case where a closure is essential.",
-      "type": "trivia",
-      "technology": "javascript",
-      "difficulty": "beginner",
-      "tags": ["closure", "scope"],
-      "importance": 3
-    }
-  ]
-  
+  {
+    "id": "js-event-loop",
+    "title": "Explain the JavaScript Event Loop",
+    "description": "What is the event loop in JavaScript? How do macrotasks and microtasks interact?",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "event-loop",
+      "async",
+      "microtasks"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "microsoft",
+      "uber",
+      "netflix"
+    ]
+  },
+  {
+    "id": "js-this-binding",
+    "title": "Describe `this` Binding",
+    "description": "In JavaScript, how is the value of `this` determined in a function call? Give examples for default, implicit, explicit, and new binding.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "this",
+      "call",
+      "bind",
+      "apply"
+    ],
+    "importance": 4,
+    "companies": [
+      "amazon",
+      "uber",
+      "airbnb"
+    ]
+  },
+  {
+    "id": "js-closures",
+    "title": "What Are Closures?",
+    "description": "Define a closure in JavaScript and provide a use case where a closure is essential.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "closure",
+      "scope"
+    ],
+    "importance": 3,
+    "companies": [
+      "apple",
+      "google",
+      "meta",
+      "netflix"
+    ]
+  }
+]

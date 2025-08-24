@@ -1,0 +1,23 @@
+<!-- company-index.component.html -->
+<h1 class="text-3xl font-extrabold text-white mb-2">Company guides</h1>
+<p class="text-gray-400 mb-6">
+    Prepare for specific companies by learning insider tips and practicing known questions.
+</p>
+
+<div class="space-y-3">
+    <a *ngFor="let c of companies" [routerLink]="['/companies', c.slug, 'all']"
+        class="block rounded-xl border border-white/10 bg-neutral-900 hover:bg-neutral-800 transition p-4 sm:p-5">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-white/10 grid place-items-center text-white font-semibold">
+                    {{ c.label[0] }}
+                </div>
+                <div>
+                    <div class="text-white font-semibold">{{ c.label }}</div>
+                    <div class="text-xs text-gray-400">{{ c.count }} questions</div>
+                </div>
+            </div>
+            <div class="text-gray-400">→</div>
+        </div>
+    </a>
+</div>

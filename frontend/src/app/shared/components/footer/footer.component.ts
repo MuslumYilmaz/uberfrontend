@@ -22,50 +22,53 @@ type OutlineTopic = {
   selector: 'app-footer',
   imports: [CommonModule, TooltipModule],
   templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss'],
+  styleUrls: ['./footer.component.css'],
 })
 export class FooterComponent {
   // General
   @Input() mode: Mode = 'practice';
 
-  // Practice (coding-list / coding-detail)
+  // Practice (coding/trivia lists & detail)
   @Input() progressText?: string | null;
-  @Input() showPrevNext = false;
   @Input() prevDisabled = false;
   @Input() nextDisabled = false;
   @Input() nextDisabledTooltip: string | null = null;
 
   // Course (reading/coding with breadcrumb)
-  @Input() backLabel?: string | null;           // “Back to course”
-  @Input() breadcrumbLabel?: string | null;     // Course title
-  @Input() middleSuffixLabel?: string | null;   // “Reading lesson”, “Coding task”, ...
-  @Input() coursePrevLabel?: string | null;
-  @Input() courseNextLabel?: string | null;
+  @Input() backLabel?: string | null;                // (optional) not shown in center cluster, used for back()
+  @Input() breadcrumbLabel?: string | null;          // clickable breadcrumb in center
+  @Input() middleSuffixLabel?: string | null;        // "Coding task" / "Reading lesson"
+  @Input() coursePrevLabel?: string | null;          // label for prev lesson
+  @Input() courseNextLabel?: string | null;          // label for next lesson
 
-  // Optional right-side submit/action (used by reading lessons)
+  // Optional right-side submit/action (reading lessons)
   @Input() showSubmit = false;
   @Input() submitLabel = 'Submit';
 
   // Left-side course-outline menu (courses only)
-  @Input() leftCourseLabel?: string | null;     // “1. Basic functions”
-  @Input() outline?: OutlineTopic[] | null;     // topics + lessons
-  @Input() currentLessonId?: string | null;     // to highlight current
+  @Input() leftCourseLabel?: string | null;
+  @Input() outline?: OutlineTopic[] | null;
+  @Input() currentLessonId?: string | null;
 
   @Output() prev = new EventEmitter<void>();
   @Output() next = new EventEmitter<void>();
   @Output() back = new EventEmitter<void>();
   @Output() coursePrev = new EventEmitter<void>();
   @Output() courseNext = new EventEmitter<void>();
-  @Output() submit = new EventEmitter<void>();  // reading “Mark as complete”
+  @Output() submit = new EventEmitter<void>();
   @Output() selectLesson = new EventEmitter<{ topicId: string; lessonId: string }>();
 
   menuOpen = signal(false);
   menuVisible = signal(false);
-
   private readonly DRAWER_MS = 180;
 
+  // Explicit mode checks (avoid over-smart detection)
+  get isCourse(): boolean { return this.mode === 'course'; }
+  get isPractice(): boolean { return this.mode === 'practice'; }
+  get hasOutline(): boolean { return (this.outline?.length ?? 0) > 0; }
+
   openMenu() {
-    if (this.mode !== 'course' || !this.outline?.length) return;
+    if (!this.isCourse || !this.hasOutline || !this.leftCourseLabel) return;
     this.menuVisible.set(true);
     requestAnimationFrame(() => this.menuOpen.set(true));
   }
@@ -76,7 +79,6 @@ export class FooterComponent {
   }
 
   onSelect(topicId: string, lessonId: string) {
-    // close first (animate), then emit so the parent navigates after fade/slide
     this.menuOpen.set(false);
     setTimeout(() => {
       this.menuVisible.set(false);

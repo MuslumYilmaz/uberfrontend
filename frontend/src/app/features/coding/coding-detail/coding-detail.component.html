@@ -1,5 +1,6 @@
-<!-- coding-detail.component.html -->
-<div class="coding-detail flex gap-[5px] h-[calc(100vh-64px-85px)]">
+<!-- Fixed full-viewport work area:
+     sits BELOW the header (uses --app-safe-top) and ABOVE the footer (56px) -->
+<div class="coding-detail fixed-under-header flex gap-[5px]">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
     [style.flex]="asideFlex()" style="min-width:0;">
@@ -26,15 +27,11 @@
         <div class="flex-1 flex">
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===0"
             [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
-            (click)="activePanel.set(0)">
-            Description
-          </button>
+            (click)="activePanel.set(0)">Description</button>
 
           <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
-            (click)="onSolutionTabClick()">
-            Solution
-          </button>
+            (click)="onSolutionTabClick()">Solution</button>
         </div>
 
         <button class="px-3 py-2 text-gray-300 hover:text-white p-button-text" pButton type="button"
@@ -63,7 +60,6 @@
                 </button>
               </div>
 
-              <!-- Monaco preview (unclickable, no scrollbars, preserved syntax colors) -->
               <div class="h-48 relative overflow-hidden">
                 <app-monaco-editor class="h-full rounded border border-white/10 pointer-events-none select-none"
                   [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
@@ -81,16 +77,12 @@
 
         <!-- Solution Panel -->
         <div *ngIf="activePanel()===1" class="space-y-4">
-          <!-- If warning is on, show confirm -->
           <ng-container *ngIf="showSolutionWarning(); else solutionContent">
             <div class="solution-warning rounded border border-yellow-400 bg-yellow-100/10 p-4 flex gap-3">
-              <div class="icon-warning">
-                <i class="pi pi-exclamation-triangle"></i>
-              </div>
+              <div class="icon-warning"><i class="pi pi-exclamation-triangle"></i></div>
               <div class="content">
                 <h3 class="font-semibold mb-2">Are you sure you want to see the solution?</h3>
-                <p class="mb-3">
-                  You’re about to reveal the full answer and overwrite your editor with the solution code.
+                <p class="mb-3">You’re about to reveal the full answer and overwrite your editor with the solution code.
                 </p>
                 <div class="actions flex items-center gap-3">
                   <button pButton label="Show solution" class="p-button-danger"
@@ -101,7 +93,6 @@
             </div>
           </ng-container>
 
-          <!-- After confirming, we show the explanation (code is already applied) -->
           <ng-template #solutionContent>
             <h2 class="text-base font-semibold">Solution Explanation</h2>
             <div class="whitespace-pre-wrap text-xs leading-5">
@@ -124,27 +115,24 @@
       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
       <span class="font-medium">Your code was restored from client storage.</span>
 
-      <!-- actions pinned to the right -->
       <div class="absolute right-2 inset-y-0 flex items-center gap-3">
         <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
         <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
       </div>
     </div>
+
     <!-- ANGULAR via StackBlitz SDK -->
     <ng-container *ngIf="tech==='angular'">
       <div
         class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
-        <!-- Angular (overlay) banner -->
-        <div *ngIf="showRestoreBanner()" class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 shadow
-            relative text-center">
+        <div *ngIf="showRestoreBanner()"
+          class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 shadow relative text-center">
           <span class="font-medium">Your code was restored from client storage.</span>
-
           <div class="absolute right-3 inset-y-0 flex items-center gap-3">
             <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
             <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
           </div>
         </div>
-
 
         <div class="relative flex-1">
           <div #sbHost class="w-full h-full"></div>
@@ -158,18 +146,12 @@
     <!-- JAVASCRIPT / TYPESCRIPT EDITOR & TESTS -->
     <ng-container *ngIf="tech!=='angular'">
       <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-        <!-- Top tabs + language selector -->
         <div class="flex items-center border-b border-white/10 px-4">
           <div class="flex">
             <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
-              (click)="topTab.set('code')">
-              &lt;/&gt; Code
-            </button>
+              (click)="topTab.set('code')">&lt;/&gt; Code</button>
             <button class="px-4 py-2" [class.opacity-100]="isTopTestsTab()" [class.opacity-60]="!isTopTestsTab()"
-              (click)="topTab.set('tests')">
-              <i class="pi pi-clipboard mr-2"></i> Test cases
-            </button>
-
+              (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
           </div>
 
           <div class="ml-auto flex items-center gap-2">
@@ -182,38 +164,27 @@
           </div>
         </div>
 
-        <!-- Editor / Results split -->
         <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
-            <!-- Code editor -->
             <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
               [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorMonacoOptions"
               (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
 
-            <!-- Tests editor (always JS) -->
             <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
               [options]="editorMonacoOptions" (codeChange)="testCode.set($event)"></app-monaco-editor>
           </div>
 
-          <!-- Horizontal splitter -->
           <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()" (pointerdown)="startDrag($event)">
           </div>
 
-          <!-- Results / Console -->
           <div class="flex-1 flex flex-col overflow-hidden min-h-0">
             <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
               <button class="font-medium" (click)="runTests()">▶ Run tests</button>
               <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
-                (click)="subTab.set('tests')">
-                Results
-              </button>
+                (click)="subTab.set('tests')">Results</button>
               <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
-                (click)="subTab.set('console')">
-                Console
-              </button>
-              <span class="ml-auto opacity-80" *ngIf="hasRunTests">
-                {{ passedCount() }}/{{ totalCount() }} passed
-              </span>
+                (click)="subTab.set('console')">Console</button>
+              <span class="ml-auto opacity-80" *ngIf="hasRunTests">{{ passedCount() }}/{{ totalCount() }} passed</span>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
@@ -221,11 +192,7 @@
               <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
                 <div *ngIf="!hasRunTests" class="h-full grid place-items-center">
                   <div class="text-center">
-                    <!-- BEFORE: <div class="text-4xl leading-none mb-3">🧪</div> -->
-                    <div class="icon-hero mb-3">
-                      <i class="pi pi-play"></i>
-                    </div>
-
+                    <div class="icon-hero mb-3"><i class="pi pi-play"></i></div>
                     <h3 class="text-base font-semibold mb-2">Test your code</h3>
                     <p class="text-gray-400 mb-4 text-xs">
                       Run your code with
@@ -236,7 +203,6 @@
                     <button pButton label="Run" icon="pi pi-play" (click)="runTests()"></button>
                   </div>
                 </div>
-
 
                 <div *ngIf="hasRunTests" class="space-y-2">
                   <div class="summary mb-2">
@@ -253,8 +219,8 @@
                   <div *ngFor="let t of testResults()" class="test-card border rounded-md"
                     [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
                     <div class="test-name">
-                      <i [ngClass]="t.passed ? 'pi pi-check-circle text-green-400'
-                           : 'pi pi-times-circle text-red-400'"></i>
+                      <i
+                        [ngClass]="t.passed ? 'pi pi-check-circle text-green-400' : 'pi pi-times-circle text-red-400'"></i>
                       <span>{{ t.name }}</span>
                     </div>
                     <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
@@ -278,15 +244,22 @@
 </div>
 
 <!-- Shared Footer -->
+<!-- coding-detail.component.html -->
+<div class="coding-detail flex gap-[5px] h-[calc(100vh-64px-85px)]">
+  <!-- ... (everything else unchanged from your last version) ... -->
+</div>
+
+<!-- Shared Footer -->
 <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
-  [prevDisabled]="currentIndex === 0" [nextDisabled]="!isCourseContext() && (currentIndex + 1 >= allQuestions.length)"
-  [nextDisabledTooltip]="null" [breadcrumbLabel]="courseCrumbLabel()" [coursePrevLabel]="coursePrevLabel()"
-  [courseNextLabel]="courseNextLabel()" [middleSuffixLabel]="middleSuffixLabel" [leftCourseLabel]="leftDrawerLabel"
-  [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
+  [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
+  [breadcrumbLabel]="courseCrumbLabel" [coursePrevLabel]="coursePrevLabel" [courseNextLabel]="courseNextLabel"
+  [middleSuffixLabel]="'Coding task'" [leftCourseLabel]="leftDrawerLabel" [outline]="courseOutline || []"
+  [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
   [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()" (next)="next()"
   (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
   (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>
+
 
 <!-- Preview dialog -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
@@ -299,8 +272,7 @@
   </ng-template>
   <div class="w-full h-full">
     <iframe *ngIf="previewOnlyUrl" class="w-full h-full border-0" [src]="previewOnlyUrl"
-      [attr.sandbox]="'allow-scripts allow-popups allow-modals'" [attr.allow]="''" referrerpolicy="no-referrer"
-      (load)="previewLoading()">
-    </iframe>
+      [attr.sandbox]="'allow-scripts allow-popups allow-modals'" [attr.allow]="''"
+      referrerpolicy="no-referrer"></iframe>
   </div>
 </p-dialog>

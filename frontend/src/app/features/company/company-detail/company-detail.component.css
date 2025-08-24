@@ -1,0 +1,7 @@
+/* src/app/features/company/company-detail/company-detail.component.scss */
+:host{display:block;}
+.tabx{ padding:.4rem .8rem; border:1px solid rgba(255,255,255,.1); color:#cbd5e1; border-right:none; }
+.tabx:first-child{ border-radius:.5rem 0 0 .5rem; }
+.tabx:last-child{ border-right:1px solid rgba(255,255,255,.1); border-radius:0 .5rem .5rem 0; }
+.tabx:hover{ background:rgba(255,255,255,.06); color:#fff; }
+.tabx.active{ background:rgba(255,255,255,.14); color:#fff; }

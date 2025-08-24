@@ -1,7 +1,8 @@
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  // Landing page at /
+  // Landing
   {
     path: '',
     loadComponent: () =>
@@ -9,7 +10,7 @@ export const routes: Routes = [
         .then(m => m.DashboardComponent),
   },
 
-  // 🔑 auth pages
+  // Auth
   {
     path: 'auth',
     children: [
@@ -28,9 +29,7 @@ export const routes: Routes = [
     ],
   },
 
-  // ─────────────────────────────
-  // Courses (explicit routes come BEFORE ":tech" so they don't get captured)
-  // ─────────────────────────────
+  // Courses
   {
     path: 'courses',
     loadComponent: () =>
@@ -50,7 +49,58 @@ export const routes: Routes = [
         .then(m => m.CoursePlayerComponent),
   },
 
-  // System design (list + detail)
+  // Companies
+  {
+    path: 'companies',
+    loadComponent: () =>
+      import('./features/company/company-layout/company-layout.component')
+        .then(m => m.CompanyLayoutComponent),
+    children: [
+      // Index (grid of company cards)
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/company/company-index/company-index.component')
+            .then(m => m.CompanyIndexComponent),
+      },
+
+      // Company detail page with "All / Coding / Trivia" tabs
+      {
+        path: ':slug',
+        loadComponent: () =>
+          import('./features/company/company-detail/company-detail.component')
+            .then(m => m.CompanyDetailComponent),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'all' },
+
+          {
+            path: 'all',
+            loadComponent: () =>
+              import('./features/coding/coding-list/coding-list.component')
+                .then(m => m.CodingListComponent),
+            data: { source: 'company', kind: 'all' },
+          },
+          {
+            path: 'coding',
+            loadComponent: () =>
+              import('./features/coding/coding-list/coding-list.component')
+                .then(m => m.CodingListComponent),
+            data: { source: 'company', kind: 'coding' },
+          },
+          {
+            path: 'trivia',
+            loadComponent: () =>
+              import('./features/coding/coding-list/coding-list.component')
+                .then(m => m.CodingListComponent),
+            data: { source: 'company', kind: 'trivia' },
+          },
+        ],
+      },
+    ],
+  },
+
+  // System design
   {
     path: 'system-design',
     loadComponent: () =>
@@ -72,7 +122,7 @@ export const routes: Routes = [
     ],
   },
 
-  // Tech sections with their own tabs/layout
+  // Tech sections — JavaScript / Angular
   {
     path: ':tech',
     loadComponent: () =>
@@ -80,23 +130,29 @@ export const routes: Routes = [
         .then(m => m.TechLayoutComponent),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'coding' },
+
+      // Lists
       {
         path: 'coding',
         loadComponent: () =>
           import('./features/coding/coding-list/coding-list.component')
             .then(m => m.CodingListComponent),
+        data: { source: 'tech', kind: 'coding' },
       },
+      {
+        path: 'trivia',
+        loadComponent: () =>
+          import('./features/coding/coding-list/coding-list.component')
+            .then(m => m.CodingListComponent),
+        data: { source: 'tech', kind: 'trivia' },
+      },
+
+      // Details
       {
         path: 'coding/:id',
         loadComponent: () =>
           import('./features/coding/coding-detail/coding-detail.component')
             .then(m => m.CodingDetailComponent),
-      },
-      {
-        path: 'trivia',
-        loadComponent: () =>
-          import('./features/trivia/trivia-list/trivia-list.component')
-            .then(m => m.TriviaListComponent),
       },
       {
         path: 'trivia/:id',

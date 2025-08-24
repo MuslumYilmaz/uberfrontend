@@ -10,7 +10,12 @@
             "ngzone",
             "change-detection"
         ],
-        "importance": 5
+        "importance": 5,
+        "companies": [
+            "google",
+            "microsoft",
+            "uber"
+        ]
     },
     {
         "id": "angular-lifecycle",
@@ -23,7 +28,12 @@
             "lifecycle",
             "hooks"
         ],
-        "importance": 4
+        "importance": 4,
+        "companies": [
+            "google",
+            "apple",
+            "microsoft"
+        ]
     },
     {
         "id": "angular-change-strategy",
@@ -36,6 +46,11 @@
             "change-detection",
             "performance"
         ],
-        "importance": 3
+        "importance": 3,
+        "companies": [
+            "google",
+            "airbnb",
+            "meta"
+        ]
     }
 ]

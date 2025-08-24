@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
@@ -7,13 +7,8 @@ import { filter, startWith } from 'rxjs';
 type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course';
 
 type PrepareItem = {
-  key: string;
-  title: string;
-  subtitle: string;
-  pi: string;            // PrimeIcons class suffix, e.g. 'pi-book'
-  route?: string | null;
-  disabled?: boolean;
-  badge?: string | null;
+  key: string; title: string; subtitle: string; pi: string;
+  route?: string | null; disabled?: boolean; badge?: string | null;
 };
 
 @Component({
@@ -28,14 +23,14 @@ type PrepareItem = {
         <div class="flex items-center gap-6 min-w-0">
           <a class="font-semibold text-white hover:opacity-90 whitespace-nowrap" routerLink="/">UberFrontend</a>
 
-          <!-- Tech tabs only on list pages (JS/Angular/System Design lists) -->
+          <!-- Tech tabs only on list pages -->
           <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
             <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
                [class.tab-active]="currentTech()==='javascript'">
               <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                 <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
                 <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="700"
-                      font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'"
+                      font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
                       fill="#111">JS</text>
               </svg>
               JavaScript
@@ -47,7 +42,7 @@ type PrepareItem = {
                 <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
                 <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
                 <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="800"
-                      font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans'"
+                      font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
                       fill="#fff">A</text>
               </svg>
               Angular
@@ -58,7 +53,7 @@ type PrepareItem = {
           </nav>
         </div>
 
-        <!-- CENTER: Prepare (only on detail pages) -->
+        <!-- CENTER -->
         <div class="flex items-center justify-center">
           <button *ngIf="isDetailPage()"
                   class="pill px-3 py-1.5 rounded hover:bg-white/10"
@@ -78,22 +73,17 @@ type PrepareItem = {
         <!-- MEGA MENU -->
         <ng-container *ngIf="megaOpen()">
           <div class="fixed inset-0 z-40" (click)="closeMega()"></div>
-
           <div id="prepare-mega"
-               class="fixed left-1/2 -translate-x-1/2 top-12 mt-2 z-50 w:[min(92vw,940px)] w-[min(92vw,940px)]"
+               class="fixed left-1/2 -translate-x-1/2 top-12 mt-2 z-50 w-[min(92vw,940px)]"
                (click)="$event.stopPropagation()"
                (keydown.escape)="closeMega()" tabindex="-1" role="menu" aria-label="Prepare menu">
             <div class="rounded-xl bg-neutral-900 border border-white/10 shadow-2xl p-3 sm:p-4 space-y-3">
-
               <ng-container *ngFor="let item of prepareItems; trackBy: trackByKey">
-                <!-- Disabled -->
                 <div *ngIf="item.disabled; else enabledRow"
                      class="card-row rounded-xl p-4 sm:p-5 disabled"
                      role="button" aria-disabled="true" tabindex="-1">
                   <div class="flex items-start gap-4">
-                    <div class="icon-box" aria-hidden="true">
-                      <i class="pi" [ngClass]="item.pi"></i>
-                    </div>
+                    <div class="icon-box" aria-hidden="true"><i class="pi" [ngClass]="item.pi"></i></div>
                     <div class="min-w-0">
                       <div class="flex items-center gap-2">
                         <div class="font-semibold">{{ item.title }}</div>
@@ -105,18 +95,12 @@ type PrepareItem = {
                   </div>
                 </div>
 
-                <!-- Enabled -->
                 <ng-template #enabledRow>
                   <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
-                     [routerLink]="item.route!"
-                     (click)="closeMega()"
-                     (keydown.enter)="onPrepareKeyEnter(item, $event)"
-                     (keydown.space)="onPrepareKeySpace(item, $event)"
+                     [routerLink]="item.route!" (click)="closeMega()"
                      role="link">
                     <div class="flex items-start gap-4">
-                      <div class="icon-box" aria-hidden="true">
-                        <i class="pi" [ngClass]="item.pi"></i>
-                      </div>
+                      <div class="icon-box" aria-hidden="true"><i class="pi" [ngClass]="item.pi"></i></div>
                       <div class="min-w-0 flex-1">
                         <div class="font-semibold">{{ item.title }}</div>
                         <div class="text-sm text-gray-400 mt-1">{{ item.subtitle }}</div>
@@ -127,7 +111,6 @@ type PrepareItem = {
                   </a>
                 </ng-template>
               </ng-container>
-
             </div>
           </div>
         </ng-container>
@@ -136,18 +119,15 @@ type PrepareItem = {
       <!-- Context strip: ONLY on tech list pages -->
       <div class="context" *ngIf="showContextStrip()">
         <div class="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between text-sm">
-          <div class="flex items-center gap-2">
-            <ng-container *ngIf="mode()==='tech-list'">
-              <div class="flex">
-                <a class="pill pill-tab px-3 py-2 rounded-l hover:bg-white/10"
-                   [ngClass]="{'pill-tab-active': section()==='coding'}"
-                   [routerLink]="['/', currentTech(), 'coding']">Coding</a>
-
-                <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
-                   [ngClass]="{'pill-tab-active': section()==='trivia'}"
-                   [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
-              </div>
-            </ng-container>
+          <div class="flex items-center gap-2" *ngIf="mode()==='tech-list'">
+            <div class="flex">
+              <a class="pill pill-tab px-3 py-2 rounded-l hover:bg-white/10"
+                 [ngClass]="{'pill-tab-active': section()==='coding'}"
+                 [routerLink]="['/', currentTech(), 'coding']">Coding</a>
+              <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
+                 [ngClass]="{'pill-tab-active': section()==='trivia'}"
+                 [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
+            </div>
           </div>
         </div>
       </div>
@@ -155,51 +135,18 @@ type PrepareItem = {
   `
 })
 export class HeaderComponent {
+  private doc = inject(DOCUMENT);
+
   mode = signal<Mode>('dashboard');
   currentTech = signal<'javascript' | 'angular' | null>(null);
   section = signal<'coding' | 'trivia' | null>(null);
 
-  // PrimeIcons-based items
   prepareItems: PrepareItem[] = [
-    {
-      key: 'playbook',
-      title: 'Front End Interview Playbook',
-      subtitle: 'A starter guide to preparing for front end interviews',
-      pi: 'pi-book',
-      disabled: true,
-      badge: 'Coming soon',
-      route: null
-    },
-    {
-      key: 'gfe75',
-      title: 'GFE 75',
-      subtitle: 'The 75 most important front end interview questions.',
-      pi: 'pi-list',
-      disabled: true,
-      badge: 'Coming soon',
-      route: null
-    },
-    {
-      key: 'system-design',
-      title: 'Front End System Design Playbook',
-      subtitle: 'Core System Design techniques and deep dives into social feeds, autocomplete, e-commerce, and more.',
-      pi: 'pi-sitemap',
-      route: '/system-design'
-    },
-    {
-      key: 'practice',
-      title: 'Free Practice',
-      subtitle: 'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.',
-      pi: 'pi-code',
-      route: '/javascript'
-    },
-    {
-      key: 'courses',
-      title: 'Courses',
-      subtitle: 'Structured lessons with progress tracking and a course outline.',
-      pi: 'pi-bookmark',
-      route: '/courses'
-    }
+    { key: 'playbook', title: 'Front End Interview Playbook', subtitle: 'A starter guide to preparing for front end interviews', pi: 'pi-book', disabled: true, badge: 'Coming soon', route: null },
+    { key: 'gfe75', title: 'GFE 75', subtitle: 'The 75 most important front end interview questions.', pi: 'pi-list', disabled: true, badge: 'Coming soon', route: null },
+    { key: 'system-design', title: 'Front End System Design Playbook', subtitle: 'Core System Design techniques and deep dives into social feeds, autocomplete, e-commerce, and more.', pi: 'pi-sitemap', route: '/system-design' },
+    { key: 'practice', title: 'Free Practice', subtitle: 'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.', pi: 'pi-code', route: '/javascript' },
+    { key: 'courses', title: 'Courses', subtitle: 'Structured lessons with progress tracking and a course outline.', pi: 'pi-bookmark', route: '/courses' }
   ];
 
   isSystemDesign = computed(() =>
@@ -208,24 +155,15 @@ export class HeaderComponent {
   isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
   showContextStrip = computed(() => this.mode() === 'tech-list');
 
-  backLink = computed(() => {
-    if (this.mode() === 'sd-detail') return ['/system-design'];
-    const tech = this.currentTech() ?? 'javascript';
-    const sec = this.section() ?? 'coding';
-    return ['/', tech, sec];
-  });
-
   megaOpen = signal(false);
-  searchTerm = '';
 
   constructor(private router: Router) {
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
-      startWith(null)
-    ).subscribe(() => {
-      this.parseUrl(this.router.url);
-      this.megaOpen.set(false);
-    });
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
+      .subscribe(() => {
+        this.parseUrl(this.router.url);
+        this.megaOpen.set(false);
+        this.updateSafeTop();
+      });
   }
 
   private parseUrl(url: string) {
@@ -246,17 +184,18 @@ export class HeaderComponent {
     this.mode.set(segs.length === 2 ? 'tech-list' : 'tech-detail');
   }
 
-  // a11y helpers (typed as Event to silence Angular's narrow typing warnings)
-  onPrepareKeyEnter(item: PrepareItem, ev: Event) { this.onPrepareClick(item, ev); }
-  onPrepareKeySpace(item: PrepareItem, ev: Event) { ev.preventDefault(); this.onPrepareClick(item, ev); }
-  onPrepareClick(item: PrepareItem, ev?: Event) {
-    if (item.disabled || !item.route) { ev?.preventDefault(); return; }
-    this.closeMega();
-    this.router.navigateByUrl(item.route);
+  // publish the safe top spacing (header + optional context strip)
+  private updateSafeTop() {
+    const base = 48; // h-12
+    const ctx = this.showContextStrip() ? 48 : 0; // context strip h-12
+    const px = base + ctx;
+    this.doc.documentElement.style.setProperty('--app-safe-top', `${px}px`);
   }
 
   trackByKey(_: number, it: PrepareItem) { return it.key; }
-
   toggleMega() { this.megaOpen.update(v => !v); }
   closeMega() { this.megaOpen.set(false); }
+
+  currentTechValue() { return this.currentTech(); }
+  sectionValue() { return this.section(); }
 }

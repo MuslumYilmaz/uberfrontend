@@ -1,4 +1,4 @@
-<div class="flex h-full bg-gray-900 text-white">
+<div class="flex h-[calc(100vh-64px-56px)] bg-gray-900 text-white">
     <!-- Sidebar -->
     <aside class="w-72 flex-shrink-0 overflow-auto bg-neutral-800 border-r border-neutral-700">
         <div class="px-6 py-4 border-b border-neutral-700">
@@ -25,55 +25,44 @@
 
     <!-- Detail pane -->
     <main class="flex-1 p-8 overflow-auto space-y-6">
-        <!-- Header + metadata -->
-        <div *ngIf="question()" class="space-y-4">
+        <div *ngIf="question() as q; else missing" class="space-y-4">
             <div class="flex flex-col gap-2">
-                <h1 class="text-4xl font-extrabold">{{ question()?.title }}</h1>
+                <h1 class="text-4xl font-extrabold">{{ q.title }}</h1>
                 <div class="flex flex-wrap gap-4 items-center text-sm">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-1 bg-green-600 rounded text-xs font-medium capitalize">
-                            {{ question()?.difficulty }}
-                        </span>
-                    </div>
+                    <span class="px-2 py-1 bg-green-600 rounded text-xs font-medium capitalize">{{ q.difficulty
+                        }}</span>
                     <div class="flex gap-2 flex-wrap">
-                        <ng-container *ngFor="let tag of question()?.tags">
-                            <span class="tag">{{ tag }}</span>
-                        </ng-container>
+                        <span class="tag" *ngFor="let tag of q.tags">{{ tag }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Description Card -->
             <div class="rounded-xl bg-neutral-800 p-6 shadow">
-                <div class="prose prose-invert max-w-none">
-                    {{ question()?.description }}
-                </div>
+                <div class="prose prose-invert max-w-none">{{ q.description }}</div>
             </div>
 
-            <!-- Answer drawer -->
             <div class="rounded-xl overflow-hidden">
                 <button pButton type="button"
                     class="w-full flex justify-between items-center px-6 py-4 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-t-xl transition"
                     (click)="toggleAnswer()">
-                    <div class="font-medium text-lg">
-                        {{ showAnswer() ? 'Hide Answer' : 'Show Answer' }}
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="pi transition-transform"
-                            [ngClass]="showAnswer() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                    </div>
+                    <div class="font-medium text-lg">{{ showAnswer() ? 'Hide Answer' : 'Show Answer' }}</div>
+                    <i class="pi" [ngClass]="showAnswer() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
                 </button>
                 <div *ngIf="showAnswer()" class="bg-neutral-800 border border-t-0 border-neutral-700 rounded-b-xl p-6">
-                    <div class="text-green-400 font-medium leading-relaxed">
-                        {{ question()?.answer }}
-                    </div>
+                    <div class="text-green-400 font-medium leading-relaxed">{{ q.answer }}</div>
                 </div>
             </div>
         </div>
 
-        <!-- fallback if no question -->
-        <div *ngIf="!question()" class="text-center py-20">
-            <div class="text-xl text-neutral-400">Question not found.</div>
-        </div>
+        <ng-template #missing>
+            <div class="text-center py-20">
+                <div class="text-xl text-neutral-400">Question not found.</div>
+            </div>
+        </ng-template>
     </main>
 </div>
+
+<!-- Footer (practice mode) -->
+<app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
+    (prev)="prev()" (next)="next()" (back)="returnTo ? router.navigate(returnTo) : null">
+</app-footer>

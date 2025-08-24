@@ -1,72 +1,61 @@
 <footer class="footer fixed bottom-0 left-0 right-0 z-30 bg-neutral-900 border-t border-white/10">
-    <div class="max-w-7xl mx-auto h-14 px-4 flex items-center justify-between gap-3 text-gray-100">
-
-        <!-- LEFT: Course drawer trigger (only course mode with outline) -->
-        <div class="flex items-center gap-2 min-w-0">
-            <button *ngIf="mode==='course' && outline?.length && leftCourseLabel" class="left-trigger"
-                (click)="openMenu()" type="button" aria-label="Open course outline">
+    <!-- 3-col grid: left (outline) | center (cluster) | right (submit) -->
+    <div class="bar">
+        <!-- LEFT -->
+        <div class="left">
+            <button *ngIf="isCourse && hasOutline && leftCourseLabel" class="left-trigger" type="button"
+                (click)="openMenu()" aria-label="Open course outline">
                 <span class="icon">☰</span>
                 <span class="truncate">{{ leftCourseLabel }}</span>
             </button>
         </div>
 
-        <!-- MIDDLE: practice vs course controls -->
-        <div class="flex items-center gap-2">
-            <!-- Practice -->
-            <ng-container *ngIf="mode==='practice'; else courseContent">
-                <button class="pbtn-sm" type="button" (click)="prev.emit()" [disabled]="prevDisabled">
-                    ← Prev
-                </button>
-
-                <span class="opacity-70 text-sm" *ngIf="progressText">{{ progressText }}</span>
-
+        <!-- CENTER -->
+        <div class="center">
+            <!-- Practice cluster -->
+            <div class="cluster" *ngIf="isPractice">
+                <button class="pbtn-sm" type="button" (click)="prev.emit()" [disabled]="prevDisabled">← Prev</button>
+                <span class="progress" *ngIf="progressText">{{ progressText }}</span>
                 <button class="pbtn-sm" type="button" (click)="next.emit()" [disabled]="nextDisabled"
-                    [ngClass]="{ 'is-disabled': nextDisabled }" [pTooltip]="nextDisabledTooltip || ''"
+                    [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
                     [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
                     Next →
                 </button>
-            </ng-container>
+            </div>
 
-            <!-- Course -->
-            <ng-template #courseContent>
-                <div class="flex items-center gap-3">
-                    <button class="pbtn-sm" type="button" (click)="coursePrev.emit()" [disabled]="!coursePrevLabel">
-                        ← {{ coursePrevLabel || 'Back' }}
-                    </button>
+            <!-- Course cluster -->
+            <div class="cluster" *ngIf="isCourse">
+                <button class="pbtn-sm" type="button" (click)="coursePrev.emit()" [disabled]="!coursePrevLabel">
+                    ← {{ coursePrevLabel || 'Back' }}
+                </button>
 
-                    <span class="opacity-60 text-sm">/</span>
+                <span class="sep">·</span>
 
-                    <button class="crumb underline decoration-dotted" *ngIf="breadcrumbLabel" (click)="back.emit()"
-                        type="button">
-                        {{ breadcrumbLabel }}
-                    </button>
+                <button *ngIf="breadcrumbLabel" class="crumb" type="button" (click)="back.emit()"
+                    [title]="breadcrumbLabel">
+                    {{ breadcrumbLabel }}
+                </button>
 
-                    <span class="opacity-80 text-sm truncate max-w-[30vw]">
-                        {{ middleSuffixLabel || '' }}
-                    </span>
+                <span class="suffix" *ngIf="middleSuffixLabel">{{ middleSuffixLabel }}</span>
 
-                    <button class="pbtn-sm ml-2" type="button" (click)="courseNext.emit()"
-                        [disabled]="!courseNextLabel || nextDisabled"
-                        [ngClass]="{ 'is-disabled': !courseNextLabel || nextDisabled }"
-                        [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
-                        [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
-                        {{ courseNextLabel ? ('Next: ' + courseNextLabel) : 'Next' }} →
-                    </button>
-                </div>
-            </ng-template>
+                <button class="pbtn-sm" type="button" (click)="courseNext.emit()"
+                    [disabled]="!courseNextLabel || nextDisabled"
+                    [pTooltip]="nextDisabled ? (nextDisabledTooltip || '') : ''"
+                    [tooltipDisabled]="!(nextDisabled && nextDisabledTooltip)" tooltipPosition="top">
+                    {{ courseNextLabel ? ('Next: ' + courseNextLabel) : 'Next' }} →
+                </button>
+            </div>
         </div>
 
-        <!-- RIGHT: optional submit / mark complete (reading lessons) -->
-        <div class="flex items-center gap-2">
-            <button *ngIf="showSubmit" class="pbtn-sm" type="button" (click)="submit.emit()">
+        <!-- RIGHT -->
+        <div class="right">
+            <button *ngIf="showSubmit" class="pbtn-sm primary" type="button" (click)="submit.emit()">
                 {{ submitLabel }}
             </button>
         </div>
     </div>
-
 </footer>
 
-<!-- Drawer -->
 <!-- Drawer -->
 <div class="drawer-backdrop" *ngIf="menuVisible()" [class.show]="menuOpen()" (click)="closeMenu()">
     <aside class="drawer" [class.show]="menuOpen()" (click)="$event.stopPropagation()">

@@ -11,7 +11,13 @@
       "async"
     ],
     "importance": 4,
-    "languageDefault": "js"
+    "languageDefault": "js",
+    "companies": [
+      "google",
+      "amazon",
+      "microsoft",
+      "meta"
+    ]
   },
   {
     "id": "js-debounce",
@@ -19,13 +25,18 @@
     "description": "Implement a `debounce(fn, wait)` utility that delays invoking `fn` until after `wait` milliseconds have elapsed since the last call.",
     "type": "coding",
     "technology": "javascript",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "tags": [
       "debounce",
       "timers"
     ],
     "importance": 3,
-    "languageDefault": "js"
+    "languageDefault": "js",
+    "companies": [
+      "google",
+      "meta",
+      "airbnb"
+    ]
   },
   {
     "id": "js-array-flatten",
@@ -39,13 +50,18 @@
       "recursion"
     ],
     "importance": 4,
-    "languageDefault": "js"
+    "languageDefault": "js",
+    "companies": [
+      "apple",
+      "google",
+      "meta"
+    ]
   },
   {
     "id": "dummy-test",
     "title": "Dummy Test Question",
     "description": "This one lets us test starter vs solution swap in Monaco.",
-    "difficulty": "Easy",
+    "difficulty": "easy",
     "importance": 1,
     "tags": [
       "test"
@@ -58,7 +74,11 @@
     "stackblitzSolutionUrl": null,
     "languageDefault": "js",
     "type": "coding",
-    "technology": "javascript"
+    "technology": "javascript",
+    "companies": [
+      "uber",
+      "netflix"
+    ]
   },
   {
     "id": "mean",
@@ -78,7 +98,12 @@
     "solutionTs": "export default function mean(array: number[]): number {\n  if (array.length === 0) return Number.NaN;\n  return array.reduce((s, v) => s + v, 0) / array.length;\n}",
     "tests": "import mean from './mean';\n\ndescribe('mean', () => {\n  test('empty input array', () => {\n    expect(mean([])).toBeNaN();\n  });\n\n  test('single value', () => {\n    expect(mean([0])).toEqual(0);\n  });\n\n  test('two values', () => {\n    expect(mean([1, 3])).toEqual(2);\n  });\n});",
     "testsTs": "import mean from './mean';\n\ndescribe('mean', () => {\n  test('empty input array', () => {\n    expect(mean([] as number[])).toBeNaN();\n  });\n\n  test('single value', () => {\n    expect(mean([0])).toEqual(0);\n  });\n\n  test('two values', () => {\n    expect(mean([1, 3])).toEqual(2);\n  });\n});",
-    "languageDefault": "js"
+    "languageDefault": "js",
+    "companies": [
+      "amazon",
+      "microsoft",
+      "google"
+    ]
   },
   {
     "id": "deepClone",
@@ -101,7 +126,7 @@
     },
     "type": "coding",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "object",
       "clone",
@@ -113,7 +138,13 @@
     "solution": "export default function deepClone(obj) {\n  if (obj === null || typeof obj !== 'object') return obj;\n  if (Array.isArray(obj)) return obj.map(deepClone);\n  const res = {};\n  for (const key in obj) {\n    if (Object.prototype.hasOwnProperty.call(obj, key)) {\n      res[key] = deepClone(obj[key]);\n    }\n  }\n  return res;\n}",
     "solutionTs": "export default function deepClone<T>(obj: T): T {\n  if (obj === null || typeof obj !== 'object') return obj;\n  if (Array.isArray(obj)) return (obj as unknown as any[]).map(deepClone) as unknown as T;\n  const res: Record<string, unknown> = {};\n  for (const key in obj as Record<string, unknown>) {\n    if (Object.prototype.hasOwnProperty.call(obj, key)) {\n      // @ts-ignore indexable copy for exercise simplicity\n      res[key] = deepClone((obj as any)[key]);\n    }\n  }\n  return res as T;\n}",
     "tests": "import deepClone from './deepClone';\n\ndescribe('deepClone', () => {\n  test('primitive', () => {\n    expect(deepClone(5)).toEqual(5);\n  });\n\n  test('nested object', () => {\n    const o = { a: { b: 2 } };\n    const c = deepClone(o);\n    c.a.b = 3;\n    expect(o.a.b).toEqual(2);\n  });\n\n  test('array inside object', () => {\n    const o = { arr: [1, 2, { x: 5 }] };\n    const c = deepClone(o);\n    c.arr[2].x = 10;\n    expect(o.arr[2].x).toEqual(5);\n  });\n});",
-    "testsTs": "import deepClone from './deepClone';\n\ndescribe('deepClone', () => {\n  test('primitive', () => {\n    expect(deepClone(5)).toEqual(5);\n  });\n\n  test('nested object', () => {\n    const o = { a: { b: 2 } } as const;\n    const c = deepClone(o);\n    (c as any).a.b = 3;\n    expect(o.a.b).toEqual(2);\n  });\n\n  test('array inside object', () => {\n    const o = { arr: [1, 2, { x: 5 }] };\n    const c = deepClone(o);\n    (c.arr[2] as any).x = 10;\n    expect(o.arr[2].x).toEqual(5);\n  });\n});",
-    "languageDefault": "js"
+    "testsTs": "import deepClone from './deepClone';\n\ndescribe('deepClone', () => {\n  test('primitive', () => {\n    expect(deepClone(5)).ToEqual(5);\n  });\n\n  test('nested object', () => {\n    const o = { a: { b: 2 } } as const;\n    const c = deepClone(o);\n    (c as any).a.b = 3;\n    expect(o.a.b).toEqual(2);\n  });\n\n  test('array inside object', () => {\n    const o = { arr: [1, 2, { x: 5 }] };\n    const c = deepClone(o);\n    (c.arr[2] as any).x = 10;\n    expect(o.arr[2].x).toEqual(5);\n  });\n});",
+    "languageDefault": "js",
+    "companies": [
+      "google",
+      "meta",
+      "apple",
+      "airbnb"
+    ]
   }
 ]

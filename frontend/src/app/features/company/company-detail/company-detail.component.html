@@ -1,0 +1,34 @@
+<!-- src/app/features/company/company-detail/company-detail.component.html -->
+<div class="mb-6">
+    <div class="flex items-center gap-3">
+        <div class="h-12 w-12 rounded-2xl bg-white/10 grid place-items-center text-white font-semibold text-lg">
+            {{ (label | async)?.[0] }}
+        </div>
+        <div>
+            <h1 class="text-3xl font-extrabold text-white">
+                {{ label | async }} Front End Interview Guide
+            </h1>
+            <div class="text-gray-400 text-sm">Known questions & practice tailored for {{ label | async }}.</div>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-3 mt-3 text-xs">
+        <span class="px-2 py-1 rounded-full bg-white/10 text-gray-200">
+            {{ (counts$ | async)?.all }} known questions
+        </span>
+        <span class="px-2 py-1 rounded-full bg-white/10 text-gray-200">
+            Coding: {{ (counts$ | async)?.coding }} • Trivia: {{ (counts$ | async)?.trivia }}
+        </span>
+    </div>
+
+    <!-- Local tabs for this company -->
+    <div class="mt-4 flex">
+        <a [routerLink]="['all']" class="tabx" routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact:true}">All</a>
+        <a [routerLink]="['coding']" class="tabx" routerLinkActive="active">Coding</a>
+        <a [routerLink]="['trivia']" class="tabx" routerLinkActive="active">Trivia</a>
+    </div>
+</div>
+
+<!-- The list itself -->
+<router-outlet />
