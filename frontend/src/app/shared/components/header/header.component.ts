@@ -1,67 +1,76 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
+import {
+  PREPARE_GROUPS,
+  PrepareGroup,
+  PrepareItem,
+  TargetName
+} from '../../shared/prepare/prepare.registry';
 
-type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course';
-
-type PrepareItem = {
-  key: string; title: string; subtitle: string; pi: string;
-  route?: string | null; disabled?: boolean; badge?: string | null;
-};
+type Mode =
+  | 'dashboard'
+  | 'tech-list'
+  | 'tech-detail'
+  | 'sd-list'
+  | 'sd-detail'
+  | 'course'
+  | 'auth'; // NEW: treat /auth/* as its own mode
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
-  styleUrls: ['./header.component.scss'],
+  styleUrls: ['./header.component.css'],
   template: `
-    <div class="topbar bg-neutral-900/95 text-gray-200 pb-2">
-      <div class="max-w-7xl mx-auto px-4 h-12 grid [grid-template-columns:1fr_auto_1fr] items-center gap-4">
-        <!-- LEFT -->
-        <div class="flex items-center gap-6 min-w-0">
-          <a class="font-semibold text-white hover:opacity-90 whitespace-nowrap" routerLink="/">UberFrontend</a>
+    <div class="ufh-topbar" role="banner">
+      <div class="ufh-inner">
+        <!-- LEFT: brand + tech tabs (tabs hidden on dashboard, detail & auth pages) -->
+        <div class="ufh-left">
+          <a class="ufh-brand" routerLink="/">UberFrontend</a>
 
-          <!-- Tech tabs only on list pages -->
-          <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
-            <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
-              [class.tab-active]="currentTech()==='javascript'">
-              <svg class="tab-icon mr-2" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
-                <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="700"
-                      font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
-                      fill="#111">JS</text>
-              </svg>
+          <nav *ngIf="showTechTabs()" class="ufh-tabs">
+            <a [routerLink]="'/javascript'"
+               class="ufh-tab"
+               [class.ufh-tab-active]="currentTech()==='javascript'">
+              <span class="ufh-tab-ico">
+                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                  <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
+                  <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="700"
+                        font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
+                        fill="#111">JS</text>
+                </svg>
+              </span>
               JavaScript
             </a>
 
-            <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
-              [class.tab-active]="currentTech()==='angular'">
-              <svg class="tab-icon mr-2" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
-                <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
-                <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="800"
-                      font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
-                      fill="#fff">A</text>
-              </svg>
+            <a [routerLink]="'/angular'"
+               class="ufh-tab"
+               [class.ufh-tab-active]="currentTech()==='angular'">
+              <span class="ufh-tab-ico">
+                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                  <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
+                  <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
+                  <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="800"
+                        font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
+                        fill="#fff">A</text>
+                </svg>
+              </span>
               Angular
             </a>
 
-            <!-- System design (PrimeIcon) -->
-            <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
-              [class.tab-active]="isSystemDesign()">
-              <i class="pi pi-sitemap mr-2"></i>
-              System design
-            </a>
+            <a [routerLink]="'/system-design'"
+               class="ufh-tab"
+               [class.ufh-tab-active]="isSystemDesign()">System design</a>
           </nav>
-
         </div>
 
-        <!-- CENTER -->
-        <div class="flex items-center justify-center">
-          <button *ngIf="isDetailPage()"
-                  class="pill px-3 py-1.5 rounded hover:bg-white/10"
+        <!-- CENTER: Prepare trigger on Dashboard + coding-detail (not on auth) -->
+        <div class="ufh-center">
+          <button *ngIf="showPrepareTrigger()"
+                  class="ufh-pill"
                   (click)="toggleMega()"
                   aria-haspopup="menu"
                   [attr.aria-expanded]="megaOpen()"
@@ -70,143 +79,271 @@ type PrepareItem = {
           </button>
         </div>
 
-        <!-- RIGHT -->
-        <div class="flex items-center justify-end">
-          <a routerLink="/" class="hidden sm:inline text-sm pill px-3 py-1 rounded hover:opacity-90">Dashboard</a>
-        </div>
+        <!-- RIGHT: auth-aware area -->
+        <div class="ufh-right" (click)="$event.stopPropagation()">
+          <!-- Not signed in -->
+          <ng-container *ngIf="!isAuthed(); else authed">
+            <a class="ufh-link-ghost" [routerLink]="['/auth','login']">Sign in</a>
+            <a class="ufh-cta" [routerLink]="['/auth','signup']">Get full access</a>
+          </ng-container>
 
-        <!-- MEGA MENU -->
-        <ng-container *ngIf="megaOpen()">
-          <div class="fixed inset-0 z-40" (click)="closeMega()"></div>
-          <div id="prepare-mega"
-               class="fixed left-1/2 -translate-x-1/2 top-12 mt-2 z-50 w-[min(92vw,940px)]"
-               (click)="$event.stopPropagation()"
-               (keydown.escape)="closeMega()" tabindex="-1" role="menu" aria-label="Prepare menu">
-            <div class="rounded-xl bg-neutral-900 border border-white/10 shadow-2xl p-3 sm:p-4 space-y-3">
-              <ng-container *ngFor="let item of prepareItems; trackBy: trackByKey">
-                <div *ngIf="item.disabled; else enabledRow"
-                     class="card-row rounded-xl p-4 sm:p-5 disabled"
-                     role="button" aria-disabled="true" tabindex="-1">
-                  <div class="flex items-start gap-4">
-                    <div class="icon-box" aria-hidden="true"><i class="pi" [ngClass]="item.pi"></i></div>
-                    <div class="min-w-0">
-                      <div class="flex items-center gap-2">
-                        <div class="font-semibold">{{ item.title }}</div>
-                        <span *ngIf="item.badge" class="row-badge">{{ item.badge }}</span>
-                      </div>
-                      <div class="text-sm text-gray-400 mt-1">{{ item.subtitle }}</div>
-                      <div class="skeleton-bar mt-3"></div>
+          <!-- Signed in -->
+          <ng-template #authed>
+            <div class="ufh-profile ufh-profile-right">
+              <button class="ufh-avatar"
+                      (click)="toggleProfileMenu()"
+                      aria-haspopup="menu"
+                      [attr.aria-expanded]="profileOpen()">
+                <i class="pi pi-user"></i>
+              </button>
+
+              <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
+                <div class="ufh-menu-section">{{ user()?.name || 'Account' }}</div>
+                <button class="ufh-menu-item" disabled><i class="pi pi-user"></i> My profile</button>
+                <button class="ufh-menu-item" disabled><i class="pi pi-check-circle"></i> Progress</button>
+                <button class="ufh-menu-item" disabled><i class="pi pi-bookmark"></i> Bookmarks</button>
+                <button class="ufh-menu-item"><i class="pi pi-moon"></i> Theme</button>
+                <button class="ufh-menu-item"><i class="pi pi-sliders-h"></i> Keyboard shortcuts</button>
+                <div class="ufh-divider"></div>
+                <button class="ufh-menu-item" (click)="signOut()"><i class="pi pi-sign-out"></i> Sign out</button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- MEGA MENU (unchanged) -->
+      <ng-container *ngIf="megaOpen()">
+        <div class="ufh-backdrop" (click)="closeAll()"></div>
+        <div id="prepare-mega" class="ufh-mega"
+             (click)="$event.stopPropagation()"
+             (keydown.escape)="closeAll()" tabindex="-1" role="menu" aria-label="Prepare menu">
+          <div class="ufh-mega-inner">
+            <div class="ufh-rail">
+              <button *ngFor="let g of groups; trackBy: trackByGroupKey"
+                      class="ufh-rail-item"
+                      [class.ufh-rail-active]="g.key===activeGroupKey()"
+                      (click)="activeGroupKey.set(g.key)">
+                <span class="ufh-rail-text">{{ g.title }}</span>
+                <i class="pi pi-chevron-right ufh-rail-caret"></i>
+              </button>
+            </div>
+
+            <div class="ufh-pane">
+              <a *ngIf="continueLink() as cont"
+                 class="ufh-card ufh-card-continue"
+                 [routerLink]="cont.to"
+                 (click)="closeAll()">
+                <div class="ufh-card-icon"><i class="pi pi-play-circle"></i></div>
+                <div class="ufh-card-body">
+                  <div class="ufh-card-title">Continue</div>
+                  <div class="ufh-card-sub">{{ cont.label }}</div>
+                  <div class="ufh-skel"></div>
+                </div>
+                <div aria-hidden="true">→</div>
+              </a>
+
+              <ng-container *ngFor="let item of activeItems(); trackBy: trackByItemKey">
+                <div *ngIf="item.disabled || item.intent!=='route' || !item.target; else enabledRow"
+                     class="ufh-card ufh-card-disabled" role="button" aria-disabled="true" tabindex="-1">
+                  <div class="ufh-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                  <div class="ufh-card-body">
+                    <div class="ufh-card-title">
+                      {{ item.title }}
+                      <span *ngIf="item.badge" class="ufh-badge">{{ item.badge }}</span>
                     </div>
+                    <div class="ufh-card-sub">{{ item.subtitle }}</div>
+                    <div class="ufh-skel"></div>
                   </div>
                 </div>
 
                 <ng-template #enabledRow>
-                  <a class="card-row rounded-xl p-4 sm:p-5 block hover:bg-white/5 transition"
-                     [routerLink]="item.route!" (click)="closeMega()"
-                     role="link">
-                    <div class="flex items-start gap-4">
-                      <div class="icon-box" aria-hidden="true"><i class="pi" [ngClass]="item.pi"></i></div>
-                      <div class="min-w-0 flex-1">
-                        <div class="font-semibold">{{ item.title }}</div>
-                        <div class="text-sm text-gray-400 mt-1">{{ item.subtitle }}</div>
-                        <div class="skeleton-bar mt-3"></div>
-                      </div>
-                      <div class="ml-2 opacity-60">→</div>
+                  <a class="ufh-card"
+                     [routerLink]="intentToLink(item)!"
+                     (click)="closeAll()">
+                    <div class="ufh-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                    <div class="ufh-card-body">
+                      <div class="ufh-card-title">{{ item.title }}</div>
+                      <div class="ufh-card-sub">{{ item.subtitle }}</div>
+                      <div class="ufh-skel"></div>
                     </div>
+                    <div aria-hidden="true">→</div>
                   </a>
                 </ng-template>
               </ng-container>
             </div>
           </div>
-        </ng-container>
-      </div>
+        </div>
+      </ng-container>
 
-      <!-- Context strip: ONLY on tech list pages -->
-      <div class="context" *ngIf="showContextStrip()">
-        <div class="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between text-sm">
-          <div class="flex items-center gap-2" *ngIf="mode()==='tech-list'">
-            <div class="flex">
-              <a class="pill pill-tab px-3 py-2 rounded-l hover:bg-white/10"
-                 [ngClass]="{'pill-tab-active': section()==='coding'}"
-                 [routerLink]="['/', currentTech(), 'coding']">Coding</a>
-
-              <a class="pill pill-tab px-3 py-2 hover:bg-white/10"
-                 [ngClass]="{'pill-tab-active': section()==='trivia'}"
-                 [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
-
-              <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
-                 [ngClass]="{'pill-tab-active': section()==='debug'}"
-                 [routerLink]="['/', currentTech(), 'debug']">Debug</a>
-            </div>
+      <!-- Context strip for tech list pages -->
+      <div class="ufh-context" *ngIf="showContextStrip()">
+        <div class="ufh-context-inner" *ngIf="mode()==='tech-list'">
+          <div class="ufh-pill-tabs">
+            <a class="ufh-pill-tab"
+               [class.ufh-pill-active]="section()==='coding'"
+               [routerLink]="['/', currentTech(), 'coding']">Coding</a>
+            <a class="ufh-pill-tab"
+               [class.ufh-pill-active]="section()==='trivia'"
+               [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
+            <a class="ufh-pill-tab"
+               [class.ufh-pill-active]="section()==='debug'"
+               [routerLink]="['/', currentTech(), 'debug']">Debug</a>
           </div>
         </div>
       </div>
     </div>
   `
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   private doc = inject(DOCUMENT);
 
+  // routing state
   mode = signal<Mode>('dashboard');
   currentTech = signal<'javascript' | 'angular' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
-  prepareItems: PrepareItem[] = [
-    { key: 'playbook', title: 'Front End Interview Playbook', subtitle: 'A starter guide to preparing for front end interviews', pi: 'pi-book', disabled: true, badge: 'Coming soon', route: null },
-    { key: 'gfe75', title: 'GFE 75', subtitle: 'The 75 most important front end interview questions.', pi: 'pi-list', disabled: true, badge: 'Coming soon', route: null },
-    { key: 'system-design', title: 'Front End System Design Playbook', subtitle: 'Core System Design techniques and deep dives.', pi: 'pi-sitemap', route: '/system-design' },
-    { key: 'practice', title: 'Free Practice', subtitle: 'Jump into coding, debug & trivia practice.', pi: 'pi-code', route: '/javascript' },
-    { key: 'courses', title: 'Courses', subtitle: 'Structured lessons with progress tracking and a course outline.', pi: 'pi-bookmark', route: '/courses' },
-    { key: 'companies', title: 'Companies', subtitle: 'Practice by company: coding & trivia.', pi: 'pi-briefcase', route: '/companies' }
-  ];
+  // auth state (storage-based stub; replace with real AuthService later)
+  user = signal<{ name?: string } | null>(null);
+  isAuthed = signal(false);
 
-  isSystemDesign = computed(() =>
-    this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
-  );
-  isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
-  showContextStrip = computed(() => this.mode() === 'tech-list');
+  // registry
+  groups: PrepareGroup[] = PREPARE_GROUPS;
+  activeGroupKey = signal<PrepareGroup['key']>('practice');
+  activeGroup = computed(() => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]);
+  activeItems = computed(() => this.activeGroup().items);
 
+  // menus
   megaOpen = signal(false);
+  profileOpen = signal(false);
 
   constructor(private router: Router) {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
       .subscribe(() => {
         this.parseUrl(this.router.url);
         this.megaOpen.set(false);
+        this.profileOpen.set(false);
         this.updateSafeTop();
+        this.pickDefaultGroup();
       });
+
+    window.addEventListener('click', () => this.profileOpen.set(false));
+
+    // init + react to storage changes (pretend auth)
+    this.refreshAuth();
+    window.addEventListener('storage', this.onStorage);
   }
 
+  ngOnDestroy(): void {
+    window.removeEventListener('storage', this.onStorage);
+  }
+
+  private onStorage = (e: StorageEvent) => {
+    if (!e.key || e.key === 'uf:user' || e.key === 'uf:auth') this.refreshAuth();
+  };
+
+  private refreshAuth() {
+    try {
+      const raw = localStorage.getItem('uf:user');
+      this.user.set(raw ? JSON.parse(raw) : null);
+    } catch { this.user.set(null); }
+    const flag = localStorage.getItem('uf:auth') === 'true';
+    this.isAuthed.set(Boolean(this.user()) || flag);
+  }
+
+  signOut() {
+    localStorage.removeItem('uf:user');
+    localStorage.removeItem('uf:auth');
+    this.refreshAuth();
+    this.profileOpen.set(false);
+  }
+
+  // derived flags
+  isSystemDesign = computed(() =>
+    this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
+  );
+  isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
+  showContextStrip = computed(() => this.mode() === 'tech-list');
+  showTechTabs = computed(() => this.mode() === 'tech-list' || this.mode() === 'sd-list');
+  showPrepareTrigger = computed(() =>
+    (this.mode() === 'dashboard' || this.mode() === 'tech-detail')
+    && this.mode() !== 'auth' // defensive (though auth never matches above)
+  );
+
+  // url parsing
   private parseUrl(url: string) {
     const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
     this.mode.set('dashboard'); this.currentTech.set(null); this.section.set(null);
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
+    if (segs[0] === 'auth') { this.mode.set('auth'); return; }          // NEW
     if (segs[0] === 'courses') { this.mode.set('course'); return; }
     if (segs[0] === 'system-design') { this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail'); return; }
 
     const tech = segs[0] as 'javascript' | 'angular';
-    this.currentTech.set(tech);
+    if (tech === 'javascript' || tech === 'angular') this.currentTech.set(tech);
 
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
     const sec = segs[1] as 'coding' | 'trivia' | 'debug';
-    this.section.set(sec);
-    this.mode.set(segs.length === 2 ? 'tech-list' : 'tech-detail');
+    if (sec === 'coding' || sec === 'trivia' || sec === 'debug') {
+      this.section.set(sec);
+      this.mode.set(segs.length === 2 ? 'tech-list' : 'tech-detail');
+    }
   }
 
-  // publish the safe top spacing (header + optional context strip)
+  private pickDefaultGroup() {
+    if (this.mode() === 'tech-list' || this.mode() === 'tech-detail') { this.activeGroupKey.set('practice'); return; }
+    if (this.mode() === 'sd-list' || this.mode() === 'sd-detail') { this.activeGroupKey.set('system'); return; }
+    if (this.router.url.startsWith('/companies')) { this.activeGroupKey.set('companies'); return; }
+    if (this.router.url.startsWith('/courses')) { this.activeGroupKey.set('courses'); return; }
+    this.activeGroupKey.set('foundations');
+  }
+
+  trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
+  trackByItemKey(_: number, it: PrepareItem) { return it.key; }
+
+  // index-signature safe access
+  intentToLink(it: PrepareItem): any[] | null {
+    if (it.intent !== 'route' || !it.target) return null;
+    const t = it.target;
+    switch (t.name as TargetName) {
+      case 'practice': {
+        const tech = (t.params?.['tech'] as 'javascript' | 'angular' | undefined) ?? this.currentTech() ?? 'javascript';
+        return ['/', tech];
+      }
+      case 'system':
+        return ['/system-design'];
+      case 'companies': {
+        const c = t.params?.['company'] as string | undefined;
+        return c ? ['/companies', c] : ['/companies'];
+      }
+      case 'courses':
+        return ['/courses'];
+      case 'guides':
+        return ['/guides'];
+      default:
+        return null;
+    }
+  }
+
+  continueLink = computed(() => {
+    try {
+      const raw = localStorage.getItem('uf:lastVisited');
+      if (!raw) return null;
+      const obj = JSON.parse(raw) as { to: any[]; label?: string };
+      if (!Array.isArray(obj.to)) return null;
+      return { to: obj.to, label: obj.label ?? 'Pick up where you left off' };
+    } catch { return null; }
+  });
+
   private updateSafeTop() {
-    const base = 48; // h-12
-    const ctx = this.showContextStrip() ? 48 : 0; // context strip h-12
-    const px = base + ctx;
-    this.doc.documentElement.style.setProperty('--app-safe-top', `${px}px`);
+    const base = 48;
+    const ctx = this.showContextStrip() ? 48 : 0;
+    this.doc.documentElement.style.setProperty('--app-safe-top', `${base + ctx}px`);
   }
 
-  trackByKey(_: number, it: PrepareItem) { return it.key; }
   toggleMega() { this.megaOpen.update(v => !v); }
-  closeMega() { this.megaOpen.set(false); }
-
-  currentTechValue() { return this.currentTech(); }
-  sectionValue() { return this.section(); }
+  toggleProfileMenu() { this.profileOpen.update(v => !v); }
+  closeAll() { this.megaOpen.set(false); this.profileOpen.set(false); }
 }
