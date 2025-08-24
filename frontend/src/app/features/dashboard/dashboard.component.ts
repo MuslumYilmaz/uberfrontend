@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-type Icon = 'book' | 'grid' | 'list' | 'cap';
+type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building';
 
 type DashItem = {
   title: string;
   subtitle: string;
-  icon: Icon;
+  icon: IconKey;
   route?: any[];
   disabled?: boolean;
   badge?: string | null;
@@ -18,10 +18,23 @@ type DashItem = {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  styleUrls: ['./dashboard.component.css'],   // <-- note the plural
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
+  private readonly ICON_MAP: Record<IconKey, string> = {
+    book: 'book',
+    grid: 'th-large',
+    list: 'list',
+    cap: 'bookmark',   // ← was 'graduation-cap' (not in your version)
+    building: 'briefcase' // you can switch to 'building' if your version supports it
+  };
+
+  piIcon(key: IconKey) {
+    const name = this.ICON_MAP[key] ?? 'question';
+    return ['pi', `pi-${name}`];
+  }
+
   items: DashItem[] = [
     {
       title: 'Front End Interview Playbook',
@@ -46,8 +59,7 @@ export class DashboardComponent {
     },
     {
       title: 'Free Practice',
-      subtitle:
-        'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.',
+      subtitle: 'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.',
       icon: 'list',
       route: ['/javascript'],
     },
@@ -56,6 +68,12 @@ export class DashboardComponent {
       subtitle: 'Structured, paced lessons with progress tracking.',
       icon: 'cap',
       route: ['/courses'],
+    },
+    {
+      title: 'Companies',
+      subtitle: 'Practice by company (Google, Uber, etc.): coding & trivia.',
+      icon: 'building',              // mapped to pi-briefcase
+      route: ['/companies'],
     },
   ];
 

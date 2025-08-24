@@ -1,101 +1,136 @@
 import { Injectable } from '@angular/core';
-import sdk from '@stackblitz/sdk';
+import sdk, { VM } from '@stackblitz/sdk';
 import { normalizeSdkFiles } from '../utils/snapshot.utils';
+
+type Asset = {
+  files: Record<string, string>;
+  dependencies?: Record<string, string>;
+  openFile?: string;
+};
 
 @Injectable({ providedIn: 'root' })
 export class StackBlitzEmbed {
-  private autosaveTimers = new Map<any, number>();
+  private autosaveTimers = new Map<VM, number>();
 
-  async fetchAsset(assetUrl: string): Promise<{
-    files: Record<string, string>;
-    dependencies?: Record<string, string>;
-    openFile?: string;
-  } | null> {
+  private normalizePath(p?: string): string | undefined {
+    return typeof p === 'string' ? p.replace(/^\/+/, '') : undefined;
+  }
+  private resolveAssetUrl(assetUrl: string): string {
+    const cleaned = assetUrl.replace(/^\/+/, '');
+    return cleaned.startsWith('assets/') ? `/${cleaned}` : `/assets/${cleaned}`;
+  }
+
+  /** Load an asset JSON and normalize its shape for the SDK. */
+  async fetchAsset(assetUrl: string): Promise<Asset | null> {
     try {
-      const res = await fetch(assetUrl, { cache: 'no-store' });
+      const res = await fetch(this.resolveAssetUrl(assetUrl), { cache: 'no-store' });
       if (!res.ok) return null;
-      const json = await res.json();
+
+      const json: any = await res.json();
+      // Accept either { files: {...}, dependencies, openFile } or a flat files map.
+      const rawFiles: Record<string, string> = json?.files ?? json ?? {};
+
       return {
-        files: normalizeSdkFiles(json),
-        dependencies: (json?.dependencies ?? undefined) as Record<string, string> | undefined,
-        openFile: (json?.openFile as string | undefined) ?? undefined,
+        files: normalizeSdkFiles(rawFiles),
+        dependencies: json?.dependencies ?? undefined,
+        openFile: this.normalizePath(json?.openFile),
       };
     } catch {
       return null;
     }
   }
 
-  /** Embed project + ensure we persist to localStorage regularly and on teardown. */
+  /** Embed a project and autosave the virtual FS to localStorage. */
   async embedProject(
     host: HTMLElement,
     opts: {
       title: string;
       files: Record<string, string>;
       dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>; // merged into dependencies
       openFile: string;
       storageKey: string;
     }
-  ): Promise<{ vm: any; cleanup: () => void }> {
+  ): Promise<{ vm: VM; cleanup: () => void }> {
+    const deps: Record<string, string> = {
+      ...(opts.dependencies ?? {}),
+      ...(opts.devDependencies ?? {}),
+    };
+
     const vm = await sdk.embedProject(
       host,
       {
         template: 'angular-cli',
         title: opts.title,
         description: 'Embedded via StackBlitz SDK',
-        files: opts.files,
-        dependencies: opts.dependencies,
+        files: normalizeSdkFiles(opts.files),
+        dependencies: deps,
       },
-      { height: '100%', openFile: opts.openFile }
+      {
+        height: '100%',
+        openFile: this.normalizePath(opts.openFile)!,
+        forceEmbedLayout: true,
+        hideNavigation: true,
+      }
     );
 
     const saveNow = async () => {
       try {
         const snap = await vm.getFsSnapshot();
-        localStorage.setItem(opts.storageKey, JSON.stringify(snap));
+        localStorage.setItem(opts.storageKey, JSON.stringify(snap ?? {}));
       } catch { /* noop */ }
     };
 
-    // Save immediately once (covers quick nav after reset)
+    // Initial save + autosave
     void saveNow();
-
-    // Autosave every 4s
     const t = window.setInterval(saveNow, 4000);
     this.autosaveTimers.set(vm, t);
 
-    // Save when tab is hidden or closing
+    // Save on tab hide/close
     const onVis = () => { if (document.hidden) void saveNow(); };
     const onUnload = () => { void saveNow(); };
     document.addEventListener('visibilitychange', onVis);
     window.addEventListener('beforeunload', onUnload);
 
     const cleanup = () => {
-      // Final flush + cleanup timers/listeners
       void saveNow();
       const timer = this.autosaveTimers.get(vm);
       if (timer) clearInterval(timer);
       this.autosaveTimers.delete(vm);
       document.removeEventListener('visibilitychange', onVis);
       window.removeEventListener('beforeunload', onUnload);
+      try { (vm as any)?.destroy?.(); } catch { /* noop */ }
     };
 
     return { vm, cleanup };
   }
 
-  /** Replace files from asset and persist them as the new working snapshot. */
-  async replaceFromAsset(vm: any, newFiles: Record<string, string>, openFile: string, storageKey: string) {
-    const current = await vm.getFsSnapshot();
-    const destroy = Object.keys(current).filter(p => !(p in newFiles));
+  /** Replace files from an asset and persist them as the new working snapshot. */
+  async replaceFromAsset(
+    vm: VM,
+    newFiles: Record<string, string>,
+    openFile: string,
+    storageKey: string
+  ) {
+    const normalized = normalizeSdkFiles(newFiles);
+    const current = (await vm.getFsSnapshot()) as Record<string, string> | null;
+    const destroy = Object.keys(current ?? {}).filter(p => !(p in normalized));
 
-    await vm.applyFsDiff({ create: newFiles, destroy });
-    localStorage.setItem(storageKey, JSON.stringify(newFiles));
+    await vm.applyFsDiff({ create: normalized, destroy });
+    localStorage.setItem(storageKey, JSON.stringify(normalized));
 
-    // Hop files so Monaco picks up changes
-    const alt = Object.keys(newFiles).find(p => p !== openFile) || 'src/main.ts';
+    const primary = this.normalizePath(openFile) || 'src/main.ts';
+
+    // Nudge Monaco: hop to a different file, then back to the target file.
+    const open = async (path: string) => {
+      try { await (vm as any).editor?.openFile?.(path); } catch { /* noop */ }
+    };
     try {
-      await vm.setCurrentFile(alt);
+      const alt = Object.keys(normalized).find(p => p !== primary) || 'src/main.ts';
+      await open(alt);
       await new Promise(r => setTimeout(r, 16));
-      await vm.setCurrentFile(openFile);
-      vm.editor?.layout?.();
+      await open(primary);
+      (vm as any).editor?.layout?.();
     } catch { /* noop */ }
   }
 }

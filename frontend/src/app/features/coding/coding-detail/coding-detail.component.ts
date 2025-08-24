@@ -32,7 +32,8 @@ type CourseNavState = {
 } | null;
 
 type Tech = 'javascript' | 'angular';
-type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia'; id: string };
+type Kind = 'coding' | 'debug';
+type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
 
 @Component({
@@ -47,6 +48,7 @@ type PracticeSession = { items: PracticeItem[]; index: number } | null;
 })
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: Tech;
+  kind: Kind = 'coding';
   question = signal<Question | null>(null);
 
   @ViewChild('sbHost', { read: ElementRef }) sbHost?: ElementRef<HTMLDivElement>;
@@ -71,7 +73,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
-  // Convenience labels for course footer (course context only)
   descCollapsed = signal(false);
   private lastAsideRatio = 0.3;
   asideFlex = computed(
@@ -80,7 +81,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       : `0 0 ${this.horizontalRatio() * 100}%`
   );
 
-  // add inside the class
+  // Convenience labels for course footer (course context only)
   get courseCrumbLabel(): string | null {
     return this.courseNav()?.breadcrumb?.label ?? this.returnLabel() ?? null;
   }
@@ -90,8 +91,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   get courseNextLabel(): string | null {
     return this.courseNav()?.next?.label ?? null;
   }
-
-
 
   // Context flags
   isCourseContext = signal(false);
@@ -123,7 +122,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;
 
-  // Practice session (from list/company pages)
+  // Practice session
   private practice: PracticeSession = null;
 
   // Solution warning
@@ -170,7 +169,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       : (this.currentIndex + 1 < this.allQuestions.length);
   }
 
-  // --- course footer/drawer state (kept for course context) ---
+  // --- course footer/drawer state ---
   courseIdFromState: string | null = null;
   courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
   leftDrawerLabel: string | null = null;
@@ -239,8 +238,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private static sortForPractice(a: Question, b: Question): number {
     const ia = Number((a as any).importance ?? 0);
     const ib = Number((b as any).importance ?? 0);
-    if (ia !== ib) return ib - ia; // importance DESC
-    return (a.title || '').localeCompare(b.title || ''); // title ASC
+    if (ia !== ib) return ib - ia;
+    return (a.title || '').localeCompare(b.title || '');
   }
 
   private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
@@ -302,8 +301,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     recompute();
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
 
-    // determine :tech up the tree
+    // determine :tech and :kind up the tree
     this.route.paramMap.subscribe((pm) => {
+      // climb to detect tech
       let p: ActivatedRoute | null = this.route;
       let tech: string | null = null;
       while (p && !tech) {
@@ -311,10 +311,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         p = p.parent!;
       }
       this.tech = ((tech || 'javascript') as Tech);
+
+      // detect kind from this route's path (coding/:id or debug/:id)
+      const path = this.route.routeConfig?.path || '';
+      this.kind = path.startsWith('debug') ? 'debug' : 'coding';
+
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
       const id = pm.get('id')!;
-      this.qs.loadQuestions(this.tech, 'coding').subscribe((list) => {
+      this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
         this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
         this.loadQuestion(id);
       });
@@ -441,6 +446,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sbVm = null;
       this.embedLoading.set(false);
     } else {
+      // ---------- ANGULAR via StackBlitz (robust handling for empty saved files) ----------
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
@@ -452,38 +458,51 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const storageKey = getNgStorageKey(q);
       const baselineKey = getNgBaselineKey(q);
 
+      // read previously saved files; treat {} as empty
       let files = this.loadSavedFiles(storageKey);
+      const isEmpty = !files || Object.keys(files).length === 0;
+
       let dependencies: Record<string, string> | undefined;
       let openFileFromAsset: string | undefined;
 
-      if (!files && meta?.asset) {
+      // If nothing saved (or empty), fetch the asset JSON again
+      if (isEmpty && meta?.asset) {
         const asset = await this.ngEmbed.fetchAsset(meta.asset);
         if (asset) {
-          files = asset.files;
+          files = asset.files ?? {};
           dependencies = asset.dependencies;
           openFileFromAsset = asset.openFile;
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(files));
-            if (!localStorage.getItem(baselineKey)) {
-              localStorage.setItem(baselineKey, JSON.stringify(files));
-            }
-          } catch { /* ignore */ }
+
+          // Only persist when we actually have files
+          if (Object.keys(files).length > 0) {
+            try {
+              localStorage.setItem(storageKey, JSON.stringify(files));
+              if (!localStorage.getItem(baselineKey)) {
+                localStorage.setItem(baselineKey, JSON.stringify(files));
+              }
+            } catch { /* ignore */ }
+          }
         }
       }
 
-      if (files) {
+      // If we have files now, determine if they diverged from baseline for the banner
+      if (files && Object.keys(files).length > 0) {
         let baseline: Record<string, string> | null = null;
+
         const baseRaw = localStorage.getItem(baselineKey);
         if (baseRaw) baseline = normalizeSdkFiles(JSON.parse(baseRaw));
+
         if (!baseline && meta?.asset) {
           const asset = await this.ngEmbed.fetchAsset(meta.asset);
           baseline = asset?.files ?? null;
           try { if (asset?.files) localStorage.setItem(baselineKey, JSON.stringify(asset.files)); } catch { }
         }
-        if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
-      }
 
-      if (!files) files = {};
+        if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
+      } else {
+        // Fallback to avoid launching a completely empty project
+        files = {};
+      }
 
       const openFile = (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
       const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
@@ -509,7 +528,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const raw = localStorage.getItem(storageKey);
       if (!raw) return null;
-      return normalizeSdkFiles(JSON.parse(raw));
+      const parsed = normalizeSdkFiles(JSON.parse(raw));
+      return Object.keys(parsed || {}).length > 0 ? parsed : null;
     } catch {
       return null;
     }
@@ -608,7 +628,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.currentIndex > 0) {
       const prevId = this.allQuestions[this.currentIndex - 1].id;
-      this.router.navigate(['/', this.tech, 'coding', prevId]);
+      this.router.navigate(['/', this.tech, this.kind, prevId]);
     }
   }
   next() {
@@ -618,11 +638,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.currentIndex + 1 < this.allQuestions.length) {
       const nextId = this.allQuestions[this.currentIndex + 1].id;
-      this.router.navigate(['/', this.tech, 'coding', nextId]);
+      this.router.navigate(['/', this.tech, this.kind, nextId]);
     }
   }
 
-  // ---------- course navigations (unchanged) ----------
+  // ---------- course navigations ----------
   goCoursePrev() {
     const c = this.courseNav();
     if (c?.prev) this.router.navigate(c.prev.to);

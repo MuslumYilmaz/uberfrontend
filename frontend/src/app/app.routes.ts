@@ -1,4 +1,3 @@
-// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -66,6 +65,7 @@ export const routes: Routes = [
       },
 
       // Company detail page with "All / Coding / Trivia" tabs
+      // (No 'debug' tab here by design)
       {
         path: ':slug',
         loadComponent: () =>
@@ -131,7 +131,7 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'coding' },
 
-      // Lists
+      // Lists (practice pages)
       {
         path: 'coding',
         loadComponent: () =>
@@ -146,6 +146,13 @@ export const routes: Routes = [
             .then(m => m.CodingListComponent),
         data: { source: 'tech', kind: 'trivia' },
       },
+      {
+        path: 'debug', // NEW: Debug tab (practice only)
+        loadComponent: () =>
+          import('./features/coding/coding-list/coding-list.component')
+            .then(m => m.CodingListComponent),
+        data: { source: 'tech', kind: 'debug' },
+      },
 
       // Details
       {
@@ -159,6 +166,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/trivia/trivia-detail/trivia-detail.component')
             .then(m => m.TriviaDetailComponent),
+      },
+      {
+        path: 'debug/:id', // NEW: Debug detail (practice only)
+        loadComponent: () =>
+          import('./features/coding/coding-detail/coding-detail.component')
+            .then(m => m.CodingDetailComponent),
+        data: { kind: 'debug' },
       },
     ],
   },

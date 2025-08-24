@@ -26,8 +26,8 @@ type PrepareItem = {
           <!-- Tech tabs only on list pages -->
           <nav *ngIf="!isDetailPage()" class="hidden md:flex items-center gap-6">
             <a [routerLink]="'/javascript'" class="tab pb-2 whitespace-nowrap"
-               [class.tab-active]="currentTech()==='javascript'">
-              <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              [class.tab-active]="currentTech()==='javascript'">
+              <svg class="tab-icon mr-2" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                 <rect x="2" y="2" width="28" height="28" rx="4" fill="#F7DF1E"></rect>
                 <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="700"
                       font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
@@ -37,8 +37,8 @@ type PrepareItem = {
             </a>
 
             <a [routerLink]="'/angular'" class="tab pb-2 whitespace-nowrap"
-               [class.tab-active]="currentTech()==='angular'">
-              <svg class="tab-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+              [class.tab-active]="currentTech()==='angular'">
+              <svg class="tab-icon mr-2" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
                 <polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon>
                 <polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon>
                 <text x="16" y="21" text-anchor="middle" font-size="14" font-weight="800"
@@ -48,9 +48,14 @@ type PrepareItem = {
               Angular
             </a>
 
+            <!-- System design (PrimeIcon) -->
             <a [routerLink]="'/system-design'" class="tab pb-2 whitespace-nowrap"
-               [class.tab-active]="isSystemDesign()">System design</a>
+              [class.tab-active]="isSystemDesign()">
+              <i class="pi pi-sitemap mr-2"></i>
+              System design
+            </a>
           </nav>
+
         </div>
 
         <!-- CENTER -->
@@ -124,9 +129,14 @@ type PrepareItem = {
               <a class="pill pill-tab px-3 py-2 rounded-l hover:bg-white/10"
                  [ngClass]="{'pill-tab-active': section()==='coding'}"
                  [routerLink]="['/', currentTech(), 'coding']">Coding</a>
-              <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
+
+              <a class="pill pill-tab px-3 py-2 hover:bg-white/10"
                  [ngClass]="{'pill-tab-active': section()==='trivia'}"
                  [routerLink]="['/', currentTech(), 'trivia']">Trivia</a>
+
+              <a class="pill pill-tab px-3 py-2 rounded-r hover:bg-white/10"
+                 [ngClass]="{'pill-tab-active': section()==='debug'}"
+                 [routerLink]="['/', currentTech(), 'debug']">Debug</a>
             </div>
           </div>
         </div>
@@ -139,14 +149,15 @@ export class HeaderComponent {
 
   mode = signal<Mode>('dashboard');
   currentTech = signal<'javascript' | 'angular' | null>(null);
-  section = signal<'coding' | 'trivia' | null>(null);
+  section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
   prepareItems: PrepareItem[] = [
     { key: 'playbook', title: 'Front End Interview Playbook', subtitle: 'A starter guide to preparing for front end interviews', pi: 'pi-book', disabled: true, badge: 'Coming soon', route: null },
     { key: 'gfe75', title: 'GFE 75', subtitle: 'The 75 most important front end interview questions.', pi: 'pi-list', disabled: true, badge: 'Coming soon', route: null },
-    { key: 'system-design', title: 'Front End System Design Playbook', subtitle: 'Core System Design techniques and deep dives into social feeds, autocomplete, e-commerce, and more.', pi: 'pi-sitemap', route: '/system-design' },
-    { key: 'practice', title: 'Free Practice', subtitle: 'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.', pi: 'pi-code', route: '/javascript' },
-    { key: 'courses', title: 'Courses', subtitle: 'Structured lessons with progress tracking and a course outline.', pi: 'pi-bookmark', route: '/courses' }
+    { key: 'system-design', title: 'Front End System Design Playbook', subtitle: 'Core System Design techniques and deep dives.', pi: 'pi-sitemap', route: '/system-design' },
+    { key: 'practice', title: 'Free Practice', subtitle: 'Jump into coding, debug & trivia practice.', pi: 'pi-code', route: '/javascript' },
+    { key: 'courses', title: 'Courses', subtitle: 'Structured lessons with progress tracking and a course outline.', pi: 'pi-bookmark', route: '/courses' },
+    { key: 'companies', title: 'Companies', subtitle: 'Practice by company: coding & trivia.', pi: 'pi-briefcase', route: '/companies' }
   ];
 
   isSystemDesign = computed(() =>
@@ -179,7 +190,7 @@ export class HeaderComponent {
 
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
-    const sec = segs[1] as 'coding' | 'trivia';
+    const sec = segs[1] as 'coding' | 'trivia' | 'debug';
     this.section.set(sec);
     this.mode.set(segs.length === 2 ? 'tech-list' : 'tech-detail');
   }

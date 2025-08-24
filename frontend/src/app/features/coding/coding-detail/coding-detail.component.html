@@ -1,5 +1,4 @@
-<!-- Fixed full-viewport work area:
-     sits BELOW the header (uses --app-safe-top) and ABOVE the footer (56px) -->
+<!-- Fixed full-viewport work area -->
 <div class="coding-detail fixed-under-header flex gap-[5px]">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
@@ -114,7 +113,6 @@
     <div *ngIf="tech!=='angular' && showRestoreBanner()"
       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
       <span class="font-medium">Your code was restored from client storage.</span>
-
       <div class="absolute right-2 inset-y-0 flex items-center gap-3">
         <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
         <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
@@ -243,23 +241,16 @@
   </main>
 </div>
 
-<!-- Shared Footer -->
-<!-- coding-detail.component.html -->
-<div class="coding-detail flex gap-[5px] h-[calc(100vh-64px-85px)]">
-  <!-- ... (everything else unchanged from your last version) ... -->
-</div>
-
-<!-- Shared Footer -->
+<!-- Footer -->
 <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
   [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
   [breadcrumbLabel]="courseCrumbLabel" [coursePrevLabel]="coursePrevLabel" [courseNextLabel]="courseNextLabel"
-  [middleSuffixLabel]="'Coding task'" [leftCourseLabel]="leftDrawerLabel" [outline]="courseOutline || []"
-  [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
+  [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
+  [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
   [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()" (next)="next()"
   (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
   (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>
-
 
 <!-- Preview dialog -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"

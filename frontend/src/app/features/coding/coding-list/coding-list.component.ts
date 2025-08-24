@@ -17,16 +17,16 @@ import { MixedQuestion, QuestionService } from '../../../core/services/question.
 
 type StructuredDescription = { text: string; examples?: string[] };
 type ListSource = 'tech' | 'company';
-type Kind = 'coding' | 'trivia' | 'all';
+type Kind = 'coding' | 'trivia' | 'debug' | 'all';
 type Tech = 'javascript' | 'angular';
 
 type Row = Question & {
   tech?: Tech;              // attached in company mode or derived from route
-  __kind: 'coding' | 'trivia';
+  __kind: 'coding' | 'trivia' | 'debug';
   companies?: string[];
 };
 
-type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia'; id: string };
+type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia' | 'debug'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number };
 
 @Component({
@@ -77,20 +77,23 @@ export class CodingListComponent {
     }),
     switchMap(() => {
       if (this.source === 'tech') {
-        // path: /:tech/(coding|trivia|all)
+        // path: /:tech/(coding|trivia|debug|all)
         return this.route.parent!.paramMap.pipe(
           map(pm => (pm.get('tech') ?? 'javascript') as Tech),
           tap(t => (this.tech = t)),
           switchMap(t => {
             if (this.kind === 'all') {
+              // Not linked today for /:tech, but safe to support
               return forkJoin([
                 this.qs.loadQuestions(t, 'coding')
                   .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'coding' })))),
                 this.qs.loadQuestions(t, 'trivia')
-                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' }))))
-              ]).pipe(map(([a, b]) => [...a, ...b]));
+                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' })))),
+                this.qs.loadQuestions(t, 'debug')
+                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'debug' }))))
+              ]).pipe(map(([a, b, c]) => [...a, ...b, ...c]));
             }
-            const k: Exclude<Kind, 'all'> = this.kind as Exclude<Kind, 'all'>;
+            const k = this.kind as Exclude<Kind, 'all'>;
             return this.qs.loadQuestions(t, k)
               .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))));
           }),
@@ -98,7 +101,8 @@ export class CodingListComponent {
         );
       }
 
-      // source === 'company' (merge all techs and attach __kind + tech)
+      // source === 'company'
+      // Company pages intentionally have only coding/trivia/all (no debug)
       if (this.kind === 'all') {
         return forkJoin([
           this.qs.loadAllQuestions('coding')
@@ -108,9 +112,9 @@ export class CodingListComponent {
         ]).pipe(map(([a, b]) => [...a, ...b]), startWith<Row[]>([]));
       } else {
         const k: Exclude<Kind, 'all'> = this.kind as Exclude<Kind, 'all'>;
-        return this.qs.loadAllQuestions(k)
+        return this.qs.loadAllQuestions(k as any) // (k will never be 'debug' here)
           .pipe(
-            map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k, tech: q.tech }))),
+            map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
             startWith<Row[]>([])
           );
       }
@@ -159,6 +163,7 @@ export class CodingListComponent {
   linkTo(q: Row): any[] {
     const tech = (q as any).tech ?? this.tech ?? 'javascript';
     if (q.__kind === 'trivia') return ['/', tech, 'trivia', q.id];
+    if (q.__kind === 'debug') return ['/', tech, 'debug', q.id];
     return ['/', tech, 'coding', q.id];
   }
 
@@ -187,9 +192,11 @@ export class CodingListComponent {
 
   heading(): string {
     const t = this.tech ?? 'javascript';
-    const what = this.kind === 'coding' ? 'Coding Challenges'
-      : this.kind === 'trivia' ? 'Trivia Questions'
-        : 'All Questions';
+    const what =
+      this.kind === 'coding' ? 'Coding Challenges'
+        : this.kind === 'trivia' ? 'Trivia Questions'
+          : this.kind === 'debug' ? 'Debug Tasks'
+            : 'All Questions';
     return `${this.capitalize(t)} ${what}`;
   }
   private capitalize(s: string | null | undefined) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
