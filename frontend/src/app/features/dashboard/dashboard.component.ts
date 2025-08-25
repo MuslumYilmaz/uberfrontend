@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { DailyHeatmapComponent } from './daily-heatmap/daily-heatmap.component';
+import { DailyWidgetComponent } from './daily-widget/daily-widget.component';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building';
 
@@ -16,7 +18,7 @@ type DashItem = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, DailyWidgetComponent, DailyHeatmapComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],   // <-- note the plural
   changeDetection: ChangeDetectionStrategy.OnPush,

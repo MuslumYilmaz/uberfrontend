@@ -1,0 +1,39 @@
+.dw-card { background:#151515; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:16px; color:#e9edf1; }
+.dw-head { display:grid; grid-template-columns:1fr auto auto; gap:12px; align-items:center; }
+.dw-title {
+  font-weight: 600;
+  font-size: 14px; /* smaller, matches card headers */
+}
+
+.dw-streak, .dw-xp {
+  font-size: 12px;
+  color: #cfd6dd;
+}
+
+.dw-sub {
+  opacity: .7;
+  margin-left: 4px;
+  font-size: 11px;
+}
+
+.dw-progress { display:flex; align-items:center; gap:10px; margin-top:10px; }
+.dw-bar { flex:1; height:8px; border-radius:999px; background:rgba(255,255,255,.06); overflow:hidden; }
+.dw-fill { height:100%; background:#7aa2ff; }
+.dw-progress-text {
+  font-size: 11px;
+}
+
+.dw-list { list-style:none; margin:12px 0 0; padding:0; display:grid; gap:8px; }
+.dw-row { display:grid; grid-template-columns:auto auto 1fr auto; gap:8px; align-items:center; padding:10px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,.06); padding: 8px; }
+.dw-row:hover { background:rgba(255,255,255,.04); }
+.dw-kind { font-size:10px; padding:1px 5px; border-radius:999px; background:#243b55; color:#cfe1ff; text-transform:capitalize; }
+.dw-kind[data-kind="debug"] { background:#3a2538; color:#ffd8fb; }
+.dw-kind[data-kind="trivia"] { background:#2a3a2e; color:#d5ffd6; }
+.dw-label { color:#e9edf1; text-decoration:none; font-size: 13px; }
+.dw-label:hover { text-decoration:underline; }
+.dw-time { font-size:12px; color:#aab3bd; }
+.dw-skel { height:8px; background:rgba(255,255,255,.08); border-radius:999px; margin-top:8px; width:60%; }
+.dw-hint {
+  font-size: 11px;
+  color: #aab3bd;
+}

@@ -1,23 +1,18 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
+import { defaultPrefs } from '../../../core/models/user.model';
+import { DailyService } from '../../../core/services/daily.service';
 import {
   PREPARE_GROUPS,
   PrepareGroup,
   PrepareItem,
   TargetName
-} from '../../shared/prepare/prepare.registry';
+} from '../../shared/prepare/prepare.registry'; // keep your existing path
 
-type Mode =
-  | 'dashboard'
-  | 'tech-list'
-  | 'tech-detail'
-  | 'sd-list'
-  | 'sd-detail'
-  | 'course'
-  | 'auth'; // NEW: treat /auth/* as its own mode
+type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +22,7 @@ type Mode =
   template: `
     <div class="ufh-topbar" role="banner">
       <div class="ufh-inner">
-        <!-- LEFT: brand + tech tabs (tabs hidden on dashboard, detail & auth pages) -->
+        <!-- LEFT: brand + tech tabs (tabs hidden on dashboard & detail pages) -->
         <div class="ufh-left">
           <a class="ufh-brand" routerLink="/">UberFrontend</a>
 
@@ -67,7 +62,7 @@ type Mode =
           </nav>
         </div>
 
-        <!-- CENTER: Prepare trigger on Dashboard + coding-detail (not on auth) -->
+        <!-- CENTER: Prepare trigger on Dashboard + coding-detail -->
         <div class="ufh-center">
           <button *ngIf="showPrepareTrigger()"
                   class="ufh-pill"
@@ -79,40 +74,79 @@ type Mode =
           </button>
         </div>
 
-        <!-- RIGHT: auth-aware area -->
+        <!-- RIGHT: streak/XP pill + profile -->
         <div class="ufh-right" (click)="$event.stopPropagation()">
-          <!-- Not signed in -->
-          <ng-container *ngIf="!isAuthed(); else authed">
-            <a class="ufh-link-ghost" [routerLink]="['/auth','login']">Sign in</a>
-            <a class="ufh-cta" [routerLink]="['/auth','signup']">Get full access</a>
-          </ng-container>
+          <!-- Stats pill -->
+          <div class="ufh-stats">
+            <button class="ufh-stats-pill"
+                    (click)="toggleStatsMenu()"
+                    aria-haspopup="menu"
+                    [attr.aria-expanded]="statsOpen()">
+              <span aria-hidden="true">🔥</span>
+              <span class="ufh-stats-num">{{ streak().current || 0 }}</span>
+              <span class="ufh-dot">·</span>
+              <span aria-hidden="true">⭐</span>
+              <span class="ufh-stats-num">{{ xp().total || 0 }}</span>
+            </button>
 
-          <!-- Signed in -->
-          <ng-template #authed>
-            <div class="ufh-profile ufh-profile-right">
-              <button class="ufh-avatar"
-                      (click)="toggleProfileMenu()"
-                      aria-haspopup="menu"
-                      [attr.aria-expanded]="profileOpen()">
-                <i class="pi pi-user"></i>
-              </button>
-
-              <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
-                <div class="ufh-menu-section">{{ user()?.name || 'Account' }}</div>
-                <button class="ufh-menu-item" disabled><i class="pi pi-user"></i> My profile</button>
-                <button class="ufh-menu-item" disabled><i class="pi pi-check-circle"></i> Progress</button>
-                <button class="ufh-menu-item" disabled><i class="pi pi-bookmark"></i> Bookmarks</button>
-                <button class="ufh-menu-item"><i class="pi pi-moon"></i> Theme</button>
-                <button class="ufh-menu-item"><i class="pi pi-sliders-h"></i> Keyboard shortcuts</button>
-                <div class="ufh-divider"></div>
-                <button class="ufh-menu-item" (click)="signOut()"><i class="pi pi-sign-out"></i> Sign out</button>
+            <div *ngIf="statsOpen()" class="ufh-stats-menu" role="menu">
+              <div class="ufh-stats-header">
+                <div class="ufh-stat">
+                  <div class="big">🔥 {{ streak().current || 0 }}</div>
+                  <div class="sub">day streak</div>
+                </div>
+                <div class="ufh-stat">
+                  <div class="big">⭐ {{ xp().total || 0 }}</div>
+                  <div class="sub">total XP</div>
+                </div>
               </div>
+
+              <div class="ufh-prog">
+                <div class="ufh-prog-bar">
+                  <div class="ufh-prog-fill" [style.width.%]="progress()*100"></div>
+                </div>
+                <div class="ufh-prog-text">{{ completedCount() }}/{{ totalCount() }} done today</div>
+              </div>
+
+              <ul class="ufh-stats-list">
+                <li *ngFor="let it of daily()?.items || []">
+                  <a class="ufh-stats-link" [routerLink]="it.to" (click)="closeAll()">
+                    <span class="ufh-kind" [attr.data-kind]="it.kind">{{ it.kind }}</span>
+                    <span class="ufh-label">{{ it.label }}</span>
+                    <span class="ufh-time">{{ it.durationMin }}m</span>
+                    <i class="pi"
+                       [ngClass]="it.state?.completedAt ? 'pi-check-circle text-green-400' : 'pi-chevron-right opacity-60'"></i>
+                  </a>
+                </li>
+              </ul>
             </div>
-          </ng-template>
+          </div>
+
+          <!-- Profile -->
+          <div class="ufh-profile ufh-profile-right">
+            <button class="ufh-avatar"
+                    (click)="toggleProfileMenu()"
+                    aria-haspopup="menu"
+                    [attr.aria-expanded]="profileOpen()">
+              <i class="pi pi-user"></i>
+            </button>
+
+            <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
+              <div class="ufh-menu-section">Signed out</div>
+              <button class="ufh-menu-item" disabled><i class="pi pi-user"></i> My profile</button>
+              <button class="ufh-menu-item" disabled><i class="pi pi-check-circle"></i> Progress</button>
+              <button class="ufh-menu-item" disabled><i class="pi pi-bookmark"></i> Bookmarks</button>
+              <button class="ufh-menu-item"><i class="pi pi-moon"></i> Theme</button>
+              <button class="ufh-menu-item"><i class="pi pi-sliders-h"></i> Keyboard shortcuts</button>
+              <div class="ufh-divider"></div>
+              <button class="ufh-menu-item" routerLink="/auth/signup"><i class="pi pi-user-plus"></i> Sign up</button>
+              <button class="ufh-menu-item" routerLink="/auth/login"><i class="pi pi-sign-in"></i> Log in</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- MEGA MENU (unchanged) -->
+      <!-- MEGA MENU -->
       <ng-container *ngIf="megaOpen()">
         <div class="ufh-backdrop" (click)="closeAll()"></div>
         <div id="prepare-mega" class="ufh-mega"
@@ -195,17 +229,13 @@ type Mode =
     </div>
   `
 })
-export class HeaderComponent implements OnDestroy {
+export class HeaderComponent {
   private doc = inject(DOCUMENT);
 
-  // routing state
+  // router state
   mode = signal<Mode>('dashboard');
   currentTech = signal<'javascript' | 'angular' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
-
-  // auth state (storage-based stub; replace with real AuthService later)
-  user = signal<{ name?: string } | null>(null);
-  isAuthed = signal(false);
 
   // registry
   groups: PrepareGroup[] = PREPARE_GROUPS;
@@ -216,67 +246,55 @@ export class HeaderComponent implements OnDestroy {
   // menus
   megaOpen = signal(false);
   profileOpen = signal(false);
+  statsOpen = signal(false);
+
+  // daily stats (for pill + popover)
+  private dailySvc = inject(DailyService);
+  daily = this.dailySvc.daily;
+  xp = this.dailySvc.xp;
+  streak = this.dailySvc.streak;
+
+  completedCount = computed(() =>
+    this.daily()?.items.filter(i => !!i.state?.completedAt).length ?? 0
+  );
+  totalCount = computed(() => this.daily()?.items.length ?? 0);
+  progress = computed(() => {
+    const t = this.totalCount(); const d = this.completedCount(); return t > 0 ? d / t : 0;
+  });
 
   constructor(private router: Router) {
+    // Seed today's set once so header always has data
+    this.dailySvc.ensureTodaySet(defaultPrefs().defaultTech || 'javascript');
+
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
       .subscribe(() => {
         this.parseUrl(this.router.url);
         this.megaOpen.set(false);
         this.profileOpen.set(false);
+        this.statsOpen.set(false);
         this.updateSafeTop();
         this.pickDefaultGroup();
       });
 
-    window.addEventListener('click', () => this.profileOpen.set(false));
-
-    // init + react to storage changes (pretend auth)
-    this.refreshAuth();
-    window.addEventListener('storage', this.onStorage);
+    // outside click closes menus
+    window.addEventListener('click', () => { this.profileOpen.set(false); this.statsOpen.set(false); });
   }
 
-  ngOnDestroy(): void {
-    window.removeEventListener('storage', this.onStorage);
-  }
-
-  private onStorage = (e: StorageEvent) => {
-    if (!e.key || e.key === 'uf:user' || e.key === 'uf:auth') this.refreshAuth();
-  };
-
-  private refreshAuth() {
-    try {
-      const raw = localStorage.getItem('uf:user');
-      this.user.set(raw ? JSON.parse(raw) : null);
-    } catch { this.user.set(null); }
-    const flag = localStorage.getItem('uf:auth') === 'true';
-    this.isAuthed.set(Boolean(this.user()) || flag);
-  }
-
-  signOut() {
-    localStorage.removeItem('uf:user');
-    localStorage.removeItem('uf:auth');
-    this.refreshAuth();
-    this.profileOpen.set(false);
-  }
-
-  // derived flags
+  // ---------- derived flags ----------
   isSystemDesign = computed(() =>
     this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
   );
   isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
   showContextStrip = computed(() => this.mode() === 'tech-list');
   showTechTabs = computed(() => this.mode() === 'tech-list' || this.mode() === 'sd-list');
-  showPrepareTrigger = computed(() =>
-    (this.mode() === 'dashboard' || this.mode() === 'tech-detail')
-    && this.mode() !== 'auth' // defensive (though auth never matches above)
-  );
+  showPrepareTrigger = computed(() => this.mode() === 'dashboard' || this.mode() === 'tech-detail');
 
-  // url parsing
+  // ---------- url parsing ----------
   private parseUrl(url: string) {
     const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
     this.mode.set('dashboard'); this.currentTech.set(null); this.section.set(null);
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
-    if (segs[0] === 'auth') { this.mode.set('auth'); return; }          // NEW
     if (segs[0] === 'courses') { this.mode.set('course'); return; }
     if (segs[0] === 'system-design') { this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail'); return; }
 
@@ -300,10 +318,11 @@ export class HeaderComponent implements OnDestroy {
     this.activeGroupKey.set('foundations');
   }
 
+  // helpers
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
 
-  // index-signature safe access
+  // route intents (use bracket access to satisfy TS4111 on index signatures)
   intentToLink(it: PrepareItem): any[] | null {
     if (it.intent !== 'route' || !it.target) return null;
     const t = it.target;
@@ -345,5 +364,6 @@ export class HeaderComponent implements OnDestroy {
 
   toggleMega() { this.megaOpen.update(v => !v); }
   toggleProfileMenu() { this.profileOpen.update(v => !v); }
-  closeAll() { this.megaOpen.set(false); this.profileOpen.set(false); }
+  toggleStatsMenu() { this.statsOpen.update(v => !v); }
+  closeAll() { this.megaOpen.set(false); this.profileOpen.set(false); this.statsOpen.set(false); }
 }

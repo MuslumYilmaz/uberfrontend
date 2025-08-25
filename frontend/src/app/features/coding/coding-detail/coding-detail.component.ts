@@ -22,6 +22,10 @@ import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
+// NEW: Daily wiring
+import type { DailyItemKind } from '../../../core/models/user.model';
+import { DailyService } from '../../../core/services/daily.service';
+
 declare const monaco: any;
 
 type JsLang = 'js' | 'ts';
@@ -231,7 +235,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private zone: NgZone,
     private codeStore: CodeStorageService,
     private runner: UserCodeSandboxService,
-    private ngEmbed: StackBlitzEmbed
+    private ngEmbed: StackBlitzEmbed,
+    private daily: DailyService              // <-- injected DailyService
   ) { }
 
   // ---------- helpers ----------
@@ -315,6 +320,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       // detect kind from this route's path (coding/:id or debug/:id)
       const path = this.route.routeConfig?.path || '';
       this.kind = path.startsWith('debug') ? 'debug' : 'coding';
+
+      // NEW: make sure a Daily set exists for the current tech
+      this.daily.ensureTodaySet(this.tech);
 
       this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
 
@@ -683,9 +691,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- run tests ----------
-  async runTests() {
-    const q = this.question(); if (!q) return;
+  // Run tests (JS/TS only). Credits daily on full pass.
+  async runTests(): Promise<void> {
+    const q = this.question();
+    if (!q) return;
+
+    // Angular challenges don’t run unit tests here
     if (this.tech === 'angular') return;
 
     this.subTab.set('console');
@@ -703,7 +714,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const wrapped = wrapExportDefault(userJs, q.id);
     const testsPrepared = transformTestCode(testsJs, q.id);
 
-    const out = await this.runner.runWithTests({ userCode: wrapped, testCode: testsPrepared, timeoutMs: 1500 });
+    const out = await this.runner.runWithTests({
+      userCode: wrapped,
+      testCode: testsPrepared,
+      timeoutMs: 1500
+    });
 
     this.consoleEntries.set(out.entries ?? []);
     this.testResults.set(out.results ?? []);
@@ -713,10 +728,46 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.solved.set(passing);
     this.saveSolvedFlag(q, passing);
 
+    if (passing) {
+      // mark today’s Coding/Debug tile done + confetti
+      this.creditDaily();
+      await this.celebrate('tests');
+    }
+
     this.subTab.set('tests');
   }
 
-  submitCode() { /* hook for backend if needed */ }
+  // ---------- Daily credit helpers ----------
+  private creditDailyIfInSet() {
+    const q = this.question(); if (!q) return;
+    const kind = this.kind as DailyItemKind; // 'coding' | 'debug'
+    if (!this.daily.isInTodaySet(kind, q.id)) return;
+    this.daily.markCompletedById(kind, q.id);
+  }
+
+  // ---------- submit ----------
+  // Submit button behavior for both stacks.
+  // Angular/Debug: mark done immediately. JS Coding: require passing tests.
+  async submitCode(): Promise<void> {
+    const q = this.question();
+    if (!q) return;
+
+    if (this.tech === 'angular') {
+      // Angular challenges are marked complete on submit
+      this.creditDaily();
+      await this.celebrate('submit');
+      return;
+    }
+
+    if (this.kind === 'debug') {
+      // JS Debug tasks don’t require tests to pass
+      this.creditDaily();
+      await this.celebrate('submit');
+    } else {
+      // JS Coding requires all tests to pass — runTests will credit & confetti on pass
+      await this.runTests();
+    }
+  }
 
   // ---------- splitters ----------
   startDrag = (ev: PointerEvent) => {
@@ -881,5 +932,35 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   cancelSolutionReveal() {
     this.showSolutionWarning.set(false);
     this.activePanel.set(0);
+  }
+
+  // Credit today's daily item (uses V0 fallback-by-kind in DailyService)
+  private creditDaily(): void {
+    const q = this.question();
+    if (!q) return;
+    this.daily.markCompletedById(this.kind as any, q.id);
+  }
+
+  // --- Confetti helpers (no global imports; uses dynamic import) ---
+  private async fireConfetti(): Promise<void> {
+    const mod: any = await import('canvas-confetti');
+    const confetti = (mod.default || mod) as (opts: any) => void;
+
+    const count = 140;
+    const defaults = { spread: 70, ticks: 90, gravity: 0.9, scalar: 1 };
+
+    const fire = (ratio: number, opts: any = {}) =>
+      confetti({ particleCount: Math.floor(count * ratio), ...defaults, ...opts });
+
+    // two-side burst + a couple of center pops
+    fire(0.30, { startVelocity: 45, origin: { x: 0.15, y: 0.2 } });
+    fire(0.30, { startVelocity: 45, origin: { x: 0.85, y: 0.2 } });
+    fire(0.20, { spread: 100, decay: 0.92, scalar: 0.9, origin: { y: 0.35 } });
+    fire(0.20, { spread: 120, startVelocity: 55, origin: { y: 0.35 } });
+  }
+
+  private async celebrate(reason: 'tests' | 'submit'): Promise<void> {
+    // (you can conditionally vary the burst by `reason` later)
+    try { await this.fireConfetti(); } catch { /* ignore if user blocks animations */ }
   }
 }

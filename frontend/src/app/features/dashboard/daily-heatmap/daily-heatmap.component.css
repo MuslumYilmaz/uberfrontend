@@ -1,0 +1,62 @@
+:host { display: block; }
+
+.hm-card {
+  background: #0c1627;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 16px 18px;
+  color: #e5e7eb;
+}
+
+.hm-head {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* grid container: center nicely and let it breathe */
+.hm-grid {
+  --cell: clamp(12px, 1.2vw, 16px);
+  --gap: clamp(4px, .7vw, 7px);
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+  min-height: 150px;            /* breathing room so it doesn't look squished */
+}
+
+/* each column (5 of them) holds 7 cells stacked */
+.hm-col {
+  display: grid;
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
+}
+
+/* cell appearance */
+.hm-cell {
+  width: var(--cell);
+  height: var(--cell);
+  border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.hm-cell.l1 { background: #144a63; }
+.hm-cell.l2 { background: #0ea5e9; }
+.hm-cell.l3 { background: #22d3ee; }
+
+.hm-legend {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; opacity: .8; margin-top: 10px;
+}
+.hm-dot {
+  width: 12px; height: 12px; border-radius: 3px;
+  background: rgba(255,255,255,0.12);
+}
+.hm-dot.l1 { background: #144a63; }
+.hm-dot.l2 { background: #0ea5e9; }
+.hm-dot.l3 { background: #22d3ee; }
+
+/* ensure a reasonable minimum width so it never feels cramped on lg screens */
+@media (min-width: 1024px) {
+  .hm-card { min-height: 230px; }
+}

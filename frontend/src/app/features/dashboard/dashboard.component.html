@@ -1,40 +1,23 @@
 <div class="min-h-screen bg-neutral-900 text-gray-200">
-    <div class="mx-auto max-w-5xl py-10 px-4">
-        <h1 class="text-4xl font-extrabold text-white mb-6">Dashboard</h1>
-
-        <section>
-            <h2 class="text-xl font-semibold text-gray-200">Recommended preparation</h2>
-            <p class="text-sm text-gray-400 mt-1 mb-6">
+    <div class="mx-auto max-w-6xl py-10 px-4">
+        <header class="mb-6">
+            <h1 class="text-4xl font-extrabold text-white">Dashboard</h1>
+            <p class="text-sm text-gray-400 mt-1">
                 Not sure where to start? This path works well for most people.
             </p>
+        </header>
 
-            <div class="space-y-4">
-                <ng-container *ngFor="let it of items; index as i; trackBy: trackByTitle">
-                    <!-- Enabled (link) -->
-                    <a *ngIf="!it.disabled; else disabledCard" class="card hoverable" [routerLink]="it.route"
-                        [attr.aria-label]="it.title">
-                        <div class="step">{{ i + 1 }}</div>
+        <!-- TWO-COLUMN LAYOUT: main list on the left, sticky right rail -->
+        <section class="dash-layout">
+            <!-- LEFT: main content / cards -->
+            <main class="dash-main">
+                <h2 class="text-lg font-semibold text-gray-200 mb-3">Keep going</h2>
 
-                        <div class="icon" aria-hidden="true">
-                            <i [ngClass]="piIcon(it.icon)" class="text-[20px] leading-none"></i>
-                        </div>
-
-                        <div class="content">
-                            <div class="title-row">
-                                <div class="title">{{ it.title }}</div>
-                            </div>
-                            <div class="subtitle">{{ it.subtitle }}</div>
-                            <div class="skeleton">
-                                <div class="bar"></div>
-                            </div>
-                        </div>
-
-                        <div class="chevron">→</div>
-                    </a>
-
-                    <!-- Disabled -->
-                    <ng-template #disabledCard>
-                        <div class="card disabled">
+                <div class="space-y-4">
+                    <ng-container *ngFor="let it of items; index as i; trackBy: trackByTitle">
+                        <!-- Enabled (link) -->
+                        <a *ngIf="!it.disabled; else disabledCard" class="card hoverable" [routerLink]="it.route"
+                            [attr.aria-label]="it.title">
                             <div class="step">{{ i + 1 }}</div>
 
                             <div class="icon" aria-hidden="true">
@@ -44,17 +27,48 @@
                             <div class="content">
                                 <div class="title-row">
                                     <div class="title">{{ it.title }}</div>
-                                    <span *ngIf="it.badge" class="badge secondary">{{ it.badge }}</span>
                                 </div>
                                 <div class="subtitle">{{ it.subtitle }}</div>
                                 <div class="skeleton">
                                     <div class="bar"></div>
                                 </div>
                             </div>
-                        </div>
-                    </ng-template>
-                </ng-container>
-            </div>
+
+                            <div class="chevron">→</div>
+                        </a>
+
+                        <!-- Disabled -->
+                        <ng-template #disabledCard>
+                            <div class="card disabled">
+                                <div class="step">{{ i + 1 }}</div>
+
+                                <div class="icon" aria-hidden="true">
+                                    <i [ngClass]="piIcon(it.icon)" class="text-[20px] leading-none"></i>
+                                </div>
+
+                                <div class="content">
+                                    <div class="title-row">
+                                        <div class="title">{{ it.title }}</div>
+                                        <span *ngIf="it.badge" class="badge secondary">{{ it.badge }}</span>
+                                    </div>
+                                    <div class="subtitle">{{ it.subtitle }}</div>
+                                    <div class="skeleton">
+                                        <div class="bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                </div>
+            </main>
+
+            <!-- RIGHT: sticky rail with Today’s set (top) + Heatmap (bottom) -->
+            <aside class="dash-rail">
+                <div class="rail-sticky">
+                    <app-daily-widget class="rail-card"></app-daily-widget>
+                    <app-daily-heatmap class="rail-card" [cell]="14" [gap]="6"></app-daily-heatmap>
+                </div>
+            </aside>
         </section>
     </div>
 </div>
