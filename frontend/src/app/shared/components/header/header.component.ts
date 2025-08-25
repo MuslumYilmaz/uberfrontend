@@ -4,15 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs } from '../../../core/models/user.model';
+import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
 import {
   PREPARE_GROUPS,
   PrepareGroup,
   PrepareItem,
   TargetName
-} from '../../shared/prepare/prepare.registry'; // keep your existing path
+} from '../../shared/prepare/prepare.registry';
 
-type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course';
+type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course' | 'profile';
 
 @Component({
   selector: 'app-header',
@@ -62,7 +63,7 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
           </nav>
         </div>
 
-        <!-- CENTER: Prepare trigger on Dashboard + coding-detail -->
+        <!-- CENTER: Prepare trigger on Dashboard + coding-detail + profile -->
         <div class="ufh-center">
           <button *ngIf="showPrepareTrigger()"
                   class="ufh-pill"
@@ -132,15 +133,43 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
             </button>
 
             <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
-              <div class="ufh-menu-section">Signed out</div>
-              <button class="ufh-menu-item" disabled><i class="pi pi-user"></i> My profile</button>
+              <div class="ufh-menu-section">Account</div>
+
+              <!-- My profile: enabled only when logged in -->
+              <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
+                <a class="ufh-menu-item" routerLink="/profile" (click)="closeAll()">
+                  <i class="pi pi-user"></i> My profile
+                </a>
+              </ng-container>
+              <ng-template #profileDisabled>
+                <button class="ufh-menu-item" disabled>
+                  <i class="pi pi-user"></i> My profile
+                </button>
+              </ng-template>
+
               <button class="ufh-menu-item" disabled><i class="pi pi-check-circle"></i> Progress</button>
               <button class="ufh-menu-item" disabled><i class="pi pi-bookmark"></i> Bookmarks</button>
               <button class="ufh-menu-item"><i class="pi pi-moon"></i> Theme</button>
               <button class="ufh-menu-item"><i class="pi pi-sliders-h"></i> Keyboard shortcuts</button>
+              
               <div class="ufh-divider"></div>
-              <button class="ufh-menu-item" routerLink="/auth/signup"><i class="pi pi-user-plus"></i> Sign up</button>
-              <button class="ufh-menu-item" routerLink="/auth/login"><i class="pi pi-sign-in"></i> Log in</button>
+
+              <!-- Show login/signup if not logged in -->
+              <ng-container *ngIf="!auth.isLoggedIn(); else loggedInTpl">
+                <button class="ufh-menu-item" routerLink="/auth/signup" (click)="closeAll()">
+                  <i class="pi pi-user-plus"></i> Sign up
+                </button>
+                <button class="ufh-menu-item" routerLink="/auth/login" (click)="closeAll()">
+                  <i class="pi pi-sign-in"></i> Log in
+                </button>
+              </ng-container>
+
+              <!-- Show logout if logged in -->
+              <ng-template #loggedInTpl>
+                <button class="ufh-menu-item" (click)="logout()">
+                  <i class="pi pi-sign-out"></i> Log out
+                </button>
+              </ng-template>
             </div>
           </div>
         </div>
@@ -262,7 +291,7 @@ export class HeaderComponent {
     const t = this.totalCount(); const d = this.completedCount(); return t > 0 ? d / t : 0;
   });
 
-  constructor(private router: Router) {
+  constructor(private router: Router, public auth: AuthService) {
     // Seed today's set once so header always has data
     this.dailySvc.ensureTodaySet(defaultPrefs().defaultTech || 'javascript');
 
@@ -287,16 +316,29 @@ export class HeaderComponent {
   isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
   showContextStrip = computed(() => this.mode() === 'tech-list');
   showTechTabs = computed(() => this.mode() === 'tech-list' || this.mode() === 'sd-list');
-  showPrepareTrigger = computed(() => this.mode() === 'dashboard' || this.mode() === 'tech-detail');
+  showPrepareTrigger = computed(() =>
+    this.mode() === 'dashboard' ||
+    this.mode() === 'tech-detail' ||
+    this.mode() === 'profile'
+  );
 
   // ---------- url parsing ----------
   private parseUrl(url: string) {
     const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
-    this.mode.set('dashboard'); this.currentTech.set(null); this.section.set(null);
+    this.mode.set('dashboard');
+    this.currentTech.set(null);
+    this.section.set(null);
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
     if (segs[0] === 'courses') { this.mode.set('course'); return; }
-    if (segs[0] === 'system-design') { this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail'); return; }
+    if (segs[0] === 'system-design') {
+      this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail');
+      return;
+    }
+    if (segs[0] === 'profile') {
+      this.mode.set('profile');
+      return;
+    }
 
     const tech = segs[0] as 'javascript' | 'angular';
     if (tech === 'javascript' || tech === 'angular') this.currentTech.set(tech);
@@ -322,7 +364,7 @@ export class HeaderComponent {
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
 
-  // route intents (use bracket access to satisfy TS4111 on index signatures)
+  // route intents
   intentToLink(it: PrepareItem): any[] | null {
     if (it.intent !== 'route' || !it.target) return null;
     const t = it.target;
@@ -331,18 +373,14 @@ export class HeaderComponent {
         const tech = (t.params?.['tech'] as 'javascript' | 'angular' | undefined) ?? this.currentTech() ?? 'javascript';
         return ['/', tech];
       }
-      case 'system':
-        return ['/system-design'];
+      case 'system': return ['/system-design'];
       case 'companies': {
         const c = t.params?.['company'] as string | undefined;
         return c ? ['/companies', c] : ['/companies'];
       }
-      case 'courses':
-        return ['/courses'];
-      case 'guides':
-        return ['/guides'];
-      default:
-        return null;
+      case 'courses': return ['/courses'];
+      case 'guides': return ['/guides'];
+      default: return null;
     }
   }
 
@@ -366,4 +404,10 @@ export class HeaderComponent {
   toggleProfileMenu() { this.profileOpen.update(v => !v); }
   toggleStatsMenu() { this.statsOpen.update(v => !v); }
   closeAll() { this.megaOpen.set(false); this.profileOpen.set(false); this.statsOpen.set(false); }
+
+  logout() {
+    this.auth.logout();
+    this.closeAll();
+    this.router.navigate(['/']);
+  }
 }

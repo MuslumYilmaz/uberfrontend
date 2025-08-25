@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   // Landing
@@ -120,6 +121,16 @@ export const routes: Routes = [
             .then(m => m.SystemDesignDetailComponent),
       },
     ],
+  },
+
+  // Profile (placed before :tech so it's not overridden)
+  {
+    path: 'profile',
+    canMatch: [authMatchGuard],
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/auth/profile/profile.component')
+        .then(m => m.ProfileComponent),
   },
 
   // Tech sections — JavaScript / Angular
