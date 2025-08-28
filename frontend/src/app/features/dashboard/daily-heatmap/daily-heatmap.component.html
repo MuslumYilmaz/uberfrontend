@@ -1,12 +1,13 @@
 <div class="hm-card">
-    <div class="hm-head">Your last 35 days</div>
+    <div class="hm-head">Your last {{ daysCount }} days</div>
 
     <!-- bind CSS vars for size/gap -->
     <div class="hm-grid" [style.--cell.px]="cell" [style.--gap.px]="gap">
         <ng-container *ngFor="let row of grid(); let r = index">
             <div class="hm-col">
                 <div *ngFor="let val of row; let c = index" class="hm-cell" [class.l1]="val===1" [class.l2]="val===2"
-                    [class.l3]="val===3"></div>
+                    [class.l3]="val===3">
+                </div>
             </div>
         </ng-container>
     </div>

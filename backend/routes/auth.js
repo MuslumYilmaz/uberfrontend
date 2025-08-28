@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/User.js');
+const { getBearerToken } = require('../middleware/Auth.js');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -14,16 +15,15 @@ const pick = (u) => ({
     avatarUrl: u.avatarUrl,
     role: u.role,
     createdAt: u.createdAt,
+    prefs: u.prefs,
+    stats: u.stats,
+    billing: u.billing,
+    coupons: u.coupons,
+    lastLoginAt: u.lastLoginAt,
 });
 
 const sign = (u) =>
     jwt.sign({ sub: u._id.toString(), role: u.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-
-function getBearerToken(req) {
-    const h = req.headers.authorization || '';
-    const m = h.match(/^Bearer\s+(.+)$/i);
-    return m ? m[1] : null;
-}
 
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
@@ -37,7 +37,15 @@ router.post('/signup', async (req, res) => {
         if (exists) return res.status(409).json({ error: 'Email or username already in use' });
 
         const passwordHash = await bcrypt.hash(password, 10);
-        const user = await User.create({ email, username, passwordHash });
+        const user = await User.create({
+            email,
+            username,
+            passwordHash,
+            prefs: { tz: 'Europe/Istanbul', theme: 'dark', defaultTech: 'javascript', keyboard: 'default' },
+        });
+
+        user.lastLoginAt = new Date();
+        await user.save();
 
         res.status(201).json({ token: sign(user), user: pick(user) });
     } catch (e) {
@@ -60,6 +68,9 @@ router.post('/login', async (req, res) => {
 
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
+
+        user.lastLoginAt = new Date();
+        await user.save();
 
         res.json({ token: sign(user), user: pick(user) });
     } catch (e) {

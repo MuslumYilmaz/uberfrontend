@@ -22,10 +22,10 @@
   align-items: center;
   justify-content: center;
   gap: var(--gap);
-  min-height: 150px;            /* breathing room so it doesn't look squished */
+  min-height: 150px;
 }
 
-/* each column (5 of them) holds 7 cells stacked */
+/* each column (N of them) holds 7 cells stacked */
 .hm-col {
   display: grid;
   grid-auto-rows: var(--cell);
@@ -56,7 +56,6 @@
 .hm-dot.l2 { background: #0ea5e9; }
 .hm-dot.l3 { background: #22d3ee; }
 
-/* ensure a reasonable minimum width so it never feels cramped on lg screens */
 @media (min-width: 1024px) {
   .hm-card { min-height: 230px; }
 }

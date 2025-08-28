@@ -1,9 +1,10 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs } from '../../../core/models/user.model';
+import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
 import {
@@ -13,7 +14,26 @@ import {
   TargetName
 } from '../../shared/prepare/prepare.registry';
 
-type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course' | 'profile';
+type Mode =
+  | 'dashboard'
+  | 'tech-list'
+  | 'tech-detail'
+  | 'sd-list'
+  | 'sd-detail'
+  | 'course'
+  | 'profile';
+
+type ActivitySummary = {
+  totalXp: number;
+  streak: { current: number; best?: number };
+  today: { completed: number; total: number; progress: number };
+};
+
+const EMPTY_SUMMARY: ActivitySummary = {
+  totalXp: 0,
+  streak: { current: 0 },
+  today: { completed: 0, total: 0, progress: 0 },
+};
 
 @Component({
   selector: 'app-header',
@@ -23,7 +43,7 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
   template: `
     <div class="ufh-topbar" role="banner">
       <div class="ufh-inner">
-        <!-- LEFT: brand + tech tabs (tabs hidden on dashboard & detail pages) -->
+        <!-- LEFT -->
         <div class="ufh-left">
           <a class="ufh-brand" routerLink="/">UberFrontend</a>
 
@@ -63,7 +83,7 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
           </nav>
         </div>
 
-        <!-- CENTER: Prepare trigger on Dashboard + coding-detail + profile -->
+        <!-- CENTER -->
         <div class="ufh-center">
           <button *ngIf="showPrepareTrigger()"
                   class="ufh-pill"
@@ -75,41 +95,40 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
           </button>
         </div>
 
-        <!-- RIGHT: streak/XP pill + profile -->
+        <!-- RIGHT -->
         <div class="ufh-right" (click)="$event.stopPropagation()">
-          <!-- Stats pill -->
-          <div class="ufh-stats">
+          <div class="ufh-stats" *ngIf="true">
             <button class="ufh-stats-pill"
                     (click)="toggleStatsMenu()"
                     aria-haspopup="menu"
                     [attr.aria-expanded]="statsOpen()">
               <span aria-hidden="true">🔥</span>
-              <span class="ufh-stats-num">{{ streak().current || 0 }}</span>
+              <span class="ufh-stats-num">{{ streakNum() }}</span>
               <span class="ufh-dot">·</span>
               <span aria-hidden="true">⭐</span>
-              <span class="ufh-stats-num">{{ xp().total || 0 }}</span>
+              <span class="ufh-stats-num">{{ totalXp() }}</span>
             </button>
 
             <div *ngIf="statsOpen()" class="ufh-stats-menu" role="menu">
               <div class="ufh-stats-header">
                 <div class="ufh-stat">
-                  <div class="big">🔥 {{ streak().current || 0 }}</div>
+                  <div class="big">🔥 {{ streakNum() }}</div>
                   <div class="sub">day streak</div>
                 </div>
                 <div class="ufh-stat">
-                  <div class="big">⭐ {{ xp().total || 0 }}</div>
+                  <div class="big">⭐ {{ totalXp() }}</div>
                   <div class="sub">total XP</div>
                 </div>
               </div>
 
               <div class="ufh-prog">
                 <div class="ufh-prog-bar">
-                  <div class="ufh-prog-fill" [style.width.%]="progress()*100"></div>
+                  <div class="ufh-prog-fill" [style.width.%]="todayProgressPct()"></div>
                 </div>
-                <div class="ufh-prog-text">{{ completedCount() }}/{{ totalCount() }} done today</div>
+                <div class="ufh-prog-text">{{ todayCompleted() }}/{{ todayTotal() }} done today</div>
               </div>
 
-              <ul class="ufh-stats-list">
+              <ul class="ufh-stats-list" *ngIf="(daily()?.items?.length || 0) > 0">
                 <li *ngFor="let it of daily()?.items || []">
                   <a class="ufh-stats-link" [routerLink]="it.to" (click)="closeAll()">
                     <span class="ufh-kind" [attr.data-kind]="it.kind">{{ it.kind }}</span>
@@ -120,10 +139,13 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
                   </a>
                 </li>
               </ul>
+
+              <div *ngIf="!auth.isLoggedIn()" class="ufh-prog-text" style="margin-top:8px;">
+                Log in to track your streak & XP.
+              </div>
             </div>
           </div>
 
-          <!-- Profile -->
           <div class="ufh-profile ufh-profile-right">
             <button class="ufh-avatar"
                     (click)="toggleProfileMenu()"
@@ -135,7 +157,6 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
             <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
               <div class="ufh-menu-section">Account</div>
 
-              <!-- My profile: enabled only when logged in -->
               <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
                 <a class="ufh-menu-item" routerLink="/profile" (click)="closeAll()">
                   <i class="pi pi-user"></i> My profile
@@ -151,10 +172,8 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
               <button class="ufh-menu-item" disabled><i class="pi pi-bookmark"></i> Bookmarks</button>
               <button class="ufh-menu-item"><i class="pi pi-moon"></i> Theme</button>
               <button class="ufh-menu-item"><i class="pi pi-sliders-h"></i> Keyboard shortcuts</button>
-              
               <div class="ufh-divider"></div>
 
-              <!-- Show login/signup if not logged in -->
               <ng-container *ngIf="!auth.isLoggedIn(); else loggedInTpl">
                 <button class="ufh-menu-item" routerLink="/auth/signup" (click)="closeAll()">
                   <i class="pi pi-user-plus"></i> Sign up
@@ -164,7 +183,6 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
                 </button>
               </ng-container>
 
-              <!-- Show logout if logged in -->
               <ng-template #loggedInTpl>
                 <button class="ufh-menu-item" (click)="logout()">
                   <i class="pi pi-sign-out"></i> Log out
@@ -239,7 +257,7 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
         </div>
       </ng-container>
 
-      <!-- Context strip for tech list pages -->
+      <!-- Context strip -->
       <div class="ufh-context" *ngIf="showContextStrip()">
         <div class="ufh-context-inner" *ngIf="mode()==='tech-list'">
           <div class="ufh-pill-tabs">
@@ -258,41 +276,46 @@ type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' 
     </div>
   `
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   private doc = inject(DOCUMENT);
 
-  // router state
+  // Router state
   mode = signal<Mode>('dashboard');
   currentTech = signal<'javascript' | 'angular' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
-  // registry
+  // Registry
   groups: PrepareGroup[] = PREPARE_GROUPS;
   activeGroupKey = signal<PrepareGroup['key']>('practice');
-  activeGroup = computed(() => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]);
+  activeGroup = computed(
+    () => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]
+  );
   activeItems = computed(() => this.activeGroup().items);
 
-  // menus
+  // Menus
   megaOpen = signal(false);
   profileOpen = signal(false);
   statsOpen = signal(false);
 
-  // daily stats (for pill + popover)
+  // Services
+  private activitySvc = inject(ActivityService);
   private dailySvc = inject(DailyService);
-  daily = this.dailySvc.daily;
-  xp = this.dailySvc.xp;
-  streak = this.dailySvc.streak;
 
-  completedCount = computed(() =>
-    this.daily()?.items.filter(i => !!i.state?.completedAt).length ?? 0
-  );
-  totalCount = computed(() => this.daily()?.items.length ?? 0);
-  progress = computed(() => {
-    const t = this.totalCount(); const d = this.completedCount(); return t > 0 ? d / t : 0;
-  });
+  // Local summary signal (no dependence on service implementation details)
+  private summary = signal<ActivitySummary>(EMPTY_SUMMARY);
+
+  // Read-only derivations for the UI
+  streakNum = computed(() => this.summary().streak.current);
+  totalXp = computed(() => this.summary().totalXp);
+  todayCompleted = computed(() => this.summary().today.completed);
+  todayTotal = computed(() => this.summary().today.total);
+  todayProgress = computed(() => this.summary().today.progress);
+  todayProgressPct = computed(() => Math.round(this.todayProgress() * 100));
+
+  // Daily list (signal owned by DailyService)
+  daily = this.dailySvc.daily;
 
   constructor(private router: Router, public auth: AuthService) {
-    // Seed today's set once so header always has data
     this.dailySvc.ensureTodaySet(defaultPrefs().defaultTech || 'javascript');
 
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
@@ -305,21 +328,55 @@ export class HeaderComponent {
         this.pickDefaultGroup();
       });
 
-    // outside click closes menus
-    window.addEventListener('click', () => { this.profileOpen.set(false); this.statsOpen.set(false); });
+    window.addEventListener('click', () => {
+      this.profileOpen.set(false);
+      this.statsOpen.set(false);
+    });
+
+    // If your AuthService exposes a signal for login state, this will react.
+    effect(() => {
+      const loggedIn = this.auth.isLoggedIn();
+      if (!loggedIn) this.summary.set(EMPTY_SUMMARY);
+    });
+  }
+
+  ngOnInit(): void {
+    // Initial fetch
+    this.pullSummary();
+
+    // When a completion is recorded, refresh both summary and the daily set
+    this.activitySvc.activityCompleted$.subscribe(() => {
+      this.pullSummary();
+
+      const tech =
+        this.currentTech() ?? (defaultPrefs().defaultTech as 'javascript' | 'angular');
+      this.dailySvc.ensureTodaySet(tech);
+    });
+  }
+
+  // --- Data pulls ---
+  private pullSummary() {
+    // Ask the service to refresh its cache (optional; safe if it no-ops)
+    this.activitySvc.refreshSummary?.();
+
+    // Read the latest summary snapshot
+    this.activitySvc.summary().subscribe({
+      next: (s) => this.summary.set(s ?? EMPTY_SUMMARY),
+      error: () => this.summary.set(EMPTY_SUMMARY),
+    });
   }
 
   // ---------- derived flags ----------
-  isSystemDesign = computed(() =>
-    this.currentTech() === null && (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
+  isSystemDesign = computed(
+    () =>
+      this.currentTech() === null &&
+      (this.mode() === 'sd-list' || this.mode() === 'sd-detail')
   );
   isDetailPage = computed(() => this.mode() === 'tech-detail' || this.mode() === 'sd-detail');
   showContextStrip = computed(() => this.mode() === 'tech-list');
   showTechTabs = computed(() => this.mode() === 'tech-list' || this.mode() === 'sd-list');
-  showPrepareTrigger = computed(() =>
-    this.mode() === 'dashboard' ||
-    this.mode() === 'tech-detail' ||
-    this.mode() === 'profile'
+  showPrepareTrigger = computed(
+    () => this.mode() === 'dashboard' || this.mode() === 'tech-detail' || this.mode() === 'profile'
   );
 
   // ---------- url parsing ----------
@@ -331,18 +388,11 @@ export class HeaderComponent {
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
     if (segs[0] === 'courses') { this.mode.set('course'); return; }
-    if (segs[0] === 'system-design') {
-      this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail');
-      return;
-    }
-    if (segs[0] === 'profile') {
-      this.mode.set('profile');
-      return;
-    }
+    if (segs[0] === 'system-design') { this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail'); return; }
+    if (segs[0] === 'profile') { this.mode.set('profile'); return; }
 
     const tech = segs[0] as 'javascript' | 'angular';
     if (tech === 'javascript' || tech === 'angular') this.currentTech.set(tech);
-
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
     const sec = segs[1] as 'coding' | 'trivia' | 'debug';
@@ -370,7 +420,8 @@ export class HeaderComponent {
     const t = it.target;
     switch (t.name as TargetName) {
       case 'practice': {
-        const tech = (t.params?.['tech'] as 'javascript' | 'angular' | undefined) ?? this.currentTech() ?? 'javascript';
+        const tech = (t.params?.['tech'] as 'javascript' | 'angular' | undefined)
+          ?? this.currentTech() ?? 'javascript';
         return ['/', tech];
       }
       case 'system': return ['/system-design'];
@@ -409,5 +460,7 @@ export class HeaderComponent {
     this.auth.logout();
     this.closeAll();
     this.router.navigate(['/']);
+    // Local summary resets via the effect above when logged out
+    this.summary.set(EMPTY_SUMMARY);
   }
 }

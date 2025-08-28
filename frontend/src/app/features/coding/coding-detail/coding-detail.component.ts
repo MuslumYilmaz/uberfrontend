@@ -24,6 +24,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-log
 
 // NEW: Daily wiring
 import type { DailyItemKind } from '../../../core/models/user.model';
+import { ActivityService } from '../../../core/services/activity.service';
 import { DailyService } from '../../../core/services/daily.service';
 
 declare const monaco: any;
@@ -145,6 +146,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private draggingHorizontal = false;
   private startX = 0;
   private startRatioH = 0;
+  private sessionStart = Date.now();
+  private recorded = false;
+
 
   // Preview modal
   previewVisible = false;
@@ -236,7 +240,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private codeStore: CodeStorageService,
     private runner: UserCodeSandboxService,
     private ngEmbed: StackBlitzEmbed,
-    private daily: DailyService              // <-- injected DailyService
+    private daily: DailyService,
+    private activity: ActivityService
   ) { }
 
   // ---------- helpers ----------
@@ -530,6 +535,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testResults.set([]);
     this.consoleEntries.set([]);
     this.showRestoreBanner.set(shouldShowBanner);
+    // track time per question & allow one completion record
+    this.sessionStart = Date.now();
+    this.recorded = false;
   }
 
   private loadSavedFiles(storageKey: string): Record<string, string> | null {
@@ -729,8 +737,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.saveSolvedFlag(q, passing);
 
     if (passing) {
-      // mark today’s Coding/Debug tile done + confetti
+      // mark daily, record to backend, celebrate
       this.creditDaily();
+      this.recordCompletion('tests');
       await this.celebrate('tests');
     }
 
@@ -755,6 +764,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.tech === 'angular') {
       // Angular challenges are marked complete on submit
       this.creditDaily();
+      this.recordCompletion('submit');
       await this.celebrate('submit');
       return;
     }
@@ -762,6 +772,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.kind === 'debug') {
       // JS Debug tasks don’t require tests to pass
       this.creditDaily();
+      this.recordCompletion('submit');
       await this.celebrate('submit');
     } else {
       // JS Coding requires all tests to pass — runTests will credit & confetti on pass
@@ -962,5 +973,40 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private async celebrate(reason: 'tests' | 'submit'): Promise<void> {
     // (you can conditionally vary the burst by `reason` later)
     try { await this.fireConfetti(); } catch { /* ignore if user blocks animations */ }
+  }
+
+  private xpFor(q: Question): number {
+    return Number((q as any).xp ?? 20); // default 20 if not present
+  }
+  private recordCompletion(reason: 'tests' | 'submit') {
+    const q = this.question();
+    if (!q || this.recorded) return;
+
+    const minutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
+    this.activity.complete({
+      kind: this.kind,
+      tech: this.tech,
+      itemId: q.id,
+      source: 'tech',
+      durationMin: minutes,
+      xp: this.xpFor(q),
+    }).subscribe({
+      next: (res: any) => {
+        this.recorded = true;
+
+        // 1) tell the rest of the app that an activity was recorded
+        this.activity.activityCompleted$.next({
+          kind: this.kind,        // 'coding' | 'debug' | 'trivia'
+          tech: this.tech,        // 'javascript' | 'angular'
+          stats: res?.stats
+        });
+        // 2) refresh the summary cache used by the header widget
+        this.activity.refreshSummary();
+
+        // 3) (optional) if your header uses AuthService.me(), refresh that too
+        // this.auth.refreshMe?.();
+      },
+      error: (e) => console.error('record completion failed', e),
+    });
   }
 }
