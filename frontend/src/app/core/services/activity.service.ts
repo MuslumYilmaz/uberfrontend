@@ -16,14 +16,25 @@ export interface ActivityEvent {
   dayUTC: string;       // YYYY-MM-DD
 }
 
+// src/app/core/services/activity.service.ts
 export interface ActivitySummary {
   totalXp: number;
+
+  // NEW: leveling
   level: number;
   nextLevelXp: number;
   levelProgress: { current: number; needed: number; pct: number };
+
+  // streaks
   streak: { current: number; best?: number };
+
+  // NEW: extras
   freezeTokens: number;
+
+  // NEW: weekly credits
   weekly: { completed: number; target: number; progress: number };
+
+  // today (now credit-based 0..3)
   today: { completed: number; total: number; progress: number };
 }
 

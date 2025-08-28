@@ -6,61 +6,50 @@ const ActivityEvent = require('../models/ActivityEvent');
 const XpCredit = require('../models/XpCredit');
 const { requireAuth } = require('../middleware/Auth');
 
-// ---------- helpers ----------
-function utcDayStr(d = new Date()) { return d.toISOString().slice(0, 10); }
+// ---------- date helpers ----------
+function utcDayStr(d = new Date()) {
+    return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+}
 function dayDiffUTC(aStr, bStr) {
     if (!aStr || !bStr) return Infinity;
     const a = new Date(aStr + 'T00:00:00.000Z').getTime();
     const b = new Date(bStr + 'T00:00:00.000Z').getTime();
     return Math.round((b - a) / 86400000);
 }
-function startOfISOWeekUTC(d = new Date()) {
-    const dt = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-    const day = dt.getUTCDay(); // 0..6 (Sun..Sat)
-    const diff = (day === 0 ? -6 : 1) - day; // move to Monday
-    dt.setUTCDate(dt.getUTCDate() + diff);
-    dt.setUTCHours(0, 0, 0, 0);
-    return dt;
+
+// ---------- leveling helpers (simple exponential growth) ----------
+function nextStepForLevel(level) {
+    // XP needed to go from (level) -> (level+1). L1->L2=100, grows 25%/level.
+    return Math.round(100 * Math.pow(1.25, Math.max(0, level - 1)));
 }
-function addDaysUTC(d, days) {
-    const x = new Date(d.getTime());
-    x.setUTCDate(x.getUTCDate() + days);
-    return x;
-}
-function isoWeekKey(d = new Date()) {
-    // Use Monday date as the key: 'YYYY-MM-DD'
-    return utcDayStr(startOfISOWeekUTC(d));
-}
-// Level curve: fast early, slower later. Adjust constants as you like.
-function levelFromXp(totalXp) {
-    const xp = Math.max(0, Number(totalXp) || 0);
-    let level = 1;
-    const levelXp = n => Math.floor(100 * Math.pow(n, 1.5));
-    let next = levelXp(level);
-    while (xp >= next && level < 999) {
-        level += 1;
-        next = levelXp(level);
+function computeLevelFromXp(totalXp) {
+    let lvl = 1;
+    let xpLeft = Math.max(0, Number(totalXp) || 0);
+
+    while (true) {
+        const step = nextStepForLevel(lvl);
+        if (xpLeft < step) {
+            const current = xpLeft;
+            const needed = step;
+            const pct = needed > 0 ? current / needed : 1;
+            return {
+                level: lvl,
+                nextLevelXp: step,
+                levelProgress: { current, needed, pct },
+            };
+        }
+        xpLeft -= step;
+        lvl += 1;
+        if (lvl > 500) break; // hard safety cap
     }
-    const prevThreshold = level === 1 ? 0 : levelXp(level - 1);
-    const current = xp - prevThreshold;
-    const needed = next - prevThreshold;
-    const pct = needed > 0 ? current / needed : 1;
-    return { level, nextLevelXp: next, levelProgress: { current, needed, pct } };
+    return { level: 500, nextLevelXp: nextStepForLevel(500), levelProgress: { current: 0, needed: nextStepForLevel(500), pct: 0 } };
 }
-
-// ---------- config ----------
-const WEEKLY_TARGET = parseInt(process.env.WEEKLY_TARGET || '5', 10);
-
-// ---------- routes ----------
 
 /**
  * POST /api/activity/complete
  * body: { kind, tech, itemId?, source?, durationMin?, xp? }
- * Behavior:
- *  - Always log ActivityEvent.
- *  - XP credited only once per (user, dayUTC, kind). Others that day get xp=0.
- *  - Streak-freeze: if exactly 1 day gap (diff===2) and user has a freeze token, consume 1 and continue streak.
- *  - Weekly goal token: first time you reach WEEKLY_TARGET in the ISO week, grant +1 token.
+ * - Logs an ActivityEvent
+ * - Awards XP only once per (userId, dayUTC, kind) via XpCredit
  */
 router.post('/complete', requireAuth, async (req, res) => {
     try {
@@ -75,82 +64,53 @@ router.post('/complete', requireAuth, async (req, res) => {
         const completedAt = new Date();
         const dayUTC = utcDayStr(completedAt);
 
-        // 1) Determine if this action should grant XP (first-of-day per kind)
-        let credited = false;
+        // Award XP once per (userId, dayUTC, kind)
+        let awardedXp = 0;
         try {
             await XpCredit.create({ userId: String(user._id), dayUTC, kind });
-            credited = true;
+            awardedXp = Number(xp) || 0;
         } catch (e) {
-            if (!(e && e.code === 11000)) throw e; // rethrow non-duplicate errors
+            // Duplicate credit => 0 XP; keep logging the event
+            if (!(e && e.code === 11000)) throw e;
+            awardedXp = 0;
         }
 
-        const xpAwarded = credited ? (Number(xp) || 0) : 0;
-        const safeDuration = Math.max(1, Number(durationMin) || 1);
-
-        // 2) Always log the event; store awarded XP
+        // Log event (with awardedXp — may be 0 on repeats)
         const event = await ActivityEvent.create({
             userId: user._id,
             kind,
             tech,
             itemId,
             source,
-            durationMin: safeDuration,
-            xp: xpAwarded,
+            durationMin,
+            xp: awardedXp,
             completedAt,
             dayUTC,
         });
 
-        // 3) Aggregates + streak
+        // Update aggregates
         user.stats = user.stats || {};
-        user.stats.xpTotal = (user.stats.xpTotal || 0) + xpAwarded;
+        user.stats.xpTotal = (user.stats.xpTotal || 0) + awardedXp;
         user.stats.completedTotal = (user.stats.completedTotal || 0) + 1;
 
         user.stats.perTech = user.stats.perTech || {};
         user.stats.perTech[tech] = user.stats.perTech[tech] || { xp: 0, completed: 0 };
-        user.stats.perTech[tech].xp += xpAwarded;
+        user.stats.perTech[tech].xp += awardedXp;
         user.stats.perTech[tech].completed += 1;
 
-        // streak & freeze
+        // Streak (UTC)
         user.stats.streak = user.stats.streak || { current: 0, longest: 0, lastActiveUTCDate: null };
-        user.stats.freeze = user.stats.freeze || { tokens: 0, lastAwardWeekStart: null };
-
         const last = user.stats.streak.lastActiveUTCDate;
         const diff = dayDiffUTC(last, dayUTC);
-
-        if (diff === 1) {
-            user.stats.streak.current = (user.stats.streak.current || 0) + 1;
-        } else if (diff === 2 && (user.stats.freeze.tokens || 0) > 0) {
-            // consume one freeze token to bridge a single missed day
-            user.stats.freeze.tokens = (user.stats.freeze.tokens || 0) - 1;
-            user.stats.streak.current = (user.stats.streak.current || 0) + 1;
-        } else if (diff !== 0) {
-            user.stats.streak.current = 1; // new streak
-        }
+        if (diff === 1) user.stats.streak.current = (user.stats.streak.current || 0) + 1;
+        else if (diff !== 0) user.stats.streak.current = 1;
         user.stats.streak.longest = Math.max(user.stats.streak.longest || 0, user.stats.streak.current || 0);
         user.stats.streak.lastActiveUTCDate = dayUTC;
-
-        // 4) Weekly goal token (once per ISO week)
-        const weekStart = startOfISOWeekUTC(completedAt);
-        const weekEnd = addDaysUTC(weekStart, 7);
-        const weekKey = isoWeekKey(completedAt);
-
-        const weeklyCompleted = await ActivityEvent.countDocuments({
-            userId: user._id,
-            completedAt: { $gte: weekStart, $lt: weekEnd },
-        });
-
-        if (
-            weeklyCompleted >= WEEKLY_TARGET &&
-            user.stats.freeze.lastAwardWeekStart !== weekKey
-        ) {
-            user.stats.freeze.tokens = (user.stats.freeze.tokens || 0) + 1;
-            user.stats.freeze.lastAwardWeekStart = weekKey;
-        }
 
         await user.save();
 
         const recent = await ActivityEvent.find({ userId: user._id }).sort({ completedAt: -1 }).limit(10).lean();
-        res.json({ credited, stats: user.stats, event, recent });
+        res.json({ stats: user.stats, event, recent });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -177,54 +137,68 @@ router.get('/recent', requireAuth, async (req, res) => {
     }
 });
 
-/** GET /api/activity/summary */
+/** GET /api/activity/summary  (credit-based Today/Weekly + leveling) */
 router.get('/summary', requireAuth, async (req, res) => {
     try {
         const user = await User.findById(req.auth.userId).select('stats');
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const today = utcDayStr();
-        const todayCompleted = await ActivityEvent.countDocuments({ userId: req.auth.userId, dayUTC: today });
-
-        // weekly ring (ISO week)
-        const now = new Date();
-        const weekStart = startOfISOWeekUTC(now);
-        const weekEnd = addDaysUTC(weekStart, 7);
-        const weeklyCompleted = await ActivityEvent.countDocuments({
-            userId: req.auth.userId,
-            completedAt: { $gte: weekStart, $lt: weekEnd },
-        });
-
-        // levels
         const totalXp = user.stats?.xpTotal ?? 0;
-        const { level, nextLevelXp, levelProgress } = levelFromXp(totalXp);
 
+        // Level from total XP
+        const { level, nextLevelXp, levelProgress } = computeLevelFromXp(totalXp);
+
+        // Streaks
         const current = user.stats?.streak?.current ?? 0;
-        const best = user.stats?.streak?.longest ?? 0;
-        const freezeTokens = user.stats?.freeze?.tokens ?? 0;
+        const best = user.stats?.streak?.longest ?? user.stats?.streak?.best ?? 0;
 
-        const dailyTarget = parseInt(process.env.DAILY_TARGET || '1', 10);
-        const todayProgress = Math.min(1, dailyTarget ? todayCompleted / dailyTarget : 1);
+        // Freeze tokens (optional, defaults 0)
+        const freezeTokens = Number(user.stats?.freezeTokens ?? 0);
 
-        const weeklyTarget = WEEKLY_TARGET;
-        const weeklyProgress = Math.min(1, weeklyTarget ? weeklyCompleted / weeklyTarget : 1);
+        // Today credits (0..3)
+        const todayStr = utcDayStr();
+        const todayCompleted = await XpCredit.countDocuments({
+            userId: String(req.auth.userId),
+            dayUTC: todayStr,
+        });
+        const todayTotal = 3; // coding + trivia + debug
+        const todayProgress = Math.min(1, todayTotal ? todayCompleted / todayTotal : 1);
+
+        // Weekly credits (last 7 days, inclusive)
+        const start = new Date();
+        start.setUTCDate(start.getUTCDate() - 6); // 6 days back + today = 7
+        const startStr = utcDayStr(start);
+        const weeklyCompleted = await XpCredit.countDocuments({
+            userId: String(req.auth.userId),
+            dayUTC: { $gte: startStr, $lte: todayStr },
+        });
+        const weeklyTarget = parseInt(process.env.WEEKLY_TARGET || '5', 10);
+        const weeklyProgress = weeklyTarget > 0 ? Math.min(1, weeklyCompleted / weeklyTarget) : 1;
 
         res.json({
             totalXp,
             level,
             nextLevelXp,
-            levelProgress, // { current, needed, pct }
-            streak: { current, best },
+            levelProgress,                 // { current, needed, pct }
             freezeTokens,
-            weekly: { completed: weeklyCompleted, target: weeklyTarget, progress: weeklyProgress },
-            today: { completed: todayCompleted, total: dailyTarget, progress: todayProgress },
+            streak: { current, best },
+            weekly: {
+                completed: weeklyCompleted,
+                target: weeklyTarget,
+                progress: weeklyProgress,
+            },
+            today: {
+                completed: todayCompleted,
+                total: todayTotal,
+                progress: todayProgress,
+            },
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-/** GET /api/activity/heatmap?days=180 */
+/** GET /api/activity/heatmap?days=180 (unchanged) */
 router.get('/heatmap', requireAuth, async (req, res) => {
     try {
         const days = Math.min(Math.max(parseInt(req.query.days || '180', 10), 1), 366);
