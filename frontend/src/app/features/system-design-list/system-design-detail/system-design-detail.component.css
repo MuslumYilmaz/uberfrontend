@@ -1,30 +1,119 @@
-:host{
-  display: block;
+:host { display:block; height:100%; }
+
+/* layout variables */
+.sdl-root{
+  --gap: 16px;
+  --left-w: 320px;
+  --right-w: 260px;
+  --top-off: calc(var(--app-safe-top, 64px) + 12px);
+  --foot-h: 56px; /* footer height reservation */
+}
+
+/* page padding only; rails are fixed, so center uses margins */
+.sdl-main{ padding: var(--gap); }
+
+/* ---------- LEFT: FIXED rail ---------- */
+.left{
+  position: fixed;
+  left: var(--gap);
+  top: var(--top-off);
+  bottom: var(--foot-h);
+  width: var(--left-w);
+  z-index: 1;
+}
+/* make room for a bottom row */
+.left-inner{
   height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;   /* was: auto 1fr */
+  background:#0f0f10;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
 }
 
-/* subtle chip look */
-:host ::ng-deep .p-chip{
-  background:#1f2937;
-  color:#e5e7eb;
-  border-radius:9999px;
+.left-body{
+  overflow: auto;
+  padding:14px 16px;
+  color:#cfd6dd;
+  font-size:13px;
 }
 
-/* Dark accordion styling so headers/content are visible */
-:host ::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link{
-  background:#1f2937;
-  color:#e5e7eb;
-  border:1px solid rgba(255,255,255,.06);
+/* pinned bottom area */
+.left-foot{
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:10px 12px;
 }
-:host ::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link:hover{
-  background:#243040;
+
+.guide{
+  font-size: 13px;
+  background:#141a22;
+  border:1px solid rgba(255,255,255,.08);
+  color:#b7c3cf;
+  padding:10px;
+  border-radius:8px;
 }
-:host ::ng-deep .p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link{
-  background:#1e293b;
-  color:#ffffff;
+
+.title{ margin:0; font-size:18px; font-weight:700; color:#f3f5f7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.desc{ white-space:pre-line; line-height:1.5; }
+.tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+:host ::ng-deep .p-chip.custom-chip{ background:#1f2937; color:#e5e7eb; border-radius:9999px; font-size:12px; padding:2px 8px; }
+.guide a{  color:#9ad1ff; text-decoration:underline; }
+
+/* ---------- CENTER: main content takes margins for rails ---------- */
+.center{
+  min-width:0;
+  margin-left: calc(var(--left-w) + var(--gap));
+  margin-right: calc(var(--right-w) + var(--gap));
 }
-:host ::ng-deep .p-accordion .p-accordion-content{
-  background:#0f172a;
-  color:#e5e7eb;
-  border:1px solid rgba(255,255,255,.06);
+.sd-section{ padding:10px 6px 22px 6px; border-bottom:1px solid rgba(255,255,255,.06); }
+.sd-h2{
+  font-size:18px; font-weight:700; color:#fff; margin:6px 0 12px;
+  /* keep anchor jumps below header if someone hits a #id directly */
+  scroll-margin-top: calc(var(--app-safe-top, 64px) + 16px);
+}
+.sd-text{ white-space:pre-wrap; color:#e6eaee; line-height:1.6; font-size:14px; }
+.sd-code{
+  display:block;
+  border-radius:10px; border:1px solid rgba(255,255,255,.10);
+  overflow:hidden; margin:10px 0; background:#0c0f14;
+}
+.sd-figure{ margin:12px 0; color:#aeb6bf; }
+.sd-figure img{ max-width:100%; border-radius:10px; border:1px solid rgba(255,255,255,.10); display:block; }
+.sd-figure figcaption{ font-size:12px; margin-top:6px; }
+
+/* ---------- RIGHT: FIXED TOC ---------- */
+.right{
+  position: fixed;
+  right: var(--gap);
+  top: var(--top-off);
+  bottom: var(--foot-h);
+  width: var(--right-w);
+  z-index: 1;
+}
+.toc{
+  height:100%;
+  background:#0f0f10;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:10px;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+.toc-head{ padding:6px 8px 10px; color:#e6eaee; font-weight:600; border-bottom:1px solid rgba(255,255,255,.06); }
+.toc-list{ list-style:none; margin:8px 0 0 0; padding:0; overflow:auto; }
+.toc-item{
+  width:100%; text-align:left; font-size:13px; line-height:1.4; padding:8px 10px;
+  color:#cfd6dd; border-radius:8px; border:1px solid transparent; background:transparent; cursor:pointer;
+}
+.toc-item:hover{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.06); }
+.toc-item.active{ background:#1b2330; color:#fff; border-color:rgba(255,255,255,.12); }
+.toc-foot{ border-top:1px solid rgba(255,255,255,.06); padding-top:8px; display:flex; justify-content:center; }
+.top-btn{ background:#fff; color:#111; font-size:12px; border:none; padding:6px 10px; border-radius:999px; cursor:pointer; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1200px){
+  .left, .right{ position:static; width:auto; height:auto; }
+  .right{ display:none; }               /* hide TOC on mobile */
+  .center{ margin:0; }                  /* full-width content */
+  .left-inner{ height:auto; }
 }

@@ -1,23 +1,12 @@
 // src/app/monaco-editor.component.ts
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  SimpleChanges,
-  ViewChild,
+  AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges,
+  OnDestroy, Output, SimpleChanges, ViewChild
 } from '@angular/core';
 
 declare global {
-  interface Window {
-    require: any;        // AMD loader
-    monaco: any;         // Monaco namespace
-  }
+  interface Window { require: any; monaco: any; }
 }
 
 @Component({
@@ -26,17 +15,24 @@ declare global {
   imports: [CommonModule],
   template: `<div #editorContainer class="h-full w-full"></div>`,
   styles: [`
-    :host { display:block; height:100%; width:100%; }
+    :host { display:block; width:100%; }
+    /* let the host height be driven either by parent (h-full) or by autoHeight */
   `],
 })
 export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('editorContainer', { static: true }) container!: ElementRef<HTMLDivElement>;
 
   @Input() code = '';
-  @Input() language: 'javascript' | 'typescript' | string = 'javascript';
+  @Input() language: string = 'javascript';
   @Input() theme = 'vs-dark';
   @Input() options: any = { automaticLayout: true };
   @Input() readOnly = false;
+
+  /** New: disable mouse/keyboard and selection */
+  @Input() interactive = true;
+
+  /** New: grow the editor to fit the content (no inner scrollbars) */
+  @Input() autoHeight = false;
 
   @Output() codeChange = new EventEmitter<string>();
 
@@ -44,7 +40,6 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private suppressNextModelUpdate = false;
   private disposed = false;
 
-  // Where we self-hosted monaco (relative to app root)
   private readonly amdLoaderPath = 'assets/monaco/min/vs/loader.js';
   private readonly vsBasePath = 'assets/monaco/min/vs';
 
@@ -52,31 +47,49 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     await this.ensureMonaco();
     if (this.disposed) return;
 
-    // Theme first (safe to call before/after create)
-    if (this.theme && window.monaco?.editor?.setTheme) {
-      window.monaco.editor.setTheme(this.theme);
-    }
+    // Theme first
+    window.monaco?.editor?.setTheme?.(this.theme);
 
     this.editorInstance = window.monaco.editor.create(this.container.nativeElement, {
       value: this.code,
-      language: this.language,
+      language: this.normalizeLanguage(this.language),
       theme: this.theme,
       readOnly: this.readOnly,
       automaticLayout: true,
+      scrollBeyondLastLine: false,
       ...this.options,
     });
 
-    this.editorInstance.onDidChangeModelContent(() => {
-      if (this.suppressNextModelUpdate) {
-        this.suppressNextModelUpdate = false;
-        return;
-      }
+    // Raise codeChange (disabled when we programmatically setValue)
+    this.editorInstance.onDidChangeModelContent?.(() => {
+      if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
       const val = this.editorInstance.getValue();
       this.codeChange.emit(val);
     });
 
-    // initial layout kick
-    setTimeout(() => this.editorInstance?.layout(), 0);
+    // Auto-height support
+    if (this.autoHeight) {
+      // hide scrollbars inside Monaco; height will be driven by content
+      this.editorInstance.updateOptions({
+        scrollbar: {
+          vertical: 'hidden', horizontal: 'hidden',
+          useShadows: false, verticalScrollbarSize: 0, horizontalScrollbarSize: 0,
+          alwaysConsumeMouseWheel: false,
+        },
+        wordWrap: 'on',
+      });
+
+      const apply = () => this.applyAutoHeight();
+      this.editorInstance.onDidContentSizeChange?.(apply);
+      // first pass
+      setTimeout(apply, 0);
+    }
+
+    // Interactivity toggle
+    this.applyInteractivity();
+
+    // Kick a layout in case host did not size yet
+    setTimeout(() => this.editorInstance?.layout?.(), 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -88,12 +101,14 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         this.suppressNextModelUpdate = true;
         this.editorInstance.setValue(this.code);
       }
+      if (this.autoHeight) this.applyAutoHeight();
     }
 
     if (changes['language'] && !changes['language'].isFirstChange()) {
       const model = this.editorInstance.getModel?.();
+      const lang = this.normalizeLanguage(this.language);
       if (model && window.monaco?.editor?.setModelLanguage) {
-        window.monaco.editor.setModelLanguage(model, this.language);
+        window.monaco.editor.setModelLanguage(model, lang);
       }
     }
 
@@ -103,26 +118,80 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
     if (changes['options'] && !changes['options'].isFirstChange()) {
       this.editorInstance.updateOptions(this.options);
+      if (this.autoHeight) this.applyAutoHeight();
     }
 
     if (changes['readOnly'] && !changes['readOnly'].isFirstChange()) {
       this.editorInstance.updateOptions({ readOnly: this.readOnly });
     }
+
+    if (changes['interactive'] && !changes['interactive'].isFirstChange()) {
+      this.applyInteractivity();
+    }
+
+    if (changes['autoHeight'] && !changes['autoHeight'].isFirstChange()) {
+      if (this.autoHeight) this.applyAutoHeight();
+      // if turning off, do nothing (parent layout will rule)
+    }
   }
 
   ngOnDestroy() {
     this.disposed = true;
-    try { this.editorInstance?.dispose?.(); } catch { }
+    try { this.editorInstance?.dispose?.(); } catch { /* ignore */ }
   }
 
-  // --- Loader bootstrap (robust even if index.html didn't preload it) ---
+  // --- helpers ---
+  private normalizeLanguage(lang: string): string {
+    const l = (lang || '').toLowerCase();
+    const map: Record<string, string> = {
+      ts: 'typescript',
+      typescript: 'typescript',
+      js: 'javascript',
+      javascript: 'javascript',
+      jsonc: 'json',
+      yml: 'yaml',
+      sh: 'shell',
+      bash: 'shell',
+      shell: 'shell',
+      sql: 'sql',
+      mysql: 'sql',
+      pgsql: 'sql',
+      postgres: 'sql',
+      http: 'plaintext',      // Monaco has no built-in HTTP lexer; use plaintext (or add a custom Monarch later)
+      text: 'plaintext',
+      plaintext: 'plaintext',
+    };
+    return map[l] || l || 'plaintext';
+  }
+
+  private applyInteractivity() {
+    const el = this.container.nativeElement;
+    if (this.interactive) {
+      el.style.pointerEvents = '';
+      el.style.userSelect = '';
+    } else {
+      // make it display-only
+      el.style.pointerEvents = 'none';
+      el.style.userSelect = 'none';
+    }
+  }
+
+  private applyAutoHeight() {
+    if (!this.editorInstance) return;
+    const contentH = this.editorInstance.getContentHeight?.() || 0;
+    // Add a small padding so bottom shadow, if any, isn't cropped
+    const h = Math.max(24, Math.ceil(contentH + 8));
+    // Set the host height (component will expand vertically)
+    (this.container.nativeElement.parentElement as HTMLElement)?.style.setProperty('height', `${h}px`);
+    this.editorInstance.layout?.();
+  }
+
+  // --- AMD bootstrap ---
   private ensureMonaco(): Promise<void> {
     return new Promise((resolve) => {
       const start = () => {
-        // Ensure AMD has the vs path before requiring editor.main
         if (!window.require || !window.require.configuredForVs) {
           try {
-            // Some AMD builds support .config; others set paths by assigning window.require again.
             if (typeof window.require === 'function' && typeof (window.require as any).config === 'function') {
               (window.require as any).config({ paths: { vs: this.vsBasePath } });
             } else {
@@ -134,25 +203,12 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         window.require(['vs/editor/editor.main'], () => resolve());
       };
 
-      // If AMD already present, just start.
-      if (window.require && typeof window.require === 'function') {
-        start();
-        return;
-      }
+      if (window.require && typeof window.require === 'function') { start(); return; }
 
-      // Inject AMD loader script
       const s = document.createElement('script');
       s.src = this.amdLoaderPath;
-      s.onload = () => {
-        // Minimal config in case index.html didn't set it
-        (window as any).require = (window as any).require || {};
-        if (!(window as any).require.paths) (window as any).require.paths = { vs: this.vsBasePath };
-        start();
-      };
-      s.onerror = () => {
-        console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath);
-        resolve(); // resolve to avoid hanging; component won't render editor
-      };
+      s.onload = () => { (window as any).require = (window as any).require || {}; start(); };
+      s.onerror = () => { console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath); resolve(); };
       document.body.appendChild(s);
     });
   }

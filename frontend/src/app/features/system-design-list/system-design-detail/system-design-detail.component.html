@@ -1,92 +1,88 @@
-<div class="flex h-full min-h-0">
-    <!-- LEFT -->
-    <aside class="flex flex-col min-h-0" [style.flex]="'0 0 ' + (leftRatio() * 100) + '%'"
-        style="min-width:280px; border-right:1px solid rgba(255,255,255,.08)">
-        <div class="flex items-center justify-between px-5 py-4 bg-neutral-900 text-white">
-            <h1 class="text-xl font-bold truncate">{{ title() }}</h1>
-        </div>
+<div class="sdl-root">
+    <div class="sdl-main">
+        <!-- LEFT : fixed rail -->
+        <!-- LEFT : Problem brief (fixed) -->
+        <aside class="left">
+            <div class="left-inner">
+                <div class="left-head">
+                    <h1 class="title" [title]="title()">{{ title() }}</h1>
+                </div>
 
-        <div class="flex-1 overflow-auto p-6 bg-black text-white">
-            <div class="text-sm text-gray-300 whitespace-pre-line">{{ description() }}</div>
+                <!-- scrollable content -->
+                <div class="left-body">
+                    <div class="desc">{{ description() }}</div>
 
-            <div class="mt-4 flex flex-wrap gap-2">
-                <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
+                    <div class="tags">
+                        <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
+                    </div>
+                </div>
+
+                <!-- pinned bottom (like right toc foot) -->
+                <div class="left-foot">
+                    <div class="guide">
+                        New to RADIO?
+                        <a routerLink="/guides/radio">Read the guide</a> first.
+                    </div>
+                </div>
             </div>
+        </aside>
 
-            <div class="mt-6 p-3 rounded bg-neutral-800/70 text-sm text-gray-300">
-                New to RADIO?
-                <a routerLink="/guides/radio" class="text-blue-300 underline">Read the guide</a> first.
-            </div>
-        </div>
+        <!-- CENTER : article -->
+        <main class="center">
+            <ng-container *ngFor="let s of sections()">
+                <section class="sd-section" [attr.id]="anchorId(s.key)">
+                    <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
 
-        <div class="flex-none px-4 py-3 bg-neutral-800 text-white flex items-center justify-between">
-            <button pButton label="← Prev" (click)="prev()" [disabled]="idx===0"></button>
-            <div class="text-sm">{{ idx + 1 }} / {{ all.length }}</div>
-            <button pButton label="Next →" iconPos="right" (click)="next()" [disabled]="idx + 1 >= all.length"></button>
-        </div>
-    </aside>
-
-    <!-- RIGHT -->
-    <main class="flex-1 min-w-0 min-h-0 flex flex-col bg-gray-800 text-white">
-        <!-- fixed header -->
-        <div class="px-5 py-3 flex items-center justify-between border-b border-white/10">
-            <div class="font-semibold">Solution (RADIO)</div>
-            <div class="flex gap-2">
-                <a routerLink="/guides/radio" class="text-xs text-blue-300 underline">What is RADIO?</a>
-                <button pButton size="small" label="Expand all" (click)="expandAll()"></button>
-                <button pButton size="small" label="Collapse all" class="p-button-secondary"
-                    (click)="collapseAll()"></button>
-            </div>
-        </div>
-
-        <!-- scrollable body -->
-        <div class="flex-1 overflow-auto p-5">
-            <p-accordion [multiple]="true" [activeIndex]="activeIndexes()"
-                (activeIndexChange)="onActiveIndexChange($event)">
-                <p-accordionTab *ngFor="let s of sections(); let i = index" [header]="s.title">
-                    <div class="space-y-4">
-                        <!-- Prefer blocks; fall back to legacy content if no blocks -->
+                    <div class="sd-blocks">
+                        <!-- Prefer blocks; fallback to legacy content -->
                         <ng-container *ngIf="s.blocks?.length; else legacyText">
                             <ng-container *ngFor="let b of s.blocks">
                                 <!-- TEXT -->
-                                <div *ngIf="b.type === 'text'" class="whitespace-pre-wrap leading-6 text-gray-200">
-                                    {{ b.text }}
-                                </div>
+                                <div *ngIf="b.type === 'text'" class="sd-text">{{ b.text }}</div>
 
-                                <!-- CODE (Monaco read-only) -->
+                                <!-- CODE (Monaco, non-interactive, auto height unless explicit height) -->
                                 <div *ngIf="b.type === 'code'">
-                                    <app-monaco-editor class="rounded border border-white/10"
-                                        [language]="b.language || 'typescript'" [code]="b.code" [readOnly]="true"
-                                        [options]="{ minimap:{enabled:false}, lineNumbers:'on', folding:true }"
-                                        [style.height.px]="b.height || 280">
+                                    <app-monaco-editor class="sd-code" [code]="b.code"
+                                        [language]="b.language || 'typescript'" [readOnly]="true" [interactive]="false"
+                                        [autoHeight]="!b.height" [options]="codeViewerOptions"
+                                        [style.height.px]="b.height || null">
                                     </app-monaco-editor>
                                 </div>
 
                                 <!-- IMAGE -->
-                                <figure *ngIf="b.type === 'image'" class="space-y-2">
-                                    <img [src]="asset(b.src)" [alt]="b.alt || ''"
-                                        class="max-w-full rounded-lg border border-white/10"
-                                        [style.width.px]="b.width || null" />
-                                    <figcaption *ngIf="b.caption" class="text-sm text-gray-400">
-                                        {{ b.caption }}
-                                    </figcaption>
+                                <figure *ngIf="b.type === 'image'" class="sd-figure">
+                                    <img [src]="asset(b.src)" [alt]="b.alt || ''" [style.width.px]="b.width || null" />
+                                    <figcaption *ngIf="b.caption">{{ b.caption }}</figcaption>
                                 </figure>
                             </ng-container>
                         </ng-container>
 
-                        <!-- Legacy single-string content -->
                         <ng-template #legacyText>
-                            <div class="prose prose-invert max-w-none whitespace-pre-wrap leading-6">
-                                {{ s.content }}
-                            </div>
+                            <div class="sd-text">{{ s.content }}</div>
                         </ng-template>
                     </div>
-                </p-accordionTab>
+                </section>
+            </ng-container>
+        </main>
 
-                <div *ngIf="sections().length === 0" class="text-gray-300">
-                    No RADIO sections found for this question yet.
+        <!-- RIGHT : fixed TOC -->
+        <nav class="right">
+            <div class="toc">
+                <div class="toc-head">On this page</div>
+                <ul class="toc-list">
+                    <li *ngFor="let s of sections()">
+                        <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
+                            {{ s.title }}
+                        </button>
+                    </li>
+                </ul>
+                <div class="toc-foot">
+                    <button class="top-btn" (click)="scrollTop()">Back to top</button>
                 </div>
-            </p-accordion>
-        </div>
-    </main>
+            </div>
+        </nav>
+    </div>
+
+    <!-- global footer below content -->
+    <app-footer></app-footer>
 </div>
