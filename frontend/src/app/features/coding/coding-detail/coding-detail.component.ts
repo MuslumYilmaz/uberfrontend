@@ -978,9 +978,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private xpFor(q: Question): number {
     return Number((q as any).xp ?? 20); // default 20 if not present
   }
+  // In CodingDetailComponent (TypeScript)
   private recordCompletion(reason: 'tests' | 'submit') {
     const q = this.question();
-    if (!q || this.recorded) return;
+    if (!q) return;
+
+    // Keep local session guard to avoid hammering the API,
+    // but *do not* block running tests or clicking buttons.
+    if (this.recorded) return;
 
     const minutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
     this.activity.complete({
@@ -994,17 +999,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (res: any) => {
         this.recorded = true;
 
-        // 1) tell the rest of the app that an activity was recorded
+        const credited = !!res?.credited; // ⬅ respect server decision
+
+        // Notify the rest of the app either way (header/daily will reflect real totals)
         this.activity.activityCompleted$.next({
-          kind: this.kind,        // 'coding' | 'debug' | 'trivia'
-          tech: this.tech,        // 'javascript' | 'angular'
+          kind: this.kind,
+          tech: this.tech,
           stats: res?.stats
         });
-        // 2) refresh the summary cache used by the header widget
         this.activity.refreshSummary();
 
-        // 3) (optional) if your header uses AuthService.me(), refresh that too
-        // this.auth.refreshMe?.();
+        // Optional: only celebrate on first credit
+        // if (!credited) { this.toast?.info?.(`XP already credited today for ${this.kind}.`); }
       },
       error: (e) => console.error('record completion failed', e),
     });

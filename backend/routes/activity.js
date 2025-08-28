@@ -1,7 +1,9 @@
+// server/routes/activity.js
 const router = require('express').Router();
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const ActivityEvent = require('../models/ActivityEvent');
+const XpCredit = require('../models/XpCredit'); // ⬅ NEW
 const { requireAuth } = require('../middleware/Auth');
 
 function utcDayStr(d = new Date()) {
@@ -17,6 +19,10 @@ function dayDiffUTC(aStr, bStr) {
 /**
  * POST /api/activity/complete
  * body: { kind, tech, itemId?, source?, durationMin?, xp? }
+ *
+ * Behavior:
+ * - Always log an ActivityEvent.
+ * - XP is credited only once per (user, dayUTC, kind). Subsequent events that day set xp=0.
  */
 router.post('/complete', requireAuth, async (req, res) => {
     try {
@@ -30,34 +36,57 @@ router.post('/complete', requireAuth, async (req, res) => {
 
         const completedAt = new Date();
         const dayUTC = utcDayStr(completedAt);
+
+        // 1) Determine if this action should grant XP (first-of-day per kind)
+        let credited = false;
+        try {
+            await XpCredit.create({ userId: String(user._id), dayUTC, kind });
+            credited = true; // first credit wins
+        } catch (e) {
+            if (!(e && e.code === 11000)) throw e; // duplicate key => already credited today; otherwise rethrow
+        }
+
+        const xpAwarded = credited ? (Number(xp) || 0) : 0;
+        const safeDuration = Math.max(1, Number(durationMin) || 1);
+
+        // 2) Always log the event; make sure xp reflects XP actually awarded
         const event = await ActivityEvent.create({
-            userId: user._id, kind, tech, itemId, source, durationMin, xp, completedAt, dayUTC,
+            userId: user._id,
+            kind,
+            tech,
+            itemId,
+            source,
+            durationMin: safeDuration,
+            xp: xpAwarded,           // <-- store awarded XP for accurate heatmap/analytics
+            completedAt,
+            dayUTC,
         });
 
-        // aggregates
+        // 3) Update aggregates
         user.stats = user.stats || {};
-        user.stats.xpTotal = (user.stats.xpTotal || 0) + (xp || 0);
+        // xpTotal only increases on credited events
+        user.stats.xpTotal = (user.stats.xpTotal || 0) + xpAwarded;
+        // completed counters track attempts/successes (keep as before)
         user.stats.completedTotal = (user.stats.completedTotal || 0) + 1;
 
         user.stats.perTech = user.stats.perTech || {};
         user.stats.perTech[tech] = user.stats.perTech[tech] || { xp: 0, completed: 0 };
-        user.stats.perTech[tech].xp += xp || 0;
+        user.stats.perTech[tech].xp += xpAwarded;
         user.stats.perTech[tech].completed += 1;
 
-        // streak
+        // streak (activity counts even if no XP credited; same-day diff=0 leaves streak unchanged)
         user.stats.streak = user.stats.streak || { current: 0, longest: 0, lastActiveUTCDate: null };
         const last = user.stats.streak.lastActiveUTCDate;
         const diff = dayDiffUTC(last, dayUTC);
         if (diff === 1) user.stats.streak.current = (user.stats.streak.current || 0) + 1;
         else if (diff !== 0) user.stats.streak.current = 1;
-
         user.stats.streak.longest = Math.max(user.stats.streak.longest || 0, user.stats.streak.current || 0);
         user.stats.streak.lastActiveUTCDate = dayUTC;
 
         await user.save();
 
         const recent = await ActivityEvent.find({ userId: user._id }).sort({ completedAt: -1 }).limit(10).lean();
-        res.json({ stats: user.stats, event, recent });
+        res.json({ credited, stats: user.stats, event, recent });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
