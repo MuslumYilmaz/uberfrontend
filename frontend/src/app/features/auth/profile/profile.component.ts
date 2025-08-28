@@ -1,8 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivityEvent, ActivityService } from '../../../core/services/activity.service';
+import { ActivityEvent, ActivityService, ActivitySummary } from '../../../core/services/activity.service';
 import { AuthService, User, UserPrefs } from '../../../core/services/auth.service';
+
+const EMPTY_SUMMARY: ActivitySummary = {
+  totalXp: 0,
+  level: 1,
+  nextLevelXp: 100,
+  levelProgress: { current: 0, needed: 100, pct: 0 },
+  streak: { current: 0, best: 0 },
+  freezeTokens: 0,
+  weekly: { completed: 0, target: 5, progress: 0 },
+  today: { completed: 0, total: 1, progress: 0 },
+};
 
 @Component({
   selector: 'app-profile',
@@ -46,14 +57,19 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
 
         <!-- Activity -->
         <section *ngIf="tab() === 'activity'" class="panel">
+          <!-- Top stats: Streak / Best / Level / XP / Completed -->
           <div class="stats-card">
             <div class="stat">
-              <div class="value">🔥 {{ stats()?.streak?.current || 0 }}</div>
+              <div class="value">🔥 {{ summary().streak.current }}</div>
               <div class="label">Current streak</div>
             </div>
             <div class="stat">
-              <div class="value">🏅 {{ stats()?.streak?.longest || 0 }}</div>
+              <div class="value">🏅 {{ summary().streak.best }}</div>
               <div class="label">Longest streak</div>
+            </div>
+            <div class="stat">
+              <div class="value">L{{ summary().level }}</div>
+              <div class="label">{{ levelProgressPct() }}% to next</div>
             </div>
             <div class="stat">
               <div class="value">⭐ {{ stats()?.xpTotal || 0 }}</div>
@@ -62,6 +78,41 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
             <div class="stat">
               <div class="value">{{ stats()?.completedTotal || 0 }}</div>
               <div class="label">Completed items</div>
+            </div>
+          </div>
+
+          <!-- Progress bars -->
+          <div class="section">
+            <h3>Progress</h3>
+
+            <div class="meter">
+              <div class="meter-head">
+                <span>Level progress</span>
+                <span>{{ levelProgressPct() }}%</span>
+              </div>
+              <div class="meter-bar"><div class="meter-fill" [style.width.%]="levelProgressPct()"></div></div>
+              <div class="meter-sub">L{{ summary().level }} → L{{ summary().level + 1 }}</div>
+            </div>
+
+            <div class="meter">
+              <div class="meter-head">
+                <span>Weekly goal</span>
+                <span>{{ weeklyCompleted() }}/{{ weeklyTarget() }}</span>
+              </div>
+              <div class="meter-bar"><div class="meter-fill" [style.width.%]="weeklyProgressPct()"></div></div>
+              <div class="meter-sub">
+                {{ weeklyProgressPct() }}% of weekly goal
+                <span *ngIf="freezeTokens()>0" class="badge" style="margin-left:8px;">Freeze tokens: {{ freezeTokens() }}</span>
+              </div>
+            </div>
+
+            <div class="meter">
+              <div class="meter-head">
+                <span>Today</span>
+                <span>{{ todayCompleted() }}/{{ todayTotal() }}</span>
+              </div>
+              <div class="meter-bar"><div class="meter-fill" [style.width.%]="todayProgressPct()"></div></div>
+              <div class="meter-sub">{{ todayProgressPct() }}% done today</div>
             </div>
           </div>
 
@@ -221,6 +272,19 @@ export class ProfileComponent implements OnInit {
   stats = computed(() => this.auth.user()?.stats);
   billing = computed(() => this.auth.user()?.billing);
 
+  // V0 summary (level, weekly, today, freeze)
+  private _summary = signal<ActivitySummary>(EMPTY_SUMMARY);
+  summary = computed(() => this._summary());
+
+  levelProgressPct = computed(() => Math.round((this.summary().levelProgress?.pct ?? 0) * 100));
+  weeklyCompleted = computed(() => this.summary().weekly.completed);
+  weeklyTarget = computed(() => this.summary().weekly.target);
+  weeklyProgressPct = computed(() => Math.round((this.summary().weekly.progress ?? 0) * 100));
+  todayCompleted = computed(() => this.summary().today.completed);
+  todayTotal = computed(() => this.summary().today.total);
+  todayProgressPct = computed(() => Math.round((this.summary().today.progress ?? 0) * 100));
+  freezeTokens = computed(() => this.summary().freezeTokens);
+
   // local form (clone of user fields we allow to edit)
   form: { username: string; email: string; bio: string; prefs: UserPrefs } = {
     username: '',
@@ -235,10 +299,29 @@ export class ProfileComponent implements OnInit {
   constructor(private auth: AuthService, private activity: ActivityService) { }
 
   ngOnInit(): void {
+    // Load profile
     this.auth.ensureMe().subscribe((u) => {
       if (u) this.resetForm(u);
     });
+
+    // Pull summary & recent
+    this.refreshSummary();
     this.loadRecent();
+
+    // React to completions (update summary + recent)
+    this.activity.activityCompleted$.subscribe(() => {
+      this.refreshSummary();
+      this.loadRecent();
+    });
+  }
+
+  private refreshSummary() {
+    // Optional: update the shared cache then read fresh summary
+    this.activity.refreshSummary?.();
+    this.activity.summary().subscribe({
+      next: (s) => this._summary.set(s || EMPTY_SUMMARY),
+      error: () => this._summary.set(EMPTY_SUMMARY),
+    });
   }
 
   initials() {
@@ -253,18 +336,15 @@ export class ProfileComponent implements OnInit {
   }
 
   private loadRecent() {
-    // If not logged in, avoid hitting the protected endpoint
     if (!this.auth.isLoggedIn()) {
       this.recent.set([]);
       return;
     }
-
     this.activity.recent({ limit: 10 }).subscribe({
       next: (rows) => this.recent.set(rows || []),
-      error: () => this.recent.set([]), // e.g., 401 or network error
+      error: () => this.recent.set([]),
     });
   }
-
 
   private resetForm(u: User) {
     this.form = {

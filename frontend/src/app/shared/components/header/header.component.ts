@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs } from '../../../core/models/user.model';
-import { ActivityService } from '../../../core/services/activity.service';
+import { ActivityService, ActivitySummary } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
 import {
@@ -23,16 +23,15 @@ type Mode =
   | 'course'
   | 'profile';
 
-type ActivitySummary = {
-  totalXp: number;
-  streak: { current: number; best?: number };
-  today: { completed: number; total: number; progress: number };
-};
-
 const EMPTY_SUMMARY: ActivitySummary = {
   totalXp: 0,
-  streak: { current: 0 },
-  today: { completed: 0, total: 0, progress: 0 },
+  level: 1,
+  nextLevelXp: 100,
+  levelProgress: { current: 0, needed: 100, pct: 0 },
+  streak: { current: 0, best: 0 },
+  freezeTokens: 0,
+  weekly: { completed: 0, target: 5, progress: 0 },
+  today: { completed: 0, total: 1, progress: 0 },
 };
 
 @Component({
@@ -101,12 +100,12 @@ const EMPTY_SUMMARY: ActivitySummary = {
             <button class="ufh-stats-pill"
                     (click)="toggleStatsMenu()"
                     aria-haspopup="menu"
-                    [attr.aria-expanded]="statsOpen()">
+                    [attr.aria-expanded]="statsOpen()"
+                    title="Streak · Level">
               <span aria-hidden="true">🔥</span>
               <span class="ufh-stats-num">{{ streakNum() }}</span>
               <span class="ufh-dot">·</span>
-              <span aria-hidden="true">⭐</span>
-              <span class="ufh-stats-num">{{ totalXp() }}</span>
+              <span class="ufh-stats-num">L{{ level() }}</span>
             </button>
 
             <div *ngIf="statsOpen()" class="ufh-stats-menu" role="menu">
@@ -116,11 +115,30 @@ const EMPTY_SUMMARY: ActivitySummary = {
                   <div class="sub">day streak</div>
                 </div>
                 <div class="ufh-stat">
-                  <div class="big">⭐ {{ totalXp() }}</div>
-                  <div class="sub">total XP</div>
+                  <div class="big">L{{ level() }}</div>
+                  <div class="sub">{{ levelProgressPct() }}% to L{{ level()+1 }}</div>
                 </div>
               </div>
 
+              <!-- Level progress -->
+              <div class="ufh-prog">
+                <div class="ufh-prog-bar">
+                  <div class="ufh-prog-fill" [style.width.%]="levelProgressPct()"></div>
+                </div>
+                <div class="ufh-prog-text">Level progress</div>
+              </div>
+
+              <!-- Weekly goal -->
+              <div class="ufh-prog">
+                <div class="ufh-prog-bar">
+                  <div class="ufh-prog-fill" [style.width.%]="weeklyProgressPct()"></div>
+                </div>
+                <div class="ufh-prog-text">{{ weeklyCompleted() }}/{{ weeklyTarget() }} this week
+                  <span *ngIf="freezeTokens()>0" class="ufh-badge">Freeze: {{ freezeTokens() }}</span>
+                </div>
+              </div>
+
+              <!-- Today progress (kept) -->
               <div class="ufh-prog">
                 <div class="ufh-prog-bar">
                   <div class="ufh-prog-fill" [style.width.%]="todayProgressPct()"></div>
@@ -141,7 +159,7 @@ const EMPTY_SUMMARY: ActivitySummary = {
               </ul>
 
               <div *ngIf="!auth.isLoggedIn()" class="ufh-prog-text" style="margin-top:8px;">
-                Log in to track your streak & XP.
+                Log in to track your streak & levels.
               </div>
             </div>
           </div>
@@ -301,16 +319,22 @@ export class HeaderComponent implements OnInit {
   private activitySvc = inject(ActivityService);
   private dailySvc = inject(DailyService);
 
-  // Local summary signal (no dependence on service implementation details)
+  // Local summary signal
   private summary = signal<ActivitySummary>(EMPTY_SUMMARY);
 
   // Read-only derivations for the UI
   streakNum = computed(() => this.summary().streak.current);
-  totalXp = computed(() => this.summary().totalXp);
+  level = computed(() => this.summary().level);
+  levelProgressPct = computed(() => Math.round((this.summary().levelProgress?.pct ?? 0) * 100));
+  freezeTokens = computed(() => this.summary().freezeTokens);
+
+  weeklyCompleted = computed(() => this.summary().weekly.completed);
+  weeklyTarget = computed(() => this.summary().weekly.target);
+  weeklyProgressPct = computed(() => Math.round((this.summary().weekly.progress ?? 0) * 100));
+
   todayCompleted = computed(() => this.summary().today.completed);
   todayTotal = computed(() => this.summary().today.total);
-  todayProgress = computed(() => this.summary().today.progress);
-  todayProgressPct = computed(() => Math.round(this.todayProgress() * 100));
+  todayProgressPct = computed(() => Math.round((this.summary().today.progress ?? 0) * 100));
 
   // Daily list (signal owned by DailyService)
   daily = this.dailySvc.daily;
@@ -333,7 +357,7 @@ export class HeaderComponent implements OnInit {
       this.statsOpen.set(false);
     });
 
-    // If your AuthService exposes a signal for login state, this will react.
+    // Reset summary on logout
     effect(() => {
       const loggedIn = this.auth.isLoggedIn();
       if (!loggedIn) this.summary.set(EMPTY_SUMMARY);
@@ -341,13 +365,11 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initial fetch
     this.pullSummary();
 
     // When a completion is recorded, refresh both summary and the daily set
     this.activitySvc.activityCompleted$.subscribe(() => {
       this.pullSummary();
-
       const tech =
         this.currentTech() ?? (defaultPrefs().defaultTech as 'javascript' | 'angular');
       this.dailySvc.ensureTodaySet(tech);
@@ -356,10 +378,7 @@ export class HeaderComponent implements OnInit {
 
   // --- Data pulls ---
   private pullSummary() {
-    // Ask the service to refresh its cache (optional; safe if it no-ops)
     this.activitySvc.refreshSummary?.();
-
-    // Read the latest summary snapshot
     this.activitySvc.summary().subscribe({
       next: (s) => this.summary.set(s ?? EMPTY_SUMMARY),
       error: () => this.summary.set(EMPTY_SUMMARY),
@@ -460,7 +479,6 @@ export class HeaderComponent implements OnInit {
     this.auth.logout();
     this.closeAll();
     this.router.navigate(['/']);
-    // Local summary resets via the effect above when logged out
     this.summary.set(EMPTY_SUMMARY);
   }
 }

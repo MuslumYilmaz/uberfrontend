@@ -18,7 +18,12 @@ export interface ActivityEvent {
 
 export interface ActivitySummary {
   totalXp: number;
+  level: number;
+  nextLevelXp: number;
+  levelProgress: { current: number; needed: number; pct: number };
   streak: { current: number; best?: number };
+  freezeTokens: number;
+  weekly: { completed: number; target: number; progress: number };
   today: { completed: number; total: number; progress: number };
 }
 
@@ -59,7 +64,6 @@ export class ActivityService {
     const q: string[] = [];
     if (params?.limit) q.push(`limit=${params.limit}`);
     if (params?.since) q.push(`since=${encodeURIComponent(params.since)}`);
-    // cache-buster so the browser/dev server can't serve a stale response
     q.push(`_=${Date.now()}`);
 
     const qs = q.length ? `?${q.join('&')}` : '';
@@ -70,7 +74,6 @@ export class ActivityService {
   }
 
   summary(): Observable<ActivitySummary> {
-    // also uncacheable so header updates instantly
     const qs = `?_=${Date.now()}`;
     return this.http.get<ActivitySummary>(`${this.base}/summary${qs}`, {
       headers: this.noCacheHeaders(),
@@ -93,13 +96,15 @@ export class ActivityService {
     durationMin?: number;
     xp?: number;
   }) {
-    return this.http.post(`${this.base}/complete`, payload, { headers: this.headers() });
+    return this.http.post<{ credited: boolean; stats: any }>(`${this.base}/complete`, payload, {
+      headers: this.headers()
+    });
   }
 
   refreshSummary() {
     this.summary().subscribe({
       next: (s) => this.summarySig.set(s),
-      error: () => this.summarySig.set(this.summarySig()), // keep last on error
+      error: () => this.summarySig.set(this.summarySig()),
     });
   }
 }
