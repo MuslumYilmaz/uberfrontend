@@ -5,6 +5,7 @@ import {
   Tech,
   defaultPrefs
 } from '../../core/models/user.model';
+import type { ActivityEvent, ActivitySummary } from './activity.service';
 
 const LS_XP = 'uf:xp';
 const LS_STREAK = 'uf:streak';
@@ -44,8 +45,114 @@ export class DailyService {
     this.resetXpIfNewDay(); // also ensures fresh today counter
   }
 
-  // Called by the widget checkbox
-  // Complete-only (idempotent). No XP refunds; ignores uncheck attempts.
+  /**
+   * Hydrate local *streak/done* state using a server summary.
+   * This does NOT try to reconstruct per-item checkmarks (summary doesn't include per-kind),
+   * but it keeps the streak widget accurate and marks the whole day complete when obvious.
+   */
+  hydrateFromSummary(summary: ActivitySummary | null | undefined) {
+    if (!summary) return;
+
+    // Sync streak counts (no XP mutation here)
+    const s = { ...this.streak() };
+    s.current = summary.streak?.current ?? s.current ?? 0;
+    s.longest = Math.max(s.longest ?? 0, summary.streak?.best ?? s.longest ?? 0);
+
+    // If server says we did *something* today, mark lastActive = today
+    if ((summary.today?.completed ?? 0) > 0) {
+      s.lastActive = this.dayKey();
+    }
+    this.streak.set(s);
+    localStorage.setItem(LS_STREAK, JSON.stringify(s));
+
+    // If server clearly reports the whole day done, reflect that locally
+    const d = this.daily();
+    if (d && (summary.today?.completed ?? 0) >= (summary.today?.total ?? d.items.length)) {
+      d.completed = true;
+      const todayIso = new Date().toISOString();
+      for (const it of d.items) {
+        if (!it.state?.completedAt) {
+          it.state = { ...(it.state || {}), startedAt: it.state?.startedAt ?? todayIso, completedAt: todayIso };
+        }
+      }
+      const s2 = { ...this.streak() };
+      s2.lastCompleted = this.dayKey();
+      this.streak.set(s2);
+      localStorage.setItem(LS_STREAK, JSON.stringify(s2));
+
+      this.daily.set({ ...d });
+      this.saveDaily(d);
+    }
+
+    // Keep total XP in sync if the server exposes it (no “today” recompute to avoid double counting)
+    if (typeof summary.totalXp === 'number') {
+      const x = { ...this.xp() };
+      x.total = summary.totalXp;
+      // Maintain today bucket boundary but don't award again.
+      x.lastDay = x.lastDay ?? this.dayKey();
+      this.xp.set(x);
+      localStorage.setItem(LS_XP, JSON.stringify(x));
+    }
+  }
+
+  /**
+   * Hydrate **per-kind checkmarks for today** from recent server events.
+   * - Does not award XP (to avoid double-credit); it just mirrors checkmarks.
+   * - Updates streak.lastActive/lastCompleted when appropriate.
+   */
+  hydrateFromRecent(rows: ActivityEvent[] = [], tech: Tech = defaultPrefs().defaultTech!) {
+    this.ensureTodaySet(tech);
+
+    const d = this.daily();
+    if (!d) return;
+
+    const todayLocal = this.dayKey(); // local-day key
+    const kindsDoneToday = new Set<DailyItemKind>();
+
+    for (const r of rows) {
+      // Determine local day from completedAt (fallbacks)
+      const raw = r.completedAt || r.dayUTC || '';
+      if (!raw) continue;
+      const localKey = this.dayKey(new Date(raw));
+      if (localKey !== todayLocal) continue;
+      // Only mirror known kinds
+      if (r.kind === 'coding' || r.kind === 'trivia' || r.kind === 'debug') {
+        kindsDoneToday.add(r.kind);
+      }
+    }
+
+    if (kindsDoneToday.size === 0) return; // nothing to hydrate
+
+    // Apply checkmarks by kind (prefer exact id match; fallback to first of that kind)
+    const nowIso = new Date().toISOString();
+    for (const kind of kindsDoneToday) {
+      let item = d.items.find(i => i.kind === kind && i.state?.completedAt) // already marked? keep it
+        ?? d.items.find(i => i.kind === kind);
+      if (!item) continue;
+
+      if (!item.state?.completedAt) {
+        item.state = {
+          ...(item.state || {}),
+          startedAt: item.state?.startedAt ?? nowIso,
+          completedAt: nowIso,
+        };
+      }
+    }
+
+    d.completed = d.items.every(i => !!i.state?.completedAt);
+
+    // Update streak anchors (no counter mutation; that’s the server’s source of truth)
+    const s = { ...this.streak() };
+    s.lastActive = todayLocal;
+    if (d.completed) s.lastCompleted = todayLocal;
+    this.streak.set(s);
+    localStorage.setItem(LS_STREAK, JSON.stringify(s));
+
+    this.daily.set({ ...d });
+    this.saveDaily(d);
+  }
+
+  // Called by the widget checkbox (manual completion)
   toggleItem(item: DailyItem) {
     const d = this.daily();
     if (!d) return;
@@ -69,8 +176,6 @@ export class DailyService {
   }
 
   // For detail pages (e.g., user finished a specific exercise)
-  // src/app/core/services/daily.service.ts
-
   markCompletedById(kind: DailyItemKind, id: string, xpOverride?: number) {
     const d = this.daily();
     if (!d) return;

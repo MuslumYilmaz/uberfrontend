@@ -695,46 +695,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // --- Debug test patch helpers (only used for debug items) ---
-  private escapeRe(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
-  private hasDefaultImportForId(testsSrc: string, id: string): boolean {
-    const re = new RegExp(
-      String.raw`^\s*import\s+[A-Za-z$_][\w$]*\s+from\s+['"]\./${this.escapeRe(id)}['"]\s*;?\s*$`,
-      'm'
-    );
-    return re.test(testsSrc) ||
-      new RegExp(String.raw`^\s*const\s+[A-Za-z$_][\w$]*\s*=\s*require\(\s*['"]\./${this.escapeRe(id)}['"]\s*\)\s*;?\s*$`, 'm').test(testsSrc);
-  }
-
-  private patchUserImport(testsSrc: string, id: string): string {
-    const idRe = this.escapeRe(id);
-    const reDefault = new RegExp(
-      String.raw`^\s*import\s+([A-Za-z$_][\w$]*)\s+from\s+['"]\./${idRe}['"]\s*;?\s*$`,
-      'gm'
-    );
-    let out = testsSrc.replace(reDefault, 'const $1 = __user_fn__;');
-
-    const reRequire = new RegExp(
-      String.raw`^\s*const\s+([A-Za-z$_][\w$]*)\s*=\s*require\(\s*['"]\./${idRe}['"]\s*\)\s*;?\s*$`,
-      'gm'
-    );
-    out = out.replace(reRequire, 'const $1 = __user_fn__;');
-
-    return out;
-  }
-
-  private injectUserFnBridge(src: string): string {
-    // If tests reference __user_fn__ but don't define it locally, add a bridge
-    const referencesUser = /\b__user_fn__\b/.test(src);
-    const definesLocal = /\bconst\s+__user_fn__\s*=/.test(src) || /\blet\s+__user_fn__\s*=/.test(src) || /\bvar\s+__user_fn__\s*=/.test(src);
-    if (referencesUser && !definesLocal) {
-      return `const __user_fn__ = (typeof globalThis!=='undefined' && (globalThis as any).__user_fn__) ?? (typeof window!=='undefined' && (window as any).__user_fn__);\n${src}`;
-    }
-    return src;
-  }
-
-  // Run tests (JS/TS only). Credits daily on full pass.
+  // ---------- run tests ----------
   async runTests(): Promise<void> {
     const q = this.question();
     if (!q || this.tech === 'angular') return;
@@ -746,11 +707,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const lang = this.jsLang();
     const userSrc = this.editorContent();
-    const testsSrc = this.testCode(); // ← no pre-patching
+    const testsSrc = this.testCode();
 
     const userJs = lang === 'ts' ? await this.transpileTsToJs(userSrc, `${q.id}.ts`) : userSrc;
     const testsJs = lang === 'ts' ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
 
+    // Wrap user's default export and transform tests to reference __user_fn__
     const wrapped = wrapExportDefault(userJs, q.id);
     const testsPrepared = transformTestCode(testsJs, q.id);
 
@@ -760,14 +722,38 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       timeoutMs: 1500
     });
 
-    this.consoleEntries.set(out.entries ?? []);
+    this.consoleEntries.set(this.sanitizeLogs(out.entries as ConsoleEntry[]));
     this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
 
     const passing = this.allPassing();
     this.solved.set(passing);
     this.saveSolvedFlag(q, passing);
-    if (passing) { this.creditDaily(); this.recordCompletion('tests'); await this.celebrate('tests'); }
+
+    if (passing) {
+      this.creditDaily();
+      // record with solved=true so server persists progress
+      this.activity.complete({
+        kind: this.kind,
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
+        xp: this.xpFor(q),
+        solved: true
+      }).subscribe({
+        next: (res: any) => {
+          this.recorded = true;
+          this.activity.activityCompleted$.next({
+            kind: this.kind, tech: this.tech, stats: res?.stats
+          });
+          this.activity.refreshSummary();
+        },
+        error: (e) => console.error('record completion failed', e),
+      });
+
+      await this.celebrate('tests');
+    }
 
     this.subTab.set('tests');
   }
@@ -781,14 +767,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ---------- submit ----------
-  // Submit button: now runs tests for BOTH coding and debug.
-  // Coding: credit only if tests pass (handled inside runTests).
-  // Debug: always runs tests; if they don't all pass, we still credit on submit.
+  // Submit button: runs tests for BOTH coding and debug.
+  // Coding: credit handled in runTests (only on pass).
+  // Debug: always runs tests; if not all passing we still credit on submit.
   async submitCode(): Promise<void> {
     const q = this.question();
     if (!q) return;
 
-    // Angular challenges still don’t run unit tests here
+    // Angular challenges are marked complete on submit
     if (this.tech === 'angular') {
       this.creditDaily();
       this.recordCompletion('submit');
@@ -796,14 +782,31 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // JS/TS (coding + debug): always run tests on submit
+    // JS/TS: always run tests
     await this.runTests();
 
-    // For debug, we don’t require a pass to submit.
-    // Avoid double-credit: only credit here if tests did NOT already pass (runTests credits on pass).
+    // For debug, allow credit even if not all tests passed (avoid double-credit if runTests already did it)
     if (this.kind === 'debug' && !this.allPassing()) {
       this.creditDaily();
-      this.recordCompletion('submit');
+      this.activity.complete({
+        kind: this.kind,
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
+        xp: this.xpFor(q),
+        solved: false
+      }).subscribe({
+        next: (res: any) => {
+          this.recorded = true;
+          this.activity.activityCompleted$.next({
+            kind: this.kind, tech: this.tech, stats: res?.stats
+          });
+          this.activity.refreshSummary();
+        },
+        error: (e) => console.error('record completion failed', e),
+      });
+
       await this.celebrate('submit');
     }
   }
@@ -834,6 +837,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   startHorizontalDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.draggingHorizontal = true;
+    const totalWidth = window.innerWidth;
     this.startX = ev.clientX;
     this.startRatioH = this.horizontalRatio();
     this.copiedExamples.set(true);

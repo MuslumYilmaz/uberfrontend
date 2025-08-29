@@ -266,6 +266,16 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Hydrate Daily list/ticks from server summary on boot
+    // Pull server snapshot (streak/level/etc.)
+    this.activitySvc.getSummary({ force: true }).pipe(take(1))
+      .subscribe(s => this.dailySvc.hydrateFromSummary(s));
+
+    // Pull recent rows to reconstruct today's checkmarks by kind
+    this.activitySvc.getRecent({ since: this.startOfWeekLocalISO() }, { force: true })
+      .pipe(take(1))
+      .subscribe(rows => this.dailySvc.hydrateFromRecent(rows));
+
     this.refreshAll(false);
     this.scheduleMidnightRefresh();
 

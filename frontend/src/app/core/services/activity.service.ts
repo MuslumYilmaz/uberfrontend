@@ -95,8 +95,10 @@ export class ActivityService {
     return obs;
   }
 
-  getRecent(params?: { limit?: number; since?: string },
-    options?: { force?: boolean; ttlMs?: number }): Observable<ActivityEvent[]> {
+  getRecent(
+    params?: { limit?: number; since?: string },
+    options?: { force?: boolean; ttlMs?: number }
+  ): Observable<ActivityEvent[]> {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
     const key = `limit=${params?.limit ?? ''}|since=${params?.since ?? ''}`;
 
@@ -111,16 +113,18 @@ export class ActivityService {
     if (options?.force) q.push(`_=${Date.now()}`);
     const qs = q.length ? `?${q.join('&')}` : '';
 
-    const obs = this.http.get<ActivityEvent[]>(
-      `${this.base}/recent${qs}`, { headers: this.headers() }
-    ).pipe(shareReplay(1));
+    const obs = this.http
+      .get<ActivityEvent[]>(`${this.base}/recent${qs}`, { headers: this.headers() })
+      .pipe(shareReplay(1));
 
     this.recentCache.set(key, { ts: Date.now(), obs });
     return obs;
   }
 
-  getHeatmap(params?: { days?: number },
-    options?: { force?: boolean; ttlMs?: number }): Observable<any> {
+  getHeatmap(
+    params?: { days?: number },
+    options?: { force?: boolean; ttlMs?: number }
+  ): Observable<any> {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
     const key = `days=${params?.days ?? ''}`;
 
@@ -134,7 +138,8 @@ export class ActivityService {
     if (options?.force) q.push(`_=${Date.now()}`);
     const qs = q.length ? `?${q.join('&')}` : '';
 
-    const obs = this.http.get<any>(`${this.base}/heatmap${qs}`, { headers: this.headers() })
+    const obs = this.http
+      .get<any>(`${this.base}/heatmap${qs}`, { headers: this.headers() })
       .pipe(shareReplay(1));
 
     this.heatmapCache.set(key, { ts: Date.now(), obs });
@@ -149,16 +154,21 @@ export class ActivityService {
     source?: 'tech' | 'company' | 'course' | 'system';
     durationMin?: number;
     xp?: number;
+    solved?: boolean; // NEW: let server know if all tests passed
   }) {
-    return this.http.post<{ credited: boolean; stats: any }>(`${this.base}/complete`, payload, {
-      headers: this.headers()
-    }).pipe(tap(() => {
-      // Bust caches & push event
-      this.invalidateAll();
-      this.activityCompleted$.next({ kind: payload.kind, tech: payload.tech, itemId: payload.itemId });
-      // Opportunistically refresh summary signal
-      this.getSummary({ force: true }).subscribe();
-    }));
+    return this.http.post<{ credited: boolean; stats: any }>(
+      `${this.base}/complete`,
+      payload,
+      { headers: this.headers() }
+    ).pipe(
+      tap(() => {
+        // Bust caches & push event
+        this.invalidateAll();
+        this.activityCompleted$.next({ kind: payload.kind, tech: payload.tech, itemId: payload.itemId });
+        // Opportunistically refresh summary signal
+        this.getSummary({ force: true }).subscribe();
+      })
+    );
   }
 
   // ---------- legacy API (kept for compatibility; prefer get* above) ----------
