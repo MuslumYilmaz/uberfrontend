@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   AfterViewInit, Component, ElementRef, OnDestroy, OnInit,
-  QueryList, ViewChildren, WritableSignal, computed, inject, signal
+  QueryList, ViewChild, ViewChildren, WritableSignal, computed, inject, signal
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ChipModule } from 'primeng/chip';
@@ -13,10 +13,23 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 type Block =
   | { type: 'text'; text: string }
   | { type: 'code'; language?: string; code: string; height?: number }
-  | { type: 'image'; src: string; alt?: string; caption?: string; width?: number };
+  | {
+    type: 'image';
+    src: string;
+    alt?: string;
+    caption?: string;
+    width?: number;
+    height?: number;
+    srcWebp?: string;
+    srcAvif?: string;
+    priority?: boolean;
+  };
 
 type RadioSection = { key: string; title: string; content?: string; blocks?: Block[]; };
-type SDQuestion = Question & { radio?: RadioSection[]; reflect?: string; assumptions?: string; diagram?: string; interface?: string; operations?: string; };
+type SDQuestion = Question & {
+  radio?: RadioSection[];
+  reflect?: string; assumptions?: string; diagram?: string; interface?: string; operations?: string;
+};
 
 @Component({
   selector: 'app-system-design-detail',
@@ -61,7 +74,17 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   activeKey = signal<string | null>(null);
   @ViewChildren('sectionHeading', { read: ElementRef }) heads!: QueryList<ElementRef<HTMLElement>>;
 
-  /** Monaco viewer options (compact, readable) */
+  /** Lazy Monaco: observed placeholders */
+  @ViewChildren('codeSentinel', { read: ElementRef }) codeSentinels!: QueryList<ElementRef<HTMLElement>>;
+  private io?: IntersectionObserver;
+  private mountedCodes = signal<Set<string>>(new Set());
+  isCodeMounted = (id: string) => this.mountedCodes().has(id);
+  codeKey(sectionKey: string, idx: number) { return `${sectionKey}#${idx}`; }
+
+  /** Center column for potential responsive image sizing */
+  @ViewChild('centerEl', { read: ElementRef }) centerEl!: ElementRef<HTMLElement>;
+
+  /** Monaco viewer options */
   codeViewerOptions = {
     readOnly: true,
     wordWrap: 'on',
@@ -83,6 +106,9 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private programScrollTarget: number | null = null;
   private settleWatcher: any = null;
 
+  // rAF throttle for resize work
+  private resizeRaf = 0;
+
   // ---- lifecycle ----
   ngOnInit(): void {
     this.qs.loadSystemDesign().subscribe((list) => {
@@ -97,16 +123,45 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngAfterViewInit(): void {
-    this.heads.changes.subscribe(() => setTimeout(() => this.updateActiveFromPositions(), 0));
+    this.heads.changes.subscribe(() => setTimeout(() => {
+      this.updateActiveFromPositions();
+    }, 0));
+
+    // Observe code sentinels for lazy Monaco mount
+    const setupIO = () => {
+      this.io?.disconnect();
+      this.io = new IntersectionObserver((entries) => {
+        const next = new Set(this.mountedCodes());
+        for (const e of entries) {
+          const id = (e.target as HTMLElement).dataset['codeId']!;
+          if (e.isIntersecting && id) next.add(id);
+        }
+        if (next.size !== this.mountedCodes().size) this.mountedCodes.set(next);
+      }, {
+        root: null,
+        rootMargin: '700px 0px 700px 0px',
+        threshold: 0
+      });
+      this.codeSentinels.forEach(ref => this.io!.observe(ref.nativeElement));
+    };
+
+    setupIO();
+    this.codeSentinels.changes.subscribe(() => setupIO());
+
     window.addEventListener('scroll', this.onScroll, { passive: true });
-    window.addEventListener('resize', this.onScroll, { passive: true });
-    setTimeout(() => this.updateActiveFromPositions(), 0);
+    window.addEventListener('resize', this.onResize, { passive: true });
+
+    setTimeout(() => {
+      this.updateActiveFromPositions();
+    }, 0);
   }
 
   ngOnDestroy(): void {
     window.removeEventListener('scroll', this.onScroll);
-    window.removeEventListener('resize', this.onScroll);
+    window.removeEventListener('resize', this.onResize);
     clearInterval(this.settleWatcher);
+    if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);
+    this.io?.disconnect();
   }
 
   // ---- helpers ----
@@ -120,6 +175,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     if (pos >= 0) {
       this.idx = pos;
       this.q.set(this.all[pos]);
+      // reset lazy-mounted editors when switching questions
+      this.mountedCodes.set(new Set());
       // default active: first section
       this.activeKey.set(this.sections()[0]?.key ?? null);
       setTimeout(() => this.updateActiveFromPositions(), 0);
@@ -128,24 +185,28 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   /** Height to keep clear for the fixed header + breathing room */
   private headerOffset(): number {
-    const raw = getComputedStyle(document.documentElement)
-      .getPropertyValue('--app-safe-top')
-      .trim();
+    const raw = getComputedStyle(document.documentElement).getPropertyValue('--app-safe-top').trim();
     const base = parseInt(raw || '64', 10);
     return (isNaN(base) ? 64 : base) + 12;
   }
 
-  /** We switch a little earlier than the header line to feel natural */
-  private leadBeforeHeader(): number {
-    return 96; // px before the header line to flip active section
-  }
+  /** Switch a tad earlier than the header line to feel natural */
+  private leadBeforeHeader(): number { return 96; }
 
-  /** Choose the last heading whose absolute top is <= scroll line (header + lead). */
+  /** Choose the last heading whose absolute top is <= scroll line; force last when near bottom. */
   private updateActiveFromPositions = () => {
     if (!this.heads) return;
-
     const nodes = this.heads.toArray().map(h => h.nativeElement);
     if (!nodes.length) return;
+
+    // If we're very close to the bottom, force last section active
+    const doc = document.documentElement;
+    const bottomGap = doc.scrollHeight - (window.pageYOffset + window.innerHeight);
+    if (bottomGap <= Math.max(48, this.leadBeforeHeader())) {
+      const lastKey = nodes[nodes.length - 1].dataset['key'] || null;
+      if (lastKey && this.activeKey() !== lastKey) this.activeKey.set(lastKey);
+      return;
+    }
 
     const line = window.pageYOffset + this.headerOffset() + this.leadBeforeHeader();
     let bestIdx = 0;
@@ -161,27 +222,32 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   };
 
   private onScroll = () => {
-    if (this.isProgrammaticScroll) return; // ignore while we’re auto-scrolling
+    if (this.isProgrammaticScroll) return;
     this.updateActiveFromPositions();
   };
 
-  /** smooth scroll to section with offset and a true “settle” guard */
+  private onResize = () => {
+    if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);
+    this.resizeRaf = requestAnimationFrame(() => {
+      this.updateActiveFromPositions();
+    });
+  };
+
+  /** smooth scroll to section with offset and a “settle” guard */
   scrollToKey(key: string) {
     const el = document.getElementById(this.anchorId(key));
     if (!el) return;
 
-    // optimistic highlight immediately
     this.activeKey.set(key);
 
-    // compute target (slightly above header to feel earlier)
-    const target = el.getBoundingClientRect().top + window.pageYOffset - (this.headerOffset() + 8);
-    this.programScrollTarget = Math.max(0, target);
+    const desired = el.getBoundingClientRect().top + window.pageYOffset - (this.headerOffset() + 8);
+    const doc = document.documentElement;
+    const maxTop = Math.max(0, doc.scrollHeight - window.innerHeight);
+    this.programScrollTarget = Math.min(maxTop, Math.max(0, desired));
     this.isProgrammaticScroll = true;
 
-    // fire smooth scroll
     window.scrollTo({ top: this.programScrollTarget, behavior: 'smooth' });
 
-    // watch until scroll stabilizes near target (or timeout)
     clearInterval(this.settleWatcher);
     let lastY = window.pageYOffset;
     let stableTicks = 0;

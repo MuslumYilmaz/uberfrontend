@@ -1,23 +1,19 @@
 <div class="sdl-root">
     <div class="sdl-main">
         <!-- LEFT : fixed rail -->
-        <!-- LEFT : Problem brief (fixed) -->
         <aside class="left">
             <div class="left-inner">
                 <div class="left-head">
                     <h1 class="title" [title]="title()">{{ title() }}</h1>
                 </div>
 
-                <!-- scrollable content -->
                 <div class="left-body">
                     <div class="desc">{{ description() }}</div>
-
                     <div class="tags">
                         <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
                     </div>
                 </div>
 
-                <!-- pinned bottom (like right toc foot) -->
                 <div class="left-foot">
                     <div class="guide">
                         New to RADIO?
@@ -28,30 +24,42 @@
         </aside>
 
         <!-- CENTER : article -->
-        <main class="center">
+        <main class="center" #centerEl>
             <ng-container *ngFor="let s of sections()">
                 <section class="sd-section" [attr.id]="anchorId(s.key)">
                     <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
 
                     <div class="sd-blocks">
-                        <!-- Prefer blocks; fallback to legacy content -->
                         <ng-container *ngIf="s.blocks?.length; else legacyText">
-                            <ng-container *ngFor="let b of s.blocks">
+                            <ng-container *ngFor="let b of s.blocks; let bi = index">
                                 <!-- TEXT -->
                                 <div *ngIf="b.type === 'text'" class="sd-text">{{ b.text }}</div>
 
-                                <!-- CODE (Monaco, non-interactive, auto height unless explicit height) -->
-                                <div *ngIf="b.type === 'code'">
-                                    <app-monaco-editor class="sd-code" [code]="b.code"
-                                        [language]="b.language || 'typescript'" [readOnly]="true" [interactive]="false"
-                                        [autoHeight]="!b.height" [options]="codeViewerOptions"
-                                        [style.height.px]="b.height || null">
-                                    </app-monaco-editor>
+                                <!-- CODE (Monaco, lazy via IntersectionObserver) -->
+                                <div *ngIf="b.type === 'code'" class="sd-code"
+                                    [style.minHeight.px]="!isCodeMounted(codeKey(s.key, bi)) ? (b.height || 160) : (b.height || null)">
+                                    <!-- Show skeleton OR editor (never both) -->
+                                    <div *ngIf="!isCodeMounted(codeKey(s.key, bi)); else showCode" #codeSentinel
+                                        class="code-sentinel" [attr.data-code-id]="codeKey(s.key, bi)"></div>
+
+                                    <ng-template #showCode>
+                                        <app-monaco-editor class="sd-code-fill" [code]="b.code"
+                                            [language]="b.language || 'typescript'" [readOnly]="true"
+                                            [interactive]="false" [autoHeight]="!b.height" [options]="codeViewerOptions"
+                                            [style.height.px]="b.height || null"></app-monaco-editor>
+                                    </ng-template>
                                 </div>
 
                                 <!-- IMAGE -->
                                 <figure *ngIf="b.type === 'image'" class="sd-figure">
-                                    <img [src]="asset(b.src)" [alt]="b.alt || ''" [style.width.px]="b.width || null" />
+                                    <picture>
+                                        <source *ngIf="b.srcAvif" [attr.srcset]="asset(b.srcAvif)" type="image/avif" />
+                                        <source *ngIf="b.srcWebp" [attr.srcset]="asset(b.srcWebp)" type="image/webp" />
+                                        <img [src]="asset(b.src)" [alt]="b.alt || ''" [attr.width]="b.width || null"
+                                            [attr.height]="b.height || null"
+                                            [attr.loading]="b.priority ? 'eager' : 'lazy'"
+                                            [attr.decoding]="b.priority ? 'sync' : 'async'" />
+                                    </picture>
                                     <figcaption *ngIf="b.caption">{{ b.caption }}</figcaption>
                                 </figure>
                             </ng-container>
@@ -83,6 +91,5 @@
         </nav>
     </div>
 
-    <!-- global footer below content -->
     <app-footer></app-footer>
 </div>

@@ -6,10 +6,9 @@
   --left-w: 320px;
   --right-w: 260px;
   --top-off: calc(var(--app-safe-top, 64px) + 12px);
-  --foot-h: 56px; /* footer height reservation */
+  --foot-h: 56px;
 }
 
-/* page padding only; rails are fixed, so center uses margins */
 .sdl-main{ padding: var(--gap); }
 
 /* ---------- LEFT: FIXED rail ---------- */
@@ -21,45 +20,25 @@
   width: var(--left-w);
   z-index: 1;
 }
-/* make room for a bottom row */
 .left-inner{
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto;   /* was: auto 1fr */
+  grid-template-rows: auto 1fr auto;
   background:#0f0f10;
   border:1px solid rgba(255,255,255,.08);
   border-radius:10px;
 }
-
-.left-body{
-  overflow: auto;
-  padding:14px 16px;
-  color:#cfd6dd;
-  font-size:13px;
-}
-
-/* pinned bottom area */
-.left-foot{
-  border-top:1px solid rgba(255,255,255,.06);
-  padding:10px 12px;
-}
-
-.guide{
-  font-size: 13px;
-  background:#141a22;
-  border:1px solid rgba(255,255,255,.08);
-  color:#b7c3cf;
-  padding:10px;
-  border-radius:8px;
-}
-
+.left-head{ padding:14px 16px; background:#141416; border-bottom:1px solid rgba(255,255,255,.06); }
 .title{ margin:0; font-size:18px; font-weight:700; color:#f3f5f7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.left-body{ overflow:auto; padding:14px 16px; color:#cfd6dd; font-size:13px; }
 .desc{ white-space:pre-line; line-height:1.5; }
 .tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
 :host ::ng-deep .p-chip.custom-chip{ background:#1f2937; color:#e5e7eb; border-radius:9999px; font-size:12px; padding:2px 8px; }
-.guide a{  color:#9ad1ff; text-decoration:underline; }
+.left-foot{ border-top:1px solid rgba(255,255,255,.06); padding:10px 12px; }
+.guide{ font-size: 13px; background:#141a22; border:1px solid rgba(255,255,255,.08); color:#b7c3cf; padding:10px; border-radius:8px; }
+.guide a{ color:#9ad1ff; text-decoration:underline; }
 
-/* ---------- CENTER: main content takes margins for rails ---------- */
+/* ---------- CENTER ---------- */
 .center{
   min-width:0;
   margin-left: calc(var(--left-w) + var(--gap));
@@ -68,17 +47,45 @@
 .sd-section{ padding:10px 6px 22px 6px; border-bottom:1px solid rgba(255,255,255,.06); }
 .sd-h2{
   font-size:18px; font-weight:700; color:#fff; margin:6px 0 12px;
-  /* keep anchor jumps below header if someone hits a #id directly */
   scroll-margin-top: calc(var(--app-safe-top, 64px) + 16px);
 }
 .sd-text{ white-space:pre-wrap; color:#e6eaee; line-height:1.6; font-size:14px; }
+
+/* Monaco block */
 .sd-code{
-  display:block;
-  border-radius:10px; border:1px solid rgba(255,255,255,.10);
-  overflow:hidden; margin:10px 0; background:#0c0f14;
+  position: relative;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.10);
+  overflow:hidden;
+  margin:10px 0;
+  background:#0c0f14;
+  min-height: 0; /* no enforced min-height after mount */
 }
+.sd-code-fill{ display:block; width:100%; }
+
+/* Skeleton shown ONLY while Monaco is not mounted */
+.code-sentinel{
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.06), rgba(255,255,255,.04));
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Images */
 .sd-figure{ margin:12px 0; color:#aeb6bf; }
-.sd-figure img{ max-width:100%; border-radius:10px; border:1px solid rgba(255,255,255,.10); display:block; }
+.sd-figure picture, .sd-figure img{ display:block; max-width:100%; }
+.sd-figure img{
+  width: 100%;
+  height: auto;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.10);
+}
 .sd-figure figcaption{ font-size:12px; margin-top:6px; }
 
 /* ---------- RIGHT: FIXED TOC ---------- */
@@ -113,7 +120,7 @@
 /* ---------- Responsive ---------- */
 @media (max-width: 1200px){
   .left, .right{ position:static; width:auto; height:auto; }
-  .right{ display:none; }               /* hide TOC on mobile */
-  .center{ margin:0; }                  /* full-width content */
+  .right{ display:none; }
+  .center{ margin:0; }
   .left-inner{ height:auto; }
 }

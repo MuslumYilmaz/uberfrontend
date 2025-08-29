@@ -24,7 +24,10 @@
           {
             "type": "image",
             "src": "https://placehold.co/1000x560/111318/ffffff?text=User+Flow%3A+Create+%E2%86%92+Share+%E2%86%92+Click+%E2%86%92+Redirect",
-            "caption": "User flow at a glance"
+            "alt": "User flow from create to redirect",
+            "caption": "User flow at a glance",
+            "width": 1000,
+            "height": 560
           }
         ]
       },
@@ -45,7 +48,11 @@
           {
             "type": "image",
             "src": "https://placehold.co/1200x650/111318/ffffff?text=High-level+Architecture%3A+Edge+%E2%86%92+API+%E2%86%92+Cache%2FDB+%2B+ID+Gen",
-            "caption": "Edge POPs terminate TLS and cache redirects; app tier handles writes; Redis + SQL/NoSQL for storage."
+            "alt": "High-level architecture showing Edge to API to Cache and DB with ID generation",
+            "caption": "Edge POPs terminate TLS and cache redirects; app tier handles writes; Redis + SQL/NoSQL for storage.",
+            "width": 1200,
+            "height": 650,
+            "priority": true
           },
           {
             "type": "text",
@@ -103,7 +110,10 @@
           {
             "type": "image",
             "src": "https://placehold.co/1000x420/111318/ffffff?text=Ops%2FTrade-offs+Overview",
-            "caption": "Hot path stays lean; heavy work is async."
+            "alt": "Operations and trade-offs overview diagram",
+            "caption": "Hot path stays lean; heavy work is async.",
+            "width": 1000,
+            "height": 420
           }
         ]
       }
