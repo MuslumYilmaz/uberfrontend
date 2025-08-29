@@ -22,7 +22,6 @@ import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
-// NEW: Daily wiring
 import type { DailyItemKind } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { DailyService } from '../../../core/services/daily.service';
@@ -30,11 +29,13 @@ import { DailyService } from '../../../core/services/daily.service';
 declare const monaco: any;
 
 type JsLang = 'js' | 'ts';
-type CourseNavState = {
-  breadcrumb?: { to: any[]; label: string };
-  prev?: { to: any[]; label: string } | null;
-  next?: { to: any[]; label: string } | null;
-} | null;
+type CourseNavState =
+  | {
+    breadcrumb?: { to: any[]; label: string };
+    prev?: { to: any[]; label: string } | null;
+    next?: { to: any[]; label: string } | null;
+  }
+  | null;
 
 type Tech = 'javascript' | 'angular';
 type Kind = 'coding' | 'debug';
@@ -460,7 +461,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sbVm = null;
       this.embedLoading.set(false);
     } else {
-      // ---------- ANGULAR via StackBlitz (robust handling for empty saved files) ----------
+      // ---------- ANGULAR via StackBlitz ----------
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
@@ -472,14 +473,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const storageKey = getNgStorageKey(q);
       const baselineKey = getNgBaselineKey(q);
 
-      // read previously saved files; treat {} as empty
       let files = this.loadSavedFiles(storageKey);
       const isEmpty = !files || Object.keys(files).length === 0;
 
       let dependencies: Record<string, string> | undefined;
       let openFileFromAsset: string | undefined;
 
-      // If nothing saved (or empty), fetch the asset JSON again
       if (isEmpty && meta?.asset) {
         const asset = await this.ngEmbed.fetchAsset(meta.asset);
         if (asset) {
@@ -487,19 +486,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
           dependencies = asset.dependencies;
           openFileFromAsset = asset.openFile;
 
-          // Only persist when we actually have files
           if (Object.keys(files).length > 0) {
             try {
               localStorage.setItem(storageKey, JSON.stringify(files));
               if (!localStorage.getItem(baselineKey)) {
                 localStorage.setItem(baselineKey, JSON.stringify(files));
               }
-            } catch { /* ignore */ }
+            } catch { }
           }
         }
       }
 
-      // If we have files now, determine if they diverged from baseline for the banner
       if (files && Object.keys(files).length > 0) {
         let baseline: Record<string, string> | null = null;
 
@@ -514,7 +511,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       } else {
-        // Fallback to avoid launching a completely empty project
         files = {};
       }
 
@@ -536,7 +532,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testResults.set([]);
     this.consoleEntries.set([]);
     this.showRestoreBanner.set(shouldShowBanner);
-    // track time per question & allow one completion record
     this.sessionStart = Date.now();
     this.recorded = false;
   }
@@ -700,23 +695,58 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // --- Debug test patch helpers (only used for debug items) ---
+  private escapeRe(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  private hasDefaultImportForId(testsSrc: string, id: string): boolean {
+    const re = new RegExp(
+      String.raw`^\s*import\s+[A-Za-z$_][\w$]*\s+from\s+['"]\./${this.escapeRe(id)}['"]\s*;?\s*$`,
+      'm'
+    );
+    return re.test(testsSrc) ||
+      new RegExp(String.raw`^\s*const\s+[A-Za-z$_][\w$]*\s*=\s*require\(\s*['"]\./${this.escapeRe(id)}['"]\s*\)\s*;?\s*$`, 'm').test(testsSrc);
+  }
+
+  private patchUserImport(testsSrc: string, id: string): string {
+    const idRe = this.escapeRe(id);
+    const reDefault = new RegExp(
+      String.raw`^\s*import\s+([A-Za-z$_][\w$]*)\s+from\s+['"]\./${idRe}['"]\s*;?\s*$`,
+      'gm'
+    );
+    let out = testsSrc.replace(reDefault, 'const $1 = __user_fn__;');
+
+    const reRequire = new RegExp(
+      String.raw`^\s*const\s+([A-Za-z$_][\w$]*)\s*=\s*require\(\s*['"]\./${idRe}['"]\s*\)\s*;?\s*$`,
+      'gm'
+    );
+    out = out.replace(reRequire, 'const $1 = __user_fn__;');
+
+    return out;
+  }
+
+  private injectUserFnBridge(src: string): string {
+    // If tests reference __user_fn__ but don't define it locally, add a bridge
+    const referencesUser = /\b__user_fn__\b/.test(src);
+    const definesLocal = /\bconst\s+__user_fn__\s*=/.test(src) || /\blet\s+__user_fn__\s*=/.test(src) || /\bvar\s+__user_fn__\s*=/.test(src);
+    if (referencesUser && !definesLocal) {
+      return `const __user_fn__ = (typeof globalThis!=='undefined' && (globalThis as any).__user_fn__) ?? (typeof window!=='undefined' && (window as any).__user_fn__);\n${src}`;
+    }
+    return src;
+  }
+
   // Run tests (JS/TS only). Credits daily on full pass.
   async runTests(): Promise<void> {
     const q = this.question();
-    if (!q) return;
-
-    // Angular challenges don’t run unit tests here
-    if (this.tech === 'angular') return;
+    if (!q || this.tech === 'angular') return;
 
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
-
     const lang = this.jsLang();
     const userSrc = this.editorContent();
-    const testsSrc = this.testCode();
+    const testsSrc = this.testCode(); // ← no pre-patching
 
     const userJs = lang === 'ts' ? await this.transpileTsToJs(userSrc, `${q.id}.ts`) : userSrc;
     const testsJs = lang === 'ts' ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
@@ -731,20 +761,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.consoleEntries.set(out.entries ?? []);
-    this.consoleEntries.set(this.sanitizeLogs(out.entries as ConsoleEntry[]));
     this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
 
     const passing = this.allPassing();
     this.solved.set(passing);
     this.saveSolvedFlag(q, passing);
-
-    if (passing) {
-      // mark daily, record to backend, celebrate
-      this.creditDaily();
-      this.recordCompletion('tests');
-      await this.celebrate('tests');
-    }
+    if (passing) { this.creditDaily(); this.recordCompletion('tests'); await this.celebrate('tests'); }
 
     this.subTab.set('tests');
   }
@@ -758,28 +781,30 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ---------- submit ----------
-  // Submit button behavior for both stacks.
-  // Angular/Debug: mark done immediately. JS Coding: require passing tests.
+  // Submit button: now runs tests for BOTH coding and debug.
+  // Coding: credit only if tests pass (handled inside runTests).
+  // Debug: always runs tests; if they don't all pass, we still credit on submit.
   async submitCode(): Promise<void> {
     const q = this.question();
     if (!q) return;
 
+    // Angular challenges still don’t run unit tests here
     if (this.tech === 'angular') {
-      // Angular challenges are marked complete on submit
       this.creditDaily();
       this.recordCompletion('submit');
       await this.celebrate('submit');
       return;
     }
 
-    if (this.kind === 'debug') {
-      // JS Debug tasks don’t require tests to pass
+    // JS/TS (coding + debug): always run tests on submit
+    await this.runTests();
+
+    // For debug, we don’t require a pass to submit.
+    // Avoid double-credit: only credit here if tests did NOT already pass (runTests credits on pass).
+    if (this.kind === 'debug' && !this.allPassing()) {
       this.creditDaily();
       this.recordCompletion('submit');
       await this.celebrate('submit');
-    } else {
-      // JS Coding requires all tests to pass — runTests will credit & confetti on pass
-      await this.runTests();
     }
   }
 
@@ -948,14 +973,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePanel.set(0);
   }
 
-  // Credit today's daily item (uses V0 fallback-by-kind in DailyService)
   private creditDaily(): void {
     const q = this.question();
     if (!q) return;
     this.daily.markCompletedById(this.kind as any, q.id);
   }
 
-  // --- Confetti helpers (no global imports; uses dynamic import) ---
   private async fireConfetti(): Promise<void> {
     const mod: any = await import('canvas-confetti');
     const confetti = (mod.default || mod) as (opts: any) => void;
@@ -966,28 +989,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const fire = (ratio: number, opts: any = {}) =>
       confetti({ particleCount: Math.floor(count * ratio), ...defaults, ...opts });
 
-    // two-side burst + a couple of center pops
     fire(0.30, { startVelocity: 45, origin: { x: 0.15, y: 0.2 } });
     fire(0.30, { startVelocity: 45, origin: { x: 0.85, y: 0.2 } });
     fire(0.20, { spread: 100, decay: 0.92, scalar: 0.9, origin: { y: 0.35 } });
     fire(0.20, { spread: 120, startVelocity: 55, origin: { y: 0.35 } });
   }
 
-  private async celebrate(reason: 'tests' | 'submit'): Promise<void> {
-    // (you can conditionally vary the burst by `reason` later)
-    try { await this.fireConfetti(); } catch { /* ignore if user blocks animations */ }
+  private async celebrate(_reason: 'tests' | 'submit'): Promise<void> {
+    try { await this.fireConfetti(); } catch { }
   }
 
   private xpFor(q: Question): number {
-    return Number((q as any).xp ?? 20); // default 20 if not present
+    return Number((q as any).xp ?? 20);
   }
-  // In CodingDetailComponent (TypeScript)
-  private recordCompletion(reason: 'tests' | 'submit') {
+  private recordCompletion(_reason: 'tests' | 'submit') {
     const q = this.question();
     if (!q) return;
-
-    // Keep local session guard to avoid hammering the API,
-    // but *do not* block running tests or clicking buttons.
     if (this.recorded) return;
 
     const minutes = Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000));
@@ -1001,19 +1018,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }).subscribe({
       next: (res: any) => {
         this.recorded = true;
-
-        const credited = !!res?.credited; // ⬅ respect server decision
-
-        // Notify the rest of the app either way (header/daily will reflect real totals)
         this.activity.activityCompleted$.next({
           kind: this.kind,
           tech: this.tech,
           stats: res?.stats
         });
         this.activity.refreshSummary();
-
-        // Optional: only celebrate on first credit
-        // if (!credited) { this.toast?.info?.(`XP already credited today for ${this.kind}.`); }
       },
       error: (e) => console.error('record completion failed', e),
     });
@@ -1021,7 +1031,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private sanitizeLogs(list: ConsoleEntry[] | undefined): ConsoleEntry[] {
     if (!Array.isArray(list) || list.length === 0) return [];
-    // keep last N only
     return list.slice(-this.MAX_CONSOLE_LINES);
   }
 }

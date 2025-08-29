@@ -3,10 +3,10 @@
 /* Full-viewport work area that never hides under header/footer */
 .fixed-under-header {
   position: fixed;
-  top: var(--app-safe-top, 64px); /* header + optional context bar */
+  top: var(--app-safe-top, 64px);
   right: 0;
   left: 0;
-  bottom: 56px; /* footer height (h-14) */
+  bottom: 56px; /* footer */
   overflow: hidden;
 }
 

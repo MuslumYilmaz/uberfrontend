@@ -1,4 +1,3 @@
-<!-- Fixed full-viewport work area -->
 <div class="coding-detail fixed-under-header flex gap-[5px]">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
@@ -154,8 +153,8 @@
 
           <div class="ml-auto flex items-center gap-2">
             <span class="text-xs opacity-70">Language</span>
-            <select #langSel class="bg-neutral-800 border border-white/10 rounded px-2 py-1 text-sm" [value]="jsLang()"
-              (change)="setLanguage($any(langSel).value)" aria-label="Editor language">
+            <select #langSel class="bg-neutral-800 border border-white/10 rounded px-2 py-1 text-sm" [value]="jsLang()
+              " (change)="setLanguage($any(langSel).value)" aria-label="Editor language">
               <option value="js">JavaScript</option>
               <option value="ts">TypeScript</option>
             </select>
@@ -233,7 +232,6 @@
                 <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()" [max]="500"
                   [autoScroll]="true">
                 </app-console-logger>
-
               </div>
             </div>
           </div>
@@ -246,7 +244,6 @@
 <!-- Footer -->
 <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
   [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
-  [breadcrumbLabel]="courseCrumbLabel" [coursePrevLabel]="coursePrevLabel" [courseNextLabel]="courseNextLabel"
   [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
   [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
   [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()" (next)="next()"
