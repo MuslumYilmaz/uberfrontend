@@ -230,8 +230,10 @@
 
               <!-- Console -->
               <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
-                <app-console-logger class="flex-1" [entries]="consoleEntries()"
-                  [results]="testResults()"></app-console-logger>
+                <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()" [max]="500"
+                  [autoScroll]="true">
+                </app-console-logger>
+
               </div>
             </div>
           </div>

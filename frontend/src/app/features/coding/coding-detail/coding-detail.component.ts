@@ -149,6 +149,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private sessionStart = Date.now();
   private recorded = false;
 
+  private readonly MAX_CONSOLE_LINES = 500;
 
   // Preview modal
   previewVisible = false;
@@ -712,6 +713,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
+
     const lang = this.jsLang();
     const userSrc = this.editorContent();
     const testsSrc = this.testCode();
@@ -729,6 +731,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.consoleEntries.set(out.entries ?? []);
+    this.consoleEntries.set(this.sanitizeLogs(out.entries as ConsoleEntry[]));
     this.testResults.set(out.results ?? []);
     this.hasRunTests = true;
 
@@ -1014,5 +1017,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (e) => console.error('record completion failed', e),
     });
+  }
+
+  private sanitizeLogs(list: ConsoleEntry[] | undefined): ConsoleEntry[] {
+    if (!Array.isArray(list) || list.length === 0) return [];
+    // keep last N only
+    return list.slice(-this.MAX_CONSOLE_LINES);
   }
 }
