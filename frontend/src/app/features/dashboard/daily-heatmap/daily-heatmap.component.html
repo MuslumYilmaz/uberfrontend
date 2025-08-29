@@ -1,23 +1,36 @@
-<div class="hm-card">
-    <div class="hm-head">Your last {{ daysCount }} days</div>
+<div class="hm-card" [attr.data-palette]="palette" [style.--cell.px]="cell" [style.--gap.px]="gap">
 
-    <!-- bind CSS vars for size/gap -->
-    <div class="hm-grid" [style.--cell.px]="cell" [style.--gap.px]="gap">
-        <ng-container *ngFor="let row of grid(); let r = index">
-            <div class="hm-col">
-                <div *ngFor="let val of row; let c = index" class="hm-cell" [class.l1]="val===1" [class.l2]="val===2"
-                    [class.l3]="val===3">
+    <div class="hm-head">
+        <div class="hm-title">Your last {{ daysCount }} days</div>
+        <div class="hm-streak" *ngIf="streak() >= 2">🔥 {{ streak() }}-day streak</div>
+    </div>
+
+    <!-- Centered board -->
+    <div class="hm-board">
+        <!-- Month labels above the correct columns -->
+        <div class="hm-months" *ngIf="showMonthLabel">
+            <span *ngFor="let m of monthLabelsByCol()">{{ m }}</span>
+        </div>
+
+        <!-- Weekday headers -->
+        <div class="hm-weekdays" *ngIf="showWeekdayHeaders">
+            <span *ngFor="let d of weekdayHeaders()">{{ d }}</span>
+        </div>
+
+        <!-- Grid: rows=weeks, cols=weekdays -->
+        <div class="hm-grid">
+            <div class="hm-row" *ngFor="let week of grid(); let r = index">
+                <div *ngFor="let val of week; let c = index" class="hm-cell" [class.void]="val < 0"
+                    [class.l1]="val === 1" [class.l2]="val === 2" [class.l3]="val === 3" [class.today]="isToday(r, c)"
+                    [attr.title]="tooltip(r, c, val)">
                 </div>
             </div>
-        </ng-container>
+        </div>
     </div>
 
     <div class="hm-legend">
         <span>Less</span>
-        <div class="hm-dot"></div>
-        <div class="hm-dot l1"></div>
-        <div class="hm-dot l2"></div>
-        <div class="hm-dot l3"></div>
+        <div class="hm-scale"></div>
         <span>More</span>
     </div>
 </div>

@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -8,26 +16,38 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './daily-heatmap.component.html',
-  styleUrls: ['./daily-heatmap.component.css']
+  styleUrls: ['./daily-heatmap.component.css'],
 })
 export class DailyHeatmapComponent implements OnDestroy {
+  /** Number of calendar days to render (oldest → newest) */
   @Input() daysCount = 35;
+
+  /** Cell size & gaps (px) */
   @Input() cell = 14;
   @Input() gap = 6;
+
+  /** Visual options */
+  @Input() palette: 'teal' | 'emerald' | 'violet' = 'teal';
+  @Input() showWeekdayHeaders = true;
+  @Input() showMonthLabel = true;
+
+  /** Locale for labels (falls back to browser locale) */
+  @Input() locale?: string;
 
   private activity = inject(ActivityService);
   private auth = inject(AuthService);
 
-  /** Intensities per day, oldest → newest. Values 0..3 */
+  /** Intensities per day, 0..3, oldest → newest */
   days = signal<number[]>(Array.from({ length: this.daysCount }, () => 0));
 
-  /** Track last local calendar day we hydrated for visibility-resume checks */
+  /** Track last local calendar day for visibility/resume checks */
   private lastLocalDayKey = this.dayKeyLocal();
-  private midnightTimer: any = null;
-  private activitySub: any = null;
+
+  private midnightTimer: ReturnType<typeof setTimeout> | ReturnType<typeof setInterval> | null = null;
+  private activitySub: { unsubscribe?: () => void } | null = null;
+
   private visHandler = () => this.onVisibility();
 
-  // run effect in injection context (constructor), not ngOnInit
   constructor() {
     effect(() => {
       if (this.auth.isLoggedIn()) {
@@ -50,15 +70,12 @@ export class DailyHeatmapComponent implements OnDestroy {
     document.removeEventListener('visibilitychange', this.visHandler);
   }
 
-  // ---------- data loading ----------
+  // ---------- Data loading ----------
   private load() {
     this.activity.heatmap({ days: this.daysCount }).subscribe({
       next: (payload: any) => {
-        // Accept both shapes: array OR { days, data }
         const raw = Array.isArray(payload) ? payload : (payload?.data ?? payload);
         const normalized = this.normalize(raw, this.daysCount);
-        // If our local day has advanced but the server is still on previous UTC day,
-        // append a zero bucket so the grid starts “empty” for today at local 00:00.
         const coerced = this.coerceLocalToday(normalized);
         this.days.set(coerced);
         this.lastLocalDayKey = this.dayKeyLocal();
@@ -102,8 +119,6 @@ export class DailyHeatmapComponent implements OnDestroy {
   private coerceLocalToday(intensities: number[]): number[] {
     const localKey = this.dayKeyLocal();
     const utcKey = this.dayKeyUTC();
-
-    // Only needed when local is AHEAD of UTC (e.g., TR/Asia) at their 00:xx.
     if (localKey !== utcKey) {
       const withZero = [...intensities, 0];
       return withZero.slice(-this.daysCount);
@@ -111,7 +126,7 @@ export class DailyHeatmapComponent implements OnDestroy {
     return intensities;
   }
 
-  // ---------- helpers ----------
+  // ---------- Helpers ----------
   private bucketize(values: number[], buckets: number): number[] {
     if (!values.length) return [];
     const max = Math.max(...values);
@@ -134,15 +149,12 @@ export class DailyHeatmapComponent implements OnDestroy {
 
   private dayKeyLocal(d = new Date()): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    // local calendar day
   }
   private dayKeyUTC(d = new Date()): string {
     return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-    // UTC calendar day
   }
 
-  // ---------- refresh triggers ----------
-  /** Reload at local midnight (00:00 local time), then every 24h */
+  // ---------- Refresh triggers ----------
   private installLocalMidnightTimer() {
     this.clearLocalMidnightTimer();
     const now = new Date();
@@ -151,20 +163,18 @@ export class DailyHeatmapComponent implements OnDestroy {
     );
     const delay = Math.max(100, nextMidnight.getTime() - now.getTime());
     this.midnightTimer = setTimeout(() => {
-      this.load(); // show fresh column immediately
-      // continue daily
+      this.load();
       this.midnightTimer = setInterval(() => this.load(), 24 * 60 * 60 * 1000);
     }, delay);
   }
   private clearLocalMidnightTimer() {
     if (this.midnightTimer) {
-      clearTimeout(this.midnightTimer);
-      clearInterval(this.midnightTimer);
+      clearTimeout(this.midnightTimer as number);
+      clearInterval(this.midnightTimer as number);
       this.midnightTimer = null;
     }
   }
 
-  /** Reload when user completes something (keeps heatmap in sync during the day) */
   private bindActivityStream() {
     if (this.activitySub) return;
     this.activitySub = this.activity.activityCompleted$?.subscribe?.(() => this.load());
@@ -174,7 +184,6 @@ export class DailyHeatmapComponent implements OnDestroy {
     this.activitySub = null;
   }
 
-  /** If user switches back to the tab and the local calendar day changed, reload. */
   private onVisibility() {
     if (document.visibilityState !== 'visible') return;
     const nowKey = this.dayKeyLocal();
@@ -183,16 +192,103 @@ export class DailyHeatmapComponent implements OnDestroy {
     }
   }
 
-  // ---------- grid layout (unchanged) ----------
-  // 7 rows x N cols, fill column-wise so newest ends bottom-right
+  // ---------- Week/Day layout (columns=Mon..Sun, rows=weeks) ----------
+  private dowIndexMon0(d: Date): number { return (d.getDay() + 6) % 7; } // Mon=0..Sun=6
+
+  layout = computed(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+
+    const first = new Date(today);
+    first.setDate(today.getDate() - (this.daysCount - 1));
+    first.setHours(0, 0, 0, 0);
+
+    const startCol = this.dowIndexMon0(first);       // column for 'first'
+    const totalSlots = startCol + this.daysCount;    // padding + real cells
+    const weeks = Math.ceil(totalSlots / 7);
+
+    const todaySlot = totalSlots - 1;
+    const todayRow = Math.floor(todaySlot / 7);
+    const todayCol = todaySlot % 7;
+
+    return { first, startCol, weeks, todayRow, todayCol, today };
+  });
+
+  /** Grid of weeks×7; value = -1 for void padding, else 0..3 */
   grid = computed(() => {
-    const arr = this.days();
-    const rows = 7, cols = Math.ceil(this.daysCount / rows);
-    const out: number[][] = Array.from({ length: rows }, () => Array(cols).fill(0));
-    let idx = 0;
-    for (let c = 0; c < cols; c++) {
-      for (let r = 0; r < rows; r++) out[r][c] = arr[idx++] ?? 0;
+    const values = this.days();
+    const { startCol, weeks } = this.layout();
+    const out: number[][] = Array.from({ length: weeks }, () => Array(7).fill(-1));
+    for (let i = 0; i < values.length; i++) {
+      const slot = startCol + i;
+      const row = Math.floor(slot / 7);
+      const col = slot % 7;
+      out[row][col] = values[i] ?? 0;
     }
     return out;
+  });
+
+  /** Weekday headers Mon..Sun in the requested locale (auto narrows if cells are small) */
+  weekdayHeaders = computed(() => {
+    const loc = this.locale ?? undefined;
+    const style: 'short' | 'narrow' = this.cell <= 16 ? 'narrow' : 'short';
+    const base = new Date();
+    const monday = new Date(base);
+    const day = (base.getDay() + 6) % 7;
+    monday.setDate(base.getDate() - day);
+    const fmt = new Intl.DateTimeFormat(loc, { weekday: style });
+    return Array.from({ length: 7 }, (_, i) =>
+      fmt.format(new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i))
+    );
+  });
+
+  /** Month labels above the column containing the 1st day of any month */
+  monthLabelsByCol = computed(() => {
+    if (!this.showMonthLabel) return Array(7).fill('');
+    const { weeks } = this.layout();
+    const loc = this.locale ?? undefined;
+    const labels = Array(7).fill('');
+    for (let c = 0; c < 7; c++) {
+      for (let r = 0; r < weeks; r++) {
+        const d = this.dateForCell(r, c);
+        if (d.getDate() === 1) {
+          labels[c] = d.toLocaleString(loc, { month: 'short' });
+          break;
+        }
+      }
+    }
+    return labels;
+  });
+
+  private dateForCell(row: number, col: number): Date {
+    const { first, startCol } = this.layout();
+    const slot = row * 7 + col;
+    const delta = slot - startCol;
+    const d = new Date(first);
+    d.setDate(first.getDate() + delta);
+    return d;
+  }
+
+  isToday(row: number, col: number): boolean {
+    const { todayRow, todayCol } = this.layout();
+    return row === todayRow && col === todayCol;
+  }
+
+  tooltip(row: number, col: number, val: number): string | null {
+    if (val < 0) return null;
+    const loc = this.locale ?? undefined;
+    const d = this.dateForCell(row, col);
+    const ds = d.toLocaleDateString(loc, {
+      weekday: 'short', month: 'short', day: 'numeric'
+    });
+    const labels = ['No activity', 'Light', 'Good', 'Great'];
+    return `${ds} · ${labels[Math.max(0, Math.min(3, val))]}`;
+  }
+
+  /** Consecutive non-zero days from newest backwards */
+  streak = computed(() => {
+    const a = this.days();
+    let s = 0;
+    for (let i = a.length - 1; i >= 0; i--) { if (a[i] > 0) s++; else break; }
+    return s;
   });
 }
