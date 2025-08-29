@@ -51,7 +51,7 @@ export class DailyHeatmapComponent implements OnDestroy {
   constructor() {
     effect(() => {
       if (this.auth.isLoggedIn()) {
-        this.load();
+        this.load(false);
         this.installLocalMidnightTimer();
         this.bindActivityStream();
         document.addEventListener('visibilitychange', this.visHandler);
@@ -70,9 +70,9 @@ export class DailyHeatmapComponent implements OnDestroy {
     document.removeEventListener('visibilitychange', this.visHandler);
   }
 
-  // ---------- Data loading ----------
-  private load() {
-    this.activity.heatmap({ days: this.daysCount }).subscribe({
+  // ---------- Data loading (cached via ActivityService) ----------
+  private load(force: boolean) {
+    this.activity.getHeatmap({ days: this.daysCount }, { force }).subscribe({
       next: (payload: any) => {
         const raw = Array.isArray(payload) ? payload : (payload?.data ?? payload);
         const normalized = this.normalize(raw, this.daysCount);
@@ -86,15 +86,13 @@ export class DailyHeatmapComponent implements OnDestroy {
 
   /** Accepts number[] (0..3) OR rows [{ dayUTC/day, score|count|completed|xp }...] */
   private normalize(input: any, size: number): number[] {
-    if (input && Array.isArray(input.data)) input = input.data; // handle {data: [...]}
+    if (input && Array.isArray(input.data)) input = input.data;
 
-    // Already intensity list
     if (Array.isArray(input) && (input.length === 0 || typeof input[0] === 'number')) {
       const ints = (input as number[]).map(n => this.clampInt(n));
       return this.fitToSize(ints, size);
     }
 
-    // Rows → intensities
     if (Array.isArray(input)) {
       const rows = [...input].sort((a, b) => {
         const da = a.dayUTC ?? a.day ?? '';
@@ -114,8 +112,6 @@ export class DailyHeatmapComponent implements OnDestroy {
     return Array.from({ length: size }, () => 0);
   }
 
-  // When local date has rolled over but server (UTC) hasn't yet,
-  // show an extra 0-intensity “today” at the end so the grid looks fresh.
   private coerceLocalToday(intensities: number[]): number[] {
     const localKey = this.dayKeyLocal();
     const utcKey = this.dayKeyUTC();
@@ -158,13 +154,11 @@ export class DailyHeatmapComponent implements OnDestroy {
   private installLocalMidnightTimer() {
     this.clearLocalMidnightTimer();
     const now = new Date();
-    const nextMidnight = new Date(
-      now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0
-    );
+    const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
     const delay = Math.max(100, nextMidnight.getTime() - now.getTime());
     this.midnightTimer = setTimeout(() => {
-      this.load();
-      this.midnightTimer = setInterval(() => this.load(), 24 * 60 * 60 * 1000);
+      this.load(true); // force just after midnight
+      this.midnightTimer = setInterval(() => this.load(true), 24 * 60 * 60 * 1000);
     }, delay);
   }
   private clearLocalMidnightTimer() {
@@ -177,7 +171,7 @@ export class DailyHeatmapComponent implements OnDestroy {
 
   private bindActivityStream() {
     if (this.activitySub) return;
-    this.activitySub = this.activity.activityCompleted$?.subscribe?.(() => this.load());
+    this.activitySub = this.activity.activityCompleted$?.subscribe?.(() => this.load(true));
   }
   private unbindActivityStream() {
     try { this.activitySub?.unsubscribe?.(); } catch { }
@@ -187,23 +181,20 @@ export class DailyHeatmapComponent implements OnDestroy {
   private onVisibility() {
     if (document.visibilityState !== 'visible') return;
     const nowKey = this.dayKeyLocal();
-    if (nowKey !== this.lastLocalDayKey) {
-      this.load();
-    }
+    if (nowKey !== this.lastLocalDayKey) this.load(true);
   }
 
-  // ---------- Week/Day layout (columns=Mon..Sun, rows=weeks) ----------
+  // ---------- Week/Day layout ----------
   private dowIndexMon0(d: Date): number { return (d.getDay() + 6) % 7; } // Mon=0..Sun=6
 
   layout = computed(() => {
     const today = new Date(); today.setHours(0, 0, 0, 0);
-
     const first = new Date(today);
     first.setDate(today.getDate() - (this.daysCount - 1));
     first.setHours(0, 0, 0, 0);
 
-    const startCol = this.dowIndexMon0(first);       // column for 'first'
-    const totalSlots = startCol + this.daysCount;    // padding + real cells
+    const startCol = this.dowIndexMon0(first);
+    const totalSlots = startCol + this.daysCount;
     const weeks = Math.ceil(totalSlots / 7);
 
     const todaySlot = totalSlots - 1;
@@ -213,7 +204,7 @@ export class DailyHeatmapComponent implements OnDestroy {
     return { first, startCol, weeks, todayRow, todayCol, today };
   });
 
-  /** Grid of weeks×7; value = -1 for void padding, else 0..3 */
+  /** Grid of weeks×7; value = -1 for padding, else 0..3 */
   grid = computed(() => {
     const values = this.days();
     const { startCol, weeks } = this.layout();
@@ -227,7 +218,6 @@ export class DailyHeatmapComponent implements OnDestroy {
     return out;
   });
 
-  /** Weekday headers Mon..Sun in the requested locale (auto narrows if cells are small) */
   weekdayHeaders = computed(() => {
     const loc = this.locale ?? undefined;
     const style: 'short' | 'narrow' = this.cell <= 16 ? 'narrow' : 'short';
@@ -241,7 +231,6 @@ export class DailyHeatmapComponent implements OnDestroy {
     );
   });
 
-  /** Month labels above the column containing the 1st day of any month */
   monthLabelsByCol = computed(() => {
     if (!this.showMonthLabel) return Array(7).fill('');
     const { weeks } = this.layout();
@@ -277,14 +266,11 @@ export class DailyHeatmapComponent implements OnDestroy {
     if (val < 0) return null;
     const loc = this.locale ?? undefined;
     const d = this.dateForCell(row, col);
-    const ds = d.toLocaleDateString(loc, {
-      weekday: 'short', month: 'short', day: 'numeric'
-    });
+    const ds = d.toLocaleDateString(loc, { weekday: 'short', month: 'short', day: 'numeric' });
     const labels = ['No activity', 'Light', 'Good', 'Great'];
     return `${ds} · ${labels[Math.max(0, Math.min(3, val))]}`;
   }
 
-  /** Consecutive non-zero days from newest backwards */
   streak = computed(() => {
     const a = this.days();
     let s = 0;

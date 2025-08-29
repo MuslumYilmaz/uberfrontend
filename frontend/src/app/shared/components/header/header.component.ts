@@ -187,6 +187,7 @@ const EMPTY_SUMMARY: ActivitySummary = {
 export class HeaderComponent implements OnInit {
   private doc = inject(DOCUMENT);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   // Router state
   mode = signal<Mode>('dashboard');
@@ -208,18 +209,15 @@ export class HeaderComponent implements OnInit {
   private activitySvc = inject(ActivityService);
   private dailySvc = inject(DailyService);
   public auth = inject(AuthService);
-  private router = inject(Router);
 
-  // Server summary (streak/xp/level)
+  // Server summary (mirror ActivityService.summarySig)
   private summary = signal<ActivitySummary>(EMPTY_SUMMARY);
-
-  // Read-only derivations (server)
   streakNum = computed(() => this.summary().streak.current);
   level = computed(() => this.summary().level);
   levelProgressPct = computed(() => Math.round((this.summary().levelProgress?.pct ?? 0) * 100));
   freezeTokens = computed(() => this.summary().freezeTokens);
 
-  // ------- CLIENT OVERRIDES (Today/Weekly) -------
+  // Client overrides (recomputed via recent())
   uiTodayDone = signal(0);
   uiTodayTotal = signal(3);
   uiWeeklyDone = signal(0);
@@ -234,7 +232,7 @@ export class HeaderComponent implements OnInit {
     return t > 0 ? Math.round((d / t) * 100) : 0;
   });
 
-  // Daily list (used in the stats menu list)
+  // Daily list (signal owned by DailyService)
   daily = this.dailySvc.daily;
 
   constructor() {
@@ -248,7 +246,7 @@ export class HeaderComponent implements OnInit {
         this.closeAll();
         this.updateSafeTop();
         this.pickDefaultGroup();
-        this.refreshAll();
+        this.refreshAll(false);
       });
 
     // Logout -> wipe server fields immediately
@@ -259,40 +257,45 @@ export class HeaderComponent implements OnInit {
       const items = this.daily()?.items ?? [];
       this.uiTodayTotal.set(items.length || 3);
     });
+
+    // Mirror the service's summarySig reactively
+    effect(() => {
+      const s = this.activitySvc.summarySig();
+      if (s) this.summary.set(s);
+    });
   }
 
   ngOnInit(): void {
-    this.refreshAll();
+    this.refreshAll(false);
     this.scheduleMidnightRefresh();
 
-    // When something is completed anywhere in the app, re-pull everything
+    // When a completion is recorded, force-refresh both views
     this.activitySvc.activityCompleted$.subscribe(() => {
-      this.refreshAll();
+      this.refreshAll(true);
     });
   }
 
   // ---------- Data refresh ----------
-  private refreshAll() {
-    this.pullSummary();         // server (streak/xp/level)
-    this.refreshClientProgress(); // client override (today/weekly)
+  private refreshAll(force: boolean) {
     this.dailySvc.ensureTodaySet(this.resolveTech());
+    this.pullSummary(force);
+    this.refreshClientProgress(force);
   }
 
-  private pullSummary() {
-    this.activitySvc.refreshSummary?.();
-    this.activitySvc.summary().pipe(take(1)).subscribe({
+  private pullSummary(force: boolean) {
+    this.activitySvc.getSummary({ force }).pipe(take(1)).subscribe({
       next: (s) => this.summary.set(s ?? EMPTY_SUMMARY),
       error: () => this.summary.set(EMPTY_SUMMARY),
     });
   }
 
-  /** Recompute Today + Weekly from recent rows using **local time**. */
-  private refreshClientProgress() {
+  /** Recompute Today + Weekly from recent rows using local time. */
+  private refreshClientProgress(force: boolean) {
     if (!this.auth.isLoggedIn()) { this.uiTodayDone.set(0); this.uiWeeklyDone.set(0); return; }
 
     const since = this.startOfWeekLocalISO();
 
-    this.activitySvc.recent({ since }).pipe(take(1)).subscribe({
+    this.activitySvc.getRecent({ since }, { force }).pipe(take(1)).subscribe({
       next: (rows: any[] = []) => {
         const todayStr = this.localDateStr(new Date());
         const kindsToday = new Set<string>();
@@ -315,14 +318,12 @@ export class HeaderComponent implements OnInit {
 
   // ---------- Local-time helpers ----------
   private resolveTech(): 'javascript' | 'angular' {
-    // Only nullish coalescing – fixes the ?? / || TS complaint
     return this.currentTech() ?? (defaultPrefs().defaultTech as 'javascript' | 'angular' | undefined) ?? 'javascript';
   }
 
   private startOfWeekLocalISO(): string {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
-    // ISO week start = Monday; change to 0 if you want Sunday
     const dow = (d.getDay() + 6) % 7; // Mon=0..Sun=6
     d.setDate(d.getDate() - dow);
     return this.localDateStr(d);
@@ -337,7 +338,6 @@ export class HeaderComponent implements OnInit {
 
   private isInCurrentLocalWeek(isoDay: string): boolean {
     const start = this.startOfWeekLocalISO();
-    // end = start + 6 days
     const sd = new Date(start + 'T00:00:00');
     const ed = new Date(sd);
     ed.setDate(sd.getDate() + 6);
@@ -351,7 +351,7 @@ export class HeaderComponent implements OnInit {
       const next = new Date(now);
       next.setHours(24, 0, 5, 0); // ~00:00:05 next day
       const ms = Math.max(1000, next.getTime() - now.getTime());
-      const id = setTimeout(() => { this.refreshAll(); tick(); }, ms);
+      const id = setTimeout(() => { this.refreshAll(true); tick(); }, ms);
       this.destroyRef.onDestroy(() => clearTimeout(id));
     };
     tick();
@@ -377,7 +377,7 @@ export class HeaderComponent implements OnInit {
     if (segs[0] === 'profile') { this.mode.set('profile'); return; }
 
     const tech = segs[0] as 'javascript' | 'angular';
-    if (tech === 'javascript' || tech === 'angular') this.currentTech.set(tech);
+    if (tech === 'javascript' || 'angular') this.currentTech.set(tech);
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
     const sec = segs[1] as 'coding' | 'trivia' | 'debug';
@@ -399,7 +399,6 @@ export class HeaderComponent implements OnInit {
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
 
-  // route intents
   intentToLink(it: PrepareItem): any[] | null {
     if (it.intent !== 'route' || !it.target) return null;
     const t = it.target;
@@ -439,5 +438,5 @@ export class HeaderComponent implements OnInit {
   toggleProfileMenu() { this.profileOpen.update(v => !v); }
   toggleStatsMenu() { this.statsOpen.update(v => !v); }
   closeAll() { this.megaOpen.set(false); this.profileOpen.set(false); this.statsOpen.set(false); }
-  logout() { this.auth.logout(); this.closeAll(); this.summary.set(EMPTY_SUMMARY); this.router.navigate(['/']); }
+  logout() { this.auth.logout(); this.closeAll(); this.summary.set(EMPTY_SUMMARY); this.activitySvc.invalidateAll(); this.router.navigate(['/']); }
 }
