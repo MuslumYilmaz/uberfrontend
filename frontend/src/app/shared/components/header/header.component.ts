@@ -7,7 +7,7 @@ import { defaultPrefs } from '../../../core/models/user.model';
 import { ActivityService, ActivitySummary } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
-import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../shared/prepare/prepare.registry';
+import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
 
 type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course' | 'profile';
 

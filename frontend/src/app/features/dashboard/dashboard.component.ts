@@ -42,8 +42,7 @@ export class DashboardComponent {
       title: 'Front End Interview Playbook',
       subtitle: 'A starter guide to preparing for front end interviews',
       icon: 'book',
-      disabled: true,
-      badge: 'Coming soon',
+      route: ['/guides'],
     },
     {
       title: 'GFE 75',

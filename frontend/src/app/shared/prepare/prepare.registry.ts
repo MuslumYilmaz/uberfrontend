@@ -42,9 +42,8 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 title: 'Front End Interview Playbook',
                 subtitle: 'A starter guide to front end interviews',
                 pi: 'pi-book',
-                intent: 'placeholder',
-                disabled: true,
-                badge: 'Coming soon',
+                intent: 'route',
+                target: { name: 'guides' },
             },
             {
                 key: 'gfe75',
