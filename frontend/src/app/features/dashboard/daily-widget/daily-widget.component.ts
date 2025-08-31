@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   OnInit,
   computed,
   inject,
@@ -65,6 +66,8 @@ export class DailyWidgetComponent implements OnInit {
   private actSvc = inject(ActivityService);
   private dailySvc = inject(DailyService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+
 
   auth = this.authSvc; // template access
 
@@ -120,11 +123,11 @@ export class DailyWidgetComponent implements OnInit {
   ngOnInit(): void {
     // ensure daily exists + warm summary cache (deduped/TTL)
     this.dailySvc.ensureTodaySet(this.currentTech());
-    this.actSvc.getSummary().pipe(take(1), takeUntilDestroyed()).subscribe();
+    this.actSvc.getSummary().pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe();
 
     // route-driven current tech + pull today rows (cached/TTL)
     this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd), startWith(null), takeUntilDestroyed())
+      .pipe(filter(e => e instanceof NavigationEnd), startWith(null), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         const seg = this.router.url.split('?')[0].split('#')[0].split('/').filter(Boolean)[0] as any;
         if (seg === 'javascript' || seg === 'angular') this.currentTech.set(seg);
@@ -134,7 +137,7 @@ export class DailyWidgetComponent implements OnInit {
 
     // on completions: mark locally + force-refresh caches once
     this.actSvc.activityCompleted$
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((evt) => {
         const k = evt?.kind as Kind | undefined;
         if (k === 'coding' || k === 'trivia' || k === 'debug') {
@@ -143,7 +146,7 @@ export class DailyWidgetComponent implements OnInit {
           this.justCompletedKinds.set(next);
         }
         this.dailySvc.ensureTodaySet(this.currentTech());
-        this.actSvc.getSummary({ force: true }).pipe(take(1), takeUntilDestroyed()).subscribe();
+        this.actSvc.getSummary({ force: true }).pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe();
         this.pullTodayFromServer(true);
       });
   }
@@ -155,7 +158,7 @@ export class DailyWidgetComponent implements OnInit {
     const now = new Date();
     const since = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
 
-    this.actSvc.getRecent({ since }, { force }).pipe(take(1), takeUntilDestroyed()).subscribe({
+    this.actSvc.getRecent({ since }, { force }).pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (rows) => {
         const set = new Set<Kind>();
         for (const r of rows || []) {

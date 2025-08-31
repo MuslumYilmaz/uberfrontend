@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, DestroyRef, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith, take } from 'rxjs';
@@ -70,13 +70,11 @@ const EMPTY_SUMMARY: ActivitySummary = {
                 <div class="ufh-stat"><div class="big">L{{ level() }}</div><div class="sub">{{ levelProgressPct() }}% to L{{ level()+1 }}</div></div>
               </div>
 
-              <!-- Level progress (server) -->
               <div class="ufh-prog">
                 <div class="ufh-prog-bar"><div class="ufh-prog-fill" [style.width.%]="levelProgressPct()"></div></div>
                 <div class="ufh-prog-text">Level progress</div>
               </div>
 
-              <!-- Weekly goal (client override) -->
               <div class="ufh-prog">
                 <div class="ufh-prog-bar"><div class="ufh-prog-fill" [style.width.%]="uiWeeklyPct()"></div></div>
                 <div class="ufh-prog-text">{{ uiWeeklyDone() }}/{{ uiWeeklyTarget() }} this week
@@ -84,7 +82,6 @@ const EMPTY_SUMMARY: ActivitySummary = {
                 </div>
               </div>
 
-              <!-- Today (client override) -->
               <div class="ufh-prog">
                 <div class="ufh-prog-bar"><div class="ufh-prog-fill" [style.width.%]="uiTodayPct()"></div></div>
                 <div class="ufh-prog-text">{{ uiTodayDone() }}/{{ uiTodayTotal() }} done today</div>
@@ -210,18 +207,25 @@ export class HeaderComponent implements OnInit {
   private dailySvc = inject(DailyService);
   public auth = inject(AuthService);
 
-  // Server summary (mirror ActivityService.summarySig)
-  private summary = signal<ActivitySummary>(EMPTY_SUMMARY);
+  // Summary as a pure computed (no writes inside effects)
+  private summary = computed<ActivitySummary>(() => {
+    if (!this.auth.isLoggedIn()) return EMPTY_SUMMARY;
+    return this.activitySvc.summarySig() ?? EMPTY_SUMMARY;
+  });
+
   streakNum = computed(() => this.summary().streak.current);
   level = computed(() => this.summary().level);
   levelProgressPct = computed(() => Math.round((this.summary().levelProgress?.pct ?? 0) * 100));
   freezeTokens = computed(() => this.summary().freezeTokens);
 
-  // Client overrides (recomputed via recent())
+  // Client progress
   uiTodayDone = signal(0);
-  uiTodayTotal = signal(3);
   uiWeeklyDone = signal(0);
   uiWeeklyTarget = signal(5);
+
+  // Derive today's total from the daily list (no signal writes in effects)
+  daily = this.dailySvc.daily;
+  uiTodayTotal = computed(() => (this.daily()?.items?.length ?? 0) || 3);
 
   uiTodayPct = computed(() => {
     const t = this.uiTodayTotal(); const d = this.uiTodayDone();
@@ -231,9 +235,6 @@ export class HeaderComponent implements OnInit {
     const t = this.uiWeeklyTarget(); const d = this.uiWeeklyDone();
     return t > 0 ? Math.round((d / t) * 100) : 0;
   });
-
-  // Daily list (signal owned by DailyService)
-  daily = this.dailySvc.daily;
 
   constructor() {
     // Ensure daily exists for current tech on boot
@@ -248,26 +249,10 @@ export class HeaderComponent implements OnInit {
         this.pickDefaultGroup();
         this.refreshAll(false);
       });
-
-    // Logout -> wipe server fields immediately
-    effect(() => { if (!this.auth.isLoggedIn()) this.summary.set(EMPTY_SUMMARY); });
-
-    // Keep "today total" synced with daily list length
-    effect(() => {
-      const items = this.daily()?.items ?? [];
-      this.uiTodayTotal.set(items.length || 3);
-    });
-
-    // Mirror the service's summarySig reactively
-    effect(() => {
-      const s = this.activitySvc.summarySig();
-      if (s) this.summary.set(s);
-    });
   }
 
   ngOnInit(): void {
     // Hydrate Daily list/ticks from server summary on boot
-    // Pull server snapshot (streak/level/etc.)
     this.activitySvc.getSummary({ force: true }).pipe(take(1))
       .subscribe(s => this.dailySvc.hydrateFromSummary(s));
 
@@ -293,10 +278,8 @@ export class HeaderComponent implements OnInit {
   }
 
   private pullSummary(force: boolean) {
-    this.activitySvc.getSummary({ force }).pipe(take(1)).subscribe({
-      next: (s) => this.summary.set(s ?? EMPTY_SUMMARY),
-      error: () => this.summary.set(EMPTY_SUMMARY),
-    });
+    // Trigger service refresh; summary computed reads summarySig().
+    this.activitySvc.getSummary({ force }).pipe(take(1)).subscribe();
   }
 
   /** Recompute Today + Weekly from recent rows using local time. */
@@ -387,7 +370,7 @@ export class HeaderComponent implements OnInit {
     if (segs[0] === 'profile') { this.mode.set('profile'); return; }
 
     const tech = segs[0] as 'javascript' | 'angular';
-    if (tech === 'javascript' || 'angular') this.currentTech.set(tech);
+    if (tech === 'javascript' || tech === 'angular') this.currentTech.set(tech);
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
     const sec = segs[1] as 'coding' | 'trivia' | 'debug';
@@ -419,8 +402,8 @@ export class HeaderComponent implements OnInit {
       }
       case 'system': {
         const section = t.params?.['section'] as string | undefined;
-        if (section === 'guide') return ['/guides', 'system-design'];
-        // practice/challenges both land on the SD problems page for now
+        if (section === 'guide') return ['/guides', 'system-design']; // system design playbook
+        // practice/challenges both land on SD problems list for now
         return ['/system-design'];
       }
       case 'companies': {
@@ -476,22 +459,16 @@ export class HeaderComponent implements OnInit {
     this.statsOpen.set(which === 'stats');
   }
 
-  toggleMega() {
-    this.openOnly(this.megaOpen() ? null : 'mega');
-  }
+  toggleMega() { this.openOnly(this.megaOpen() ? null : 'mega'); }
+  toggleProfileMenu() { this.openOnly(this.profileOpen() ? null : 'profile'); }
+  toggleStatsMenu() { this.openOnly(this.statsOpen() ? null : 'stats'); }
 
-  toggleProfileMenu() {
-    this.openOnly(this.profileOpen() ? null : 'profile');
-  }
+  closeAll() { this.openOnly(null); }
 
-  toggleStatsMenu() {
-    this.openOnly(this.statsOpen() ? null : 'stats');
+  logout() {
+    this.auth.logout();
+    this.closeAll();
+    this.activitySvc.invalidateAll();
+    this.router.navigate(['/']);
   }
-
-  // keep this as-is
-  closeAll() {
-    this.openOnly(null);
-  }
-
-  logout() { this.auth.logout(); this.closeAll(); this.summary.set(EMPTY_SUMMARY); this.activitySvc.invalidateAll(); this.router.navigate(['/']); }
 }
