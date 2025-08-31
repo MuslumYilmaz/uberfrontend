@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, Subject, shareReplay, tap } from 'rxjs';
+import { Tech } from '../models/user.model';
 import { AuthService } from './auth.service';
 
 export interface ActivityEvent {
@@ -30,7 +31,7 @@ export interface ActivitySummary {
 export type ActivityCompletedEvent = {
   stats?: any;
   kind?: 'coding' | 'trivia' | 'debug';
-  tech?: 'javascript' | 'angular';
+  tech?: Tech;
   itemId?: string;
 };
 
@@ -149,7 +150,7 @@ export class ActivityService {
   // ---------- mutation ----------
   complete(payload: {
     kind: 'coding' | 'trivia' | 'debug';
-    tech: 'javascript' | 'angular';
+    tech: Tech;
     itemId?: string;
     source?: 'tech' | 'company' | 'course' | 'system';
     durationMin?: number;

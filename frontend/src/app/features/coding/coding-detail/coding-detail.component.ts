@@ -37,7 +37,8 @@ type CourseNavState =
   }
   | null;
 
-type Tech = 'javascript' | 'angular';
+/** NOW supports html/css too */
+type Tech = 'javascript' | 'angular' | 'html' | 'css';
 type Kind = 'coding' | 'debug';
 type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
@@ -67,11 +68,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   editorContent = signal<string>('');
   testCode = signal<string>('');
 
+  // WEB (HTML/CSS)
+  private htmlCode = signal<string>('');
+  private cssCode = signal<string>('');
+  webHtml = () => this.htmlCode();
+  webCss = () => this.cssCode();
+
   // JS/TS language toggle (persisted per question)
   jsLang = signal<JsLang>('js');
 
   // UI state
-  topTab = signal<'code' | 'tests'>('code');
+  /** unified tab signal used by both modes */
+  topTab = signal<'code' | 'tests' | 'html' | 'css' | 'view'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
@@ -86,17 +94,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       ? `0 0 ${this.COLLAPSED_PX}px`
       : `0 0 ${this.horizontalRatio() * 100}%`
   );
-
-  // Convenience labels for course footer (course context only)
-  get courseCrumbLabel(): string | null {
-    return this.courseNav()?.breadcrumb?.label ?? this.returnLabel() ?? null;
-  }
-  get coursePrevLabel(): string | null {
-    return this.courseNav()?.prev?.label ?? null;
-  }
-  get courseNextLabel(): string | null {
-    return this.courseNav()?.next?.label ?? null;
-  }
 
   // Context flags
   isCourseContext = signal(false);
@@ -114,6 +111,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   showRestoreBanner = signal(false);
 
   private jsSaveTimer: any = null;
+  private webSaveTimer: any = null;
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -152,7 +150,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly MAX_CONSOLE_LINES = 500;
 
-  // Preview modal
+  // Preview modal (Angular)
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
 
@@ -178,6 +176,33 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.practice ? (this.practice.index + 1 < this.practice.items.length)
       : (this.currentIndex + 1 < this.allQuestions.length);
   }
+
+  /** live preview HTML for html/css mode */
+  // 1) Put <style> in BODY, add an inline fallback wrapper
+  previewDocRaw = computed(() => {
+    const css = this.cssCode() ?? '';
+    const html = this.htmlCode() ?? '';
+    return `<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root { color-scheme: light dark }
+  html,body{height:100%}
+  body{
+    margin:16px;
+    font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
+    background: Canvas; color: CanvasText;
+  }
+  ${css}
+</style>
+</head><body>${html}</body></html>`;
+  });
+
+  previewDocSafe = computed(() =>
+    this.sanitizer.bypassSecurityTrustHtml(this.previewDocRaw())
+  );
+
 
   // --- course footer/drawer state ---
   courseIdFromState: string | null = null;
@@ -328,10 +353,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const path = this.route.routeConfig?.path || '';
       this.kind = path.startsWith('debug') ? 'debug' : 'coding';
 
-      // NEW: make sure a Daily set exists for the current tech
-      this.daily.ensureTodaySet(this.tech);
+      // NEW: make sure a Daily set exists for the current tech (works even if service ignores html/css)
+      this.daily.ensureTodaySet(this.tech as any);
 
-      this.horizontalRatio.set(this.tech === 'javascript' ? 0.5 : 0.3);
+      // initial layout
+      this.horizontalRatio.set(this.isWebTech() || this.tech === 'javascript' ? 0.5 : 0.3);
 
       const id = pm.get('id')!;
       this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
@@ -399,6 +425,37 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
+  /** ----- WEB (html/css) helpers ----- */
+  private getWebStarters(q: any): { html: string; css: string } {
+    const w = q.web ?? {};
+    let html =
+      w.starterHtml ?? q.starterHtml ?? q.htmlStarter ?? w.html ?? q.html ?? '';
+    let css =
+      w.starterCss ?? q.starterCss ?? q.cssStarter ?? w.css ?? q.css ?? '';
+
+    // Fallback skeletons so editors are never empty
+    if (!html || !html.trim()) {
+      html = `<!-- Start here: ${q.title ?? 'Challenge'} -->
+<div class="container">
+  <h1>${q.title ?? 'Challenge'}</h1>
+  <p>Edit the HTML and CSS tabs, then check the View tab.</p>
+</div>`;
+    }
+    if (!css || !css.trim()) {
+      css = `.container{max-width:640px;margin:2rem auto;padding:1rem;border:1px dashed #555;border-radius:8px}`;
+    }
+    return { html, css };
+  }
+
+  private getWebSolutions(q: any): { html: string; css: string } {
+    const w = q.web ?? {};
+    const html = w.solutionHtml ?? q.solutionHtml ?? q.htmlSolution ?? w.htmlSolution ?? '';
+    const css = w.solutionCss ?? q.solutionCss ?? q.cssSolution ?? w.cssSolution ?? '';
+    return { html: String(html ?? ''), css: String(css ?? '') };
+  }
+  private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
+  private webBaseKey(q: Question, which: 'html' | 'css') { return `uf:web:baseline:${which}:${q.id}`; }
+
   // ---------- solved persistence ----------
   private solvedKey(q: Question) { return `uf:coding:solved:${this.tech}:${q.id}`; }
   private loadSolvedFlag(q: Question) {
@@ -426,42 +483,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let shouldShowBanner = false;
 
-    if (this.tech !== 'angular') {
-      const jsKey = getJsKey(q.id);
-      const baseKey = getJsBaselineKey(q.id);
-
-      const savedPref = (localStorage.getItem(this.langPrefKey(q)) as JsLang | null);
-      const defaultLang = this.getDefaultLang(q);
-      const svcSaved = this.codeStore.getJs(q.id);
-      const langFromSvc = svcSaved?.language as JsLang | undefined;
-      const resolvedLang: JsLang = langFromSvc ?? savedPref ?? defaultLang;
-      this.jsLang.set(resolvedLang);
-
-      const starterForResolved = this.getStarter(q, resolvedLang);
-      if (!localStorage.getItem(baseKey)) {
-        try { localStorage.setItem(baseKey, JSON.stringify({ code: starterForResolved })); } catch { }
-      }
-
-      const savedSvcCode = svcSaved?.code;
-      const savedLegacyRaw = localStorage.getItem(jsKey);
-      const savedLegacy = savedLegacyRaw ? (() => { try { return JSON.parse(savedLegacyRaw); } catch { return null; } })() : null;
-      const restored = savedSvcCode ?? savedLegacy?.code ?? null;
-
-      if (restored != null) {
-        this.editorContent.set(restored);
-        const base = JSON.parse(localStorage.getItem(baseKey) || '{"code":""}');
-        if (restored !== base.code) shouldShowBanner = true;
-      } else {
-        this.editorContent.set(starterForResolved);
-      }
-
-      this.testCode.set(this.getTests(q, resolvedLang));
-
-      if (this.embedCleanup) this.embedCleanup();
-      this.sbVm = null;
-      this.embedLoading.set(false);
-    } else {
+    if (this.tech === 'angular') {
       // ---------- ANGULAR via StackBlitz ----------
+      this.topTab.set('code');
       this.embedLoading.set(true);
 
       const host = this.sbHost?.nativeElement;
@@ -522,7 +546,109 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sbVm = vm;
       this.embedCleanup = cleanup;
       this.embedLoading.set(false);
+
+      // reset UI + set banner
+      this.activePanel.set(0);
+      this.subTab.set('tests');
+      this.hasRunTests = false;
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      this.showRestoreBanner.set(shouldShowBanner);
+      this.sessionStart = Date.now();
+      this.recorded = false;
+      return;
     }
+
+    if (this.isWebTech()) {
+      // --- HTML / CSS mode ---
+      const starters = this.getWebStarters(q);
+      const htmlBaseKey = this.webBaseKey(q, 'html');
+      const cssBaseKey = this.webBaseKey(q, 'css');
+
+      // set baselines if missing
+      if (!localStorage.getItem(htmlBaseKey)) try { localStorage.setItem(htmlBaseKey, starters.html); } catch { }
+      if (!localStorage.getItem(cssBaseKey)) try { localStorage.setItem(cssBaseKey, starters.css); } catch { }
+
+      // normalize old/empty saves like {"code":""}
+      const normalizeSaved = (raw: string | null) => {
+        if (raw == null) return null;
+        const s = raw.trim();
+        if (!s) return null;                     // treat empty string as "no save"
+        if (s.startsWith('{')) {
+          try {
+            const obj = JSON.parse(s);
+            if (obj && typeof obj.code === 'string') return obj.code;
+          } catch { }
+        }
+        return s;
+      };
+
+      const savedHtml = normalizeSaved(localStorage.getItem(this.webKey(q, 'html')));
+      const savedCss = normalizeSaved(localStorage.getItem(this.webKey(q, 'css')));
+
+      // prefer non-empty saves; otherwise use starters
+      const html = savedHtml ?? starters.html;
+      const css = savedCss ?? starters.css;
+
+      this.htmlCode.set(html);
+      this.cssCode.set(css);
+
+      // banner if diverged
+      try {
+        const baseHtml = localStorage.getItem(htmlBaseKey) ?? '';
+        const baseCss = localStorage.getItem(cssBaseKey) ?? '';
+        if ((savedHtml && savedHtml !== baseHtml) || (savedCss && savedCss !== baseCss)) {
+          shouldShowBanner = true;
+        }
+      } catch { }
+
+      this.topTab.set('html');
+      this.activePanel.set(0);
+      this.subTab.set('tests');
+      this.hasRunTests = false;
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      this.showRestoreBanner.set(shouldShowBanner);
+      this.sessionStart = Date.now();
+      this.recorded = false;
+      return;
+
+    }
+
+    // ---------- JS / TS mode ----------
+    const jsKey = getJsKey(q.id);
+    const baseKey = getJsBaselineKey(q.id);
+
+    const savedPref = (localStorage.getItem(this.langPrefKey(q)) as JsLang | null);
+    const defaultLang = this.getDefaultLang(q);
+    const svcSaved = this.codeStore.getJs(q.id);
+    const langFromSvc = svcSaved?.language as JsLang | undefined;
+    const resolvedLang: JsLang = langFromSvc ?? savedPref ?? defaultLang;
+    this.jsLang.set(resolvedLang);
+
+    const starterForResolved = this.getStarter(q, resolvedLang);
+    if (!localStorage.getItem(baseKey)) {
+      try { localStorage.setItem(baseKey, JSON.stringify({ code: starterForResolved })); } catch { }
+    }
+
+    const savedSvcCode = svcSaved?.code;
+    const savedLegacyRaw = localStorage.getItem(jsKey);
+    const savedLegacy = savedLegacyRaw ? (() => { try { return JSON.parse(savedLegacyRaw); } catch { return null; } })() : null;
+    const restored = savedSvcCode ?? savedLegacy?.code ?? null;
+
+    if (restored != null) {
+      this.editorContent.set(restored);
+      const base = JSON.parse(localStorage.getItem(baseKey) || '{"code":""}');
+      if (restored !== base.code) shouldShowBanner = true;
+    } else {
+      this.editorContent.set(starterForResolved);
+    }
+
+    this.testCode.set(this.getTests(q, resolvedLang));
+
+    if (this.embedCleanup) this.embedCleanup();
+    this.sbVm = null;
+    this.embedLoading.set(false);
 
     // reset UI + set banner
     this.activePanel.set(0);
@@ -551,7 +677,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   onJsCodeChange(code: string) {
     this.editorContent.set(code);
     const q = this.question();
-    if (!q || this.tech === 'angular') return;
+    if (!q || this.tech === 'angular' || this.isWebTech()) return;
 
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
@@ -559,15 +685,36 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code })); } catch { }
     }, 300);
   }
+
+  onHtmlChange = (code: string) => {
+    const q = this.question(); if (!q || !this.isWebTech()) return;
+    this.htmlCode.set(code);
+    clearTimeout(this.webSaveTimer);
+    this.webSaveTimer = setTimeout(() => {
+      try { localStorage.setItem(this.webKey(q, 'html'), code); } catch { }
+    }, 200);
+  };
+  onCssChange = (code: string) => {
+    const q = this.question(); if (!q || !this.isWebTech()) return;
+    this.cssCode.set(code);
+    clearTimeout(this.webSaveTimer);
+    this.webSaveTimer = setTimeout(() => {
+      try { localStorage.setItem(this.webKey(q, 'css'), code); } catch { }
+    }, 200);
+  };
+
   private persistJsEffect = effect(() => {
     const q = this.question();
-    if (!q || this.tech === 'angular') return;
-    try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: this.editorContent() })); } catch { }
+    if (!q || this.tech === 'angular' || this.isWebTech()) return; // <— add isWebTech()
+    try {
+      localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: this.editorContent() }));
+    } catch { }
   });
+
 
   // ---------- language toggle ----------
   setLanguage(lang: JsLang) {
-    const q = this.question(); if (!q) return;
+    const q = this.question(); if (!q || this.isWebTech() || this.tech === 'angular') return;
     const prevLang = this.jsLang();
     if (lang === prevLang) return;
 
@@ -698,7 +845,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // ---------- run tests ----------
   async runTests(): Promise<void> {
     const q = this.question();
-    if (!q || this.tech === 'angular') return;
+    if (!q || this.tech === 'angular' || this.isWebTech()) return;
 
     this.subTab.set('console');
     this.hasRunTests = false;
@@ -767,15 +914,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ---------- submit ----------
-  // Submit button: runs tests for BOTH coding and debug.
-  // Coding: credit handled in runTests (only on pass).
-  // Debug: always runs tests; if not all passing we still credit on submit.
   async submitCode(): Promise<void> {
     const q = this.question();
     if (!q) return;
 
-    // Angular challenges are marked complete on submit
-    if (this.tech === 'angular') {
+    // Angular and Web (html/css) are marked complete on submit
+    if (this.tech === 'angular' || this.isWebTech()) {
       this.creditDaily();
       this.recordCompletion('submit');
       await this.celebrate('submit');
@@ -890,12 +1034,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.resetting.set(true);
     try {
-      if (this.tech !== 'angular') {
-        localStorage.removeItem(getJsKey(q.id));
-        const lang = this.jsLang();
-        this.editorContent.set(this.getStarter(q, lang));
-        this.testCode.set(this.getTests(q, lang));
-      } else {
+      if (this.tech === 'angular') {
         const storageKey = getNgStorageKey(q);
         localStorage.removeItem(storageKey);
         this.embedLoading.set(true);
@@ -914,6 +1053,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           requestAnimationFrame(() => this.loadQuestion(q.id));
         }
+      } else if (this.isWebTech()) {
+        const starters = this.getWebStarters(q);
+        localStorage.removeItem(this.webKey(q, 'html'));
+        localStorage.removeItem(this.webKey(q, 'css'));
+        this.htmlCode.set(starters.html);
+        this.cssCode.set(starters.css);
+      } else {
+        localStorage.removeItem(getJsKey(q.id));
+        const lang = this.jsLang();
+        this.editorContent.set(this.getStarter(q, lang));
+        this.testCode.set(this.getTests(q, lang));
       }
 
       this.solved.set(false);
@@ -923,7 +1073,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.testResults.set([]);
       this.consoleEntries.set([]);
       this.subTab.set('tests');
-      this.topTab.set('code');
+      this.topTab.set(this.isWebTech() ? 'html' : 'code');
       this.showRestoreBanner.set(false);
     } finally {
       this.resetting.set(false);
@@ -948,6 +1098,20 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   loadSolutionCode() {
     const q = this.question();
     if (!q) return;
+
+    if (this.isWebTech()) {
+      const sol = this.getWebSolutions(q);
+      const html = sol.html || this.getWebStarters(q).html;
+      const css = sol.css || this.getWebStarters(q).css;
+      this.htmlCode.set(html);
+      this.cssCode.set(css);
+      try { localStorage.setItem(this.webKey(q, 'html'), html); } catch { }
+      try { localStorage.setItem(this.webKey(q, 'css'), css); } catch { }
+      this.activePanel.set(1);
+      this.topTab.set('html');
+      return;
+    }
+
     const lang = this.jsLang();
     const solution = this.getSolution(q, lang);
     const fallback = this.getSolution(q, lang === 'ts' ? 'js' : 'ts');
@@ -1037,4 +1201,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!Array.isArray(list) || list.length === 0) return [];
     return list.slice(-this.MAX_CONSOLE_LINES);
   }
+
+  /** util */
+  isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
 }

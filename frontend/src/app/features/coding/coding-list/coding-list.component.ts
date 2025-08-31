@@ -18,7 +18,7 @@ import { MixedQuestion, QuestionService } from '../../../core/services/question.
 type StructuredDescription = { text: string; examples?: string[] };
 type ListSource = 'tech' | 'company';
 type Kind = 'coding' | 'trivia' | 'debug' | 'all';
-type Tech = 'javascript' | 'angular';
+type Tech = 'javascript' | 'angular' | 'html' | 'css';
 
 type Row = Question & {
   tech?: Tech;              // attached in company mode or derived from route
@@ -201,7 +201,15 @@ export class CodingListComponent {
   }
   private capitalize(s: string | null | undefined) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 
-  techName(q: Row) { return (q.tech ?? 'javascript') === 'angular' ? 'Angular' : 'JavaScript'; }
+  techName(q: Row) {
+    const tech = (q.tech ?? 'javascript') as Tech;
+    switch (tech) {
+      case 'angular': return 'Angular';
+      case 'html': return 'HTML';
+      case 'css': return 'CSS';
+      default: return 'JavaScript';
+    }
+  }
 
   companyLabel(slug?: string | null) {
     if (!slug) return 'Companies';

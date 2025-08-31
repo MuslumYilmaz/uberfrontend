@@ -1,0 +1,35 @@
+[
+    {
+        "id": "html-accordion",
+        "title": "Build an accessible accordion",
+        "description": "Create a collapsible accordion using semantic HTML (<button>, <section>) and proper ARIA so it is keyboard-accessible.",
+        "type": "coding",
+        "technology": "html",
+        "difficulty": "intermediate",
+        "tags": [
+            "html",
+            "aria",
+            "accessibility",
+            "semantics"
+        ],
+        "importance": 4,
+        "starterHtml": "<button class=\"accordion\" aria-expanded=\"false\" aria-controls=\"sect-1\" id=\"acc-1\">Section 1</button>\n<section id=\"sect-1\" hidden>\n  <p>Start here…</p>\n</section>",
+        "starterCss": ".accordion{display:block;padding:.5rem 1rem;border:1px solid #555;border-radius:6px;background:transparent;}\n[hidden]{display:none !important;}"
+    },
+    {
+        "id": "html-form",
+        "title": "Semantic sign-up form",
+        "description": "Mark up a sign-up form with labels, required fields, and a plan selector using <fieldset>/<legend>.",
+        "type": "coding",
+        "technology": "html",
+        "difficulty": "easy",
+        "tags": [
+            "forms",
+            "semantics",
+            "a11y"
+        ],
+        "importance": 3,
+        "starterHtml": "<form novalidate>\n  <label for=\"name\">Name</label>\n  <input id=\"name\" name=\"name\" required>\n\n  <label for=\"email\">Email</label>\n  <input id=\"email\" type=\"email\" name=\"email\" required>\n\n  <fieldset>\n    <legend>Plan</legend>\n    <label><input type=\"radio\" name=\"plan\" value=\"free\" checked> Free</label>\n    <label><input type=\"radio\" name=\"plan\" value=\"pro\"> Pro</label>\n  </fieldset>\n\n  <button type=\"submit\">Sign up</button>\n</form>",
+        "starterCss": "form{display:grid;gap:.75rem;max-width:420px}\nlabel{font-weight:600}\ninput,button{padding:.5rem;border:1px solid #555;border-radius:6px;background:transparent;color:inherit}"
+    }
+]

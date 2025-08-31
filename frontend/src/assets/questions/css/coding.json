@@ -1,0 +1,30 @@
+[
+    {
+        "id": "css-center-card",
+        "title": "Center a card",
+        "description": "Center a 320px card horizontally and vertically in the viewport using modern CSS (no absolute positioning).",
+        "type": "coding",
+        "technology": "css",
+        "difficulty": "easy",
+        "tags": [
+            "layout",
+            "flexbox",
+            "grid"
+        ],
+        "importance": 2
+    },
+    {
+        "id": "css-sticky-header",
+        "title": "Sticky header + scrollable list",
+        "description": "Create a page with a sticky header and a scrollable list that fills the remaining height (no double scrollbars).",
+        "type": "coding",
+        "technology": "css",
+        "difficulty": "intermediate",
+        "tags": [
+            "positioning",
+            "layout",
+            "sticky"
+        ],
+        "importance": 4
+    }
+]

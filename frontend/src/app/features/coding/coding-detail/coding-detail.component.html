@@ -108,7 +108,7 @@
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
-    <!-- JS banner -->
+    <!-- Restore banner (non-Angular) -->
     <div *ngIf="tech!=='angular' && showRestoreBanner()"
       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
       <span class="font-medium">Your code was restored from client storage.</span>
@@ -140,103 +140,142 @@
       </div>
     </ng-container>
 
-    <!-- JAVASCRIPT / TYPESCRIPT EDITOR & TESTS -->
+    <!-- NON-ANGULAR: choose between Web (HTML/CSS) or JS/TS -->
     <ng-container *ngIf="tech!=='angular'">
-      <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-        <div class="flex items-center border-b border-white/10 px-4">
-          <div class="flex">
-            <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
-              (click)="topTab.set('code')">&lt;/&gt; Code</button>
-            <button class="px-4 py-2" [class.opacity-100]="isTopTestsTab()" [class.opacity-60]="!isTopTestsTab()"
-              (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
-          </div>
-
-          <div class="ml-auto flex items-center gap-2">
-            <span class="text-xs opacity-70">Language</span>
-            <select #langSel class="bg-neutral-800 border border-white/10 rounded px-2 py-1 text-sm" [value]="jsLang()
-              " (change)="setLanguage($any(langSel).value)" aria-label="Editor language">
-              <option value="js">JavaScript</option>
-              <option value="ts">TypeScript</option>
-            </select>
-          </div>
-        </div>
-
-        <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
-          <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
-            <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
-              [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorMonacoOptions"
-              (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
-
-            <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
-              [options]="editorMonacoOptions" (codeChange)="testCode.set($event)"></app-monaco-editor>
-          </div>
-
-          <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()" (pointerdown)="startDrag($event)">
-          </div>
-
-          <div class="flex-1 flex flex-col overflow-hidden min-h-0">
-            <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
-              <button class="font-medium" (click)="runTests()">▶ Run tests</button>
-              <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
-                (click)="subTab.set('tests')">Results</button>
-              <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
-                (click)="subTab.set('console')">Console</button>
-              <span class="ml-auto opacity-80" *ngIf="hasRunTests">{{ passedCount() }}/{{ totalCount() }} passed</span>
+      <!-- WEB: HTML / CSS / VIEW -->
+      <ng-container *ngIf="isWebTech(); else jsBlock">
+        <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
+          <div class="flex items-center border-b border-white/10 px-4">
+            <div class="flex">
+              <button class="px-4 py-2" [class.opacity-100]="topTab()==='html'" [class.opacity-60]="topTab()!=='html'"
+                (click)="topTab.set('html')">&lt;html&gt; HTML</button>
+              <button class="px-4 py-2" [class.opacity-100]="topTab()==='css'" [class.opacity-60]="topTab()!=='css'"
+                (click)="topTab.set('css')"># CSS</button>
+              <button class="px-4 py-2" [class.opacity-100]="topTab()==='view'" [class.opacity-60]="topTab()!=='view'"
+                (click)="topTab.set('view')"><i class="pi pi-eye mr-2"></i> View</button>
             </div>
 
-            <div class="flex-1 min-h-0 overflow-hidden">
-              <!-- Results -->
-              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
-                <div *ngIf="!hasRunTests" class="h-full grid place-items-center">
-                  <div class="text-center">
-                    <div class="icon-hero mb-3"><i class="pi pi-play"></i></div>
-                    <h3 class="text-base font-semibold mb-2">Test your code</h3>
-                    <p class="text-gray-400 mb-4 text-xs">
-                      Run your code with
-                      <a href="" class="text-yellow-300 underline" (click)="goToCustomTests($event)">custom test
-                        cases</a>
-                      before submitting.
-                    </p>
-                    <button pButton label="Run" icon="pi pi-play" (click)="runTests()"></button>
+            <div class="ml-auto text-xs opacity-70" *ngIf="topTab()==='view'">
+              Live preview updates as you type
+            </div>
+          </div>
+
+          <div class="flex-1 min-h-0">
+            <!-- HTML editor -->
+            <app-monaco-editor *ngIf="topTab()==='html'" class="h-full" [code]="webHtml()" [language]="'html'"
+              [options]="editorMonacoOptions" (codeChange)="onHtmlChange($event)"></app-monaco-editor>
+
+            <!-- CSS editor -->
+            <app-monaco-editor *ngIf="topTab()==='css'" class="h-full" [code]="webCss()" [language]="'css'"
+              [options]="editorMonacoOptions" (codeChange)="onCssChange($event)"></app-monaco-editor>
+
+            <!-- LIVE PREVIEW -->
+            <iframe *ngIf="topTab()==='view'" class="w-full h-full border-0" sandbox="allow-scripts"
+              [attr.srcdoc]="previewDocSafe()" referrerpolicy="no-referrer"></iframe>
+
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- JS / TS EDITOR & TESTS -->
+      <ng-template #jsBlock>
+        <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
+          <div class="flex items-center border-b border-white/10 px-4">
+            <div class="flex">
+              <button class="px-4 py-2" [class.opacity-100]="isTopCodeTab()" [class.opacity-60]="!isTopCodeTab()"
+                (click)="topTab.set('code')">&lt;/&gt; Code</button>
+              <button class="px-4 py-2" [class.opacity-100]="isTopTestsTab()" [class.opacity-60]="!isTopTestsTab()"
+                (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
+            </div>
+
+            <div class="ml-auto flex items-center gap-2">
+              <span class="text-xs opacity-70">Language</span>
+              <select #langSel class="bg-neutral-800 border border-white/10 rounded px-2 py-1 text-sm"
+                [value]="jsLang()" (change)="setLanguage($any(langSel).value)" aria-label="Editor language">
+                <option value="js">JavaScript</option>
+                <option value="ts">TypeScript</option>
+              </select>
+            </div>
+          </div>
+
+          <div #splitContainer class="flex-1 flex flex-col overflow-hidden">
+            <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
+              <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
+                [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorMonacoOptions"
+                (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
+
+              <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
+                [options]="editorMonacoOptions" (codeChange)="testCode.set($event)"></app-monaco-editor>
+            </div>
+
+            <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
+              (pointerdown)="startDrag($event)"></div>
+
+            <div class="flex-1 flex flex-col overflow-hidden min-h-0">
+              <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
+                <button class="font-medium" (click)="runTests()">▶ Run tests</button>
+                <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
+                  (click)="subTab.set('tests')">Results</button>
+                <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
+                  (click)="subTab.set('console')">Console</button>
+                <span class="ml-auto opacity-80" *ngIf="hasRunTests">{{ passedCount() }}/{{ totalCount() }}
+                  passed</span>
+              </div>
+
+              <div class="flex-1 min-h-0 overflow-hidden">
+                <!-- Results -->
+                <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
+                  <div *ngIf="!hasRunTests" class="h-full grid place-items-center">
+                    <div class="text-center">
+                      <div class="icon-hero mb-3"><i class="pi pi-play"></i></div>
+                      <h3 class="text-base font-semibold mb-2">Test your code</h3>
+                      <p class="text-gray-400 mb-4 text-xs">
+                        Run your code with
+                        <a href="" class="text-yellow-300 underline" (click)="goToCustomTests($event)">custom test
+                          cases</a>
+                        before submitting.
+                      </p>
+                      <button pButton label="Run" icon="pi pi-play" (click)="runTests()"></button>
+                    </div>
+                  </div>
+
+                  <div *ngIf="hasRunTests" class="space-y-2">
+                    <div class="summary mb-2">
+                      <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
+                      <ng-container *ngIf="totalCount() > 0">
+                        <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
+                        <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                      </ng-container>
+                      <ng-container *ngIf="totalCount() === 0">
+                        <span class="text-yellow-400 ml-2">No tests reported</span>
+                      </ng-container>
+                    </div>
+
+                    <div *ngFor="let t of testResults()" class="test-card border rounded-md"
+                      [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
+                      <div class="test-name">
+                        <i
+                          [ngClass]="t.passed ? 'pi pi-check-circle text-green-400' : 'pi pi-times-circle text-red-400'"></i>
+                        <span>{{ t.name }}</span>
+                      </div>
+                      <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
+                        {{ t.error }}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div *ngIf="hasRunTests" class="space-y-2">
-                  <div class="summary mb-2">
-                    <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
-                    <ng-container *ngIf="totalCount() > 0">
-                      <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
-                      <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
-                    </ng-container>
-                    <ng-container *ngIf="totalCount() === 0">
-                      <span class="text-yellow-400 ml-2">No tests reported</span>
-                    </ng-container>
-                  </div>
-
-                  <div *ngFor="let t of testResults()" class="test-card border rounded-md"
-                    [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
-                    <div class="test-name">
-                      <i
-                        [ngClass]="t.passed ? 'pi pi-check-circle text-green-400' : 'pi pi-times-circle text-red-400'"></i>
-                      <span>{{ t.name }}</span>
-                    </div>
-                    <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
-                      {{ t.error }}
-                    </div>
-                  </div>
+                <!-- Console -->
+                <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
+                  <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()" [max]="500"
+                    [autoScroll]="true">
+                  </app-console-logger>
                 </div>
-              </div>
-
-              <!-- Console -->
-              <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
-                <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()" [max]="500"
-                  [autoScroll]="true">
-                </app-console-logger>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </ng-template>
     </ng-container>
   </main>
 </div>
@@ -246,12 +285,12 @@
   [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
   [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
   [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
-  [submitLabel]="tech !== 'angular' ? 'Submit' : 'Mark as complete'" (prev)="prev()" (next)="next()"
+  [submitLabel]="(tech==='angular' || isWebTech()) ? 'Mark as complete' : 'Submit'" (prev)="prev()" (next)="next()"
   (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
   (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>
 
-<!-- Preview dialog -->
+<!-- Preview dialog (Angular only) -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"
   [resizable]="false" [style]="{ width: '90vw', maxWidth: '1400px' }" [contentStyle]="{ padding: '0', height: '80vh' }">
   <ng-template pTemplate="header">
@@ -261,8 +300,7 @@
     </div>
   </ng-template>
   <div class="w-full h-full">
-    <iframe *ngIf="previewOnlyUrl" class="w-full h-full border-0" [src]="previewOnlyUrl"
-      [attr.sandbox]="'allow-scripts allow-popups allow-modals'" [attr.allow]="''"
-      referrerpolicy="no-referrer"></iframe>
+    <iframe *ngIf="previewOnlyUrl" [src]="previewOnlyUrl" sandbox="allow-scripts allow-popups allow-modals"
+      class="w-full h-full border-0" referrerpolicy="no-referrer"></iframe>
   </div>
 </p-dialog>

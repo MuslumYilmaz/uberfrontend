@@ -1,9 +1,9 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith, take } from 'rxjs';
-import { defaultPrefs } from '../../../core/models/user.model';
+import { defaultPrefs, Tech } from '../../../core/models/user.model';
 import { ActivityService, ActivitySummary } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
@@ -43,6 +43,31 @@ const EMPTY_SUMMARY: ActivitySummary = {
               <span class="ufh-tab-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon><polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon><text x="16" y="21" text-anchor="middle" font-size="14" font-weight="800" font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'" fill="#fff">A</text></svg></span>
               Angular
             </a>
+
+            <a [routerLink]="'/html'" class="ufh-tab" [class.ufh-tab-active]="currentTech()==='html'">
+              <span class="ufh-tab-ico">
+                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                  <rect x="2" y="2" width="28" height="28" rx="4" fill="#E34F26"></rect>
+                  <text x="16" y="21" text-anchor="middle" font-size="12" font-weight="800"
+                        font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
+                        fill="#fff">H5</text>
+                </svg>
+              </span>
+              HTML
+            </a>
+
+            <a [routerLink]="'/css'" class="ufh-tab" [class.ufh-tab-active]="currentTech()==='css'">
+              <span class="ufh-tab-ico">
+                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                  <rect x="2" y="2" width="28" height="28" rx="4" fill="#1572B6"></rect>
+                  <text x="16" y="21" text-anchor="middle" font-size="12" font-weight="800"
+                        font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'"
+                        fill="#fff">C3</text>
+                </svg>
+              </span>
+              CSS
+            </a>
+
             <a [routerLink]="'/system-design'" class="ufh-tab" [class.ufh-tab-active]="isSystemDesign()">System design</a>
           </nav>
         </div>
@@ -188,7 +213,7 @@ export class HeaderComponent implements OnInit {
 
   // Router state
   mode = signal<Mode>('dashboard');
-  currentTech = signal<'javascript' | 'angular' | null>(null);
+  currentTech = signal<'javascript' | 'angular' | 'html' | 'css' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
   // Registry
@@ -310,8 +335,9 @@ export class HeaderComponent implements OnInit {
   }
 
   // ---------- Local-time helpers ----------
-  private resolveTech(): 'javascript' | 'angular' {
-    return this.currentTech() ?? (defaultPrefs().defaultTech as 'javascript' | 'angular' | undefined) ?? 'javascript';
+  private resolveTech(): Tech {
+    const pref = (defaultPrefs().defaultTech as Tech | undefined) ?? 'javascript';
+    return this.currentTech() ?? pref;
   }
 
   private startOfWeekLocalISO(): string {
@@ -369,8 +395,11 @@ export class HeaderComponent implements OnInit {
     if (segs[0] === 'system-design') { this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail'); return; }
     if (segs[0] === 'profile') { this.mode.set('profile'); return; }
 
-    const tech = segs[0] as 'javascript' | 'angular';
-    if (tech === 'javascript' || tech === 'angular') this.currentTech.set(tech);
+    const tech = segs[0] as 'javascript' | 'angular' | 'html' | 'css';
+    if (tech === 'javascript' || tech === 'angular' || tech === 'html' || tech === 'css') {
+      this.currentTech.set(tech);
+    }
+
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
     const sec = segs[1] as 'coding' | 'trivia' | 'debug';
@@ -379,6 +408,7 @@ export class HeaderComponent implements OnInit {
       this.mode.set(segs.length === 2 ? 'tech-list' : 'tech-detail');
     }
   }
+
 
   private pickDefaultGroup() {
     if (this.mode() === 'tech-list' || this.mode() === 'tech-detail') { this.activeGroupKey.set('practice'); return; }

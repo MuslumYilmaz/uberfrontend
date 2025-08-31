@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Question } from '../models/question.model';
+import { Tech } from '../models/user.model';
 
-type Tech = 'javascript' | 'angular';
 type Kind = 'coding' | 'trivia' | 'debug';          // ← debug added
 export type MixedQuestion = Question & { tech: Tech };
 
@@ -40,15 +40,16 @@ export class QuestionService {
 
   /** Load all questions for both techs, for a given kind (companies pages). */
   loadAllQuestions(kind: Exclude<Kind, 'debug'>): Observable<MixedQuestion[]> {
-    return forkJoin([
-      this.loadQuestions('javascript', kind).pipe(
-        map(list => list.map(q => ({ ...q, tech: 'javascript' as const })))
-      ),
-      this.loadQuestions('angular', kind).pipe(
-        map(list => list.map(q => ({ ...q, tech: 'angular' as const })))
-      ),
-    ]).pipe(map(([a, b]) => [...a, ...b]));
+    const TECHS: Tech[] = ['javascript', 'angular', 'html', 'css'];
+    return forkJoin(
+      TECHS.map(t =>
+        this.loadQuestions(t, kind).pipe(
+          map(list => list.map(q => ({ ...q, tech: t as any })))
+        )
+      )
+    ).pipe(map(buckets => buckets.flat()));
   }
+
 
   /** Convenience: fetch a single question by id. */
   getById(technology: Tech, kind: Kind, id: string): Observable<Question | null> {
