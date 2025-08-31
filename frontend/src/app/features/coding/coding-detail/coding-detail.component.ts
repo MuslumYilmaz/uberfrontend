@@ -212,6 +212,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 </style></head><body>${html}</body></html>`;
   });
 
+  /** trusted HTML for iframe srcdoc binding */
   previewDocSafe = computed(() =>
     this.sanitizer.bypassSecurityTrustHtml(this.previewDocRaw())
   );
@@ -490,7 +491,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const html = htmlRaw || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
 
     if (!cssRaw) {
-      // helpful during QA to find items missing CSS in JSON
       try { console.warn('[coding-detail] No CSS found in JSON for', q?.id, Object.keys(q || {})); } catch { }
     }
 
@@ -506,7 +506,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
   private webBaseKey(q: Question, which: 'html' | 'css') {
-    // bump baseline to invalidate previous component-fallback versions
     return `uf:web:baseline:v2:${which}:${q.id}`;
   }
 
@@ -538,7 +537,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     let shouldShowBanner = false;
 
     if (this.tech === 'angular') {
-      // ---------- ANGULAR via StackBlitz ----------
       this.topTab.set('code');
       this.embedLoading.set(true);
 
@@ -614,20 +612,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.isWebTech()) {
-      // --- HTML / CSS mode (JSON-only) ---
       const starters = this.getWebStarters(q);
       const htmlBaseKey = this.webBaseKey(q, 'html');
       const cssBaseKey = this.webBaseKey(q, 'css');
 
-      // set baselines if missing
       if (!localStorage.getItem(htmlBaseKey)) try { localStorage.setItem(htmlBaseKey, starters.html); } catch { }
       if (!localStorage.getItem(cssBaseKey)) try { localStorage.setItem(cssBaseKey, starters.css); } catch { }
 
-      // normalize old/empty saves like {"code":""}
       const normalizeSaved = (raw: string | null) => {
         if (raw == null) return null;
         const s = raw.trim();
-        if (!s) return null;                     // treat empty string as "no save"
+        if (!s) return null;
         if (s.startsWith('{')) {
           try {
             const obj = JSON.parse(s);
@@ -640,14 +635,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const savedHtml = normalizeSaved(localStorage.getItem(this.webKey(q, 'html')));
       const savedCss = normalizeSaved(localStorage.getItem(this.webKey(q, 'css')));
 
-      // prefer non-empty saves; otherwise use starters
       const html = savedHtml ?? starters.html;
       const css = savedCss ?? starters.css;
 
       this.htmlCode.set(html);
       this.cssCode.set(css);
 
-      // banner if diverged
       try {
         const baseHtml = localStorage.getItem(htmlBaseKey) ?? '';
         const baseCss = localStorage.getItem(cssBaseKey) ?? '';
@@ -704,7 +697,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sbVm = null;
     this.embedLoading.set(false);
 
-    // reset UI + set banner
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
@@ -912,7 +904,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const userJs = lang === 'ts' ? await this.transpileTsToJs(userSrc, `${q.id}.ts`) : userSrc;
     const testsJs = lang === 'ts' ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
 
-    // Wrap user's default export and transform tests to reference __user_fn__
     const wrapped = wrapExportDefault(userJs, q.id);
     const testsPrepared = transformTestCode(testsJs, q.id);
 
@@ -932,7 +923,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (passing) {
       this.creditDaily();
-      // record with solved=true so server persists progress
       this.activity.complete({
         kind: this.kind,
         tech: this.tech,
@@ -958,20 +948,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
   }
 
-  // ---------- Daily credit helpers ----------
   private creditDailyIfInSet() {
     const q = this.question(); if (!q) return;
-    const kind = this.kind as DailyItemKind; // 'coding' | 'debug'
+    const kind = this.kind as DailyItemKind;
     if (!this.daily.isInTodaySet(kind, q.id)) return;
     this.daily.markCompletedById(kind, q.id);
   }
 
-  // ---------- submit ----------
   async submitCode(): Promise<void> {
     const q = this.question();
     if (!q) return;
 
-    // Angular and Web (html/css) are marked complete on submit
     if (this.tech === 'angular' || this.isWebTech()) {
       this.creditDaily();
       this.recordCompletion('submit');
@@ -979,10 +966,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // JS/TS: always run tests
     await this.runTests();
 
-    // For debug, allow credit even if not all tests passed (avoid double-credit if runTests already did it)
     if (this.kind === 'debug' && !this.allPassing()) {
       this.creditDaily();
       this.activity.complete({
@@ -1008,7 +993,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // --- handlers (reuse your global pointer listeners) ---
+  // --- handlers ---
   startWebColumnDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.draggingCols = true;
@@ -1049,7 +1034,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.previewRatio.set(r));
   };
 
-  // ---------- splitters ----------
   startDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.dragging = true;
@@ -1060,12 +1044,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const stop = () => { this.dragging = false; this.isDraggingHorizontal.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
-  private onPointerMove = (ev: PointerEvent) => {
-    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; } // aside splitter
-    if (this.draggingCols) { this.onPointerMoveCols(ev); return; } // middle splitter
-    if (this.draggingPreview) { this.onPointerMovePreview(ev); return; } // right splitter
 
-    // HTML ↔ CSS splitter
+  private onPointerMove = (ev: PointerEvent) => {
+    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; }
+    if (this.draggingCols) { this.onPointerMoveCols(ev); return; }
+    if (this.draggingPreview) { this.onPointerMovePreview(ev); return; }
+
     if (!this.dragging || !this.splitContainer) return;
     const rect = this.splitContainer.nativeElement.getBoundingClientRect();
     const delta = ev.clientY - this.startY;
@@ -1093,6 +1077,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
+
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
@@ -1102,7 +1087,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
-  // ---------- preview helpers ----------
   private toPreviewOnly(base: string): string {
     const u = new URL(base);
     u.searchParams.set('embed', '1');
@@ -1116,6 +1100,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     u.searchParams.delete('file');
     return u.toString();
   }
+
   openPreview() {
     const q = this.question();
     if (!q || this.tech !== 'angular') return;
@@ -1131,7 +1116,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => { this.previewOnlyUrl = null; this.previewLoading.set(false); }, 200);
   }
 
-  // ---------- reset ----------
   async resetQuestion() {
     const q = this.question();
     if (!q || this.resetting()) return;

@@ -142,21 +142,16 @@
 
     <!-- NON-ANGULAR: choose between Web (HTML/CSS) or JS/TS -->
     <ng-container *ngIf="tech!=='angular'">
-      <!-- WEB: HTML + CSS (both visible) + DOCKED LIVE PREVIEW + RESULTS/CONSOLE UNDER PREVIEW -->
+      <!-- WEB: HTML + CSS + LIVE PREVIEW -->
       <ng-container *ngIf="isWebTech(); else jsBlock">
         <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-          <!-- simple header -->
           <div class="flex items-center border-b border-white/10 px-4">
             <div class="text-xs opacity-70 ml-auto">Live preview updates as you type</div>
           </div>
 
-          <!-- Split: editors (left) + live preview (right) -->
-          <!-- Split: editors (left) + live preview (right) -->
           <div class="flex-1 min-h-0 flex">
             <!-- LEFT editors -->
-            <!-- LEFT editors -->
             <div class="min-w-0 flex flex-col" [style.flex]="'0 0 ' + (webColsRatio()*100) + '%'">
-              <!-- put the ref on the wrapper that contains top+splitter+bottom -->
               <div #splitContainer class="flex-1 min-h-0 flex flex-col">
                 <div class="border-b border-white/10 px-3 py-1 text-xs opacity-80">&lt;html&gt; HTML</div>
 
@@ -177,16 +172,17 @@
               </div>
             </div>
 
-            <!-- MIDDLE vertical splitter (left vs right) -->
+            <!-- MIDDLE splitter -->
             <div class="splitter" [class.dragging]="isDraggingCols()" (pointerdown)="startWebColumnDrag($event)"></div>
 
-            <!-- RIGHT column: preview (top) + results/console (bottom) -->
+            <!-- RIGHT: preview (top) + results/console (bottom) -->
             <div class="min-w-0 flex-1 flex flex-col">
               <div #previewSplit class="flex-1 flex flex-col overflow-hidden">
                 <!-- TOP: preview -->
-                <iframe class="w-full border-0 bg-white" [style.flex]="'0 0 ' + (previewRatio()*100) + '%'"
-                  sandbox="allow-scripts allow-same-origin" [srcdoc]="$any(previewDocSafe())"
-                  referrerpolicy="no-referrer">
+                <iframe class="preview-iframe w-full border-0 bg-white min-h-[160px]"
+                  [style.flex]="'0 0 ' + (previewRatio()*100) + '%'"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation"
+                  [srcdoc]="$any(previewDocSafe())" referrerpolicy="no-referrer">
                 </iframe>
 
                 <!-- Splitter -->
@@ -195,14 +191,51 @@
 
                 <!-- BOTTOM: results/console -->
                 <div class="flex-1 min-h-[140px] flex flex-col border-t border-white/10">
-                  <div class="flex items-center px-3 py-2 text-xs bg-neutral-900/60">
-                    <span class="font-medium">Console</span>
+                  <div class="flex items-center gap-6 px-3 py-2 text-xs bg-neutral-900/60">
+                    <button class="font-medium" [disabled]="true"
+                      title="Run tests are only available for JS/TS challenges">
+                      ▶ Run tests
+                    </button>
+                    <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
+                      (click)="subTab.set('tests')">Results</button>
+                    <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
+                      (click)="subTab.set('console')">Console</button>
+                    <span class="ml-auto opacity-80" *ngIf="hasRunTests">
+                      {{ passedCount() }}/{{ totalCount() }} passed
+                    </span>
                   </div>
 
-                  <div class="flex-1 min-h-0 flex flex-col">
-                    <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()"
-                      [max]="500" [autoScroll]="true">
-                    </app-console-logger>
+                  <div class="flex-1 min-h-0 overflow-hidden">
+                    <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
+                      <div class="h-full grid place-items-center text-xs text-gray-400" *ngIf="totalCount()===0">
+                        No tests for HTML/CSS mode.
+                      </div>
+                      <div *ngIf="totalCount() > 0" class="space-y-2">
+                        <div class="summary mb-2">
+                          <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
+                          <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
+                          <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                        </div>
+
+                        <div *ngFor="let t of testResults()" class="test-card border rounded-md"
+                          [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
+                          <div class="test-name">
+                            <i [ngClass]="t.passed ? 'pi pi-check-circle text-green-400'
+                                   : 'pi pi-times-circle text-red-400'"></i>
+                            <span>{{ t.name }}</span>
+                          </div>
+                          <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
+                            {{ t.error }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
+                      <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()"
+                        [max]="500" [autoScroll]="true">
+                      </app-console-logger>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -258,7 +291,6 @@
               </div>
 
               <div class="flex-1 min-h-0 overflow-hidden">
-                <!-- Results -->
                 <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
                   <div *ngIf="!hasRunTests" class="h-full grid place-items-center">
                     <div class="text-center">
@@ -300,7 +332,6 @@
                   </div>
                 </div>
 
-                <!-- Console -->
                 <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
                   <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()" [max]="500"
                     [autoScroll]="true">
