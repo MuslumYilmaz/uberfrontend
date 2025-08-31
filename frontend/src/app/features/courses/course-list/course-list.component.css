@@ -1,3 +1,63 @@
-:host {
-  display: block;
-}
+    :host { display:block; }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 32px; }
+
+    .title {
+      font-size: 28px; font-weight: 800; letter-spacing: .2px;
+      margin: 4px 0 16px; color: #fff;
+    }
+
+    .grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    @media (min-width: 860px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 1200px) { .grid { gap: 18px; } }
+
+    .card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 76px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 16px;
+      border-radius: 16px;
+      background: rgba(20,20,22,.9);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+      text-decoration: none; color: inherit;
+      outline: none; -webkit-tap-highlight-color: transparent;
+    }
+    .card:hover { border-color: rgba(255,255,255,.22); background: rgba(24,24,28,.95); }
+    .card:active { transform: translateY(1px); }
+    .card:focus-visible { box-shadow: 0 0 0 2px #6aa3ff; border-radius: 16px; }
+
+    .hero {
+      width: 60px; height: 60px; border-radius: 999px;
+      display: grid; place-items: center; flex: none;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    /* Clamp the inline SVG size so global resets can't blow it up */
+    .hero > svg { width: 40px !important; height: 40px !important; display: block; }
+
+    .hero--js    { background: #ffd300; }
+    .hero--learn { background: linear-gradient(135deg, #ff7a18, #ff3d00); }
+
+    .body { min-width: 0; }
+    .name {
+      color: #f8fafc; font-weight: 800; letter-spacing: .2px; font-size: 18px;
+      line-height: 1.2; margin-bottom: 4px;
+    }
+    .subtitle { color: #cfd3da; font-size: 14px; margin-bottom: 6px; }
+    .blurb { color: #aeb6bf; font-size: 13px; }
+    .clamp-2 {
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .chev {
+      color: #cfd3da; opacity: .6; font-weight: 700; padding: 0 6px;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .card:hover .chev { transform: translateX(4px); opacity: .95; }

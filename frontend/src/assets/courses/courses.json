@@ -34,5 +34,120 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "learn-programming",
+        "title": "Learn Programming",
+        "subtitle": "The easiest way to learn Programming concepts for absolute beginners step by step.",
+        "description": "Start from zero: learn what code is, how programs run, and the core ideas every language shares. Short lessons, tiny examples, and hands-on mini projects.",
+        "topics": [
+            {
+                "id": "start-here",
+                "title": "Start here",
+                "lessons": [
+                    {
+                        "id": "welcome",
+                        "title": "Welcome & setup",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "what-is-programming",
+                        "title": "What is “programming”?",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "how-code-runs",
+                        "title": "How code runs (very high-level)",
+                        "type": "reading"
+                    }
+                ]
+            },
+            {
+                "id": "basics",
+                "title": "Programming basics",
+                "lessons": [
+                    {
+                        "id": "values-and-types",
+                        "title": "Values & types",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "variables",
+                        "title": "Variables",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "expressions",
+                        "title": "Expressions & operators",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "conditions",
+                        "title": "Conditions (if/else)",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "loops",
+                        "title": "Loops",
+                        "type": "reading"
+                    }
+                ]
+            },
+            {
+                "id": "functions",
+                "title": "Functions",
+                "lessons": [
+                    {
+                        "id": "functions-intro",
+                        "title": "Meet functions",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "params-returns",
+                        "title": "Parameters & return values",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "scope",
+                        "title": "Scope (where names live)",
+                        "type": "reading"
+                    }
+                ]
+            },
+            {
+                "id": "data-structures",
+                "title": "Arrays & objects",
+                "lessons": [
+                    {
+                        "id": "arrays",
+                        "title": "Arrays",
+                        "type": "reading"
+                    },
+                    {
+                        "id": "objects",
+                        "title": "Objects",
+                        "type": "reading"
+                    }
+                ]
+            },
+            {
+                "id": "mini-practice",
+                "title": "Mini practice",
+                "lessons": [
+                    {
+                        "id": "practice-mean",
+                        "title": "Practice: mean()",
+                        "type": "coding",
+                        "ref": "mean"
+                    },
+                    {
+                        "id": "practice-deep-clone",
+                        "title": "Practice: Deep Clone",
+                        "type": "coding",
+                        "ref": "deepClone"
+                    }
+                ]
+            }
+        ]
     }
 ]
