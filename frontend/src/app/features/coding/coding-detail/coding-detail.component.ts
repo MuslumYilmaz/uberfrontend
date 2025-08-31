@@ -79,7 +79,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // UI state
   /** unified tab signal used by both modes */
-  topTab = signal<'code' | 'tests' | 'html' | 'css' | 'view'>('code');
+  topTab = signal<'code' | 'tests' | 'html' | 'css'>('code');
   activePanel = signal<number>(0);
   subTab = signal<'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
@@ -164,6 +164,23 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
 
+  // --- state ---
+  webColsRatio = signal(0.5);     // left vs right columns
+  previewRatio = signal(0.7);     // preview vs console under preview
+
+  isDraggingCols = signal(false);
+  isDraggingRight = signal(false);
+
+  private draggingCols = false;
+  private startXCols = 0;
+  private startColsRatio = 0;
+
+  private draggingPreview = false;
+  private startYPreview = 0;
+  private startPreviewRatio = 0;
+
+  @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
+
   // Footer helpers
   get progressText() {
     if (this.practice) return `${this.practice.index + 1} / ${this.practice.items.length}`;
@@ -178,31 +195,26 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /** live preview HTML for html/css mode */
-  // 1) Put <style> in BODY, add an inline fallback wrapper
   previewDocRaw = computed(() => {
     const css = this.cssCode() ?? '';
     const html = this.htmlCode() ?? '';
-    return `<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+    return `<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  :root { color-scheme: light dark }
-  html,body{height:100%}
-  body{
+  :root { color-scheme: light }
+  * { box-sizing: border-box }
+  html,body { height: 100%; background:#fff; color:#111; }
+  body {
     margin:16px;
-    font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
-    background: Canvas; color: CanvasText;
+    font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
   }
   ${css}
-</style>
-</head><body>${html}</body></html>`;
+</style></head><body>${html}</body></html>`;
   });
 
   previewDocSafe = computed(() =>
     this.sanitizer.bypassSecurityTrustHtml(this.previewDocRaw())
   );
-
 
   // --- course footer/drawer state ---
   courseIdFromState: string | null = null;
@@ -425,25 +437,64 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
-  /** ----- WEB (html/css) helpers ----- */
-  private getWebStarters(q: any): { html: string; css: string } {
-    const w = q.web ?? {};
-    let html =
-      w.starterHtml ?? q.starterHtml ?? q.htmlStarter ?? w.html ?? q.html ?? '';
-    let css =
-      w.starterCss ?? q.starterCss ?? q.cssStarter ?? w.css ?? q.css ?? '';
+  /** ---------- WEB (html/css) helpers ---------- */
 
-    // Fallback skeletons so editors are never empty
-    if (!html || !html.trim()) {
-      html = `<!-- Start here: ${q.title ?? 'Challenge'} -->
-<div class="container">
-  <h1>${q.title ?? 'Challenge'}</h1>
-  <p>Edit the HTML and CSS tabs, then check the View tab.</p>
-</div>`;
+  /** Pick the first non-empty string value from a list of dot-paths. */
+  private pickString(obj: any, paths: string[]): string {
+    for (const p of paths) {
+      const val = p.split('.').reduce((o: any, k) => (o && k in o ? (o as any)[k] : undefined), obj as any);
+      if (typeof val === 'string' && val.trim()) return val;
     }
-    if (!css || !css.trim()) {
-      css = `.container{max-width:640px;margin:2rem auto;padding:1rem;border:1px dashed #555;border-radius:8px}`;
+    return '';
+  }
+
+  /** Last-resort scan for any non-solution CSS-looking key (case-insensitive). */
+  private findCssLike(obj: any): string {
+    const scan = (o: any) => {
+      if (!o || typeof o !== 'object') return '';
+      for (const [k, v] of Object.entries(o)) {
+        if (typeof v === 'string' && /css/i.test(k) && !/solution/i.test(k) && v.trim()) return v;
+      }
+      return '';
+    };
+    return scan(obj?.web) || scan(obj) || '';
+  }
+
+  /** Pretty-print CSS without pulling in a heavy formatter. */
+  private prettifyCss(css: string): string {
+    if (!css) return '';
+    try {
+      return css
+        .replace(/\s*{\s*/g, ' {\n  ')
+        .replace(/;\s*/g, ';\n  ')
+        .replace(/\s*}\s*/g, '\n}\n')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+    } catch {
+      return css;
     }
+  }
+
+  /** Load starters strictly from JSON; no component-defined CSS fallback. */
+  private getWebStarters(q: any): { html: string; css: string } {
+    const htmlRaw = this.pickString(q, [
+      'web.starterHtml', 'starterHtml', 'htmlStarter', 'web.html', 'html'
+    ]);
+
+    let cssRaw = this.pickString(q, [
+      'web.starterCss', 'starterCss', 'cssStarter', 'web.css', 'css', 'starterStyles', 'styles', 'starterCSS'
+    ]);
+    if (!cssRaw) cssRaw = this.findCssLike(q);
+
+    // Minimal HTML fallback so the editor is never blank; CSS stays JSON-only.
+    const html = htmlRaw || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
+
+    if (!cssRaw) {
+      // helpful during QA to find items missing CSS in JSON
+      try { console.warn('[coding-detail] No CSS found in JSON for', q?.id, Object.keys(q || {})); } catch { }
+    }
+
+    const css = this.prettifyCss(cssRaw);
     return { html, css };
   }
 
@@ -454,7 +505,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return { html: String(html ?? ''), css: String(css ?? '') };
   }
   private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
-  private webBaseKey(q: Question, which: 'html' | 'css') { return `uf:web:baseline:${which}:${q.id}`; }
+  private webBaseKey(q: Question, which: 'html' | 'css') {
+    // bump baseline to invalidate previous component-fallback versions
+    return `uf:web:baseline:v2:${which}:${q.id}`;
+  }
 
   // ---------- solved persistence ----------
   private solvedKey(q: Question) { return `uf:coding:solved:${this.tech}:${q.id}`; }
@@ -560,7 +614,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.isWebTech()) {
-      // --- HTML / CSS mode ---
+      // --- HTML / CSS mode (JSON-only) ---
       const starters = this.getWebStarters(q);
       const htmlBaseKey = this.webBaseKey(q, 'html');
       const cssBaseKey = this.webBaseKey(q, 'css');
@@ -705,12 +759,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private persistJsEffect = effect(() => {
     const q = this.question();
-    if (!q || this.tech === 'angular' || this.isWebTech()) return; // <— add isWebTech()
+    if (!q || this.tech === 'angular' || this.isWebTech()) return;
     try {
       localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: this.editorContent() }));
     } catch { }
   });
-
 
   // ---------- language toggle ----------
   setLanguage(lang: JsLang) {
@@ -955,6 +1008,47 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  // --- handlers (reuse your global pointer listeners) ---
+  startWebColumnDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.draggingCols = true;
+    this.isDraggingCols.set(true);
+    this.startXCols = ev.clientX;
+    this.startColsRatio = this.webColsRatio();
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+    const stop = () => { this.draggingCols = false; this.isDraggingCols.set(false); document.removeEventListener('pointerup', stop); };
+    document.addEventListener('pointerup', stop);
+  };
+
+  private onPointerMoveCols = (ev: PointerEvent) => {
+    if (!this.draggingCols) return;
+    const delta = ev.clientX - this.startXCols;
+    let r = this.startColsRatio + delta / window.innerWidth;
+    r = Math.max(0.25, Math.min(0.75, r));
+    this.zone.run(() => this.webColsRatio.set(r));
+  };
+
+  startPreviewDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.draggingPreview = true;
+    this.isDraggingRight.set(true);
+    this.startYPreview = ev.clientY;
+    this.startPreviewRatio = this.previewRatio();
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+    const stop = () => { this.draggingPreview = false; this.isDraggingRight.set(false); document.removeEventListener('pointerup', stop); };
+    document.addEventListener('pointerup', stop);
+  };
+
+  private onPointerMovePreview = (ev: PointerEvent) => {
+    if (!this.draggingPreview || !this.previewSplit) return;
+    const rect = this.previewSplit.nativeElement.getBoundingClientRect();
+    const delta = ev.clientY - this.startYPreview;
+    let r = (rect.height * this.startPreviewRatio + delta) / rect.height;
+    r = Math.max(0.2, Math.min(0.9, r));
+    this.zone.run(() => this.previewRatio.set(r));
+  };
+
   // ---------- splitters ----------
   startDrag = (ev: PointerEvent) => {
     ev.preventDefault();
@@ -967,16 +1061,26 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     document.addEventListener('pointerup', stop);
   };
   private onPointerMove = (ev: PointerEvent) => {
-    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; }
+    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; } // aside splitter
+    if (this.draggingCols) { this.onPointerMoveCols(ev); return; } // middle splitter
+    if (this.draggingPreview) { this.onPointerMovePreview(ev); return; } // right splitter
+
+    // HTML ↔ CSS splitter
     if (!this.dragging || !this.splitContainer) return;
-    const rect = this.splitContainer!.nativeElement.getBoundingClientRect();
+    const rect = this.splitContainer.nativeElement.getBoundingClientRect();
     const delta = ev.clientY - this.startY;
     const newEditorPx = rect.height * this.startRatio + delta;
     let newRatio = newEditorPx / rect.height;
     newRatio = Math.max(0.2, Math.min(0.9, newRatio));
     this.zone.run(() => this.editorRatio.set(newRatio));
   };
-  private onPointerUp = () => { if (this.dragging) this.dragging = false; if (this.draggingHorizontal) this.draggingHorizontal = false; };
+
+  private onPointerUp = () => {
+    if (this.dragging) this.dragging = false;
+    if (this.draggingHorizontal) this.draggingHorizontal = false;
+    if (this.draggingCols) this.draggingCols = false;
+    if (this.draggingPreview) this.draggingPreview = false;
+  };
 
   startHorizontalDrag = (ev: PointerEvent) => {
     ev.preventDefault();

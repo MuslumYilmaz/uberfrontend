@@ -142,37 +142,72 @@
 
     <!-- NON-ANGULAR: choose between Web (HTML/CSS) or JS/TS -->
     <ng-container *ngIf="tech!=='angular'">
-      <!-- WEB: HTML / CSS / VIEW -->
+      <!-- WEB: HTML + CSS (both visible) + DOCKED LIVE PREVIEW + RESULTS/CONSOLE UNDER PREVIEW -->
       <ng-container *ngIf="isWebTech(); else jsBlock">
         <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
+          <!-- simple header -->
           <div class="flex items-center border-b border-white/10 px-4">
-            <div class="flex">
-              <button class="px-4 py-2" [class.opacity-100]="topTab()==='html'" [class.opacity-60]="topTab()!=='html'"
-                (click)="topTab.set('html')">&lt;html&gt; HTML</button>
-              <button class="px-4 py-2" [class.opacity-100]="topTab()==='css'" [class.opacity-60]="topTab()!=='css'"
-                (click)="topTab.set('css')"># CSS</button>
-              <button class="px-4 py-2" [class.opacity-100]="topTab()==='view'" [class.opacity-60]="topTab()!=='view'"
-                (click)="topTab.set('view')"><i class="pi pi-eye mr-2"></i> View</button>
-            </div>
-
-            <div class="ml-auto text-xs opacity-70" *ngIf="topTab()==='view'">
-              Live preview updates as you type
-            </div>
+            <div class="text-xs opacity-70 ml-auto">Live preview updates as you type</div>
           </div>
 
-          <div class="flex-1 min-h-0">
-            <!-- HTML editor -->
-            <app-monaco-editor *ngIf="topTab()==='html'" class="h-full" [code]="webHtml()" [language]="'html'"
-              [options]="editorMonacoOptions" (codeChange)="onHtmlChange($event)"></app-monaco-editor>
+          <!-- Split: editors (left) + live preview (right) -->
+          <!-- Split: editors (left) + live preview (right) -->
+          <div class="flex-1 min-h-0 flex">
+            <!-- LEFT editors -->
+            <!-- LEFT editors -->
+            <div class="min-w-0 flex flex-col" [style.flex]="'0 0 ' + (webColsRatio()*100) + '%'">
+              <!-- put the ref on the wrapper that contains top+splitter+bottom -->
+              <div #splitContainer class="flex-1 min-h-0 flex flex-col">
+                <div class="border-b border-white/10 px-3 py-1 text-xs opacity-80">&lt;html&gt; HTML</div>
 
-            <!-- CSS editor -->
-            <app-monaco-editor *ngIf="topTab()==='css'" class="h-full" [code]="webCss()" [language]="'css'"
-              [options]="editorMonacoOptions" (codeChange)="onCssChange($event)"></app-monaco-editor>
+                <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'"
+                  style="min-height:120px;">
+                  <app-monaco-editor class="h-full" [code]="webHtml()" [language]="'html'"
+                    [options]="editorMonacoOptions" (codeChange)="onHtmlChange($event)"></app-monaco-editor>
+                </div>
 
-            <!-- LIVE PREVIEW -->
-            <iframe *ngIf="topTab()==='view'" class="w-full h-full border-0" sandbox="allow-scripts"
-              [attr.srcdoc]="previewDocSafe()" referrerpolicy="no-referrer"></iframe>
+                <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
+                  (pointerdown)="startDrag($event)"></div>
 
+                <div class="flex-1 min-h-0 flex flex-col">
+                  <div class="border-b border-white/10 px-3 py-1 text-xs opacity-80"># CSS</div>
+                  <app-monaco-editor class="flex-1" [code]="webCss()" [language]="'css'" [options]="editorMonacoOptions"
+                    (codeChange)="onCssChange($event)"></app-monaco-editor>
+                </div>
+              </div>
+            </div>
+
+            <!-- MIDDLE vertical splitter (left vs right) -->
+            <div class="splitter" [class.dragging]="isDraggingCols()" (pointerdown)="startWebColumnDrag($event)"></div>
+
+            <!-- RIGHT column: preview (top) + results/console (bottom) -->
+            <div class="min-w-0 flex-1 flex flex-col">
+              <div #previewSplit class="flex-1 flex flex-col overflow-hidden">
+                <!-- TOP: preview -->
+                <iframe class="w-full border-0 bg-white" [style.flex]="'0 0 ' + (previewRatio()*100) + '%'"
+                  sandbox="allow-scripts allow-same-origin" [srcdoc]="$any(previewDocSafe())"
+                  referrerpolicy="no-referrer">
+                </iframe>
+
+                <!-- Splitter -->
+                <div class="horizontal-splitter" [class.dragging]="isDraggingRight()"
+                  (pointerdown)="startPreviewDrag($event)"></div>
+
+                <!-- BOTTOM: results/console -->
+                <div class="flex-1 min-h-[140px] flex flex-col border-t border-white/10">
+                  <div class="flex items-center px-3 py-2 text-xs bg-neutral-900/60">
+                    <span class="font-medium">Console</span>
+                  </div>
+
+                  <div class="flex-1 min-h-0 flex flex-col">
+                    <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()"
+                      [max]="500" [autoScroll]="true">
+                    </app-console-logger>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </ng-container>
