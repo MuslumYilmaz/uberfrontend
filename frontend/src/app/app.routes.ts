@@ -84,7 +84,7 @@ export const routes: Routes = [
     ],
   },
 
-  // System design
+  // System design (practice/problems area, not the guide)
   {
     path: 'system-design',
     loadComponent: () =>
@@ -104,20 +104,48 @@ export const routes: Routes = [
     ],
   },
 
-  // Guides (NEW)
+  // Guides
   {
     path: 'guides',
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'playbook' },
+
       {
         path: 'playbook',
         loadComponent: () =>
-          import('./features/guides/playbook/playbook-index/playbook-index.component').then(m => m.PlaybookIndexComponent),
+          import('./features/guides/playbook/playbook-index/playbook-index.component')
+            .then(m => m.PlaybookIndexComponent),
       },
       {
         path: 'playbook/:slug',
         loadComponent: () =>
-          import('./features/guides/playbook/playbook-host.component').then(m => m.PlaybookHostComponent),
+          import('./features/guides/playbook/playbook-host.component')
+            .then(m => m.PlaybookHostComponent),
+      },
+      {
+        path: 'system-design',
+        loadComponent: () =>
+          import('./features/guides/system-design/system-design-index/system-design-index.component')
+            .then(m => m.SystemDesignIndexComponent),
+      },
+      {
+        path: 'system-design/:slug',
+        loadComponent: () =>
+          import('./features/guides/system-design/system-design-host.component')
+            .then(m => m.SystemDesignHostComponent),
+      },
+
+      {
+        path: 'behavioral',
+        loadComponent: () =>
+          import('./features/guides/behavioral/behavioral-index/behavioral-index.component')
+            .then(m => m.BehavioralIndexComponent),
+      },
+      {
+        path: 'behavioral/:slug',
+        loadComponent: () =>
+          import('./features/guides/behavioral/behavioral-host.component')
+            .then(m => m.BehavioralHostComponent),
       },
     ],
   },
