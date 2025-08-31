@@ -41,29 +41,29 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 key: 'playbook',
                 title: 'Front End Interview Playbook',
                 subtitle: 'A starter guide to front end interviews',
-                pi: 'pi-book',
+                pi: 'pi pi-file',
                 intent: 'route',
-                target: { name: 'guides' },
+                target: { name: 'guides', params: { section: 'playbook' } }
             },
             {
                 key: 'gfe75',
                 title: 'GFE 75',
                 subtitle: 'The 75 most important front end questions',
-                pi: 'pi-list',
-                intent: 'placeholder',
-                disabled: true,
+                pi: 'pi pi-list',
                 badge: 'Coming soon',
-            },
-            {
-                key: 'guides',
-                title: 'Guides',
-                subtitle: 'Resume, portfolio, behavioral, SD primer',
-                pi: 'pi-compass',
-                intent: 'placeholder',
                 disabled: true,
-                badge: 'Soon',
+                intent: 'placeholder'
             },
-        ],
+            // NEW
+            {
+                key: 'behavioral',
+                title: 'Behavioral Interview Guide',
+                subtitle: 'STAR stories, signals, examples',
+                pi: 'pi pi-comments',
+                intent: 'route',
+                target: { name: 'guides', params: { section: 'behavioral' } }
+            }
+        ]
     },
     {
         key: 'practice',
@@ -92,14 +92,30 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
         title: 'System Design',
         items: [
             {
-                key: 'system-design',
-                title: 'Front End System Design Playbook',
-                subtitle: 'Core techniques + deep dives',
-                pi: 'pi-sitemap',
+                key: 'sd-guide',
+                title: 'System Design Playbook',
+                subtitle: 'Concepts, patterns, interview tactics',
+                pi: 'pi pi-sitemap',
                 intent: 'route',
-                target: { name: 'system' },
+                target: { name: 'system', params: { section: 'guide' } } // maps to /guides/system-design
             },
-        ],
+            {
+                key: 'sd-practice',
+                title: 'System Design',
+                subtitle: 'Practice problems & walkthroughs',
+                pi: 'pi pi-list',
+                intent: 'route',
+                target: { name: 'system', params: { section: 'practice' } } // maps to /system-design
+            },
+            {
+                key: 'sd-challenges',
+                title: 'System Design Challenges',
+                subtitle: 'Time-boxed interview-style prompts',
+                pi: 'pi pi-bolt',
+                intent: 'route',
+                target: { name: 'system', params: { section: 'challenges' } } // /system-design for now
+            },
+        ]
     },
     {
         key: 'companies',

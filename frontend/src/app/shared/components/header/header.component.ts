@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith, take } from 'rxjs';
@@ -28,7 +28,7 @@ const EMPTY_SUMMARY: ActivitySummary = {
   imports: [CommonModule, RouterModule, FormsModule],
   styleUrls: ['./header.component.css'],
   template: `
-    <div class="ufh-topbar" role="banner">
+    <div class="ufh-topbar" role="banner" (click)="$event.stopPropagation()">
       <div class="ufh-inner">
         <!-- LEFT -->
         <div class="ufh-left">
@@ -417,14 +417,27 @@ export class HeaderComponent implements OnInit {
         const tech = this.resolveTech();
         return ['/', tech];
       }
-      case 'system': return ['/system-design'];
+      case 'system': {
+        const section = t.params?.['section'] as string | undefined;
+        if (section === 'guide') return ['/guides', 'system-design'];
+        // practice/challenges both land on the SD problems page for now
+        return ['/system-design'];
+      }
       case 'companies': {
         const c = t.params?.['company'] as string | undefined;
         return c ? ['/companies', c] : ['/companies'];
       }
-      case 'courses': return ['/courses'];
-      case 'guides': return ['/guides'];
-      default: return null;
+      case 'courses':
+        return ['/courses'];
+      case 'guides': {
+        const section = (t.params?.['section'] as string | undefined) ?? '';
+        if (section === 'playbook') return ['/guides', 'playbook'];
+        if (section === 'behavioral') return ['/guides', 'behavioral'];
+        if (section === 'system-design') return ['/guides', 'system-design'];
+        return ['/guides'];
+      }
+      default:
+        return null;
     }
   }
 
@@ -444,9 +457,41 @@ export class HeaderComponent implements OnInit {
     this.doc.documentElement.style.setProperty('--app-safe-top', `${base + ctx}px`);
   }
 
-  toggleMega() { this.megaOpen.update(v => !v); }
-  toggleProfileMenu() { this.profileOpen.update(v => !v); }
-  toggleStatsMenu() { this.statsOpen.update(v => !v); }
-  closeAll() { this.megaOpen.set(false); this.profileOpen.set(false); this.statsOpen.set(false); }
+  // Close any open popovers when clicking anywhere outside this component.
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.closeAll();
+  }
+
+  // Also close on Escape from anywhere
+  @HostListener('document:keydown.escape')
+  onDocumentEsc() {
+    this.closeAll();
+  }
+
+  // Keep exactly one menu open at a time
+  private openOnly(which: 'mega' | 'profile' | 'stats' | null) {
+    this.megaOpen.set(which === 'mega');
+    this.profileOpen.set(which === 'profile');
+    this.statsOpen.set(which === 'stats');
+  }
+
+  toggleMega() {
+    this.openOnly(this.megaOpen() ? null : 'mega');
+  }
+
+  toggleProfileMenu() {
+    this.openOnly(this.profileOpen() ? null : 'profile');
+  }
+
+  toggleStatsMenu() {
+    this.openOnly(this.statsOpen() ? null : 'stats');
+  }
+
+  // keep this as-is
+  closeAll() {
+    this.openOnly(null);
+  }
+
   logout() { this.auth.logout(); this.closeAll(); this.summary.set(EMPTY_SUMMARY); this.activitySvc.invalidateAll(); this.router.navigate(['/']); }
 }
