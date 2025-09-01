@@ -81,7 +81,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   /** unified tab signal used by both modes */
   topTab = signal<'code' | 'tests' | 'html' | 'css'>('code');
   activePanel = signal<number>(0);
-  subTab = signal<'tests' | 'console'>('tests');
+  // NOTE: now also supports 'code' (test editor) in the preview pane for HTML/CSS
+  subTab = signal<'code' | 'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
   horizontalRatio = signal(0.3);
 
@@ -138,6 +139,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
 
+  // preview iframe ref (HTML/CSS mode)
+  @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
+
   // drag state
   private dragging = false;
   private startY = 0;
@@ -159,10 +163,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   totalCount = computed(() => this.testResults().length);
   failedCount = computed(() => this.testResults().filter(r => !r.passed).length);
   allPassing = computed(() => this.totalCount() > 0 && this.failedCount() === 0);
+
+  // at top of class
+  previewTopTab = signal<'preview' | 'testcode'>('preview');
+  isPreviewTop = computed(() => this.previewTopTab() === 'preview');
+  isTestCodeTop = computed(() => this.previewTopTab() === 'testcode');
+
   isTestsTab = computed(() => this.subTab() === 'tests');
   isConsoleTab = computed(() => this.subTab() === 'console');
   isTopCodeTab = computed(() => this.topTab() === 'code');
   isTopTestsTab = computed(() => this.topTab() === 'tests');
+  hasAnyTests = computed(() => !!(this.testCode()?.trim()));
 
   // --- state ---
   webColsRatio = signal(0.5);     // left vs right columns
@@ -212,7 +223,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 </style></head><body>${html}</body></html>`;
   });
 
-  /** trusted HTML for iframe srcdoc binding */
+  /** trusted HTML for iframe srcdoc binding (kept available) */
   previewDocSafe = computed(() =>
     this.sanitizer.bypassSecurityTrustHtml(this.previewDocRaw())
   );
@@ -439,7 +450,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
   /** ---------- WEB (html/css) helpers ---------- */
-
   /** Pick the first non-empty string value from a list of dot-paths. */
   private pickString(obj: any, paths: string[]): string {
     for (const p of paths) {
@@ -448,7 +458,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return '';
   }
-
   /** Last-resort scan for any non-solution CSS-looking key (case-insensitive). */
   private findCssLike(obj: any): string {
     const scan = (o: any) => {
@@ -460,7 +469,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     return scan(obj?.web) || scan(obj) || '';
   }
-
   /** Pretty-print CSS without pulling in a heavy formatter. */
   private prettifyCss(css: string): string {
     if (!css) return '';
@@ -475,7 +483,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return css;
     }
   }
-
   /** Load starters strictly from JSON; no component-defined CSS fallback. */
   private getWebStarters(q: any): { html: string; css: string } {
     const htmlRaw = this.pickString(q, [
@@ -487,7 +494,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     ]);
     if (!cssRaw) cssRaw = this.findCssLike(q);
 
-    // Minimal HTML fallback so the editor is never blank; CSS stays JSON-only.
     const html = htmlRaw || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
 
     if (!cssRaw) {
@@ -497,12 +503,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const css = this.prettifyCss(cssRaw);
     return { html, css };
   }
-
   private getWebSolutions(q: any): { html: string; css: string } {
     const w = q.web ?? {};
     const html = w.solutionHtml ?? q.solutionHtml ?? q.htmlSolution ?? w.htmlSolution ?? '';
     const css = w.solutionCss ?? q.solutionCss ?? q.cssSolution ?? w.cssSolution ?? '';
     return { html: String(html ?? ''), css: String(css ?? '') };
+  }
+  private getWebTests(q: any): string {
+    return this.pickString(q, ['web.tests', 'tests', 'testsDom', 'testsHtml']) || '';
   }
   private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
   private webBaseKey(q: Question, which: 'html' | 'css') {
@@ -537,6 +545,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     let shouldShowBanner = false;
 
     if (this.tech === 'angular') {
+      // ---------- ANGULAR via StackBlitz ----------
       this.topTab.set('code');
       this.embedLoading.set(true);
 
@@ -612,6 +621,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.isWebTech()) {
+      // --- HTML / CSS mode ---
       const starters = this.getWebStarters(q);
       const htmlBaseKey = this.webBaseKey(q, 'html');
       const cssBaseKey = this.webBaseKey(q, 'css');
@@ -648,6 +658,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
           shouldShowBanner = true;
         }
       } catch { }
+
+      // Load tests if provided for web problems
+      this.testCode.set(this.getWebTests(q));
 
       this.topTab.set('html');
       this.activePanel.set(0);
@@ -887,10 +900,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- run tests ----------
+  // ---------- run tests (JS/TS) ----------
   async runTests(): Promise<void> {
     const q = this.question();
-    if (!q || this.tech === 'angular' || this.isWebTech()) return;
+    if (!q || this.tech === 'angular') return;
+
+    if (this.isWebTech()) {
+      await this.runWebTests();
+      return;
+    }
 
     this.subTab.set('console');
     this.hasRunTests = false;
@@ -934,9 +952,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       }).subscribe({
         next: (res: any) => {
           this.recorded = true;
-          this.activity.activityCompleted$.next({
-            kind: this.kind, tech: this.tech, stats: res?.stats
-          });
+          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
           this.activity.refreshSummary();
         },
         error: (e) => console.error('record completion failed', e),
@@ -948,17 +964,151 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
   }
 
+  // ---------- run tests (HTML/CSS DOM) ----------
+  private fmt(v: any): string {
+    try {
+      if (v instanceof Element) return `<${v.tagName.toLowerCase()}>`;
+      return JSON.stringify(v);
+    } catch { return String(v); }
+  }
+
+  private makeDomExpect(doc: Document, win: Window) {
+    const expect = (received: any) => ({
+      toBe: (exp: any) => {
+        if (received !== exp) throw new Error(`Expected ${this.fmt(received)} to be ${this.fmt(exp)}`);
+      },
+      toBeTruthy: () => {
+        if (!received) throw new Error(`Expected value to be truthy, got ${this.fmt(received)}`);
+      },
+      toHaveAttribute: (name: string, value?: string) => {
+        if (!(received instanceof Element)) throw new Error('toHaveAttribute expects an Element');
+        const got = received.getAttribute(name);
+        const ok = (value === undefined) ? got !== null : got === value;
+        if (!ok) throw new Error(`Expected element to have [${name}${value !== undefined ? `="${value}"` : ''}], got ${this.fmt(got)}`);
+      },
+      toHaveText: (substr: string) => {
+        if (!(received instanceof Element)) throw new Error('toHaveText expects an Element');
+        const txt = (received.textContent || '').trim();
+        if (!txt.includes(substr)) throw new Error(`Expected text to include "${substr}", got "${txt}"`);
+      },
+      toBeVisible: () => {
+        if (!(received instanceof Element)) throw new Error('toBeVisible expects Element');
+        const cs = win.getComputedStyle(received);
+        if (cs.display === 'none' || cs.visibility === 'hidden') {
+          throw new Error('Element is not visible');
+        }
+      }
+    });
+    return expect;
+  }
+
+  private async ensurePreviewLoaded(frame: HTMLIFrameElement): Promise<void> {
+    const d = frame.contentDocument;
+    if (d && d.readyState === 'complete') return;
+    await new Promise<void>((res) => {
+      const on = () => { frame.removeEventListener('load', on); res(); };
+      frame.addEventListener('load', on, { once: true });
+    });
+  }
+
+  async runWebTests(): Promise<void> {
+    const q = this.question();
+    if (!q || !this.isWebTech()) return;
+
+    this.subTab.set('tests');
+    this.hasRunTests = false;
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+
+    const code = (this.testCode() || '').trim();
+    if (!code) {
+      // nothing to run
+      this.hasRunTests = true;
+      this.testResults.set([]);
+      return;
+    }
+
+    const iframe = this.previewFrame?.nativeElement;
+    if (!iframe) return;
+
+    await this.ensurePreviewLoaded(iframe);
+    const doc = iframe.contentDocument as Document;
+    const win = iframe.contentWindow as Window;
+
+    const results: TestResult[] = [];
+    const it = async (name: string, fn: () => any | Promise<any>) => {
+      try { await fn(); results.push({ name, passed: true }); }
+      catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
+    };
+    // alias
+    const test = it;
+
+    const expect = this.makeDomExpect(doc, win);
+
+    // small helpers
+    const q$ = (sel: string) => doc.querySelector(sel);
+    const qa$ = (sel: string) => Array.from(doc.querySelectorAll(sel));
+
+    try {
+      // Execute tests with a controlled scope
+      const runner = new Function(
+        'document',
+        'window',
+        'it',
+        'test',
+        'expect',
+        'q',
+        'qa',
+        code
+      );
+      await runner.call(undefined, doc, win, it, test, expect as any, q$, qa$);
+    } catch (e: any) {
+      results.unshift({ name: 'Failed to execute test file', passed: false, error: String(e?.message ?? e) });
+    }
+
+    this.testResults.set(results);
+    this.hasRunTests = true;
+
+    const passing = this.allPassing();
+    this.solved.set(passing);
+    this.saveSolvedFlag(q, passing);
+    if (passing) {
+      this.creditDaily();
+      this.activity.complete({
+        kind: this.kind,
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
+        xp: this.xpFor(q),
+        solved: true
+      }).subscribe({
+        next: (res: any) => {
+          this.recorded = true;
+          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
+          this.activity.refreshSummary();
+        },
+        error: (e) => console.error('record completion failed', e),
+      });
+
+      await this.celebrate('tests');
+    }
+  }
+
+  // ---------- Daily credit helpers ----------
   private creditDailyIfInSet() {
     const q = this.question(); if (!q) return;
-    const kind = this.kind as DailyItemKind;
+    const kind = this.kind as DailyItemKind; // 'coding' | 'debug'
     if (!this.daily.isInTodaySet(kind, q.id)) return;
     this.daily.markCompletedById(kind, q.id);
   }
 
+  // ---------- submit ----------
   async submitCode(): Promise<void> {
     const q = this.question();
     if (!q) return;
 
+    // Angular and Web are still “mark complete” on submit (tests are optional)
     if (this.tech === 'angular' || this.isWebTech()) {
       this.creditDaily();
       this.recordCompletion('submit');
@@ -966,8 +1116,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // JS/TS: always run tests
     await this.runTests();
 
+    // For debug, allow credit even if not all tests passed (avoid double-credit if runTests already did it)
     if (this.kind === 'debug' && !this.allPassing()) {
       this.creditDaily();
       this.activity.complete({
@@ -981,9 +1133,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       }).subscribe({
         next: (res: any) => {
           this.recorded = true;
-          this.activity.activityCompleted$.next({
-            kind: this.kind, tech: this.tech, stats: res?.stats
-          });
+          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
           this.activity.refreshSummary();
         },
         error: (e) => console.error('record completion failed', e),
@@ -993,7 +1143,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // --- handlers ---
+  // --- handlers (reuse your global pointer listeners) ---
   startWebColumnDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.draggingCols = true;
@@ -1034,6 +1184,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.previewRatio.set(r));
   };
 
+  // ---------- splitters ----------
   startDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.dragging = true;
@@ -1044,12 +1195,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const stop = () => { this.dragging = false; this.isDraggingHorizontal.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
-
   private onPointerMove = (ev: PointerEvent) => {
-    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; }
-    if (this.draggingCols) { this.onPointerMoveCols(ev); return; }
-    if (this.draggingPreview) { this.onPointerMovePreview(ev); return; }
+    if (this.draggingHorizontal) { this.onPointerMoveHorizontal(ev); return; } // aside splitter
+    if (this.draggingCols) { this.onPointerMoveCols(ev); return; } // middle splitter
+    if (this.draggingPreview) { this.onPointerMovePreview(ev); return; } // right splitter
 
+    // HTML ↔ CSS splitter
     if (!this.dragging || !this.splitContainer) return;
     const rect = this.splitContainer.nativeElement.getBoundingClientRect();
     const delta = ev.clientY - this.startY;
@@ -1077,7 +1228,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
-
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
@@ -1116,6 +1266,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => { this.previewOnlyUrl = null; this.previewLoading.set(false); }, 200);
   }
 
+  // ---------- reset ----------
   async resetQuestion() {
     const q = this.question();
     if (!q || this.resetting()) return;
@@ -1274,11 +1425,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }).subscribe({
       next: (res: any) => {
         this.recorded = true;
-        this.activity.activityCompleted$.next({
-          kind: this.kind,
-          tech: this.tech,
-          stats: res?.stats
-        });
+        this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
         this.activity.refreshSummary();
       },
       error: (e) => console.error('record completion failed', e),

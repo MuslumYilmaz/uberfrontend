@@ -140,15 +140,11 @@
       </div>
     </ng-container>
 
-    <!-- NON-ANGULAR: choose between Web (HTML/CSS) or JS/TS -->
+    <!-- NON-ANGULAR: WEB or JS -->
     <ng-container *ngIf="tech!=='angular'">
-      <!-- WEB: HTML + CSS + LIVE PREVIEW -->
+      <!-- WEB: HTML + CSS + PREVIEW/TEST-CODE tabs + Results/Console -->
       <ng-container *ngIf="isWebTech(); else jsBlock">
         <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
-          <div class="flex items-center border-b border-white/10 px-4">
-            <div class="text-xs opacity-70 ml-auto">Live preview updates as you type</div>
-          </div>
-
           <div class="flex-1 min-h-0 flex">
             <!-- LEFT editors -->
             <div class="min-w-0 flex flex-col" [style.flex]="'0 0 ' + (webColsRatio()*100) + '%'">
@@ -158,7 +154,8 @@
                 <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'"
                   style="min-height:120px;">
                   <app-monaco-editor class="h-full" [code]="webHtml()" [language]="'html'"
-                    [options]="editorMonacoOptions" (codeChange)="onHtmlChange($event)"></app-monaco-editor>
+                    [options]="editorMonacoOptions" (codeChange)="onHtmlChange($event)">
+                  </app-monaco-editor>
                 </div>
 
                 <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
@@ -175,46 +172,68 @@
             <!-- MIDDLE splitter -->
             <div class="splitter" [class.dragging]="isDraggingCols()" (pointerdown)="startWebColumnDrag($event)"></div>
 
-            <!-- RIGHT: preview (top) + results/console (bottom) -->
+            <!-- RIGHT: top (Preview/Test code) + bottom (Results/Console) -->
             <div class="min-w-0 flex-1 flex flex-col">
               <div #previewSplit class="flex-1 flex flex-col overflow-hidden">
-                <!-- TOP: preview -->
-                <iframe class="preview-iframe w-full border-0 bg-white min-h-[160px]"
-                  [style.flex]="'0 0 ' + (previewRatio()*100) + '%'"
-                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation"
-                  [srcdoc]="$any(previewDocSafe())" referrerpolicy="no-referrer">
-                </iframe>
+                <!-- TOP TABS -->
+                <div class="flex items-center border-b border-white/10 px-3 py-2 text-xs">
+                  <button class="px-3 py-1" [class.opacity-100]="isPreviewTop()" [class.opacity-60]="!isPreviewTop()"
+                    (click)="previewTopTab.set('preview')">Preview</button>
+                  <button class="px-3 py-1" [class.opacity-100]="isTestCodeTop()" [class.opacity-60]="!isTestCodeTop()"
+                    (click)="previewTopTab.set('testcode')">Test code</button>
+                  <div class="ml-auto text-xs opacity-70">Live preview updates as you type</div>
+                </div>
 
-                <!-- Splitter -->
+                <!-- TOP CONTENT -->
+                <div [style.flex]="'0 0 ' + (previewRatio()*100) + '%'" class="relative min-h-[160px]">
+                  <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white"
+                    [style.display]="isPreviewTop() ? 'block' : 'none'"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation"
+                    [attr.srcdoc]="previewDocRaw()" referrerpolicy="no-referrer">
+                  </iframe>
+
+                  <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">
+                    <app-monaco-editor class="h-full" [code]="testCode()" [language]="'javascript'"
+                      [options]="editorMonacoOptions" (codeChange)="testCode.set($event)">
+                    </app-monaco-editor>
+                  </div>
+                </div>
+
+                <!-- Splitter between TOP and BOTTOM -->
                 <div class="horizontal-splitter" [class.dragging]="isDraggingRight()"
                   (pointerdown)="startPreviewDrag($event)"></div>
 
-                <!-- BOTTOM: results/console -->
+                <!-- BOTTOM: Results / Console -->
                 <div class="flex-1 min-h-[140px] flex flex-col border-t border-white/10">
                   <div class="flex items-center gap-6 px-3 py-2 text-xs bg-neutral-900/60">
-                    <button class="font-medium" [disabled]="true"
-                      title="Run tests are only available for JS/TS challenges">
-                      ▶ Run tests
-                    </button>
+                    <button class="font-medium" (click)="runWebTests()" [disabled]="!hasAnyTests()"
+                      [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">▶ Run tests</button>
                     <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
                       (click)="subTab.set('tests')">Results</button>
                     <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
                       (click)="subTab.set('console')">Console</button>
-                    <span class="ml-auto opacity-80" *ngIf="hasRunTests">
+                    <span class="ml-auto opacity-80" *ngIf="hasRunTests && totalCount() > 0">
                       {{ passedCount() }}/{{ totalCount() }} passed
                     </span>
                   </div>
 
                   <div class="flex-1 min-h-0 overflow-hidden">
+                    <!-- Results -->
                     <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
-                      <div class="h-full grid place-items-center text-xs text-gray-400" *ngIf="totalCount()===0">
-                        No tests for HTML/CSS mode.
+                      <div class="h-full grid place-items-center text-xs text-gray-400" *ngIf="!hasAnyTests()">
+                        No tests provided for this challenge yet.
                       </div>
-                      <div *ngIf="totalCount() > 0" class="space-y-2">
+
+                      <div *ngIf="hasAnyTests()" class="space-y-2">
                         <div class="summary mb-2">
                           <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
-                          <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
-                          <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                          <ng-container *ngIf="totalCount() > 0">
+                            <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
+                            <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                          </ng-container>
+                          <ng-container *ngIf="totalCount() === 0">
+                            <span class="text-yellow-400 ml-2">No tests run yet</span>
+                          </ng-container>
                         </div>
 
                         <div *ngFor="let t of testResults()" class="test-card border rounded-md"
@@ -231,6 +250,7 @@
                       </div>
                     </div>
 
+                    <!-- Console -->
                     <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
                       <app-console-logger class="flex-1" [entries]="consoleEntries()" [results]="testResults()"
                         [max]="500" [autoScroll]="true">
@@ -239,7 +259,6 @@
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
