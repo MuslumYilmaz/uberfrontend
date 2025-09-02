@@ -531,21 +531,27 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- load question ----------
   private async loadQuestion(id: string) {
-    const idx = this.allQuestions.findIndex((q) => q.id === id);
-    if (idx >= 0) this.currentIndex = idx;
+    // Find the question
+    const idx = this.allQuestions.findIndex(q => q.id === id);
 
-    const q = idx >= 0 ? this.allQuestions[idx] : null;
-    if (!q) { this.question.set(null); return; }
+    // If not found, bounce to 404 (prevents empty chrome)
+    if (idx < 0) {
+      this.router.navigateByUrl('/404', { state: { from: this.router.url } });
+      return;
+    }
+
+    this.currentIndex = idx;
+    const q = this.allQuestions[idx];
     this.question.set(q);
 
-    // restore "solved"
+    // restore "solved" + left panel state
     this.solved.set(this.loadSolvedFlag(q));
     this.loadCollapsePref(q);
 
     let shouldShowBanner = false;
 
+    // ---------- ANGULAR via StackBlitz ----------
     if (this.tech === 'angular') {
-      // ---------- ANGULAR via StackBlitz ----------
       this.topTab.set('code');
       this.embedLoading.set(true);
 
@@ -577,7 +583,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
               if (!localStorage.getItem(baselineKey)) {
                 localStorage.setItem(baselineKey, JSON.stringify(files));
               }
-            } catch { }
+            } catch { /* ignore quota */ }
           }
         }
       }
@@ -620,8 +626,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // ---------- HTML / CSS mode ----------
     if (this.isWebTech()) {
-      // --- HTML / CSS mode ---
       const starters = this.getWebStarters(q);
       const htmlBaseKey = this.webBaseKey(q, 'html');
       const cssBaseKey = this.webBaseKey(q, 'css');
@@ -672,7 +678,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sessionStart = Date.now();
       this.recorded = false;
       return;
-
     }
 
     // ---------- JS / TS mode ----------

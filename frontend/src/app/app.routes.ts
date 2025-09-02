@@ -1,5 +1,16 @@
-import { Routes } from '@angular/router';
+import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
+
+/** Only match allowed techs */
+const ALLOWED_TECH = new Set(['javascript', 'angular', 'html', 'css']);
+export function techMatcher(segments: UrlSegment[]): UrlMatchResult | null {
+  if (!segments.length) return null;
+  const first = segments[0].path;
+  if (ALLOWED_TECH.has(first)) {
+    return { consumed: [segments[0]], posParams: { tech: segments[0] } };
+  }
+  return null;
+}
 
 export const routes: Routes = [
   // Landing
@@ -42,6 +53,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/courses/course-player/course-player.component').then(m => m.CoursePlayerComponent),
   },
+  // anything else under /courses after the specific ones → 404
+  {
+    path: 'courses/**',
+    loadComponent: () =>
+      import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+    data: { title: 'Page not found' },
+  },
 
   // Companies
   {
@@ -79,6 +97,13 @@ export const routes: Routes = [
               import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
             data: { source: 'company', kind: 'trivia' },
           },
+          // unknown child under /companies/:slug → 404
+          {
+            path: '**',
+            loadComponent: () =>
+              import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+            data: { title: 'Page not found' },
+          },
         ],
       },
     ],
@@ -100,6 +125,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/system-design-list/system-design-detail/system-design-detail.component')
             .then(m => m.SystemDesignDetailComponent),
+      },
+      // any deeper child under /system-design → 404
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+        data: { title: 'Page not found' },
       },
     ],
   },
@@ -147,6 +179,14 @@ export const routes: Routes = [
           import('./features/guides/behavioral/behavioral-host.component')
             .then(m => m.BehavioralHostComponent),
       },
+
+      // unknown child under /guides → 404
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+        data: { title: 'Page not found' },
+      },
     ],
   },
 
@@ -159,9 +199,17 @@ export const routes: Routes = [
       import('./features/auth/profile/profile.component').then(m => m.ProfileComponent),
   },
 
-  // Tech sections — JavaScript / Angular
+  // explicit /404 (optional for programmatic nav)
   {
-    path: ':tech',
+    path: '404',
+    loadComponent: () =>
+      import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+    data: { title: 'Page not found' },
+  },
+
+  // Tech sections — JavaScript / Angular / HTML / CSS
+  {
+    matcher: techMatcher,
     loadComponent: () =>
       import('./features/tech-layout/tech-layout.component').then(m => m.TechLayoutComponent),
     children: [
@@ -200,9 +248,21 @@ export const routes: Routes = [
           import('./features/coding/coding-detail/coding-detail.component').then(m => m.CodingDetailComponent),
         data: { kind: 'debug' },
       },
+      // Unknown child under a valid tech → 404
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+        data: { title: 'Page not found' },
+      },
     ],
   },
 
-  // Fallback
-  { path: '**', redirectTo: '' },
+  // Global fallback — render 404 (don't redirect so the missing URL is shown)
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+    data: { title: 'Page not found' },
+  },
 ];

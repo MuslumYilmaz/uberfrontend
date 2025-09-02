@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
@@ -10,7 +10,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
-import { BehaviorSubject, combineLatest, forkJoin } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, of } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Difficulty, Question } from '../../../core/models/question.model';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
@@ -60,6 +60,9 @@ export class CodingListComponent {
   source: ListSource = 'tech';
   kind: Kind = 'coding';
 
+  ALLOWED_TECH = new Set(['javascript', 'angular', 'html', 'css']);
+
+
   // company slug from parent param (:slug) OR ?c=
   companySlug$ = (this.route.parent
     ? combineLatest([
@@ -79,44 +82,55 @@ export class CodingListComponent {
       if (this.source === 'tech') {
         // path: /:tech/(coding|trivia|debug|all)
         return this.route.parent!.paramMap.pipe(
-          map(pm => (pm.get('tech') ?? 'javascript') as Tech),
-          tap(t => (this.tech = t)),
-          switchMap(t => {
-            if (this.kind === 'all') {
-              // Not linked today for /:tech, but safe to support
-              return forkJoin([
-                this.qs.loadQuestions(t, 'coding')
-                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'coding' })))),
-                this.qs.loadQuestions(t, 'trivia')
-                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' })))),
-                this.qs.loadQuestions(t, 'debug')
-                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'debug' }))))
-              ]).pipe(map(([a, b, c]) => [...a, ...b, ...c]));
+          map(pm => (pm.get('tech') ?? '').toLowerCase()),
+          switchMap((t) => {
+            if (!this.ALLOWED_TECH.has(t)) {
+              this.router.navigateByUrl('/404');
+              return of<Row[]>([]);
             }
+            this.tech = t as Tech;
+
+            if (this.kind === 'all') {
+              return forkJoin([
+                this.qs.loadQuestions(this.tech, 'coding')
+                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'coding' })))),
+                this.qs.loadQuestions(this.tech, 'trivia')
+                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' })))),
+                this.qs.loadQuestions(this.tech, 'debug')
+                  .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'debug' }))))
+              ]).pipe(
+                map(([a, b, c]) => [...a, ...b, ...c]),
+                startWith<Row[]>([])
+              );
+            }
+
             const k = this.kind as Exclude<Kind, 'all'>;
-            return this.qs.loadQuestions(t, k)
-              .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))));
-          }),
-          startWith<Row[]>([])
+            return this.qs.loadQuestions(this.tech, k)
+              .pipe(
+                map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))),
+                startWith<Row[]>([])
+              );
+          })
         );
       }
 
       // source === 'company'
-      // Company pages intentionally have only coding/trivia/all (no debug)
       if (this.kind === 'all') {
         return forkJoin([
           this.qs.loadAllQuestions('coding')
             .pipe(map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech })))),
           this.qs.loadAllQuestions('trivia')
             .pipe(map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))))
-        ]).pipe(map(([a, b]) => [...a, ...b]), startWith<Row[]>([]));
+        ]).pipe(
+          map(([a, b]) => [...a, ...b]),
+          startWith<Row[]>([])
+        );
       } else {
         const k: Exclude<Kind, 'all'> = this.kind as Exclude<Kind, 'all'>;
-        return this.qs.loadAllQuestions(k as any) // (k will never be 'debug' here)
-          .pipe(
-            map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
-            startWith<Row[]>([])
-          );
+        return this.qs.loadAllQuestions(k as any).pipe(
+          map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
+          startWith<Row[]>([])
+        );
       }
     })
   );
@@ -151,7 +165,7 @@ export class CodingListComponent {
     { label: 'Advanced', value: 'hard' as Difficulty }
   ];
 
-  constructor(public route: ActivatedRoute, public qs: QuestionService) { }
+  constructor(public route: ActivatedRoute, public qs: QuestionService, public router: Router) { }
 
   // ---------- helpers used by template ----------
   descriptionText(q: Question): string {

@@ -9,7 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
 
-type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course' | 'profile';
+type Mode = 'dashboard' | 'tech-list' | 'tech-detail' | 'sd-list' | 'sd-detail' | 'course' | 'profile' | 'not-found';
 
 const EMPTY_SUMMARY: ActivitySummary = {
   totalXp: 0,
@@ -388,20 +388,32 @@ export class HeaderComponent implements OnInit {
   // ---------- url parsing ----------
   private parseUrl(url: string) {
     const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
-    this.mode.set('dashboard'); this.currentTech.set(null); this.section.set(null);
+
+    // defaults
+    this.mode.set('dashboard');
+    this.currentTech.set(null);
+    this.section.set(null);
 
     if (segs.length === 0) { this.mode.set('dashboard'); return; }
+
+    // explicit first-segment checks
+    if (segs[0] === '404') { this.mode.set('not-found'); return; }
     if (segs[0] === 'courses') { this.mode.set('course'); return; }
     if (segs[0] === 'system-design') { this.mode.set(segs.length === 1 ? 'sd-list' : 'sd-detail'); return; }
     if (segs[0] === 'profile') { this.mode.set('profile'); return; }
 
+    // tech sections
     const tech = segs[0] as 'javascript' | 'angular' | 'html' | 'css';
-    if (tech === 'javascript' || tech === 'angular' || tech === 'html' || tech === 'css') {
-      this.currentTech.set(tech);
-    }
+    const isTech = tech === 'javascript' || tech === 'angular' || tech === 'html' || tech === 'css';
+    if (isTech) this.currentTech.set(tech);
 
+    // if it wasn't a known tech, leave mode as 'dashboard' and bail
+    if (!isTech) return;
+
+    // tech root -> list
     if (segs.length === 1) { this.mode.set('tech-list'); this.section.set('coding'); return; }
 
+    // section under tech
     const sec = segs[1] as 'coding' | 'trivia' | 'debug';
     if (sec === 'coding' || sec === 'trivia' || sec === 'debug') {
       this.section.set(sec);

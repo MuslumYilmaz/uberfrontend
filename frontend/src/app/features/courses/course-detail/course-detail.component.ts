@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { Course } from '../../../core/models/course.model';
 import { CoursesService } from '../../../core/services/course.service';
 
@@ -19,7 +20,6 @@ import { CoursesService } from '../../../core/services/course.service';
       padding: 24px 16px 48px;
     }
 
-    /* ---------- Header / hero ---------- */
     .hero {
       position: relative;
       padding: 20px 18px 22px;
@@ -48,7 +48,6 @@ import { CoursesService } from '../../../core/services/course.service';
       background:rgba(255,255,255,.04);
     }
 
-    /* ---------- Topics ---------- */
     .topics{ margin-top:22px; display:grid; gap:14px; }
 
     .topic{
@@ -92,14 +91,13 @@ import { CoursesService } from '../../../core/services/course.service';
     .chev{ opacity:.65; padding:0 4px; font-weight:700; }
     .row:hover .chev{ opacity:.95; transform:translateX(3px); transition:.16s; }
 
-    /* ---------- Responsive ---------- */
     @media (max-width: 720px){
       .title{ font-size:26px; }
       .hero{ padding:16px; }
     }
   `],
   template: `
-    <div class="wrap" *ngIf="course" [style.--accent]="accent">
+    <div class="wrap" *ngIf="course; else loadingTpl" [style.--accent]="accent">
       <section class="hero">
         <h1 class="title">{{ course.title }}</h1>
         <div class="subtitle" *ngIf="course.subtitle">{{ course.subtitle }}</div>
@@ -129,9 +127,11 @@ import { CoursesService } from '../../../core/services/course.service';
       </div>
     </div>
 
-    <div class="wrap" *ngIf="!course">
-      <section class="hero"><div class="subtitle">Loading…</div></section>
-    </div>
+    <ng-template #loadingTpl>
+      <div class="wrap">
+        <section class="hero"><div class="subtitle">Loading…</div></section>
+      </div>
+    </ng-template>
   `,
 })
 export class CourseDetailComponent {
@@ -139,21 +139,30 @@ export class CourseDetailComponent {
   lessonCount = 0;
   accent = '#6aa3ff';
 
-  constructor(route: ActivatedRoute, cs: CoursesService) {
+  constructor(route: ActivatedRoute, cs: CoursesService, private router: Router) {
     route.paramMap
-      .pipe(switchMap(pm => cs.get(pm.get('courseId')!)))
+      .pipe(
+        map(pm => pm.get('courseId') || ''),
+        switchMap(id => cs.get(id)),
+        catchError(() => of(null))
+      )
       .subscribe(c => {
-        this.course = c || undefined;
-        this.lessonCount = c?.topics?.reduce((n, t) => n + (t.lessons?.length ?? 0), 0) ?? 0;
+        if (!c) { this.navTo404(); return; }
+        this.course = c;
+        this.lessonCount = c.topics?.reduce((n, t) => n + (t.lessons?.length ?? 0), 0) ?? 0;
         this.accent = this.pickAccent(c);
       });
   }
 
+  private navTo404() {
+    const missing = this.router.url; // e.g., /courses/asd
+    try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+    this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
+  }
+
   private pickAccent(c?: Course): string {
-    // Prefer a color coming from data if present
     const hc = (c as any)?.heroColor as string | undefined;
     if (hc) return hc;
-    // Simple heuristics per course id
     if (c?.id?.includes('javascript')) return '#ffd300';
     if (c?.id?.includes('program')) return '#ff7a18';
     return '#6aa3ff';

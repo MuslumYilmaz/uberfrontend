@@ -111,14 +111,17 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   // ---- lifecycle ----
   ngOnInit(): void {
+    // Load list once; then resolve current id
     this.qs.loadSystemDesign().subscribe((list) => {
       this.all = list as SDQuestion[];
       const id = this.route.snapshot.paramMap.get('id')!;
-      this.setCurrentById(id);
+      this.setCurrentById(id, /*allowPending*/ false);
     });
+
+    // React to id changes (e.g., next/prev navigation)
     this.route.paramMap.subscribe(pm => {
       const id = pm.get('id');
-      if (id) this.setCurrentById(id);
+      if (id) this.setCurrentById(id, /*allowPending*/ true);
     });
   }
 
@@ -170,17 +173,47 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     return path.startsWith('http') ? path : `assets/${path.replace(/^\/+/, '')}`;
   }
 
-  private setCurrentById(id: string) {
+  /**
+   * Set current item by id.
+   * If list is loaded and id is unknown → navigate to /404 with the missing URL.
+   */
+  private setCurrentById(id: string, allowPending: boolean) {
+    if (!this.all.length) {
+      // list not ready yet; ignore unless we allow pending (route change before data)
+      if (!allowPending) return;
+    }
     const pos = this.all.findIndex(x => x.id === id);
+
     if (pos >= 0) {
       this.idx = pos;
-      this.q.set(this.all[pos]);
+      const item = this.all[pos];
+      this.q.set(item);
+      // remember “continue” target
+      try {
+        localStorage.setItem('uf:lastVisited', JSON.stringify({
+          to: ['/system-design', item.id],
+          label: item.title ?? 'System design'
+        }));
+      } catch { }
+
       // reset lazy-mounted editors when switching questions
       this.mountedCodes.set(new Set());
       // default active: first section
       this.activeKey.set(this.sections()[0]?.key ?? null);
       setTimeout(() => this.updateActiveFromPositions(), 0);
+      return;
     }
+
+    // If we have data and still couldn't find it → 404
+    if (this.all.length) this.navTo404();
+  }
+
+  /** Send the user to the NotFound page with the missing URL preserved. */
+  private navTo404() {
+    const missing = this.router.url;
+    try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+    // replaceUrl so Back returns to the last valid page instead of the bad URL
+    this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
   }
 
   /** Height to keep clear for the fixed header + breathing room */
