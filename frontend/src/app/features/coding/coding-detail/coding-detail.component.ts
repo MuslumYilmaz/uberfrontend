@@ -1297,16 +1297,20 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.resetting.set(true);
     try {
-      if (this.tech === 'angular') {
-        const storageKey = getNgStorageKey(q);
-        localStorage.removeItem(storageKey);
+      if (this.isFrameworkTech()) {
+        // ✅ Handle Angular *and* React here
+        const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
+        const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
+        const defaultOpen = this.tech === 'angular' ? 'src/app/app.component.ts' : 'src/App.tsx';
+
+        try { localStorage.removeItem(storageKey); } catch { }
+
         this.embedLoading.set(true);
 
-        const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
         if (this.sbVm && meta?.asset) {
           try {
             const asset = await this.ngEmbed.fetchAsset(meta.asset);
-            const openFile = (meta.openFile ?? asset?.openFile ?? 'src/app/app.component.ts').replace(/^\/+/, '');
+            const openFile = (meta.openFile ?? asset?.openFile ?? defaultOpen).replace(/^\/+/, '');
             if (asset?.files) {
               await this.ngEmbed.replaceFromAsset(this.sbVm, asset.files, openFile, storageKey);
             }
@@ -1314,6 +1318,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             this.embedLoading.set(false);
           }
         } else {
+          // If there’s no VM yet, just reload the question; loadQuestion()
+          // will bootstrap the StackBlitz files from the asset/baseline.
           requestAnimationFrame(() => this.loadQuestion(q.id));
         }
       } else if (this.isWebTech()) {
@@ -1323,15 +1329,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.htmlCode.set(starters.html);
         this.cssCode.set(starters.css);
       } else {
+        // JS/TS
         localStorage.removeItem(getJsKey(q.id));
         const lang = this.jsLang();
         this.editorContent.set(this.getStarter(q, lang));
         this.testCode.set(this.getTests(q, lang));
       }
 
+      // common cleanup
       this.solved.set(false);
       this.clearSolvedFlag(q);
-
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
