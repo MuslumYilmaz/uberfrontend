@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import sdk, { VM } from '@stackblitz/sdk';
 import { normalizeSdkFiles } from '../utils/snapshot.utils';
 
@@ -50,6 +50,8 @@ export class StackBlitzEmbed {
       devDependencies?: Record<string, string>; // merged into dependencies
       openFile: string;
       storageKey: string;
+      template?: 'angular-cli' | 'create-react-app' | 'javascript' | 'typescript' | 'node';
+
     }
   ): Promise<{ vm: VM; cleanup: () => void }> {
     const deps: Record<string, string> = {
@@ -60,7 +62,7 @@ export class StackBlitzEmbed {
     const vm = await sdk.embedProject(
       host,
       {
-        template: 'angular-cli',
+        template: opts.template ?? 'angular-cli',
         title: opts.title,
         description: 'Embedded via StackBlitz SDK',
         files: normalizeSdkFiles(opts.files),

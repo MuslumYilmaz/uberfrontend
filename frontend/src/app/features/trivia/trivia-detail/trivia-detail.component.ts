@@ -5,10 +5,10 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Subscription, combineLatest, map, switchMap, tap } from 'rxjs';
 import { Question } from '../../../core/models/question.model';
+import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 
-type Tech = 'javascript' | 'angular';
 type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
 

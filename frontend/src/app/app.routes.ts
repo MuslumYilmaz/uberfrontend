@@ -2,7 +2,7 @@ import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 
 /** Only match allowed techs */
-const ALLOWED_TECH = new Set(['javascript', 'angular', 'html', 'css']);
+const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'html', 'css']);
 export function techMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   if (!segments.length) return null;
   const first = segments[0].path;

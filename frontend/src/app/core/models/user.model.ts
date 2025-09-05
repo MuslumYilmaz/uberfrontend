@@ -11,7 +11,7 @@ export interface User {
 }
 
 // --- app-level enums & helpers ---
-export type Tech = 'javascript' | 'angular' | 'html' | 'css';
+export type Tech = 'javascript' | 'angular' | 'react' | 'html' | 'css';
 export type DailyItemKind = 'trivia' | 'quiz' | 'coding' | 'debug';
 export type RouteLink = any[]; // Angular routerLink tuple
 

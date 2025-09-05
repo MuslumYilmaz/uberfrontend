@@ -13,12 +13,12 @@ import { SliderModule } from 'primeng/slider';
 import { BehaviorSubject, combineLatest, forkJoin, of } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Difficulty, Question } from '../../../core/models/question.model';
+import { Tech } from '../../../core/models/user.model';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 
 type StructuredDescription = { text: string; examples?: string[] };
 type ListSource = 'tech' | 'company';
 type Kind = 'coding' | 'trivia' | 'debug' | 'all';
-type Tech = 'javascript' | 'angular' | 'html' | 'css';
 
 type Row = Question & {
   tech?: Tech;              // attached in company mode or derived from route
@@ -60,7 +60,7 @@ export class CodingListComponent {
   source: ListSource = 'tech';
   kind: Kind = 'coding';
 
-  ALLOWED_TECH = new Set(['javascript', 'angular', 'html', 'css']);
+  ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'html', 'css']);
 
 
   // company slug from parent param (:slug) OR ?c=
@@ -219,6 +219,7 @@ export class CodingListComponent {
     const tech = (q.tech ?? 'javascript') as Tech;
     switch (tech) {
       case 'angular': return 'Angular';
+      case 'react': return 'React';
       case 'html': return 'HTML';
       case 'css': return 'CSS';
       default: return 'JavaScript';

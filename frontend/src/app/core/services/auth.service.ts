@@ -2,10 +2,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
+import { Tech } from '../models/user.model';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
-export type Tech = 'javascript' | 'angular';
 
 export interface UserPrefs {
   tz: string;

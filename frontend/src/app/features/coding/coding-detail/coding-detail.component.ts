@@ -16,13 +16,13 @@ import { QuestionService } from '../../../core/services/question.service';
 import { StackBlitzEmbed } from '../../../core/services/stackblitz-embed.service';
 import { UserCodeSandboxService } from '../../../core/services/user-code-sandbox.service';
 import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
-import { getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey } from '../../../core/utils/storage-keys';
+import { getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey, getReactBaselineKey, getReactStorageKey } from '../../../core/utils/storage-keys';
 import { transformTestCode, wrapExportDefault } from '../../../core/utils/test-transform';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
-import type { DailyItemKind } from '../../../core/models/user.model';
+import type { DailyItemKind, Tech } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { DailyService } from '../../../core/services/daily.service';
 
@@ -38,7 +38,6 @@ type CourseNavState =
   | null;
 
 /** NOW supports html/css too */
-type Tech = 'javascript' | 'angular' | 'html' | 'css';
 type Kind = 'coding' | 'debug';
 type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
@@ -178,6 +177,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // --- state ---
   webColsRatio = signal(0.5);     // left vs right columns
   previewRatio = signal(0.7);     // preview vs console under preview
+
+  embedError = signal<string | null>(null);
 
   isDraggingCols = signal(false);
   isDraggingRight = signal(false);
@@ -550,8 +551,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let shouldShowBanner = false;
 
-    // ---------- ANGULAR via StackBlitz ----------
-    if (this.tech === 'angular') {
+    // ---------- FRAMEWORK via StackBlitz (Angular / React) ----------
+    if (this.isFrameworkTech()) {
       this.topTab.set('code');
       this.embedLoading.set(true);
 
@@ -561,8 +562,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.embedCleanup) { this.embedCleanup(); this.embedCleanup = undefined; }
 
       const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
-      const storageKey = getNgStorageKey(q);
-      const baselineKey = getNgBaselineKey(q);
+
+      // storage & baseline keys per framework
+      const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
+      const baselineKey = this.tech === 'angular' ? getNgBaselineKey(q) : getReactBaselineKey(q);
 
       let files = this.loadSavedFiles(storageKey);
       const isEmpty = !files || Object.keys(files).length === 0;
@@ -588,6 +591,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
+      let shouldShowBanner = false;
       if (files && Object.keys(files).length > 0) {
         let baseline: Record<string, string> | null = null;
 
@@ -599,22 +603,35 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
           baseline = asset?.files ?? null;
           try { if (asset?.files) localStorage.setItem(baselineKey, JSON.stringify(asset.files)); } catch { }
         }
-
         if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       } else {
         files = {};
       }
 
-      const openFile = (meta?.openFile ?? openFileFromAsset ?? 'src/app/app.component.ts').replace(/^\/+/, '');
-      const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
-        title: q.title || 'Angular question',
-        files, dependencies, openFile, storageKey
-      });
-      this.sbVm = vm;
-      this.embedCleanup = cleanup;
-      this.embedLoading.set(false);
+      // sensible default entries
+      const defaultOpen = this.tech === 'angular' ? 'src/app/app.component.ts'
+        : 'src/App.tsx'; // React fallback
+      const openFile = (meta?.openFile ?? openFileFromAsset ?? defaultOpen).replace(/^\/+/, '');
 
-      // reset UI + set banner
+      // pick StackBlitz template
+      const template = this.tech === 'angular' ? 'angular-cli' : 'create-react-app';
+
+      this.embedError.set(null);
+      try {
+        const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
+          title: q.title || (this.tech === 'angular' ? 'Angular question' : 'React question'),
+          files, dependencies, openFile, storageKey, template
+        });
+        this.sbVm = vm;
+        this.embedCleanup = cleanup;
+      } catch (e: any) {
+        console.error('StackBlitz embed failed', e);
+        this.embedError.set(e?.message || 'Failed to connect to StackBlitz');
+      } finally {
+        this.embedLoading.set(false);
+      }
+
+      // reset UI + banner state
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
@@ -1115,10 +1132,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Angular and Web are still “mark complete” on submit (tests are optional)
     if (this.tech === 'angular' || this.isWebTech()) {
-      this.creditDaily();
-      this.recordCompletion('submit');
-      await this.celebrate('submit');
-      return;
+      if (this.isFrameworkTech() || this.isWebTech()) {
+        this.creditDaily();
+        this.recordCompletion('submit');
+        await this.celebrate('submit');
+        return;
+      }
     }
 
     // JS/TS: always run tests
@@ -1258,7 +1277,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openPreview() {
     const q = this.question();
-    if (!q || this.tech !== 'angular') return;
+    if (!q || !this.isFrameworkTech()) return;
     const base = ((q as any).stackblitzSolutionUrl as string | undefined) ?? ((q as any).stackblitzEmbedUrl as string | undefined);
     if (!base) return;
     this.previewLoading.set(true);
@@ -1444,4 +1463,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** util */
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
+
+  /** Angular & React share the "framework embed" path */
+  isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react'; }
+
 }

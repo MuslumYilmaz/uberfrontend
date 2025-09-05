@@ -68,7 +68,7 @@
           </ng-container>
 
           <div>
-            <button *ngIf="tech==='angular'" pButton label="Preview what you need to build" icon="pi pi-eye"
+            <button *ngIf="isFrameworkTech()" pButton label="Preview what you need to build" icon="pi pi-eye"
               class="mt-6" (click)="openPreview()"></button>
           </div>
         </div>
@@ -109,7 +109,7 @@
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
     <!-- Restore banner (non-Angular) -->
-    <div *ngIf="tech!=='angular' && showRestoreBanner()"
+    <div *ngIf="!isWebTech() && showRestoreBanner()"
       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
       <span class="font-medium">Your code was restored from client storage.</span>
       <div class="absolute right-2 inset-y-0 flex items-center gap-3">
@@ -119,18 +119,9 @@
     </div>
 
     <!-- ANGULAR via StackBlitz SDK -->
-    <ng-container *ngIf="tech==='angular'">
+    <ng-container *ngIf="isFrameworkTech()">
       <div
         class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
-        <div *ngIf="showRestoreBanner()"
-          class="absolute top-0 left-0 right-0 z-[60] bg-yellow-200 text-black text-sm px-3 py-2 shadow relative text-center">
-          <span class="font-medium">Your code was restored from client storage.</span>
-          <div class="absolute right-3 inset-y-0 flex items-center gap-3">
-            <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
-            <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
-          </div>
-        </div>
-
         <div class="relative flex-1">
           <div #sbHost class="w-full h-full"></div>
           <div *ngIf="embedLoading()" class="absolute inset-0 grid place-items-center bg-black/40">
@@ -141,7 +132,7 @@
     </ng-container>
 
     <!-- NON-ANGULAR: WEB or JS -->
-    <ng-container *ngIf="tech!=='angular'">
+    <ng-container *ngIf="!isFrameworkTech()">
       <!-- WEB: HTML + CSS + PREVIEW/TEST-CODE tabs + Results/Console -->
       <ng-container *ngIf="isWebTech(); else jsBlock">
         <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
@@ -370,7 +361,7 @@
   [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
   [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
   [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
-  [submitLabel]="(tech==='angular' || isWebTech()) ? 'Mark as complete' : 'Submit'" (prev)="prev()" (next)="next()"
+  [submitLabel]="(isFrameworkTech() || isWebTech()) ? 'Mark as complete' : 'Submit'" (prev)="prev()" (next)="next()"
   (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
   (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>

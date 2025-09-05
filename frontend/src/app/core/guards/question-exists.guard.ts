@@ -2,8 +2,8 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { map, take } from 'rxjs/operators';
 import { QuestionService } from '../services/question.service';
+import { Tech } from '../models/user.model';
 
-type Tech = 'javascript' | 'angular' | 'html' | 'css';
 type Kind = 'coding' | 'trivia' | 'debug';
 
 export const questionExistsGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {

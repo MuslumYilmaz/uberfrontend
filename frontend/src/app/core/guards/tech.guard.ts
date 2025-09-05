@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanMatchFn, Router } from '@angular/router';
 
-const ALLOWED_TECH = new Set(['javascript', 'angular', 'html', 'css']);
+const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'html', 'css']);
 
 export const techMatchGuard: CanMatchFn = (_route, segments) => {
     const router = inject(Router);
