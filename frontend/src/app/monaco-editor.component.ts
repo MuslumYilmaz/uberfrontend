@@ -190,26 +190,59 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private ensureMonaco(): Promise<void> {
     return new Promise((resolve) => {
       const start = () => {
-        if (!window.require || !window.require.configuredForVs) {
-          try {
-            if (typeof window.require === 'function' && typeof (window.require as any).config === 'function') {
-              (window.require as any).config({ paths: { vs: this.vsBasePath } });
-            } else {
-              window.require = Object.assign(function () { }, window.require, { paths: { vs: this.vsBasePath } });
-            }
-            (window.require as any).configuredForVs = true;
-          } catch { /* ignore */ }
+        // Configure AMD path to Monaco once
+        if (!(window as any).require || !(window as any).require.configuredForVs) {
+          const req: any = (window as any).require || {};
+          req.config?.({ paths: { vs: this.vsBasePath } }) ??
+            ((window as any).require = Object.assign(function () { }, req, { paths: { vs: this.vsBasePath } }));
+          (window as any).require = req;
+          (window as any).require.configuredForVs = true;
         }
-        window.require(['vs/editor/editor.main'], () => resolve());
+
+        (window as any).require(['vs/editor/editor.main'], () => {
+          const monaco = (window as any).monaco;
+          const ts = monaco.languages.typescript;
+
+          // Friendly compiler options for a browser playground
+          ts.typescriptDefaults.setCompilerOptions({
+            allowJs: true,
+            target: monaco.languages.typescript.ScriptTarget.ES2020,
+            module: monaco.languages.typescript.ModuleKind.ESNext,
+            // Avoid "try nodenext" messages for bare imports in browser
+            moduleResolution: monaco.languages.typescript.ModuleResolutionKind.Bundler,
+            jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
+            esModuleInterop: true,
+            skipLibCheck: true,
+            strict: false,
+            baseUrl: 'file:///',
+          });
+
+          ts.typescriptDefaults.setDiagnosticsOptions({
+            diagnosticCodesToIgnore: [2307, 2792],
+          });
+
+          resolve();
+        });
       };
 
-      if (window.require && typeof window.require === 'function') { start(); return; }
+      // If AMD loader already present, start immediately; otherwise load it
+      if ((window as any).require && typeof (window as any).require === 'function') {
+        start();
+        return;
+      }
 
       const s = document.createElement('script');
-      s.src = this.amdLoaderPath;
-      s.onload = () => { (window as any).require = (window as any).require || {}; start(); };
-      s.onerror = () => { console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath); resolve(); };
+      s.src = this.amdLoaderPath; // e.g. 'assets/monaco/min/vs/loader.js'
+      s.onload = () => {
+        (window as any).require = (window as any).require || {};
+        start();
+      };
+      s.onerror = () => {
+        console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath);
+        resolve(); // fail-soft so app still runs
+      };
       document.body.appendChild(s);
     });
   }
+
 }

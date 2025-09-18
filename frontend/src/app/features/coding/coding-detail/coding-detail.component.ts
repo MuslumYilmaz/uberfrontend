@@ -50,7 +50,7 @@ type PracticeSession = { items: PracticeItem[]; index: number } | null;
     ProgressSpinnerModule, MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent
   ],
   templateUrl: './coding-detail.component.html',
-  styleUrls: ['./coding-detail.component.scss'],
+  styleUrls: ['./coding-detail.component.css'],
 })
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: Tech;
@@ -66,6 +66,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // JS/TS editor + tests
   editorContent = signal<string>('');
   testCode = signal<string>('');
+  frameworkEntryFile = '';
 
   // WEB (HTML/CSS)
   private htmlCode = signal<string>('');
@@ -106,6 +107,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   embedLoading = signal(false);
   previewLoading = signal(false);
   resetting = signal(false);
+
+  showEditor = signal(true);
 
   // banner
   showRestoreBanner = signal(false);
@@ -174,6 +177,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isTopTestsTab = computed(() => this.topTab() === 'tests');
   hasAnyTests = computed(() => !!(this.testCode()?.trim()));
 
+  // --- file explorer state for framework techs ---
+  filesMap = signal<Record<string, string>>({});
+  openPath = signal<string>(''); // current file shown in Monaco
+
+  fileList = computed(() =>
+    Object.keys(this.filesMap()).sort((a, b) => {
+      const da = a.split('/').length, db = b.split('/').length;
+      if (da !== db) return da - db; // a light “folders first” feel
+      return a.localeCompare(b);
+    })
+  );
+
   // --- state ---
   webColsRatio = signal(0.5);     // left vs right columns
   previewRatio = signal(0.7);     // preview vs console under preview
@@ -182,6 +197,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isDraggingCols = signal(false);
   isDraggingRight = signal(false);
+  showFileDrawer = signal(false);
 
   private draggingCols = false;
   private startXCols = 0;
@@ -414,17 +430,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       window.addEventListener('pointermove', this.onPointerMove);
       window.addEventListener('pointerup', this.onPointerUp);
     });
-
-    try {
-      monaco?.languages?.typescript?.typescriptDefaults?.setCompilerOptions?.({
-        module: monaco.languages.typescript.ModuleKind.ESNext,
-        target: monaco.languages.typescript.ScriptTarget.ES2020,
-        strict: false,
-        noEmitOnError: false,
-        allowJs: true,
-        isolatedModules: true,
-      });
-    } catch { /* ignore */ }
   }
 
   ngOnDestroy() {
@@ -530,7 +535,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
 
-  // ---------- load question ----------
   private async loadQuestion(id: string) {
     // Find the question
     const idx = this.allQuestions.findIndex(q => q.id === id);
@@ -573,6 +577,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       let dependencies: Record<string, string> | undefined;
       let openFileFromAsset: string | undefined;
 
+      // First-time bootstrap from asset if nothing saved locally
       if (isEmpty && meta?.asset) {
         const asset = await this.ngEmbed.fetchAsset(meta.asset);
         if (asset) {
@@ -591,7 +596,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
 
-      let shouldShowBanner = false;
+      // Compare with baseline to decide banner
       if (files && Object.keys(files).length > 0) {
         let baseline: Record<string, string> | null = null;
 
@@ -608,22 +613,43 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         files = {};
       }
 
-      // sensible default entries
-      const defaultOpen = this.tech === 'angular' ? 'src/app/app.component.ts'
-        : 'src/App.tsx'; // React fallback
+      // Which file to open in the VM/editor
+      const defaultOpen = this.tech === 'angular' ? 'src/app/app.component.ts' : 'src/App.tsx';
       const openFile = (meta?.openFile ?? openFileFromAsset ?? defaultOpen).replace(/^\/+/, '');
+      this.frameworkEntryFile = openFile;
 
-      // pick StackBlitz template
+      // Pick StackBlitz template
       const template = this.tech === 'angular' ? 'angular-cli' : 'create-react-app';
 
       this.embedError.set(null);
       try {
+        // Mount the visible StackBlitz iframe into #sbHost
         const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
           title: q.title || (this.tech === 'angular' ? 'Angular question' : 'React question'),
-          files, dependencies, openFile, storageKey, template
+          files,
+          dependencies,
+          openFile,
+          storageKey,
+          template,
         });
         this.sbVm = vm;
         this.embedCleanup = cleanup;
+
+        // Initialize Monaco with the same file the VM opened
+        let initialCode = (files && files[openFile]) || '';
+        try {
+          if (!initialCode && this.sbVm?.getFsSnapshot) {
+            const snap = await this.sbVm.getFsSnapshot();
+            initialCode = snap?.[openFile] || '';
+          }
+        } catch { /* snapshot optional */ }
+
+        // make all files visible in the left list
+        this.filesMap.set(files || {});
+        this.openPath.set(openFile);
+        this.frameworkEntryFile = openFile;
+
+        this.editorContent.set(initialCode);
       } catch (e: any) {
         console.error('StackBlitz embed failed', e);
         this.embedError.set(e?.message || 'Failed to connect to StackBlitz');
@@ -1313,6 +1339,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             const openFile = (meta.openFile ?? asset?.openFile ?? defaultOpen).replace(/^\/+/, '');
             if (asset?.files) {
               await this.ngEmbed.replaceFromAsset(this.sbVm, asset.files, openFile, storageKey);
+
+              this.filesMap.set(asset.files);
+              this.openPath.set(openFile);
+
+              const fresh = asset.files[openFile] ?? '';
+              this.frameworkEntryFile = openFile;
+              this.editorContent.set(fresh);
+              this.remountEditor();
             }
           } finally {
             this.embedLoading.set(false);
@@ -1468,10 +1502,59 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return list.slice(-this.MAX_CONSOLE_LINES);
   }
 
+  langFromPath(p: string): 'typescript' | 'javascript' | 'html' | 'css' | 'json' | 'plaintext' {
+    const lc = (p || '').toLowerCase();
+    if (lc.endsWith('.ts') || lc.endsWith('.tsx')) return 'typescript';
+    if (lc.endsWith('.js') || lc.endsWith('.jsx')) return 'javascript';
+    if (lc.endsWith('.html')) return 'html';
+    if (lc.endsWith('.css') || lc.endsWith('.scss')) return 'css';
+    if (lc.endsWith('.json')) return 'json';
+    return 'plaintext';
+  }
+
+  openFile(path: string) {
+    const files = this.filesMap();
+    if (!path || !(path in files)) return;
+    this.openPath.set(path);
+    this.frameworkEntryFile = path;
+    this.editorContent.set(files[path] ?? '');
+    this.remountEditor();
+  }
+
+  toggleFiles() { this.showFileDrawer.set(!this.showFileDrawer()); }
+  closeFiles() { this.showFileDrawer.set(false); }
+
   /** util */
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
 
   /** Angular & React share the "framework embed" path */
   isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react'; }
 
+  onFrameworkCodeChange(code: string) {
+    this.editorContent.set(code);
+
+    const q = this.question();
+    if (!q) return;
+
+    const path = this.openPath() || this.frameworkEntryFile;
+    if (!path) return;
+
+    // update in-memory map
+    this.filesMap.update(m => ({ ...m, [path]: code }));
+
+    // persist whole snapshot (so we can restore all files)
+    const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
+    try { localStorage.setItem(storageKey, JSON.stringify(this.filesMap())); } catch { }
+
+    // live-sync to the VM
+    if (this.sbVm) {
+      this.sbVm.applyFsDiff({ create: { [path]: code }, destroy: [] });
+    }
+  }
+
+  private remountEditor() {
+    this.showEditor.set(false);
+    // next macrotask → re-create the component
+    setTimeout(() => this.showEditor.set(true), 0);
+  }
 }

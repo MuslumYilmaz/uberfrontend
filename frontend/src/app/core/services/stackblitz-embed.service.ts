@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import sdk, { VM } from '@stackblitz/sdk';
 import { normalizeSdkFiles } from '../utils/snapshot.utils';
 
@@ -70,9 +70,13 @@ export class StackBlitzEmbed {
       },
       {
         height: '100%',
-        openFile: this.normalizePath(opts.openFile)!,
-        forceEmbedLayout: true,
+        view: 'preview',
+        hideExplorer: true,
         hideNavigation: true,
+        hideDevTools: true,
+        terminalHeight: 0,
+        forceEmbedLayout: true,
+        openFile: this.normalizePath(opts.openFile)!,
       }
     );
 
