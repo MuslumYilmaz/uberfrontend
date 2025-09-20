@@ -1,23 +1,25 @@
+// coding-detail.component.ts
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
   AfterViewInit, Component, computed, effect, ElementRef, NgZone,
-  OnDestroy, OnInit, signal, ViewChild, WritableSignal
+  OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { filter } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
+
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
-import { StackBlitzEmbed } from '../../../core/services/stackblitz-embed.service';
 import { UserCodeSandboxService } from '../../../core/services/user-code-sandbox.service';
 import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
-import { getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey, getReactBaselineKey, getReactStorageKey } from '../../../core/utils/storage-keys';
-import { transformTestCode, wrapExportDefault } from '../../../core/utils/test-transform';
+import {
+  getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey,
+  getReactBaselineKey, getReactStorageKey
+} from '../../../core/utils/storage-keys';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
@@ -37,17 +39,22 @@ type CourseNavState =
   }
   | null;
 
-/** NOW supports html/css too */
 type Kind = 'coding' | 'debug';
 type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
+
+type SdkAsset = {
+  files: Record<string, string>;
+  dependencies?: Record<string, string>;
+  openFile?: string;
+};
 
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
   imports: [
-    CommonModule, RouterModule, AccordionModule, ButtonModule, DialogModule,
-    ProgressSpinnerModule, MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent
+    CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
+    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
@@ -56,12 +63,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   tech!: Tech;
   kind: Kind = 'coding';
   question = signal<Question | null>(null);
-
-  @ViewChild('sbHost', { read: ElementRef }) sbHost?: ElementRef<HTMLDivElement>;
-  private sbVm: any | null = null;
-  private embedCleanup?: () => void;
-
-  embedUrl: WritableSignal<SafeResourceUrl | null> = signal(null);
 
   // JS/TS editor + tests
   editorContent = signal<string>('');
@@ -78,10 +79,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   jsLang = signal<JsLang>('js');
 
   // UI state
-  /** unified tab signal used by both modes */
   topTab = signal<'code' | 'tests' | 'html' | 'css'>('code');
   activePanel = signal<number>(0);
-  // NOTE: now also supports 'code' (test editor) in the preview pane for HTML/CSS
   subTab = signal<'code' | 'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
   horizontalRatio = signal(0.3);
@@ -96,21 +95,47 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       : `0 0 ${this.horizontalRatio() * 100}%`
   );
 
-  // Context flags
+  // Context flags + course bits
   isCourseContext = signal(false);
-
   copiedExamples = signal(false);
   isDraggingVertical = signal(false);
   isDraggingHorizontal = signal(false);
 
-  // loading / reset
-  embedLoading = signal(false);
-  previewLoading = signal(false);
+  courseIdFromState: string | null = null;
+  courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
+  leftDrawerLabel: string | null = null;
+  currentCourseLessonId: string | null = null;
+
+  editorMonacoOptions = {
+    fontSize: 12,
+    lineHeight: 18,
+    minimap: { enabled: false },
+    tabSize: 2,
+  };
+
+  examplesMonacoOptions = {
+    readOnly: true,
+    fontSize: 12,
+    lineHeight: 18,
+    minimap: { enabled: false },
+    lineNumbers: 'on' as const,
+    folding: false,
+    renderLineHighlight: 'none' as const,
+    scrollBeyondLastLine: false,
+    overviewRulerLanes: 0,
+    scrollbar: {
+      vertical: 'hidden' as const,
+      horizontal: 'hidden' as const,
+      useShadows: false,
+      verticalScrollbarSize: 0,
+      horizontalScrollbarSize: 0,
+      alwaysConsumeMouseWheel: false,
+    },
+  };
+
+  // loading / reset / banner
   resetting = signal(false);
-
   showEditor = signal(true);
-
-  // banner
   showRestoreBanner = signal(false);
 
   private jsSaveTimer: any = null;
@@ -124,7 +149,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   consoleEntries = signal<ConsoleEntry[]>([]);
   hasRunTests = false;
 
-  // Course breadcrumb + lesson-to-lesson nav
+  // Course breadcrumb + nav
   courseNav = signal<CourseNavState>(null);
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;
@@ -140,9 +165,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   solved = signal(false);
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
-
-  // preview iframe ref (HTML/CSS mode)
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
+  @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
 
   // drag state
   private dragging = false;
@@ -156,7 +180,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly MAX_CONSOLE_LINES = 500;
 
-  // Preview modal (Angular)
+  // Preview dialog (Angular)
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
 
@@ -166,7 +190,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   failedCount = computed(() => this.testResults().filter(r => !r.passed).length);
   allPassing = computed(() => this.totalCount() > 0 && this.failedCount() === 0);
 
-  // at top of class
   previewTopTab = signal<'preview' | 'testcode'>('preview');
   isPreviewTop = computed(() => this.previewTopTab() === 'preview');
   isTestCodeTop = computed(() => this.previewTopTab() === 'testcode');
@@ -179,21 +202,23 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // --- file explorer state for framework techs ---
   filesMap = signal<Record<string, string>>({});
-  openPath = signal<string>(''); // current file shown in Monaco
+  openPath = signal<string>('');
 
   fileList = computed(() =>
     Object.keys(this.filesMap()).sort((a, b) => {
       const da = a.split('/').length, db = b.split('/').length;
-      if (da !== db) return da - db; // a light “folders first” feel
+      if (da !== db) return da - db;
       return a.localeCompare(b);
     })
   );
 
   // --- state ---
-  webColsRatio = signal(0.5);     // left vs right columns
-  previewRatio = signal(0.7);     // preview vs console under preview
+  webColsRatio = signal(0.5);
+  previewRatio = signal(0.7);
 
-  embedError = signal<string | null>(null);
+  // preview url
+  private _previewUrl = signal<SafeResourceUrl | null>(null);
+  previewUrl = () => this._previewUrl();
 
   isDraggingCols = signal(false);
   isDraggingRight = signal(false);
@@ -206,8 +231,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private draggingPreview = false;
   private startYPreview = 0;
   private startPreviewRatio = 0;
-
-  @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
 
   // Footer helpers
   get progressText() {
@@ -240,17 +263,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 </style></head><body>${html}</body></html>`;
   });
 
-  /** trusted HTML for iframe srcdoc binding (kept available) */
-  previewDocSafe = computed(() =>
-    this.sanitizer.bypassSecurityTrustHtml(this.previewDocRaw())
-  );
-
-  // --- course footer/drawer state ---
-  courseIdFromState: string | null = null;
-  courseOutline: Array<{ id: string; title: string; lessons: any[] }> | null = null;
-  leftDrawerLabel: string | null = null;
-  currentCourseLessonId: string | null = null;
-
   descriptionText = computed(() => {
     const q = this.question();
     if (!q) return '';
@@ -273,32 +285,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return exs.map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`).join('\n\n// --------\n\n');
   });
 
-  editorMonacoOptions = {
-    fontSize: 12,
-    lineHeight: 18,
-    minimap: { enabled: false },
-    tabSize: 2,
-  };
-  examplesMonacoOptions = {
-    readOnly: true,
-    fontSize: 12,
-    lineHeight: 18,
-    minimap: { enabled: false },
-    lineNumbers: 'on' as const,
-    folding: false,
-    renderLineHighlight: 'none' as const,
-    scrollBeyondLastLine: false,
-    overviewRulerLanes: 0,
-    scrollbar: {
-      vertical: 'hidden' as const,
-      horizontal: 'hidden' as const,
-      useShadows: false,
-      verticalScrollbarSize: 0,
-      horizontalScrollbarSize: 0,
-      alwaysConsumeMouseWheel: false,
-    },
-  };
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -307,9 +293,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private zone: NgZone,
     private codeStore: CodeStorageService,
     private runner: UserCodeSandboxService,
-    private ngEmbed: StackBlitzEmbed,
     private daily: DailyService,
-    private activity: ActivityService
+    private activity: ActivityService,
+    private http: HttpClient
   ) { }
 
   // ---------- helpers ----------
@@ -358,7 +344,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.returnLabel.set(null);
     }
 
-    // drawer data (course)
     this.courseIdFromState = s?.courseId ?? null;
     this.courseOutline = s?.outline ?? null;
     this.leftDrawerLabel = s?.leftCourseLabel ?? null;
@@ -379,9 +364,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     recompute();
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
 
-    // determine :tech and :kind up the tree
+    // determine :tech and :kind
     this.route.paramMap.subscribe((pm) => {
-      // climb to detect tech
       let p: ActivatedRoute | null = this.route;
       let tech: string | null = null;
       while (p && !tech) {
@@ -390,14 +374,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.tech = ((tech || 'javascript') as Tech);
 
-      // detect kind from this route's path (coding/:id or debug/:id)
       const path = this.route.routeConfig?.path || '';
       this.kind = path.startsWith('debug') ? 'debug' : 'coding';
 
-      // NEW: make sure a Daily set exists for the current tech (works even if service ignores html/css)
       this.daily.ensureTodaySet(this.tech as any);
-
-      // initial layout
       this.horizontalRatio.set(this.isWebTech() || this.tech === 'javascript' ? 0.5 : 0.3);
 
       const id = pm.get('id')!;
@@ -410,7 +390,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.style.overflow = 'hidden';
   }
 
-  /** Practice vs Course detection – do NOT treat plain returnTo (company) as course. */
   private computeIsCourseContext(): boolean {
     if (this.courseNav()) return true;
     const url = this.router.url.split('?')[0];
@@ -436,7 +415,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
     document.body.style.overflow = '';
-    if (this.embedCleanup) this.embedCleanup();
   }
 
   // ---------- helpers to pick code by language ----------
@@ -451,12 +429,24 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return lang === 'ts' ? (q.solutionTs ?? q.solution ?? '') : (q.solution ?? q.solutionTs ?? '');
   }
   private getTests(q: any, lang: JsLang) {
-    return lang === 'ts' ? (q.testsTs ?? q.tests ?? '') : (q.tests ?? q.testsTs ?? '');
+    // most-specific first, then fallbacks
+    const keysJs = ['tests', 'testsJs', 'unitTests', 'spec', 'specs', 'testCode'];
+    const keysTs = ['testsTs', 'tests', 'unitTestsTs', 'specTs', 'specsTs', 'testCodeTs'];
+
+    const pick = (obj: any, keys: string[]) => {
+      for (const k of keys) {
+        const v = obj?.[k];
+        if (typeof v === 'string' && v.trim()) return v;
+      }
+      return '';
+    };
+
+    return lang === 'ts' ? pick(q, keysTs) : pick(q, keysJs);
   }
+
   private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
-  /** ---------- WEB (html/css) helpers ---------- */
-  /** Pick the first non-empty string value from a list of dot-paths. */
+  // ---------- WEB (html/css) utilities ----------
   private pickString(obj: any, paths: string[]): string {
     for (const p of paths) {
       const val = p.split('.').reduce((o: any, k) => (o && k in o ? (o as any)[k] : undefined), obj as any);
@@ -464,7 +454,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return '';
   }
-  /** Last-resort scan for any non-solution CSS-looking key (case-insensitive). */
   private findCssLike(obj: any): string {
     const scan = (o: any) => {
       if (!o || typeof o !== 'object') return '';
@@ -475,7 +464,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     return scan(obj?.web) || scan(obj) || '';
   }
-  /** Pretty-print CSS without pulling in a heavy formatter. */
   private prettifyCss(css: string): string {
     if (!css) return '';
     try {
@@ -485,11 +473,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         .replace(/\s*}\s*/g, '\n}\n')
         .replace(/\n\s*\n/g, '\n')
         .trim();
-    } catch {
-      return css;
-    }
+    } catch { return css; }
   }
-  /** Load starters strictly from JSON; no component-defined CSS fallback. */
   private getWebStarters(q: any): { html: string; css: string } {
     const htmlRaw = this.pickString(q, [
       'web.starterHtml', 'starterHtml', 'htmlStarter', 'web.html', 'html'
@@ -501,12 +486,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!cssRaw) cssRaw = this.findCssLike(q);
 
     const html = htmlRaw || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
-
-    if (!cssRaw) {
-      try { console.warn('[coding-detail] No CSS found in JSON for', q?.id, Object.keys(q || {})); } catch { }
-    }
-
-    const css = this.prettifyCss(cssRaw);
+    const css = this.prettifyCss(cssRaw || '');
     return { html, css };
   }
   private getWebSolutions(q: any): { html: string; css: string } {
@@ -535,11 +515,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
 
+  // ---------- Load question ----------
   private async loadQuestion(id: string) {
-    // Find the question
     const idx = this.allQuestions.findIndex(q => q.id === id);
-
-    // If not found, bounce to 404 (prevents empty chrome)
     if (idx < 0) {
       this.router.navigateByUrl('/404', { state: { from: this.router.url } });
       return;
@@ -549,115 +527,63 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
-    // restore "solved" + left panel state
     this.solved.set(this.loadSolvedFlag(q));
     this.loadCollapsePref(q);
 
     let shouldShowBanner = false;
 
-    // ---------- FRAMEWORK via StackBlitz (Angular / React) ----------
+    // FRAMEWORK (Angular/React)
     if (this.isFrameworkTech()) {
       this.topTab.set('code');
-      this.embedLoading.set(true);
 
-      const host = this.sbHost?.nativeElement;
-      if (!host) { requestAnimationFrame(() => this.loadQuestion(id)); return; }
-
-      if (this.embedCleanup) { this.embedCleanup(); this.embedCleanup = undefined; }
-
-      const meta = (q as any).sdk as { asset?: string; openFile?: string; storageKey?: string } | undefined;
-
-      // storage & baseline keys per framework
       const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
       const baselineKey = this.tech === 'angular' ? getNgBaselineKey(q) : getReactBaselineKey(q);
 
+      // 1) Load saved snapshot
       let files = this.loadSavedFiles(storageKey);
-      const isEmpty = !files || Object.keys(files).length === 0;
 
-      let dependencies: Record<string, string> | undefined;
-      let openFileFromAsset: string | undefined;
+      // 2) If first time, bootstrap from sdk.asset (JSON) or fallback
+      if (!files || Object.keys(files).length === 0) {
+        const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
+        const assetUrl = meta?.asset;
+        if (assetUrl) {
+          try {
+            const asset = await this.fetchSdkAsset(assetUrl);
+            files = normalizeSdkFiles(asset.files || {});
+            const openFromAsset = (meta?.openFile ?? asset.openFile) || undefined;
 
-      // First-time bootstrap from asset if nothing saved locally
-      if (isEmpty && meta?.asset) {
-        const asset = await this.ngEmbed.fetchAsset(meta.asset);
-        if (asset) {
-          files = asset.files ?? {};
-          dependencies = asset.dependencies;
-          openFileFromAsset = asset.openFile;
-
-          if (Object.keys(files).length > 0) {
+            // persist baseline + current
             try {
               localStorage.setItem(storageKey, JSON.stringify(files));
-              if (!localStorage.getItem(baselineKey)) {
-                localStorage.setItem(baselineKey, JSON.stringify(files));
-              }
-            } catch { /* ignore quota */ }
+              localStorage.setItem(baselineKey, JSON.stringify(files));
+            } catch { }
+            // choose entry
+            const open = (openFromAsset || this.defaultEntry()).replace(/^\/+/, '');
+            this.frameworkEntryFile = open;
+          } catch {
+            files = this.createFrameworkFallbackFiles();
           }
+        } else {
+          files = this.createFrameworkFallbackFiles();
         }
-      }
-
-      // Compare with baseline to decide banner
-      if (files && Object.keys(files).length > 0) {
-        let baseline: Record<string, string> | null = null;
-
-        const baseRaw = localStorage.getItem(baselineKey);
-        if (baseRaw) baseline = normalizeSdkFiles(JSON.parse(baseRaw));
-
-        if (!baseline && meta?.asset) {
-          const asset = await this.ngEmbed.fetchAsset(meta.asset);
-          baseline = asset?.files ?? null;
-          try { if (asset?.files) localStorage.setItem(baselineKey, JSON.stringify(asset.files)); } catch { }
-        }
-        if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       } else {
-        files = {};
+        // decide banner against baseline
+        const baseRaw = localStorage.getItem(baselineKey);
+        const baseline = baseRaw ? normalizeSdkFiles(JSON.parse(baseRaw)) : null;
+        if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       }
 
-      // Which file to open in the VM/editor
-      const defaultOpen = this.tech === 'angular' ? 'src/app/app.component.ts' : 'src/App.tsx';
-      const openFile = (meta?.openFile ?? openFileFromAsset ?? defaultOpen).replace(/^\/+/, '');
+      // 3) Initialize editor
+      const openFile = this.pickFirstOpen(files);
       this.frameworkEntryFile = openFile;
+      this.filesMap.set(files);
+      this.openPath.set(openFile);
+      this.editorContent.set(files[openFile] ?? '');
 
-      // Pick StackBlitz template
-      const template = this.tech === 'angular' ? 'angular-cli' : 'create-react-app';
+      // 4) Preview (simple html-only placeholder)
+      this.rebuildFrameworkPreview();
 
-      this.embedError.set(null);
-      try {
-        // Mount the visible StackBlitz iframe into #sbHost
-        const { vm, cleanup } = await this.ngEmbed.embedProject(host, {
-          title: q.title || (this.tech === 'angular' ? 'Angular question' : 'React question'),
-          files,
-          dependencies,
-          openFile,
-          storageKey,
-          template,
-        });
-        this.sbVm = vm;
-        this.embedCleanup = cleanup;
-
-        // Initialize Monaco with the same file the VM opened
-        let initialCode = (files && files[openFile]) || '';
-        try {
-          if (!initialCode && this.sbVm?.getFsSnapshot) {
-            const snap = await this.sbVm.getFsSnapshot();
-            initialCode = snap?.[openFile] || '';
-          }
-        } catch { /* snapshot optional */ }
-
-        // make all files visible in the left list
-        this.filesMap.set(files || {});
-        this.openPath.set(openFile);
-        this.frameworkEntryFile = openFile;
-
-        this.editorContent.set(initialCode);
-      } catch (e: any) {
-        console.error('StackBlitz embed failed', e);
-        this.embedError.set(e?.message || 'Failed to connect to StackBlitz');
-      } finally {
-        this.embedLoading.set(false);
-      }
-
-      // reset UI + banner state
+      // reset UI
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
@@ -669,7 +595,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // ---------- HTML / CSS mode ----------
+    // ---------- HTML / CSS ----------
     if (this.isWebTech()) {
       const starters = this.getWebStarters(q);
       const htmlBaseKey = this.webBaseKey(q, 'html');
@@ -708,9 +634,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       } catch { }
 
-      // Load tests if provided for web problems
       this.testCode.set(this.getWebTests(q));
-
       this.topTab.set('html');
       this.activePanel.set(0);
       this.subTab.set('tests');
@@ -723,7 +647,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // ---------- JS / TS mode ----------
+    // ---------- JS / TS ----------
     const jsKey = getJsKey(q.id);
     const baseKey = getJsBaselineKey(q.id);
 
@@ -754,10 +678,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.testCode.set(this.getTests(q, resolvedLang));
 
-    if (this.embedCleanup) this.embedCleanup();
-    this.sbVm = null;
-    this.embedLoading.set(false);
-
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
@@ -767,6 +687,41 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showRestoreBanner.set(shouldShowBanner);
     this.sessionStart = Date.now();
     this.recorded = false;
+  }
+
+  private defaultEntry(): string {
+    return this.tech === 'angular' ? 'src/app/app.component.ts' : 'src/App.tsx';
+  }
+
+  private pickFirstOpen(files: Record<string, string>): string {
+    const dflt = this.defaultEntry();
+    if (files[dflt]) return dflt;
+    const candidates = ['src/main.tsx', 'src/main.ts', 'src/index.tsx', 'src/index.ts', 'src/App.tsx', 'src/app/app.component.ts'];
+    const found = candidates.find(f => f in files);
+    if (found) return found;
+    const [first] = Object.keys(files);
+    return (first || dflt).replace(/^\/+/, '');
+  }
+
+  private async fetchSdkAsset(url: string): Promise<SdkAsset> {
+    // Resolve relative to <base href> to support subpaths
+    const href = new URL(url, document.baseURI).toString();
+    return await firstValueFrom(this.http.get<SdkAsset>(href));
+  }
+
+  private createFrameworkFallbackFiles(): Record<string, string> {
+    if (this.tech === 'react') {
+      return {
+        'public/index.html': `<!doctype html><html><head><meta charset="utf-8"><title>React</title></head><body><div id="root">React preview placeholder</div></body></html>`,
+        'src/App.tsx': `export default function App(){ return <div>Hello React</div> }`,
+      };
+    } else {
+      return {
+        'src/app/app.component.ts': `import { Component } from '@angular/core';\n@Component({selector:'app-root', standalone:true, template:\`<h1>Hello Angular</h1>\`})\nexport class AppComponent{}`,
+        'src/main.ts': `import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent);`,
+        'index.html': `<!doctype html><html><head><meta charset="utf-8"><title>Angular</title></head><body><app-root>Angular preview placeholder</app-root></body></html>`,
+      };
+    }
   }
 
   private loadSavedFiles(storageKey: string): Record<string, string> | null {
@@ -856,10 +811,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private shouldWarnForSolution(): boolean {
     return this.isCourseContext() && localStorage.getItem(this.SOLUTION_WARN_SKIP_KEY) !== 'true';
   }
-  skipSolutionWarningForever() {
-    try { localStorage.setItem(this.SOLUTION_WARN_SKIP_KEY, 'true'); } catch { }
-    this.showSolutionWarning.set(false);
-  }
 
   showSolution() {
     const q = this.question();
@@ -885,7 +836,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ---------- navigation (practice) ----------
   prev() {
     if (this.practice) {
       if (this.practice.index > 0) this.navToPracticeIndex(this.practice.index - 1);
@@ -930,7 +880,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- TS -> JS transpile ----------
+  // ---------- TS -> JS transpile (for tests) ----------
   private async transpileTsToJs(code: string, fileName: string): Promise<string> {
     if (!monaco?.languages?.typescript || typeof code !== 'string') return code;
     const uri = monaco.Uri.parse(`inmemory://model/${fileName}`);
@@ -953,34 +903,107 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q || this.tech === 'angular') return;
 
-    if (this.isWebTech()) {
-      await this.runWebTests();
-      return;
-    }
+    // Delegate to DOM runner for HTML/CSS questions
+    if (this.isWebTech()) { await this.runWebTests(); return; }
 
+    // UI reset
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
+    const testsSrcRaw = (this.testCode() || '').trim();
+    if (!testsSrcRaw) {
+      // Nothing to run – show "No tests reported"
+      this.hasRunTests = true;
+      this.testResults.set([]);
+      this.subTab.set('tests');
+      return;
+    }
+
+    // Prepare sources
     const lang = this.jsLang();
+    // Prepare sources
     const userSrc = this.editorContent();
-    const testsSrc = this.testCode();
+    const testsSrc = (this.testCode() || '').trim();
 
-    const userJs = lang === 'ts' ? await this.transpileTsToJs(userSrc, `${q.id}.ts`) : userSrc;
-    const testsJs = lang === 'ts' ? await this.transpileTsToJs(testsSrc, `${q.id}.tests.ts`) : testsSrc;
+    // Always ensure JS (transpile if needed) for BOTH user & tests
+    const userJs = await this.ensureJs(userSrc, `${q.id}.ts`);
+    const testsJs = await this.ensureJs(testsSrc, `${q.id}.tests.ts`);
 
-    const wrapped = wrapExportDefault(userJs, q.id);
-    const testsPrepared = transformTestCode(testsJs, q.id);
+    const wrapped = this.wrapExportDefault(userJs, q.id);
+    const testsPrepared = this.transformTestCode(testsJs, q.id);
 
-    const out = await this.runner.runWithTests({
-      userCode: wrapped,
-      testCode: testsPrepared,
-      timeoutMs: 1500
-    });
 
-    this.consoleEntries.set(this.sanitizeLogs(out.entries as ConsoleEntry[]));
-    this.testResults.set(out.results ?? []);
+    // 1) Try the sandbox first
+    try {
+      const out = await this.runner.runWithTests({ userCode: wrapped, testCode: testsPrepared, timeoutMs: 1500 });
+      this.consoleEntries.set(this.sanitizeLogs((out?.entries as ConsoleEntry[]) || []));
+      this.testResults.set(out?.results || []);
+    } catch (e: any) {
+      this.testResults.set([{ name: 'Test runner error', passed: false, error: String(e?.message ?? e) }]);
+    }
+
+    // 2) Fallback: local harness if the sandbox produced no results
+    if ((this.testResults() || []).length === 0 && testsPrepared.trim()) {
+      try {
+        // Evaluate user's code so default export is on the global
+        new Function(wrapped)();
+
+        // Minimal harness
+        const results: TestResult[] = [];
+        const logs: ConsoleEntry[] = [];
+        const pushLog = (type: 'log' | 'warn' | 'error', args: any[]) => { try { logs.push({ type, args } as any); } catch { } };
+
+        const consoleProxy = {
+          log: (...a: any[]) => pushLog('log', a),
+          warn: (...a: any[]) => pushLog('warn', a),
+          error: (...a: any[]) => pushLog('error', a),
+        };
+
+        const isObj = (v: any) => v !== null && typeof v === 'object';
+        const deepEqual = (a: any, b: any): boolean => {
+          if (Object.is(a, b)) return true;
+          if (Array.isArray(a) && Array.isArray(b)) {
+            return a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
+          }
+          if (isObj(a) && isObj(b)) {
+            const ka = Object.keys(a), kb = Object.keys(b);
+            if (ka.length !== kb.length) return false;
+            for (const k of ka) if (!deepEqual(a[k], (b as any)[k])) return false;
+            return true;
+          }
+          return false;
+        };
+
+        const expect = (received: any) => ({
+          toBe: (exp: any) => { if (!Object.is(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to be ${JSON.stringify(exp)}`); },
+          toEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to equal ${JSON.stringify(exp)}`); },
+          toStrictEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to strictly equal ${JSON.stringify(exp)}`); },
+        });
+
+        const runCase = async (name: string, fn: () => any | Promise<any>) => {
+          try { await fn(); results.push({ name, passed: true }); }
+          catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
+        };
+
+        const it = (name: string, fn: () => any | Promise<any>) => runCase(name, fn);
+        const test = it;
+        const describe = (_: string, fn: () => void) => { try { fn(); } catch { /* ignore */ } };
+
+        // Execute tests with harness in scope
+        new Function('describe', 'test', 'it', 'expect', 'console', testsPrepared)(
+          describe as any, test as any, it as any, expect as any, consoleProxy as any
+        );
+
+        this.consoleEntries.set(this.sanitizeLogs(logs));
+        this.testResults.set(results);
+      } catch (e: any) {
+        this.testResults.set([{ name: 'Local runner error', passed: false, error: String(e?.message ?? e) }]);
+      }
+    }
+
+    // End-of-run bookkeeping
     this.hasRunTests = true;
 
     const passing = this.allPassing();
@@ -1010,6 +1033,33 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.subTab.set('tests');
+  }
+
+  // Add this helper near your transpileTsToJs()
+  private async ensureJs(code: string, fileName: string): Promise<string> {
+    if (!code) return '';
+
+    // Heuristic: does the code look like TypeScript?
+    const looksTs =
+      /:\s*[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code) || // type annotations
+      /\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code) || // "as" casts
+      /\binterface\b|\btype\s+[^=]+\=/.test(code) ||     // interfaces / type aliases
+      /\benum\s+[A-Za-z_$]/.test(code);                  // enums
+
+    if (this.jsLang() === 'ts' || looksTs) {
+      // Prefer real TS emit
+      const js = await this.transpileTsToJs(code, fileName);
+      if (js && js.trim()) return js;
+
+      // Fallback: strip some common TS syntax if monaco worker isn’t ready
+      return code
+        .replace(/:\s*[^=;,)]+(?=[=;,)])/g, '')         // remove ": type"
+        .replace(/\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/g, '') // remove "as Type"
+        .replace(/\binterface\b[\s\S]*?\{[\s\S]*?\}\s*/g, '') // drop interfaces
+        .replace(/\btype\s+[A-Za-z_$][\w$]*\s*=\s*[\s\S]*?;/g, ''); // drop type aliases
+    }
+
+    return code;
   }
 
   // ---------- run tests (HTML/CSS DOM) ----------
@@ -1142,15 +1192,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.celebrate('tests');
     }
   }
-
-  // ---------- Daily credit helpers ----------
-  private creditDailyIfInSet() {
-    const q = this.question(); if (!q) return;
-    const kind = this.kind as DailyItemKind; // 'coding' | 'debug'
-    if (!this.daily.isInTodaySet(kind, q.id)) return;
-    this.daily.markCompletedById(kind, q.id);
-  }
-
+  
   // ---------- submit ----------
   async submitCode(): Promise<void> {
     const q = this.question();
@@ -1287,34 +1329,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
-  private toPreviewOnly(base: string): string {
-    const u = new URL(base);
-    u.searchParams.set('embed', '1');
-    u.searchParams.set('view', 'preview');
-    u.searchParams.set('hideExplorer', '1');
-    u.searchParams.set('hideNavigation', '1');
-    u.searchParams.set('hideDevTools', '1');
-    u.searchParams.set('terminalHeight', '0');
-    u.searchParams.set('forceEmbedLayout', '1');
-    u.searchParams.set('ctl', '0');
-    u.searchParams.delete('file');
-    return u.toString();
-  }
-
   openPreview() {
-    const q = this.question();
-    if (!q || !this.isFrameworkTech()) return;
-    const base = ((q as any).stackblitzSolutionUrl as string | undefined) ?? ((q as any).stackblitzEmbedUrl as string | undefined);
-    if (!base) return;
-    this.previewLoading.set(true);
-    const url = this.toPreviewOnly(base);
-    this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    const url = this.previewUrl(); if (!url) return;
+    this.previewOnlyUrl = url;
     this.previewVisible = true;
   }
-  closePreview() {
-    this.previewVisible = false;
-    setTimeout(() => { this.previewOnlyUrl = null; this.previewLoading.set(false); }, 200);
-  }
+  closePreview() { this.previewVisible = false; setTimeout(() => { this.previewOnlyUrl = null; }, 200); }
 
   // ---------- reset ----------
   async resetQuestion() {
@@ -1324,47 +1344,19 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resetting.set(true);
     try {
       if (this.isFrameworkTech()) {
-        // ✅ Handle Angular *and* React here
-        const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
+        // Clear saved snapshot and reload question; loadQuestion will re-bootstrap files/preview
         const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
-        const defaultOpen = this.tech === 'angular' ? 'src/app/app.component.ts' : 'src/App.tsx';
-
         try { localStorage.removeItem(storageKey); } catch { }
-
-        this.embedLoading.set(true);
-
-        if (this.sbVm && meta?.asset) {
-          try {
-            const asset = await this.ngEmbed.fetchAsset(meta.asset);
-            const openFile = (meta.openFile ?? asset?.openFile ?? defaultOpen).replace(/^\/+/, '');
-            if (asset?.files) {
-              await this.ngEmbed.replaceFromAsset(this.sbVm, asset.files, openFile, storageKey);
-
-              this.filesMap.set(asset.files);
-              this.openPath.set(openFile);
-
-              const fresh = asset.files[openFile] ?? '';
-              this.frameworkEntryFile = openFile;
-              this.editorContent.set(fresh);
-              this.remountEditor();
-            }
-          } finally {
-            this.embedLoading.set(false);
-          }
-        } else {
-          // If there’s no VM yet, just reload the question; loadQuestion()
-          // will bootstrap the StackBlitz files from the asset/baseline.
-          requestAnimationFrame(() => this.loadQuestion(q.id));
-        }
+        await this.loadQuestion(q.id);
       } else if (this.isWebTech()) {
         const starters = this.getWebStarters(q);
-        localStorage.removeItem(this.webKey(q, 'html'));
-        localStorage.removeItem(this.webKey(q, 'css'));
+        try { localStorage.removeItem(this.webKey(q, 'html')); } catch { }
+        try { localStorage.removeItem(this.webKey(q, 'css')); } catch { }
         this.htmlCode.set(starters.html);
         this.cssCode.set(starters.css);
       } else {
         // JS/TS
-        localStorage.removeItem(getJsKey(q.id));
+        try { localStorage.removeItem(getJsKey(q.id)); } catch { }
         const lang = this.jsLang();
         this.editorContent.set(this.getStarter(q, lang));
         this.testCode.set(this.getTests(q, lang));
@@ -1383,6 +1375,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.resetting.set(false);
     }
   }
+
 
   copyExamples() {
     const examples = this.combinedExamples();
@@ -1524,20 +1517,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleFiles() { this.showFileDrawer.set(!this.showFileDrawer()); }
   closeFiles() { this.showFileDrawer.set(false); }
 
-  /** util */
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
-
-  /** Angular & React share the "framework embed" path */
   isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react'; }
 
   onFrameworkCodeChange(code: string) {
     this.editorContent.set(code);
+    const q = this.question(); if (!q) return;
 
-    const q = this.question();
-    if (!q) return;
-
-    const path = this.openPath() || this.frameworkEntryFile;
-    if (!path) return;
+    const path = this.openPath() || this.frameworkEntryFile; if (!path) return;
 
     // update in-memory map
     this.filesMap.update(m => ({ ...m, [path]: code }));
@@ -1546,15 +1533,158 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
     try { localStorage.setItem(storageKey, JSON.stringify(this.filesMap())); } catch { }
 
-    // live-sync to the VM
-    if (this.sbVm) {
-      this.sbVm.applyFsDiff({ create: { [path]: code }, destroy: [] });
-    }
+    // Debounced rebuild hook
+    this.scheduleRebuild();
+  }
+
+  private rebuildTimer: any = null;
+  private scheduleRebuild() {
+    if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
+    this.rebuildTimer = setTimeout(() => this.rebuildFrameworkPreview(), 200);
   }
 
   private remountEditor() {
     this.showEditor.set(false);
-    // next macrotask → re-create the component
     setTimeout(() => this.showEditor.set(true), 0);
+  }
+
+  /** Rebuilds the preview iframe for framework techs using the saved files */
+  async rebuildFrameworkPreview() {
+    const files = this.filesMap();
+
+    if (this.tech === 'react') {
+      const html = this.makeReactPreviewHtml(files);
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+      return;
+    }
+
+    // Angular (basic fallback: just show index.html if present)
+    const html = files['index.html'] || files['public/index.html'] || '';
+    if (!html) { this._previewUrl.set(null); return; }
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+  }
+
+  /** Build a self-contained preview HTML for React using UMD + Babel in the iframe */
+  private makeReactPreviewHtml(files: Record<string, string>): string {
+    let user = files['src/App.tsx']
+      ?? files['src/App.jsx']
+      ?? files['src/App.ts']
+      ?? files['src/App.js']
+      ?? `export default function App(){ return <div>Empty App</div> }`;
+
+    const appSrc = this.rewriteReactModuleToUMD(user);
+
+    const css = files['src/App.css'] ?? files['src/index.css'] ?? files['public/styles.css'] ?? '';
+
+    return `<!doctype html>
+                <html>
+                <head>
+                  <meta charset="utf-8"/>
+                  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+                  <title>Preview</title>
+                  <style>html,body,#root{height:100%}body{margin:16px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial}</style>
+                  ${css ? `<style>${css}</style>` : ''}
+                  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+                  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+                  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+                </head>
+                <body>
+                  <div id="root"></div>
+
+                  <!-- User code (TS/JSX) – imports stripped, hooks aliased -->
+                  <script type="text/babel" data-presets="typescript,react">
+                    const { useState, useEffect, useMemo, useRef, useReducer, useContext } = React;
+                ${appSrc}
+                  </script>
+
+                  <!-- Mount -->
+                  <script type="text/babel" data-presets="typescript,react">
+                    const root = ReactDOM.createRoot(document.getElementById('root'));
+                    if (typeof App === 'function' || (typeof App === 'object' && App)) {
+                      root.render(React.createElement(App));
+                    } else {
+                      root.render(React.createElement('div', null, 'No App component exported'));
+                    }
+                  </script>
+                </body>
+                </html>`;
+  }
+
+
+  /** Turn a module-style React file into plain script that runs with UMD globals */
+  private rewriteReactModuleToUMD(src: string): string {
+    let s = src;
+
+    // 1) Remove React/ReactDOM (and client) imports – we load UMD versions in the page
+    s = s.replace(/^\s*import\s+[^;]*from\s+['"]react(?:-dom(?:\/client)?)?['"];?\s*$/mg, '');
+
+    // 2) Remove side-effect CSS imports like `import './App.css'`
+    s = s.replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '');
+
+    // 3) Normalize default exports to `App` in global scope
+    //    export default function App() {}    -> function App() {}
+    s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, 'function App');
+    //    export default class App {}        -> class App {}
+    s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, 'class App');
+    //    export default (...)               -> const App = (...)
+    s = s.replace(/\bexport\s+default\s+/m, 'const App = ');
+
+    // 4) Remove any remaining named `export` keywords (not needed in the preview)
+    s = s.replace(/^\s*export\s+(?=(const|let|var|function|class)\b)/mg, '');
+
+    return s.trim();
+  }
+
+  private wrapExportDefault(src: string, _id: string): string {
+    let name: string | null = null;
+    let s = src;
+
+    // 1) export default function NAME(...) { ... }  -> function NAME(...) { ... }
+    s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, (_m, n) => {
+      name = n || '__UF_DefaultFn__';
+      return `function ${name}`;
+    });
+
+    // 2) export default class NAME {...} -> class NAME {...}
+    s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, (_m, n) => {
+      name = n || '__UF_DefaultClass__';
+      return `class ${name}`;
+    });
+
+    // 3) export default <expr>; -> const __UF_Default__ = <expr>;
+    if (!/\b__UF_Default(Fn|Class)__\b/.test(s)) {
+      const before = s;
+      s = s.replace(/\bexport\s+default\s+/m, 'const __UF_Default__ = ');
+      if (s !== before) name = name || '__UF_Default__';
+    }
+
+    // 4) Publish to globals (both generic and named)
+    s += `
+      ;globalThis.__UF_USER_DEFAULT__ = (typeof ${name} !== "undefined") ? ${name} : undefined;
+      ;try { if (${JSON.stringify(name)} && typeof ${name} !== "undefined") { globalThis[${JSON.stringify(name)}] = ${name}; } } catch {}
+    `;
+
+    return s;
+  }
+
+
+  private transformTestCode(src: string, _id: string): string {
+    const REL_DEFAULT = /import\s+([A-Za-z0-9_$*\s{},]+)\s+from\s+['"]\.\/[A-Za-z0-9_\-./]+['"];?/g;
+
+    let out = src.replace(REL_DEFAULT, (_m, bindings) => {
+      const first = bindings.includes('{')
+        ? bindings.replace(/[{}*\s]/g, '').split(',')[0] || '__user'
+        : bindings.trim();
+
+      // ✅ no TS here:
+      return `const ${first} = globalThis.__UF_USER_DEFAULT__;`;
+    });
+
+    out = out.replace(/^\s*import\s+[^;]+from\s+['"](jest|vitest)['"];\s*$/mg, '');
+    return out;
   }
 }

@@ -103,7 +103,7 @@
   </aside>
 
   <!-- VERTICAL SPLITTER -->
-  <div *ngIf="!descCollapsed()" class="splitter" [class.dragging]="isDraggingVertical()"
+  <div *ngIf="!descCollapsed()" class="splitter" [class.dragging]="isDraggingHorizontal()"
     (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->
@@ -118,44 +118,57 @@
       </div>
     </div>
 
-    <!-- FRAMEWORK: Angular / React (our Monaco + visible StackBlitz) -->
+    <!-- FRAMEWORK: Angular / React (our editor + our preview, no StackBlitz) -->
     <ng-container *ngIf="isFrameworkTech()">
       <div
         class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
-
-        <!-- Off-canvas Files drawer -->
+        <!-- File Drawer -->
         <div class="file-drawer" [class.open]="showFileDrawer()">
           <div class="backdrop" (click)="closeFiles()"></div>
-          <aside class="panel" (click)="$event.stopPropagation()">
+
+          <div class="panel">
             <div class="panel-header">
-              <span>Files</span>
-              <button class="icon-btn" (click)="closeFiles()" title="Close"><i class="pi pi-times"></i></button>
+              <div>Files</div>
+              <button class="icon-btn" title="Close" (click)="closeFiles()">
+                <i class="pi pi-times"></i>
+              </button>
             </div>
+
             <div class="panel-body">
               <ul class="file-list">
-                <li *ngFor="let f of fileList()" class="file-item" [class.active]="openPath()===f"
-                  (click)="openFile(f); closeFiles()" title="{{ f }}">
-                  {{ f }}
+                <li *ngFor="let p of fileList()" class="file-item" [class.active]="(openPath()||frameworkEntryFile)===p"
+                  (click)="openFile(p); closeFiles()" [title]="p"
+                  [style.paddingLeft.px]="(p.split('/').length-1)*12 + 12">
+                  {{ p }}
                 </li>
               </ul>
             </div>
-          </aside>
+          </div>
         </div>
 
         <div class="flex-1 grid grid-cols-2 gap-px min-h-0">
-          <!-- RIGHT: visible StackBlitz embed host -->
-          <!-- LEFT: mini header + Monaco editor -->
+          <!-- LEFT: header + Monaco editor -->
           <div class="min-w-0 min-h-0 flex flex-col">
-            <!-- tiny header -->
             <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
+              <!-- LEFT: hamburger + path -->
               <div class="flex items-center gap-2 min-w-0">
-                <button class="icon-btn" (click)="toggleFiles()" title="Files"><i class="pi pi-bars"></i></button>
-                <div class="text-xs opacity-80 truncate">{{ openPath() || frameworkEntryFile }}</div>
+                <button class="icon-btn" [class.active]="showFileDrawer()" (click)="toggleFiles()"
+                  aria-label="Toggle files" title="Files">
+                  <i class="pi pi-bars"></i>
+                </button>
+                <div class="text-xs opacity-80 truncate">
+                  {{ openPath() || frameworkEntryFile || 'Select a file' }}
+                </div>
+              </div>
+
+              <!-- RIGHT: actions -->
+              <div class="flex items-center gap-2">
+                <button class="text-xs px-2 py-1 border border-white/10 rounded" (click)="rebuildFrameworkPreview()">
+                  Rebuild preview
+                </button>
               </div>
             </div>
 
-            <!-- editor -->
-            <!-- make the wrapper a flex container and allow it to shrink/grow -->
             <section class="min-w-0 min-h-0 flex-1 flex">
               <ng-container *ngIf="showEditor()">
                 <app-monaco-editor class="flex-1 min-h-0 h-full" [code]="editorContent()"
@@ -166,19 +179,21 @@
             </section>
           </div>
 
-          <div class="sb-cropper relative"
-            [class.sb-no-clicks]="isDraggingCols() || isDraggingRight() || isDraggingHorizontal()">
-            <div #sbHost class="sb-slot absolute inset-0"></div>
-
-            <div *ngIf="embedLoading()" class="absolute inset-0 grid place-items-center bg-black/40">
-              <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+          <!-- RIGHT: your own preview iframe -->
+          <div class="relative min-w-0 min-h-0">
+            <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400">
+              No preview yet. Click “Rebuild preview”.
             </div>
+            <iframe *ngIf="previewUrl()" class="absolute inset-0 w-full h-full border-0 bg-white" [src]="previewUrl()"
+              referrerpolicy="no-referrer"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation">
+            </iframe>
           </div>
         </div>
       </div>
     </ng-container>
 
-    <!-- NON-ANGULAR: WEB or JS -->
+    <!-- NON-FRAMEWORK: WEB or JS -->
     <ng-container *ngIf="!isFrameworkTech()">
       <!-- WEB: HTML + CSS + PREVIEW/TEST-CODE tabs + Results/Console -->
       <ng-container *ngIf="isWebTech(); else jsBlock">
@@ -327,10 +342,12 @@
             <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
               <app-monaco-editor *ngIf="isTopCodeTab()" class="h-full" [code]="editorContent()"
                 [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorMonacoOptions"
-                (codeChange)="onJsCodeChange($event)"></app-monaco-editor>
+                (codeChange)="onJsCodeChange($event)">
+              </app-monaco-editor>
 
               <app-monaco-editor *ngIf="isTopTestsTab()" class="h-full" [code]="testCode()" [language]="'javascript'"
-                [options]="editorMonacoOptions" (codeChange)="testCode.set($event)"></app-monaco-editor>
+                [options]="editorMonacoOptions" (codeChange)="testCode.set($event)">
+              </app-monaco-editor>
             </div>
 
             <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
@@ -338,7 +355,11 @@
 
             <div class="flex-1 flex flex-col overflow-hidden min-h-0">
               <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
-                <button class="font-medium" (click)="runTests()">▶ Run tests</button>
+                <!-- JS / TS block -->
+                <button class="font-medium" (click)="runTests()" [disabled]="!hasAnyTests()"
+                  [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">
+                  ▶ Run tests
+                </button>
                 <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
                   (click)="subTab.set('tests')">Results</button>
                 <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"

@@ -219,3 +219,7 @@
 .bg-neutral-900.rounded-lg.shadow-sm.border.flex-1.flex.flex-col.overflow-hidden {
   position: relative;
 }
+
+/* smooth-ish drawer */
+.file-drawer-enter { transform: translateX(-16px); opacity: 0; }
+.file-drawer-enter-active { transform: translateX(0); opacity: 1; transition: all .12s ease; }
