@@ -30,8 +30,8 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "node_modules/monaco-editor/min/vs",
-                "output": "assets/monaco/vs"
+                "input": "node_modules/monaco-editor/min",
+                "output": "assets/monaco/min"
               }
             ],
             "styles": [

@@ -2,41 +2,38 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Uberfrontend</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet" />
 </head>
 
 <body>
   <app-root></app-root>
 
-  <!-- Monaco loader + worker proxy setup -->
-
-
+  <!-- Monaco loader + worker setup (single load, guarded) -->
   <script>
-    // Preconfigure AMD loader
-    window.require = { paths: { vs: 'assets/monaco/min/vs' } };
+    (function () {
+      if (window.require && typeof window.require.config === 'function') return;
 
-    // Self-hosted worker bootstrap
-    window.MonacoEnvironment = {
-      getWorkerUrl() {
-        const src = `
-          self.MonacoEnvironment = { baseUrl: 'assets/monaco/min/' };
-          importScripts('assets/monaco/min/vs/base/worker/workerMain.js');
-        `;
-        return URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
-      }
-    };
-  </script>
-  <script src="assets/monaco/min/vs/loader.js"></script>
-  <script>
-    // optional warm-up so editor.main is cached before your component mounts
-    window.require(['vs/editor/editor.main'], function () { });
-  </script>
+      window.require = { paths: { vs: 'assets/monaco/min/vs' } };
 
+      window.MonacoEnvironment = {
+        getWorkerUrl() {
+          return new URL('assets/monaco/min/vs/base/worker/workerMain.js', document.baseURI).toString();
+        }
+      };
+
+      var s = document.createElement('script');
+      s.src = 'assets/monaco/min/vs/loader.js';
+      s.onload = function () {
+        window.require(['vs/editor/editor.main'], function () { });
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
 </body>
 
 </html>

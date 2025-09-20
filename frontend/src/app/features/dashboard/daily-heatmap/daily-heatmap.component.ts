@@ -54,13 +54,17 @@ export class DailyHeatmapComponent implements OnDestroy {
         this.load(false);
         this.installLocalMidnightTimer();
         this.bindActivityStream();
-        document.addEventListener('visibilitychange', this.visHandler);
       } else {
         this.days.set(Array.from({ length: this.daysCount }, () => 0));
         this.clearLocalMidnightTimer();
         this.unbindActivityStream();
-        document.removeEventListener('visibilitychange', this.visHandler);
       }
+    }, { allowSignalWrites: true });
+
+    effect((onCleanup) => {
+      if (!this.auth.isLoggedIn()) return;
+      document.addEventListener('visibilitychange', this.visHandler);
+      onCleanup(() => document.removeEventListener('visibilitychange', this.visHandler));
     });
   }
 

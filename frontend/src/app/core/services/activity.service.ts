@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { Observable, Subject, shareReplay, tap } from 'rxjs';
+import { Observable, Subject, catchError, of, shareReplay, tap, throwError } from 'rxjs';
 import { Tech } from '../models/user.model';
 import { AuthService } from './auth.service';
 
@@ -60,6 +60,10 @@ export class ActivityService {
     });
   }
 
+  private isLoggedIn(): boolean {
+    return !!this.auth.token; // or this.auth.isLoggedIn() if you have it
+  }
+
   // ---------- headers ----------
   private headers(): HttpHeaders {
     return new HttpHeaders(
@@ -81,6 +85,14 @@ export class ActivityService {
   getSummary(options?: { force?: boolean; ttlMs?: number }): Observable<ActivitySummary> {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
 
+    // 🛑 Do nothing when logged out (no console errors)
+    if (!this.isLoggedIn()) {
+      this.summarySig.set(null);
+      const obs = of(null as unknown as ActivitySummary).pipe(shareReplay(1));
+      this.summaryCache = { ts: Date.now(), obs };
+      return obs;
+    }
+
     if (options?.force) this.invalidateSummary();
 
     const fresh = this.summaryCache && (Date.now() - this.summaryCache.ts) < ttl;
@@ -89,6 +101,14 @@ export class ActivityService {
     const url = `${this.base}/summary${options?.force ? `?_=${Date.now()}` : ''}`;
     const obs = this.http.get<ActivitySummary>(url, { headers: this.headers() }).pipe(
       tap((s) => this.summarySig.set(s)),
+      // 🔇 Swallow 401s (e.g., token expired race)
+      catchError(err => {
+        if (err?.status === 401) {
+          this.summarySig.set(null);
+          return of(null as unknown as ActivitySummary);
+        }
+        return throwError(() => err);
+      }),
       shareReplay(1)
     );
 
@@ -103,6 +123,13 @@ export class ActivityService {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
     const key = `limit=${params?.limit ?? ''}|since=${params?.since ?? ''}`;
 
+    // 🛑 Skip when logged out
+    if (!this.isLoggedIn()) {
+      const obs = of([] as ActivityEvent[]).pipe(shareReplay(1));
+      this.recentCache.set(key, { ts: Date.now(), obs });
+      return obs;
+    }
+
     if (options?.force) this.recentCache.delete(key);
 
     const hit = this.recentCache.get(key);
@@ -116,7 +143,12 @@ export class ActivityService {
 
     const obs = this.http
       .get<ActivityEvent[]>(`${this.base}/recent${qs}`, { headers: this.headers() })
-      .pipe(shareReplay(1));
+      .pipe(
+        catchError(err => err?.status === 401
+          ? of([] as ActivityEvent[])
+          : throwError(() => err)),
+        shareReplay(1)
+      );
 
     this.recentCache.set(key, { ts: Date.now(), obs });
     return obs;
@@ -128,6 +160,13 @@ export class ActivityService {
   ): Observable<any> {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
     const key = `days=${params?.days ?? ''}`;
+
+    // 🛑 Skip when logged out
+    if (!this.isLoggedIn()) {
+      const obs = of(null).pipe(shareReplay(1));
+      this.heatmapCache.set(key, { ts: Date.now(), obs } as any);
+      return obs as any;
+    }
 
     if (options?.force) this.heatmapCache.delete(key);
 
@@ -141,7 +180,10 @@ export class ActivityService {
 
     const obs = this.http
       .get<any>(`${this.base}/heatmap${qs}`, { headers: this.headers() })
-      .pipe(shareReplay(1));
+      .pipe(
+        catchError(err => err?.status === 401 ? of(null) : throwError(() => err)),
+        shareReplay(1)
+      );
 
     this.heatmapCache.set(key, { ts: Date.now(), obs });
     return obs;
@@ -155,19 +197,26 @@ export class ActivityService {
     source?: 'tech' | 'company' | 'course' | 'system';
     durationMin?: number;
     xp?: number;
-    solved?: boolean; // NEW: let server know if all tests passed
+    solved?: boolean;
   }) {
+    // 🛑 If logged out, act like a no-op (no error, no network)
+    if (!this.isLoggedIn()) {
+      return of({ credited: false, stats: null } as { credited: boolean; stats: any });
+    }
+
     return this.http.post<{ credited: boolean; stats: any }>(
       `${this.base}/complete`,
       payload,
       { headers: this.headers() }
     ).pipe(
       tap(() => {
-        // Bust caches & push event
         this.invalidateAll();
         this.activityCompleted$.next({ kind: payload.kind, tech: payload.tech, itemId: payload.itemId });
-        // Opportunistically refresh summary signal
         this.getSummary({ force: true }).subscribe();
+      }),
+      catchError(err => {
+        if (err?.status === 401) return of({ credited: false, stats: null });
+        return throwError(() => err);
       })
     );
   }
