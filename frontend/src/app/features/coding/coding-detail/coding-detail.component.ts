@@ -29,6 +29,7 @@ import { ActivityService } from '../../../core/services/activity.service';
 import { DailyService } from '../../../core/services/daily.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
+import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 
 declare const monaco: any;
 
@@ -694,13 +695,20 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private defaultEntry(): string {
-    return this.tech === 'angular' ? 'src/app/app.component.ts' : 'src/App.tsx';
+    if (this.tech === 'angular') return 'src/app/app.component.ts';
+    if (this.tech === 'react') return 'src/App.tsx';
+    return 'src/App.ts'; 
   }
+
 
   private pickFirstOpen(files: Record<string, string>): string {
     const dflt = this.defaultEntry();
     if (files[dflt]) return dflt;
-    const candidates = ['src/main.tsx', 'src/main.ts', 'src/index.tsx', 'src/index.ts', 'src/App.tsx', 'src/app/app.component.ts'];
+    const candidates = [
+      'src/main.tsx', 'src/main.ts', 'src/index.tsx', 'src/index.ts',
+      'src/App.tsx', 'src/App.ts', 'src/App.js', 'src/App.vue',
+      'src/app/app.component.ts'
+    ];
     const found = candidates.find(f => f in files);
     if (found) return found;
     const [first] = Object.keys(files);
@@ -1522,7 +1530,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   closeFiles() { this.showFileDrawer.set(false); }
 
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
-  isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react'; }
+  isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react' || this.tech === 'vue'; }
 
   onFrameworkCodeChange(code: string) {
     this.editorContent.set(code);
@@ -1573,6 +1581,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.tech === 'angular') {
         const html = makeAngularPreviewHtmlV1(files);
+        this.setPreviewHtml(html);
+        return;
+      }
+
+      if (this.tech === 'vue') {
+        const html = makeVuePreviewHtml(this.filesMap());
         this.setPreviewHtml(html);
         return;
       }

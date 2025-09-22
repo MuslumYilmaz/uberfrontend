@@ -40,7 +40,7 @@ export class QuestionService {
 
   /** Load all questions for both techs, for a given kind (companies pages). */
   loadAllQuestions(kind: Exclude<Kind, 'debug'>): Observable<MixedQuestion[]> {
-    const TECHS: Tech[] = ['javascript', 'angular', 'html', 'css'];
+    const TECHS: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
     return forkJoin(
       TECHS.map(t =>
         this.loadQuestions(t, kind).pipe(

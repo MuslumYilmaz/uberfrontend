@@ -52,6 +52,17 @@ const EMPTY_SUMMARY: ActivitySummary = {
               React
             </a>
 
+            <a [routerLink]="'/vue'" class="ufh-tab" [class.ufh-tab-active]="currentTech()==='vue'">
+              <span class="ufh-tab-ico">
+                <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                  <rect x="2" y="2" width="28" height="28" rx="4" fill="#42B883"></rect>
+                  <path d="M10 12h4l2 3 2-3h4l-6 9z" fill="#35495E"></path>
+                </svg>
+              </span>
+              Vue
+            </a>
+
+
             <a [routerLink]="'/angular'" class="ufh-tab" [class.ufh-tab-active]="currentTech()==='angular'">
               <span class="ufh-tab-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,2 29,7 27,26 16,30 5,26 3,7" fill="#DD0031"></polygon><polygon points="16,5 26.2,8.9 24.8,24.5 16,27.7 7.2,24.5 5.8,8.9" fill="#C3002F"></polygon><text x="16" y="21" text-anchor="middle" font-size="14" font-weight="800" font-family="Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,'Noto Sans'" fill="#fff">A</text></svg></span>
               Angular
@@ -226,7 +237,7 @@ export class HeaderComponent implements OnInit {
 
   // Router state
   mode = signal<Mode>('dashboard');
-  currentTech = signal<'javascript' | 'angular' | 'react' | 'html' | 'css' | null>(null);
+  currentTech = signal<'javascript' | 'angular' | 'react' | 'vue' | 'html' | 'css' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
   // Registry
@@ -416,9 +427,10 @@ export class HeaderComponent implements OnInit {
     if (segs[0] === 'profile') { this.mode.set('profile'); return; }
 
     // tech sections
-    const tech = segs[0] as 'javascript' | 'angular' | 'react' | 'html' | 'css';
-    const isTech = tech === 'javascript' || tech === 'angular' || tech === 'react' || tech === 'html' || tech === 'css';
-    
+    const tech = segs[0] as 'javascript' | 'angular' | 'react' | 'vue' | 'html' | 'css';
+    const isTech =
+      tech === 'javascript' || tech === 'angular' || tech === 'react' ||
+      tech === 'vue' || tech === 'html' || tech === 'css';
     if (isTech) this.currentTech.set(tech);
 
     // if it wasn't a known tech, leave mode as 'dashboard' and bail

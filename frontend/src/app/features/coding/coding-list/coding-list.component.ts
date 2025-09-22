@@ -60,8 +60,7 @@ export class CodingListComponent {
   source: ListSource = 'tech';
   kind: Kind = 'coding';
 
-  ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'html', 'css']);
-
+  ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
 
   // company slug from parent param (:slug) OR ?c=
   companySlug$ = (this.route.parent
@@ -220,6 +219,7 @@ export class CodingListComponent {
     switch (tech) {
       case 'angular': return 'Angular';
       case 'react': return 'React';
+      case 'vue': return 'Vue';
       case 'html': return 'HTML';
       case 'css': return 'CSS';
       default: return 'JavaScript';
