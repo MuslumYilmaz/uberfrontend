@@ -16,7 +16,7 @@
             "code": "{\n  \"name\": \"demo\",\n  \"private\": true\n}\n"
         },
         "/src/main.ts": {
-            "code": "import 'zone.js';\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
         },
         "/src/index.html": {
             "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Simple Form</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
