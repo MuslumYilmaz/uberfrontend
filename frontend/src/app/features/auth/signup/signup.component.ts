@@ -24,7 +24,7 @@ export class SignupComponent {
     })
   }, { validators: this.matchPasswords });
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, public auth: AuthService, private router: Router) { }
 
   get confirmCtrl() { return this.form.get('passwords.confirmPassword'); }
 
