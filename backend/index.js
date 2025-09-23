@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { requireAuth } = require('./middleware/Auth');
+const cookieParser = require('cookie-parser'); // +
+
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use(
     })
 );
 app.use(express.json());
+app.use(cookieParser()); 
 
 // ---- Models ----
 const User = require('./models/User');

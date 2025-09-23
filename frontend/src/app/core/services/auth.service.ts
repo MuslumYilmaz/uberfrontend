@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, effect, Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { shareReplay, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, shareReplay, tap } from 'rxjs/operators';
 import { Tech } from '../models/user.model';
 
 export type Role = 'user' | 'admin';
@@ -152,4 +152,60 @@ export class AuthService {
       .put<User>(`http://localhost:3001/api/users/${id}`, data, { headers: this.authHeaders() })
       .pipe(tap((u) => this.user.set(u)));
   }
+
+  /** Start OAuth: redirects to backend which 302s to Google */
+  oauthStart(provider: 'google' | 'github', mode: 'login' | 'signup' = 'login') {
+    const redirectUri = `${window.location.origin}/auth/callback`;
+    const state = (crypto as any).randomUUID ? (crypto as any).randomUUID() : `${Date.now()}-${Math.random()}`;
+    sessionStorage.setItem('oauth:state', state);
+
+    // Adjust path if your backend differs (e.g., /auth/google)
+    const url =
+      `${this.base}/oauth/${provider}/start` +
+      `?redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&state=${encodeURIComponent(state)}` +
+      `&mode=${encodeURIComponent(mode)}`;
+
+    window.location.assign(url);
+  }
+
+  /**
+   * Finish OAuth on /auth/callback.
+   * Expects backend to redirect back with ?token=... (or #token=...),
+   * then we fetch /me to populate the user.
+   */
+  completeOAuthCallback(qp: Record<string, any>): Observable<User | null> {
+    const expected = sessionStorage.getItem('oauth:state');
+    if (qp['state'] && expected && qp['state'] !== expected) {
+      return throwError(() => new Error('Invalid OAuth state'));
+    }
+    sessionStorage.removeItem('oauth:state');
+
+    if (qp['error']) {
+      return throwError(() => new Error(String(qp['error'])));
+    }
+
+    // token may be in query OR in the hash
+    let token: string | null =
+      (qp['token'] as string) || (qp['access_token'] as string) || null;
+
+    if (!token && window.location.hash) {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      token = hash.get('token') || hash.get('access_token');
+    }
+
+    if (!token) {
+      return throwError(() => new Error('No token in OAuth callback'));
+    }
+
+    this.setToken(token);
+    return this.fetchMe().pipe(
+      catchError((e) => {
+        // if /me fails, invalidate token so UI doesn’t think we’re logged in
+        this.setToken(null);
+        return throwError(() => e);
+      })
+    );
+  }
+
 }

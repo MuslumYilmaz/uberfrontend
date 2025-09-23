@@ -51,4 +51,8 @@ export class LoginComponent {
         },
       });
   }
+
+  continueWithGoogle() {
+    this.auth.oauthStart('google', 'login');
+  }
 }

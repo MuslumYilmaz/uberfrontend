@@ -43,4 +43,8 @@ export class SignupComponent {
       error: (err: any) => { this.error = err.error?.error || 'Sign up failed'; this.loading = false; }
     });
   }
+
+  continueWithGoogle() {
+    this.auth.oauthStart('google', 'signup');
+  }
 }
