@@ -1,0 +1,18 @@
+/* src/app/features/pricing/pricing.component.css */
+.pr-wrap{max-width:1100px;margin:48px auto;padding:0 20px;color:#e5e7eb}
+.pr-hero h1{font-size:32px;line-height:1.2;margin:0 0 8px}
+.muted{color:#9ca3af}
+.pr-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px}
+.pr-card{background:#0b0b0b;border:1px solid #2a2a2a;border-radius:16px;padding:18px;position:relative}
+.pr-rec{border-color:#8b5cf6}
+.rec-badge{position:absolute;right:12px;top:12px;font-size:11px;background:#8b5cf6;color:#111;padding:4px 8px;border-radius:999px;font-weight:600}
+.title{margin:4px 0 8px;font-weight:600}
+.price{font-size:28px;font-weight:700;margin:4px 0 12px}
+.price span{font-size:12px;font-weight:500;color:#9ca3af;margin-left:6px}
+.features{list-style:none;padding:0;margin:0 0 16px}
+.features li{margin:6px 0}
+.btn{width:100%;padding:10px 14px;border-radius:10px;background:#a3e635;color:#111;font-weight:600}
+.btn:disabled{opacity:.7}
+.tiny{margin-top:18px;font-size:12px}
+@media (max-width:960px){.pr-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.pr-grid{grid-template-columns:1fr}}

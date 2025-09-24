@@ -164,6 +164,29 @@ export class CodingListComponent {
     { label: 'Advanced', value: 'hard' as Difficulty }
   ];
 
+  /** Tech tabs shown at top (only for source==='tech'). */
+  techTabs = [
+    { key: 'javascript' as Tech, label: 'JavaScript', badge: 'JS', cls: 'bg-yellow-400 text-black' },
+    { key: 'react' as Tech, label: 'React', badge: 'R', cls: 'bg-sky-300 text-black' },
+    { key: 'angular' as Tech, label: 'Angular', badge: 'A', cls: 'bg-red-600 text-white' },
+    { key: 'vue' as Tech, label: 'Vue', badge: 'V', cls: 'bg-emerald-400 text-black' },
+    { key: 'html' as Tech, label: 'HTML', badge: 'H5', cls: 'bg-orange-600 text-white' },
+    { key: 'css' as Tech, label: 'CSS', badge: 'C3', cls: 'bg-blue-600 text-white' },
+  ];
+
+  filteredCount$ = this.filtered$.pipe(
+    map(list => list.length),
+    startWith(0)
+  );
+
+  kindTabs: Array<{ key: Kind; label: string }> = [
+    { key: 'coding', label: 'Coding' },
+    { key: 'trivia', label: 'Quiz' },
+    { key: 'debug', label: 'Debug' }
+  ];
+
+
+
   constructor(public route: ActivatedRoute, public qs: QuestionService, public router: Router) { }
 
   // ---------- helpers used by template ----------

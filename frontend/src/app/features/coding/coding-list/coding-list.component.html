@@ -1,4 +1,31 @@
 <div class="container mx-auto max-w-7xl px-4 py-6">
+
+  <!-- Tech tabs -->
+  <div *ngIf="source==='tech'" class="mb-4 overflow-x-auto">
+    <nav class="flex items-center gap-2 min-w-max">
+      <a *ngFor="let t of techTabs" [routerLink]="['/', t.key, kind]" class="tab-pill"
+        [ngClass]="t.key === tech ? 'tab-pill--active' : 'tab-pill--idle'">
+        <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+        <span class="whitespace-nowrap">{{ t.label }}</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Section tabs + right-side count -->
+  <div *ngIf="source==='tech'" class="tabs-row">
+    <div class="tabs-left">
+      <a *ngFor="let k of kindTabs" [routerLink]="['/', tech || 'javascript', k.key]" class="kind-pill"
+        [ngClass]="k.key === kind ? 'kind-pill--active' : 'kind-pill--idle'">
+        {{ k.label }}
+      </a>
+    </div>
+
+    <div class="tabs-right">
+      <span class="count-chip">{{ filteredCount$ | async }} questions</span>
+    </div>
+  </div>
+
+
   <h1 *ngIf="source==='tech'" class="text-4xl font-extrabold text-white mb-6">
     {{ heading() }}
   </h1>

@@ -114,6 +114,11 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'pricing',
+    loadComponent: () =>
+      import('./features/pricing/pricing.component').then(m => m.PricingComponent),
+  },
 
   // System design (practice/problems area, not the guide)
   {
