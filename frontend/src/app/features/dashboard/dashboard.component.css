@@ -3,41 +3,13 @@
 /* ====== LAYOUT ====== */
 .dash-layout {
   display: grid;
-  grid-template-columns: 1fr;      /* mobile: single column */
+  grid-template-columns: 1fr; /* single column (rail removed) */
   gap: 24px;
 }
 
-/* ≥1024px: main + right rail */
-@media (min-width: 1024px) {
-  .dash-layout {
-    grid-template-columns: minmax(0, 1fr) 380px;
-    gap: 28px;
-  }
-}
+.dash-main { min-width: 0; } /* prevent overflow from long titles */
 
-.dash-main { min-width: 0; } /* avoid overflow from long titles */
-
-/* Right rail */
-.dash-rail { min-width: 0; }
-.rail-sticky {
-  position: sticky;
-  top: calc(var(--app-safe-top, 64px) + 16px);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* Make rail children feel like cards and consistent spacing */
-.rail-card {
-  display: block;
-}
-
-/* Slightly tighten the card look so lists don’t feel far below the fold */
-@media (min-width: 1024px) {
-  .card { padding: 18px 20px; }
-}
-
-/* ====== YOUR EXISTING CARD STYLES (kept) ====== */
+/* ====== Cards ====== */
 .card {
   display: grid;
   grid-template-columns: auto auto 1fr auto;
@@ -74,8 +46,7 @@
 .title { font-weight: 700; color: #fff; margin-bottom: 2px; }
 .subtitle { color: #9ca3af; font-size: .95rem; }
 
-.badge { font-size: .75rem; line-height: 1; padding: 4px 8px; border-radius: 9999px;
-  background: #3b82f6; color: #fff; }
+.badge { font-size: .75rem; line-height: 1; padding: 4px 8px; border-radius: 9999px; background: #3b82f6; color: #fff; }
 .badge.secondary { background: #374151; color: #e5e7eb; }
 
 .skeleton { margin-top: 10px; }
@@ -94,3 +65,8 @@
 }
 .chevron { color: #e5e7eb; opacity: .7; font-size: 18px; }
 .card.hoverable:hover .chevron { opacity: 1; }
+
+/* tighten card padding slightly on wide screens */
+@media (min-width: 1024px){
+  .card { padding: 18px 20px; }
+}

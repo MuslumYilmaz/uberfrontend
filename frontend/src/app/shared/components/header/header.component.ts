@@ -2,11 +2,9 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, computed, DestroyRef, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter, startWith, take } from 'rxjs';
+import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
-import { ActivityService, ActivitySummary } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { DailyService } from '../../../core/services/daily.service';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
 
 type Mode =
@@ -19,17 +17,6 @@ type Mode =
   | 'profile'
   | 'not-found';
 
-const EMPTY_SUMMARY: ActivitySummary = {
-  totalXp: 0,
-  level: 1,
-  nextLevelXp: 100,
-  levelProgress: { current: 0, needed: 100, pct: 0 },
-  streak: { current: 0, best: 0 },
-  freezeTokens: 0,
-  weekly: { completed: 0, target: 5, progress: 0 },
-  today: { completed: 0, total: 1, progress: 0 },
-};
-
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -38,76 +25,26 @@ const EMPTY_SUMMARY: ActivitySummary = {
   template: `
   <div class="ufh-topbar" role="banner" (click)="$event.stopPropagation()">
     <div class="ufh-inner">
-      <!-- LEFT (brand + Prepare) -->
+      <!-- LEFT (brand) -->
       <div class="ufh-left">
         <a class="ufh-brand" routerLink="/">UberFrontend</a>
       </div>
 
-      <!-- CENTER (spacer) -->
+      <!-- CENTER (Prepare trigger) -->
       <div class="ufh-center">
         <button
-                class="ufh-navlink"
-                (click)="toggleMega()"
-                aria-haspopup="menu"
-                [attr.aria-expanded]="megaOpen()"
-                aria-controls="prepare-mega">
+          class="ufh-navlink"
+          (click)="toggleMega()"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="megaOpen()"
+          aria-controls="prepare-mega">
           Prepare <span class="caret" aria-hidden="true">▾</span>
         </button>
       </div>
 
-      <!-- RIGHT (Pricing → Stats → Avatar → Upgrade) -->
+      <!-- RIGHT (Pricing → Avatar → CTA) -->
       <div class="ufh-right" (click)="$event.stopPropagation()">
         <a class="ufh-btn" routerLink="/pricing">Pricing</a>
-
-        <div class="ufh-stats">
-          <button class="ufh-stats-chip"
-                  (click)="toggleStatsMenu()"
-                  aria-haspopup="menu"
-                  [attr.aria-expanded]="statsOpen()"
-                  title="Streak · Level">
-            <span aria-hidden="true">🔥</span>
-            <span class="num">{{ streakNum() }}</span>
-            <span class="sep"></span>
-            <span class="num">L{{ level() }}</span>
-          </button>
-
-          <div *ngIf="statsOpen()" class="ufh-stats-menu" role="menu">
-            <div class="ufh-stats-header">
-              <div class="ufh-stat"><div class="big">🔥 {{ streakNum() }}</div><div class="sub">day streak</div></div>
-              <div class="ufh-stat"><div class="big">L{{ level() }}</div><div class="sub">{{ levelProgressPct() }}% to L{{ level()+1 }}</div></div>
-            </div>
-
-            <div class="ufh-prog">
-              <div class="ufh-prog-bar"><div class="ufh-prog-fill" [style.width.%]="levelProgressPct()"></div></div>
-              <div class="ufh-prog-text">Level progress</div>
-            </div>
-
-            <div class="ufh-prog">
-              <div class="ufh-prog-bar"><div class="ufh-prog-fill" [style.width.%]="uiWeeklyPct()"></div></div>
-              <div class="ufh-prog-text">{{ uiWeeklyDone() }}/{{ uiWeeklyTarget() }} this week
-                <span *ngIf="freezeTokens()>0" class="ufh-badge">Freeze: {{ freezeTokens() }}</span>
-              </div>
-            </div>
-
-            <div class="ufh-prog">
-              <div class="ufh-prog-bar"><div class="ufh-prog-fill" [style.width.%]="uiTodayPct()"></div></div>
-              <div class="ufh-prog-text">{{ uiTodayDone() }}/{{ uiTodayTotal() }} done today</div>
-            </div>
-
-            <ul class="ufh-stats-list" *ngIf="(daily()?.items?.length || 0) > 0">
-              <li *ngFor="let it of daily()?.items || []">
-                <a class="ufh-stats-link" [routerLink]="it.to" (click)="closeAll()">
-                  <span class="ufh-kind" [attr.data-kind]="it.kind">{{ it.kind }}</span>
-                  <span class="ufh-label">{{ it.label }}</span>
-                  <span class="ufh-time">{{ it.durationMin }}m</span>
-                  <i class="pi" [ngClass]="it.state?.completedAt ? 'pi-check-circle text-green-400' : 'pi-chevron-right opacity-60'"></i>
-                </a>
-              </li>
-            </ul>
-
-            <div *ngIf="!auth.isLoggedIn()" class="ufh-prog-text" style="margin-top:8px;">Log in to track your streak & levels.</div>
-          </div>
-        </div>
 
         <div class="ufh-profile ufh-profile-right">
           <button class="ufh-avatar"
@@ -118,19 +55,22 @@ const EMPTY_SUMMARY: ActivitySummary = {
           </button>
           <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
             <div class="ufh-menu-section">Account</div>
+
             <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
-              <a class="ufh-menu-item" routerLink="/profile" (click)="closeAll()"><i class="pi pi-user"></i> My profile</a>
-            </ng-container>
-            <ng-template #profileDisabled>
-              <button class="ufh-menu-item" disabled><i class="pi pi-user"></i> My profile</button>
-            </ng-template>
-            <div class="ufh-divider"></div>
-            <ng-container *ngIf="!auth.isLoggedIn(); else loggedInTpl">
-              <button class="ufh-menu-item" routerLink="/auth/signup" (click)="closeAll()"><i class="pi pi-user-plus"></i> Sign up</button>
-              <button class="ufh-menu-item" routerLink="/auth/login" (click)="closeAll()"><i class="pi pi-sign-in"></i> Log in</button>
-            </ng-container>
-            <ng-template #loggedInTpl>
+              <a class="ufh-menu-item" routerLink="/profile" (click)="closeAll()">
+                <i class="pi pi-user"></i> My profile
+              </a>
+              <div class="ufh-divider"></div>
               <button class="ufh-menu-item" (click)="logout()"><i class="pi pi-sign-out"></i> Log out</button>
+            </ng-container>
+
+            <ng-template #profileDisabled>
+              <button class="ufh-menu-item" routerLink="/auth/signup" (click)="closeAll()">
+                <i class="pi pi-user-plus"></i> Sign up
+              </button>
+              <button class="ufh-menu-item" routerLink="/auth/login" (click)="closeAll()">
+                <i class="pi pi-sign-in"></i> Log in
+              </button>
             </ng-template>
           </div>
         </div>
@@ -157,6 +97,7 @@ const EMPTY_SUMMARY: ActivitySummary = {
               <i class="pi pi-chevron-right ufh-rail-caret"></i>
             </button>
           </div>
+
           <div class="ufh-pane">
             <a *ngIf="continueLink() as cont"
                class="ufh-card ufh-card-continue"
@@ -209,155 +150,39 @@ export class HeaderComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
+  // route state
   mode = signal<Mode>('dashboard');
   currentTech = signal<'javascript' | 'angular' | 'react' | 'vue' | 'html' | 'css' | null>(null);
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
+  // prepare groups
   groups: PrepareGroup[] = PREPARE_GROUPS;
   activeGroupKey = signal<PrepareGroup['key']>('practice');
   activeGroup = computed(() => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]);
   activeItems = computed(() => this.activeGroup().items);
 
+  // menus
   megaOpen = signal(false);
   profileOpen = signal(false);
-  statsOpen = signal(false);
 
-  private activitySvc = inject(ActivityService);
-  private dailySvc = inject(DailyService);
   public auth = inject(AuthService);
 
-  private summary = computed<ActivitySummary>(() => {
-    if (!this.auth.isLoggedIn()) return EMPTY_SUMMARY;
-    return this.activitySvc.summarySig() ?? EMPTY_SUMMARY;
-  });
-
-  streakNum = computed(() => this.summary().streak.current);
-  level = computed(() => this.summary().level);
-  levelProgressPct = computed(() => Math.round((this.summary().levelProgress?.pct ?? 0) * 100));
-  freezeTokens = computed(() => this.summary().freezeTokens);
-
-  uiTodayDone = signal(0);
-  uiWeeklyDone = signal(0);
-  uiWeeklyTarget = signal(5);
-
-  daily = this.dailySvc.daily;
-  uiTodayTotal = computed(() => (this.daily()?.items?.length ?? 0) || 3);
-
-  uiTodayPct = computed(() => {
-    const t = this.uiTodayTotal();
-    const d = this.uiTodayDone();
-    return t > 0 ? Math.round((d / t) * 100) : 0;
-  });
-  uiWeeklyPct = computed(() => {
-    const t = this.uiWeeklyTarget();
-    const d = this.uiWeeklyDone();
-    return t > 0 ? Math.round((d / t) * 100) : 0;
-  });
-
   constructor() {
-    this.dailySvc.ensureTodaySet(this.resolveTech());
-
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
       .subscribe(() => {
         this.parseUrl(this.router.url);
         this.closeAll();
         this.updateSafeTop();
         this.pickDefaultGroup();
-        this.refreshAll(false);
       });
   }
 
-  ngOnInit(): void {
-    this.activitySvc.getSummary({ force: true }).pipe(take(1))
-      .subscribe(s => this.dailySvc.hydrateFromSummary(s));
+  ngOnInit(): void { }
 
-    this.activitySvc.getRecent({ since: this.startOfWeekLocalISO() }, { force: true })
-      .pipe(take(1))
-      .subscribe(rows => this.dailySvc.hydrateFromRecent(rows));
-
-    this.refreshAll(false);
-    this.scheduleMidnightRefresh();
-
-    this.activitySvc.activityCompleted$.subscribe(() => {
-      this.refreshAll(true);
-    });
-  }
-
-  private refreshAll(force: boolean) {
-    this.dailySvc.ensureTodaySet(this.resolveTech());
-    this.pullSummary(force);
-    this.refreshClientProgress(force);
-  }
-
-  private pullSummary(force: boolean) {
-    this.activitySvc.getSummary({ force }).pipe(take(1)).subscribe();
-  }
-
-  private refreshClientProgress(force: boolean) {
-    if (!this.auth.isLoggedIn()) { this.uiTodayDone.set(0); this.uiWeeklyDone.set(0); return; }
-
-    const since = this.startOfWeekLocalISO();
-
-    this.activitySvc.getRecent({ since }, { force }).pipe(take(1)).subscribe({
-      next: (rows: any[] = []) => {
-        const todayStr = this.localDateStr(new Date());
-        const kindsToday = new Set<string>();
-        const daysThisWeek = new Set<string>();
-
-        for (const r of rows || []) {
-          const ts = r.completedAt || r.ts || r.date || r.createdAt || r.updatedAt;
-          if (!ts) continue;
-          const localDay = this.localDateStr(new Date(ts));
-          if (localDay === todayStr && r.kind) kindsToday.add(r.kind);
-          if (this.isInCurrentLocalWeek(localDay)) daysThisWeek.add(localDay);
-        }
-
-        this.uiTodayDone.set(kindsToday.size);
-        this.uiWeeklyDone.set(daysThisWeek.size);
-      },
-      error: () => { /* keep last values on error */ }
-    });
-  }
-
+  // —— utils / routing ——
   private resolveTech(): Tech {
     const pref = (defaultPrefs().defaultTech as Tech | undefined) ?? 'javascript';
     return this.currentTech() ?? pref;
-  }
-
-  private startOfWeekLocalISO(): string {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    const dow = (d.getDay() + 6) % 7; // Mon=0..Sun=6
-    d.setDate(d.getDate() - dow);
-    return this.localDateStr(d);
-  }
-
-  private localDateStr(d: Date): string {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  }
-
-  private isInCurrentLocalWeek(isoDay: string): boolean {
-    const start = this.startOfWeekLocalISO();
-    const sd = new Date(start + 'T00:00:00');
-    const ed = new Date(sd);
-    ed.setDate(sd.getDate() + 6);
-    const x = new Date(isoDay + 'T00:00:00');
-    return x >= sd && x <= ed;
-  }
-
-  private scheduleMidnightRefresh() {
-    const tick = () => {
-      const now = new Date();
-      const next = new Date(now);
-      next.setHours(24, 0, 5, 0);
-      const ms = Math.max(1000, next.getTime() - now.getTime());
-      const id = setTimeout(() => { this.refreshAll(true); tick(); }, ms);
-      this.destroyRef.onDestroy(() => clearTimeout(id));
-    };
-    tick();
   }
 
   isSystemDesign = computed(() =>
@@ -432,9 +257,9 @@ export class HeaderComponent implements OnInit {
         return ['/courses'];
       case 'guides': {
         const section = (t.params?.['section'] as string | undefined) ?? '';
-        if (section === 'playbook') return ['/guides', 'playbook'];
-        if (section === 'behavioral') return ['/guides', 'behavioral'];
-        if (section === 'system-design') return ['/guides', 'system-design'];
+        if (section === 'playbook') return (['/guides', 'playbook']);
+        if (section === 'behavioral') return (['/guides', 'behavioral']);
+        if (section === 'system-design') return (['/guides', 'system-design']);
         return ['/guides'];
       }
       default:
@@ -464,22 +289,19 @@ export class HeaderComponent implements OnInit {
   @HostListener('document:keydown.escape')
   onDocumentEsc() { this.closeAll(); }
 
-  private openOnly(which: 'mega' | 'profile' | 'stats' | null) {
+  private openOnly(which: 'mega' | 'profile' | null) {
     this.megaOpen.set(which === 'mega');
     this.profileOpen.set(which === 'profile');
-    this.statsOpen.set(which === 'stats');
   }
 
   toggleMega() { this.openOnly(this.megaOpen() ? null : 'mega'); }
   toggleProfileMenu() { this.openOnly(this.profileOpen() ? null : 'profile'); }
-  toggleStatsMenu() { this.openOnly(this.statsOpen() ? null : 'stats'); }
 
   closeAll() { this.openOnly(null); }
 
   logout() {
     this.auth.logout();
     this.closeAll();
-    this.activitySvc.invalidateAll();
     this.router.navigate(['/']);
   }
 }

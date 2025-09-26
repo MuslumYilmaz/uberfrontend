@@ -1,19 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivityEvent, ActivityService, ActivitySummary } from '../../../core/services/activity.service';
+import { ActivityEvent, ActivityService } from '../../../core/services/activity.service';
 import { AuthService, User, UserPrefs } from '../../../core/services/auth.service';
-
-const EMPTY_SUMMARY: ActivitySummary = {
-  totalXp: 0,
-  level: 1,
-  nextLevelXp: 100,
-  levelProgress: { current: 0, needed: 100, pct: 0 },
-  streak: { current: 0, best: 0 },
-  freezeTokens: 0,
-  weekly: { completed: 0, target: 5, progress: 0 },
-  today: { completed: 0, total: 1, progress: 0 },
-};
 
 @Component({
   selector: 'app-profile',
@@ -39,13 +28,9 @@ const EMPTY_SUMMARY: ActivitySummary = {
           <li><i class="pi pi-id-card"></i> <span>ID: {{ user()!._id | slice:0:8 }}</span></li>
           <li><i class="pi pi-calendar"></i> <span>Joined: {{ user()!.createdAt | date:'dd.MM.yyyy' }}</span></li>
         </ul>
-
-        <button class="discord-btn" disabled>
-          <i class="pi pi-discord"></i> Join Premium Discord
-        </button>
       </aside>
 
-      <!-- Main Content -->
+      <!-- Main -->
       <main class="profile-main">
         <nav class="tabs">
           <button [class.active]="tab() === 'activity'" (click)="tab.set('activity')">Activity</button>
@@ -55,67 +40,8 @@ const EMPTY_SUMMARY: ActivitySummary = {
           <button [class.active]="tab() === 'coupons'" (click)="tab.set('coupons')">Coupons</button>
         </nav>
 
-        <!-- Activity -->
+        <!-- Activity (Recent only) -->
         <section *ngIf="tab() === 'activity'" class="panel">
-          <!-- Top stats: Streak / Best / Level / XP / Completed -->
-          <div class="stats-card">
-            <div class="stat">
-              <div class="value">🔥 {{ summary().streak.current }}</div>
-              <div class="label">Current streak</div>
-            </div>
-            <div class="stat">
-              <div class="value">🏅 {{ summary().streak.best }}</div>
-              <div class="label">Longest streak</div>
-            </div>
-            <div class="stat">
-              <div class="value">L{{ summary().level }}</div>
-              <div class="label">{{ levelProgressPct() }}% to next</div>
-            </div>
-            <div class="stat">
-              <div class="value">⭐ {{ stats()?.xpTotal || 0 }}</div>
-              <div class="label">Total XP</div>
-            </div>
-            <div class="stat">
-              <div class="value">{{ stats()?.completedTotal || 0 }}</div>
-              <div class="label">Completed items</div>
-            </div>
-          </div>
-
-          <!-- Progress bars -->
-          <div class="section">
-            <h3>Progress</h3>
-
-            <div class="meter">
-              <div class="meter-head">
-                <span>Level progress</span>
-                <span>{{ levelProgressPct() }}%</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill" [style.width.%]="levelProgressPct()"></div></div>
-              <div class="meter-sub">L{{ summary().level }} → L{{ summary().level + 1 }}</div>
-            </div>
-
-            <div class="meter">
-              <div class="meter-head">
-                <span>Weekly goal</span>
-                <span>{{ weeklyCompleted() }}/{{ weeklyTarget() }}</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill" [style.width.%]="weeklyProgressPct()"></div></div>
-              <div class="meter-sub">
-                {{ weeklyProgressPct() }}% of weekly goal
-                <span *ngIf="freezeTokens()>0" class="badge" style="margin-left:8px;">Freeze tokens: {{ freezeTokens() }}</span>
-              </div>
-            </div>
-
-            <div class="meter">
-              <div class="meter-head">
-                <span>Today</span>
-                <span>{{ todayCompleted() }}/{{ todayTotal() }}</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill" [style.width.%]="todayProgressPct()"></div></div>
-              <div class="meter-sub">{{ todayProgressPct() }}% done today</div>
-            </div>
-          </div>
-
           <div class="section">
             <h3>Recent Activity</h3>
             <ul class="activity-list" *ngIf="recent().length; else noRecent">
@@ -129,22 +55,6 @@ const EMPTY_SUMMARY: ActivitySummary = {
             <ng-template #noRecent>
               <p class="muted">No recent activity yet.</p>
             </ng-template>
-          </div>
-
-          <div class="section">
-            <h3>Per-tech breakdown</h3>
-            <div class="pertech">
-              <div class="pt-card">
-                <div class="pt-title">JavaScript</div>
-                <div class="pt-line"><span>XP</span><span>{{ stats()?.perTech?.javascript?.xp || 0 }}</span></div>
-                <div class="pt-line"><span>Completed</span><span>{{ stats()?.perTech?.javascript?.completed || 0 }}</span></div>
-              </div>
-              <div class="pt-card">
-                <div class="pt-title">Angular</div>
-                <div class="pt-line"><span>XP</span><span>{{ stats()?.perTech?.angular?.xp || 0 }}</span></div>
-                <div class="pt-line"><span>Completed</span><span>{{ stats()?.perTech?.angular?.completed || 0 }}</span></div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -212,7 +122,9 @@ const EMPTY_SUMMARY: ActivitySummary = {
           <div class="account-card">
             <h4>UberFrontend Pro</h4>
             <p class="desc" *ngIf="billing()?.pro?.status === 'lifetime'">You are on the <b>Lifetime</b> plan.</p>
-            <p class="desc" *ngIf="billing()?.pro?.status === 'active'">Your subscription renews on {{ billing()?.pro?.renewsAt | date:'mediumDate' }}.</p>
+            <p class="desc" *ngIf="billing()?.pro?.status === 'active'">
+              Your subscription renews on {{ billing()?.pro?.renewsAt | date:'mediumDate' }}.
+            </p>
             <p class="desc" *ngIf="!billing() || billing()?.pro?.status === 'none'">You are not subscribed.</p>
           </div>
 
@@ -252,7 +164,8 @@ const EMPTY_SUMMARY: ActivitySummary = {
           <p class="muted" *ngIf="!user()?.coupons?.length">No coupons available.</p>
           <ul *ngIf="user()?.coupons?.length">
             <li *ngFor="let c of user()!.coupons!">
-              <span class="chip">{{ c.code }}</span> <span class="muted">{{ c.scope }}</span> ·
+              <span class="chip">{{ c.code }}</span>
+              <span class="muted">{{ c.scope }}</span> ·
               <span class="muted">{{ c.appliedAt | date:'mediumDate' }}</span>
             </li>
           </ul>
@@ -269,28 +182,20 @@ export class ProfileComponent implements OnInit {
   tab = signal<'activity' | 'account' | 'billing' | 'security' | 'coupons'>('activity');
 
   user = computed(() => this.auth.user());
-  stats = computed(() => this.auth.user()?.stats);
   billing = computed(() => this.auth.user()?.billing);
 
-  // V0 summary (level, weekly, today, freeze)
-  private _summary = signal<ActivitySummary>(EMPTY_SUMMARY);
-  summary = computed(() => this._summary());
-
-  levelProgressPct = computed(() => Math.round((this.summary().levelProgress?.pct ?? 0) * 100));
-  weeklyCompleted = computed(() => this.summary().weekly.completed);
-  weeklyTarget = computed(() => this.summary().weekly.target);
-  weeklyProgressPct = computed(() => Math.round((this.summary().weekly.progress ?? 0) * 100));
-  todayCompleted = computed(() => this.summary().today.completed);
-  todayTotal = computed(() => this.summary().today.total);
-  todayProgressPct = computed(() => Math.round((this.summary().today.progress ?? 0) * 100));
-  freezeTokens = computed(() => this.summary().freezeTokens);
-
-  // local form (clone of user fields we allow to edit)
+  // Form state (editable subset)
   form: { username: string; email: string; bio: string; prefs: UserPrefs } = {
     username: '',
     email: '',
     bio: '',
-    prefs: { tz: 'Europe/Istanbul', theme: 'dark', defaultTech: 'javascript', keyboard: 'default', marketingEmails: false },
+    prefs: {
+      tz: 'Europe/Istanbul',
+      theme: 'dark',
+      defaultTech: 'javascript',
+      keyboard: 'default',
+      marketingEmails: false
+    },
   };
 
   recent = signal<ActivityEvent[]>([]);
@@ -304,23 +209,21 @@ export class ProfileComponent implements OnInit {
       if (u) this.resetForm(u);
     });
 
-    // Pull summary & recent
-    this.refreshSummary();
+    // Load only recent activity for MVP
     this.loadRecent();
 
-    // React to completions (update summary + recent)
-    this.activity.activityCompleted$.subscribe(() => {
-      this.refreshSummary();
-      this.loadRecent();
-    });
+    // Refresh recent after completions
+    this.activity.activityCompleted$.subscribe(() => this.loadRecent());
   }
 
-  private refreshSummary() {
-    // Optional: update the shared cache then read fresh summary
-    this.activity.refreshSummary?.();
-    this.activity.summary().subscribe({
-      next: (s) => this._summary.set(s || EMPTY_SUMMARY),
-      error: () => this._summary.set(EMPTY_SUMMARY),
+  private loadRecent() {
+    if (!this.auth.isLoggedIn()) {
+      this.recent.set([]);
+      return;
+    }
+    this.activity.recent({ limit: 10 }).subscribe({
+      next: (rows) => this.recent.set(rows || []),
+      error: () => this.recent.set([]),
     });
   }
 
@@ -333,17 +236,6 @@ export class ProfileComponent implements OnInit {
   isPro(): boolean {
     const b = this.billing();
     return !!b && (b.pro?.status === 'lifetime' || b.pro?.status === 'active');
-  }
-
-  private loadRecent() {
-    if (!this.auth.isLoggedIn()) {
-      this.recent.set([]);
-      return;
-    }
-    this.activity.recent({ limit: 10 }).subscribe({
-      next: (rows) => this.recent.set(rows || []),
-      error: () => this.recent.set([]),
-    });
   }
 
   private resetForm(u: User) {

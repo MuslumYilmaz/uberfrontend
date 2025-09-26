@@ -29,16 +29,6 @@
 .profile-info { list-style: none; margin: 16px 0; padding: 0; }
 .profile-info li { display: flex; align-items: center; gap: 6px; color: #cfd6dd; font-size: 12px; margin-bottom: 6px; }
 
-.discord-btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 8px 10px;
-  background: #2b2b2b;
-  border: 1px solid rgba(255,255,255,.1);
-  color: #cfd6dd;
-  border-radius: 8px;
-}
-
 /* Main */
 .profile-main {
   background: #151515; padding: 16px; border-radius: 10px;
@@ -56,40 +46,9 @@
 /* Panel */
 .panel { display: grid; gap: 18px; }
 
-/* Stats header */
-.stats-card {
-  display: grid; grid-template-columns: repeat(5, 1fr);
-  background: #1b1b1b; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 12px 16px; gap: 10px;
-}
-.stat { text-align: center; }
-.value { font-size: 15px; font-weight: 600; }
-.label { font-size: 12px; color: #aab3bd; }
-
 /* Sections */
 .section h3 { font-size: 14px; margin: 0 0 8px; font-weight: 600; }
 .muted { color: #9aa3ad; font-size: 12px; }
-
-/* === Meters (Level / Weekly / Today) === */
-.meter { background: #1b1b1b; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
-.meter-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #cfd6dd; margin-bottom: 8px; }
-.meter-bar { height: 8px; background: #0f0f0f; border-radius: 999px; overflow: hidden; }
-.meter-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #7dd3fc, #a78bfa, #f472b6);
-  transition: width .35s ease;
-}
-.meter-sub { margin-top: 6px; font-size: 12px; color: #aab3bd; }
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  font-size: 11px;
-  border-radius: 999px;
-  background: #222;
-  border: 1px solid rgba(255,255,255,.08);
-  color: #e9edf1;
-}
 
 /* Activity list */
 .activity-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
@@ -101,12 +60,6 @@
 .chip.kind[data-kind="trivia"] { background:#2a3a2e; color:#d5ffd6; }
 .chip.kind[data-kind="debug"] { background:#3a2538; color:#ffd8fb; }
 .label { color:#e9edf1; }
-
-/* Per-tech */
-.pertech { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.pt-card { background:#1c1c1c; border:1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 12px; }
-.pt-title { font-weight: 600; margin-bottom: 8px; }
-.pt-line { display: flex; justify-content: space-between; font-size: 13px; color: #cfd6dd; }
 
 /* Account cards */
 .account-card {
@@ -132,11 +85,7 @@
 .promo strong { display: block; margin-bottom: 4px; }
 
 /* === Responsive === */
-@media (max-width: 1080px) {
-  .stats-card { grid-template-columns: repeat(3, 1fr); }
-}
+@media (max-width: 1080px) { }
 @media (max-width: 860px) {
   .profile-layout { grid-template-columns: 1fr; }
-  .pertech { grid-template-columns: 1fr; }
-  .stats-card { grid-template-columns: repeat(2, 1fr); }
 }

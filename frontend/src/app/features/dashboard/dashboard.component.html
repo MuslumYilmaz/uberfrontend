@@ -7,15 +7,14 @@
             </p>
         </header>
 
-        <!-- TWO-COLUMN LAYOUT: main list on the left, sticky right rail -->
+        <!-- Single-column layout (rail removed for MVP) -->
         <section class="dash-layout">
-            <!-- LEFT: main content / cards -->
             <main class="dash-main">
                 <h2 class="text-lg font-semibold text-gray-200 mb-3">Keep going</h2>
 
                 <div class="space-y-4">
                     <ng-container *ngFor="let it of items; index as i; trackBy: trackByTitle">
-                        <!-- Enabled (link) -->
+                        <!-- Enabled -->
                         <a *ngIf="!it.disabled; else disabledCard" class="card hoverable" [routerLink]="it.route"
                             [attr.aria-label]="it.title">
                             <div class="step">{{ i + 1 }}</div>
@@ -61,14 +60,6 @@
                     </ng-container>
                 </div>
             </main>
-
-            <!-- RIGHT: sticky rail with Today’s set (top) + Heatmap (bottom) -->
-            <aside class="dash-rail">
-                <div class="rail-sticky">
-                    <app-daily-widget class="rail-card"></app-daily-widget>
-                    <app-daily-heatmap class="rail-card" [cell]="14" [gap]="6"></app-daily-heatmap>
-                </div>
-            </aside>
         </section>
     </div>
 </div>

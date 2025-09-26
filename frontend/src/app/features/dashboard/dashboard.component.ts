@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DailyHeatmapComponent } from './daily-heatmap/daily-heatmap.component';
-import { DailyWidgetComponent } from './daily-widget/daily-widget.component';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building';
 
@@ -18,9 +16,9 @@ type DashItem = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, DailyWidgetComponent, DailyHeatmapComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],   // <-- note the plural
+  styleUrls: ['./dashboard.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
@@ -28,8 +26,8 @@ export class DashboardComponent {
     book: 'book',
     grid: 'th-large',
     list: 'list',
-    cap: 'bookmark',   // ← was 'graduation-cap' (not in your version)
-    building: 'briefcase' // you can switch to 'building' if your version supports it
+    cap: 'bookmark',
+    building: 'briefcase', // switch to 'building' if your icon set supports it
   };
 
   piIcon(key: IconKey) {
@@ -60,7 +58,8 @@ export class DashboardComponent {
     },
     {
       title: 'Free Practice',
-      subtitle: 'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.',
+      subtitle:
+        'Jump into coding & trivia practice. Choose JavaScript or Angular and start solving.',
       icon: 'list',
       route: ['/javascript'],
     },
@@ -73,7 +72,7 @@ export class DashboardComponent {
     {
       title: 'Companies',
       subtitle: 'Practice by company (Google, Uber, etc.): coding & trivia.',
-      icon: 'building',              // mapped to pi-briefcase
+      icon: 'building',
       route: ['/companies'],
     },
   ];
