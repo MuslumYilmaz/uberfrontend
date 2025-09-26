@@ -1,24 +1,35 @@
 import { Injectable } from '@angular/core';
 
-// esbuild-init.service.ts
 @Injectable({ providedIn: 'root' })
 export class EsbuildInitService {
-  private ready?: Promise<void>;
+  private inited = false;
+  private pending: Promise<void> | null = null;
 
+  /**
+   * Optional lazy init. Only call this from a feature that truly needs esbuild.
+   * Always resolves; safe to call multiple times.
+   */
   init(): Promise<void> {
-    if (this.ready) return this.ready;
+    if (this.inited) return Promise.resolve();
+    if (this.pending) return this.pending;
 
-    this.ready = (async () => {
-      const esbuild = await import('esbuild-wasm');
-      // Use CDN unconditionally (no local HEAD → no 404 in console)
-      const wasmURL = 'https://unpkg.com/esbuild-wasm@0.25.10/esbuild.wasm';
-      await esbuild.initialize({ wasmURL, worker: true });
-    })().catch(err => {
-      console.error('[esbuild] init failed', err);
-      this.ready = undefined;
-      throw err;
-    });
+    this.pending = this.tryInit()
+      .then(() => { this.inited = true; })
+      .catch((err) => {
+        console.warn('[esbuild] optional init failed; continuing without it:', err);
+      })
+      .finally(() => { this.pending = null; });
 
-    return this.ready;
+    return this.pending;
+  }
+
+  private async tryInit(): Promise<void> {
+    // If you never ship esbuild, bail out immediately.
+    // Comment this return and fill in the real loader if/when you add it.
+    return;
+
+    // Example (for later):
+    // const mod: any = await import('esbuild-wasm');
+    // await mod.initialize({ wasmURL: '/assets/esbuild/wasm/esbuild.wasm', worker: true });
   }
 }
