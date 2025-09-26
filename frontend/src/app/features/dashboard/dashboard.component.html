@@ -1,65 +1,140 @@
-<div class="min-h-screen bg-neutral-900 text-gray-200">
-    <div class="mx-auto max-w-6xl py-10 px-4">
-        <header class="mb-6">
-            <h1 class="text-4xl font-extrabold text-white">Dashboard</h1>
-            <p class="text-sm text-gray-400 mt-1">
-                Not sure where to start? This path works well for most people.
-            </p>
+<div class="dash">
+    <div class="container">
+        <header class="page-header">
+            <h1>Dashboard</h1>
         </header>
 
-        <!-- Single-column layout (rail removed for MVP) -->
-        <section class="dash-layout">
-            <main class="dash-main">
-                <h2 class="text-lg font-semibold text-gray-200 mb-3">Keep going</h2>
-
-                <div class="space-y-4">
-                    <ng-container *ngFor="let it of items; index as i; trackBy: trackByTitle">
-                        <!-- Enabled -->
-                        <a *ngIf="!it.disabled; else disabledCard" class="card hoverable" [routerLink]="it.route"
-                            [attr.aria-label]="it.title">
-                            <div class="step">{{ i + 1 }}</div>
-
-                            <div class="icon" aria-hidden="true">
-                                <i [ngClass]="piIcon(it.icon)" class="text-[20px] leading-none"></i>
-                            </div>
-
-                            <div class="content">
-                                <div class="title-row">
-                                    <div class="title">{{ it.title }}</div>
-                                </div>
-                                <div class="subtitle">{{ it.subtitle }}</div>
-                                <div class="skeleton">
-                                    <div class="bar"></div>
-                                </div>
-                            </div>
-
-                            <div class="chevron">→</div>
-                        </a>
-
-                        <!-- Disabled -->
-                        <ng-template #disabledCard>
-                            <div class="card disabled">
-                                <div class="step">{{ i + 1 }}</div>
-
-                                <div class="icon" aria-hidden="true">
-                                    <i [ngClass]="piIcon(it.icon)" class="text-[20px] leading-none"></i>
-                                </div>
-
-                                <div class="content">
-                                    <div class="title-row">
-                                        <div class="title">{{ it.title }}</div>
-                                        <span *ngIf="it.badge" class="badge secondary">{{ it.badge }}</span>
-                                    </div>
-                                    <div class="subtitle">{{ it.subtitle }}</div>
-                                    <div class="skeleton">
-                                        <div class="bar"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </ng-template>
-                    </ng-container>
+        <!-- Continue learning -->
+        <section class="block" *ngIf="continueCard as c">
+            <h2 class="block-title">Continue learning</h2>
+            <a class="resume-card" [routerLink]="c.route">
+                <div class="resume-left">
+                    <div class="pct">0%</div>
+                    <div class="resume-texts">
+                        <div class="resume-title">{{ c.title }}</div>
+                        <div class="resume-sub">{{ c.subtitle }}</div>
+                    </div>
                 </div>
-            </main>
+                <div class="resume-cta">Resume</div>
+            </a>
+            <div class="hr"></div>
+        </section>
+
+        <!-- Recommended -->
+        <section class="block">
+            <h2 class="block-title">Recommended preparation</h2>
+            <p class="block-sub">Not sure where to start? This preparation roadmap has been proven to work for most of
+                our users.</p>
+
+            <div class="list">
+                <ng-container *ngFor="let it of recommended; trackBy: trackByTitle">
+                    <a *ngIf="!it.disabled; else disabledRow" class="row" [routerLink]="it.route">
+                        <div class="row-step">1</div>
+                        <div class="row-icon"><i [ngClass]="piIcon(it.icon)"></i></div>
+                        <div class="row-body">
+                            <div class="row-title">{{ it.title }}</div>
+                            <div class="row-sub">{{ it.subtitle }}</div>
+                        </div>
+                        <div class="row-arrow">→</div>
+                    </a>
+
+                    <ng-template #disabledRow>
+                        <div class="row disabled">
+                            <div class="row-step">•</div>
+                            <div class="row-icon"><i [ngClass]="piIcon(it.icon)"></i></div>
+                            <div class="row-body">
+                                <div class="row-title">
+                                    {{ it.title }}
+                                    <span *ngIf="it.badge" class="badge">{{ it.badge }}</span>
+                                </div>
+                                <div class="row-sub">{{ it.subtitle }}</div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </div>
+        </section>
+
+        <!-- Study plans -->
+        <section class="block">
+            <h3 class="section-h">Study plans</h3>
+            <p class="block-sub">Prepare the best you can within any timeline.</p>
+
+            <div class="list">
+                <a class="row" *ngFor="let p of studyPlans; trackBy: trackByTitle" [routerLink]="p.route">
+                    <div class="row-icon"><i [ngClass]="piIcon(p.icon)"></i></div>
+                    <div class="row-body">
+                        <div class="row-title">{{ p.title }}</div>
+                        <div class="row-sub">{{ p.subtitle }}</div>
+                    </div>
+                    <div class="row-arrow">→</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Company guides -->
+        <section class="block">
+            <h3 class="section-h">Company guides</h3>
+            <p class="block-sub">Prepare for specific companies by learning insider tips and practicing known questions.
+            </p>
+
+            <div class="grid grid-2">
+                <a class="row" *ngFor="let c of companyGuides; trackBy: trackByTitle" [routerLink]="c.route">
+                    <div class="row-icon"><i [ngClass]="piIcon(c.icon)"></i></div>
+                    <div class="row-body">
+                        <div class="row-title">{{ c.title }}</div>
+                        <div class="row-sub">{{ c.subtitle }}</div>
+                    </div>
+                    <div class="row-arrow">→</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Focus areas -->
+        <section class="block">
+            <h3 class="section-h">Focus Areas</h3>
+            <p class="block-sub">Deep-dive into topical focus areas critical for front end interviews.</p>
+
+            <div class="grid grid-2">
+                <a class="row" *ngFor="let f of focusAreas; trackBy: trackByTitle" [routerLink]="f.route">
+                    <div class="row-icon"><i [ngClass]="piIcon(f.icon)"></i></div>
+                    <div class="row-body">
+                        <div class="row-title">{{ f.title }}</div>
+                        <div class="row-sub">{{ f.subtitle }}</div>
+                    </div>
+                    <div class="row-arrow">→</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Practice questions -->
+        <section class="block">
+            <h2 class="block-title">Practice questions</h2>
+            <p class="block-sub">More practice questions you can dive into with any excess time.</p>
+
+            <h3 class="section-h">Question formats</h3>
+            <div class="grid grid-2">
+                <a class="row" *ngFor="let q of questionFormats; trackBy: trackByTitle" [routerLink]="q.route">
+                    <div class="row-icon"><i [ngClass]="piIcon(q.icon)"></i></div>
+                    <div class="row-body">
+                        <div class="row-title">{{ q.title }}</div>
+                        <div class="row-sub">{{ q.subtitle }}</div>
+                    </div>
+                    <div class="row-arrow">→</div>
+                </a>
+            </div>
+
+            <h3 class="section-h">Frameworks and languages</h3>
+            <div class="grid grid-2">
+                <a class="row" *ngFor="let fw of frameworks; trackBy: trackByTitle" [routerLink]="fw.route">
+                    <div class="row-icon"><i [ngClass]="piIcon(fw.icon)"></i></div>
+                    <div class="row-body">
+                        <div class="row-title">{{ fw.title }}</div>
+                        <div class="row-sub">{{ fw.subtitle }}</div>
+                    </div>
+                    <div class="row-arrow">→</div>
+                </a>
+            </div>
         </section>
     </div>
 </div>
