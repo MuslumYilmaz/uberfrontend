@@ -1,142 +1,152 @@
 <div class="dash">
     <div class="container">
+
         <header class="page-header">
-            <h1>Dashboard</h1>
+            <h1>Prepare</h1>
         </header>
 
         <!-- Continue learning -->
         <section class="block" *ngIf="continueCard as c">
-            <h2 class="block-title">Continue learning</h2>
             <a class="resume-card" [routerLink]="c.route">
                 <div class="resume-left">
-                    <div class="pct">0%</div>
-                    <div class="resume-texts">
+                    <div class="pct">
+                        <i [ngClass]="piIcon(c.icon)"></i>
+                    </div>
+                    <div>
                         <div class="resume-title">{{ c.title }}</div>
                         <div class="resume-sub">{{ c.subtitle }}</div>
                     </div>
                 </div>
-                <div class="resume-cta">Resume</div>
+                <span class="resume-cta">Open →</span>
             </a>
             <div class="hr"></div>
         </section>
 
         <!-- Recommended -->
         <section class="block">
-            <h2 class="block-title">Recommended preparation</h2>
-            <p class="block-sub">Not sure where to start? This preparation roadmap has been proven to work for most of
-                our users.</p>
-
-            <div class="list">
-                <ng-container *ngFor="let it of recommended; let i = index; trackBy: trackByTitle">
-                    <a *ngIf="!it.disabled; else disabledRow" class="row" [routerLink]="it.route"
-                        [attr.aria-label]="it.title">
-                        <div class="row-step">{{ i + 1 }}</div>
-                        <div class="row-icon"><i [ngClass]="piIcon(it.icon)"></i></div>
+            <div class="block-title">Recommended preparation</div>
+            <div class="grid grid-2">
+                <ng-container *ngFor="let card of recommended; trackBy: trackByTitle">
+                    <!-- Enabled -->
+                    <a *ngIf="card.route && !card.disabled; else recDisabled" class="row" [routerLink]="card.route"
+                        [queryParams]="card.queryParams">
+                        <div class="row-step">
+                            <i [ngClass]="piIcon(card.icon)"></i>
+                        </div>
+                        <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">
-                            <div class="row-title">{{ it.title }}</div>
-                            <div class="row-sub">{{ it.subtitle }}</div>
+                            <div class="row-title">{{ card.title }}</div>
+                            <div class="row-sub">{{ card.subtitle }}</div>
                         </div>
                         <div class="row-arrow">→</div>
                     </a>
 
-                    <ng-template #disabledRow>
-                        <div class="row disabled" role="button" aria-disabled="true" tabindex="-1">
-                            <div class="row-step">{{ i + 1 }}</div>
-                            <div class="row-icon"><i [ngClass]="piIcon(it.icon)"></i></div>
+                    <!-- Disabled -->
+                    <ng-template #recDisabled>
+                        <div class="row disabled">
+                            <div class="row-step"><i [ngClass]="piIcon(card.icon)"></i></div>
+                            <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                             <div class="row-body">
                                 <div class="row-title">
-                                    {{ it.title }}
-                                    <span *ngIf="it.badge" class="badge"> {{ it.badge }} </span>
+                                    {{ card.title }}
+                                    <span *ngIf="card.badge" class="badge">{{ card.badge }}</span>
                                 </div>
-                                <div class="row-sub">{{ it.subtitle }}</div>
+                                <div class="row-sub">{{ card.subtitle }}</div>
                             </div>
-                            <div class="row-arrow" aria-hidden="true">→</div>
+                            <div class="row-arrow">→</div>
                         </div>
                     </ng-template>
                 </ng-container>
             </div>
+            <div class="hr"></div>
         </section>
 
         <!-- Study plans -->
         <section class="block">
-            <h3 class="section-h">Study plans</h3>
-            <p class="block-sub">Prepare the best you can within any timeline.</p>
-
-            <div class="list">
-                <a class="row" *ngFor="let p of studyPlans; trackBy: trackByTitle" [routerLink]="p.route">
-                    <div class="row-icon"><i [ngClass]="piIcon(p.icon)"></i></div>
+            <div class="block-title">Study plans</div>
+            <div class="grid grid-2">
+                <a *ngFor="let card of studyPlans; trackBy: trackByTitle" class="row" [routerLink]="card.route">
+                    <div class="row-step"><i [ngClass]="piIcon(card.icon)"></i></div>
+                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
-                        <div class="row-title">{{ p.title }}</div>
-                        <div class="row-sub">{{ p.subtitle }}</div>
+                        <div class="row-title">{{ card.title }}</div>
+                        <div class="row-sub">{{ card.subtitle }}</div>
                     </div>
                     <div class="row-arrow">→</div>
                 </a>
             </div>
+            <div class="hr"></div>
         </section>
 
         <!-- Company guides -->
         <section class="block">
-            <h3 class="section-h">Company guides</h3>
-            <p class="block-sub">Prepare for specific companies by learning insider tips and practicing known questions.
-            </p>
-
+            <div class="block-title">Company guides</div>
             <div class="grid grid-2">
-                <a class="row" *ngFor="let c of companyGuides; trackBy: trackByTitle" [routerLink]="c.route">
-                    <div class="row-icon"><i [ngClass]="piIcon(c.icon)"></i></div>
+                <a *ngFor="let card of companyGuides; trackBy: trackByTitle" class="row" [routerLink]="card.route">
+                    <div class="row-step"><i [ngClass]="piIcon(card.icon)"></i></div>
+                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
-                        <div class="row-title">{{ c.title }}</div>
-                        <div class="row-sub">{{ c.subtitle }}</div>
+                        <div class="row-title">{{ card.title }}</div>
+                        <div class="row-sub">{{ card.subtitle }}</div>
                     </div>
                     <div class="row-arrow">→</div>
                 </a>
             </div>
+            <div class="hr"></div>
         </section>
 
         <!-- Focus areas -->
         <section class="block">
-            <h3 class="section-h">Focus Areas</h3>
-            <p class="block-sub">Deep-dive into topical focus areas critical for front end interviews.</p>
-
+            <div class="block-title">Focus areas</div>
             <div class="grid grid-2">
-                <a class="row" *ngFor="let f of focusAreas; trackBy: trackByTitle" [routerLink]="f.route">
-                    <div class="row-icon"><i [ngClass]="piIcon(f.icon)"></i></div>
+                <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    [queryParams]="card.queryParams">
+                    <div class="row-step"><i [ngClass]="piIcon(card.icon)"></i></div>
+                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
-                        <div class="row-title">{{ f.title }}</div>
-                        <div class="row-sub">{{ f.subtitle }}</div>
+                        <div class="row-title">{{ card.title }}</div>
+                        <div class="row-sub">{{ card.subtitle }}</div>
                     </div>
                     <div class="row-arrow">→</div>
                 </a>
             </div>
+            <div class="hr"></div>
         </section>
 
-        <!-- Practice questions -->
+        <!-- Question formats -->
         <section class="block">
-            <h2 class="block-title">Practice questions</h2>
-            <p class="block-sub">More practice questions you can dive into with any excess time.</p>
-
-            <h3 class="section-h">Question formats</h3>
+            <div class="block-title">Question formats</div>
             <div class="grid grid-2">
-                <a class="row" *ngFor="let q of questionFormats; trackBy: trackByTitle" [routerLink]="q.route">
-                    <div class="row-icon"><i [ngClass]="piIcon(q.icon)"></i></div>
+                <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    [queryParams]="card.queryParams">
+                    <div class="row-step"><i [ngClass]="piIcon(card.icon)"></i></div>
+                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
-                        <div class="row-title">{{ q.title }}</div>
-                        <div class="row-sub">{{ q.subtitle }}</div>
+                        <div class="row-title">{{ card.title }}</div>
+                        <div class="row-sub">{{ card.subtitle }}</div>
                     </div>
                     <div class="row-arrow">→</div>
                 </a>
             </div>
+            <div class="hr"></div>
+        </section>
 
-            <h3 class="section-h">Frameworks and languages</h3>
+        <!-- Frameworks & languages -->
+        <section class="block">
+            <div class="block-title">Frameworks and languages</div>
             <div class="grid grid-2">
-                <a class="row" *ngFor="let fw of frameworks; trackBy: trackByTitle" [routerLink]="fw.route">
-                    <div class="row-icon"><i [ngClass]="piIcon(fw.icon)"></i></div>
+                <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    [queryParams]="card.queryParams">
+                    <div class="row-step"><i [ngClass]="piIcon(card.icon)"></i></div>
+                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
-                        <div class="row-title">{{ fw.title }}</div>
-                        <div class="row-sub">{{ fw.subtitle }}</div>
+                        <div class="row-title">{{ card.title }}</div>
+                        <div class="row-sub">{{ card.subtitle }}</div>
                     </div>
                     <div class="row-arrow">→</div>
                 </a>
             </div>
         </section>
+
     </div>
 </div>

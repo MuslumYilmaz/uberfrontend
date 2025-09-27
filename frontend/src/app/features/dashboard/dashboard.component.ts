@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Params, RouterModule } from '@angular/router';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
 
@@ -9,6 +9,7 @@ type Card = {
   subtitle?: string;
   icon?: IconKey;
   route?: any[];
+  queryParams?: Params;     // pre-filters like /coding?tech=react
   disabled?: boolean;
   badge?: string | null;
   metaLeft?: string;
@@ -40,12 +41,11 @@ export class DashboardComponent {
     return ['pi', `pi-${name}`];
   }
 
-  /** ===== Continue learning (generic safe target) ===== */
-  continueCard: Card | null = {
+  /** ===== Continue learning (safe route) ===== */
+  continueCard: Card = {
     title: 'Front End Interview Playbook',
     subtitle: 'Pick up where you left off',
     icon: 'book',
-    // Safe route that exists in router (guides -> playbook index)
     route: ['/guides', 'playbook'],
   };
 
@@ -55,28 +55,25 @@ export class DashboardComponent {
       title: 'Front End Interview Playbook',
       subtitle: 'A starter guide to preparing for front end interviews.',
       icon: 'book',
-      route: ['/guides', 'playbook'], // ✅ real route
+      route: ['/guides', 'playbook'],
     },
     {
       title: 'GFE 75',
       subtitle:
         'The 75 most important front end interview questions. Covers patterns & formats.',
       icon: 'book',
-      disabled: true,                 // no concrete route in router for now
+      disabled: true,
       badge: 'Coming soon',
     },
     {
       title: 'Front End System Design Playbook',
       subtitle: 'Core techniques and deep dives (guide).',
       icon: 'grid',
-      route: ['/guides', 'system-design'], // ✅ guide route (not the practice area)
+      route: ['/guides', 'system-design'],
     },
   ];
 
-  /** ===== Study plans =====
-   * There are no explicit /plans routes; send users to the playbook
-   * (closest valid entry point) until plans exist.
-   */
+  /** ===== Study plans (route to guide for now) ===== */
   studyPlans: Card[] = [
     { title: '1 Week', subtitle: '51 questions · 2 hours daily', icon: 'bolt', route: ['/guides', 'playbook'] },
     { title: '1 Month', subtitle: '107 questions · 6 hours weekly', icon: 'clock', route: ['/guides', 'playbook'] },
@@ -92,45 +89,39 @@ export class DashboardComponent {
     { title: 'ByteDance', subtitle: '27 questions', icon: 'building', route: ['/companies', 'bytedance'] },
     { title: 'Apple', subtitle: '13 questions', icon: 'building', route: ['/companies', 'apple'] },
   ];
-  // Tip: if you also want an entry to the index page, add one:
-  // { title: 'All companies', subtitle: 'Browse all', icon: 'building', route: ['/companies'] }
 
-  /** ===== Focus areas =====
-   * No /focus routes in router. Point to a valid tech landing which redirects
-   * to /:tech/coding (via matcher). Use /javascript for now.
-   */
+  /** ===== Focus areas ===== */
+  // These go to /coding; add queryParams when you want to pre-filter by tech
   focusAreas: Card[] = [
-    { title: 'Accessibility', subtitle: '12 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'Async Operations', subtitle: '33 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'Design System Components', subtitle: '15 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'DOM Manipulation', subtitle: '10 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'Forms', subtitle: '10 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'JavaScript Polyfills', subtitle: '26 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'Lodash Functions', subtitle: '28 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'React Hooks', subtitle: '23 questions', icon: 'grid', route: ['/react'] },
-    { title: 'State Management', subtitle: '17 questions', icon: 'grid', route: ['/react'] },
+    { title: 'Accessibility', subtitle: '12 questions', icon: 'grid', route: ['/coding'] },
+    { title: 'Async Operations', subtitle: '33 questions', icon: 'grid', route: ['/coding'] },
+    { title: 'Design System Components', subtitle: '15 questions', icon: 'grid', route: ['/coding'] },
+    { title: 'DOM Manipulation', subtitle: '10 questions', icon: 'grid', route: ['/coding'] },
+    { title: 'Forms', subtitle: '10 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'angular' } },
+    { title: 'JavaScript Polyfills', subtitle: '26 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'javascript' } },
+    { title: 'Lodash Functions', subtitle: '28 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'javascript' } },
+    { title: 'React Hooks', subtitle: '23 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'react' } },
+    { title: 'State Management', subtitle: '17 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'react' } },
   ];
 
-  /** ===== Practice: formats & frameworks =====
-   * Map each to known, existing routes.
-   */
+  /** ===== Practice: formats ===== */
   questionFormats: Card[] = [
-    { title: 'User Interface Coding', subtitle: '0/59 questions', icon: 'list', route: ['/javascript', 'coding'] },
-    { title: 'JavaScript Functions', subtitle: '0/140 questions', icon: 'list', route: ['/javascript', 'trivia'] },
-    { title: 'Front End System Design', subtitle: '0/19 questions', icon: 'list', route: ['/system-design'] }, // ✅ practice area
-    { title: 'Quiz', subtitle: '0/283 questions', icon: 'list', route: ['/javascript', 'trivia'] },
-    { title: 'Data Structures & Algorithms Coding', subtitle: '0/92 questions', icon: 'list', route: ['/javascript', 'coding'] },
+    { title: 'User Interface Coding', subtitle: '0/59 questions', icon: 'list', route: ['/coding'] },
+    { title: 'JavaScript Functions', subtitle: '0/140 questions', icon: 'list', route: ['/coding'], queryParams: { tech: 'javascript' } },
+    { title: 'Front End System Design', subtitle: '0/19 questions', icon: 'list', route: ['/system-design'] },
+    { title: 'Quiz', subtitle: '0/283 questions', icon: 'list', route: ['/coding'] },
+    { title: 'Data Structures & Algorithms Coding', subtitle: '0/92 questions', icon: 'list', route: ['/coding'] },
     { title: 'Behavioral', subtitle: '0/8 articles', icon: 'list', route: ['/guides', 'behavioral'] },
   ];
 
-  /** Only include techs allowed by the matcher: javascript, angular, react, vue, html, css */
+  /** ===== Framework tiles → /coding?tech=<key> ===== */
   frameworks: Card[] = [
-    { title: 'JavaScript', subtitle: '0/483 questions', icon: 'grid', route: ['/javascript'] },
-    { title: 'React', subtitle: '0/91 questions', icon: 'grid', route: ['/react'] },
-    { title: 'Angular', subtitle: '0/32 questions', icon: 'grid', route: ['/angular'] },
-    { title: 'Vue', subtitle: '0/31 questions', icon: 'grid', route: ['/vue'] },
-    { title: 'CSS', subtitle: '0/74 questions', icon: 'grid', route: ['/css'] },
-    { title: 'HTML', subtitle: '0/90 questions', icon: 'grid', route: ['/html'] },
+    { title: 'JavaScript', subtitle: '0/483 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'javascript' } },
+    { title: 'React', subtitle: '0/91 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'react' } },
+    { title: 'Angular', subtitle: '0/32 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'angular' } },
+    { title: 'Vue', subtitle: '0/31 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'vue' } },
+    { title: 'CSS', subtitle: '0/74 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'css' } },
+    { title: 'HTML', subtitle: '0/90 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'html' } },
   ];
 
   trackByTitle = (_: number, it: Card) => it.title;

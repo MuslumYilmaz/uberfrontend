@@ -11,7 +11,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
 import { BehaviorSubject, combineLatest, forkJoin, of } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { Difficulty, Question } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
@@ -204,8 +204,19 @@ export class CodingListComponent {
     { key: 'debug', label: 'Debug' }
   ];
 
-  constructor(public route: ActivatedRoute, public qs: QuestionService, public router: Router) { }
-
+  constructor(public route: ActivatedRoute, public qs: QuestionService, public router: Router) {
+    // Only matters for the global list; harmless otherwise
+    this.route.queryParamMap
+      .pipe(
+        take(1),
+        map(qp => (qp.get('tech') || '').toLowerCase()),
+        tap(t => {
+          const allowed = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
+          if (allowed.includes(t)) this.selectedTech$.next(t as Tech);
+        })
+      )
+      .subscribe();
+  }
   // ---------- helpers used by template ----------
   descriptionText(q: Question): string {
     const desc: any = (q as any).description;
