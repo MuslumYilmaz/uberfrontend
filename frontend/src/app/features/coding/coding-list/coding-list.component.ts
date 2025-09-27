@@ -17,11 +17,11 @@ import { Tech } from '../../../core/models/user.model';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 
 type StructuredDescription = { text: string; examples?: string[] };
-type ListSource = 'tech' | 'company';
+type ListSource = 'tech' | 'company' | 'global-coding';
 type Kind = 'coding' | 'trivia' | 'debug' | 'all';
 
 type Row = Question & {
-  tech?: Tech;              // attached in company mode or derived from route
+  tech?: Tech;
   __kind: 'coding' | 'trivia' | 'debug';
   companies?: string[];
 };
@@ -55,8 +55,12 @@ export class CodingListComponent {
   diffs$ = new BehaviorSubject<Difficulty[]>([]);
   maxImp$ = new BehaviorSubject<number>(5);
 
+  // GLOBAL (/coding) local filters
+  selectedTech$ = new BehaviorSubject<Tech | null>(null);
+  selectedKind$ = new BehaviorSubject<Exclude<Kind, 'all'>>('coding');
+
   // ----- context from routing -----
-  tech!: Tech; // used on tech pages
+  tech!: Tech; // used on per-tech pages
   source: ListSource = 'tech';
   kind: Kind = 'coding';
 
@@ -76,10 +80,28 @@ export class CodingListComponent {
     tap(d => {
       this.source = (d['source'] as ListSource) ?? 'tech';
       this.kind = (d['kind'] as Kind) ?? 'coding';
+      // seed the local kind filter from route (helps when deep-linking in future)
+      if (this.source === 'global-coding' && (this.kind === 'coding' || this.kind === 'trivia' || this.kind === 'debug')) {
+        this.selectedKind$.next(this.kind);
+      }
     }),
     switchMap(() => {
+      // --------- GLOBAL (/coding): load by selectedKind$ ----------
+      if (this.source === 'global-coding') {
+        return this.selectedKind$.pipe(
+          switchMap((k) =>
+            this.qs.loadAllQuestions(k as any).pipe(
+              map((list: MixedQuestion[]) =>
+                list.map<Row>(q => ({ ...q, __kind: k, tech: q.tech }))
+              ),
+              startWith<Row[]>([])
+            )
+          )
+        );
+      }
+
+      // --------- PER-TECH (/:tech/...) -------------
       if (this.source === 'tech') {
-        // path: /:tech/(coding|trivia|debug|all)
         return this.route.parent!.paramMap.pipe(
           map(pm => (pm.get('tech') ?? '').toLowerCase()),
           switchMap((t) => {
@@ -104,16 +126,15 @@ export class CodingListComponent {
             }
 
             const k = this.kind as Exclude<Kind, 'all'>;
-            return this.qs.loadQuestions(this.tech, k)
-              .pipe(
-                map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))),
-                startWith<Row[]>([])
-              );
+            return this.qs.loadQuestions(this.tech, k).pipe(
+              map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))),
+              startWith<Row[]>([])
+            );
           })
         );
       }
 
-      // source === 'company'
+      // --------- COMPANY -----------------------
       if (this.kind === 'all') {
         return forkJoin([
           this.qs.loadAllQuestions('coding')
@@ -140,16 +161,18 @@ export class CodingListComponent {
     this.search$,
     this.diffs$,
     this.maxImp$,
-    this.companySlug$
+    this.companySlug$,
+    this.selectedTech$
   ]).pipe(
-    map(([questions, term, diffs, maxImp, companySlug]) => {
+    map(([questions, term, diffs, maxImp, companySlug, selectedTech]) => {
       const t = (term || '').toLowerCase();
       return (questions ?? [])
         .filter(q =>
           (q.title?.toLowerCase()?.includes(t) ?? false) &&
           (diffs.length === 0 || diffs.includes(q.difficulty)) &&
           (q.importance ?? 0) <= maxImp &&
-          (!companySlug || ((q as any).companies ?? []).includes(companySlug))
+          (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
+          (this.source !== 'global-coding' || !selectedTech || q.tech === selectedTech)
         )
         .sort((a, b) => {
           if (a.importance !== b.importance) return (b.importance ?? 0) - (a.importance ?? 0);
@@ -164,7 +187,6 @@ export class CodingListComponent {
     { label: 'Advanced', value: 'hard' as Difficulty }
   ];
 
-  /** Tech tabs shown at top (only for source==='tech'). */
   techTabs = [
     { key: 'javascript' as Tech, label: 'JavaScript', badge: 'JS', cls: 'bg-yellow-400 text-black' },
     { key: 'react' as Tech, label: 'React', badge: 'R', cls: 'bg-sky-300 text-black' },
@@ -174,18 +196,13 @@ export class CodingListComponent {
     { key: 'css' as Tech, label: 'CSS', badge: 'C3', cls: 'bg-blue-600 text-white' },
   ];
 
-  filteredCount$ = this.filtered$.pipe(
-    map(list => list.length),
-    startWith(0)
-  );
+  filteredCount$ = this.filtered$.pipe(map(list => list.length), startWith(0));
 
-  kindTabs: Array<{ key: Kind; label: string }> = [
+  kindTabs: Array<{ key: Exclude<Kind, 'all'>; label: string }> = [
     { key: 'coding', label: 'Coding' },
     { key: 'trivia', label: 'Quiz' },
     { key: 'debug', label: 'Debug' }
   ];
-
-
 
   constructor(public route: ActivatedRoute, public qs: QuestionService, public router: Router) { }
 
@@ -203,7 +220,6 @@ export class CodingListComponent {
     return ['/', tech, 'coding', q.id];
   }
 
-  /** Build router state carrying a practice session (ordered items from the *filtered* list). */
   stateForNav(list: Row[], current: Row, companySlug: string | null) {
     const items: PracticeItem[] = list.map((r) => ({
       tech: (r.tech ?? this.tech ?? 'javascript') as Tech,
@@ -211,13 +227,11 @@ export class CodingListComponent {
       id: r.id
     }));
     const index = Math.max(0, list.findIndex(r => r.id === current.id));
-
     const ret = this.detailStateForCompany(companySlug);
     const session: PracticeSession = { items, index };
     return { ...(ret || {}), session };
   }
 
-  // (unchanged) company return state
   detailStateForCompany(companySlug: string | null): { [k: string]: any } | undefined {
     if (this.source !== 'company') return undefined;
     return {
@@ -227,6 +241,11 @@ export class CodingListComponent {
   }
 
   heading(): string {
+    if (this.source === 'global-coding') {
+      const k = this.selectedKind$.value;
+      const label = k === 'trivia' ? 'Quiz' : (k === 'debug' ? 'Debug' : 'Coding');
+      return `All ${label} Questions`;
+    }
     const t = this.tech ?? 'javascript';
     const what =
       this.kind === 'coding' ? 'Coding Challenges'
@@ -257,5 +276,14 @@ export class CodingListComponent {
       faang: 'FAANG'
     };
     return map[slug] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
+  }
+
+  // GLOBAL filters
+  toggleTech(key: Tech) {
+    const curr = this.selectedTech$.value;
+    this.selectedTech$.next(curr === key ? null : key);
+  }
+  selectKind(k: 'coding' | 'trivia' | 'debug') {
+    if (this.source === 'global-coding') this.selectedKind$.next(k);
   }
 }

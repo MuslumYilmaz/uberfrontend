@@ -27,9 +27,10 @@
                 our users.</p>
 
             <div class="list">
-                <ng-container *ngFor="let it of recommended; trackBy: trackByTitle">
-                    <a *ngIf="!it.disabled; else disabledRow" class="row" [routerLink]="it.route">
-                        <div class="row-step">1</div>
+                <ng-container *ngFor="let it of recommended; let i = index; trackBy: trackByTitle">
+                    <a *ngIf="!it.disabled; else disabledRow" class="row" [routerLink]="it.route"
+                        [attr.aria-label]="it.title">
+                        <div class="row-step">{{ i + 1 }}</div>
                         <div class="row-icon"><i [ngClass]="piIcon(it.icon)"></i></div>
                         <div class="row-body">
                             <div class="row-title">{{ it.title }}</div>
@@ -39,16 +40,17 @@
                     </a>
 
                     <ng-template #disabledRow>
-                        <div class="row disabled">
-                            <div class="row-step">•</div>
+                        <div class="row disabled" role="button" aria-disabled="true" tabindex="-1">
+                            <div class="row-step">{{ i + 1 }}</div>
                             <div class="row-icon"><i [ngClass]="piIcon(it.icon)"></i></div>
                             <div class="row-body">
                                 <div class="row-title">
                                     {{ it.title }}
-                                    <span *ngIf="it.badge" class="badge">{{ it.badge }}</span>
+                                    <span *ngIf="it.badge" class="badge"> {{ it.badge }} </span>
                                 </div>
                                 <div class="row-sub">{{ it.subtitle }}</div>
                             </div>
+                            <div class="row-arrow" aria-hidden="true">→</div>
                         </div>
                     </ng-template>
                 </ng-container>

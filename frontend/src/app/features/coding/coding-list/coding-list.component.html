@@ -1,23 +1,54 @@
 <div class="container mx-auto max-w-7xl px-4 py-6">
 
-  <!-- Tech tabs -->
-  <div *ngIf="source==='tech'" class="mb-4 overflow-x-auto">
+  <!-- Tech pills -->
+  <div *ngIf="source!=='company'" class="mb-4 overflow-x-auto">
     <nav class="flex items-center gap-2 min-w-max">
-      <a *ngFor="let t of techTabs" [routerLink]="['/', t.key, kind]" class="tab-pill"
-        [ngClass]="t.key === tech ? 'tab-pill--active' : 'tab-pill--idle'">
-        <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
-        <span class="whitespace-nowrap">{{ t.label }}</span>
-      </a>
+
+      <!-- GLOBAL /coding: filter buttons (no navigation) -->
+      <ng-container *ngIf="source==='global-coding'; else techLinks">
+        <button *ngFor="let t of techTabs" type="button" class="tab-pill"
+          [ngClass]="(selectedTech$ | async) === t.key ? 'tab-pill--active' : 'tab-pill--idle'"
+          (click)="toggleTech(t.key)">
+          <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+          <span class="whitespace-nowrap">{{ t.label }}</span>
+        </button>
+      </ng-container>
+
+      <!-- Per-tech routes: navigation pills -->
+      <ng-template #techLinks>
+        <a *ngFor="let t of techTabs" [routerLink]="['/', t.key, kind]" class="tab-pill"
+          [ngClass]="t.key === tech ? 'tab-pill--active' : 'tab-pill--idle'">
+          <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+          <span class="whitespace-nowrap">{{ t.label }}</span>
+        </a>
+      </ng-template>
+
     </nav>
   </div>
 
   <!-- Section tabs + right-side count -->
-  <div *ngIf="source==='tech'" class="tabs-row">
+  <div *ngIf="source!=='company'" class="tabs-row">
     <div class="tabs-left">
-      <a *ngFor="let k of kindTabs" [routerLink]="['/', tech || 'javascript', k.key]" class="kind-pill"
-        [ngClass]="k.key === kind ? 'kind-pill--active' : 'kind-pill--idle'">
-        {{ k.label }}
-      </a>
+      <!-- GLOBAL: local kind filter (no navigation) -->
+      <ng-container *ngIf="source==='global-coding'; else kindLinks">
+        <button type="button" class="kind-pill"
+          [ngClass]="(selectedKind$ | async) === 'coding' ? 'kind-pill--active' : 'kind-pill--idle'"
+          (click)="selectKind('coding')">Coding</button>
+        <button type="button" class="kind-pill"
+          [ngClass]="(selectedKind$ | async) === 'trivia' ? 'kind-pill--active' : 'kind-pill--idle'"
+          (click)="selectKind('trivia')">Quiz</button>
+        <button type="button" class="kind-pill"
+          [ngClass]="(selectedKind$ | async) === 'debug' ? 'kind-pill--active' : 'kind-pill--idle'"
+          (click)="selectKind('debug')">Debug</button>
+      </ng-container>
+
+      <!-- Per-tech pages: navigate between kinds -->
+      <ng-template #kindLinks>
+        <a *ngFor="let k of kindTabs" [routerLink]="['/', tech || 'javascript', k.key]" class="kind-pill"
+          [ngClass]="k.key === kind ? 'kind-pill--active' : 'kind-pill--idle'">
+          {{ k.label }}
+        </a>
+      </ng-template>
     </div>
 
     <div class="tabs-right">
@@ -25,8 +56,7 @@
     </div>
   </div>
 
-
-  <h1 *ngIf="source==='tech'" class="text-4xl font-extrabold text-white mb-6">
+  <h1 class="text-4xl font-extrabold text-white mb-6">
     {{ heading() }}
   </h1>
 
@@ -58,173 +88,49 @@
 
   <!-- Data -->
   <div class="bg-gray-800 rounded-xl overflow-hidden">
-    <!-- headers omitted for brevity (unchanged from your last version) -->
-
-    <!-- Body -->
     <ng-container *ngIf="filtered$ | async as questions; else loading">
       <div *ngIf="questions.length === 0" class="py-6 text-center italic text-gray-500">
         No questions match your filters.
       </div>
 
-      <!-- TECH: coding or trivia -->
-      <ng-container *ngIf="source==='tech' && kind!=='all'">
-        <div *ngFor="let q of questions"
-          class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
-          <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-            class="absolute inset-0 z-10"></a>
+      <!-- Rows -->
+      <div *ngFor="let q of questions"
+        class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
+        <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
+          class="absolute inset-0 z-10"></a>
 
-          <div class="col-span-5">
-            <div class="text-lg font-semibold text-white">{{ q.title }}</div>
-            <div class="text-xs text-gray-400 mt-0.5">{{ descriptionText(q) | slice:0:80 }}&hellip;</div>
-          </div>
+        <div class="col-span-5">
+          <div class="text-lg font-semibold text-white">{{ q.title }}</div>
+          <div class="text-xs text-gray-400 mt-0.5">{{ descriptionText(q) | slice:0:80 }}&hellip;</div>
+        </div>
 
-          <div class="col-span-2">
-            <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{
-              'bg-green-800 text-green-300': q.difficulty === 'easy',
-              'bg-yellow-800 text-yellow-300': q.difficulty === 'intermediate',
-              'bg-red-800 text-red-300': q.difficulty === 'hard'
-            }">{{ q.difficulty | titlecase }}</span>
-          </div>
+        <div class="col-span-2">
+          <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{
+            'bg-green-800 text-green-300': q.difficulty === 'easy',
+            'bg-yellow-800 text-yellow-300': q.difficulty === 'intermediate',
+            'bg-red-800 text-red-300': q.difficulty === 'hard'
+          }">{{ q.difficulty | titlecase }}</span>
+        </div>
 
-          <div class="col-span-1">
-            <div class="text-sm text-gray-200">{{ q.importance }}</div>
-          </div>
+        <div class="col-span-1">
+          <div class="text-sm text-gray-200">{{ q.importance }}</div>
+        </div>
 
-          <div class="col-span-3 flex flex-wrap gap-2">
-            <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag" styleClass="custom-chip"></p-chip>
-          </div>
+        <!-- Show the tech badge when not on per-tech page -->
+        <div class="col-span-1" *ngIf="source!=='tech'">
+          <span class="px-2 py-1 rounded text-xs bg-white/10 text-gray-200">{{ techName(q) }}</span>
+        </div>
 
-          <div class="col-span-1 text-right">
-            <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
-              <span>→</span><span>Open</span>
-            </div>
+        <div class="col-span-2 flex flex-wrap gap-2">
+          <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag" styleClass="custom-chip"></p-chip>
+        </div>
+
+        <div class="col-span-1 text-right">
+          <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
+            <span>→</span><span>Open</span>
           </div>
         </div>
-      </ng-container>
-
-      <!-- TECH: all -->
-      <ng-container *ngIf="source==='tech' && kind==='all'">
-        <div *ngFor="let q of questions"
-          class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
-          <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-            class="absolute inset-0 z-10"></a>
-
-          <div class="col-span-5">
-            <div class="text-lg font-semibold text-white">{{ q.title }}</div>
-            <div class="text-xs text-gray-400 mt-0.5">{{ descriptionText(q) | slice:0:80 }}&hellip;</div>
-          </div>
-
-          <div class="col-span-2">
-            <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{
-              'bg-green-800 text-green-300': q.difficulty === 'easy',
-              'bg-yellow-800 text-yellow-300': q.difficulty === 'intermediate',
-              'bg-red-800 text-red-300': q.difficulty === 'hard'
-            }">{{ q.difficulty | titlecase }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <div class="text-sm text-gray-200">{{ q.importance }}</div>
-          </div>
-
-          <div class="col-span-1">
-            <span class="px-2 py-1 rounded text-xs"
-              [ngClass]="q.__kind==='coding' ? 'bg-indigo-800 text-indigo-200' : 'bg-teal-800 text-teal-200'">
-              {{ q.__kind | titlecase }}
-            </span>
-          </div>
-
-          <div class="col-span-2 flex flex-wrap gap-2">
-            <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag" styleClass="custom-chip"></p-chip>
-          </div>
-
-          <div class="col-span-1 text-right">
-            <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
-              <span>→</span><span>Open</span>
-            </div>
-          </div>
-        </div>
-      </ng-container>
-
-      <!-- COMPANY: coding or trivia -->
-      <ng-container *ngIf="source==='company' && kind!=='all'">
-        <div *ngFor="let q of questions"
-          class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
-          <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-            class="absolute inset-0 z-10"></a>
-
-          <div class="col-span-5">
-            <div class="text-lg font-semibold text-white">{{ q.title }}</div>
-            <div class="text-xs text-gray-400 mt-0.5">{{ descriptionText(q) | slice:0:80 }}&hellip;</div>
-          </div>
-
-          <div class="col-span-2">
-            <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{
-              'bg-green-800 text-green-300': q.difficulty === 'easy',
-              'bg-yellow-800 text-yellow-300': q.difficulty === 'intermediate',
-              'bg-red-800 text-red-300': q.difficulty === 'hard'
-            }">{{ q.difficulty | titlecase }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <div class="text-sm text-gray-200">{{ q.importance }}</div>
-          </div>
-
-          <div class="col-span-1">
-            <span class="px-2 py-1 rounded text-xs bg-white/10 text-gray-200">{{ techName(q) }}</span>
-          </div>
-
-          <div class="col-span-2 flex flex-wrap gap-2">
-            <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag" styleClass="custom-chip"></p-chip>
-          </div>
-
-          <div class="col-span-1 text-right">
-            <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
-              <span>→</span><span>Open</span>
-            </div>
-          </div>
-        </div>
-      </ng-container>
-
-      <!-- COMPANY: all -->
-      <ng-container *ngIf="source==='company' && kind==='all'">
-        <div *ngFor="let q of questions"
-          class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
-          <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-            class="absolute inset-0 z-10"></a>
-
-          <div class="col-span-4">
-            <div class="text-lg font-semibold text-white">{{ q.title }}</div>
-            <div class="text-xs text-gray-400 mt-0.5">{{ descriptionText(q) | slice:0:80 }}&hellip;</div>
-          </div>
-
-          <div class="col-span-2">
-            <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{
-              'bg-green-800 text-green-300': q.difficulty === 'easy',
-              'bg-yellow-800 text-yellow-300': q.difficulty === 'intermediate',
-              'bg-red-800 text-red-300': q.difficulty === 'hard'
-            }">{{ q.difficulty | titlecase }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <div class="text-sm text-gray-200">{{ q.importance }}</div>
-          </div>
-
-          <div class="col-span-1">
-            <span class="px-2 py-1 rounded text-xs bg-white/10 text-gray-200">{{ techName(q) }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <span class="px-2 py-1 rounded text-xs"
-              [ngClass]="q.__kind==='coding' ? 'bg-indigo-800 text-indigo-200' : 'bg-teal-800 text-teal-200'">
-              {{ q.__kind | titlecase }}
-            </span>
-          </div>
-
-          <div class="col-span-2 flex flex-wrap gap-2 overflow-hidden">
-            <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag" styleClass="custom-chip"></p-chip>
-          </div>
-        </div>
-      </ng-container>
+      </div>
     </ng-container>
 
     <ng-template #loading>

@@ -114,6 +114,7 @@ export const routes: Routes = [
       },
     ],
   },
+
   {
     path: 'pricing',
     loadComponent: () =>
@@ -218,31 +219,23 @@ export const routes: Routes = [
     data: { title: 'Page not found' },
   },
 
+  // NEW: Global Coding page — lists all coding questions; pills filter client-side
+  {
+    path: 'coding',
+    loadComponent: () =>
+      import('./features/coding/coding-list/coding-list.component')
+        .then(m => m.CodingListComponent),
+    data: { source: 'global-coding', kind: 'coding' },
+  },
+
   // Tech sections — JavaScript / Angular / HTML / CSS
   {
     matcher: techMatcher,
     loadComponent: () =>
       import('./features/tech-layout/tech-layout.component').then(m => m.TechLayoutComponent),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'coding' },
-      {
-        path: 'coding',
-        loadComponent: () =>
-          import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
-        data: { source: 'tech', kind: 'coding' },
-      },
-      {
-        path: 'trivia',
-        loadComponent: () =>
-          import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
-        data: { source: 'tech', kind: 'trivia' },
-      },
-      {
-        path: 'debug',
-        loadComponent: () =>
-          import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
-        data: { source: 'tech', kind: 'debug' },
-      },
+      // Visiting /:tech goes to the single global list
+      { path: '', pathMatch: 'full', redirectTo: '/coding' },
       {
         path: 'coding/:id',
         loadComponent: () =>
@@ -259,7 +252,7 @@ export const routes: Routes = [
           import('./features/coding/coding-detail/coding-detail.component').then(m => m.CodingDetailComponent),
         data: { kind: 'debug' },
       },
-      // Unknown child under a valid tech → 404
+
       {
         path: '**',
         loadComponent: () =>
@@ -268,6 +261,7 @@ export const routes: Routes = [
       },
     ],
   },
+
 
   // Global fallback — render 404 (don't redirect so the missing URL is shown)
   {

@@ -13,14 +13,11 @@
   border-radius: 8px;
   color: #e3e8ff;
 }
-
 ::ng-deep .difficulty-filter .p-multiselect .p-multiselect-label,
 ::ng-deep .difficulty-filter .p-multiselect .p-placeholder {
   background: transparent; color: #cdd6f4;
 }
-
 ::ng-deep .difficulty-filter .p-multiselect .p-multiselect-trigger { color: #cdd6f4; }
-
 ::ng-deep .difficulty-filter .p-multiselect-token {
   background: rgba(255,255,255,.08);
   color: #e3e8ff; border-radius: 9999px;
@@ -33,21 +30,16 @@
   color: #e3e8ff !important;
   box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
 }
-
 ::ng-deep .dark-multiselect-panel .p-multiselect-header {
   background: #1f2737; border-bottom: 1px solid #2f3750; padding: 6px 8px;
 }
-
 ::ng-deep .dark-multiselect-panel .p-multiselect-filter-container input {
   background: #273046; border: 1px solid #2f3750; color: #e3e8ff;
 }
-
 ::ng-deep .dark-multiselect-panel .p-multiselect-item { background: transparent; padding: .5rem 1rem; color: #e3e8ff; }
 ::ng-deep .dark-multiselect-panel .p-multiselect-item:hover { background: rgba(255,255,255,.04); }
 ::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight { background: rgba(255,255,255,.06); }
-
 ::ng-deep .dark-multiselect-panel .p-multiselect-close { color: #e3e8ff; }
-
 ::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
   background: transparent; border: 1px solid #2f3750;
 }
@@ -55,54 +47,41 @@
   background: rgba(255,255,255,.08); border-color: #5a9df9;
 }
 
-/* --- Tech pills (JS/React/...) --- */
-/* Layout for the row containing section tabs (left) and count (right) */
+/* --- Pills / tabs --- */
 .tabs-row {
   display: flex;
   align-items: center;
-  width: 100%;           /* ensure the row spans the container */
+  width: 100%;
   margin-bottom: 1.5rem;
 }
-
-/* Left side container just helps wrapping on small screens */
 .tabs-left {
   display: inline-flex;
   gap: 6px;
   padding: 4px;
   border: 1px solid rgba(255,255,255,0.10);
-  background: #2a2f3a;          /* ~bg-gray-800 */
-  border-radius: 9999px;         /* pill group */
+  background: #2a2f3a;
+  border-radius: 9999px;
 }
-
-/* Section pills (Coding / Quiz / Debug) */
 .kind-pill {
   display: inline-block;
   padding: 6px 12px;
   border-radius: 9999px;
   font-size: 14px;
   line-height: 1;
-  color: #d1d5db;                /* gray-300 */
+  color: #d1d5db;
   text-decoration: none;
   transition: background-color .15s ease, color .15s ease;
 }
-.kind-pill--idle:hover {
-  background: rgba(255,255,255,0.06);
-  color: #ffffff;
-}
-.kind-pill--active {
-  background: rgba(255,255,255,0.10);
-  color: #ffffff;
-}
+.kind-pill--idle:hover { background: rgba(255,255,255,0.06); color: #ffffff; }
+.kind-pill--active { background: rgba(255,255,255,0.10); color: #ffffff; }
 
-/* Right-side count chip */
 .tabs-right {
-  margin-left: auto;     /* <— this pushes the count all the way right */
+  margin-left: auto;
   display: flex;
   align-items: center;
 }
-
 .count-chip {
-  white-space: nowrap;   /* keep it on one line */
+  white-space: nowrap;
   display: inline-block;
   padding: 6px 10px;
   border-radius: 9999px;
@@ -112,7 +91,6 @@
   border: 1px solid rgba(255,255,255,0.08);
 }
 
-/* (If you’re using the tech pills from before, these keep working) */
 .tab-pill {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.10);
