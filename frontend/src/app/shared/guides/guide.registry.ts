@@ -68,8 +68,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 15,
         summary: 'Essential JS patterns and real interview-style problems.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/js-problems-article.component')
+                .then(m => m.JsProblemsArticle),
     },
     {
         slug: 'dsa-for-fe',
