@@ -77,8 +77,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 18,
         summary: 'The subset of algorithms & data structures you actually need for front-end roles.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/fe-dsa-article.component')
+                .then(m => m.FeDsaArticle),
     },
     {
         slug: 'ui-interviews',
