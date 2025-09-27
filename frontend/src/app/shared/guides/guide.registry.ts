@@ -5,22 +5,16 @@ import { Type } from '@angular/core';
 export type GuideEntry = {
     slug: string;
     title: string;
-    /** lazy loader for the article component (it should render <uf-guide-shell> inside) */
     load: () => Promise<Type<any>>;
-    /** Optional metadata some UIs may use (kept for back-compat with FE Playbook listings) */
     minutes?: number;
     summary?: string;
 };
 
-/** Section groups used to build the left navigator */
 export type GuideGroup = {
     title: string;
     items: Array<{ slug: string }>;
 };
 
-/** Generic helper: find current/prev/next for a given registry.
- *  If `base` is omitted, we’ll try to infer it from the registry identity.
- */
 export function navFor(
     registry: GuideEntry[],
     slug: string,
@@ -40,7 +34,6 @@ export function navFor(
     return { current, prev, next, idx };
 }
 
-/** Try to infer the route base segment from the registry reference. */
 function inferBase(registry: GuideEntry[]): string | null {
     if (registry === PLAYBOOK) return 'playbook';
     if (registry === SYSTEM) return 'system-design';
@@ -48,41 +41,114 @@ function inferBase(registry: GuideEntry[]): string | null {
     return null;
 }
 
-/* ---------------------------------- PLAYBOOK (existing) ---------------------------------- */
+/* ---------------------------------- PLAYBOOK ---------------------------------- */
 
 export const PLAYBOOK: GuideEntry[] = [
     {
         slug: 'intro',
-        title: 'Front End Interviews: An Introduction',
-        minutes: 18,
-        summary:
-            'Everything you need to know — from types of questions to preparation tactics.',
+        title: 'How Front-End Interviews Really Work (and How to Prep)',
+        minutes: 10,
+        summary: 'Formats you’ll face, what companies actually evaluate, and how to plan your prep.',
         load: () =>
             import('../../features/guides/playbook/fe-intro-article.component')
                 .then(m => m.FeIntroArticle),
     },
     {
         slug: 'coding-interviews',
-        title: 'Front End Coding Interviews',
-        minutes: 21,
-        summary:
-            'Question types to expect, handy coding tips and the best resources to use.',
+        title: 'Shipping Code Under Pressure',
+        minutes: 12,
+        summary: 'The coding round, demystified: types of problems, strategies, and pitfalls.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'javascript-interviews',
+        title: 'JavaScript Problems That Actually Show Up',
+        minutes: 15,
+        summary: 'Essential JS patterns and real interview-style problems.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'dsa-for-fe',
+        title: 'Just-Enough DSA for Front-End',
+        minutes: 18,
+        summary: 'The subset of algorithms & data structures you actually need for front-end roles.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'ui-interviews',
+        title: 'Build Great UI in 60 Minutes',
+        minutes: 20,
+        summary: 'UI coding interviews: from layout to logic to polish under time pressure.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'api-design',
+        title: 'Designing Component APIs That Scale',
+        minutes: 14,
+        summary: 'Best practices for reusable, maintainable UI component APIs.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'system-design',
+        title: 'Client-Side System Design: A Fast Framework',
+        minutes: 8,
+        summary: 'How to think about front-end system design in interviews.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'quiz',
+        title: 'Fundamentals Check: Browser, CSS, JS, HTTP',
+        minutes: 10,
+        summary: 'Quick-fire questions that test your grasp of the essentials.',
+        load: () =>
+            import('../../features/guides/playbook/fe-coding-article.component')
+                .then(m => m.FeCodingArticle),
+    },
+    {
+        slug: 'resume',
+        title: 'A Front-End Resume That Gets Calls Back',
+        minutes: 12,
+        summary: 'How to write a CV that gets you interviews instead of rejections.',
         load: () =>
             import('../../features/guides/playbook/fe-coding-article.component')
                 .then(m => m.FeCodingArticle),
     },
 ];
 
-export const PLAYBOOK_GROUPS: Array<{
-    key: string; title: string; items: Array<{ slug: string }>;
-}> = [
-        { key: 'intro', title: 'Introduction', items: [{ slug: 'intro' }] },
-        { key: 'coding', title: 'Coding interviews', items: [{ slug: 'coding-interviews' }] },
-    ];
+export const PLAYBOOK_GROUPS: Array<{ key: string; title: string; items: Array<{ slug: string }> }> = [
+    { key: 'intro', title: 'Introduction', items: [{ slug: 'intro' }] },
+    {
+        key: 'coding', title: 'Coding interviews', items: [
+            { slug: 'coding-interviews' },
+            { slug: 'javascript-interviews' },
+            { slug: 'dsa-for-fe' },
+        ]
+    },
+    {
+        key: 'ui', title: 'User interface', items: [
+            { slug: 'ui-interviews' },
+            { slug: 'api-design' },
+        ]
+    },
+    { key: 'system', title: 'System design', items: [{ slug: 'system-design' }] },
+    { key: 'quiz', title: 'Quiz interviews', items: [{ slug: 'quiz' }] },
+    { key: 'resume', title: 'Resume preparation', items: [{ slug: 'resume' }] },
+];
 
 /* ---------------------------------- SYSTEM DESIGN ---------------------------------- */
 
-// shared/guides/guide.registry.ts
 export const SYSTEM: GuideEntry[] = [
     {
         slug: 'intro',
@@ -98,24 +164,21 @@ export const SYSTEM: GuideEntry[] = [
             import('../../features/guides/system-design/system-design-foundations')
                 .then(m => m.SystemDesignFoundationsArticle)
     },
-    // add more only when they exist; or remove from SYSTEM_GROUPS until ready
 ];
 
 export const SYSTEM_GROUPS = [
     { title: 'Introduction', items: [{ slug: 'intro' }] },
-    { title: 'Core concepts', items: [{ slug: 'foundations' }] } // keep only implemented ones
+    { title: 'Core concepts', items: [{ slug: 'foundations' }] }
 ];
 
 /* ---------------------------------- BEHAVIORAL ---------------------------------- */
 
-// shared/guides/guide.registry.ts
-
 export const BEHAVIORAL: GuideEntry[] = [
     {
         slug: 'intro',
-        title: 'Behavioral Interviews: An Introduction',
+        title: 'Behavioral Interviews: What Great Answers Look Like',
         minutes: 12,
-        summary: 'What’s evaluated and how to prepare strong examples.',
+        summary: 'Signals interviewers care about and how to prepare high-signal stories.',
         load: () =>
             import('../../features/guides/behavioral/intro')
                 .then(m => m.BehavioralIntroArticle),
@@ -124,15 +187,14 @@ export const BEHAVIORAL: GuideEntry[] = [
         slug: 'stories',
         title: 'Crafting STAR Stories',
         minutes: 14,
-        summary: 'A practical recipe to structure concise, high-signal stories.',
+        summary: 'A practical recipe to structure concise, memorable examples.',
         load: () =>
             import('../../features/guides/behavioral/stories')
                 .then(m => m.BehavioralStoriesArticle),
     },
-    // (optional) add 'signals' later
 ];
 
 export const BEHAVIORAL_GROUPS = [
     { title: 'Overview', items: [{ slug: 'intro' }] },
-    { title: 'Practice', items: [{ slug: 'stories' }] }, // add { slug: 'signals' } when implemented
+    { title: 'Practice', items: [{ slug: 'stories' }] },
 ];

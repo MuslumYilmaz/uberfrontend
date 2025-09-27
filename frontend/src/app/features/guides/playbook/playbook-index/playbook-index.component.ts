@@ -43,14 +43,14 @@ import { PLAYBOOK, PLAYBOOK_GROUPS } from '../../../../shared/guides/guide.regis
       <div *ngFor="let g of groups()" class="section">
         <div class="sec-head">{{ g.title }}</div>
 
-        <a *ngFor="let it of g.items; index as i"
+        <a *ngFor="let it of g.items"
            class="card" [routerLink]="['/','guides','playbook', it.slug]">
-          <div class="num">{{ i + 1 }}</div>
+          <div class="num">{{ globalIdx().get(it.slug) }}</div>
           <div class="body">
-            <div class="title">{{ map().get(it.slug)?.title || it.slug }}</div>
-            <div class="sub">{{ map().get(it.slug)?.summary }}</div>
+            <div class="title">{{ entries().get(it.slug)?.title || it.slug }}</div>
+            <div class="sub">{{ entries().get(it.slug)?.summary }}</div>
           </div>
-          <div class="mins" *ngIf="map().get(it.slug)?.minutes as m">{{ m }} min</div>
+          <div class="mins" *ngIf="entries().get(it.slug)?.minutes as m">{{ m }} min</div>
           <div class="arrow" aria-hidden="true">→</div>
         </a>
       </div>
@@ -58,6 +58,19 @@ import { PLAYBOOK, PLAYBOOK_GROUPS } from '../../../../shared/guides/guide.regis
   `
 })
 export class PlaybookIndexComponent {
+  /** Section groups (order matters). */
   groups = computed(() => PLAYBOOK_GROUPS);
-  map = computed(() => new Map(PLAYBOOK.map(e => [e.slug, e])));
+
+  /** Quick lookup: slug -> GuideEntry */
+  entries = computed(() => new Map(PLAYBOOK.map(e => [e.slug, e])));
+
+  /** Global numbering: slug -> 1..N across all sections */
+  globalIdx = computed(() => {
+    const map = new Map<string, number>();
+    let n = 0;
+    for (const g of PLAYBOOK_GROUPS) {
+      for (const it of g.items) map.set(it.slug, ++n);
+    }
+    return map;
+  });
 }
