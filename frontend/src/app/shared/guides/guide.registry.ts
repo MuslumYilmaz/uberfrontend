@@ -86,8 +86,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 20,
         summary: 'UI coding interviews: from layout to logic to polish under time pressure.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/fe-ui-in-60.component')
+                .then(m => m.FeUiIn60Article),
     },
     {
         slug: 'api-design',
