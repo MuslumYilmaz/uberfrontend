@@ -114,6 +114,26 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       background: #0C1016; border: 1px solid rgba(255,255,255,.08);
       padding: .8rem; border-radius: 10px; overflow: auto; margin: .6rem 0 1rem;
     }
+
+        ol.step-list { counter-reset:item; margin: 8px 0 14px; padding-left:0; }
+    ol.step-list > li {
+      list-style:none;
+      counter-increment:item;
+      position:relative;
+      padding-left:1.9rem;
+      margin:6px 0;
+    }
+    ol.step-list > li::before {
+      content: counter(item);
+      position:absolute; left:0; top:0.1rem;
+      width:1.4rem; height:1.4rem;
+      display:grid; place-items:center;
+      border-radius:9999px;
+      font-size:.8rem; font-weight:700;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.16);
+      color:#cfe1ff;
+    }
   `],
   template: `
   <uf-guide-shell
@@ -127,70 +147,86 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   >
     <!-- Opening -->
     <p>
-      Front-end interviews can feel unpredictable. Some loops look like generic
-      software engineering interviews, while others lean heavily into building UI
-      and debugging JavaScript. The truth: most companies are evaluating the same
-      core things — <strong>can you ship a working solution under pressure, explain
-      your choices, and show good product sense?</strong>
+      Front-end interviews often feel like a lottery. One company throws you an
+      algorithm, the next wants you to build a modal from scratch, and a third
+      quizzes you on obscure browser details. It’s easy to think there’s no pattern.
+    </p>
+    <p>
+      But underneath, most interviewers are looking for the same core signals:
+      <strong>can you ship a working solution under time pressure, explain your
+      choices clearly, and show that you think like an engineer who cares about the
+      end-user?</strong>
+    </p>
+    <p>
+      That means the exact question matters less than how you approach it. Do you
+      break problems down? Do you communicate trade-offs? Do you balance speed with
+      correctness? These are the threads that run through every round.
+    </p>
+    <p>
+      This guide exists to cut through the noise: we’ll map out the formats you’re
+      likely to face, what each one is really testing, and how to prep in a way that
+      builds confidence instead of burnout.
     </p>
 
     <!-- Section 1 -->
     <h2>The big picture</h2>
     <ul>
-      <li>There’s no universal format. You might get algorithmic coding, a UI build, or a mix of both.</li>
-      <li>Trend: less whiteboard puzzles, more domain-relevant tasks (widgets, JS utilities, debugging async/state).</li>
+      <li>There’s no universal format — expect a mix of coding, UI builds, debugging, and system design.</li>
+      <li>Trend: less whiteboard puzzles, more domain-relevant tasks (widgets, JS utilities, async/state bugs).</li>
       <li>What matters most: correctness → clarity → reasoning → trade-offs → communication.</li>
+      <li>Interviews are not just about “knowing stuff” — they’re about <em>showing how you think under pressure</em>.</li>
     </ul>
 
-    <!-- Section 2 -->
-    <h2>Common rounds (and what they test)</h2>
-
-    <h3><a [routerLink]="['/coding']">Coding</a></h3>
     <p>
-      Almost every loop has a coding exercise. You may be asked to implement a
-      small utility (<code>debounce</code>, <code>memoize</code>) or a UI widget
-      (modal, dropdown, autocomplete). Interviewers want to see that you:
+      Almost every loop has a coding exercise. You might need to build a small
+      UI widget (modal, dropdown, autocomplete) or implement a JavaScript helper
+      (<code>debounce</code>, <code>memoize</code>). Interviewers want to see if you
+      can <strong>ship something working under time pressure</strong>.
     </p>
-    <ul>
-      <li>Deliver a working MVP quickly, before adding polish.</li>
+    <ol class="step-list">
+      <li>Get to a working MVP first, then polish if there’s time.</li>
       <li>Work incrementally — show progress in small steps.</li>
-      <li>Handle edge cases (empty input, errors, odd characters).</li>
-      <li>Narrate your thinking instead of silently coding.</li>
-    </ul>
+      <li>Think about edge cases early (empty input, async errors, large data sets).</li>
+      <li>Explain your thought process instead of silently coding.</li>
+    </ol>
 
     <h3><a [routerLink]="['/guides','system-design']">System design (senior+)</a></h3>
     <p>
-      Senior candidates are often asked to design client-side systems:
-      a complex component API, a checkout flow, or a dashboard app.
-      They’re listening for:
+      For mid–senior candidates, system design is often the deciding round. Instead
+      of backend scaling, you’ll focus on <strong>front-end architecture</strong>:
+      how components talk to each other, where state lives, and how you handle
+      performance and accessibility trade-offs.
     </p>
-    <ul>
-      <li>How you define the MVP and prevent scope creep.</li>
-      <li>How you model state and data flow (local vs global, sync vs async).</li>
-      <li>Performance and accessibility trade-offs you call out early.</li>
-      <li>How you’d scale: caching, invalidation, code-splitting.</li>
-    </ul>
+    <ol class="step-list">
+      <li>Define the MVP clearly so you don’t overbuild.</li>
+      <li>Show how you’d organize state and data flow (local vs global, sync vs async).</li>
+      <li>Call out performance considerations (caching layers, code-splitting).</li>
+      <li>Bake in accessibility from the start, not as an afterthought.</li>
+    </ol>
 
     <h3>Quiz / knowledge checks</h3>
     <p>
-      These are usually short questions sprinkled into other rounds.
-      Examples: “How does the browser rendering pipeline work?”
-      “What’s the difference between <code>async</code> and <code>defer</code>?”
+      These are short questions sprinkled in to test fundamentals. Expect things like:
+      “How does the rendering pipeline work?” or “What’s the difference between
+      <code>async</code> and <code>defer</code>?”. It’s about showing <strong>solid mental models</strong>,
+      not memorizing obscure trivia.
     </p>
-    <ul>
-      <li>Focus on mental models: event loop, rendering, CSS cascade, caching, security basics (XSS/CSRF).</li>
-      <li>Make a 1-page cheatsheet and practice recall, not just recognition.</li>
-    </ul>
+    <ol class="step-list">
+      <li>Be ready to explain event loop, rendering, CSS cascade, caching, and security basics.</li>
+      <li>Create a 1-page cheatsheet and practice recall, not just recognition.</li>
+      <li>Focus on clarity and confidence — you don’t need every edge case.</li>
+    </ol>
 
     <h3>Behavioral</h3>
     <p>
-      Many candidates underestimate this part. Managers want to know how you
-      collaborate, handle ambiguity, and recover from setbacks.
+      Many candidates underestimate this round, but hiring managers weigh it heavily.
+      They want to know: can you <strong>work well with others under ambiguity</strong>?
     </p>
-    <ul>
-      <li>Prepare 5–6 STAR stories around conflict, failure, learning, and leadership.</li>
-      <li>Be specific — name the problem, your actions, and the measurable outcome.</li>
-    </ul>
+    <ol class="step-list">
+      <li>Prepare 5–6 STAR stories (Situation, Task, Action, Result) around conflict, failure, learning, leadership, and speed.</li>
+      <li>Be concrete — instead of “we improved performance,” say “we reduced LCP from 6s → 3s with lazy loading.”</li>
+      <li>Keep each story short: 2–3 minutes with a clear takeaway.</li>
+    </ol>
 
     <!-- Section 3 -->
     <h2>What interviewers actually score</h2>
