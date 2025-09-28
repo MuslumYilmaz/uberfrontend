@@ -95,8 +95,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 14,
         summary: 'Best practices for reusable, maintainable UI component APIs.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/component-api-design-article.component')
+                .then(m => m.ComponentApiDesignArticle),
     },
     {
         slug: 'system-design',
@@ -104,8 +104,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 8,
         summary: 'How to think about front-end system design in interviews.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/fe-system-design-fast-framework-article.component')
+                .then(m => m.FeSystemDesignFastFrameworkArticle),
     },
     {
         slug: 'quiz',
