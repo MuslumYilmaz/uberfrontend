@@ -152,23 +152,101 @@ export const PLAYBOOK_GROUPS: Array<{ key: string; title: string; items: Array<{
 export const SYSTEM: GuideEntry[] = [
     {
         slug: 'intro',
-        title: 'System Design Interviews: An Introduction',
+        title: 'Front-End System Design: What It Really Tests',
+        minutes: 8,
+        summary: 'How FE system design differs from backend, what interviewers evaluate, and how to approach these rounds.',
         load: () =>
-            import('../../features/guides/system-design/intro.component')
+            import('../../features/guides/system-design/system-design-intro.component')
                 .then(m => m.SystemDesignIntroArticle)
     },
     {
         slug: 'foundations',
-        title: 'Foundations & Constraints',
+        title: 'Scope, Constraints, and Trade-offs',
+        minutes: 12,
+        summary: 'Clarifying requirements, identifying constraints, and making principled trade-offs before you draw boxes.',
         load: () =>
             import('../../features/guides/system-design/system-design-foundations')
                 .then(m => m.SystemDesignFoundationsArticle)
+    },
+    {
+        slug: 'framework',
+        title: 'A Reusable 5-Step Approach',
+        minutes: 10,
+        summary: 'A simple, repeatable structure for tackling any FE system design interview question.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-framework')
+                .then(m => m.SystemDesignFrameworkArticle)
+    },
+    {
+        slug: 'architecture',
+        title: 'Rendering & App Architecture',
+        minutes: 14,
+        summary: 'CSR, SSR, islands, microfrontends—how to reason about architecture choices and trade-offs.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-architecture')
+                .then(m => m.SystemDesignArchitectureArticle)
+    },
+    {
+        slug: 'state-data',
+        title: 'State, Data Flow, and Caching',
+        minutes: 15,
+        summary: 'Patterns for managing state, syncing with backends, and improving performance with caching.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-state')
+                .then(m => m.SystemDesignStateArticle)
+    },
+    {
+        slug: 'performance',
+        title: 'Performance & Web Vitals at Scale',
+        minutes: 12,
+        summary: 'How to reason about load times, rendering speed, and runtime optimizations during interviews.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-performance')
+                .then(m => m.SystemDesignPerformanceArticle)
+    },
+    {
+        slug: 'ux',
+        title: 'Accessibility, i18n & Offline First',
+        minutes: 10,
+        summary: 'Covering cross-cutting concerns that separate good answers from great ones.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-ux')
+                .then(m => m.SystemDesignCrossCuttingArticle)
+    },
+    {
+        slug: 'evaluation',
+        title: 'What Interviewers Really Look For',
+        minutes: 9,
+        summary: 'Signals that matter most: clarity, prioritization, and reasoning about trade-offs.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-evaluation')
+                .then(m => m.SystemDesignSignalsArticle)
+    },
+    {
+        slug: 'pitfalls',
+        title: 'Traps and Anti-Patterns to Avoid',
+        minutes: 8,
+        summary: 'Common mistakes candidates fall into and how to avoid them under pressure.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-pitfalls')
+                .then(m => m.SystemDesignTrapsArticle)
+    },
+    {
+        slug: 'checklist',
+        title: 'One-Page Checklist for Interviews',
+        minutes: 6,
+        summary: 'A quick mental map to keep in mind for any system design question.',
+        load: () =>
+            import('../../features/guides/system-design/system-design-checklist')
+                .then(m => m.SystemDesignChecklistArticle)
     },
 ];
 
 export const SYSTEM_GROUPS = [
     { title: 'Introduction', items: [{ slug: 'intro' }] },
-    { title: 'Core concepts', items: [{ slug: 'foundations' }] }
+    { title: 'Core concepts', items: [{ slug: 'foundations' }, { slug: 'framework' }, { slug: 'architecture' }, { slug: 'state-data' }] },
+    { title: 'Advanced topics', items: [{ slug: 'performance' }, { slug: 'ux' }] },
+    { title: 'Interview focus', items: [{ slug: 'evaluation' }, { slug: 'pitfalls' }, { slug: 'checklist' }] },
 ];
 
 /* ---------------------------------- BEHAVIORAL ---------------------------------- */

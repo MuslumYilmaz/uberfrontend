@@ -45,13 +45,13 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
         <span class="pill">Trade-offs & checkpoints</span>
       </div>
 
-      <div *ngFor="let g of groups()" class="section">
+      <div *ngFor="let g of groups(); let gi = index" class="section">
         <div class="sec-head">{{ g.title }}</div>
 
-        <a *ngFor="let it of g.items; index as i"
+        <a *ngFor="let it of g.items; let ii = index"
            class="card"
            [routerLink]="['/','guides','system-design', it.slug]">
-          <div class="num">{{ i + 1 }}</div>
+          <div class="num">{{ starts()[gi] + ii + 1 }}</div>
           <div class="body">
             <div class="title">{{ map().get(it.slug)?.title || it.slug }}</div>
             <div class="sub" *ngIf="map().get(it.slug)?.summary as s">{{ s }}</div>
@@ -66,4 +66,16 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
 export class SystemDesignIndexComponent {
   groups = computed(() => SYSTEM_GROUPS);
   map = computed(() => new Map(SYSTEM.map(e => [e.slug, e])));
+
+  /** cumulative starting index for each group (0-based) */
+  starts = computed(() => {
+    const gs = this.groups();
+    const out: number[] = [];
+    let acc = 0;
+    for (const g of gs) {
+      out.push(acc);
+      acc += g.items.length;
+    }
+    return out;
+  });
 }
