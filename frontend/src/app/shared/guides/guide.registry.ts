@@ -113,8 +113,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 10,
         summary: 'Quick-fire questions that test your grasp of the essentials.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/fundamentals-check-article.component')
+                .then(m => m.FundamentalsCheckArticle),
     },
     {
         slug: 'resume',
@@ -122,8 +122,8 @@ export const PLAYBOOK: GuideEntry[] = [
         minutes: 12,
         summary: 'How to write a CV that gets you interviews instead of rejections.',
         load: () =>
-            import('../../features/guides/playbook/fe-coding-article.component')
-                .then(m => m.FeCodingArticle),
+            import('../../features/guides/playbook/resume-article.component')
+                .then(m => m.ResumeArticle),
     },
 ];
 
