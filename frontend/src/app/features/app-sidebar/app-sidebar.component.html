@@ -1,0 +1,59 @@
+<button class="sidebar-toggle" type="button" (click)="toggleDrawer()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+</button>
+
+<aside class="sidebar" [class.is-collapsed]="collapsed" [class.is-open]="drawerOpen()">
+
+    <nav class="nav">
+        <ul>
+            <li *ngFor="let item of nav; let i = index">
+
+                <!-- links -->
+                <a *ngIf="isLink(item)" class="nav-link" [routerLink]="item.to" routerLinkActive="is-active"
+                    [routerLinkActiveOptions]="{ exact: true }" [attr.aria-label]="item.label">
+                    <i class="pi nav-ic" [ngClass]="item.icon"></i>
+                    <span class="label">{{ item.label }}</span>
+                </a>
+
+                <!-- group -->
+                <div *ngIf="isGroup(item)" class="nav-group">
+                    <button class="group-header" type="button" (click)="toggleGroup(i)" [attr.aria-expanded]="item.open"
+                        [attr.aria-controls]="'group-'+i">
+                        <i class="pi nav-ic" [ngClass]="item.icon"></i>
+                        <span class="label">{{ item.label }}</span>
+                        <i class="pi caret" [ngClass]="item.open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                    </button>
+
+                    <div class="group-list" [id]="'group-'+i" [class.open]="item.open">
+                        <ul class="group-inner">
+                            <li *ngFor="let c of item.children">
+                                <a class="nav-sublink" [routerLink]="c.to" routerLinkActive="is-active"
+                                    [routerLinkActiveOptions]="{ exact: true }" [attr.aria-label]="c.label">
+                                    <i *ngIf="c.icon; else smallDot" class="pi nav-ic" [ngClass]="c.icon"></i>
+                                    <ng-template #smallDot><span class="dot"></span></ng-template>
+                                    <span class="label">{{ c.label }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- bottom tools -->
+    <div class="tools">
+        <button class="tool-icon-btn" type="button" (click)="onCustomAction()" aria-label="Custom action"
+            title="Action">
+            <i class="pi pi-shield"></i>
+        </button>
+
+        <button pButton type="button" [icon]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"
+            class="p-button-rounded p-button-text p-button-icon-only" (click)="toggleCollapsed()"
+            [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+            [title]="collapsed ? 'Expand' : 'Collapse'">
+        </button>
+    </div>
+</aside>
+
+<div class="backdrop" *ngIf="drawerOpen()" (click)="toggleDrawer()" aria-hidden="true"></div>

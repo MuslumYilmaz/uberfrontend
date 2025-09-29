@@ -1,0 +1,12 @@
+/* app.component.scss (or a global) */
+:root { --header-h: 56px; }  
+.app-layout {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - var(--header-h));
+}
+.main {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+}

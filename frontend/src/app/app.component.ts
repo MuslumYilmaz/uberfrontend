@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, OnInit, OnDestroy, computed, signal, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { HeaderComponent } from './shared/components/header/header.component';
 
 // ⬇️ services we added earlier
 import { DailyService } from './core/services/daily.service';
+import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, HttpClientModule, HeaderComponent],
+  imports: [CommonModule, RouterOutlet, RouterModule, HttpClientModule, HeaderComponent, AppSidebarComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
