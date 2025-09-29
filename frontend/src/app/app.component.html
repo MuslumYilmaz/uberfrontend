@@ -1,4 +1,4 @@
-<div class="shell min-h-screen bg-neutral-900 text-gray-200">
+<div class="min-h-screen text-gray-200" style="background: #0b0c0f">
   <!-- Header -->
   <app-header *ngIf="showHeader()"></app-header>
 
@@ -11,7 +11,7 @@
   <ng-template #regularLayout>
     <div class="app-layout">
       <app-sidebar *ngIf="!isAuthRoute()"></app-sidebar>
-      <main class="main">
+      <main class="flex-1 min-h-0 overflow-hidden" style="background: #0b0c0f">
         <router-outlet></router-outlet>
       </main>
     </div>
