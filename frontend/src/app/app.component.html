@@ -1,17 +1,16 @@
-<div class="min-h-screen text-gray-200" style="background: #0b0c0f">
-  <!-- Header -->
+<div class="min-h-screen bg-neutral-900 text-gray-200">
   <app-header *ngIf="showHeader()"></app-header>
 
-  <!-- Auth pages: full-bleed -->
-  <ng-container *ngIf="isAuthRoute(); else regularLayout">
+  <!-- Full-bleed layout for auth or guide detail -->
+  <ng-container *ngIf="isAuthRoute() || isGuideDetail(); else regularLayout">
     <router-outlet></router-outlet>
   </ng-container>
 
-  <!-- Regular app layout -->
+  <!-- Regular app pages -->
   <ng-template #regularLayout>
-    <div class="app-layout">
-      <app-sidebar *ngIf="!isAuthRoute()"></app-sidebar>
-      <main class="flex-1 min-h-0 overflow-hidden" style="background: #0b0c0f">
+    <div class="flex">
+      <app-sidebar></app-sidebar>
+      <main class="flex-1 min-h-0 overflow-hidden">
         <router-outlet></router-outlet>
       </main>
     </div>

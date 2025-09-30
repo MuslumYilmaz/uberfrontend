@@ -68,4 +68,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.scheduleToNextMidnight();  // schedule again
     }, next.getTime() - now.getTime());
   }
+
+  isGuideDetail(): boolean {
+    return this.router.url.startsWith('/guides/playbook/');
+  }
 }

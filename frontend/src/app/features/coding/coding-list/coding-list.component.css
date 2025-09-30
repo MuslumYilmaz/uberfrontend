@@ -1,67 +1,130 @@
 :host { display: block; }
 
-/* Make the trigger wider and prevent it from shrinking */
-::ng-deep .difficulty-filter { flex: 0 0 auto; min-width: 240px; }
-::ng-deep .difficulty-filter .p-multiselect { display: flex; flex: 1; }
+/* ------------------------------
+   LIST: darker surface
+   ------------------------------ */
+.list {
+  background: #10141a;             /* darker container */
+  border: 1px solid #1b2027;       /* subtle frame */
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-/* Panel width & theming */
-::ng-deep .dark-multiselect-panel { min-width: 260px; width: auto; }
+.list-row {
+  background: #141821;             /* row surface */
+  border-bottom: 1px solid rgba(255,255,255,0.035);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.list-row:hover {
+  background: #191e28;             /* hover lift */
+  border-color: rgba(255,255,255,0.06);
+}
+.list-row:last-child { border-bottom: 0; }
 
-::ng-deep .difficulty-filter .p-multiselect {
-  background: #1f2737;
-  border: 1px solid #2f3750;
+/* Difficulty chips (neutralized to match dark scheme) */
+.list-row .bg-green-800,
+.list-row .bg-yellow-800,
+.list-row .bg-red-800 {
+  background-color: #141821 !important;   /* same as row */
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #cdd3dc !important;              /* softer text */
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* Chips on the right */
+:host ::ng-deep .custom-chip .p-chip {
+  background: rgba(255,255,255,.06);
+  color: #e5e7eb;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.04);
+}
+
+/* ------------------------------
+   FILTER BAR (same tone as rows)
+   ------------------------------ */
+.filter-bar {
+  background: #141821;
+  border: 1px solid #1b2027;
+}
+
+:host ::ng-deep .difficulty-filter { flex: 0 0 auto; min-width: 240px; }
+:host ::ng-deep .difficulty-filter .p-multiselect { display: flex; flex: 1; }
+
+:host ::ng-deep .dark-multiselect-panel { min-width: 260px; width: auto; }
+
+:host ::ng-deep .difficulty-filter .p-multiselect {
+  background: #141821;
+  border: 1px solid #1b2027;
   border-radius: 8px;
+  color: #cdd3dc;
+}
+:host ::ng-deep .difficulty-filter .p-multiselect .p-multiselect-label,
+:host ::ng-deep .difficulty-filter .p-multiselect .p-placeholder {
+  background: transparent; color: #cfd6e2;
+}
+:host ::ng-deep .difficulty-filter .p-multiselect .p-multiselect-trigger { color: #cfd6e2; }
+:host ::ng-deep .difficulty-filter .p-multiselect-token {
+  background: rgba(255,255,255,.06);
+  color: #cdd3dc;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  margin-right: 4px;
+  font-size: .85rem;
+}
+
+:host ::ng-deep .dark-multiselect-panel {
+  background: #141821 !important;
+  border: 1px solid #1b2027 !important;
+  color: #e3e8ff !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.48) !important;
+}
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-header {
+  background: #141821;
+  border-bottom: 1px solid #1b2027;
+  padding: 6px 8px;
+}
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-filter-container input {
+  background: #191e28;
+  border: 1px solid #1b2027;
   color: #e3e8ff;
 }
-::ng-deep .difficulty-filter .p-multiselect .p-multiselect-label,
-::ng-deep .difficulty-filter .p-multiselect .p-placeholder {
-  background: transparent; color: #cdd6f4;
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-item {
+  background: transparent;
+  padding: .5rem 1rem;
+  color: #e3e8ff;
 }
-::ng-deep .difficulty-filter .p-multiselect .p-multiselect-trigger { color: #cdd6f4; }
-::ng-deep .difficulty-filter .p-multiselect-token {
-  background: rgba(255,255,255,.08);
-  color: #e3e8ff; border-radius: 9999px;
-  padding: 2px 8px; margin-right: 4px; font-size: .85rem;
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-item:hover { background: rgba(255,255,255,.04); }
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight { background: rgba(255,255,255,.05); }
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-close { color: #e3e8ff; }
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
+  background: transparent; border: 1px solid #1b2027;
 }
-
-::ng-deep .dark-multiselect-panel {
-  background: #1f2737 !important;
-  border: 1px solid #2f3750 !important;
-  color: #e3e8ff !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
-}
-::ng-deep .dark-multiselect-panel .p-multiselect-header {
-  background: #1f2737; border-bottom: 1px solid #2f3750; padding: 6px 8px;
-}
-::ng-deep .dark-multiselect-panel .p-multiselect-filter-container input {
-  background: #273046; border: 1px solid #2f3750; color: #e3e8ff;
-}
-::ng-deep .dark-multiselect-panel .p-multiselect-item { background: transparent; padding: .5rem 1rem; color: #e3e8ff; }
-::ng-deep .dark-multiselect-panel .p-multiselect-item:hover { background: rgba(255,255,255,.04); }
-::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight { background: rgba(255,255,255,.06); }
-::ng-deep .dark-multiselect-panel .p-multiselect-close { color: #e3e8ff; }
-::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
-  background: transparent; border: 1px solid #2f3750;
-}
-::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox-box {
-  background: rgba(255,255,255,.08); border-color: #5a9df9;
+:host ::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox-box {
+  background: rgba(255,255,255,.06); border-color: #5a9df9;
 }
 
-/* --- Pills / tabs --- */
+/* ------------------------------
+   TABS / PILLS
+   ------------------------------ */
 .tabs-row {
   display: flex;
   align-items: center;
   width: 100%;
   margin-bottom: 1.5rem;
 }
+
 .tabs-left {
   display: inline-flex;
   gap: 6px;
   padding: 4px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: #2a2f3a;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1b2027;
   border-radius: 9999px;
 }
+
 .kind-pill {
   display: inline-block;
   padding: 6px 12px;
@@ -72,14 +135,15 @@
   text-decoration: none;
   transition: background-color .15s ease, color .15s ease;
 }
-.kind-pill--idle:hover { background: rgba(255,255,255,0.06); color: #ffffff; }
-.kind-pill--active { background: rgba(255,255,255,0.10); color: #ffffff; }
+.kind-pill--idle:hover { background: rgba(255,255,255,0.05); color: #ffffff; }
+.kind-pill--active { background: rgba(255,255,255,0.08); color: #ffffff; }
 
 .tabs-right {
   margin-left: auto;
   display: flex;
   align-items: center;
 }
+
 .count-chip {
   white-space: nowrap;
   display: inline-block;
@@ -87,20 +151,29 @@
   border-radius: 9999px;
   font-size: 13px;
   color: #cbd5e1;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
 }
 
 .tab-pill {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.10);
-  font-size: 14px; color: #d1d5db; text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 14px;
+  color: #d1d5db;
+  text-decoration: none;
   transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
-.tab-pill--idle:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.tab-pill--idle:hover { background: rgba(255,255,255,0.04); color: #fff; }
 .tab-pill--active { border-color: #60a5fa; background: rgba(96,165,250,0.12); color: #fff; }
 
 .tech-badge {
-  width: 24px; height: 24px; display: grid; place-items: center;
-  border-radius: 6px; font-weight: 700; font-size: 10px;
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 10px;
 }
