@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { BEHAVIORAL, BEHAVIORAL_GROUPS } from '../../../../shared/guides/guide.registry';
-
 @Component({
   standalone: true,
   imports: [CommonModule, RouterModule],
@@ -29,8 +28,7 @@ import { BEHAVIORAL, BEHAVIORAL_GROUPS } from '../../../../shared/guides/guide.r
     .sub { opacity:.75; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .mins { font-size:12px; opacity:.7; }
     .arrow { opacity:.6; }
-  `],
-  template: `
+  `], template: `
     <div class="wrap">
       <h1 class="hero-title">Behavioral Interview Guide</h1>
       <div class="hero-sub">Show your impact with crisp stories and strong signals.</div>
@@ -40,12 +38,13 @@ import { BEHAVIORAL, BEHAVIORAL_GROUPS } from '../../../../shared/guides/guide.r
         <span class="pill">FE-focused prompts</span>
       </div>
 
-      <div *ngFor="let g of groups()" class="section">
+      <div *ngFor="let g of groups(); let gi = index" class="section">
         <div class="sec-head">{{ g.title }}</div>
 
-        <a *ngFor="let it of g.items; index as i"
-           class="card" [routerLink]="['/','guides','behavioral', it.slug]">
-          <div class="num">{{ i + 1 }}</div>
+        <a *ngFor="let it of g.items; let ii = index"
+           class="card"
+           [routerLink]="['/','guides','behavioral', it.slug]">
+          <div class="num">{{ starts()[gi] + ii + 1 }}</div>
           <div class="body">
             <div class="title">{{ map().get(it.slug)?.title || it.slug }}</div>
             <div class="sub">{{ map().get(it.slug)?.summary }}</div>
@@ -60,4 +59,16 @@ import { BEHAVIORAL, BEHAVIORAL_GROUPS } from '../../../../shared/guides/guide.r
 export class BehavioralIndexComponent {
   groups = computed(() => BEHAVIORAL_GROUPS);
   map = computed(() => new Map(BEHAVIORAL.map(e => [e.slug, e])));
+
+  /** cumulative starting index for each group (0-based) */
+  starts = computed(() => {
+    const gs = this.groups();
+    const out: number[] = [];
+    let acc = 0;
+    for (const g of gs) {
+      out.push(acc);
+      acc += g.items.length;
+    }
+    return out;
+  });
 }

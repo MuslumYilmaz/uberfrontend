@@ -1,13 +1,12 @@
+// app.component.ts
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
-import { HeaderComponent } from './shared/components/header/header.component';
-
-// ⬇️ services we added earlier
 import { DailyService } from './core/services/daily.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
+import { HeaderComponent } from './shared/components/header/header.component';
 
 @Component({
   selector: 'app-root',
@@ -17,32 +16,40 @@ import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.componen
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  // --- routing state used to hide header on auth pages ---
   private router = inject(Router);
   private currentUrl = signal(this.router.url || '/');
+
+  // hide header on /auth/*
   isAuthRoute = computed(() => this.currentUrl().startsWith('/auth'));
   showHeader = computed(() => !this.isAuthRoute());
 
+  // --- HIDE SIDEBAR on guide detail routes ---
+  // any of: /guides/playbook/*, /guides/system-design/*, /guides/behavioral/*
+  private readonly HIDE_SIDEBAR_PATTERNS = [
+    /^\/guides\/playbook\/.+/,
+    /^\/guides\/system-design\/.+/,
+    /^\/guides\/behavioral\/.+/,
+  ];
+
+  // strip query/hash before testing
+  private pathOnly = computed(() => this.currentUrl().split('?')[0].split('#')[0]);
+
+  hideSidebar = computed(() =>
+    this.HIDE_SIDEBAR_PATTERNS.some(rx => rx.test(this.pathOnly()))
+  );
+  showSidebar = computed(() => !this.hideSidebar());
+
   // --- daily set + rollover ---
   private daily = inject(DailyService);
-  // just injecting creates the listener (if you added the service)
-  // remove this line if you didn’t add RouteTrackerService
-
   private midnightTimer?: number;
 
   ngOnInit() {
-    // keep currentUrl in sync
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: any) => this.currentUrl.set(e.urlAfterRedirects || e.url));
 
-    // ensure we always have “today’s set” available
     this.daily.ensureTodaySet();
-
-    // rollover at local midnight
     this.scheduleToNextMidnight();
-
-    // if the tab was hidden across midnight, refresh on focus
     document.addEventListener('visibilitychange', this.onVisibility);
   }
 
@@ -62,14 +69,10 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.midnightTimer) window.clearTimeout(this.midnightTimer);
     const now = new Date();
     const next = new Date(now);
-    next.setHours(24, 0, 0, 0); // start of next local day
+    next.setHours(24, 0, 0, 0);
     this.midnightTimer = window.setTimeout(() => {
-      this.daily.ensureTodaySet();    // generates the new set, resets today’s progress
-      this.scheduleToNextMidnight();  // schedule again
+      this.daily.ensureTodaySet();
+      this.scheduleToNextMidnight();
     }, next.getTime() - now.getTime());
-  }
-
-  isGuideDetail(): boolean {
-    return this.router.url.startsWith('/guides/playbook/');
   }
 }

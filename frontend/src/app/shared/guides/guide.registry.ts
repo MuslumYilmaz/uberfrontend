@@ -258,8 +258,35 @@ export const BEHAVIORAL: GuideEntry[] = [
         minutes: 12,
         summary: 'Signals interviewers care about and how to prepare high-signal stories.',
         load: () =>
-            import('../../features/guides/behavioral/intro')
+            import('../../features/guides/behavioral/behavioral-intro')
                 .then(m => m.BehavioralIntroArticle),
+    },
+    {
+        slug: 'big-picture',
+        title: 'The Big Picture: Why Behavioral Rounds Matter in Tech',
+        minutes: 8,
+        summary: 'Where behavioral fits in the funnel and what hiring teams really optimize for.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-big-picture')
+                .then(m => m.BehavioralBigPictureArticle),
+    },
+    {
+        slug: 'evaluation-areas',
+        title: 'What You’re Evaluated On',
+        minutes: 10,
+        summary: 'Communication, collaboration, ownership, growth mindset, and leadership—decoded.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-evaluation-areas')
+                .then(m => m.BehavioralEvaluationAreasArticle),
+    },
+    {
+        slug: 'prep',
+        title: 'How to Prepare (Fast and Effectively)',
+        minutes: 9,
+        summary: 'Build a story bank, map stories to competencies, and practice without sounding scripted.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-prep')
+                .then(m => m.BehavioralPrepArticle),
     },
     {
         slug: 'stories',
@@ -267,12 +294,51 @@ export const BEHAVIORAL: GuideEntry[] = [
         minutes: 14,
         summary: 'A practical recipe to structure concise, memorable examples.',
         load: () =>
-            import('../../features/guides/behavioral/stories')
+            import('../../features/guides/behavioral/behavioral-stories')
                 .then(m => m.BehavioralStoriesArticle),
+    },
+    {
+        slug: 'common-questions',
+        title: 'Solving Common Questions',
+        minutes: 18,
+        summary: 'Frameworks + sample outlines for “Tell me about yourself”, “Why here”, conflict, failure, more.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-common-questions')
+                .then(m => m.BehavioralQuestionsArticle),
+    },
+    {
+        slug: 'fe-advanced',
+        title: 'Front-End Specific Scenarios',
+        minutes: 13,
+        summary: 'Design trade-offs, accessibility, performance, and cross-functional collaboration examples.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-fe-advanced')
+                .then(m => m.BehavioralFeAdvancedArticle),
+    },
+    {
+        slug: 'practical-tips',
+        title: 'Practical Tips & Anti-Patterns',
+        minutes: 8,
+        summary: 'Avoid rambling, stay specific, quantify impact, and handle Zoom dynamics smoothly.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-practical-tips')
+                .then(m => m.BehavioralTipsArticle),
+    },
+    {
+        slug: 'checklist',
+        title: 'Final Checklist',
+        minutes: 5,
+        summary: 'One-pager before the interview: story bank, company research, and questions to ask.',
+        load: () =>
+            import('../../features/guides/behavioral/behavioral-checklist')
+                .then(m => m.BehavioralChecklistArticle),
     },
 ];
 
 export const BEHAVIORAL_GROUPS = [
-    { title: 'Overview', items: [{ slug: 'intro' }] },
-    { title: 'Practice', items: [{ slug: 'stories' }] },
+    { title: 'Overview', items: [{ slug: 'intro' }, { slug: 'big-picture' }, { slug: 'evaluation-areas' }] },
+    { title: 'Preparation', items: [{ slug: 'prep' }, { slug: 'stories' }] },
+    { title: 'Solving Common Questions', items: [{ slug: 'common-questions' }] },
+    { title: 'Front-End Specifics', items: [{ slug: 'fe-advanced' }] },
+    { title: 'Practical', items: [{ slug: 'practical-tips' }, { slug: 'checklist' }] },
 ];
