@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { environment } from '../../../environments/environment';
 
 interface LinkItem {
   type: 'link';
@@ -10,19 +14,38 @@ interface LinkItem {
   icon?: string;
   query?: Record<string, any>;
 }
-interface GroupItem { type: 'group'; label: string; icon?: string; open?: boolean; children: LinkItem[]; }
+interface GroupItem {
+  type: 'group';
+  label: string;
+  icon?: string;
+  open?: boolean;
+  children: LinkItem[];
+}
 type NavItem = LinkItem | GroupItem;
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, ButtonModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ButtonModule,
+    DialogModule,
+    FormsModule,
+    InputTextareaModule,
+  ],
   templateUrl: './app-sidebar.component.html',
   styleUrls: ['./app-sidebar.component.css'],
 })
 export class AppSidebarComponent {
   @Input() collapsed = false;
   drawerOpen = signal(false);
+
+  bugVisible = false;
+  bugText = '';
+  submitting = false;
+  submitOk = false;
+  currentUrl = '';
 
   isLink = (i: NavItem): i is LinkItem => i.type === 'link';
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
@@ -71,10 +94,7 @@ export class AppSidebarComponent {
 
   toggleGroup(i: number) {
     this.nav.forEach((item, idx) => {
-      if (this.isGroup(item)) {
-        // close all except the clicked one
-        item.open = idx === i ? !item.open : false;
-      }
+      if (this.isGroup(item)) item.open = idx === i ? !item.open : false;
     });
   }
 
@@ -85,9 +105,50 @@ export class AppSidebarComponent {
     document.body.classList.toggle('sidebar-mini', this.collapsed);
   }
 
-  onCustomAction() { console.log('Sidebar action clicked'); }
-
   @HostListener('window:keydown.escape') onEsc() {
     if (this.drawerOpen()) this.drawerOpen.set(false);
   }
+
+  // --- Bug modal actions ---
+  openBugModal() {
+    this.submitOk = false;
+    this.bugText = '';
+    this.currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    this.bugVisible = true;
+  }
+  closeBugModal() {
+    if (this.submitting) return;
+    this.bugVisible = false;
+  }
+  async submitBug() {
+    const note = this.bugText.trim();
+    if (!note || this.submitting) return;
+    this.submitting = true;
+
+    try {
+      const res = await fetch(`${environment.apiBase}/bug-report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          note,
+          url: this.currentUrl || (typeof window !== 'undefined' ? window.location.href : '')
+        })
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
+      this.submitOk = true;
+      setTimeout(() => {
+        this.bugVisible = false;
+        this.bugText = '';
+        this.submitOk = false;
+      }, 900);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to send bug report. Please try again.');
+    } finally {
+      this.submitting = false;
+    }
+  }
+
 }

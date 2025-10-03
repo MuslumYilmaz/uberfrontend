@@ -1,4 +1,42 @@
-/* ---- container (grid pins tools at bottom) ---- */
+/* ==== dialog overlay ==== */
+:host ::ng-deep .p-dialog-mask,
+:host ::ng-deep .p-component-overlay {
+  z-index: 10000 !important;
+  background: rgba(3, 5, 8, 0.68) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* ==== dialog body pieces ==== */
+.bug-body { display: grid; gap: 10px; }
+.bug-label { font-size: 12.5px; color: #c9d1d9; }
+
+.bug-textarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  background: #0f131a;
+  border: 1px solid #242b38;
+  color: #e6e9ef;
+  border-radius: 8px;
+  padding: 10px;
+}
+.bug-textarea::placeholder { color: #9aa3ad; }
+.bug-textarea:focus {
+  outline: none;
+  border-color: #33507a;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.bug-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.bug-success { color: #34d399; font-size: 13px; margin-top: 6px; }
+
+/* ==== sidebar layout ==== */
 .sidebar{
   position: sticky;
   top: 56px;
@@ -9,7 +47,7 @@
   color: #e6e9ef;
 
   display: grid;
-  grid-template-rows: 1fr auto;   /* nav scrolls, tools fixed at bottom */
+  grid-template-rows: 1fr auto;
   padding: 10px 8px;
   gap: 8px;
 
@@ -23,10 +61,7 @@
 .sidebar.is-collapsed{ width: 60px; }
 
 /* ---- nav ---- */
-.nav{
-  min-height: 0;          /* makes 1fr actually shrink */
-  overflow: auto;         /* scroll long menus */
-}
+.nav{ min-height: 0; overflow: auto; }
 .nav ul{ list-style: none; margin: 0; padding: 0; }
 
 /* PrimeIcons in the rail */
@@ -38,7 +73,7 @@
 .group-header {
   width: 100%;
   display: grid;
-  grid-template-columns: 18px 1fr 16px; /* icon | label | tail */
+  grid-template-columns: 18px 1fr 16px;
   align-items: center;
   column-gap: 12px;
 
@@ -52,7 +87,7 @@
   cursor: pointer;
   text-align: left;
 
-  transition: border-color .15s ease, background .15s ease;
+  transition: border-color .15s, background .15s;
 }
 
 .nav-link:hover,
@@ -60,15 +95,15 @@
 .nav-sublink:hover,
 .nav-link.active,
 .nav-sublink.active {
-  background: #15181f;          /* same as dashboard bg */
-  border-color: #242b38;      /* visible subtle outline */
+  background: #15181f;
+  border-color: #242b38;
   color: #e6e9ef;
 }
 .nav-link.active, .nav-sublink.active{ background: #1b2230; border-color: #242b38; }
 
 .nav-link.active,
 .nav-sublink.active {
-  border-color: #1b2230;       /* stronger accent border */
+  border-color: #1b2230;
   font-weight: 600;
 }
 
@@ -85,7 +120,7 @@
   border: 1px solid transparent;
   background: transparent;
 
-  transition: border-color .15s ease, background .15s ease;
+  transition: border-color .15s, background .15s;
 }
 
 /* hide tail on simple links */
@@ -120,7 +155,7 @@
 
 /* ---- tools (bottom row) ---- */
 .tools{
-  align-self: stretch;           /* fill rail width */
+  align-self: stretch;
   padding: 8px 6px;
   display: flex;
   gap: 8px;
@@ -143,33 +178,24 @@
   background: #12161f; border-color: #242b38;
 }
 
-/* ---- collapsed: icons-only menu; centered icons; only chevron in tools ---- */
+/* ---- collapsed ---- */
 .sidebar.is-collapsed .label{ display: none; }
 .sidebar.is-collapsed .group-list.open{ display: none; }
 .sidebar.is-collapsed .group-inner{ margin-left: 0; }
 .sidebar.is-collapsed .group-inner::before{ display: none; }
 
-/* center the icon cells */
 .sidebar.is-collapsed .nav-link,
 .sidebar.is-collapsed .group-header{
-  grid-template-columns: 18px;    /* icon only */
+  grid-template-columns: 18px;
   justify-content: center;
   justify-items: center;
   padding-left: 0;
   padding-right: 0;
 }
-
-.sidebar.is-collapsed .group-header .caret {
-  display: none;
-}
-
+.sidebar.is-collapsed .group-header .caret { display: none; }
 .sidebar.is-collapsed .nav-link .tail,
 .sidebar.is-collapsed .group-header .tail{ display: none; }
-
-/* tools row: only the chevron, centered */
-.sidebar.is-collapsed .tools{
-  justify-content: center;
-}
+.sidebar.is-collapsed .tools{ justify-content: center; }
 .sidebar.is-collapsed .tools .tool-icon-btn{ display: none; }
 
 /* ---- mobile drawer ---- */

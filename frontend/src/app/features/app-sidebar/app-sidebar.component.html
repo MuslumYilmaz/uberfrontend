@@ -3,11 +3,9 @@
 </button>
 
 <aside class="sidebar" [class.is-collapsed]="collapsed" [class.is-open]="drawerOpen()">
-
     <nav class="nav">
         <ul>
             <li *ngFor="let item of nav; let i = index">
-
                 <!-- top-level links -->
                 <a *ngIf="isLink(item)" class="nav-link" [routerLink]="item.to" [queryParams]="item.query || null"
                     routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
@@ -45,9 +43,9 @@
 
     <!-- bottom tools -->
     <div class="tools">
-        <button class="tool-icon-btn" type="button" (click)="onCustomAction()" aria-label="Custom action"
-            title="Action">
-            <i class="pi pi-shield"></i>
+        <button class="tool-icon-btn" type="button" (click)="openBugModal()" aria-label="Report a bug"
+            title="Report a bug">
+            <i class="pi pi-exclamation-triangle"></i>
         </button>
 
         <button pButton type="button" [icon]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"
@@ -56,6 +54,73 @@
             [title]="collapsed ? 'Expand' : 'Collapse'">
         </button>
     </div>
+
+    <!-- Bug report dialog -->
+    <p-dialog [(visible)]="bugVisible" [modal]="true" [appendTo]="'body'" styleClass="bug-dialog" [showHeader]="false"
+        [style]="{
+    width: '520px',
+    maxWidth: '92vw',
+    background: '#0f131a',
+    color: '#e6e9ef',
+    border: '1px solid #242b38',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    boxShadow: '0 18px 48px rgba(0,0,0,.55)'
+  }" [contentStyle]="{
+    background: '#0f131a',
+    color: '#e6e9ef',
+    padding: '0'
+  }" [baseZIndex]="10000">
+        <!-- Custom compact header (dark) -->
+        <div style="
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 14px; line-height:1.2; font-weight:700;
+      color:#e6e9ef; background:#0f131a; border-bottom:1px solid #242b38;
+    ">
+            <span>Report a bug</span>
+            <button type="button" (click)="bugVisible=false" aria-label="Close"
+                class="p-dialog-header-icon p-dialog-header-close p-link" style="color:#cbd5e1; border-radius:8px;">
+                <span class="p-dialog-header-close-icon pi pi-times"></span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="bug-body" style="padding:12px 14px;">
+            <label for="bug-note" class="bug-label">What went wrong?</label>
+
+            <textarea id="bug-note" pInputTextarea [(ngModel)]="bugText" [autoResize]="true" rows="6"
+                class="bug-textarea"
+                placeholder="Describe the issue, steps to reproduce, and what you expected to happen.">
+    </textarea>
+
+            <div class="bug-actions">
+                <button pButton type="button" label="Cancel" (click)="closeBugModal()" [disabled]="submitting"
+                    [ngStyle]="{
+          background: '#151a22',
+          color: '#e6e9ef',
+          border: '1px solid #2a3142',
+          borderRadius: '10px',
+          padding: '6px 14px'
+        }">
+                </button>
+
+                <button pButton type="button" label="Send" (click)="submitBug()"
+                    [disabled]="!bugText.trim() || submitting" [loading]="submitting" [ngStyle]="{
+          background: '#2563eb',
+          color: '#ffffff',
+          border: '1px solid #2563eb',
+          borderRadius: '10px',
+          padding: '6px 14px',
+          fontWeight: 600
+        }">
+                </button>
+            </div>
+
+            <div *ngIf="submitOk" class="bug-success">
+                Thanks! Your note was sent. 💜
+            </div>
+        </div>
+    </p-dialog>
 </aside>
 
 <div class="backdrop" *ngIf="drawerOpen()" (click)="toggleDrawer()" aria-hidden="true"></div>

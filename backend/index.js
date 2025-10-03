@@ -4,8 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { requireAuth } = require('./middleware/Auth');
-const cookieParser = require('cookie-parser'); // +
-
+const cookieParser = require('cookie-parser');
+const nodemailer = require('nodemailer'); // <-- NEW
 
 const app = express();
 
@@ -22,10 +22,11 @@ mongoose.connection.on('error', (err) => console.error('❌ MongoDB error:', err
 app.use(
     cors({
         origin: 'http://localhost:4200', // your Angular dev URL
+        credentials: true,
     })
 );
 app.use(express.json());
-app.use(cookieParser()); 
+app.use(cookieParser());
 
 // ---- Models ----
 const User = require('./models/User');
@@ -34,6 +35,68 @@ const ActivityEvent = require('./models/ActivityEvent'); // need the model for t
 // ---- Routes (basic) ----
 app.get('/', (_, res) => res.send('Backend is working 🚀'));
 app.get('/api/hello', (_, res) => res.json({ message: 'Hello from backend 👋' }));
+
+// ======================
+//  Bug Report -> Email
+// ======================
+/**
+ * POST /api/bug-report
+ * body: { note: string, url?: string }
+ * Sends an email to mslmyilmaz34@gmail.com
+ */
+app.post('/api/bug-report', async (req, res) => {
+    try {
+        const { note, url } = req.body || {};
+        if (!note || typeof note !== 'string' || !note.trim()) {
+            return res.status(400).json({ error: 'Missing "note"' });
+        }
+
+        // Create transporter (Gmail SMTP with App Password, or any SMTP creds)
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST || 'smtp.gmail.com',
+            port: Number(process.env.SMTP_PORT || 465),
+            secure: String(process.env.SMTP_SECURE || 'true') === 'true', // true for 465
+            auth: {
+                user: process.env.SMTP_USER, // e.g. yourgmail@gmail.com
+                pass: process.env.SMTP_PASS, // Gmail App Password
+            },
+        });
+
+        const safeText = String(note);
+        const safeUrl = url ? String(url) : '';
+
+        const html = `
+      <h2 style="margin:0 0 8px">New Bug Report</h2>
+      <p style="white-space:pre-wrap;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto">
+        ${escapeHtml(safeText)}
+      </p>
+      ${safeUrl ? `<p><strong>Page:</strong> <a href="${escapeAttr(safeUrl)}">${escapeHtml(safeUrl)}</a></p>` : ''}
+      <hr style="border:none;border-top:1px solid #eee;margin:12px 0"/>
+      <p style="color:#64748b;font-size:12px;margin:0">Sent ${new Date().toISOString()}</p>
+    `;
+
+        await transporter.sendMail({
+            from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
+            to: 'mslmyilmaz34@gmail.com',
+            subject: 'Bug report from UberFrontend',
+            text: `Bug report:\n\n${safeText}\n\nPage: ${safeUrl || '(none)'}\nSent ${new Date().toISOString()}`,
+            html,
+        });
+
+        return res.status(204).end();
+    } catch (err) {
+        console.error('Email send failed:', err);
+        return res.status(500).json({ error: 'Email send failed' });
+    }
+});
+
+// small HTML-escape helpers
+function escapeHtml(s = '') {
+    return String(s).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+function escapeAttr(s = '') {
+    return escapeHtml(s).replace(/`/g, '&#96;');
+}
 
 // ---- Auth routes ----
 app.use('/api/auth', require('./routes/auth'));
