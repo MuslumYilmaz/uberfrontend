@@ -103,7 +103,13 @@ export const routes: Routes = [
               import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
             data: { source: 'company', kind: 'trivia' },
           },
-          // unknown child under /companies/:slug → 404
+          {
+            path: 'coding',
+            loadComponent: () =>
+              import('./features/coding/coding-list/coding-list.component')
+                .then(m => m.CodingListComponent),
+            data: { source: 'global-coding', kind: 'coding', view: 'formats' },
+          },
           {
             path: '**',
             loadComponent: () =>

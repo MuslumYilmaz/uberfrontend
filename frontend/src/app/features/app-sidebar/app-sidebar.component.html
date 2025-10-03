@@ -8,14 +8,15 @@
         <ul>
             <li *ngFor="let item of nav; let i = index">
 
-                <!-- links -->
-                <a *ngIf="isLink(item)" class="nav-link" [routerLink]="item.to" routerLinkActive="is-active"
-                    [routerLinkActiveOptions]="{ exact: true }" [attr.aria-label]="item.label">
+                <!-- top-level links -->
+                <a *ngIf="isLink(item)" class="nav-link" [routerLink]="item.to" [queryParams]="item.query || null"
+                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+                    [attr.aria-label]="item.label">
                     <i class="pi nav-ic" [ngClass]="item.icon"></i>
                     <span class="label">{{ item.label }}</span>
                 </a>
 
-                <!-- group -->
+                <!-- grouped links -->
                 <div *ngIf="isGroup(item)" class="nav-group">
                     <button class="group-header" type="button" (click)="toggleGroup(i)" [attr.aria-expanded]="item.open"
                         [attr.aria-controls]="'group-'+i">
@@ -27,8 +28,9 @@
                     <div class="group-list" [id]="'group-'+i" [class.open]="item.open">
                         <ul class="group-inner">
                             <li *ngFor="let c of item.children">
-                                <a class="nav-sublink" [routerLink]="c.to" routerLinkActive="is-active"
-                                    [routerLinkActiveOptions]="{ exact: true }" [attr.aria-label]="c.label">
+                                <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
+                                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+                                    [attr.aria-label]="c.label">
                                     <i *ngIf="c.icon; else smallDot" class="pi nav-ic" [ngClass]="c.icon"></i>
                                     <ng-template #smallDot><span class="dot"></span></ng-template>
                                     <span class="label">{{ c.label }}</span>

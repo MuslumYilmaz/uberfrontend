@@ -1,60 +1,80 @@
 <div class="container mx-auto max-w-7xl px-4 py-6">
 
-  <!-- Tech pills -->
+  <!-- Tech / Formats pills -->
   <div *ngIf="source!=='company'" class="mb-4 overflow-x-auto">
     <nav class="flex items-center gap-2 min-w-max">
 
-      <!-- GLOBAL /coding: filter buttons (no navigation) -->
-      <ng-container *ngIf="source==='global-coding'; else techLinks">
-        <button *ngFor="let t of techTabs" type="button" class="tab-pill"
-          [ngClass]="(selectedTech$ | async) === t.key ? 'tab-pill--active' : 'tab-pill--idle'"
-          (click)="toggleTech(t.key)">
-          <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
-          <span class="whitespace-nowrap">{{ t.label }}</span>
-        </button>
+      <!-- GLOBAL (/coding): choose by viewMode -->
+      <ng-container *ngIf="source==='global-coding'">
+        <!-- Formats mode: CATEGORY pills -->
+        <ng-container *ngIf="(viewMode$ | async) === 'formats'; else globalTechPills">
+          <button *ngFor="let c of categoryTabs" type="button" class="tab-pill"
+            [ngClass]="(selectedCategory$ | async) === c.key ? 'tab-pill--active' : 'tab-pill--idle'"
+            (click)="toggleCategory(c.key)">
+            <span class="whitespace-nowrap">{{ c.label }}</span>
+          </button>
+        </ng-container>
+
+        <!-- Tech mode: TECH filter pills -->
+        <ng-template #globalTechPills>
+          <button *ngFor="let t of techTabs" type="button" class="tab-pill"
+            [ngClass]="(selectedTech$ | async) === t.key ? 'tab-pill--active' : 'tab-pill--idle'"
+            (click)="toggleTech(t.key)">
+            <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+            <span class="whitespace-nowrap">{{ t.label }}</span>
+          </button>
+        </ng-template>
       </ng-container>
 
       <!-- Per-tech routes: navigation pills -->
-      <ng-template #techLinks>
+      <ng-container *ngIf="source!=='global-coding'">
         <a *ngFor="let t of techTabs" [routerLink]="['/', t.key, kind]" class="tab-pill"
           [ngClass]="t.key === tech ? 'tab-pill--active' : 'tab-pill--idle'">
           <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
           <span class="whitespace-nowrap">{{ t.label }}</span>
         </a>
-      </ng-template>
+      </ng-container>
 
     </nav>
   </div>
 
   <!-- Section tabs + right-side count -->
-  <div *ngIf="source!=='company'" class="tabs-row">
-    <div class="tabs-left">
-      <!-- GLOBAL: local kind filter (no navigation) -->
-      <ng-container *ngIf="source==='global-coding'; else kindLinks">
+<div *ngIf="source!=='company'" class="tabs-row">
+  <div class="tabs-left">
+
+    <!-- GLOBAL (/coding): render kind pills unless System design is active -->
+    <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
+      <ng-container *ngIf="!(isSystemCategoryActive$ | async)">
         <button type="button" class="kind-pill"
           [ngClass]="(selectedKind$ | async) === 'coding' ? 'kind-pill--active' : 'kind-pill--idle'"
           (click)="selectKind('coding')">Coding</button>
+
         <button type="button" class="kind-pill"
           [ngClass]="(selectedKind$ | async) === 'trivia' ? 'kind-pill--active' : 'kind-pill--idle'"
           (click)="selectKind('trivia')">Quiz</button>
+
         <button type="button" class="kind-pill"
           [ngClass]="(selectedKind$ | async) === 'debug' ? 'kind-pill--active' : 'kind-pill--idle'"
           (click)="selectKind('debug')">Debug</button>
       </ng-container>
+      <!-- when System design is active, this block renders nothing -->
+    </ng-container>
 
-      <!-- Per-tech pages: navigate between kinds -->
-      <ng-template #kindLinks>
-        <a *ngFor="let k of kindTabs" [routerLink]="['/', tech || 'javascript', k.key]" class="kind-pill"
-          [ngClass]="k.key === kind ? 'kind-pill--active' : 'kind-pill--idle'">
-          {{ k.label }}
-        </a>
-      </ng-template>
-    </div>
+    <!-- PER-TECH pages: show nav links -->
+    <ng-template #perTechKindLinks>
+      <a *ngFor="let k of kindTabs" [routerLink]="['/', tech || 'javascript', k.key]" class="kind-pill"
+         [ngClass]="k.key === kind ? 'kind-pill--active' : 'kind-pill--idle'">
+        {{ k.label }}
+      </a>
+    </ng-template>
 
-    <div class="tabs-right">
-      <span class="count-chip">{{ filteredCount$ | async }} questions</span>
-    </div>
   </div>
+
+  <div class="tabs-right">
+    <span class="count-chip">{{ filteredCount$ | async }} questions</span>
+  </div>
+</div>
+
 
   <h1 class="text-4xl font-extrabold text-white mb-6">
     {{ heading() }}
