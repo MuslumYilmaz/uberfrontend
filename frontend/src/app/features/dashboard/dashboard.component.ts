@@ -71,6 +71,13 @@ export class DashboardComponent {
       icon: 'grid',
       route: ['/guides', 'system-design'],
     },
+    // ✅ NEW: Behavioral Guide
+    {
+      title: 'Behavioral Interview Guide',
+      subtitle: 'STAR method, stories, and high-signal answers.',
+      icon: 'book',
+      route: ['/guides', 'behavioral'],
+    },
   ];
 
   /** ===== Study plans (route to guide for now) ===== */
