@@ -29,6 +29,8 @@ export class AppComponent implements OnInit, OnDestroy {
     /^\/guides\/playbook\/.+/,
     /^\/guides\/system-design\/.+/,
     /^\/guides\/behavioral\/.+/,
+    /^\/system-design\/[^/]+\/?$/,
+    /^\/(javascript|angular|react|vue|html|css)\/trivia\/[^/]+$/,
   ];
 
   // strip query/hash before testing
