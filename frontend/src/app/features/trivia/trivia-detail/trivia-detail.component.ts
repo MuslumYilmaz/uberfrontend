@@ -24,11 +24,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
   questionsList: Question[] = [];
   question = signal<Question | null>(null);
-  showAnswer = signal(false);
 
   private sub?: Subscription;
 
-  // practice session (passed from the list page)
+  // practice session
   private practice: PracticeSession = null;
   returnTo: any[] | null = null;
   private returnLabel = signal<string | null>(null);
@@ -61,7 +60,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
             tap((all) => {
               this.questionsList = all;
               this.selectQuestion(id);
-              // keep the practice index in sync with the URL
               this.syncPracticeIndexById(id);
             })
           )
@@ -111,14 +109,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   private selectQuestion(id: string) {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
-    this.showAnswer.set(false);
   }
 
-  toggleAnswer() { this.showAnswer.update((v) => !v); }
   isActive(q: Question) { return this.question()?.id === q.id; }
 
   onSelect(q: Question) {
-    // keep the session when switching via the sidebar
     this.ensurePracticeBuilt(q.id);
     this.router.navigate(['/', this.tech, 'trivia', q.id], {
       state: {
@@ -132,4 +127,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   // footer actions
   prev() { if (this.hasPrev()) this.navToPracticeIndex(this.practice!.index - 1); }
   next() { if (this.hasNext()) this.navToPracticeIndex(this.practice!.index + 1); }
+
+  // ======= NEW: label helpers used by the template =======
+  importanceLabel(n?: number): 'Low' | 'Medium' | 'High' {
+    if (typeof n !== 'number') return 'Low';
+    if (n >= 4) return 'High';
+    if (n === 3) return 'Medium';
+    return 'Low';
+  }
+
+  difficultyLabel(d?: string): 'Easy' | 'Intermediate' | 'Hard' {
+    switch ((d || '').toLowerCase()) {
+      case 'easy': return 'Easy';
+      case 'intermediate': return 'Intermediate';
+      case 'hard': return 'Hard';
+      default: return 'Easy';
+    }
+  }
 }

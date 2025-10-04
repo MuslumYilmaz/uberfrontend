@@ -1,62 +1,63 @@
-<div class="flex h-[calc(100vh-64px-56px)] bg-gray-900 text-white">
+<div class="page-frame">
     <!-- Sidebar -->
-    <aside class="w-72 flex-shrink-0 overflow-auto bg-neutral-800 border-r border-neutral-700">
-        <div class="px-6 py-4 border-b border-neutral-700">
-            <div class="text-lg font-semibold">All Questions</div>
+    <aside class="side">
+        <div class="side-head">
+            <div class="side-title">All Questions</div>
         </div>
-        <ul class="divide-y divide-neutral-700">
-            <li *ngFor="let q of questionsList" class="list-none">
-                <div class="cursor-pointer px-6 py-4 hover:bg-neutral-700 transition flex items-start gap-3"
-                    [class.bg-neutral-700]="isActive(q)" (click)="onSelect(q)">
-                    <div class="flex-1">
-                        <div class="font-semibold text-lg leading-tight">{{ q.title }}</div>
-                        <div class="text-sm text-neutral-300 mt-1 line-clamp-2">
-                            {{ q.description }}
-                        </div>
+
+        <ul class="side-list">
+            <li *ngFor="let q of questionsList">
+                <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
+                    <div class="side-item-main">
+                        <div class="side-item-title">{{ q.title }}</div>
+                        <div class="side-item-desc line-clamp-2">{{ q.description }}</div>
                     </div>
-                    <div class="self-center">
-                        <i class="pi pi-angle-right text-xl text-neutral-400" *ngIf="!isActive(q)"></i>
-                        <i class="pi pi-check-circle text-green-400 text-xl" *ngIf="isActive(q)"></i>
+                    <div class="side-item-tail">
+                        <i class="pi pi-angle-right" *ngIf="!isActive(q)"></i>
+                        <i class="pi pi-check-circle ok" *ngIf="isActive(q)"></i>
                     </div>
-                </div>
+                </button>
             </li>
         </ul>
     </aside>
 
-    <!-- Detail pane -->
-    <main class="flex-1 p-8 overflow-auto space-y-6">
-        <div *ngIf="question() as q; else missing" class="space-y-4">
-            <div class="flex flex-col gap-2">
-                <h1 class="text-4xl font-extrabold">{{ q.title }}</h1>
-                <div class="flex flex-wrap gap-4 items-center text-sm">
-                    <span class="px-2 py-1 bg-green-600 rounded text-xs font-medium capitalize">{{ q.difficulty
-                        }}</span>
-                    <div class="flex gap-2 flex-wrap">
-                        <span class="tag" *ngFor="let tag of q.tags">{{ tag }}</span>
-                    </div>
-                </div>
-            </div>
+    <!-- Detail -->
+    <main class="main">
+        <div *ngIf="question() as q; else missing" class="main-stack">
+            <!-- Title + chips -->
+            <header class="title-block">
+                <h1 class="title">{{ q.title }}</h1>
 
-            <div class="rounded-xl bg-neutral-800 p-6 shadow">
-                <div class="prose prose-invert max-w-none">{{ q.description }}</div>
-            </div>
-
-            <div class="rounded-xl overflow-hidden">
-                <button pButton type="button"
-                    class="w-full flex justify-between items-center px-6 py-4 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-t-xl transition"
-                    (click)="toggleAnswer()">
-                    <div class="font-medium text-lg">{{ showAnswer() ? 'Hide Answer' : 'Show Answer' }}</div>
-                    <i class="pi" [ngClass]="showAnswer() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
-                </button>
-                <div *ngIf="showAnswer()" class="bg-neutral-800 border border-t-0 border-neutral-700 rounded-b-xl p-6">
-                    <div class="text-green-400 font-medium leading-relaxed">{{ q.answer }}</div>
+                <div class="meta-chips">
+                    <span class="chip chip-freq">{{ importanceLabel(q.importance) }}</span>
+                    <span class="chip chip-diff">{{ difficultyLabel(q.difficulty) }}</span>
+                    <span class="chip chip-tech">{{ (q.technology || '—') | titlecase }}</span>
                 </div>
-            </div>
+            </header>
+
+            <!-- Question -->
+            <section class="card">
+                <div class="card-head">Question</div>
+                <div class="card-body">
+                    <p class="content">{{ q.description }}</p>
+                </div>
+            </section>
+
+            <!-- Answer -->
+            <section class="card">
+                <div class="card-head">Answer</div>
+                <div class="card-body">
+                    <p class="content" *ngIf="q.answer; else noAnswer">{{ q.answer }}</p>
+                    <ng-template #noAnswer>
+                        <p class="content muted">Answer coming soon.</p>
+                    </ng-template>
+                </div>
+            </section>
         </div>
 
         <ng-template #missing>
-            <div class="text-center py-20">
-                <div class="text-xl text-neutral-400">Question not found.</div>
+            <div class="empty">
+                <div class="empty-text">Question not found.</div>
             </div>
         </ng-template>
     </main>

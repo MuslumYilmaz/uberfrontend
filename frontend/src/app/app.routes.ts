@@ -1,11 +1,20 @@
-import { Routes, UrlMatchResult, UrlSegment } from '@angular/router';
+// src/app/app.routes.ts
+import {
+  Routes,
+  UrlMatchResult,
+  UrlSegment,
+  provideRouter,
+  withInMemoryScrolling,
+  withRouterConfig,
+} from '@angular/router';
+
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 
-/** Only match allowed techs */
+/** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
 export function techMatcher(segments: UrlSegment[]): UrlMatchResult | null {
   if (!segments.length) return null;
-  const first = segments[0].path;
+  const first = segments[0].path.toLowerCase();
   if (ALLOWED_TECH.has(first)) {
     return { consumed: [segments[0]], posParams: { tech: segments[0] } };
   }
@@ -17,7 +26,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
   },
 
   // Auth
@@ -27,18 +36,19 @@ export const routes: Routes = [
       {
         path: 'login',
         loadComponent: () =>
-          import('./features/auth/login/login.component').then(m => m.LoginComponent),
+          import('./features/auth/login/login.component').then((m) => m.LoginComponent),
       },
       {
         path: 'signup',
         loadComponent: () =>
-          import('./features/auth/signup/signup.component').then(m => m.SignupComponent),
+          import('./features/auth/signup/signup.component').then((m) => m.SignupComponent),
       },
       {
         path: 'callback',
         loadComponent: () =>
-          import('./features/auth/oauth-callback/oauth-callback.component')
-            .then(m => m.OAuthCallbackComponent),
+          import('./features/auth/oauth-callback/oauth-callback.component').then(
+            (m) => m.OAuthCallbackComponent,
+          ),
       },
     ],
   },
@@ -47,23 +57,29 @@ export const routes: Routes = [
   {
     path: 'courses',
     loadComponent: () =>
-      import('./features/courses/course-list/course-list.component').then(m => m.CourseListComponent),
+      import('./features/courses/course-list/course-list.component').then(
+        (m) => m.CourseListComponent,
+      ),
   },
   {
     path: 'courses/:courseId',
     loadComponent: () =>
-      import('./features/courses/course-detail/course-detail.component').then(m => m.CourseDetailComponent),
+      import('./features/courses/course-detail/course-detail.component').then(
+        (m) => m.CourseDetailComponent,
+      ),
   },
   {
     path: 'courses/:courseId/:topicId/:lessonId',
     loadComponent: () =>
-      import('./features/courses/course-player/course-player.component').then(m => m.CoursePlayerComponent),
+      import('./features/courses/course-player/course-player.component').then(
+        (m) => m.CoursePlayerComponent,
+      ),
   },
   // anything else under /courses after the specific ones → 404
   {
     path: 'courses/**',
     loadComponent: () =>
-      import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+      import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
     data: { title: 'Page not found' },
   },
 
@@ -71,49 +87,56 @@ export const routes: Routes = [
   {
     path: 'companies',
     loadComponent: () =>
-      import('./features/company/company-layout/company-layout.component').then(m => m.CompanyLayoutComponent),
+      import('./features/company/company-layout/company-layout.component').then(
+        (m) => m.CompanyLayoutComponent,
+      ),
     children: [
       {
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./features/company/company-index/company-index.component').then(m => m.CompanyIndexComponent),
+          import('./features/company/company-index/company-index.component').then(
+            (m) => m.CompanyIndexComponent,
+          ),
       },
       {
         path: ':slug',
         loadComponent: () =>
-          import('./features/company/company-detail/company-detail.component').then(m => m.CompanyDetailComponent),
+          import('./features/company/company-detail/company-detail.component').then(
+            (m) => m.CompanyDetailComponent,
+          ),
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'all' },
           {
             path: 'all',
             loadComponent: () =>
-              import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
+              import('./features/coding/coding-list/coding-list.component').then(
+                (m) => m.CodingListComponent,
+              ),
             data: { source: 'company', kind: 'all' },
           },
           {
             path: 'coding',
             loadComponent: () =>
-              import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
+              import('./features/coding/coding-list/coding-list.component').then(
+                (m) => m.CodingListComponent,
+              ),
             data: { source: 'company', kind: 'coding' },
           },
           {
             path: 'trivia',
             loadComponent: () =>
-              import('./features/coding/coding-list/coding-list.component').then(m => m.CodingListComponent),
+              import('./features/coding/coding-list/coding-list.component').then(
+                (m) => m.CodingListComponent,
+              ),
             data: { source: 'company', kind: 'trivia' },
-          },
-          {
-            path: 'coding',
-            loadComponent: () =>
-              import('./features/coding/coding-list/coding-list.component')
-                .then(m => m.CodingListComponent),
-            data: { source: 'global-coding', kind: 'coding', view: 'formats' },
           },
           {
             path: '**',
             loadComponent: () =>
-              import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+              import('./shared/components/not-found/not-found.component').then(
+                (m) => m.NotFoundComponent,
+              ),
             data: { title: 'Page not found' },
           },
         ],
@@ -124,31 +147,35 @@ export const routes: Routes = [
   {
     path: 'pricing',
     loadComponent: () =>
-      import('./features/pricing/pricing.component').then(m => m.PricingComponent),
+      import('./features/pricing/pricing.component').then((m) => m.PricingComponent),
   },
 
   // System design (practice/problems area, not the guide)
   {
     path: 'system-design',
     loadComponent: () =>
-      import('./features/tech-layout/tech-layout.component').then(m => m.TechLayoutComponent),
+      import('./features/tech-layout/tech-layout.component').then((m) => m.TechLayoutComponent),
     children: [
       {
         path: '',
         loadComponent: () =>
-          import('./features/system-design-list/system-design-list.component').then(m => m.SystemDesignListComponent),
+          import('./features/system-design-list/system-design-list.component').then(
+            (m) => m.SystemDesignListComponent,
+          ),
       },
       {
         path: ':id',
         loadComponent: () =>
-          import('./features/system-design-list/system-design-detail/system-design-detail.component')
-            .then(m => m.SystemDesignDetailComponent),
+          import('./features/system-design-list/system-design-detail/system-design-detail.component').then(
+            (m) => m.SystemDesignDetailComponent,
+          ),
       },
-      // any deeper child under /system-design → 404
       {
         path: '**',
         loadComponent: () =>
-          import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
         data: { title: 'Page not found' },
       },
     ],
@@ -163,46 +190,53 @@ export const routes: Routes = [
       {
         path: 'playbook',
         loadComponent: () =>
-          import('./features/guides/playbook/playbook-index/playbook-index.component')
-            .then(m => m.PlaybookIndexComponent),
+          import('./features/guides/playbook/playbook-index/playbook-index.component').then(
+            (m) => m.PlaybookIndexComponent,
+          ),
       },
       {
         path: 'playbook/:slug',
         loadComponent: () =>
-          import('./features/guides/playbook/playbook-host.component')
-            .then(m => m.PlaybookHostComponent),
+          import('./features/guides/playbook/playbook-host.component').then(
+            (m) => m.PlaybookHostComponent,
+          ),
       },
       {
         path: 'system-design',
         loadComponent: () =>
-          import('./features/guides/system-design/system-design-index/system-design-index.component')
-            .then(m => m.SystemDesignIndexComponent),
+          import('./features/guides/system-design/system-design-index/system-design-index.component').then(
+            (m) => m.SystemDesignIndexComponent,
+          ),
       },
       {
         path: 'system-design/:slug',
         loadComponent: () =>
-          import('./features/guides/system-design/system-design-host.component')
-            .then(m => m.SystemDesignHostComponent),
+          import('./features/guides/system-design/system-design-host.component').then(
+            (m) => m.SystemDesignHostComponent,
+          ),
       },
 
       {
         path: 'behavioral',
         loadComponent: () =>
-          import('./features/guides/behavioral/behavioral-index/behavioral-index.component')
-            .then(m => m.BehavioralIndexComponent),
+          import('./features/guides/behavioral/behavioral-index/behavioral-index.component').then(
+            (m) => m.BehavioralIndexComponent,
+          ),
       },
       {
         path: 'behavioral/:slug',
         loadComponent: () =>
-          import('./features/guides/behavioral/behavioral-host.component')
-            .then(m => m.BehavioralHostComponent),
+          import('./features/guides/behavioral/behavioral-host.component').then(
+            (m) => m.BehavioralHostComponent,
+          ),
       },
 
-      // unknown child under /guides → 404
       {
         path: '**',
         loadComponent: () =>
-          import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
         data: { title: 'Page not found' },
       },
     ],
@@ -214,14 +248,14 @@ export const routes: Routes = [
     canMatch: [authMatchGuard],
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/auth/profile/profile.component').then(m => m.ProfileComponent),
+      import('./features/auth/profile/profile.component').then((m) => m.ProfileComponent),
   },
 
-  // explicit /404 (optional for programmatic nav)
+  // explicit /404
   {
     path: '404',
     loadComponent: () =>
-      import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+      import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
     data: { title: 'Page not found' },
   },
 
@@ -229,8 +263,9 @@ export const routes: Routes = [
   {
     path: 'coding',
     loadComponent: () =>
-      import('./features/coding/coding-list/coding-list.component')
-        .then(m => m.CodingListComponent),
+      import('./features/coding/coding-list/coding-list.component').then(
+        (m) => m.CodingListComponent,
+      ),
     data: { source: 'global-coding', kind: 'coding' },
   },
 
@@ -238,42 +273,69 @@ export const routes: Routes = [
   {
     matcher: techMatcher,
     loadComponent: () =>
-      import('./features/tech-layout/tech-layout.component').then(m => m.TechLayoutComponent),
+      import('./features/tech-layout/tech-layout.component').then((m) => m.TechLayoutComponent),
     children: [
       // Visiting /:tech goes to the single global list
       { path: '', pathMatch: 'full', redirectTo: '/coding' },
+
       {
         path: 'coding/:id',
         loadComponent: () =>
-          import('./features/coding/coding-detail/coding-detail.component').then(m => m.CodingDetailComponent),
+          import('./features/coding/coding-detail/coding-detail.component').then(
+            (m) => m.CodingDetailComponent,
+          ),
       },
       {
         path: 'trivia/:id',
         loadComponent: () =>
-          import('./features/trivia/trivia-detail/trivia-detail.component').then(m => m.TriviaDetailComponent),
+          import('./features/trivia/trivia-detail/trivia-detail.component').then(
+            (m) => m.TriviaDetailComponent,
+          ),
       },
       {
         path: 'debug/:id',
         loadComponent: () =>
-          import('./features/coding/coding-detail/coding-detail.component').then(m => m.CodingDetailComponent),
+          import('./features/coding/coding-detail/coding-detail.component').then(
+            (m) => m.CodingDetailComponent,
+          ),
         data: { kind: 'debug' },
       },
 
       {
         path: '**',
         loadComponent: () =>
-          import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
         data: { title: 'Page not found' },
       },
     ],
   },
 
-
-  // Global fallback — render 404 (don't redirect so the missing URL is shown)
+  // Global fallback — render 404
   {
     path: '**',
     loadComponent: () =>
-      import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent),
+      import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
     data: { title: 'Page not found' },
   },
+];
+
+/**
+ * Router providers with the recommended configuration:
+ * - onSameUrlNavigation: 'reload' => reload component when only query params change
+ * - paramsInheritanceStrategy: 'always' => child routes inherit parent params/queryParams
+ * - scrollPositionRestoration: 'top' => nice UX on navigation
+ */
+export const APP_ROUTER_PROVIDERS = [
+  provideRouter(
+    routes,
+    withRouterConfig({
+      onSameUrlNavigation: 'reload',
+      paramsInheritanceStrategy: 'always',
+    }),
+    withInMemoryScrolling({
+      scrollPositionRestoration: 'top',
+    }),
+  ),
 ];

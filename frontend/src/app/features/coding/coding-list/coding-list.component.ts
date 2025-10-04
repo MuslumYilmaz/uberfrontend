@@ -317,11 +317,10 @@ export class CodingListComponent {
     // seed tech filter from ?tech= on global list
     this.route.queryParamMap
       .pipe(
-        take(1),
         map(qp => (qp.get('tech') || '').toLowerCase()),
         tap(t => {
-          const allowed = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
-          if (allowed.includes(t)) this.selectedTech$.next(t as Tech);
+          const allowed: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
+          this.selectedTech$.next(allowed.includes(t as Tech) ? (t as Tech) : null);
         })
       )
       .subscribe();

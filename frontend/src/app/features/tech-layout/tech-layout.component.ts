@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-tech-layout',
   template: `
     <!-- Stretchy container; children (coding/trivia detail/list) handle their own padding -->
-    <div class="flex flex-col flex-1 min-h-0 w-full px-4 py-4 bg-neutral-950 text-gray-200">
+    <div class="flex flex-col flex-1 min-h-0 w-full px-4 bg-neutral-950 text-gray-200">
     <router-outlet></router-outlet>
     </div>
   `,

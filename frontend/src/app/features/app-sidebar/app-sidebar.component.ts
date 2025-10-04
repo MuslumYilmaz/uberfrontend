@@ -71,9 +71,9 @@ export class AppSidebarComponent {
       icon: 'pi pi-map',
       open: false,
       children: [
-        { type: 'link', label: 'Frontend Interview Playbook', to: '/strategy/playbook', icon: 'pi pi-book' },
+        { type: 'link', label: 'Frontend Interview Playbook', to: '/guides/playbook', icon: 'pi pi-book' },
         { type: 'link', label: 'JavaScript Questions', to: '/coding', icon: 'pi pi-code', query: { tech: 'javascript' } },
-        { type: 'link', label: 'System Design Playbook', to: '/strategy/system-design', icon: 'pi pi-sitemap' },
+        { type: 'link', label: 'System Design Playbook', to: '/guides/system-design', icon: 'pi pi-sitemap' },
       ],
     },
 

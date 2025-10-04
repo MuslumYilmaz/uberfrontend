@@ -18,7 +18,8 @@
       "microsoft",
       "uber",
       "netflix"
-    ]
+    ],
+    "answer": "The event loop coordinates execution between the call stack, microtask queue (Promises/queueMicrotask) and macrotask queue (setTimeout, setInterval, DOM events). JS runs to completion on the call stack. After the stack empties, the event loop first flushes all microtasks in FIFO order; only when the microtask queue is empty does it take a single macrotask and run it. Microtasks can enqueue more microtasks, which run before any further macrotasks, which is why Promises often run before setTimeout callbacks."
   },
   {
     "id": "js-this-binding",
@@ -38,7 +39,8 @@
       "amazon",
       "uber",
       "airbnb"
-    ]
+    ],
+    "answer": "Default: in non-strict mode, `this` is the global object; in strict mode, `undefined`. Implicit: when called as obj.fn(), `this` is obj. Explicit: use call/apply/bind to set `this` directly. New binding: with `new`, `this` is the newly created instance. Arrow functions capture `this` lexically from their surrounding scope and ignore call/apply/bind."
   },
   {
     "id": "js-closures",
@@ -57,6 +59,7 @@
       "google",
       "meta",
       "netflix"
-    ]
+    ],
+    "answer": "A closure is a function plus the lexical environment it was created in. It lets a function access variables from its outer scope even after that outer function has returned. Uses: private state (module pattern), function factories (currying/partial application), and handlers that remember context."
   }
 ]
