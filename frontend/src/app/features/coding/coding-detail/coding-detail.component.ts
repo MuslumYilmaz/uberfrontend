@@ -114,6 +114,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     lineHeight: 18,
     minimap: { enabled: false },
     tabSize: 2,
+    wordWrap: 'on' as const,          // ✅ wrap long lines
+    wordWrapColumn: 100,              // nice bound; tweak as you like
+    scrollBeyondLastColumn: 2,
+    automaticLayout: true,            // ✅ resize with container
   };
 
   examplesMonacoOptions = {
@@ -128,12 +132,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     overviewRulerLanes: 0,
     scrollbar: {
       vertical: 'hidden' as const,
-      horizontal: 'hidden' as const,
+      horizontal: 'hidden' as const,  // ✅ no horizontal bar on examples
       useShadows: false,
       verticalScrollbarSize: 0,
       horizontalScrollbarSize: 0,
       alwaysConsumeMouseWheel: false,
     },
+    wordWrap: 'on' as const,          // ✅ wrap here too
+    automaticLayout: true,
   };
 
   // loading / reset / banner
@@ -697,7 +703,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private defaultEntry(): string {
     if (this.tech === 'angular') return 'src/app/app.component.ts';
     if (this.tech === 'react') return 'src/App.tsx';
-    return 'src/App.ts'; 
+    return 'src/App.ts';
   }
 
 

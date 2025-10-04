@@ -1,5 +1,21 @@
 :host { display: block; }
 
+/* Keep Monaco pinned inside its column */
+:host ::ng-deep .monaco-editor,
+:host ::ng-deep .monaco-editor .overflow-guard {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Belt-and-suspenders: never spill horizontally */
+:host ::ng-deep .monaco-editor .editor-scrollable {
+  overflow-x: hidden !important;
+}
+
+/* (Already used in many places, but ensure the flex children can shrink) */
+.coding-detail .min-w-0,
+.coding-detail .flex-1 { min-width: 0; }
+
 /* Full-viewport work area that never hides under header/footer */
 .fixed-under-header {
   position: fixed;
