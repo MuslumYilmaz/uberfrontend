@@ -1,49 +1,196 @@
-  export function makeAngularPreviewHtmlV1(files: Record<string, string>): string {
-    // grab the two files we support in v1
-    const appPath = 'src/app/app.component.ts';
-    const mainPath = 'src/main.ts';
-    const appTs = String(files[appPath] ?? '').trim();
-    const mainTs = String(files[mainPath] ?? '').trim();
+export function makeAngularPreviewHtmlV1(files: Record<string, any>): string {
+  const appPath = 'src/app/app.component.ts';
+  const mainPath = 'src/main.ts';
 
-    // if we don’t have both, just show whatever index.html exists (or a placeholder)
-    if (!appTs || !mainTs) {
-        const fallback = files['index.html'] || files['public/index.html'] ||
-            '<!doctype html><html><body style="font-family:system-ui;padding:16px">No Angular entry files found</body></html>';
-        return fallback;
+  const getCode = (p: string): string => {
+    const a = files[p];
+    const b = files['/' + p];
+    if (typeof a === 'string') return a;
+    if (a && typeof a.code === 'string') return a.code;
+    if (typeof b === 'string') return b;
+    if (b && typeof b.code === 'string') return b.code;
+    return '';
+  };
+
+  const appTs = String(getCode(appPath)).trim();
+  const mainTs = String(getCode(mainPath)).trim();
+
+  if (!appTs || !mainTs) {
+    const fallback =
+      getCode('index.html') ||
+      getCode('public/index.html') ||
+      '<!doctype html><html><body style="font-family:system-ui;padding:16px">No Angular entry files found</body></html>';
+    return fallback;
+  }
+
+  const importMap = {
+    imports: {
+      '@angular/core': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/core.mjs',
+      '@angular/core/rxjs-interop': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/rxjs-interop.mjs',
+      '@angular/core/primitives/signals': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/signals.mjs',
+      '@angular/core/primitives/di': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/di.mjs',
+      '@angular/core/primitives/event-dispatch': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/event-dispatch.mjs',
+      '@angular/common': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/common.mjs',
+      '@angular/common/http': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/http.mjs',
+      '@angular/forms': 'https://cdn.jsdelivr.net/npm/@angular/forms@18.2.14/fesm2022/forms.mjs',
+      '@angular/platform-browser': 'https://cdn.jsdelivr.net/npm/@angular/platform-browser@18.2.14/fesm2022/platform-browser.mjs',
+      '@angular/platform-browser-dynamic': 'https://cdn.jsdelivr.net/npm/@angular/platform-browser-dynamic@18.2.14/fesm2022/platform-browser-dynamic.mjs',
+      '@angular/compiler': 'https://cdn.jsdelivr.net/npm/@angular/compiler@18.2.14/fesm2022/compiler.mjs',
+      '@angular/router': 'https://cdn.jsdelivr.net/npm/@angular/router@18.2.14/fesm2022/router.mjs',
+      'tslib': 'https://cdn.jsdelivr.net/npm/tslib@2.6.3/tslib.es6.js',
+      'rxjs': 'https://esm.sh/rxjs@7',
+      'rxjs/operators': 'https://esm.sh/rxjs@7/operators',
+      'zone.js': 'https://cdn.jsdelivr.net/npm/zone.js@0.14.10/fesm2015/zone.js'
     }
+  };
 
-    const importMap = {
-        imports: {
-            '@angular/core': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/core.mjs',
-            '@angular/core/rxjs-interop': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/rxjs-interop.mjs',
+  const esc = (s: string) => String(s || '').replace(/<\/script>/g, '<\\/script>');
 
-            // 🔽 add these deep paths
-            '@angular/core/primitives/signals':
-                'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/signals.mjs',
-            '@angular/core/primitives/di':
-                'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/di.mjs',
-            '@angular/core/primitives/event-dispatch':
-                'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/event-dispatch.mjs',
+  const TS = `
+function compileTS(src, filename){
+  const clean = String(src||'')
+    .replace(/\\r\\n?/g, '\\n')
+    .replace(/\\uFEFF/g, '')
+    .replace(/\\u00A0/g, ' ')
+    .replace(/[\\u200B\\u200C\\u200D\\u2060]/g, '')
+    .replace(/[\\u200E\\u200F\\u061C]/g, '')
+    .replace(/\\u2028|\\u2029/g, '\\n')
+    .replace(/[\\u2018\\u2019]/g, "'")
+    .replace(/[\\u201C\\u201D]/g, '"');
 
-            '@angular/common': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/common.mjs',
-            '@angular/common/http': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/http.mjs',
-            '@angular/forms': 'https://cdn.jsdelivr.net/npm/@angular/forms@18.2.14/fesm2022/forms.mjs',
-            '@angular/platform-browser': 'https://cdn.jsdelivr.net/npm/@angular/platform-browser@18.2.14/fesm2022/platform-browser.mjs',
-            '@angular/platform-browser-dynamic': 'https://cdn.jsdelivr.net/npm/@angular/platform-browser-dynamic@18.2.14/fesm2022/platform-browser-dynamic.mjs',
-            '@angular/compiler': 'https://cdn.jsdelivr.net/npm/@angular/compiler@18.2.14/fesm2022/compiler.mjs',
-            '@angular/router': 'https://cdn.jsdelivr.net/npm/@angular/router@18.2.14/fesm2022/router.mjs',
+  let js='';
+  try{
+    const out = ts.transpileModule(clean, {
+      compilerOptions:{
+        target: ts.ScriptTarget.ES2022,
+        module: ts.ModuleKind.ESNext,
+        experimentalDecorators: true,
+        emitDecoratorMetadata: false,
+        useDefineForClassFields: false,
+        newLine: ts.NewLineKind.LineFeed,
+        importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove
+      },
+      fileName: filename,
+      reportDiagnostics:false
+    });
+    js = (out && out.outputText) || '';
+  }catch(e){ throw e; }
 
-            'tslib': 'https://cdn.jsdelivr.net/npm/tslib@2.6.3/tslib.es6.js',
-            'rxjs': 'https://esm.sh/rxjs@7',
-            'rxjs/operators': 'https://esm.sh/rxjs@7/operators',
-            "zone.js": "https://cdn.jsdelivr.net/npm/zone.js@0.14.10/fesm2015/zone.js"
-        }
-    };
+  return String(js||'')
+    .replace(/\\uFEFF/g,'')
+    .replace(/\\u2028|\\u2029/g,'\\n')
+    .replace(/[\\u200B\\u200C\\u200D\\u2060]/g,'');
+}
+`;
 
-    // inline sources (escaped)
-    const esc = (s: string) => s.replace(/<\/script>/g, '<\\/script>');
+  const RUNTIME = `
+(function(){
+  // ---------- Build normalized in-memory FS ----------
+  var RAW = ${JSON.stringify(files)};
+  var UF = {};
+  for (var k in RAW) {
+    if (!Object.prototype.hasOwnProperty.call(RAW, k)) continue;
+    var key = String(k).replace(/^\\/+/,''); // drop leading /
+    var v = RAW[k];
+    var code = (typeof v === 'string') ? v : (v && v.code) || '';
+    UF[key] = code;
+  }
+  self.UF_FILES = UF;
 
-    return String.raw`<!doctype html>
+  // ---------- Path helpers ----------
+  function norm(p){ return String(p||'').replace(/^\\/+/,'').replace(/\\\\+/g,'/'); }
+  function join(a,b){
+    a = norm(a); b = String(b||'');
+    if (b.startsWith('/')) return norm(b);
+    var base = a.split('/').slice(0,-1).join('/');
+    var parts = (base ? base + '/' + b : b).split('/');
+    var out = [];
+    for (var i=0;i<parts.length;i++){
+      var part = parts[i];
+      if (!part || part === '.') continue;
+      if (part === '..') out.pop(); else out.push(part);
+    }
+    return out.join('/');
+  }
+  function readFile(path){
+    path = norm(path);
+    if (UF[path] != null) return UF[path];
+    if (UF['src/' + path] != null) return UF['src/' + path];
+    if (UF['src/app/' + path] != null) return UF['src/app/' + path];
+    return '';
+  }
+
+  // ---------- Inline external resources in components ----------
+  function inlineTemplateAndStyles(src, fromPath){
+    // templateUrl -> inline template
+    src = src.replace(/templateUrl\\s*:\\s*(['"])(.+?)\\1/g, function(_m, _q, url){
+      var resolved = url.startsWith('.') || !/^\\//.test(url) ? join(fromPath, url) : norm(url);
+      var html = readFile(resolved);
+      return 'template: ' + JSON.stringify(String(html||''));
+    });
+    // styleUrls -> inline styles
+    src = src.replace(/styleUrls\\s*:\\s*\\[([\\s\\S]*?)\\]/g, function(_m, inner){
+      var urls = [];
+      var re = /['"](.+?)['"]/g, mm;
+      while ((mm = re.exec(inner))) urls.push(mm[1]);
+      var cssArr = urls.map(function(u){
+        var resolved = u.startsWith('.') || !/^\\//.test(u) ? join(fromPath, u) : norm(u);
+        return JSON.stringify(String(readFile(resolved) || ''));
+      });
+      return 'styles: [' + cssArr.join(',') + ']';
+    });
+    return src;
+  }
+
+  // ---------- Module emitter (TS->JS + import rewrites) ----------
+  var urls = new Map();
+  var seen = new Set();
+
+  function blobURLFor(code, path){
+    var blob = new Blob([code + '\\n//# sourceURL=' + path], { type: 'text/javascript' });
+    return URL.createObjectURL(blob);
+  }
+
+  function resolveImport(fromPath, spec){
+    if (!spec.startsWith('.')) return null; // bare imports handled by import map
+    var base = join(fromPath, spec);
+    var cands = [base, base + '.ts', base + '.tsx', base + '.js', base + '/index.ts', base + '/index.tsx'];
+    for (var i=0;i<cands.length;i++){ var c=cands[i]; if (UF[c] != null) return c; }
+    return base;
+  }
+
+  function UF_emit(path){
+    path = norm(path);
+    if (urls.has(path)) return urls.get(path);
+    if (seen.has(path)) return urls.get(path) || '';
+    seen.add(path);
+
+    var src = String(UF[path] || '');
+    if (!src) throw new Error('File not found: ' + path);
+
+    // Inline external resources BEFORE compiling
+    src = inlineTemplateAndStyles(src, path);
+
+    var js = compileTS(src, path);
+
+    // rewrite only RELATIVE imports to blob URLs
+    js = js.replace(/from\\s+(['"])(\\.\\.?[^'"]*)\\1/g, function(m, q, spec){
+      var child = resolveImport(path, spec);
+      var childUrl = UF_emit(child);
+      return 'from ' + q + childUrl + q;
+    });
+
+    var url = blobURLFor(js, path);
+    urls.set(path, url);
+    return url;
+  }
+
+  self.UF_emit = UF_emit;
+})();
+`;
+
+  // Build HTML
+  return String.raw`<!doctype html>
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -58,20 +205,15 @@
     #_uf_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
 
-<script type="importmap">${JSON.stringify(importMap)}</script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://unpkg.com/typescript@5.6.3/lib/typescript.js"></script>
-
+  <script type="importmap">${JSON.stringify(importMap)}</script>
+  <script src="https://unpkg.com/typescript@5.6.3/lib/typescript.js"></script>
 </head>
 <body>
   <app-root>Loading Angular preview…</app-root>
 
   <div id="_uf_overlay"><h1>Something went wrong</h1><pre id="_uf_overlay_msg"></pre><div id="_uf_overlay_meta" class="meta"></div></div>
 
-  <script id="_uf_app_ts"  type="application/json">${JSON.stringify(appTs)}</script>
-  <script id="_uf_main_ts" type="application/json">${JSON.stringify(mainTs)}</script>
-
-  <script type="module">
+  <script>
     const overlay = document.getElementById('_uf_overlay');
     const overlayMsg = document.getElementById('_uf_overlay_msg');
     const overlayMeta = document.getElementById('_uf_overlay_meta');
@@ -89,113 +231,25 @@
       const stack = r && r.stack ? '\\n\\n'+r.stack : '';
       showOverlay(String(r)+stack, '');
     });
+  </script>
 
-function compileTS(src, filename){
-  // 0) Normalize the raw TypeScript input first (kill invisible chars)
-  const clean = String(src || '')
-    .replace(/\r\n?/g, '\n')                  // CRLF -> LF
-    .replace(/\uFEFF/g, '')                   // BOM (anywhere)
-    .replace(/\u00A0/g, ' ')                  // NBSP -> space
-    .replace(/[\u200B\u200C\u200D\u2060]/g, '') // zero-widths
-    .replace(/[\u200E\u200F\u061C]/g, '')     // LRM/RLM/ALM
-    .replace(/\u2028|\u2029/g, '\n')          // LS/PS -> newline
-    .replace(/[\u2018\u2019]/g, "'")          // smart single quotes -> '
-    .replace(/[\u201C\u201D]/g, '"');         // smart double quotes -> "
+  <script>${esc(TS)}</script>
+  <script>${esc(RUNTIME)}</script>
 
-  // 1) Try TypeScript first (legacy decorators down-level)
-  let js = '';
-  try {
-    const out = ts.transpileModule(clean, {
-      compilerOptions: {
-        target: ts.ScriptTarget.ES2022,
-        module: ts.ModuleKind.ESNext,
-        // legacy decorator transform:
-        experimentalDecorators: true,
-        emitDecoratorMetadata: false,
-        useDefineForClassFields: false,
-        // keep things predictable:
-        newLine: ts.NewLineKind.LineFeed,
-        importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
-        importHelpers: false,
-        downlevelIteration: false,
-      },
-      fileName: filename,
-      reportDiagnostics: false
-    });
-    js = (out && out.outputText) ? out.outputText : '';
-  } catch (e) {
-    showOverlay((e && e.message) || 'Compile error', filename);
-    throw e;
-  }
+  <script type="module">
+    try{
+      hideOverlay();
+      // ESM Angular deps
+      await import('zone.js');
+      await import('@angular/compiler');
 
-  // 2) Post-sanitize the JS in case TS emitted invisible chars
-  js = String(js || '')
-    .replace(/\uFEFF/g, '')
-    .replace(/\u2028|\u2029/g, '\n')
-    .replace(/[\u200B\u200C\u200D\u2060]/g, '');
-
-  // 3) Fallback: if decorators slipped through (e.g., TS didn’t down-level),
-  //    recompile with Babel’s legacy decorators transform.
-  if (/@Component\s*\(/.test(js) || /@\w+\s*\(/.test(js)) {
-    try {
-      const res = Babel.transform(clean, {
-        filename,
-        sourceType: 'module',
-        presets: [['typescript', { isTSX: /\.tsx?$/.test(filename), allExtensions: true }]],
-        plugins: [
-          ['proposal-decorators', { legacy: true }],
-          ['proposal-class-properties', { loose: true }]
-        ],
-        retainLines: true,
-        sourceMaps: 'inline',
-        comments: false,
-        compact: false
-      });
-      js = (res && res.code) || js;
-    } catch (e) {
-      // If even Babel fails, show a nice overlay
-      showOverlay((e && e.message) || 'Decorator transform failed', filename);
-      throw e;
+      // Build & import your app entry via Blob URL (no percent-encoded data URLs)
+      const mainURL = self.UF_emit('src/main.ts');
+      await import(mainURL);
+    }catch(e){
+      console.error(e);
+      try{ showOverlay(e?.message || e, 'bootstrap'); }catch{}
     }
-  }
-
-  return js;
-}
-
-    // 1) compile both files to ESM JS
-    const appTSRaw  = JSON.parse(document.getElementById('_uf_app_ts').textContent  || '""');
-    const mainTSRaw = JSON.parse(document.getElementById('_uf_main_ts').textContent || '""');
-    const stripBOM = (s) => s && s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s;
-    const normalizeLS = (s) => String(s || '').replace(/\\u2028|\\u2029/g, '\\n');
-    const appTS  = normalizeLS(stripBOM(appTSRaw));
-    const mainTS = normalizeLS(stripBOM(mainTSRaw));
-const appJS  = compileTS(appTS,  'src/app/app.component.ts');
-let   mainJS = compileTS(mainTS, 'src/main.ts');
-
-// make a blob URL for the component module
-const appURL = 'data:text/javascript;charset=utf-8,' +
-  encodeURIComponent(appJS + '\n//# sourceURL=src/app/app.component.ts');
-
-// ✅ rewrite the relative import in main.ts to point to our blob
-mainJS = mainJS.replace(
-  /from\s+['"]\.\/app\/app\.component(?:\.[tj]sx?)?['"]/g,
-  'from "' + appURL + '"'
-);
-
-// now make the main blob
-const mainURL  = 'data:text/javascript;charset=utf-8,' +
-  encodeURIComponent(mainJS + '\n//# sourceURL=src/main.ts');
-
-
-(async () => {
-  try {
-    hideOverlay();
-    await import('zone.js');          // ESM Zone from your import map
-    await import('@angular/compiler'); // JIT for templates
-    await import(mainURL);             // bootstraps AppComponent
-  } catch (e) { /* show overlay as you already do */ }
-})();
-
   </script>
 </body>
 </html>`;
