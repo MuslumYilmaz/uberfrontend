@@ -141,6 +141,35 @@
     </div>
   </div>
 
+  <!-- Trending / popular tags -->
+  <!-- Tag filter -->
+  <div class="tag-filter" *ngIf="popularTags$ | async as popTags">
+    <div class="tag-filter__header">
+      <span class="tag-filter__legend">
+        <i class="pi pi-filter mr-1"></i> Filter by tags
+      </span>
+
+      <div class="tag-filter__meta" *ngIf="(selectedTags$ | async) as sel">
+        <span class="tag-filter__count" *ngIf="sel.length">{{ sel.length }} selected</span>
+
+        <!-- AND/OR toggle (optional; keep if you like it) -->
+        <button type="button" class="tag-filter__mode" (click)="toggleTagMatchMode()">
+          {{ tagMatchMode === 'all' ? 'Match all' : 'Match any' }}
+        </button>
+
+        <button *ngIf="sel.length" class="tag-clear" (click)="clearAllTags()">Clear</button>
+      </div>
+    </div>
+
+    <div class="tag-scrollbar" role="listbox" aria-label="Filter by tags">
+      <button *ngFor="let tag of popTags" class="tag-scroll-chip"
+        [class.active]="(selectedTags$ | async)?.includes(tag)" (click)="toggleTag(tag)">
+        {{ tag }}
+      </button>
+    </div>
+  </div>
+
+
   <!-- Data -->
   <div class="list">
     <ng-container *ngIf="filtered$ | async as questions; else loading">
@@ -183,7 +212,10 @@
 
         <!-- from: gap-2 -->
         <div class="col-span-2 flex flex-wrap gap-1">
-          <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag" styleClass="custom-chip"></p-chip>
+          <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag"
+            [styleClass]="'custom-chip tag-clickable ' + ((selectedTags$ | async)?.includes(tag) ? 'active' : '')"
+            (click)="toggleTag(tag)">
+          </p-chip>
         </div>
 
         <div class="col-span-1 text-right">

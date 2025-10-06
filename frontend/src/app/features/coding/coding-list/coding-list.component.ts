@@ -118,10 +118,14 @@ export class CodingListComponent {
   selectedKind$ = new BehaviorSubject<Exclude<Kind, 'all'>>('coding');
   selectedCategory$ = new BehaviorSubject<CategoryKey | null>(null); // only for formats mode
 
+  selectedTags$ = new BehaviorSubject<string[]>([]);
+
+
   // ----- context from routing -----
   tech!: Tech; // used on per-tech pages
   source: ListSource = 'tech';
   kind: Kind = 'coding';
+
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -135,6 +139,9 @@ export class CodingListComponent {
   viewMode: ViewMode = 'tech'; // default
 
   ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
+
+  public tagMatchMode: 'all' | 'any' = 'all';
+
 
   // company slug from parent param (:slug) OR ?c=
   companySlug$ = (this.route.parent
@@ -247,17 +254,41 @@ export class CodingListComponent {
     )
   );
 
+  allTagCounts$ = this.rawQuestions$.pipe(
+    map(rows => {
+      const counts = new Map<string, number>();
+      for (const q of rows ?? []) {
+        for (const tag of (q.tags || [])) {
+          const t = String(tag).trim();
+          if (!t) continue;
+          counts.set(t, (counts.get(t) || 0) + 1);
+        }
+      }
+      return counts;
+    })
+  );
+
+  popularTags$ = this.allTagCounts$.pipe(
+    map(counts =>
+      Array.from(counts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 12)
+        .map(([tag]) => tag)
+    )
+  );
+
   // Merge filter chain
   filtered$ = combineLatest([
     this.rawQuestions$,
     this.search$,
     this.diffs$,
-    this.impTiers$,          // importance tiers (may be empty => no filter)
+    this.impTiers$,
     this.companySlug$,
     this.selectedTech$,
     this.selectedCategory$,
+    this.selectedTags$,                      // ← NEW
   ]).pipe(
-    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory]) => {
+    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags]) => {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
@@ -266,20 +297,29 @@ export class CodingListComponent {
           // title search
           (q.title?.toLowerCase()?.includes(t) ?? false) &&
 
-          // difficulty: pass-through if none selected
+          // difficulty
           (diffs.length === 0 || diffs.includes(q.difficulty)) &&
 
-          // importance: pass-through if none selected
+          // importance
           (tiers.length === 0 || tiers.includes(tierFromImportance(q.importance))) &&
 
-          // company filter (if present)
+          // company filter
           (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
 
-          // tech pill filter only for global 'tech' view
+          // tech pill (global tech view only)
           (this.source !== 'global-coding' || isFormats || !selectedTech || q.tech === selectedTech) &&
 
-          // category pills only for formats view
-          (this.source !== 'global-coding' || !isFormats || !selectedCategory || inferCategory(q) === selectedCategory)
+          // category (formats view only)
+          (this.source !== 'global-coding' || !isFormats || !selectedCategory || inferCategory(q) === selectedCategory) &&
+
+          // NEW: tag filtering
+          (selTags.length === 0
+            ? true
+            : (this.tagMatchMode === 'all'
+              ? selTags.every(tag => (q.tags || []).includes(tag))
+              : selTags.some(tag => (q.tags || []).includes(tag))
+            )
+          )
         )
         .sort((a, b) => {
           if (a.importance !== b.importance) return (b.importance ?? 0) - (a.importance ?? 0);
@@ -518,4 +558,21 @@ export class CodingListComponent {
     return tierFromImportance(q.importance);
   }
 
+  // ---------- Tag helpers ----------
+  toggleTag(tag: string) {
+    tag = (tag || '').trim();
+    if (!tag) return;
+    const curr = new Set(this.selectedTags$.value);
+    curr.has(tag) ? curr.delete(tag) : curr.add(tag);
+    this.selectedTags$.next(Array.from(curr));
+  }
+  clearTag(tag: string) {
+    const curr = new Set(this.selectedTags$.value);
+    if (curr.delete(tag)) this.selectedTags$.next(Array.from(curr));
+  }
+  clearAllTags() { this.selectedTags$.next([]); }
+
+  toggleTagMatchMode() {
+  this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
+}
 }
