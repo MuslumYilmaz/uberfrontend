@@ -49,6 +49,11 @@
       <!-- GLOBAL (/coding): render kind pills unless System design is active -->
       <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
         <ng-container *ngIf="!(isSystemCategoryActive$ | async)">
+          <!-- NEW: All -->
+          <button type="button" class="kind-pill"
+            [ngClass]="(selectedKind$ | async) === 'all' ? 'kind-pill--active' : 'kind-pill--idle'"
+            (click)="selectKind('all')">All</button>
+
           <button type="button" class="kind-pill"
             [ngClass]="(selectedKind$ | async) === 'coding' ? 'kind-pill--active' : 'kind-pill--idle'"
             (click)="selectKind('coding')">Coding</button>
@@ -61,8 +66,8 @@
             [ngClass]="(selectedKind$ | async) === 'debug' ? 'kind-pill--active' : 'kind-pill--idle'"
             (click)="selectKind('debug')">Debug</button>
         </ng-container>
-        <!-- when System design is active, this block renders nothing -->
       </ng-container>
+
 
       <!-- PER-TECH pages: show nav links -->
       <ng-template #perTechKindLinks>
@@ -239,7 +244,7 @@
 
         <div class="col-span-1 text-right">
           <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
-            <span>→</span><span>Open</span>
+            <span>→</span>
           </div>
         </div>
       </div>

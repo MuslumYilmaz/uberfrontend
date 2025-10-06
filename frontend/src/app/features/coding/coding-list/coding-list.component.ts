@@ -122,7 +122,7 @@ export class CodingListComponent {
 
   // GLOBAL (/coding) local filters
   selectedTech$ = new BehaviorSubject<Tech | null>(null);
-  selectedKind$ = new BehaviorSubject<Exclude<Kind, 'all'>>('coding');
+  selectedKind$ = new BehaviorSubject<Kind>('all');
   selectedCategory$ = new BehaviorSubject<CategoryKey | null>(null); // only for formats mode
 
   selectedTags$ = new BehaviorSubject<string[]>([]);
@@ -178,9 +178,12 @@ export class CodingListComponent {
     tap(d => {
       this.source = (d['source'] as ListSource) ?? 'tech';
       this.kind = (d['kind'] as Kind) ?? 'coding';
-      if (this.source === 'global-coding' &&
-        (this.kind === 'coding' || this.kind === 'trivia' || this.kind === 'debug')) {
-        this.selectedKind$.next(this.kind);
+
+      // For the GLOBAL list, ignore route data and default to "all"
+      if (this.source === 'global-coding') {
+        const qpKind = this.route.snapshot.queryParamMap.get('kind') as Kind | null;
+        const allowed = new Set<Kind>(['all', 'coding', 'trivia', 'debug']);
+        this.selectedKind$.next(allowed.has(qpKind || '' as Kind) ? (qpKind as Kind) : 'all');
       }
     }),
     switchMap(() =>
@@ -196,28 +199,39 @@ export class CodingListComponent {
           if (this.source === 'global-coding') {
             return this.selectedKind$.pipe(
               switchMap((k) => {
-                // normal questions
+                if (k === 'all') {
+                  // Load only kinds supported by loadAllQuestions
+                  return forkJoin([
+                    this.qs.loadAllQuestions('coding')
+                      .pipe(map((list: MixedQuestion[]) =>
+                        list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
+                      )),
+                    this.qs.loadAllQuestions('trivia')
+                      .pipe(map((list: MixedQuestion[]) =>
+                        list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
+                      )),
+                  ]).pipe(
+                    map(([a, b]) => [...a, ...b]),
+                    startWith<Row[]>([])
+                  );
+                }
+
+                // single kind (existing behavior)
                 const base$ = this.qs.loadAllQuestions(k as any).pipe(
-                  map((list: MixedQuestion[]) =>
-                    list.map<Row>(q => ({ ...q, __kind: k, tech: q.tech }))
-                  ),
+                  map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
                   startWith<Row[]>([])
                 );
 
-                // in formats view, also bring in system-design rows
                 if (this.viewMode === 'formats') {
                   return combineLatest<[Row[], Row[]]>([
-                    base$,
+                    base$,                          // ← Fix 2: use base$ (not base_)
                     this.loadSystemDesignRows$()
-                  ]).pipe(
-                    map(([a, sys]) => [...a, ...sys])
-                  );
+                  ]).pipe(map(([a, sys]) => [...a, ...sys]));
                 }
                 return base$;
               })
             );
           }
-
           // --------- PER-TECH (/:tech/...) ----------
           if (this.source === 'tech') {
             return this.route.parent!.paramMap.pipe(
@@ -411,6 +425,18 @@ export class CodingListComponent {
       )
       .subscribe();
 
+    this.route.queryParamMap
+      .pipe(
+        map(qp => qp.get('kind') as Kind | null),
+        tap(k => {
+          if (this.source === 'global-coding') {
+            const allowed = new Set<Kind>(['all', 'coding', 'trivia', 'debug']);
+            this.selectedKind$.next(allowed.has(k || '' as Kind) ? (k as Kind) : 'all');
+          }
+        })
+      )
+      .subscribe();
+
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       if (!target.closest('.sort-wrap')) this.closeSort();
@@ -459,7 +485,11 @@ export class CodingListComponent {
   heading(): string {
     if (this.source === 'global-coding') {
       const k = this.selectedKind$.value;
-      const kindLabel = k === 'trivia' ? 'Quiz' : (k === 'debug' ? 'Debug' : 'Coding');
+      const kindLabel =
+        k === 'all' ? '' :
+          k === 'trivia' ? 'Quiz' :
+            k === 'debug' ? 'Debug' : 'Coding';
+
       if (this.isFormatsMode()) {
         const cat = this.selectedCategory$.value;
         const catLabel =
@@ -468,10 +498,11 @@ export class CodingListComponent {
               cat === 'js-fn' ? ' — JavaScript functions' :
                 cat === 'algo' ? ' — Algorithmic coding' :
                   ' — System design';
-        return `All ${kindLabel} Questions${catLabel}`;
+        return `All ${kindLabel || 'Questions'}${catLabel}`;
       }
-      return `All ${kindLabel} Questions`;
+      return `All ${kindLabel || 'Questions'}`;
     }
+    // (per-tech unchanged)
     const t = this.tech ?? 'javascript';
     const what =
       this.kind === 'coding' ? 'Coding Challenges'
@@ -510,9 +541,10 @@ export class CodingListComponent {
     const curr = this.selectedTech$.value;
     this.selectedTech$.next(curr === key ? null : key);
   }
-  selectKind(k: 'coding' | 'trivia' | 'debug') {
+  selectKind(k: Kind) {
     if (this.source === 'global-coding') this.selectedKind$.next(k);
   }
+
   toggleCategory(key: CategoryKey) {
     const curr = this.selectedCategory$.value;
     const next = curr === key ? null : key;
