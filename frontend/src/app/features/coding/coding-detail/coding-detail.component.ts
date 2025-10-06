@@ -52,6 +52,10 @@ type SdkAsset = {
   openFile?: string;
 };
 
+type TreeNode =
+  | { type: 'dir'; name: string; path: string; children: TreeNode[] }
+  | { type: 'file'; name: string; path: string; crumb?: string };
+
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
@@ -71,6 +75,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   editorContent = signal<string>('');
   testCode = signal<string>('');
   frameworkEntryFile = '';
+
+  private openDirs = signal<Set<string>>(new Set());
+
 
   // WEB (HTML/CSS)
   private htmlCode = signal<string>('');
@@ -222,6 +229,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return a.localeCompare(b);
     })
   );
+
+  // Current path + short label for the header
+  currentPath = computed(() => this.openPath() || this.frameworkEntryFile || '');
+  currentFileLabel = computed(() => {
+    const p = this.currentPath();
+    if (!p) return 'Select a file';
+    const i = p.lastIndexOf('/');
+    return i >= 0 ? p.slice(i + 1) : p;
+  });
+
 
   // --- state ---
   webColsRatio = signal(0.5);
@@ -595,6 +612,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const openFile = this.pickFirstOpen(files);
       this.frameworkEntryFile = openFile;
       this.filesMap.set(files);
+      this.openAllDirsFromPaths(Object.keys(files));
       this.openPath.set(openFile);
       this.editorContent.set(files[openFile] ?? '');
 
@@ -1680,4 +1698,69 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.previewObjectUrl = url;
     this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
+
+  isOpen = (p: string) => this.openDirs().has(p);
+  toggleDir(p: string) {
+    const s = new Set(this.openDirs());
+    if (s.has(p)) s.delete(p); else s.add(p);
+    this.openDirs.set(s);
+  }
+
+  private buildTree(paths: string[]): TreeNode[] {
+    // build a trie
+    const root: Record<string, any> = {};
+    for (const full of paths) {
+      const parts = full.split('/').filter(Boolean);
+      let cur = root;
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        const isFile = i === parts.length - 1;
+        cur[part] = cur[part] || (isFile ? { __file: full } : { __dir: true });
+        cur = isFile ? cur : cur[part];
+      }
+    }
+
+    const toNodes = (node: any, prefix: string): TreeNode[] => {
+      const dirs: TreeNode[] = [];
+      const files: TreeNode[] = [];
+
+      for (const key of Object.keys(node).sort()) {
+        const v = node[key];
+        if (v?.__dir) {
+          const path = prefix ? `${prefix}/${key}` : key;
+          dirs.push({ type: 'dir', name: key, path, children: toNodes(v, path) });
+        } else if (v?.__file) {
+          const full = v.__file as string;
+          const name = key;
+          // optional crumb (parent dirs) for context on similarly named files
+          const crumb = prefix || '';
+          files.push({ type: 'file', name, path: full, crumb });
+        }
+      }
+
+      // folders first, then files
+      return [...dirs, ...files];
+    };
+
+    return toNodes(root, '');
+  }
+
+  // Tree roots computed from your existing file list
+  treeRoots = computed<TreeNode[]>(() => this.buildTree(this.fileList()));
+
+  /** Open all directory paths derived from the file list */
+  private openAllDirsFromPaths(paths: string[]) {
+    const opened = new Set(this.openDirs());
+    for (const full of paths) {
+      const parts = full.split('/').filter(Boolean);
+      let pref = '';
+      // open every parent directory for this file
+      for (let i = 0; i < parts.length - 1; i++) {
+        pref = pref ? `${pref}/${parts[i]}` : parts[i];
+        opened.add(pref);
+      }
+    }
+    this.openDirs.set(opened);
+  }
+
 }

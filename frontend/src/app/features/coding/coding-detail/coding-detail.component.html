@@ -135,13 +135,41 @@
             </div>
 
             <div class="panel-body">
-              <ul class="file-list">
-                <li *ngFor="let p of fileList()" class="file-item" [class.active]="(openPath()||frameworkEntryFile)===p"
-                  (click)="openFile(p); closeFiles()" [title]="p"
-                  [style.paddingLeft.px]="(p.split('/').length-1)*12 + 12">
-                  {{ p }}
-                </li>
-              </ul>
+              <!-- File Tree -->
+              <div class="panel-body">
+                <ul class="file-tree">
+                  <ng-template #renderNodes let-nodes let-depth="depth">
+                    <li *ngFor="let n of nodes">
+                      <!-- Folder row -->
+                      <div *ngIf="n.type === 'dir'" class="tree-row folder-row" [style.paddingLeft.px]="depth * 12 + 8"
+                        (click)="toggleDir(n.path)" [class.open]="isOpen(n.path)">
+                        <i class="pi pi-chevron-right caret" aria-hidden="true"></i>
+                        <i class="pi pi-folder folder-ico" aria-hidden="true"></i>
+                        <span class="name" [title]="n.path">{{ n.name }}</span>
+                      </div>
+
+                      <!-- Children -->
+                      <ul *ngIf="isOpen(n.path)" class="children">
+                        <ng-container
+                          *ngTemplateOutlet="renderNodes; context: { $implicit: n.children, depth: depth + 1 }"></ng-container>
+                      </ul>
+
+                      <!-- File row -->
+                      <div *ngIf="n.type === 'file'" class="tree-row file-row"
+                        [class.active]="(openPath()||frameworkEntryFile)===n.path"
+                        [style.paddingLeft.px]="depth * 12 + 28" (click)="openFile(n.path); closeFiles()"
+                        [title]="n.path">
+                        <i class="pi pi-file file-ico" aria-hidden="true"></i>
+                        <span class="name">{{ n.name }}</span>
+                      </div>
+                    </li>
+                  </ng-template>
+
+                  <ng-container
+                    *ngTemplateOutlet="renderNodes; context: { $implicit: treeRoots(), depth: 0 }"></ng-container>
+                </ul>
+              </div>
+
             </div>
           </div>
         </div>
@@ -156,8 +184,8 @@
                   aria-label="Toggle files" title="Files">
                   <i class="pi pi-bars"></i>
                 </button>
-                <div class="text-xs opacity-80 truncate">
-                  {{ openPath() || frameworkEntryFile || 'Select a file' }}
+                <div class="text-xs opacity-80 truncate" [title]="currentPath()">
+                  {{ currentFileLabel() }}
                 </div>
               </div>
 
