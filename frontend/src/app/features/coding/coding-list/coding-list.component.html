@@ -141,7 +141,6 @@
     </div>
   </div>
 
-  <!-- Trending / popular tags -->
   <!-- Tag filter -->
   <div class="tag-filter" *ngIf="popularTags$ | async as popTags">
     <div class="tag-filter__header">
@@ -149,15 +148,36 @@
         <i class="pi pi-filter mr-1"></i> Filter by tags
       </span>
 
-      <div class="tag-filter__meta" *ngIf="(selectedTags$ | async) as sel">
-        <span class="tag-filter__count" *ngIf="sel.length">{{ sel.length }} selected</span>
+      <!-- RIGHT SIDE: selected meta + Sort -->
+      <div class="tag-filter__right">
+        <div class="tag-filter__meta" *ngIf="(selectedTags$ | async) as sel">
+          <span class="tag-filter__count" *ngIf="sel.length">{{ sel.length }} selected</span>
 
-        <!-- AND/OR toggle (optional; keep if you like it) -->
-        <button type="button" class="tag-filter__mode" (click)="toggleTagMatchMode()">
-          {{ tagMatchMode === 'all' ? 'Match all' : 'Match any' }}
-        </button>
+          <button type="button" class="tag-filter__mode" (click)="toggleTagMatchMode()">
+            {{ tagMatchMode === 'all' ? 'Match all' : 'Match any' }}
+          </button>
 
-        <button *ngIf="sel.length" class="tag-clear" (click)="clearAllTags()">Clear</button>
+          <button *ngIf="sel.length" class="tag-clear" (click)="clearAllTags()">Clear</button>
+        </div>
+
+        <!-- Sort by (moved here) -->
+        <div class="sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
+          <button type="button" class="sort-btn" (click)="toggleSort()">
+            <i class="pi pi-sliders-h"></i>
+            <span>Sort by</span>
+            <i class="pi pi-chevron-down chevron" [class.up]="sortOpen"></i>
+          </button>
+
+          <div class="sort-menu" *ngIf="sortOpen" role="menu" aria-label="Sort options">
+            <button *ngFor="let opt of sortOptions" role="menuitemradio"
+              [attr.aria-checked]="(sort$ | async) === opt.key" class="sort-item"
+              [class.active]="(sort$ | async) === opt.key" (click)="setSort(opt.key)">
+              <span class="label">{{ opt.label }}</span>
+              <span class="kbd" *ngIf="opt.hint">{{ opt.hint }}</span>
+              <span class="check" aria-hidden="true">✓</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -168,7 +188,6 @@
       </button>
     </div>
   </div>
-
 
   <!-- Data -->
   <div class="list">

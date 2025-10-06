@@ -38,6 +38,13 @@ type ViewMode = 'tech' | 'formats';
 
 type ImportanceTier = 'low' | 'medium' | 'high';
 
+type SortKey =
+  | 'default'
+  | 'title-asc' | 'title-desc'
+  | 'difficulty-asc' | 'difficulty-desc'
+  | 'importance-desc' | 'importance-asc'
+  | 'created-desc' | 'created-asc';
+
 function tierFromImportance(n: number | undefined): ImportanceTier {
   const v = n ?? 0;
   if (v >= 4) return 'high';      // 4–5 → High
@@ -119,6 +126,20 @@ export class CodingListComponent {
   selectedCategory$ = new BehaviorSubject<CategoryKey | null>(null); // only for formats mode
 
   selectedTags$ = new BehaviorSubject<string[]>([]);
+
+  sort$ = new BehaviorSubject<SortKey>('default');
+  sortOpen = false;
+  sortOptions: Array<{ key: SortKey; label: string; hint?: string }> = [
+    { key: 'default', label: 'Default', hint: 'Importance ↓, Title A–Z' },
+    { key: 'title-asc', label: 'Title: A to Z' },
+    { key: 'title-desc', label: 'Title: Z to A' },
+    { key: 'difficulty-asc', label: 'Difficulty: Easy to Hard' },
+    { key: 'difficulty-desc', label: 'Difficulty: Hard to Easy' },
+    { key: 'importance-desc', label: 'Importance: High to Low' },
+    { key: 'importance-asc', label: 'Importance: Low to High' },
+    { key: 'created-desc', label: 'Created: Newest to Oldest' },
+    { key: 'created-asc', label: 'Created: Oldest to Newest' },
+  ];
 
 
   // ----- context from routing -----
@@ -286,45 +307,45 @@ export class CodingListComponent {
     this.companySlug$,
     this.selectedTech$,
     this.selectedCategory$,
-    this.selectedTags$,                      // ← NEW
+    this.selectedTags$,
+    this.sort$,                          // ← include sort key
   ]).pipe(
-    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags]) => {
+    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey]) => {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
-      return (questions ?? [])
-        .filter(q =>
-          // title search
-          (q.title?.toLowerCase()?.includes(t) ?? false) &&
+      const filtered = (questions ?? []).filter(q =>
+        // title
+        (q.title?.toLowerCase()?.includes(t) ?? false) &&
 
-          // difficulty
-          (diffs.length === 0 || diffs.includes(q.difficulty)) &&
+        // difficulty
+        (diffs.length === 0 || diffs.includes(q.difficulty)) &&
 
-          // importance
-          (tiers.length === 0 || tiers.includes(tierFromImportance(q.importance))) &&
+        // importance
+        (tiers.length === 0 || tiers.includes(tierFromImportance(q.importance))) &&
 
-          // company filter
-          (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
+        // company
+        (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
 
-          // tech pill (global tech view only)
-          (this.source !== 'global-coding' || isFormats || !selectedTech || q.tech === selectedTech) &&
+        // tech (global tech view only)
+        (this.source !== 'global-coding' || isFormats || !selectedTech || q.tech === selectedTech) &&
 
-          // category (formats view only)
-          (this.source !== 'global-coding' || !isFormats || !selectedCategory || inferCategory(q) === selectedCategory) &&
+        // category (formats only)
+        (this.source !== 'global-coding' || !isFormats || !selectedCategory || inferCategory(q) === selectedCategory) &&
 
-          // NEW: tag filtering
-          (selTags.length === 0
-            ? true
-            : (this.tagMatchMode === 'all'
-              ? selTags.every(tag => (q.tags || []).includes(tag))
-              : selTags.some(tag => (q.tags || []).includes(tag))
-            )
+        // tags
+        (selTags.length === 0
+          ? true
+          : (this.tagMatchMode === 'all'
+            ? selTags.every(tag => (q.tags || []).includes(tag))
+            : selTags.some(tag => (q.tags || []).includes(tag))
           )
         )
-        .sort((a, b) => {
-          if (a.importance !== b.importance) return (b.importance ?? 0) - (a.importance ?? 0);
-          return (a.title || '').localeCompare(b.title || '');
-        });
+      );
+
+      // Apply chosen sort
+      const cmp = this.makeComparator(sortKey as SortKey);
+      return filtered.slice().sort(cmp);
     })
   );
 
@@ -368,6 +389,12 @@ export class CodingListComponent {
     { key: 'debug', label: 'Debug' }
   ];
 
+  // --- UI handlers for sorting ---
+  toggleSort() { this.sortOpen = !this.sortOpen; }
+  closeSort() { this.sortOpen = false; }
+  setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
+
+
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService,
@@ -383,6 +410,11 @@ export class CodingListComponent {
         })
       )
       .subscribe();
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.sort-wrap')) this.closeSort();
+    }, { capture: true });
   }
 
   // ---------- helpers used by template ----------
@@ -573,6 +605,53 @@ export class CodingListComponent {
   clearAllTags() { this.selectedTags$.next([]); }
 
   toggleTagMatchMode() {
-  this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
-}
+    this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
+  }
+
+  // SORTING
+
+  // --- Utility: order + safe fields ---
+  private difficultyRank(d: Difficulty | string | undefined): number {
+    const map: Record<string, number> = { easy: 0, intermediate: 1, hard: 2 };
+    return map[String(d || '').toLowerCase()] ?? 1;
+  }
+  private createdTs(q: any): number {
+    // tries a few common fields safely
+    const raw = q.createdAt || q.created || q.date || q.addedAt || q.added;
+    const t = raw ? new Date(raw).getTime() : NaN;
+    return Number.isFinite(t) ? t : 0;
+  }
+
+  // --- Comparator factory ---
+  private makeComparator(key: SortKey) {
+    const titleAsc = (a: any, b: any) => (a.title || '').localeCompare(b.title || '');
+    const titleDesc = (a: any, b: any) => titleAsc(b, a);
+    const imp = (q: any) => Number.isFinite(q.importance) ? (q.importance ?? 0) : 0;
+
+    switch (key) {
+      case 'title-asc': return titleAsc;
+      case 'title-desc': return titleDesc;
+      case 'difficulty-asc':
+        return (a: any, b: any) => this.difficultyRank(a.difficulty) - this.difficultyRank(b.difficulty) || titleAsc(a, b);
+      case 'difficulty-desc':
+        return (a: any, b: any) => this.difficultyRank(b.difficulty) - this.difficultyRank(a.difficulty) || titleAsc(a, b);
+      case 'importance-asc':
+        return (a: any, b: any) => imp(a) - imp(b) || titleAsc(a, b);
+      case 'importance-desc':
+        return (a: any, b: any) => imp(b) - imp(a) || titleAsc(a, b);
+      case 'created-asc':
+        return (a: any, b: any) => this.createdTs(a) - this.createdTs(b) || titleAsc(a, b);
+      case 'created-desc':
+        return (a: any, b: any) => this.createdTs(b) - this.createdTs(a) || titleAsc(a, b);
+      case 'default':
+      default:
+        // Your current default: importance ↓ then title A–Z
+        return (a: any, b: any) => {
+          const ia = imp(a), ib = imp(b);
+          if (ia !== ib) return ib - ia;
+          return titleAsc(a, b);
+        };
+    }
+  }
+
 }
