@@ -219,17 +219,24 @@
 /* keep only collapse icon visible and positioned properly */
 .sidebar.is-collapsed .tools {
   position: relative;
-  padding: 6px 4px;
-  justify-content: flex-start;
+  height: 50px; /* fixed height for visual consistency */
+  padding: 0;
+  justify-content: center;
+  align-items: center;
 }
+
 .sidebar.is-collapsed .tools-right {
   position: absolute;
-  right: 4px;
-  bottom: 6px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
 }
+
 .sidebar.is-collapsed .tools-right .p-button.p-button-icon-only {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
 }
 
