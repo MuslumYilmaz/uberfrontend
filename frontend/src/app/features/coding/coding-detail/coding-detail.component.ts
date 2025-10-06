@@ -389,7 +389,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.kind = path.startsWith('debug') ? 'debug' : 'coding';
 
       this.daily.ensureTodaySet(this.tech as any);
-      this.horizontalRatio.set(this.isWebTech() || this.tech === 'javascript' ? 0.5 : 0.3);
+      // Give HTML/CSS more room for the editor by default
+      // aside (description) width = horizontalRatio * 100%
+      const initialAside =
+        this.isWebTech() ? 0.28 :               // HTML/CSS: ~28% aside, 72% editors
+          this.tech === 'javascript' ? 0.36 :     // JS: a bit wider spec area
+            0.30;                                   // Frameworks: compact aside
+      this.horizontalRatio.set(initialAside);
+      this.lastAsideRatio = initialAside;       // keep for restore after collapse
 
       const id = pm.get('id')!;
       this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
@@ -608,6 +615,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ---------- HTML / CSS ----------
     if (this.isWebTech()) {
+      const preferred = 0.28;
+      this.horizontalRatio.set(preferred);
+      this.lastAsideRatio = preferred;
+
       const starters = this.getWebStarters(q);
       const htmlBaseKey = this.webBaseKey(q, 'html');
       const cssBaseKey = this.webBaseKey(q, 'css');
@@ -1338,12 +1349,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
+
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
     const totalWidth = window.innerWidth;
     const delta = ev.clientX - this.startX;
     let newRatio = this.startRatioH + delta / totalWidth;
-    newRatio = Math.max(0.2, Math.min(0.8, newRatio));
+
+    // Tighter bounds in HTML/CSS so editors stay dominant
+    const min = this.isWebTech() ? 0.18 : 0.20;  // minimum ~18% for web
+    const max = this.isWebTech() ? 0.45 : 0.80;  // cap aside at 45% for web
+
+    newRatio = Math.max(min, Math.min(max, newRatio));
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
