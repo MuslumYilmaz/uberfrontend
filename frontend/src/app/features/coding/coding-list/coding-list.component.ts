@@ -36,6 +36,16 @@ type PracticeSession = { items: PracticeItem[]; index: number };
 type CategoryKey = 'ui' | 'js-fn' | 'algo' | 'system';
 type ViewMode = 'tech' | 'formats';
 
+type ImportanceTier = 'low' | 'medium' | 'high';
+
+function tierFromImportance(n: number | undefined): ImportanceTier {
+  const v = n ?? 0;
+  if (v >= 4) return 'high';      // 4–5 → High
+  if (v >= 2) return 'medium';    // 2–3 → Medium
+  return 'low';                   // 0–1 → Low
+}
+
+
 const ALGO_TAGS = new Set([
   'recursion', 'two-pointers', 'binary-search', 'heap', 'graph', 'bfs', 'dfs',
   'topological', 'trie', 'dynamic-programming', 'dp', 'sorting', 'greedy', 'backtracking'
@@ -101,7 +111,7 @@ export class CodingListComponent {
 
   search$ = new BehaviorSubject<string>('');
   diffs$ = new BehaviorSubject<Difficulty[]>([]);
-  maxImp$ = new BehaviorSubject<number>(5);
+  impTiers$ = new BehaviorSubject<ImportanceTier[]>([]);
 
   // GLOBAL (/coding) local filters
   selectedTech$ = new BehaviorSubject<Tech | null>(null);
@@ -242,24 +252,33 @@ export class CodingListComponent {
     this.rawQuestions$,
     this.search$,
     this.diffs$,
-    this.maxImp$,
+    this.impTiers$,          // importance tiers (may be empty => no filter)
     this.companySlug$,
     this.selectedTech$,
     this.selectedCategory$,
   ]).pipe(
-    map(([questions, term, diffs, maxImp, companySlug, selectedTech, selectedCategory]) => {
+    map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory]) => {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
       return (questions ?? [])
         .filter(q =>
+          // title search
           (q.title?.toLowerCase()?.includes(t) ?? false) &&
+
+          // difficulty: pass-through if none selected
           (diffs.length === 0 || diffs.includes(q.difficulty)) &&
-          (q.importance ?? 0) <= maxImp &&
+
+          // importance: pass-through if none selected
+          (tiers.length === 0 || tiers.includes(tierFromImportance(q.importance))) &&
+
+          // company filter (if present)
           (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
-          // Tech filter only in tech mode (global)
+
+          // tech pill filter only for global 'tech' view
           (this.source !== 'global-coding' || isFormats || !selectedTech || q.tech === selectedTech) &&
-          // Category filter only in formats mode (global)
+
+          // category pills only for formats view
           (this.source !== 'global-coding' || !isFormats || !selectedCategory || inferCategory(q) === selectedCategory)
         )
         .sort((a, b) => {
@@ -475,4 +494,28 @@ export class CodingListComponent {
   isSystemCategoryActive(): boolean {
     return this.isFormatsMode() && this.selectedCategory$.value === 'system';
   }
+
+  onDiffChange(d: Difficulty, ev: Event) {
+    const checked = (ev.target as HTMLInputElement | null)?.checked ?? false;
+    this.toggleDiff(d, checked);
+  }
+
+  toggleDiff(d: Difficulty, checked: boolean) {
+    const curr = new Set(this.diffs$.value);
+    checked ? curr.add(d) : curr.delete(d);
+    this.diffs$.next(Array.from(curr));
+  }
+
+  onImpChange(tier: ImportanceTier, ev: Event) {
+    const checked = (ev.target as HTMLInputElement | null)?.checked ?? false;
+    const curr = new Set(this.impTiers$.value);
+    checked ? curr.add(tier) : curr.delete(tier);   // ← no re-adding if empty
+    this.impTiers$.next(Array.from(curr));
+  }
+
+
+  impLabel(q: Row): ImportanceTier {
+    return tierFromImportance(q.importance);
+  }
+
 }
