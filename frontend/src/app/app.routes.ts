@@ -1,4 +1,3 @@
-// src/app/app.routes.ts
 import {
   Routes,
   UrlMatchResult,
@@ -251,6 +250,41 @@ export const routes: Routes = [
       import('./features/auth/profile/profile.component').then((m) => m.ProfileComponent),
   },
 
+  // NEW: Legal
+  {
+    path: 'legal',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/legal/legal-index/legal-index.component').then((m) => m.LegalIndexComponent),
+      },
+      {
+        path: 'terms',
+        loadComponent: () =>
+          import('./features/legal/terms/terms.component').then((m) => m.TermsComponent),
+      },
+      {
+        path: 'privacy',
+        loadComponent: () =>
+          import('./features/legal/privacy/privacy.component').then((m) => m.PrivacyComponent),
+      },
+      {
+        path: 'cookies',
+        loadComponent: () =>
+          import('./features/legal/cookies/cookies.component').then((m) => m.CookiesComponent),
+      },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
+        data: { title: 'Page not found' },
+      },
+    ],
+  },
+
   // explicit /404
   {
     path: '404',
@@ -322,10 +356,7 @@ export const routes: Routes = [
 ];
 
 /**
- * Router providers with the recommended configuration:
- * - onSameUrlNavigation: 'reload' => reload component when only query params change
- * - paramsInheritanceStrategy: 'always' => child routes inherit parent params/queryParams
- * - scrollPositionRestoration: 'top' => nice UX on navigation
+ * Router providers with the recommended configuration
  */
 export const APP_ROUTER_PROVIDERS = [
   provideRouter(
@@ -336,6 +367,7 @@ export const APP_ROUTER_PROVIDERS = [
     }),
     withInMemoryScrolling({
       scrollPositionRestoration: 'top',
+      anchorScrolling: 'enabled',      // 👈 enable fragment scrolling
     }),
   ),
 ];

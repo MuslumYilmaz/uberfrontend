@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TooltipModule } from 'primeng/tooltip';
 import { environment } from '../../../environments/environment';
 
 interface LinkItem {
@@ -33,6 +34,7 @@ type NavItem = LinkItem | GroupItem;
     DialogModule,
     FormsModule,
     InputTextareaModule,
+    TooltipModule
   ],
   templateUrl: './app-sidebar.component.html',
   styleUrls: ['./app-sidebar.component.css'],
