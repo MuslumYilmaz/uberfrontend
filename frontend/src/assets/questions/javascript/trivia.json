@@ -2,7 +2,7 @@
   {
     "id": "js-event-loop",
     "title": "Explain the JavaScript Event Loop",
-    "description": "What is the event loop in JavaScript? How do macrotasks and microtasks interact?",
+    "description": "What is the event loop in JavaScript? How do macrotasks and microtasks interact? Provide examples of execution order and common pitfalls.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -19,47 +19,46 @@
       "uber",
       "netflix"
     ],
-    "answer": "The event loop coordinates execution between the call stack, microtask queue (Promises/queueMicrotask) and macrotask queue (setTimeout, setInterval, DOM events). JS runs to completion on the call stack. After the stack empties, the event loop first flushes all microtasks in FIFO order; only when the microtask queue is empty does it take a single macrotask and run it. Microtasks can enqueue more microtasks, which run before any further macrotasks, which is why Promises often run before setTimeout callbacks."
-  },
-  {
-    "id": "js-this-binding",
-    "title": "Describe `this` Binding",
-    "description": "In JavaScript, how is the value of `this` determined in a function call? Give examples for default, implicit, explicit, and new binding.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "intermediate",
-    "tags": [
-      "this",
-      "call",
-      "bind",
-      "apply"
-    ],
-    "importance": 4,
-    "companies": [
-      "amazon",
-      "uber",
-      "airbnb"
-    ],
-    "answer": "Default: in non-strict mode, `this` is the global object; in strict mode, `undefined`. Implicit: when called as obj.fn(), `this` is obj. Explicit: use call/apply/bind to set `this` directly. New binding: with `new`, `this` is the newly created instance. Arrow functions capture `this` lexically from their surrounding scope and ignore call/apply/bind."
-  },
-  {
-    "id": "js-closures",
-    "title": "What Are Closures?",
-    "description": "Define a closure in JavaScript and provide a use case where a closure is essential.",
-    "type": "trivia",
-    "technology": "javascript",
-    "difficulty": "easy",
-    "tags": [
-      "closure",
-      "scope"
-    ],
-    "importance": 3,
-    "companies": [
-      "apple",
-      "google",
-      "meta",
-      "netflix"
-    ],
-    "answer": "A closure is a function plus the lexical environment it was created in. It lets a function access variables from its outer scope even after that outer function has returned. Uses: private state (module pattern), function factories (currying/partial application), and handlers that remember context."
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "The **event loop** is the heart of JavaScript’s concurrency model. It coordinates execution between the **call stack**, **microtask queue** (Promises, `queueMicrotask`), and **macrotask queue** (`setTimeout`, `setInterval`, I/O, DOM events).\n\n1️⃣ **Call Stack:** Executes synchronous code line-by-line.\n2️⃣ **Microtasks:** Queued after the current call stack clears (high priority).\n3️⃣ **Macrotasks:** Executed one at a time, after microtasks finish.\n\nMicrotasks always run before the next macrotask — this is why Promise callbacks fire before any `setTimeout` callbacks, even if both are queued in the same tick."
+        },
+        {
+          "type": "image",
+          "src": "https://placehold.co/1000x520/111318/ffffff?text=Call+Stack+→+Microtasks+→+Macrotasks+→+Render",
+          "alt": "Diagram showing call stack, microtasks, macrotasks, and rendering order",
+          "caption": "Event loop cycle: stack clears → drain all microtasks → run next macrotask → render"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('A');\nsetTimeout(() => console.log('B: macrotask'));\nPromise.resolve()\n  .then(() => console.log('C: microtask 1'))\n  .then(() => console.log('D: microtask 2'));\nconsole.log('E');\n// Output: A, E, C, D, B"
+        },
+        {
+          "type": "text",
+          "text": "💡 **Explanation:**\n- `A` and `E` run synchronously.\n- Promise callbacks (microtasks) run next: `C`, `D`.\n- Then the next macrotask (timer) executes: `B`.\n\nMicrotasks can schedule more microtasks, so heavy chaining (like nested Promises) can **starve rendering** by never yielding back to the macrotask queue."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: Potential starvation\nfunction loop() {\n  Promise.resolve().then(loop); // Microtask recursion\n}\nloop(); // Browser may freeze because rendering never happens"
+        },
+        {
+          "type": "text",
+          "text": "**In Node.js**, the event loop is divided into phases:\n- **timers** → **pending callbacks** → **idle/prepare** → **poll** → **check** → **close callbacks**.\nMicrotasks (Promises) are drained after each phase, making them slightly different from browsers."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n// Order (commonly): microtask → timer → immediate"
+        },
+        {
+          "type": "text",
+          "text": "**Best Practices:**\n- Use microtasks for lightweight, next-tick logic (`Promise.resolve()`).\n- Use macrotasks for deferring heavy or UI-blocking operations (`setTimeout`, `MessageChannel`).\n- To prevent jank: break long-running operations into smaller tasks so the browser can render in between."
+        }
+      ]
+    }
   }
 ]

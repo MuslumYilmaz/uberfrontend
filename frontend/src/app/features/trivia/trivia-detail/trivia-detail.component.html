@@ -10,11 +10,12 @@
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
-                        <div class="side-item-desc line-clamp-2">{{ q.description }}</div>
+                        <div class="side-item-desc line-clamp-2">
+                            {{ descText(q.description) }}
+                        </div>
                     </div>
                     <div class="side-item-tail">
-                        <i class="pi pi-angle-right" *ngIf="!isActive(q)"></i>
-                        <i class="pi pi-check-circle ok" *ngIf="isActive(q)"></i>
+                        <i class="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></i>
                     </div>
                 </button>
             </li>
@@ -39,7 +40,7 @@
             <section class="card">
                 <div class="card-head">Question</div>
                 <div class="card-body">
-                    <p class="content">{{ q.description }}</p>
+                    <div class="content" [innerHTML]="md(descText(q.description))"></div>
                 </div>
             </section>
 
@@ -47,9 +48,58 @@
             <section class="card">
                 <div class="card-head">Answer</div>
                 <div class="card-body">
-                    <p class="content" *ngIf="q.answer; else noAnswer">{{ q.answer }}</p>
-                    <ng-template #noAnswer>
-                        <p class="content muted">Answer coming soon.</p>
+                    <ng-container *ngIf="answerIsRich(); else simpleAnswer">
+                        <div class="blocks">
+                            <ng-container *ngFor="let b of answerBlocks(); let i = index">
+                                <!-- TEXT -->
+                                <div *ngIf="b.type === 'text'" class="block b-text">
+                                    <div class="content" [innerHTML]="md($any(b).text)"></div>
+                                </div>
+
+                                <!-- CODE -->
+                                <div *ngIf="b.type === 'code'" class="block b-code">
+                                    <div class="code-head">
+                                        <span class="lang">{{ ($any(b).language || 'javascript') | uppercase }}</span>
+
+                                        <div class="code-actions">
+                                            <span class="copied-pill" *ngIf="copiedIndex() === i">
+                                                <i class="fa-solid fa-check"></i> Copied
+                                            </span>
+
+                                            <button pButton type="button" class="btn-copy p-button-sm p-button-text"
+                                                [title]="copiedIndex() === i ? 'Copied' : 'Copy to clipboard'"
+                                                (click)="copy($any(b).code, i)">
+                                                <i class="fa-solid"
+                                                    [ngClass]="copiedIndex() === i ? 'fa-check' : 'fa-copy'"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <pre class="line-numbers">
+                    <code prism
+                          [lang]="$any(b).language || 'javascript'"
+                          [code]="dedent($any(b).code)">
+                    </code>
+                  </pre>
+                                </div>
+
+                                <!-- IMAGE -->
+                                <figure *ngIf="b.type === 'image'" class="block b-image">
+                                    <img [src]="$any(b).src" [alt]="$any(b).alt || 'diagram'"
+                                        [width]="$any(b).width || null" [height]="$any(b).height || null" loading="lazy"
+                                        decoding="async" />
+                                    <figcaption *ngIf="$any(b).caption as cap">{{ cap }}</figcaption>
+                                </figure>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+
+                    <!-- Simple string fallback (markdown-rendered) -->
+                    <ng-template #simpleAnswer>
+                        <div class="content" *ngIf="q.answer; else noAnswer" [innerHTML]="md(q.answer)"></div>
+                        <ng-template #noAnswer>
+                            <p class="content muted">Answer coming soon.</p>
+                        </ng-template>
                     </ng-template>
                 </div>
             </section>
@@ -63,7 +113,10 @@
     </main>
 </div>
 
-<!-- Footer (practice mode) -->
+<!-- Global a11y announcer (fixed off-screen, never affects layout) -->
+<div id="sr-announcer" aria-live="polite" class="sr-announcer-fixed"></div>
+
+<!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
     (prev)="prev()" (next)="next()" (back)="returnTo ? router.navigate(returnTo) : null">
 </app-footer>
