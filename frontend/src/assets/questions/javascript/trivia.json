@@ -129,5 +129,390 @@
         }
       ]
     }
+  },
+  {
+    "id": "js-closures",
+    "title": "Explain Closures in JavaScript",
+    "description": "A closure happens when a function keeps access to variables from its outer scope, even after that outer function has finished. It’s how JavaScript allows private data and persistent state inside functions.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "closure",
+      "scope",
+      "lexical-environment",
+      "function"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA **closure** is when a function remembers variables from the place where it was created — not from where it is called. It means inner functions can keep using values from an outer function, even after that outer function has finished running."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Simple example\nfunction makeCounter() {\n  let count = 0; // stays in memory\n  return function () {\n    count++;\n    return count;\n  };\n}\n\nconst counter = makeCounter();\nconsole.log(counter()); // 1\nconsole.log(counter()); // 2\n\n// The inner function still 'remembers' count"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lock'></i> <strong>Why It’s Useful</strong>\n\nClosures are powerful because they let you:\n- Keep variables **private** (not accessible globally)\n- Store **state** between function calls\n- Create **helpers** like <code>once()</code>, <code>memoize()</code>, and other reusable patterns"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: once()\nfunction once(fn) {\n  let called = false;\n  let value;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      value = fn.apply(this, args);\n    }\n    return value;\n  };\n}\n\nconst init = once(() => console.log('Initialized'));\ninit(); // Logs once\ninit(); // Does nothing — remembers state"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>var</code> in loops creates one shared variable for all iterations — so all functions close over the same value:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const funcs = [];\nfor (var i = 0; i < 3; i++) {\n  funcs.push(() => i);\n}\nconsole.log(funcs.map(fn => fn())); // [3, 3, 3]"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fixes:</strong>\n- Use <code>let</code> for block scoping\n- Or use an IIFE (immediately invoked function) to capture a copy"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Fix with let\nfor (let j = 0; j < 3; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n// 0 1 2"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-memory'></i> <strong>Memory Notes</strong>\n\nClosures keep their referenced variables alive as long as the inner function exists. This can accidentally hold big objects or DOM elements in memory, so always clean up unused references."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Functions automatically form closures in JavaScript.  \n- Inner functions remember outer variables (their <strong>lexical scope</strong>).  \n- Used for data privacy, persistence, and modular code.  \n- Use <code>let</code>/<code>const</code> to avoid loop bugs.  \n- Don’t overuse closures in long-lived objects to prevent memory leaks."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you leave a room (outer function ends), but you gave your friend (inner function) a copy of the key to your drawer (variables). Even though you’re gone, they can still open it — that’s a closure!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-this-keyword",
+    "title": "Explain the `this` keyword in JavaScript",
+    "description": "The value of `this` in JavaScript depends on how a function is called — not where it’s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "this",
+      "context",
+      "binding",
+      "function"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> in JavaScript is determined by <strong>how a function is called</strong>, not by where it is written. It points to the <strong>execution context</strong> — the object that 'owns' the function at the time of invocation."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Call Type",
+            "Value of <code>this</code>",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<strong>Global / Default</strong>",
+              "In browsers → <code>window</code>, in strict mode → <code>undefined</code>",
+              "<code>console.log(this)</code>"
+            ],
+            [
+              "<strong>Object method</strong>",
+              "The object before the dot",
+              "<code>user.sayHi()</code> → <code>this === user</code>"
+            ],
+            [
+              "<strong>Constructor</strong>",
+              "The newly created instance",
+              "<code>new Person()</code>"
+            ],
+            [
+              "<strong>Explicit binding</strong>",
+              "Set manually using <code>call</code>, <code>apply</code>, or <code>bind</code>",
+              "<code>fn.call(obj)</code> → <code>this === obj</code>"
+            ],
+            [
+              "<strong>Arrow function</strong>",
+              "Does not bind <code>this</code>; inherits it from its outer scope",
+              "<code>() => this</code> inside an object → outer <code>this</code>"
+            ]
+          ],
+          "caption": "How `this` changes based on how the function is called."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 1: Default binding\nfunction show() {\n  console.log(this);\n}\nshow(); // window (or undefined in strict mode)"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 2: Method call\nconst user = {\n  name: 'Mia',\n  greet() {\n    console.log('Hi, ' + this.name);\n  }\n};\nuser.greet(); // 'Hi, Mia'"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 3: Detached method loses context\nconst greetFn = user.greet;\ngreetFn(); // undefined or 'Hi, undefined' — this is lost"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-link'></i> <strong>Fixing Lost Context</strong>\n\nYou can control or preserve <code>this</code> explicitly using:\n- <code>call()</code> / <code>apply()</code> → call immediately\n- <code>bind()</code> → return a new function with fixed <code>this</code>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const boundGreet = user.greet.bind(user);\nboundGreet(); // 'Hi, Mia'"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Arrow Functions</strong>\n\nArrow functions **don’t have their own <code>this</code>**. They inherit it from the surrounding scope. Great for callbacks that need lexical <code>this</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function Timer() {\n  this.seconds = 0;\n  setInterval(() => {\n    this.seconds++;\n    console.log(this.seconds);\n  }, 1000);\n}\nnew Timer(); // works fine\n\n// But using a normal function would break:\n// setInterval(function() { this.seconds++ }, 1000); // this = undefined"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting <code>new</code> → <code>this</code> becomes global (or undefined in strict mode)\n- Losing context when passing methods as callbacks\n- Misusing arrow functions in class methods (they can’t be rebound)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>this</code> depends on the <strong>call site</strong>, not where the function is defined.  \n- Arrow functions don’t have their own <code>this</code>.  \n- <code>call</code>, <code>apply</code>, and <code>bind</code> let you control <code>this</code> explicitly.  \n- <code>new</code> creates a new object and binds <code>this</code> to it."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>this</code> as the person holding the phone 📱 — not the number you dialed. The number (function) stays the same, but who picks up (the object that calls it) decides what <code>this</code> will be."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-hoisting-tdz",
+    "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
+    "description": "During the creation phase, JavaScript moves declarations to the top of their scope (hoisting). However, variables declared with `let` and `const` exist in a 'temporal dead zone' until their declaration is reached, making them inaccessible before initialization.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "hoisting",
+      "temporal-dead-zone",
+      "scope",
+      "variables"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore JavaScript executes any code, it first scans your script to find all variable and function declarations. It sets up memory for them in a process called <strong>hoisting</strong>. But — not all declarations behave the same way."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Declaration Type",
+            "Hoisted?",
+            "Initialized Before Declaration?",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<code>var</code>",
+              "Yes",
+              "✅ Initialized to <code>undefined</code>",
+              "<code>console.log(a); var a = 5;</code> → undefined"
+            ],
+            [
+              "<code>let</code>",
+              "Yes",
+              "❌ In TDZ (no access before declaration)",
+              "<code>console.log(b); let b = 5;</code> → ReferenceError"
+            ],
+            [
+              "<code>const</code>",
+              "Yes",
+              "❌ In TDZ (must be initialized immediately)",
+              "<code>const c = 10;</code>"
+            ],
+            [
+              "<code>function</code>",
+              "Yes (fully hoisted)",
+              "✅ Can be called before definition",
+              "<code>foo(); function foo() {}</code>"
+            ]
+          ],
+          "caption": "How different declarations behave during hoisting."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-up-long'></i> <strong>What is Hoisting?</strong>\n\nHoisting means declarations are <strong>moved to the top of their scope</strong> before code runs. This doesn’t mean your code is literally moved — it’s just how JavaScript’s memory setup works during the 'creation phase' of execution."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 1: var is hoisted\nconsole.log(name); // undefined\nvar name = 'Alice';\n// JS internally treats it like:\n// var name;\n// console.log(name);\n// name = 'Alice';"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The Temporal Dead Zone (TDZ)</strong>\n\nFor <code>let</code> and <code>const</code>, the variable exists but is not initialized yet. The time between the start of the scope and the actual declaration line is called the <strong>temporal dead zone</strong>. Accessing the variable in this zone causes a <code>ReferenceError</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 2: let and TDZ\nconsole.log(age); // ❌ ReferenceError\nlet age = 25;\n\n// In memory:\n// TDZ starts → variable exists but not initialized\n// Declaration reached → initialized to 25"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Functions vs Variables</strong>\n\nFunction declarations are hoisted <strong>with their full definition</strong>, so you can call them before they appear. But <strong>function expressions</strong> (especially with <code>let</code> or <code>const</code>) behave like normal variables."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 3: function vs expression\nsayHi(); // ✅ Works\nfunction sayHi() { console.log('Hi!'); }\n\nsayHello(); // ❌ ReferenceError\nconst sayHello = function() { console.log('Hello!'); };"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Thinking <code>let</code> or <code>const</code> aren’t hoisted (they are — just uninitialized).  \n- Forgetting that accessing them early throws an error, not <code>undefined</code>.  \n- Mixing function declarations and expressions in confusing ways."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript hoists all declarations before execution.  \n- <code>var</code> → initialized as <code>undefined</code>.  \n- <code>let</code> / <code>const</code> → uninitialized, causing a TDZ.  \n- <code>function</code> declarations → fully hoisted and callable early.  \n- Avoid referencing variables before their declaration line."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a classroom roll call 📋. The teacher knows all students’ names at the start (hoisting), but only after they say 'here' (initialization) can they answer questions. Until then, they’re in the **temporal dead zone**!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-var-let-const-hoisting",
+    "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
+    "description": "All variable declarations are hoisted, but only `var` is initialized with `undefined`. Variables declared with `let` and `const` exist in the temporal dead zone until execution reaches their declaration, making them inaccessible beforehand.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "tags": [
+      "hoisting",
+      "variables",
+      "let",
+      "const",
+      "scope"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAll variable declarations are **hoisted** — meaning they’re recognized by JavaScript before execution. However, only <code>var</code> is **initialized** immediately with <code>undefined</code>. <code>let</code> and <code>const</code> are hoisted too, but they stay in the **temporal dead zone (TDZ)** until the actual declaration line."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Keyword",
+            "Hoisted?",
+            "Initialized Before Declaration?",
+            "Accessible Before Declaration?",
+            "Reassignable?",
+            "Redeclarable?"
+          ],
+          "rows": [
+            [
+              "<code>var</code>",
+              "✅ Yes",
+              "✅ Initialized to <code>undefined</code>",
+              "✅ Yes (but value = undefined)",
+              "✅ Yes",
+              "✅ Yes"
+            ],
+            [
+              "<code>let</code>",
+              "✅ Yes",
+              "❌ Not initialized (TDZ)",
+              "❌ No — ReferenceError",
+              "✅ Yes",
+              "❌ No"
+            ],
+            [
+              "<code>const</code>",
+              "✅ Yes",
+              "❌ Not initialized (TDZ)",
+              "❌ No — ReferenceError",
+              "❌ No (must initialize immediately)",
+              "❌ No"
+            ]
+          ],
+          "caption": "Hoisting and accessibility differences between var, let, and const."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-up-long'></i> <strong>How It Works Under the Hood</strong>\n\nWhen the JavaScript engine creates an execution context, it allocates memory for all declared variables:\n- <code>var</code> is assigned <code>undefined</code> immediately.\n- <code>let</code> and <code>const</code> are known but remain uninitialized until their declaration line is reached."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 1: var\nconsole.log(a); // undefined\nvar a = 10;\n\n// Example 2: let\nconsole.log(b); // ❌ ReferenceError (TDZ)\nlet b = 10;\n\n// Example 3: const\nconsole.log(c); // ❌ ReferenceError (TDZ)\nconst c = 10;"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The Temporal Dead Zone (TDZ)</strong>\n\nThe TDZ is the time between entering a scope and the moment a <code>let</code> or <code>const</code> variable is declared. Accessing it during this period throws a <code>ReferenceError</code>. It helps prevent using variables before they're safely initialized."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "{\n  // TDZ starts\n  console.log(x); // ❌ ReferenceError\n  let x = 5; // TDZ ends here\n  console.log(x); // ✅ 5\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>All declarations are hoisted</strong>, but initialization differs.\n- <code>var</code> → hoisted + initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but uninitialized (TDZ).\n- Accessing <code>let</code> or <code>const</code> before declaration → <code>ReferenceError</code>.\n- <code>const</code> also requires immediate initialization."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re checking into a hotel 🏨. Rooms (<code>var</code>, <code>let</code>, <code>const</code>) are reserved at check-in (hoisting), but only <code>var</code> gets its key immediately. <code>let</code> and <code>const</code> exist but you can’t enter until the receptionist actually hands over the key — that’s the **temporal dead zone**!"
+        }
+      ]
+    }
   }
 ]
