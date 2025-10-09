@@ -2,7 +2,7 @@
   {
     "id": "js-event-loop",
     "title": "Explain the JavaScript Event Loop",
-    "description": "What is the event loop in JavaScript? How do macrotasks and microtasks interact? Provide examples of execution order and common pitfalls.",
+    "description": "JavaScript runs on a single thread. Each cycle: it executes synchronous code, drains all microtasks (e.g., Promise callbacks), then runs one macrotask (e.g., setTimeout) before repeating. This is why Promises run before timers and why long microtask chains can block rendering.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -23,40 +23,109 @@
       "blocks": [
         {
           "type": "text",
-          "text": "The **event loop** is the heart of JavaScript’s concurrency model. It coordinates execution between the **call stack**, **microtask queue** (Promises, `queueMicrotask`), and **macrotask queue** (`setTimeout`, `setInterval`, I/O, DOM events).\n\n1️⃣ **Call Stack:** Executes synchronous code line-by-line.\n2️⃣ **Microtasks:** Queued after the current call stack clears (high priority).\n3️⃣ **Macrotasks:** Executed one at a time, after microtasks finish.\n\nMicrotasks always run before the next macrotask — this is why Promise callbacks fire before any `setTimeout` callbacks, even if both are queued in the same tick."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Big Picture</strong>\n\nJavaScript runs <strong>on a single thread</strong>, meaning it can only do <strong>one thing at a time</strong>. So how does it handle things like <code>setTimeout</code>, <code>fetch</code>, or <code>Promise.then</code> without freezing? That’s where the <strong>event loop</strong> comes in.\n\nThink of it like a manager that decides <em>what piece of code runs next</em> among all waiting tasks."
         },
         {
-          "type": "image",
-          "src": "https://placehold.co/1000x520/111318/ffffff?text=Call+Stack+→+Microtasks+→+Macrotasks+→+Render",
-          "alt": "Diagram showing call stack, microtasks, macrotasks, and rendering order",
-          "caption": "Event loop cycle: stack clears → drain all microtasks → run next macrotask → render"
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>The Three Main Parts</strong>\n\nThe JavaScript runtime manages execution using three core parts: the <strong>Call Stack</strong>, <strong>Task Queues</strong>, and the <strong>Event Loop</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Component",
+            "Purpose",
+            "Examples / Details"
+          ],
+          "rows": [
+            [
+              "<strong>Call Stack</strong>",
+              "Where synchronous code runs, line by line. If a function takes too long here, everything else waits (blocking).",
+              "<code>console.log</code>, loops, math operations, synchronous functions"
+            ],
+            [
+              "<strong>Task Queues (two types)</strong>",
+              "Where async tasks wait until the stack is clear — split into Microtask and Macrotask queues.",
+              "Async callbacks, Promises, timers, I/O events"
+            ],
+            [
+              "<strong>Microtask Queue</strong>",
+              "Smaller, high-priority tasks that run immediately after the stack is clear.",
+              "<code>Promise.then</code>, <code>queueMicrotask</code>, <code>process.nextTick</code>"
+            ],
+            [
+              "<strong>Macrotask Queue</strong>",
+              "Larger, lower-priority tasks that can yield to the browser for rendering between runs.",
+              "<code>setTimeout</code>, DOM events, I/O, <code>setInterval</code>"
+            ]
+          ],
+          "caption": "Call Stack and Task Queues at a glance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-repeat'></i> <strong>The Event Loop</strong>\n\nThe event loop constantly checks:\n1. Is the call stack empty?  \n2. Any microtasks waiting? → Run all of them.  \n3. Take one macrotask and run it.  \nThen the cycle repeats forever."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log('A');\nsetTimeout(() => console.log('B: macrotask'));\nPromise.resolve()\n  .then(() => console.log('C: microtask 1'))\n  .then(() => console.log('D: microtask 2'));\nconsole.log('E');\n// Output: A, E, C, D, B"
+          "code": "console.log('A');\n\nsetTimeout(() => console.log('B (macrotask)'));\n\nPromise.resolve()\n  .then(() => console.log('C (microtask)'))\n  .then(() => console.log('D (microtask)'));\n\nconsole.log('E');\n\n// Output:\n// A\n// E\n// C\n// D\n// B"
         },
         {
           "type": "text",
-          "text": "💡 **Explanation:**\n- `A` and `E` run synchronously.\n- Promise callbacks (microtasks) run next: `C`, `D`.\n- Then the next macrotask (timer) executes: `B`.\n\nMicrotasks can schedule more microtasks, so heavy chaining (like nested Promises) can **starve rendering** by never yielding back to the macrotask queue."
+          "text": "<strong>Why this order?</strong>\n- <code>A</code> and <code>E</code> → run first (synchronous stack).  \n- Then the event loop runs <strong>all microtasks</strong> → <code>C</code>, <code>D</code>.  \n- Finally, the next macrotask runs → <code>B</code>.  \n\nThat’s why <strong>Promises always run before timers</strong>, even when scheduled “at the same time.”"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Microtasks vs. Macrotasks (Summary)</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Type",
+            "Examples",
+            "Runs When",
+            "Priority"
+          ],
+          "rows": [
+            [
+              "<strong>Microtask</strong>",
+              "<code>Promise.then</code>, <code>queueMicrotask</code>",
+              "After the current call stack, before rendering",
+              "High"
+            ],
+            [
+              "<strong>Macrotask</strong>",
+              "<code>setTimeout</code>, <code>setInterval</code>, DOM events",
+              "After microtasks, allows rendering",
+              "Normal"
+            ]
+          ],
+          "caption": "Microtasks run before macrotasks within each event loop cycle."
+        },
+        {
+          "type": "text",
+          "text": "After each macrotask, <strong>all microtasks</strong> are drained before the next one starts. That’s why too many microtasks (like recursive Promises) can block rendering."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example: Potential starvation\nfunction loop() {\n  Promise.resolve().then(loop); // Microtask recursion\n}\nloop(); // Browser may freeze because rendering never happens"
+          "code": "function loop() {\n  Promise.resolve().then(loop); // microtask recursion\n}\nloop(); // browser freezes — it never yields control back"
         },
         {
           "type": "text",
-          "text": "**In Node.js**, the event loop is divided into phases:\n- **timers** → **pending callbacks** → **idle/prepare** → **poll** → **check** → **close callbacks**.\nMicrotasks (Promises) are drained after each phase, making them slightly different from browsers."
+          "text": "<i class='fa-solid fa-server'></i> <strong>In Node.js</strong>\n\nThe event loop runs through several <strong>phases</strong>:\n<pre class='md-pre'>timers → pending callbacks → poll → check → close callbacks</pre>\nMicrotasks (<code>Promise.then</code>, <code>process.nextTick</code>) run <strong>after each phase</strong>, unlike browsers where they run once per loop."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n// Order (commonly): microtask → timer → immediate"
+          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n\n// Common order:\n// microtask → timer → immediate"
         },
         {
           "type": "text",
-          "text": "**Best Practices:**\n- Use microtasks for lightweight, next-tick logic (`Promise.resolve()`).\n- Use macrotasks for deferring heavy or UI-blocking operations (`setTimeout`, `MessageChannel`).\n- To prevent jank: break long-running operations into smaller tasks so the browser can render in between."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript executes <strong>synchronously</strong> on a single thread.  \n- The <strong>event loop</strong> coordinates between the stack and queues.  \n- <strong>Microtasks</strong> (Promises) always run before <strong>macrotasks</strong> (timers).  \n- Too many microtasks can freeze rendering.  \n- Use macrotasks for deferred work and microtasks for quick follow-ups."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re the only cashier at a store. You serve one customer at a time (the call stack). When a customer needs to grab something, you tell them to step aside (macrotask). But before you call the next one, you handle quick questions like ‘Can I get a receipt?’ (microtasks). You repeat this all day — that’s the event loop!"
         }
       ]
     }

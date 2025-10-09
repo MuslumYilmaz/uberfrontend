@@ -1,6 +1,8 @@
+/* ========================= trivia-detail.component.scss ========================= */
 /* Base */
 html, body { height: 100%; background: #0b0c0f; }
 
+/* Layout */
 .page-frame {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -11,13 +13,13 @@ html, body { height: 100%; background: #0b0c0f; }
 @media (max-width: 980px) { .page-frame { grid-template-columns: 1fr; } .side { display: none; } }
 
 /* Sidebar */
-.side { background: #0b0c0f; border-right: 1px solid #242b38; overflow: auto; }
-.side-head { padding: 14px 16px; border-bottom: 1px solid #242b38; }
+.side { background: #0b0c0f; border-right: 1px solid #242b38; overflow: auto; display:flex; flex-direction:column; padding-inline:10px; }
+.side-head { padding: 14px 0; border-bottom: 1px solid #242b38; }
 .side-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #9aa3ad; }
-.side-list { margin: 0; padding: 6px; list-style: none; }
+.side-list { margin: 0; padding: 6px 0; list-style: none; max-width:240px; width:100%; margin-inline:auto; }
 .side-item {
   width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px;
-  padding: 12px; margin: 6px 6px 8px;
+  padding: 12px; margin: 6px 0 8px;
   border-radius: 12px; border: 1px solid rgba(255,255,255,.06);
   background: rgba(255,255,255,.03);
   color: #e6e9ef; cursor: pointer;
@@ -26,7 +28,8 @@ html, body { height: 100%; background: #0b0c0f; }
 .side-item:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(0,0,0,.34); }
 .side-item.is-active { background: rgba(78,124,255,.12); border-color: rgba(78,124,255,.35); }
 .side-item-title { font-weight: 800; font-size: 13.75px; line-height: 1.25; }
-.side-item-desc { font-size: 12px; color: #9aa3ad; margin-top: 4px; }
+.side-item-desc { font-size: 11.5px; color: #9aa3ad; margin-top: 4px; }
+.side-item-tail { display:flex; align-items:center; }
 .side-item-tail i { font-size: 14px; color: #9aa3ad; }
 
 /* Main */
@@ -47,14 +50,28 @@ html, body { height: 100%; background: #0b0c0f; }
 .card-head { background: linear-gradient(180deg, #0e1420, #0b1018); padding: 10px 14px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #aeb9c9; border-bottom: 1px solid #242b38; }
 .card-body { padding: 18px 20px; }
 
+/* “Still so complicated?” body highlight */
+.tip-body { background: rgba(78,124,255,.06); border-radius: 10px; }
+
 /* Markdown */
-.content { margin: 0; font-size: 15.5px; line-height: 1.75; color: #e6e9ef; }
+.content { margin: 0; font-size: 14.6px; line-height: 1.72; color: #e6e9ef; }
 .content.muted { color: #9aa3ad; }
-.content .inline-code { background: #1b2431; border: 1px solid #2a3446; border-radius: 6px; padding: .12rem .4rem; font-family: "Fira Code","JetBrains Mono",monospace; font-size: .95em; color: #d6e1ff; }
-.content .md-h { margin: .8rem 0 .4rem; font-weight: 900; letter-spacing: -0.01em; }
+.content .inline-code { background: #1b2431; border: 1px solid #2a3446; border-radius: 6px; padding: .12rem .38rem; font-family: "Fira Code","JetBrains Mono",monospace; font-size: .9em; color: #d6e1ff; }
+.content .md-h { margin: .9rem 0 .5rem; font-weight: 900; letter-spacing: -0.01em; }
 .content .md-h2 { font-size: 1.35rem; } .content .md-h3 { font-size: 1.2rem; } .content .md-h4 { font-size: 1.05rem; }
 .content .md-ul, .content .md-ol { margin: .5rem 0 .5rem 1.25rem; }
-.content .md-quote { margin: .9rem 0; padding: .6rem .85rem; border-left: 3px solid #4e7cff; background: rgba(78,124,255,.07); color: #c9d4e6; border-radius: 8px; }
+.content .md-quote { margin: .95rem 0; padding: .6rem .85rem; border-left: 3px solid #4e7cff; background: rgba(78,124,255,.07); color: #c9d4e6; border-radius: 8px; }
+
+/* Extra spacing when blocks follow text */
+.content p + h2.md-h,
+.content p + h3.md-h,
+.content p + h4.md-h,
+.content p + ul.md-ul,
+.content p + ol.md-ol,
+.content p + blockquote.md-quote { margin-top: 1rem; }
+
+/* Font Awesome icons inside content */
+.content i.fa-solid { margin-right: .35rem; font-size: .95em; vertical-align: text-bottom; }
 
 /* Answer blocks */
 .blocks { display: grid; gap: 18px; }
@@ -69,51 +86,23 @@ html, body { height: 100%; background: #0b0c0f; }
   border-bottom: 1px solid #232b3d; padding: 8px 12px; backdrop-filter: blur(6px);
 }
 .code-head .lang { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: #9fb4ff; }
-.code-actions{
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 28px; /* anchor height for both items */
-  min-width: 110px;
-}
-
-.code-head .btn-copy{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;           /* remove extra padding from PrimeNG text buttons */
-}
-
-.code-head .btn-copy i{
-  line-height: 1;
-  vertical-align: middle;
-  font-size: 1rem;
-}
-
+.code-actions{ position: relative; display:flex; align-items:center; justify-content:flex-end; height:28px; min-width:110px; }
+.code-head .btn-copy{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; }
+.code-head .btn-copy i{ line-height:1; vertical-align:middle; font-size:1rem; }
 .copied-pill{
-  right: 36px;          /* space before the button */
-  top: 50%;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 22px;         /* optional: lock height for consistent centering */
-  padding: 0 8px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #bfead5;
-  background: rgba(72,217,156,.12);
-  border: 1px solid rgba(72,217,156,.35);
-  border-radius: 999px;
-  pointer-events: none;
+  right: 36px; top: 50%;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 22px; padding: 0 8px; font-size: 11px; font-weight: 700;
+  color: #bfead5; background: rgba(72,217,156,.12); border: 1px solid rgba(72,217,156,.35);
+  border-radius: 999px; pointer-events: none;
 }
 
 pre {
   margin: 0; padding: 14px 16px;
   font-family: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12.9px; line-height: 1.6; color: #d7e0f7; background: #0f141c;
+  font-size: 11.9px;
+  line-height: 1.65;
+  color: #d7e0f7; background: #0f141c;
   overflow-x: auto; border-radius: 0 0 12px 12px;
 }
 code { display: block; }
@@ -125,11 +114,28 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 /* Images */
 .b-image { text-align: center; margin: 0; }
 .b-image img { border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.4); max-width: 100%; height: auto; }
-.b-image figcaption { margin-top: 8px; color: #aeb9c9; font-size: 13px; font-style: italic; }
+.b-image figcaption { margin-top: 8px; color: #aeb9c9; font-size: 12.5px; font-style: italic; }
+
+/* LIST (table) */
+.b-list { margin: 0; }
+.table-scroll { overflow: auto; border: 1px solid #1f2737; border-radius: 10px; }
+.table { width: 100%; border-collapse: collapse; min-width: 520px; background: #0f141c; }
+.table thead th {
+  position: sticky; top: 0;
+  background: linear-gradient(180deg, #0e1420, #0b1018);
+  color: #cfe0ff; font-size: 12.5px; text-align: left; padding: 10px 12px;
+  border-bottom: 1px solid #232b3d; font-weight: 800; letter-spacing: .02em;
+}
+.table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.06);
+  vertical-align: top; color: #e6e9ef; font-size: 13.2px; line-height: 1.6;
+}
+.table tbody tr:hover td { background: rgba(255,255,255,.03); }
+.tbl-caption { margin-top: 8px; color: #aeb9c9; font-size: 12.6px; text-align: center; }
 
 /* Empty */
 .empty { text-align: center; padding: 80px 0; }
-.empty-text { color: #9aa3ad; font-size: 15px; }
+.empty-text { color: #9aa3ad; font-size: 14px; }
 
 /* Scrollbars */
 .main::-webkit-scrollbar, .side::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -137,50 +143,12 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 
 /* Off-screen, fixed live region (no layout shift) */
 .sr-announcer-fixed {
-  position: fixed;
-  width: 1px; height: 1px;
-  padding: 0; margin: 0;
-  overflow: hidden; clip: rect(0,0,0,0);
-  white-space: nowrap; border: 0;
-  pointer-events: none;
-  z-index: -1;
+  position: fixed; width: 1px; height: 1px; padding: 0; margin: 0;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  pointer-events: none; z-index: -1;
 }
 
 /* Utilities */
 .line-clamp-2{
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-
-/* Center the list column inside the sidebar */
-.side {
-  display: flex;
-  flex-direction: column;
-  /* small inner padding keeps border+scrollbar away from cards */
-  padding-inline: 10px;
-}
-
-/* constrain and center the list + keep the header text aligned to it */
-.side-head,
-.side-list {
-  max-width: 240px;      /* the “column” width for cards */
-  width: 100%;
-  margin-inline: auto;   /* centers the column */
-}
-
-/* optional: center the "All Questions" label with the column */
-.side-head { padding-inline: 0; }
-
-/* make each item fill the centered column (not the whole sidebar) */
-.side-item {
-  margin: 6px 0 8px;     /* remove the old side margins */
-  width: 100%;
-}
-
-/* small polish: keep tail icon perfectly centered vertically */
-.side-item-tail {
-  display: flex;
-  align-items: center;
-}
-.side-item-tail i {
-  line-height: 1;
 }

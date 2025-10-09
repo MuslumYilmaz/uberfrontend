@@ -1,3 +1,4 @@
+/* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -25,7 +26,14 @@ type BlockImage = {
   height?: number;
   priority?: boolean;
 };
-type AnswerBlock = BlockText | BlockCode | BlockImage;
+type BlockList = {
+  type: 'list';
+  columns: string[];
+  rows: string[][];
+  caption?: string;
+};
+
+type AnswerBlock = BlockText | BlockCode | BlockImage | BlockList;
 type RichAnswer = { blocks: AnswerBlock[] } | null | undefined;
 
 type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
@@ -67,17 +75,63 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   hasNext() { return !!this.practice && this.practice.index + 1 < this.practice.items.length; }
 
   /** ============== Derived UI helpers ============== */
+
   answerIsRich = computed<boolean>(() => {
     const q = this.question();
     const a: any = q?.answer;
     return !!(a && typeof a === 'object' && Array.isArray(a.blocks));
   });
 
+  /** Does a block look like the “Still so complicated?” one? */
+  private isExtraHelpBlock(b: AnswerBlock): b is BlockText {
+    return (b as any)?.type === 'text'
+      && typeof (b as any).text === 'string'
+      && /still\s+so\s+complicated\?/i.test((b as any).text);
+  }
+
+  /** Does a block look like the “Summary” one? */
+  private isSummaryBlock(b: AnswerBlock): b is BlockText {
+    return (b as any)?.type === 'text'
+      && typeof (b as any).text === 'string'
+      && /<strong>\s*summary\s*<\/strong>|^#{1,6}\s*summary/i.test((b as any).text);
+  }
+
+  /** Strip heading/icon from a help/summary text so only body remains */
+  private stripLeadHeading(s: string): string {
+    return s.replace(
+      /^\s*(?:<i[^>]*>\s*<\/i>\s*)?(?:<strong>.*?<\/strong>|#{1,6}\s.*)\s*\n+/i,
+      ''
+    );
+  }
+
+  /** The “Still so complicated?” HTML (or null) */
+  extraHelp = computed<SafeHtml | null>(() => {
+    if (!this.answerIsRich()) return null;
+    const q = this.question();
+    const blocks = (q?.answer as RichAnswer)?.blocks ?? [];
+    const hit = blocks.find(b => this.isExtraHelpBlock(b)) as BlockText | undefined;
+    if (!hit) return null;
+    const bodyOnly = this.stripLeadHeading(hit.text || '');
+    return this.md(bodyOnly);
+  });
+
+  /** The “Summary” HTML (or null) */
+  summaryHelp = computed<SafeHtml | null>(() => {
+    if (!this.answerIsRich()) return null;
+    const q = this.question();
+    const blocks = (q?.answer as RichAnswer)?.blocks ?? [];
+    const hit = blocks.find(b => this.isSummaryBlock(b)) as BlockText | undefined;
+    if (!hit) return null;
+    const bodyOnly = this.stripLeadHeading(hit.text || '');
+    return this.md(bodyOnly);
+  });
+
+  /** Blocks for the main Answer card (exclude summary and extra-help) */
   answerBlocks = computed<AnswerBlock[]>(() => {
     const q = this.question();
     const a = q?.answer as RichAnswer;
-    if (a && a.blocks) return a.blocks;
-    return [];
+    if (!a?.blocks) return [];
+    return a.blocks.filter(b => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b));
   });
 
   constructor(
@@ -192,7 +246,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     navigator.clipboard.writeText(code ?? '').catch(() => { });
     this.copiedIndex.set(idx);
 
-    // announce (off-screen, fixed live region)
     const el = document.getElementById('sr-announcer');
     if (el) el.textContent = 'Copied to clipboard';
 
@@ -216,25 +269,88 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     return lines.map(l => l.slice(pad)).join('\n');
   }
 
-  // very small markdown-to-HTML for bold, inline code, lists, quotes, headings
+  // ================== Markdown -> HTML with a tiny HTML whitelist ==================
   md(src: unknown): SafeHtml {
-    const s = typeof src === 'string' ? src : (src && (src as any).toString ? (src as any).toString() : '');
-    const escaped = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const raw = typeof src === 'string'
+      ? src
+      : (src && (src as any).toString ? (src as any).toString() : '');
 
-    let html = escaped.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+    // Normalize CRLF
+    let text = raw.replace(/\r\n?/g, '\n');
+
+    // Ensure list/heading/quote starters begin a new paragraph
+    text = text.replace(
+      /([^\n])\n(?=([ \t]{0,3}(?:\d+\.\s|[-*]\s|#{1,3}\s|>\s)))/g,
+      '$1\n\n'
+    );
+
+    // -------- 1) Extract fenced code blocks into placeholders --------
+    const blocks: string[] = [];
+    text = text.replace(/```(\w+)?\n([\s\S]*?)\n```/g, (_m: any, lang: string | undefined, body: string) => {
+      const esc = body
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      const langClass = lang ? ` class="language-${lang}"` : '';
+      const html = `<pre class="md-pre"><code${langClass}>${esc}</code></pre>`;
+      const token = `__FENCE_BLOCK_${blocks.length}__`;
+      blocks.push(html);
+      return `\n${token}\n`;
+    });
+
+    // -------- 2) Escape everything else --------
+    let html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // -------- 3) Safely unescape a tiny, whitelisted subset of inline tags --------
+    html = html.replace(/&lt;(\/?)(strong|em|code)&gt;/g, '<$1$2>');
+    html = html.replace(/&lt;i\s+class=(?:"|')([^"'&]+)(?:"|')\s*&gt;&lt;\/i&gt;/g,
+      (_m: any, cls: string) => {
+        const classes = cls.split(/\s+/).filter(Boolean);
+        const isAllowed = classes.every(c =>
+          /^(fa|fa-solid|fa-regular|fa-brands)$/i.test(c) || /^fa-[a-z0-9-]+$/i.test(c)
+        );
+        return isAllowed ? `<i class="${classes.join(' ')}"></i>` : '';
+      }
+    );
+
+    // inline backticks + **bold**
+    html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+    // allow <pre class="md-pre">…</pre> from JSON
+    html = html.replace(
+      /&lt;pre\s+class=(?:"|')md-pre(?:"|')&gt;([\s\S]*?)&lt;\/pre&gt;/g,
+      (_m: any, inner: string) => `<pre class="md-pre">${inner}</pre>`
+    );
+
+    // Headings, lists, quotes
     html = html
       .replace(/^###\s?(.*)$/gm, '<h4 class="md-h md-h4">$1</h4>')
       .replace(/^##\s?(.*)$/gm, '<h3 class="md-h md-h3">$1</h3>')
       .replace(/^#\s?(.*)$/gm, '<h2 class="md-h md-h2">$1</h2>');
-    html = html.replace(/^(?:-|\*)\s+(.*)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)(\s*(<li>.*<\/li>))+/gms, (m: string) => `<ul class="md-ul">${m}</ul>`);
-    html = html.replace(/^\d+\.\s+(.*)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)(\s*(<li>.*<\/li>))+/gms, (m: string) => `<ol class="md-ol">${m}</ol>`);
+    html = html.replace(/^[ \t]{0,3}\d+\.\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(?:\s*<li>.*?<\/li>)+/gms, (m: string) => `<ol class="md-ol">${m}</ol>`);
+    html = html.replace(/^[ \t]{0,3}[-*]\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(?:\s*<li>.*?<\/li>)+/gms, (m: string) => `<ul class="md-ul">${m}</ul>`);
     html = html.replace(/^\>\s?(.*)$/gm, '<blockquote class="md-quote">$1</blockquote>');
+
+    // Restore fenced code blocks
+    blocks.forEach((blockHtml, i) => {
+      const token = new RegExp(`__FENCE_BLOCK_${i}__`, 'g');
+      html = html.replace(token, blockHtml);
+    });
+
+    // Paragraph splitting
     html = html
       .split(/\n{2,}/)
-      .map((chunk: string) => (/^\s*<(h\d|ul|ol|li|blockquote)/.test(chunk) ? chunk : `<p>${chunk.replace(/\n/g, '<br/>')}</p>`))
+      .map((chunk: string) =>
+        /^\s*<(h\d|ul|ol|li|blockquote|pre)/.test(chunk)
+          ? chunk
+          : `<p>${chunk.replace(/\n/g, '<br/>')}</p>`
+      )
       .join('');
 
     return this.sanitizer.bypassSecurityTrustHtml(html);

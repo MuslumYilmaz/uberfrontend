@@ -1,18 +1,16 @@
+<!-- ========================= trivia-detail.component.html ========================= -->
 <div class="page-frame">
     <!-- Sidebar -->
     <aside class="side">
         <div class="side-head">
             <div class="side-title">All Questions</div>
         </div>
-
         <ul class="side-list">
             <li *ngFor="let q of questionsList">
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
-                        <div class="side-item-desc line-clamp-2">
-                            {{ descText(q.description) }}
-                        </div>
+                        <div class="side-item-desc line-clamp-2">{{ descText(q.description) }}</div>
                     </div>
                     <div class="side-item-tail">
                         <i class="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></i>
@@ -28,7 +26,6 @@
             <!-- Title + chips -->
             <header class="title-block">
                 <h1 class="title">{{ q.title }}</h1>
-
                 <div class="meta-chips">
                     <span class="chip chip-freq">{{ importanceLabel(q.importance) }}</span>
                     <span class="chip chip-diff">{{ difficultyLabel(q.difficulty) }}</span>
@@ -36,9 +33,9 @@
                 </div>
             </header>
 
-            <!-- Question -->
+            <!-- Quick Answer -->
             <section class="card">
-                <div class="card-head">Question</div>
+                <div class="card-head">Quick Answer</div>
                 <div class="card-body">
                     <div class="content" [innerHTML]="md(descText(q.description))"></div>
                 </div>
@@ -60,12 +57,10 @@
                                 <div *ngIf="b.type === 'code'" class="block b-code">
                                     <div class="code-head">
                                         <span class="lang">{{ ($any(b).language || 'javascript') | uppercase }}</span>
-
                                         <div class="code-actions">
                                             <span class="copied-pill" *ngIf="copiedIndex() === i">
                                                 <i class="fa-solid fa-check"></i> Copied
                                             </span>
-
                                             <button pButton type="button" class="btn-copy p-button-sm p-button-text"
                                                 [title]="copiedIndex() === i ? 'Copied' : 'Copy to clipboard'"
                                                 (click)="copy($any(b).code, i)">
@@ -74,12 +69,8 @@
                                             </button>
                                         </div>
                                     </div>
-
                                     <pre class="line-numbers">
-                    <code prism
-                          [lang]="$any(b).language || 'javascript'"
-                          [code]="dedent($any(b).code)">
-                    </code>
+<code prism [lang]="$any(b).language || 'javascript'" [code]="dedent($any(b).code)"></code>
                   </pre>
                                 </div>
 
@@ -89,6 +80,26 @@
                                         [width]="$any(b).width || null" [height]="$any(b).height || null" loading="lazy"
                                         decoding="async" />
                                     <figcaption *ngIf="$any(b).caption as cap">{{ cap }}</figcaption>
+                                </figure>
+
+                                <!-- LIST (table) -->
+                                <figure *ngIf="b.type === 'list'" class="block b-list">
+                                    <div class="table-scroll" role="region" aria-label="comparison table">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th *ngFor="let col of $any(b).columns" [innerHTML]="md(col)"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let row of $any(b).rows">
+                                                    <td *ngFor="let cell of row" [innerHTML]="md(cell)"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <figcaption *ngIf="$any(b).caption as cap" class="tbl-caption">{{ cap }}
+                                    </figcaption>
                                 </figure>
                             </ng-container>
                         </div>
@@ -103,6 +114,22 @@
                     </ng-template>
                 </div>
             </section>
+
+            <!-- Still so complicated? -->
+            <section class="card" *ngIf="extraHelp()">
+                <div class="card-head">Still so complicated?</div>
+                <div class="card-body tip-body">
+                    <div class="content" [innerHTML]="extraHelp()"></div>
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section class="card" *ngIf="summaryHelp()">
+                <div class="card-head">Summary</div>
+                <div class="card-body">
+                    <div class="content" [innerHTML]="summaryHelp()"></div>
+                </div>
+            </section>
         </div>
 
         <ng-template #missing>
@@ -113,7 +140,7 @@
     </main>
 </div>
 
-<!-- Global a11y announcer (fixed off-screen, never affects layout) -->
+<!-- Global a11y announcer (fixed off-screen, no layout shift) -->
 <div id="sr-announcer" aria-live="polite" class="sr-announcer-fixed"></div>
 
 <!-- Footer -->
