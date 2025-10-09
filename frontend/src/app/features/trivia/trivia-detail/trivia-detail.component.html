@@ -10,7 +10,6 @@
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
-                        <div class="side-item-desc line-clamp-2">{{ descText(q.description) }}</div>
                     </div>
                     <div class="side-item-tail">
                         <i class="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></i>

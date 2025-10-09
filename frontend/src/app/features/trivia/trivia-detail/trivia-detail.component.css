@@ -39,8 +39,25 @@ html, body { height: 100%; background: #0b0c0f; }
 /* Title */
 .title-block { position: sticky; top: 0; z-index: 2; padding: 6px 0 10px; background: linear-gradient(180deg, rgba(11,12,15,.95), rgba(11,12,15,.85), transparent); backdrop-filter: blur(2px); }
 .title { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; margin: 0; }
+
+/* Chips */
 .meta-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-.chip { height: 26px; padding: 0 10px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,.1); color: #cfd6e6; }
+.chip {
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,.1);
+  color: #cfd6e6;
+
+  /* center text */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;            /* avoid baseline offset */
+  vertical-align: middle;    /* for inline alignment with neighbors */
+}
 .chip-freq { border-color: rgba(72,217,156,.25); color: #bfead5; }
 .chip-diff { border-color: rgba(102,153,255,.25); color: #cfe0ff; }
 .chip-tech { border-color: rgba(196,162,255,.25); color: #e3d7ff; }
