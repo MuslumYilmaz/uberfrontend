@@ -99,10 +99,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   /** Strip heading/icon from a help/summary text so only body remains */
   private stripLeadHeading(s: string): string {
     return s.replace(
-      /^\s*(?:<i[^>]*>\s*<\/i>\s*)?(?:<strong>.*?<\/strong>|#{1,6}\s.*)\s*\n+/i,
+      /^\s*(?:<i[^>]*>\s*<\/i>\s*)?(?:<strong>.*?<\/strong>|#{1,6}\s.*)\s*(?:\n|<br\s*\/?>)+/i,
       ''
     );
   }
+
 
   /** The “Still so complicated?” HTML (or null) */
   extraHelp = computed<SafeHtml | null>(() => {
@@ -270,6 +271,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   // ================== Markdown -> HTML with a tiny HTML whitelist ==================
+  // 2) Full, corrected md()
   md(src: unknown): SafeHtml {
     const raw = typeof src === 'string'
       ? src
@@ -304,9 +306,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // -------- 3) Safely unescape a tiny, whitelisted subset of inline tags --------
-    html = html.replace(/&lt;(\/?)(strong|em|code)&gt;/g, '<$1$2>');
-    html = html.replace(/&lt;i\s+class=(?:"|')([^"'&]+)(?:"|')\s*&gt;&lt;\/i&gt;/g,
+    // -------- 3) Font Awesome <i class="..."></i> — handle first --------
+    html = html.replace(
+      /&lt;i\s+class=(?:"|')([^"'&]+)(?:"|')\s*&gt;(?:&lt;\/i&gt;|<\/i>)/g,
       (_m: any, cls: string) => {
         const classes = cls.split(/\s+/).filter(Boolean);
         const isAllowed = classes.every(c =>
@@ -316,34 +318,53 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       }
     );
 
-    // inline backticks + **bold**
+    // -------- 4) Unescape a tiny whitelist of real tags (NO <i> here) --------
+    html = html.replace(
+      /&lt;(\/?)(strong|em|code|ul|li|ol|br|b|table|thead|tbody|tr|th|td|blockquote|h[1-6])&gt;/g,
+      '<$1$2>'
+    );
+
+    // -------- 4b) Any remaining escaped tag *names* => show as literal code --------
+    // (Happens in prose like: "Here, &lt;b&gt; is only used…")
+    html = html.replace(
+      /&lt;\/?(?:strong|b|em|i|u|small|mark|del|code|br|span|div|p|h[1-6])&gt;/g,
+      (m: string) => `<code>${m}</code>`
+    );
+
+    // Inline backticks + **bold**
     html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
-    // allow <pre class="md-pre">…</pre> from JSON
+    // Allow <pre class="md-pre">…</pre> explicitly present in JSON
     html = html.replace(
       /&lt;pre\s+class=(?:"|')md-pre(?:"|')&gt;([\s\S]*?)&lt;\/pre&gt;/g,
       (_m: any, inner: string) => `<pre class="md-pre">${inner}</pre>`
     );
 
-    // Headings, lists, quotes
+    // Headings
     html = html
       .replace(/^###\s?(.*)$/gm, '<h4 class="md-h md-h4">$1</h4>')
       .replace(/^##\s?(.*)$/gm, '<h3 class="md-h md-h3">$1</h3>')
       .replace(/^#\s?(.*)$/gm, '<h2 class="md-h md-h2">$1</h2>');
+
+    // Ordered lists
     html = html.replace(/^[ \t]{0,3}\d+\.\s+(.+)$/gm, '<li>$1</li>');
     html = html.replace(/(?:\s*<li>.*?<\/li>)+/gms, (m: string) => `<ol class="md-ol">${m}</ol>`);
+
+    // Unordered lists
     html = html.replace(/^[ \t]{0,3}[-*]\s+(.+)$/gm, '<li>$1</li>');
     html = html.replace(/(?:\s*<li>.*?<\/li>)+/gms, (m: string) => `<ul class="md-ul">${m}</ul>`);
+
+    // Blockquotes (already whitelisted above too)
     html = html.replace(/^\>\s?(.*)$/gm, '<blockquote class="md-quote">$1</blockquote>');
 
-    // Restore fenced code blocks
+    // -------- 5) Restore fenced code blocks --------
     blocks.forEach((blockHtml, i) => {
       const token = new RegExp(`__FENCE_BLOCK_${i}__`, 'g');
       html = html.replace(token, blockHtml);
     });
 
-    // Paragraph splitting
+    // -------- 6) Paragraph splitting --------
     html = html
       .split(/\n{2,}/)
       .map((chunk: string) =>
@@ -355,4 +376,5 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
+
 }
