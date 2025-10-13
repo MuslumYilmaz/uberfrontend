@@ -1,56 +1,2334 @@
 [
     {
-        "id": "angular-ngzone",
-        "title": "What is NgZone?",
-        "description": "Explain the purpose of `NgZone` in Angular and how you can use it to run code outside of Angular's change detection.",
-        "type": "trivia",
+        "id": "angular-introduction",
+        "title": "What is Angular?",
         "technology": "angular",
-        "difficulty": "advanced",
-        "tags": [
-            "ngzone",
-            "change-detection"
-        ],
+        "difficulty": "easy",
         "importance": 5,
-        "companies": [
-            "google",
-            "microsoft",
-            "uber"
-        ]
+        "description": "Angular is a powerful, full-featured front-end framework developed and maintained by Google. It is designed for building dynamic, single-page web applications (SPAs) with a strong focus on scalability, maintainability, and performance. Angular provides a complete ecosystem with built-in support for components, dependency injection, routing, forms, and reactive programming using RxJS.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Angular is a TypeScript-based open-source front-end framework created by Google for building robust, maintainable, and scalable web applications. It follows a component-driven architecture, where each part of the user interface is defined as a reusable component. Angular is not just a library like React — it is a full framework that provides all the essential tools for modern web development, including routing, state management, forms, HTTP communication, and testing support."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Characteristics</strong><br>Angular is known for its opinionated structure, which enforces consistency and best practices across teams. It uses TypeScript, a superset of JavaScript that adds static typing and advanced tooling. This allows developers to write cleaner, safer, and more maintainable code while benefiting from strong IDE support and autocomplete features."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            "Component-Based Architecture",
+                            "Applications are built using modular, reusable components that define their own template, styles, and logic."
+                        ],
+                        [
+                            "Dependency Injection",
+                            "A powerful design pattern that manages how components acquire their dependencies, improving flexibility and testability."
+                        ],
+                        [
+                            "Two-Way Data Binding",
+                            "Synchronizes data between the model and view layers automatically, reducing boilerplate code."
+                        ],
+                        [
+                            "Reactive Programming with RxJS",
+                            "Angular embraces reactive streams, enabling developers to handle asynchronous data efficiently."
+                        ],
+                        [
+                            "Routing and Navigation",
+                            "Built-in RouterModule allows the creation of multi-view single-page applications (SPAs) with dynamic route management."
+                        ],
+                        [
+                            "Ahead-of-Time (AOT) Compilation",
+                            "Compiles templates at build time, improving performance by reducing the amount of work the browser does."
+                        ],
+                        [
+                            "CLI Tooling",
+                            "The Angular CLI provides commands for scaffolding components, building projects, running tests, and deploying applications."
+                        ]
+                    ],
+                    "caption": "Core features that make Angular a complete front-end framework"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Basic Angular Component\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-hello',\n  template: `<h1>Hello, {{ name }}!</h1>`,\n  styles: ['h1 { color: #007bff; }']\n})\nexport class HelloComponent {\n  name = 'Angular Developer';\n}\n\n// This component defines its selector, template, and logic in one place."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Angular Works</strong><br><br>When an Angular application runs, it bootstraps a root module that defines how the app is structured. Each module groups together related components, services, and directives. Angular’s change detection system tracks data changes and updates the DOM automatically, ensuring that the UI always reflects the current application state."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Angular Architecture</strong><br><ul><li><strong>Modules (NgModules):</strong> Group components, services, and pipes logically, making the app scalable and maintainable.</li><li><strong>Components:</strong> The fundamental building blocks of the UI, combining HTML templates, CSS, and TypeScript logic.</li><li><strong>Templates:</strong> Define the structure and appearance of the component’s view using Angular’s declarative syntax and directives.</li><li><strong>Services:</strong> Contain shared logic or data fetching operations, often injected into components via dependency injection.</li><li><strong>Directives:</strong> Extend HTML capabilities by adding custom behaviors to DOM elements.</li><li><strong>Pipes:</strong> Transform displayed data in templates (e.g., currency, date, or custom formats).</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Example of Data Binding</strong><br>Angular supports multiple binding types, including property binding, event binding, and two-way data binding. This helps keep the UI and logic synchronized seamlessly."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example: Two-way data binding -->\n<input [(ngModel)]=\"username\" placeholder=\"Enter your name\" />\n<p>Hello, {{ username }}!</p>\n\n<!-- As you type in the input, the paragraph updates instantly -->"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Using Angular</strong><br><ul><li>Comprehensive framework — includes everything from routing to forms and HTTP services.</li><li>Consistent structure and coding conventions enforced through TypeScript and CLI tooling.</li><li>Enterprise-grade scalability and maintainability.</li><li>Reactive architecture for handling real-time data efficiently.</li><li>Rich ecosystem and long-term support from Google.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When to Use Angular</strong><br>Angular is particularly well-suited for large-scale enterprise applications where consistency, modularity, and long-term maintainability are important. It’s ideal for dashboards, data-intensive SPAs, and projects requiring complex UI states or real-time interactions."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular as an all-in-one framework: it gives you the structure, patterns, and tools to build everything from small prototypes to massive enterprise-level applications efficiently."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Angular is a full-featured, TypeScript-based front-end framework maintained by Google.</li><li>It uses components, modules, and dependency injection for building scalable applications.</li><li>With built-in tools like the CLI, RxJS, and routing, Angular offers a complete development ecosystem out of the box.</li><li>It emphasizes performance, maintainability, and enterprise-level consistency.</li></ul>"
+                }
+            ]
+        }
     },
     {
-        "id": "angular-lifecycle",
-        "title": "Lifecycle Hooks Order",
-        "description": "List the Angular component lifecycle hooks in the order they are called from creation to destruction.",
-        "type": "trivia",
+        "id": "angular-vs-angularjs",
+        "title": "What is the difference between Angular and AngularJS?",
         "technology": "angular",
-        "difficulty": "intermediate",
-        "tags": [
-            "lifecycle",
-            "hooks"
-        ],
-        "importance": 4,
-        "companies": [
-            "google",
-            "apple",
-            "microsoft"
-        ]
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Angular (also known as Angular 2+) is a complete rewrite of AngularJS (Angular 1.x). While AngularJS is based on JavaScript and the Model-View-Controller (MVC) pattern, Angular is built using TypeScript and follows a component-based architecture with enhanced performance, modularity, and maintainability.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Angular and AngularJS are both frameworks developed by Google, but they are fundamentally different technologies. AngularJS (released in 2010) was designed for simpler web applications using JavaScript and the MVC model. Angular (released in 2016) is a complete reimagining of the framework, using TypeScript, a modern component architecture, and advanced features like RxJS and Ahead-of-Time (AOT) compilation."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Aspect",
+                        "AngularJS (1.x)",
+                        "Angular (2+)"
+                    ],
+                    "rows": [
+                        [
+                            "Language",
+                            "Written in JavaScript (ES5).",
+                            "Written in TypeScript, a superset of JavaScript offering static typing."
+                        ],
+                        [
+                            "Architecture",
+                            "Follows MVC or MVVM design patterns.",
+                            "Uses a component-based architecture for modular and reusable code."
+                        ],
+                        [
+                            "Mobile Support",
+                            "Limited; not designed for mobile apps.",
+                            "Built with mobile-first performance optimization."
+                        ],
+                        [
+                            "Performance",
+                            "Two-way data binding for all elements, which can slow large apps.",
+                            "Improved with unidirectional data flow and a more efficient change detection mechanism."
+                        ],
+                        [
+                            "Dependency Injection",
+                            "Basic and less flexible.",
+                            "Robust dependency injection system for scalable applications."
+                        ],
+                        [
+                            "Routing",
+                            "Uses third-party libraries for routing.",
+                            "Includes a built-in and powerful Angular Router."
+                        ],
+                        [
+                            "Templating",
+                            "Uses strings with expressions inside HTML.",
+                            "Uses powerful, declarative templates with structural directives like *ngIf and *ngFor."
+                        ],
+                        [
+                            "Tooling",
+                            "No CLI; manual setup required.",
+                            "Includes Angular CLI for project scaffolding, builds, and testing."
+                        ],
+                        [
+                            "Versioning",
+                            "Single major version (1.x).",
+                            "Actively maintained with continuous updates (Angular 2+)."
+                        ],
+                        [
+                            "Learning Curve",
+                            "Easier for small apps but limited for large-scale development.",
+                            "More complex initially, but better suited for enterprise applications."
+                        ]
+                    ],
+                    "caption": "Major differences between AngularJS and Angular"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Angular Replaced AngularJS</strong><br>AngularJS’s digest cycle and two-way binding mechanism caused performance bottlenecks in large-scale apps. Angular was rebuilt from scratch to overcome these limitations, adopting a modular approach with better dependency management, improved performance, and compatibility with modern browsers and tools."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- AngularJS syntax -->\n<div ng-app=\"app\" ng-controller=\"MainCtrl\">\n  <h1>{{ message }}</h1>\n</div>\n\n<!-- Angular syntax -->\n<app-root></app-root>\n\n// Angular components are defined in TypeScript rather than JavaScript controllers."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Improvements in Angular</strong><br><ul><li>Component-based structure improves reusability and maintainability.</li><li>Enhanced tooling with Angular CLI for faster development.</li><li>Reactive programming support through RxJS for handling asynchronous data.</li><li>Faster rendering and improved performance with Ahead-of-Time compilation.</li><li>Stronger typing and IntelliSense support with TypeScript integration.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> In short: AngularJS introduced the idea of declarative web apps, while Angular made it scalable, maintainable, and ready for modern web development."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>AngularJS is JavaScript-based and uses controllers and scopes.</li><li>Angular is TypeScript-based and uses components and modules.</li><li>Angular offers better performance, scalability, and developer tooling.</li><li>They are not backward-compatible — migrating requires rewriting major parts of the application.</li></ul>"
+                }
+            ]
+        }
     },
     {
-        "id": "angular-change-strategy",
-        "title": "Change Detection Strategies",
-        "description": "Compare `OnPush` and default change detection strategies in Angular. When and why would you use `OnPush`?",
-        "type": "trivia",
+        "id": "angular-component-definition",
+        "title": "What is a component in Angular?",
         "technology": "angular",
-        "difficulty": "intermediate",
-        "tags": [
-            "change-detection",
-            "performance"
-        ],
-        "importance": 3,
-        "companies": [
-            "google",
-            "airbnb",
-            "meta"
-        ]
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "A component in Angular is the fundamental building block of the user interface. It controls a portion of the view, encapsulating HTML, CSS, and TypeScript logic in a cohesive, reusable unit.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, everything revolves around <em>components</em>. A component is a self-contained unit that defines a section of the user interface. Each component consists of three main parts: the HTML template (view), the CSS styles (design), and the TypeScript class (logic). Together, these form the core structure of an Angular application."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Core Responsibilities</strong><br>Components are responsible for rendering data, handling user interactions, and managing UI behavior. They communicate with other components via <em>inputs</em> and <em>outputs</em>, making the architecture modular and scalable."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example of a basic Angular component\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-welcome',           // Defines the custom HTML tag\n  template: `<h1>Welcome, {{ name }}!</h1>`, // Defines the view\n  styles: ['h1 { color: #007ACC; font-family: Arial, sans-serif; }'] // Defines the styles\n})\nexport class WelcomeComponent {\n  name = 'Angular Developer'; // Component property used in the template\n}"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Part",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            "@Component Decorator",
+                            "Marks a class as an Angular component and provides metadata like selector, template, and styles."
+                        ],
+                        [
+                            "Selector",
+                            "Specifies the HTML tag where the component will be used (e.g., <app-welcome>)."
+                        ],
+                        [
+                            "Template",
+                            "Defines the component’s view — what the user sees on the screen."
+                        ],
+                        [
+                            "Styles",
+                            "Contain CSS that applies specifically to this component."
+                        ],
+                        [
+                            "Class",
+                            "Holds the component’s data and logic written in TypeScript."
+                        ]
+                    ],
+                    "caption": "Key parts of an Angular component"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Components Work</strong><br>When Angular starts an application, it bootstraps a root component (commonly <code>AppComponent</code>). This root component contains other child components, forming a hierarchical tree structure. Data and events flow between these components, making the UI dynamic and interactive."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example usage of a component -->\n<app-welcome></app-welcome>\n<!-- This will render 'Welcome, Angular Developer!' on the page. -->"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Component Lifecycle</strong><br>Each component goes through a lifecycle managed by Angular — from creation to destruction. You can hook into these stages using lifecycle methods such as <code>ngOnInit()</code>, <code>ngOnChanges()</code>, and <code>ngOnDestroy()</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Using Components</strong><br><ul><li>Encapsulation of logic, view, and styles within a single unit.</li><li>Reusability across different parts of the application.</li><li>Improved maintainability and scalability.</li><li>Easy unit testing and debugging due to isolated scope.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Example of Parent-Child Communication</strong><br>Components can exchange data using <code>@Input()</code> and <code>@Output()</code> decorators. This enables flexible and modular app design."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// child.component.ts\n@Component({ selector: 'app-child', template: `<p>{{ message }}</p>` })\nexport class ChildComponent {\n  @Input() message!: string;\n}\n\n// parent.component.html\n<app-child [message]=\"'Hello from Parent!'\" />"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of components as Lego blocks — each one serves a specific purpose, and when combined, they form the complete structure of your Angular application."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Components are the building blocks of Angular applications.</li><li>They combine template, styles, and logic in a single class.</li><li>They promote modularity, reusability, and cleaner application architecture.</li><li>Angular applications are essentially a tree of interconnected components.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-component-decorator",
+        "title": "What is the purpose of the @Component decorator?",
+        "technology": "angular",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The @Component decorator in Angular marks a class as an Angular component and provides metadata that tells Angular how to process, instantiate, and use that component within the application.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>@Component</code> decorator is a core feature of Angular. It is used to define and configure a component — the fundamental building block of Angular applications. This decorator provides Angular with the necessary metadata to understand how to render the component’s template, apply its styles, and manage its behavior in the application."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-profile',\n  templateUrl: './profile.component.html',\n  styleUrls: ['./profile.component.css']\n})\nexport class ProfileComponent {\n  name = 'John Doe';\n  age = 30;\n}"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Property",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            "selector",
+                            "Defines the custom HTML tag that represents the component in templates (e.g., <app-profile>)."
+                        ],
+                        [
+                            "template or templateUrl",
+                            "Specifies the component’s HTML structure. Can be defined inline (template) or in a separate file (templateUrl)."
+                        ],
+                        [
+                            "styles or styleUrls",
+                            "Defines the CSS styles for the component, either inline or in an external stylesheet."
+                        ],
+                        [
+                            "providers",
+                            "Registers services or dependencies available only to this component and its children."
+                        ],
+                        [
+                            "animations",
+                            "Defines animation triggers specific to this component."
+                        ]
+                    ],
+                    "caption": "Common metadata properties used in the @Component decorator"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>The <code>@Component</code> decorator associates metadata with the class it decorates. This metadata guides Angular on how to create and display the component. When Angular compiles the application, it uses this metadata to generate the component’s view and attach it to the DOM."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Using the selector to display the component -->\n<app-profile></app-profile>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Example Explained</strong><br>In the example above:<ul><li>The <code>selector</code> defines the component’s tag name (<app-profile>).</li><li>The <code>templateUrl</code> points to an external HTML file that defines the UI.</li><li>The <code>styleUrls</code> property links to external CSS styles.</li><li>The <code>ProfileComponent</code> class contains the logic and data bound to the template.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why @Component Is Essential</strong><br><ul><li>It connects your TypeScript logic to the HTML template and styles.</li><li>It defines how Angular identifies and renders the component.</li><li>It allows encapsulation of behavior, template, and styling.</li><li>It helps in building modular and maintainable applications.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> The @Component decorator is like the blueprint that tells Angular how to construct and display a piece of your user interface."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>The @Component decorator defines an Angular component by attaching metadata.</li><li>It specifies properties such as selector, template, and styles.</li><li>It helps Angular understand how to create, render, and manage the component.</li><li>Every component in Angular must use @Component to function correctly.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-module-definition",
+        "title": "What is a module in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "A module in Angular (represented by a class decorated with @NgModule) is a container that organizes related components, directives, pipes, and services into cohesive blocks of functionality. Modules help structure large applications into manageable sections and enable features like lazy loading.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, a <strong>module</strong> is a logical container that groups together related parts of an application — such as components, directives, pipes, and services. Every Angular application has at least one module, the <code>AppModule</code>, which serves as the root module. Modules help organize the codebase and make it more modular, scalable, and maintainable."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>What is @NgModule?</strong><br>The <code>@NgModule</code> decorator is used to define an Angular module. It provides metadata that describes how to compile and launch the application, specifying which components belong to the module and what other modules are imported or exported."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { FormsModule } from '@angular/forms';\nimport { AppComponent } from './app.component';\nimport { UserComponent } from './user/user.component';\n\n@NgModule({\n  declarations: [AppComponent, UserComponent], // Components, directives, pipes\n  imports: [BrowserModule, FormsModule],        // Other Angular modules\n  providers: [],                                // Services and dependencies\n  bootstrap: [AppComponent]                     // Root component to start the app\n})\nexport class AppModule {}"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Property",
+                        "Purpose"
+                    ],
+                    "rows": [
+                        [
+                            "declarations",
+                            "Lists the components, directives, and pipes that belong to this module."
+                        ],
+                        [
+                            "imports",
+                            "Imports other modules that export components, directives, or services required by this module."
+                        ],
+                        [
+                            "providers",
+                            "Defines services available for dependency injection within the module."
+                        ],
+                        [
+                            "exports",
+                            "Makes components, directives, and pipes available to other modules."
+                        ],
+                        [
+                            "bootstrap",
+                            "Specifies the root component that Angular should load when the app starts."
+                        ]
+                    ],
+                    "caption": "Key properties of the @NgModule decorator"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Types of Angular Modules</strong><br><ul><li><strong>Root Module:</strong> The main module that bootstraps the application (usually AppModule).</li><li><strong>Feature Modules:</strong> Organize specific functionality (e.g., UserModule, ProductModule).</li><li><strong>Shared Modules:</strong> Contain reusable components, directives, and pipes shared across modules.</li><li><strong>Core Module:</strong> Holds singleton services used throughout the app.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Modules Matter</strong><br><ul><li>They enable code organization and separation of concerns.</li><li>They improve maintainability and scalability in large applications.</li><li>They support lazy loading, allowing parts of the application to load only when needed, improving performance.</li><li>They control the visibility and scope of components and services within the app.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Feature module for user management\n@NgModule({\n  declarations: [UserListComponent, UserDetailComponent],\n  imports: [CommonModule, FormsModule],\n  exports: [UserListComponent]\n})\nexport class UserModule {}"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of a module as a folder or container that keeps all related functionalities together — just like organizing files into folders for better structure."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>An Angular module is a class decorated with @NgModule.</li><li>It groups related components, directives, pipes, and services.</li><li>The root module (AppModule) bootstraps the application.</li><li>Feature, Shared, and Core modules improve organization and reusability.</li><li>Modules make applications scalable, modular, and maintainable.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-appmodule-role",
+        "title": "What is the role of AppModule in an Angular application?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "The AppModule is the root module of every Angular application. It acts as the main entry point that Angular uses to bootstrap and launch the application. It declares all the root-level components, imports other feature modules, and provides configuration for services used throughout the app.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, <code>AppModule</code> serves as the main, or root, module that defines the foundational structure of the application. Every Angular app must have at least one module, and this module is decorated with <code>@NgModule</code>. It acts as the central hub that ties together components, directives, services, and other modules to make the application functional."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Purpose of AppModule</strong><br>The <code>AppModule</code> defines which components will be available throughout the app, what external modules will be imported, and which component should be bootstrapped first when the application starts. Essentially, it provides Angular with the map of how to assemble the application at runtime."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { AppRoutingModule } from './app-routing.module';\nimport { AppComponent } from './app.component';\nimport { HeaderComponent } from './components/header/header.component';\n\n@NgModule({\n  declarations: [AppComponent, HeaderComponent],  // Components belonging to this module\n  imports: [BrowserModule, AppRoutingModule],     // External modules used by this module\n  providers: [],                                  // Global services\n  bootstrap: [AppComponent]                       // The root component that starts the app\n})\nexport class AppModule {}"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Property",
+                        "Purpose"
+                    ],
+                    "rows": [
+                        [
+                            "declarations",
+                            "Lists components, directives, and pipes that belong to this module."
+                        ],
+                        [
+                            "imports",
+                            "Brings in other modules that export components or functionalities used here (e.g., FormsModule, HttpClientModule)."
+                        ],
+                        [
+                            "providers",
+                            "Defines global services or dependencies available across the app."
+                        ],
+                        [
+                            "bootstrap",
+                            "Specifies the root component that Angular loads to launch the app (usually AppComponent)."
+                        ]
+                    ],
+                    "caption": "Core configuration properties in AppModule"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How AppModule Works</strong><br>When the application starts, Angular uses the <code>main.ts</code> file to bootstrap the <code>AppModule</code>. This module, in turn, bootstraps the <code>AppComponent</code>, which serves as the top-level component containing all other components in the UI hierarchy."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// main.ts\nimport { platformBrowserDynamic } from '@angular/platform-browser-dynamic';\nimport { AppModule } from './app/app.module';\n\nplatformBrowserDynamic().bootstrapModule(AppModule)\n  .catch(err => console.error(err));"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Responsibilities of AppModule</strong><br><ul><li>Defines the entry point for the Angular application.</li><li>Declares the root component (AppComponent) that acts as the main container for other components.</li><li>Imports feature modules and shared modules.</li><li>Registers global services using the providers array.</li><li>Initializes the Angular application when it boots up.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Example Structure of an Angular App</strong><br>\nAppModule (Root Module)\n│\n├── AppComponent (Root Component)\n│   ├── HeaderComponent\n│   ├── SidebarComponent\n│   └── ContentComponent\n│\n├── SharedModule\n└── FeatureModules (e.g., UserModule, ProductModule)\n"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of the <strong>AppModule</strong> as the main conductor of an orchestra — it ensures all parts of the application play in harmony by bringing together different modules, components, and services."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>AppModule</code> is the root module of every Angular application.</li><li>It declares the main component and imports all required feature modules.</li><li>It provides global configurations and dependencies.</li><li>It is bootstrapped first to start the Angular application lifecycle.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-templates-definition",
+        "title": "What are templates in Angular?",
+        "technology": "angular",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "Templates in Angular define the HTML structure and layout for a component’s view. They combine standard HTML with Angular’s template syntax, such as data binding, directives, and pipes, to dynamically render data and control the UI.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, a <strong>template</strong> is the HTML markup that defines what gets displayed in the browser. It represents the view of a component and uses Angular’s special syntax to display data, handle events, and control the rendering of elements dynamically. Templates connect a component’s logic (TypeScript class) to the user interface (HTML)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Template Structure</strong><br>A template can include plain HTML along with Angular-specific features like:<ul><li><strong>Interpolation ({{ }})</strong> — To display component data.</li><li><strong>Property Binding ([ ])</strong> — To bind DOM element properties to component properties.</li><li><strong>Event Binding (( ))</strong> — To listen for user actions like clicks or input changes.</li><li><strong>Directives</strong> — Such as <code>*ngIf</code>, <code>*ngFor</code>, and <code>[ngClass]</code> to conditionally render or manipulate elements.</li><li><strong>Pipes</strong> — To format and transform displayed data (e.g., dates, currencies).</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example of an Angular template -->\n<div class=\"user-card\">\n  <h2>{{ user.name }}</h2>\n  <p>Email: {{ user.email }}</p>\n\n  <button (click)=\"sendMessage()\">Send Message</button>\n\n  <p *ngIf=\"user.isActive\" class=\"status active\">Active User</p>\n  <p *ngIf=\"!user.isActive\" class=\"status inactive\">Inactive User</p>\n</div>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Inline vs External Templates</strong><br>Angular allows defining templates in two ways:<ul><li><strong>Inline Template:</strong> Defined directly within the component using the <code>template</code> property.</li><li><strong>External Template:</strong> Stored in a separate HTML file and referenced using the <code>templateUrl</code> property.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Inline Template Example\n@Component({\n  selector: 'app-greeting',\n  template: `<h1>Hello, {{ name }}!</h1>`\n})\nexport class GreetingComponent {\n  name = 'Angular';\n}\n\n// External Template Example\n@Component({\n  selector: 'app-profile',\n  templateUrl: './profile.component.html'\n})\nexport class ProfileComponent {\n  // Component logic\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Templates Work</strong><br>Templates are compiled by Angular’s template compiler, which converts the HTML and bindings into efficient JavaScript instructions. These instructions update the DOM automatically whenever the underlying data changes, ensuring real-time synchronization between the UI and application logic."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Templates Are Important</strong><br><ul><li>They define how the user interface looks and behaves.</li><li>They enable dynamic content rendering through bindings and directives.</li><li>They bridge the gap between the data model and the visual presentation.</li><li>They make components reusable and maintainable by keeping structure and logic separate.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of a template as the 'face' of your component — it’s where your logic meets the user, translating data into a visual interface."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Templates define the structure and layout of a component’s view.</li><li>They combine HTML with Angular syntax like bindings and directives.</li><li>They can be inline (in the component) or external (in a separate HTML file).</li><li>Templates dynamically update the DOM based on data changes in the component.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-data-binding",
+        "title": "What is data binding in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Data binding in Angular is a powerful mechanism that connects a component’s TypeScript logic with its HTML template, allowing dynamic synchronization of data between the model and the view. It ensures that changes in the data automatically reflect in the UI and vice versa, depending on the binding type used.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Data binding is one of the core features of Angular. It allows seamless communication between the TypeScript class (component logic) and the HTML template (view). With data binding, you can dynamically display data, respond to user input, and modify application state without manually manipulating the DOM. This keeps the code cleaner, more maintainable, and aligned with Angular’s declarative approach."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Data Binding Matters</strong><br>Without data binding, developers would have to manually update the DOM elements whenever data changes. Angular automates this process through its powerful change detection mechanism, ensuring that the user interface always reflects the latest state of the underlying model."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Type of Binding",
+                        "Description",
+                        "Syntax Example"
+                    ],
+                    "rows": [
+                        [
+                            "Interpolation",
+                            "Displays component data in the HTML template.",
+                            "{{ propertyName }}"
+                        ],
+                        [
+                            "Property Binding",
+                            "Binds a component property to a DOM element’s attribute or property.",
+                            "[property]=\"expression\""
+                        ],
+                        [
+                            "Event Binding",
+                            "Listens for user actions like clicks, keystrokes, or mouse movements and triggers methods in the component.",
+                            "(event)=\"handlerFunction()\""
+                        ],
+                        [
+                            "Two-Way Binding",
+                            "Combines property and event binding to keep the component and the UI in sync.",
+                            "[(ngModel)]=\"propertyName\""
+                        ]
+                    ],
+                    "caption": "The four main types of data binding in Angular"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example: All types of data binding -->\n<h2>{{ title }}</h2> <!-- Interpolation -->\n<img [src]=\"imageUrl\" /> <!-- Property Binding -->\n<button (click)=\"onClick()\">Click Me</button> <!-- Event Binding -->\n<input [(ngModel)]=\"username\" placeholder=\"Enter name\" /> <!-- Two-Way Binding -->"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>Angular’s change detection mechanism tracks variable updates inside the component. When data changes, the framework automatically updates the corresponding DOM elements in the template. Similarly, user interactions can modify component variables, creating a continuous feedback loop between the model and the view."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Data Binding</strong><br><ul><li>Eliminates the need for manual DOM manipulation.</li><li>Keeps the UI and business logic in sync automatically.</li><li>Improves code readability and maintainability.</li><li>Supports both one-way and two-way data flow depending on the requirement.</li><li>Facilitates modular, testable, and reactive application architecture.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of data binding as a two-way communication channel — it ensures that when your data changes, your UI updates, and when the user interacts with your UI, your data changes accordingly."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Data binding connects the component (logic) and template (view) in Angular.</li><li>It provides four main binding types: interpolation, property, event, and two-way binding.</li><li>It helps maintain dynamic and reactive UIs without direct DOM manipulation.</li><li>It forms the foundation for Angular’s declarative and reactive design pattern.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-interpolation-vs-property-binding",
+        "title": "What is the difference between interpolation and property binding?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Both interpolation and property binding in Angular are used to display dynamic data in templates, but they differ in syntax and use cases. Interpolation binds data as text within HTML, while property binding binds data directly to DOM element properties or attributes.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Interpolation (<code>{{ }}</code>) and property binding (<code>[ ]</code>) are both one-way data binding techniques in Angular. They transfer data from the component class to the template, ensuring that the view displays up-to-date information. However, they differ in how they interact with the DOM and the types of values they can handle."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Interpolation</strong><br>Interpolation is used to embed component data into the template as plain text. It evaluates an expression and converts the result into a string, which Angular inserts into the DOM at runtime. Interpolation can be used inside text nodes or attribute values (with limitations)."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Interpolation Example -->\n<h1>Welcome, {{ userName }}!</h1>\n<p>Your score: {{ score + 10 }}</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Property Binding</strong><br>Property binding binds component properties directly to DOM element properties or attributes. This allows dynamic updates to element values, states, and styles — not just text. Property binding is more versatile and supports non-string data types such as numbers, booleans, and objects."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Property Binding Example -->\n<img [src]=\"profileImageUrl\" [alt]=\"userName\" />\n<button [disabled]=\"isDisabled\">Submit</button>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Interpolation",
+                        "Property Binding"
+                    ],
+                    "rows": [
+                        [
+                            "Purpose",
+                            "Display data as text in HTML templates.",
+                            "Bind component properties to DOM element attributes or properties."
+                        ],
+                        [
+                            "Syntax",
+                            "{{ propertyName }}",
+                            "[property]=\"expression\""
+                        ],
+                        [
+                            "Data Type",
+                            "Always converts data to string.",
+                            "Can handle various data types like boolean, number, or object."
+                        ],
+                        [
+                            "Use Case",
+                            "When inserting values into text nodes or simple inline attributes.",
+                            "When binding values to HTML element properties (e.g., disabled, src, value)."
+                        ],
+                        [
+                            "Example",
+                            "<h2>{{ title }}</h2>",
+                            "<input [value]=\"title\" />"
+                        ]
+                    ],
+                    "caption": "Key differences between interpolation and property binding"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Practical Usage</strong><br>While interpolation is convenient for displaying text or computed values, property binding should be used whenever you need to bind dynamic data to an element property — for example, enabling/disabling a button, setting image sources, or toggling classes dynamically."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Use interpolation when you just need to display text, and property binding when you want to dynamically manipulate HTML element properties."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Interpolation inserts text into templates using {{ }} syntax.</li><li>Property binding links component properties to DOM element attributes using [ ] syntax.</li><li>Property binding is more flexible and supports non-string values.</li><li>Both are one-way bindings that flow data from the component to the view.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-event-binding",
+        "title": "What is event binding in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Event binding in Angular allows components to respond to user interactions such as clicks, keystrokes, or form submissions by executing methods defined in the component class. It establishes a one-way data flow from the view to the component.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Event binding in Angular provides a way to listen to user actions and trigger logic in the component class. It’s the bridge that connects UI events in the template to methods or expressions in the component. This keeps the application interactive and reactive to user input without requiring manual DOM event handling."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>Angular uses parentheses <code>( )</code> around an event name to bind it to a method. When the event occurs (like a button click or keypress), Angular executes the specified function in the component, passing along event data if necessary."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Event Binding Example -->\n<button (click)=\"onClick()\">Click Me</button>\n<input (input)=\"onInputChange($event)\" placeholder=\"Type something...\" />"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Component logic\nexport class EventExampleComponent {\n  onClick() {\n    alert('Button clicked!');\n  }\n\n  onInputChange(event: any) {\n    console.log('Input value:', event.target.value);\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Supported Events</strong><br>Angular supports most native DOM events like <code>click</code>, <code>input</code>, <code>keydown</code>, <code>mouseover</code>, <code>submit</code>, and custom events emitted by child components using <code>@Output()</code> and <code>EventEmitter</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Event Binding with Custom Events</strong><br>Components can communicate using custom events defined by the <code>@Output()</code> decorator. The parent component listens for these events just like any native DOM event."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// child.component.ts\nimport { Component, Output, EventEmitter } from '@angular/core';\n\n@Component({ selector: 'app-child', template: `<button (click)=\"notifyParent()\">Notify</button>` })\nexport class ChildComponent {\n  @Output() notify = new EventEmitter<string>();\n\n  notifyParent() {\n    this.notify.emit('Child says hello!');\n  }\n}\n\n// parent.component.html\n<app-child (notify)=\"onNotify($event)\"></app-child>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Event Binding</strong><br><ul><li>Provides a declarative way to handle user interactions.</li><li>Reduces the need for direct DOM manipulation.</li><li>Improves separation of concerns between logic and presentation.</li><li>Works seamlessly with both native and custom events.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Event binding makes your application interactive — it’s how your UI listens and reacts to the user’s actions in real time."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Event binding listens for user interactions using the (event) syntax.</li><li>It calls a method in the component when the event occurs.</li><li>It supports both built-in DOM events and custom component events.</li><li>It maintains one-way communication from the view to the component.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-directives",
+        "title": "What are directives in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Directives in Angular are special classes that add behavior, logic, or structure to elements in the DOM. They allow developers to manipulate the DOM efficiently by extending the functionality of HTML elements and attributes. Angular includes built-in directives like *ngIf, *ngFor, and [ngClass], and also allows developers to create custom directives.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, a directive is an instruction that tells the framework how to manipulate or interact with the DOM. Directives are used to change the appearance, structure, or behavior of elements in a template dynamically. They can modify existing elements or inject new ones based on logic defined in the directive class."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Purpose of Directives</strong><br>Directives enable developers to build dynamic, reusable, and declarative UIs. They eliminate the need for low-level DOM manipulation by providing a higher-level abstraction that integrates smoothly with Angular’s templating and change detection system."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Type",
+                        "Description",
+                        "Examples"
+                    ],
+                    "rows": [
+                        [
+                            "Component Directives",
+                            "Directives with a template. Every component in Angular is technically a directive with its own HTML, CSS, and logic.",
+                            "All Angular components"
+                        ],
+                        [
+                            "Structural Directives",
+                            "Change the structure of the DOM by adding or removing elements dynamically.",
+                            "*ngIf, *ngFor, *ngSwitch"
+                        ],
+                        [
+                            "Attribute Directives",
+                            "Change the appearance or behavior of an existing element without altering the DOM structure.",
+                            "[ngClass], [ngStyle], custom attribute directives"
+                        ]
+                    ],
+                    "caption": "Three main types of directives in Angular"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Creating a custom attribute directive\nimport { Directive, ElementRef, Renderer2, HostListener } from '@angular/core';\n\n@Directive({\n  selector: '[appHighlight]'\n})\nexport class HighlightDirective {\n  constructor(private el: ElementRef, private renderer: Renderer2) {}\n\n  @HostListener('mouseenter') onMouseEnter() {\n    this.renderer.setStyle(this.el.nativeElement, 'background-color', 'yellow');\n  }\n\n  @HostListener('mouseleave') onMouseLeave() {\n    this.renderer.removeStyle(this.el.nativeElement, 'background-color');\n  }\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Using the custom directive -->\n<p appHighlight>Hover over this text to see the directive in action!</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Built-in Directives</strong><br>Angular provides several built-in directives for common use cases:<ul><li><strong>*ngIf:</strong> Conditionally adds or removes elements based on a Boolean expression.</li><li><strong>*ngFor:</strong> Iterates over a list of items and renders one element per item.</li><li><strong>[ngClass]:</strong> Dynamically adds or removes CSS classes.</li><li><strong>[ngStyle]:</strong> Dynamically sets inline styles based on component data.</li><li><strong>*ngSwitch:</strong> Switches between multiple template sections based on a condition.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Directives Are Useful</strong><br><ul><li>They extend HTML with custom behavior.</li><li>Encourage reusability and modularity of UI logic.</li><li>Reduce code duplication and improve maintainability.</li><li>Enable clean, declarative manipulation of DOM elements.</li><li>Integrate seamlessly with Angular’s reactive data model.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Directives are like instructions for your HTML elements — they tell Angular what to do with them, whether it’s showing, hiding, styling, or transforming content dynamically."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Directives are classes that modify the DOM or element behavior in Angular.</li><li>They come in three types: component, structural, and attribute.</li><li>They enable developers to write declarative and reusable UI logic.</li><li>Angular provides many built-in directives, and developers can also create custom ones.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-structural-vs-attribute-directives",
+        "title": "What is the difference between structural and attribute directives?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Structural directives modify the structure of the DOM by adding or removing elements dynamically, while attribute directives change the appearance or behavior of existing elements without altering the DOM structure.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, directives can be broadly classified into two functional types — structural and attribute directives. Both modify how elements behave, but they do so in different ways. Structural directives affect the DOM structure itself, while attribute directives modify existing elements by changing their style, behavior, or attributes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Structural Directives</strong><br>Structural directives are responsible for altering the layout of the DOM. They add, remove, or replace elements dynamically based on a condition or data source. These directives are easily recognizable because they are prefixed with an asterisk (<code>*</code>), which is shorthand for using Angular’s template syntax."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example: Structural Directives -->\n<div *ngIf=\"isLoggedIn\">Welcome back, user!</div>\n<ul>\n  <li *ngFor=\"let item of items\">{{ item }}</li>\n</ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Common Structural Directives</strong><br><ul><li><strong>*ngIf:</strong> Conditionally includes or excludes an element based on a Boolean expression.</li><li><strong>*ngFor:</strong> Repeats an element for each item in an array or iterable.</li><li><strong>*ngSwitch:</strong> Dynamically displays one of several possible templates based on a given value.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Attribute Directives</strong><br>Attribute directives modify the appearance or behavior of existing DOM elements. Unlike structural directives, they do not change the layout of the DOM — they only apply visual or behavioral changes, such as dynamically setting classes, styles, or event listeners."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Custom attribute directive\nimport { Directive, ElementRef, Renderer2 } from '@angular/core';\n\n@Directive({ selector: '[appTextColor]' })\nexport class TextColorDirective {\n  constructor(private el: ElementRef, private renderer: Renderer2) {\n    this.renderer.setStyle(this.el.nativeElement, 'color', 'blue');\n  }\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Using the custom attribute directive -->\n<p appTextColor>This text is styled using a custom attribute directive.</p>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Structural Directives",
+                        "Attribute Directives"
+                    ],
+                    "rows": [
+                        [
+                            "Purpose",
+                            "Modify the DOM structure by adding or removing elements.",
+                            "Modify element behavior or appearance without changing DOM structure."
+                        ],
+                        [
+                            "Prefix",
+                            "Prefixed with an asterisk (*) in the template.",
+                            "No prefix used."
+                        ],
+                        [
+                            "Examples",
+                            "*ngIf, *ngFor, *ngSwitch",
+                            "[ngClass], [ngStyle], custom attribute directives"
+                        ],
+                        [
+                            "Effect on DOM",
+                            "Creates or destroys elements.",
+                            "Applies styles, classes, or event listeners to existing elements."
+                        ],
+                        [
+                            "Use Case",
+                            "Controlling template structure dynamically.",
+                            "Changing element look or functionality dynamically."
+                        ]
+                    ],
+                    "caption": "Comparison between structural and attribute directives"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Practical Example</strong><br>A structural directive like <code>*ngIf</code> can show or hide an element, while an attribute directive like <code>[ngStyle]</code> can change the color or font of an element without removing it from the DOM."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Structural vs Attribute Example -->\n<div *ngIf=\"isVisible\">This will appear only if isVisible is true.</div>\n<p [ngStyle]=\"{ color: 'red', fontWeight: 'bold' }\">This text will always exist but styled dynamically.</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of structural directives as construction tools that build or remove parts of the DOM, while attribute directives are decorators that enhance or modify existing elements."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Structural directives modify the DOM layout by adding, removing, or manipulating elements.</li><li>Attribute directives modify the appearance or behavior of elements without changing their structure.</li><li>Structural directives use the * prefix, while attribute directives do not.</li><li>Together, they provide powerful ways to create dynamic, interactive, and visually rich user interfaces in Angular.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-ngif-directive",
+        "title": "What does ngIf do in Angular templates?",
+        "technology": "angular",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The *ngIf directive in Angular is a structural directive that conditionally adds or removes elements from the DOM based on a Boolean expression. It helps display or hide elements dynamically depending on the state of the component’s data.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>*ngIf</code> directive in Angular controls whether a portion of the DOM should be rendered or not, based on the truthiness of an expression. When the condition evaluates to true, Angular creates the element and its children; when false, Angular removes them entirely from the DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>Unlike simply hiding an element with CSS, <code>*ngIf</code> completely adds or removes the element from the DOM. This means the component and its bindings inside the element are destroyed when the condition becomes false and recreated when it becomes true again."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Basic Example -->\n<div *ngIf=\"isLoggedIn\">\n  <h2>Welcome back, {{ username }}!</h2>\n</div>\n<div *ngIf=\"!isLoggedIn\">\n  <p>Please log in to continue.</p>\n</div>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using ngIf with else</strong><br><code>*ngIf</code> can also be combined with the <code>else</code> clause to define an alternative template to render when the condition is false."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- ngIf with else clause -->\n<div *ngIf=\"isAdmin; else notAdmin\">\n  <p>Welcome, Admin! You have full access.</p>\n</div>\n<ng-template #notAdmin>\n  <p>Access restricted. Please contact your administrator.</p>\n</ng-template>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Characteristics</strong><br><ul><li>It removes or inserts elements in the DOM depending on the expression’s result.</li><li>It helps manage conditional content efficiently.</li><li>When an element is removed, its data bindings and event listeners are destroyed.</li><li>It improves performance by not rendering unnecessary DOM nodes.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When to Use</strong><br>Use <code>*ngIf</code> when the visibility of an element depends on a logical condition, such as user authentication, feature toggles, or conditional rendering based on user roles or data availability."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <strong>*ngIf</strong> as a gatekeeper — it decides whether a piece of the template should exist at all based on the condition you provide."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>*ngIf</code> is a structural directive that conditionally adds or removes elements from the DOM.</li><li>It evaluates a Boolean expression and creates/destroys DOM nodes accordingly.</li><li>It supports <code>else</code> templates for alternative rendering.</li><li>It helps improve performance by avoiding unnecessary rendering of hidden elements.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-ngfor-directive",
+        "title": "What is the purpose of ngFor?",
+        "technology": "angular",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The *ngFor directive in Angular is a structural directive used to loop over collections such as arrays or lists and render a template for each item dynamically. It simplifies the process of creating repeated elements in a template.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>*ngFor</code> directive allows you to iterate over an array or iterable object and repeat a block of HTML for each item in the collection. It’s similar to a 'for' loop in JavaScript but written declaratively in the template."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Basic Syntax</strong><br>The general syntax is:<br><code>*ngFor=\"let item of items\"</code><br>Here, <code>item</code> represents the current element in the iteration, and <code>items</code> is the array or collection being iterated over."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example: Basic ngFor usage -->\n<ul>\n  <li *ngFor=\"let fruit of fruits\">{{ fruit }}</li>\n</ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Component\nexport class FruitListComponent {\n  fruits = ['Apple', 'Banana', 'Orange', 'Grapes'];\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Accessing Index and Other Local Variables</strong><br>Angular provides local variables that can be accessed inside <code>*ngFor</code> for additional control:<ul><li><code>index</code> — current loop index (starting at 0)</li><li><code>first</code> — true if the current item is the first</li><li><code>last</code> — true if the current item is the last</li><li><code>even</code> — true if the index is even</li><li><code>odd</code> — true if the index is odd</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example with local variables -->\n<ul>\n  <li *ngFor=\"let fruit of fruits; let i = index; let odd = odd\">\n    {{ i + 1 }}. {{ fruit }} <span *ngIf=\"odd\">(odd item)</span>\n  </li>\n</ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Optimizing with trackBy</strong><br>By default, Angular re-renders the entire list if any change occurs in the array. To improve performance, you can use the <code>trackBy</code> function, which helps Angular identify items by a unique property (like an ID), minimizing unnecessary re-renders."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Using trackBy for better performance\nexport class ProductListComponent {\n  products = [\n    { id: 1, name: 'Laptop' },\n    { id: 2, name: 'Phone' },\n    { id: 3, name: 'Tablet' }\n  ];\n\n  trackById(index: number, product: any): number {\n    return product.id;\n  }\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Applying trackBy -->\n<ul>\n  <li *ngFor=\"let product of products; trackBy: trackById\">{{ product.name }}</li>\n</ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When to Use</strong><br>Use <code>*ngFor</code> whenever you need to render a list of items dynamically — for example, displaying a list of products, users, messages, or table rows fetched from an API."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <strong>*ngFor</strong> as a loop that runs directly in your template — it repeats the HTML block for every item in a data collection, keeping your UI in sync with your data."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>*ngFor</code> is a structural directive used to repeat elements for each item in a collection.</li><li>It provides local variables like index, first, last, even, and odd.</li><li>It supports <code>trackBy</code> for performance optimization.</li><li>It simplifies creating dynamic lists directly in templates.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-create-component-cli",
+        "title": "How do you create a new Angular component using the CLI?",
+        "technology": "angular",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "You can create a new Angular component using the Angular CLI command `ng generate component` (or its shorthand `ng g c`). The CLI automatically creates the necessary files, updates the module declarations, and sets up the component structure for you.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The Angular CLI (Command Line Interface) provides an easy and standardized way to create new components. Instead of manually creating files, you can use a single command that automatically generates all the required files and updates your project structure accordingly."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Basic Command</strong><br>To create a new component, use the following command in your terminal or command prompt inside your Angular project directory:<br><br><code>ng generate component component-name</code><br><br>or, using the shorthand version:<br><br><code>ng g c component-name</code>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Example</strong><br>Let’s say you want to create a new component called <code>user-profile</code>:"
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "ng generate component user-profile"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>What Happens When You Run the Command</strong><br>The Angular CLI automatically performs several tasks for you:<ul><li>Creates a new folder named <code>user-profile</code> inside the <code>src/app</code> directory.</li><li>Generates four files for the component:</li></ul>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "File",
+                        "Purpose"
+                    ],
+                    "rows": [
+                        [
+                            "user-profile.component.ts",
+                            "Contains the component’s logic and metadata (TypeScript class)."
+                        ],
+                        [
+                            "user-profile.component.html",
+                            "Defines the component’s template (HTML structure)."
+                        ],
+                        [
+                            "user-profile.component.css",
+                            "Contains styles specific to this component."
+                        ],
+                        [
+                            "user-profile.component.spec.ts",
+                            "Includes unit tests for the component."
+                        ]
+                    ],
+                    "caption": "Files generated by the Angular CLI when creating a component"
+                },
+                {
+                    "type": "text",
+                    "text": "Additionally, the CLI automatically updates the <code>AppModule</code> (or the relevant feature module) to include the new component in the <code>declarations</code> array, making it ready to use in your application."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Specifying a Custom Path</strong><br>You can also create components in subfolders or specific modules by specifying a path:<br><code>ng g c features/admin/dashboard</code><br>This command will create a <code>dashboard</code> component inside <code>src/app/features/admin</code> and update the module accordingly."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Additional CLI Options</strong><br>The CLI supports several useful options when generating components:<ul><li><code>--inline-style</code> or <code>-s</code>: Includes styles directly in the component TypeScript file.</li><li><code>--inline-template</code> or <code>-t</code>: Includes HTML inline instead of creating a separate template file.</li><li><code>--skip-tests</code>: Skips creating the test file (<code>.spec.ts</code>).</li><li><code>--module=app</code>: Specifies which module to declare the component in (useful for feature modules).</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "# Example with options\nng g c products/product-list --skip-tests --inline-style --module=app"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Verifying the Component</strong><br>After creation, you can find your component files in the specified directory. You can start using it in other templates by referencing its selector (defined in the <code>@Component</code> decorator):"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Example usage of the generated component -->\n<app-user-profile></app-user-profile>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Using the CLI</strong><br><ul><li>Ensures consistent project structure and naming conventions.</li><li>Reduces human error by automatically updating module declarations.</li><li>Speeds up development by generating boilerplate code instantly.</li><li>Supports automation for large projects with many components.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Angular CLI as your personal scaffolding tool — it builds the foundation of your components so you can focus on implementing logic and design."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Use <code>ng generate component component-name</code> or <code>ng g c component-name</code> to create new components.</li><li>The CLI generates four files: TypeScript, HTML, CSS, and a test file.</li><li>It automatically updates your module’s <code>declarations</code> array.</li><li>You can customize component creation with various flags and options.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-services",
+        "title": "What are services in Angular and why are they used?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Services in Angular are classes that handle reusable logic, such as fetching data, managing state, or communicating with APIs. They are used to promote code reusability, maintainability, and separation of concerns by keeping business logic separate from components.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, a <strong>service</strong> is a class that provides reusable functionality or logic that can be shared across multiple components. Services help keep your application modular and organized by separating data management, business rules, and helper logic from the component’s view and UI logic."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Purpose of Services</strong><br>Services are used to perform tasks such as:<ul><li>Fetching data from a backend API.</li><li>Handling user authentication or authorization.</li><li>Managing shared state or caching data.</li><li>Encapsulating business logic or calculations.</li><li>Logging or configuration handling.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Creating a Service</strong><br>You can create a service using the Angular CLI command:<br><code>ng generate service service-name</code><br>or shorthand:<br><code>ng g s service-name</code>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: user.service.ts\nimport { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\nimport { Observable } from 'rxjs';\n\n@Injectable({ providedIn: 'root' })\nexport class UserService {\n  private apiUrl = 'https://api.example.com/users';\n\n  constructor(private http: HttpClient) {}\n\n  getUsers(): Observable<any[]> {\n    return this.http.get<any[]>(this.apiUrl);\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using a Service in a Component</strong><br>Once a service is created, it can be injected into any component that needs it. Angular’s dependency injection system automatically creates an instance and provides it wherever required."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Injecting and using a service in a component\nimport { Component, OnInit } from '@angular/core';\nimport { UserService } from './user.service';\n\n@Component({\n  selector: 'app-user-list',\n  templateUrl: './user-list.component.html'\n})\nexport class UserListComponent implements OnInit {\n  users: any[] = [];\n\n  constructor(private userService: UserService) {}\n\n  ngOnInit() {\n    this.userService.getUsers().subscribe(data => {\n      this.users = data;\n    });\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Using Services</strong><br><ul><li>Encourages modular and maintainable architecture.</li><li>Enables reusability of logic across multiple components.</li><li>Improves testability by isolating business logic from components.</li><li>Supports dependency injection, making code loosely coupled.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Scope of a Service</strong><br>When a service is declared with <code>providedIn: 'root'</code>, it is available application-wide as a singleton instance. You can also provide services at the module or component level for more granular control."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of a service as the 'brain' that handles logic, while components are the 'face' that interacts with users — keeping them separate makes your app cleaner and easier to manage."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Services are classes that handle reusable and shared logic in Angular.</li><li>They are used for tasks like data fetching, business logic, or app configuration.</li><li>They can be injected into components, directives, or other services.</li><li>Services improve modularity, testability, and maintainability.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-dependency-injection",
+        "title": "What is dependency injection in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Dependency Injection (DI) in Angular is a design pattern that provides components or services with their required dependencies rather than having them create those dependencies themselves. It makes code modular, testable, and easier to maintain.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Dependency Injection (DI) is a key feature of Angular’s architecture that simplifies how components and services acquire the resources they need. Instead of manually creating instances of classes, Angular’s DI system provides them automatically whenever required."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Core Concept</strong><br>In traditional programming, you might instantiate dependencies directly using the <code>new</code> keyword. In Angular, DI removes this tight coupling by letting a centralized injector create and supply dependencies. This makes your code more flexible and easier to maintain."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Without Dependency Injection\nexport class UserListComponent {\n  userService = new UserService(); // tightly coupled to this class\n}\n\n// With Dependency Injection\nexport class UserListComponent {\n  constructor(private userService: UserService) {} // Angular injects the dependency\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>Angular’s DI system uses three main concepts:<ul><li><strong>Provider:</strong> Defines how to create or deliver a dependency (e.g., via <code>@Injectable</code> or module providers).</li><li><strong>Injector:</strong> A container that maintains a map of dependencies and provides them when needed.</li><li><strong>Dependency Token:</strong> A unique key (often the class type) used by the injector to look up the dependency instance.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: A simple DI setup\n@Injectable({ providedIn: 'root' })\nexport class LoggerService {\n  log(message: string) {\n    console.log('Log:', message);\n  }\n}\n\n@Component({ selector: 'app-home', templateUrl: './home.component.html' })\nexport class HomeComponent {\n  constructor(private logger: LoggerService) {}\n\n  ngOnInit() {\n    this.logger.log('Home component initialized.');\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Hierarchical Injection</strong><br>Angular provides a hierarchical DI system. This means services can be scoped differently based on where they’re provided:<ul><li><code>providedIn: 'root'</code> — A single instance is shared across the entire app (singleton).</li><li>Provided in a specific <strong>module</strong> — Available only to components within that module.</li><li>Provided in a <strong>component</strong> — A new instance is created for that component and its children.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Dependency Injection</strong><br><ul><li>Promotes loose coupling between classes and services.</li><li>Makes code easier to test (you can replace dependencies with mocks).</li><li>Improves maintainability and scalability in large applications.</li><li>Encourages modular and reusable design patterns.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Providing a service at the component level\n@Component({\n  selector: 'app-dashboard',\n  templateUrl: './dashboard.component.html',\n  providers: [LoggerService] // new instance for this component only\n})\nexport class DashboardComponent {\n  constructor(private logger: LoggerService) {\n    this.logger.log('Dashboard loaded');\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Dependency Injection as a delivery service for your classes — instead of creating what you need, Angular delivers it for you, ensuring consistency and efficiency."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Dependency Injection is a design pattern that provides required dependencies to a class rather than creating them manually.</li><li>Angular’s DI system uses injectors, providers, and tokens to manage dependencies.</li><li>It supports different levels of service scope: root, module, or component.</li><li>DI simplifies testing, improves modularity, and enhances maintainability.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-ngoninit-vs-constructor",
+        "title": "What is the difference between ngOnInit() and the constructor in a component?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "The constructor in an Angular component is a TypeScript feature used to initialize class members and inject dependencies, while ngOnInit() is an Angular lifecycle hook that is called after the component is initialized. ngOnInit() is ideal for performing initialization logic that requires access to component inputs or Angular bindings.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, both the <code>constructor</code> and the <code>ngOnInit()</code> method play roles in component initialization, but they serve different purposes. The constructor is a TypeScript feature that runs when the class is instantiated, whereas <code>ngOnInit()</code> is part of Angular’s lifecycle hooks and runs once the component has been fully initialized."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Constructor</strong><br>The <code>constructor</code> is called when a component class is created. It’s primarily used for dependency injection and basic setup that doesn’t depend on Angular bindings or lifecycle states. It should not contain any logic that relies on template bindings or external data sources."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "export class UserComponent {\n  constructor(private userService: UserService) {\n    console.log('Constructor called');\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>ngOnInit()</strong><br><code>ngOnInit()</code> is one of Angular’s lifecycle hooks defined in the <code>OnInit</code> interface. It is called by Angular after the component’s data-bound properties have been initialized. This is the right place to perform component setup that depends on bindings, inputs, or services."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-user',\n  templateUrl: './user.component.html'\n})\nexport class UserComponent implements OnInit {\n  users: any[] = [];\n\n  constructor(private userService: UserService) {\n    console.log('Constructor called');\n  }\n\n  ngOnInit() {\n    console.log('ngOnInit called');\n    this.userService.getUsers().subscribe(data => {\n      this.users = data;\n    });\n  }\n}"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Constructor",
+                        "ngOnInit()"
+                    ],
+                    "rows": [
+                        [
+                            "Definition",
+                            "A TypeScript feature that initializes class members.",
+                            "An Angular lifecycle hook for initialization logic."
+                        ],
+                        [
+                            "Execution Time",
+                            "Called when the class is instantiated.",
+                            "Called after Angular initializes input properties."
+                        ],
+                        [
+                            "Purpose",
+                            "Used for dependency injection and basic setup.",
+                            "Used for initialization logic that requires Angular bindings."
+                        ],
+                        [
+                            "Access to Inputs",
+                            "Not available — @Input values are not yet set.",
+                            "Available — all @Input values are accessible."
+                        ],
+                        [
+                            "Best Practice",
+                            "Keep it lightweight — no heavy logic or async calls.",
+                            "Use it for initialization, API calls, or data setup."
+                        ]
+                    ],
+                    "caption": "Comparison between constructor and ngOnInit()"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Takeaways</strong><br><ul><li>The constructor is part of TypeScript, not Angular’s lifecycle.</li><li><code>ngOnInit()</code> is triggered by Angular after input properties are resolved.</li><li>Dependency injection happens in the constructor, but complex logic belongs in <code>ngOnInit()</code>.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of the constructor as 'building the skeleton' of your component, and <strong>ngOnInit()</strong> as 'bringing it to life' once Angular has wired everything together."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>constructor</code> is for dependency injection and simple setup.</li><li><code>ngOnInit()</code> is for initialization logic that requires bindings or external data.</li><li>Both are executed during component creation but at different stages of Angular’s lifecycle.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-pipes",
+        "title": "What are Angular pipes and how are they used?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Angular pipes are features that transform data in templates. They are used to format data such as dates, numbers, currencies, and text. Pipes can be built-in or custom and are used with the pipe (|) operator in templates.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Pipes in Angular are powerful tools that allow you to transform data directly within your templates. They are similar to filters in other frameworks. A pipe takes an input value, processes it, and returns a transformed output without altering the original data."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Pipes Work</strong><br>Pipes use the pipe (<code>|</code>) operator in templates. The data before the pipe is the input, and the transformation defined by the pipe is applied to produce formatted output. Multiple pipes can be chained together for more complex transformations."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Basic Pipe Examples -->\n<p>{{ today | date }}</p>\n<p>{{ user.name | uppercase }}</p>\n<p>{{ price | currency:'USD' }}</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Common Built-in Pipes</strong><br>Angular comes with several built-in pipes for common formatting tasks:<ul><li><strong>date</strong> – Formats date values (e.g., <code>{{ today | date:'fullDate' }}</code>).</li><li><strong>uppercase</strong> / <strong>lowercase</strong> – Converts text to uppercase or lowercase.</li><li><strong>currency</strong> – Formats numbers as currency.</li><li><strong>percent</strong> – Displays numbers as percentages.</li><li><strong>json</strong> – Converts an object into a JSON-formatted string.</li><li><strong>async</strong> – Automatically subscribes to an Observable or Promise and returns the latest value.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Custom Pipes</strong><br>You can also create your own pipes for application-specific formatting. Use the Angular CLI command:<br><code>ng generate pipe pipe-name</code> or <code>ng g p pipe-name</code>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Creating a custom pipe\nimport { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({ name: 'capitalize' })\nexport class CapitalizePipe implements PipeTransform {\n  transform(value: string): string {\n    if (!value) return '';\n    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();\n  }\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Using the custom pipe in a template -->\n<p>{{ 'angular' | capitalize }}</p>\n<!-- Output: Angular -->"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Chaining Pipes</strong><br>Multiple pipes can be chained together for compound transformations. For example, to display a user’s name in uppercase and formatted as currency:"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<p>{{ amount | currency:'EUR' | uppercase }}</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Pure vs Impure Pipes</strong><br><ul><li><strong>Pure Pipes:</strong> Execute only when the input data changes by reference. These are optimized for performance.</li><li><strong>Impure Pipes:</strong> Recalculate on every change detection cycle, which can be useful for real-time transformations but may affect performance.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Using Pipes</strong><br><ul><li>They make templates cleaner and easier to read.</li><li>Encapsulate transformation logic in reusable, testable units.</li><li>Provide a declarative way to format or modify data in the view.</li><li>Allow seamless chaining for multiple transformations.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of a pipe as a 'formatter' — it takes raw data and turns it into something user-friendly right inside your template, without touching the actual data model."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Pipes transform data in Angular templates without mutating it.</li><li>They can be built-in (e.g., date, currency, uppercase) or custom.</li><li>Pipes are declared using the <code>@Pipe</code> decorator and implement <code>PipeTransform</code>.</li><li>They improve readability and maintainability of template logic.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-two-way-data-binding",
+        "title": "What is two-way data binding and how is it achieved in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Two-way data binding in Angular creates a connection between the component’s data and the template’s input fields, ensuring that any change in one immediately reflects in the other. It is primarily achieved using the ngModel directive from the FormsModule.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Two-way data binding in Angular allows synchronization between the component class (TypeScript) and the template (HTML). This means that when a user updates the value in an input field, the component property automatically updates — and vice versa. It provides a dynamic and interactive connection between the view and the model."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>Two-way data binding combines <strong>property binding</strong> (for setting a value) and <strong>event binding</strong> (for listening to changes). Angular provides the <code>ngModel</code> directive from the <code>FormsModule</code> to achieve this functionality seamlessly."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Import FormsModule in your module\nimport { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { FormsModule } from '@angular/forms';\nimport { AppComponent } from './app.component';\n\n@NgModule({\n  declarations: [AppComponent],\n  imports: [BrowserModule, FormsModule],\n  bootstrap: [AppComponent]\n})\nexport class AppModule {}"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Component\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-user-input',\n  templateUrl: './user-input.component.html'\n})\nexport class UserInputComponent {\n  username: string = '';\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Template using two-way data binding -->\n<input [(ngModel)]=\"username\" placeholder=\"Enter your name\">\n<p>Hello, {{ username }}!</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example:<ul><li><code>[(ngModel)]</code> binds the <code>username</code> property to the input element.</li><li>Changes in the input immediately update the <code>username</code> variable.</li><li>Any programmatic change to <code>username</code> automatically reflects in the input field.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Underlying Mechanism</strong><br>Internally, <code>[(ngModel)]</code> is syntactic sugar for combining property and event bindings:<br><br><code>[value]=\"username\" (input)=\"username=$event.target.value\"</code><br>This means Angular binds the input’s <code>value</code> property and listens to the <code>input</code> event to update the component property."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Two-Way Data Binding</strong><br><ul><li>Reduces boilerplate code for synchronizing data between UI and logic.</li><li>Improves interactivity and responsiveness.</li><li>Makes forms and user input handling much simpler.</li><li>Ideal for smaller or medium-sized forms and data entry applications.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When to Use</strong><br>Two-way binding is perfect when you need live synchronization between the UI and the component. However, in large-scale applications, one-way binding is often preferred for better control and performance optimization."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>[(ngModel)]</code> as a 'two-way street' between your TypeScript code and HTML — changes in one direction instantly reflect in the other."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Two-way data binding connects the component and view in real-time.</li><li>It is achieved with the <code>[(ngModel)]</code> directive from the <code>FormsModule</code>.</li><li>Combines property and event binding internally.</li><li>Useful for interactive forms and live-updating interfaces.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-lifecycle-hooks",
+        "title": "What are lifecycle hooks in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Lifecycle hooks in Angular are special methods that allow developers to tap into key moments of a component’s or directive’s lifecycle, such as creation, updates, and destruction. They help manage initialization, change detection, and cleanup processes.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Angular components and directives go through a well-defined lifecycle — from creation to destruction. Lifecycle hooks are special methods provided by Angular that allow developers to execute code at specific moments during this lifecycle, such as when the component is initialized, checked for changes, or removed from the DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Lifecycle Hooks Are Important</strong><br>Lifecycle hooks give you fine-grained control over component behavior, enabling you to:<ul><li>Initialize data or services when the component loads.</li><li>Respond to changes in data-bound properties.</li><li>Perform DOM manipulations safely after rendering.</li><li>Clean up resources or subscriptions before the component is destroyed.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Common Lifecycle Hooks</strong><br>Angular offers several lifecycle hooks, each serving a unique purpose in the component lifecycle."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Hook",
+                        "Purpose"
+                    ],
+                    "rows": [
+                        [
+                            "<code>ngOnChanges()</code>",
+                            "Called before <code>ngOnInit()</code> whenever input properties change."
+                        ],
+                        [
+                            "<code>ngOnInit()</code>",
+                            "Invoked once after the first <code>ngOnChanges()</code>; ideal for initialization logic."
+                        ],
+                        [
+                            "<code>ngDoCheck()</code>",
+                            "Called during every change detection cycle; used for custom change tracking."
+                        ],
+                        [
+                            "<code>ngAfterContentInit()</code>",
+                            "Runs after projected content (<ng-content>) has been initialized."
+                        ],
+                        [
+                            "<code>ngAfterContentChecked()</code>",
+                            "Runs after every check of projected content."
+                        ],
+                        [
+                            "<code>ngAfterViewInit()</code>",
+                            "Runs after the component’s view (and child views) have been initialized."
+                        ],
+                        [
+                            "<code>ngAfterViewChecked()</code>",
+                            "Called after every check of the component’s view and child views."
+                        ],
+                        [
+                            "<code>ngOnDestroy()</code>",
+                            "Called just before Angular destroys the component; used for cleanup tasks."
+                        ]
+                    ],
+                    "caption": "List of key Angular lifecycle hooks"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({\n  selector: 'app-example',\n  template: `<p>Lifecycle demo</p>`\n})\nexport class ExampleComponent implements OnInit, OnDestroy {\n\n  constructor() {\n    console.log('Constructor: Component instance created');\n  }\n\n  ngOnInit() {\n    console.log('ngOnInit: Component initialized');\n  }\n\n  ngOnDestroy() {\n    console.log('ngOnDestroy: Cleaning up before destruction');\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Execution Order</strong><br>The hooks follow a specific sequence throughout the component’s lifecycle:<br><br><code>constructor → ngOnChanges → ngOnInit → ngDoCheck → ngAfterContentInit → ngAfterContentChecked → ngAfterViewInit → ngAfterViewChecked → ngOnDestroy</code>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Real-World Example</strong><br>Imagine a component that subscribes to a data stream when it initializes and needs to unsubscribe before being destroyed to avoid memory leaks. You can handle this cleanly using <code>ngOnInit()</code> and <code>ngOnDestroy()</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "ngOnInit() {\n  this.subscription = this.dataService.getData().subscribe(data => {\n    this.data = data;\n  });\n}\n\nngOnDestroy() {\n  this.subscription.unsubscribe(); // Prevent memory leaks\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Lifecycle Hooks</strong><br><ul><li>Enable precise control over initialization and cleanup.</li><li>Improve performance by managing when data and DOM operations occur.</li><li>Enhance maintainability by organizing logic across different lifecycle stages.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of lifecycle hooks as ‘checkpoints’ in a component’s life — you can insert logic at each checkpoint to control how your component behaves as it grows, updates, and disappears."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Lifecycle hooks are methods Angular calls during a component’s creation, change detection, and destruction.</li><li>Common hooks include <code>ngOnInit()</code>, <code>ngOnChanges()</code>, and <code>ngOnDestroy()</code>.</li><li>They are ideal for initialization, data fetching, and resource cleanup tasks.</li><li>They make components predictable, modular, and easier to debug.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-input-output",
+        "title": "What is the purpose of the @Input() and @Output() decorators?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "@Input() and @Output() are Angular decorators used for communication between parent and child components. @Input() allows a parent component to pass data to a child component, while @Output() enables the child to emit events back to the parent using an EventEmitter.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Angular components often need to communicate with each other, especially in parent-child relationships. The <code>@Input()</code> and <code>@Output()</code> decorators are core mechanisms for this communication. They make data flow predictable and help maintain a unidirectional data architecture — parent ➜ child (via <code>@Input()</code>) and child ➜ parent (via <code>@Output()</code>)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>@Input()</strong><br><code>@Input()</code> is used in a child component to receive data from its parent. It makes a property in the child component bindable from the parent’s template."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Child component: user-card.component.ts\nimport { Component, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<h3>{{ user.name }}</h3><p>{{ user.email }}</p>`\n})\nexport class UserCardComponent {\n  @Input() user!: { name: string; email: string };\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Parent component template -->\n<app-user-card [user]=\"selectedUser\"></app-user-card>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, the parent component passes the <code>selectedUser</code> object to the <code>user</code> property of the child using property binding."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>@Output()</strong><br><code>@Output()</code> allows the child component to send events or data back to the parent. It is typically paired with <code>EventEmitter</code> to emit custom events that the parent can listen to."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Child component: user-card.component.ts\nimport { Component, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<button (click)=\"selectUser()\">Select</button>`\n})\nexport class UserCardComponent {\n  @Output() userSelected = new EventEmitter<string>();\n\n  selectUser() {\n    this.userSelected.emit('User selected successfully!');\n  }\n}"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Parent component template -->\n<app-user-card (userSelected)=\"handleUserSelection($event)\"></app-user-card>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Parent component logic\nhandleUserSelection(message: string) {\n  console.log(message); // Output: 'User selected successfully!'\n}"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Decorator",
+                        "Direction",
+                        "Purpose"
+                    ],
+                    "rows": [
+                        [
+                            "@Input()",
+                            "Parent ➜ Child",
+                            "Passes data into the child component."
+                        ],
+                        [
+                            "@Output()",
+                            "Child ➜ Parent",
+                            "Emits events or data from the child to the parent."
+                        ]
+                    ],
+                    "caption": "Data flow between components using @Input() and @Output()"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Using @Input() and @Output()</strong><ul><li>Encourages clean, predictable data flow.</li><li>Reduces tight coupling between components.</li><li>Supports reusability and modularity in complex UIs.</li><li>Enables event-driven architecture in component hierarchies.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>@Input()</code> as passing information ‘down the family tree’ and <code>@Output()</code> as sending signals ‘back up’ to the parent component."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>@Input()</code> allows data binding from a parent component to a child.</li><li><code>@Output()</code> emits custom events from a child to a parent.</li><li>Together, they enable two-way communication between components in a structured and maintainable way.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-observables-rxjs",
+        "title": "What are observables in Angular, and how do they relate to RxJS?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Observables are a core part of Angular’s reactive programming model, used to handle asynchronous data streams. They are provided by the RxJS library and allow developers to react to changes in data over time, such as user input, HTTP responses, or real-time updates.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Observables are data streams that emit values over time. They represent a powerful abstraction for handling asynchronous events, such as user interactions, HTTP requests, or WebSocket connections. Angular heavily relies on Observables for managing async operations through its integration with <strong>RxJS</strong> (Reactive Extensions for JavaScript)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Relationship Between Angular and RxJS</strong><br>RxJS is the underlying library that implements the Observable pattern in Angular. Many Angular features — like HTTPClient, Reactive Forms, and Router events — use RxJS Observables for reactive programming and event-driven workflows."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Creating an Observable</strong><br>Observables can be created using the <code>Observable</code> class or RxJS creation operators like <code>of()</code>, <code>from()</code>, or <code>interval()</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Observable, of, interval } from 'rxjs';\n\n// Example 1: Custom Observable\nconst customObservable = new Observable(observer => {\n  observer.next('First value');\n  observer.next('Second value');\n  setTimeout(() => observer.complete(), 1000);\n});\n\n// Example 2: Built-in RxJS operators\nconst numbers$ = of(1, 2, 3, 4, 5);\nconst timer$ = interval(1000);"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Subscribing to an Observable</strong><br>To receive values from an Observable, you must <em>subscribe</em> to it. This triggers the Observable to start emitting values."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "numbers$.subscribe(value => console.log('Received:', value));\n\ncustomObservable.subscribe({\n  next: value => console.log(value),\n  complete: () => console.log('Completed!')\n});"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Observables in Angular</strong><br>Angular uses Observables in many core features:<ul><li><strong>HTTP Requests</strong> — via <code>HttpClient</code> service.</li><li><strong>Reactive Forms</strong> — form controls emit value and status changes as Observables.</li><li><strong>Routing</strong> — router events (e.g., navigationStart) are emitted as Observables.</li><li><strong>Event Streams</strong> — you can use RxJS to handle streams like mouse movements or input changes.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Using Observable with HttpClient\nimport { HttpClient } from '@angular/common/http';\nimport { Component, OnInit } from '@angular/core';\n\n@Component({ selector: 'app-user-list', templateUrl: './user-list.component.html' })\nexport class UserListComponent implements OnInit {\n  users$ = this.http.get<any[]>('https://jsonplaceholder.typicode.com/users');\n\n  constructor(private http: HttpClient) {}\n\n  ngOnInit() {\n    this.users$.subscribe(data => console.log(data));\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>RxJS Operators</strong><br>Operators transform or combine Observables to produce new ones. Commonly used operators include:<ul><li><code>map()</code> — transforms emitted values.</li><li><code>filter()</code> — filters out unwanted values.</li><li><code>switchMap()</code> — switches to a new Observable on emission.</li><li><code>debounceTime()</code> — delays emissions to handle rapid events (like typing).</li><li><code>catchError()</code> — handles errors gracefully.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Observables</strong><br><ul><li>Provide powerful tools for handling asynchronous and event-based data.</li><li>Support cancellation — unsubscribing stops the stream.</li><li>Offer operators for complex data flow transformations.</li><li>Enable reactive programming patterns in Angular.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Observable vs Promise</strong><br><ul><li><strong>Observables</strong> can emit multiple values over time, while <strong>Promises</strong> resolve only once.</li><li>Observables are lazy (nothing happens until subscribed), whereas Promises are eager.</li><li>Observables can be canceled easily using <code>unsubscribe()</code>.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Unsubscribing from an Observable\nconst subscription = timer$.subscribe(value => console.log(value));\n\n// Stop receiving values after 5 seconds\nsetTimeout(() => subscription.unsubscribe(), 5000);"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of an Observable as a live 'data stream' — it keeps flowing with new values until you stop listening (unsubscribe), while a Promise is like a one-time delivery package."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Observables represent data streams that emit values over time.</li><li>They are powered by RxJS, Angular’s reactive programming backbone.</li><li>Used extensively in Angular for HTTP, forms, and event handling.</li><li>Support operators for transforming, filtering, and combining asynchronous data.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-routing",
+        "title": "What is Angular routing and how do you define routes?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Angular routing is a feature that allows navigation between different views or components in a single-page application (SPA). Routes are defined using the RouterModule and configured with path-component mappings in a routing module.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Angular’s routing system enables navigation between different views or components without reloading the page. It turns your Angular application into a single-page application (SPA) — meaning that instead of fetching new HTML pages from the server, it dynamically updates the view based on the URL."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Routing Works</strong><br>The Angular Router maps URL paths to specific components. When the browser’s address changes, Angular determines which component to display by matching the URL with a defined route configuration."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: app-routing.module.ts\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { HomeComponent } from './home/home.component';\nimport { AboutComponent } from './about/about.component';\nimport { ContactComponent } from './contact/contact.component';\n\nconst routes: Routes = [\n  { path: '', component: HomeComponent }, // default route\n  { path: 'about', component: AboutComponent },\n  { path: 'contact', component: ContactComponent },\n  { path: '**', redirectTo: '' } // wildcard route for 404s\n];\n\n@NgModule({\n  imports: [RouterModule.forRoot(routes)],\n  exports: [RouterModule]\n})\nexport class AppRoutingModule {}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Defining Routes</strong><br>Each route is defined as an object in the <code>Routes</code> array with at least a <code>path</code> and a <code>component</code> property:<ul><li><strong>path</strong> – the URL segment (e.g., 'about').</li><li><strong>component</strong> – the component to render when the path is matched.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- app.component.html -->\n<nav>\n  <a routerLink=\"/\">Home</a>\n  <a routerLink=\"/about\">About</a>\n  <a routerLink=\"/contact\">Contact</a>\n</nav>\n\n<!-- Placeholder for route content -->\n<router-outlet></router-outlet>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>RouterModule Methods</strong><br><ul><li><code>RouterModule.forRoot(routes)</code> – used in the root module for application-wide routing.</li><li><code>RouterModule.forChild(routes)</code> – used in feature modules for modular routing setups.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Navigation Methods</strong><br>Angular provides two main ways to navigate:<ul><li>Declaratively with <code>routerLink</code> in templates.</li><li>Programmatically with <code>Router.navigate()</code> in TypeScript.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: programmatic navigation\nimport { Router } from '@angular/router';\n\nconstructor(private router: Router) {}\n\ngoToAbout() {\n  this.router.navigate(['/about']);\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Route Parameters</strong><br>Routes can also include dynamic parameters, allowing you to create routes that depend on variable data (e.g., user IDs)."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example with route parameters\n{ path: 'user/:id', component: UserDetailComponent }"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Accessing route parameter in component\nimport { ActivatedRoute } from '@angular/router';\n\nconstructor(private route: ActivatedRoute) {}\n\nngOnInit() {\n  const id = this.route.snapshot.paramMap.get('id');\n  console.log('User ID:', id);\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Angular Routing</strong><br><ul><li>Enables smooth client-side navigation without page reloads.</li><li>Improves performance and user experience.</li><li>Supports route guards, parameters, and lazy loading for scalability.</li><li>Allows nested and child routes for modular app structures.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular routing as a GPS — it maps URLs to the right components so users can navigate your app fluidly without ever leaving the page."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Angular routing manages navigation between components in SPAs.</li><li>Routes are defined using <code>RouterModule</code> and configured in a routing module.</li><li><code>routerLink</code> and <code>Router.navigate()</code> are used for navigation.</li><li>Dynamic routes, guards, and lazy loading enhance flexibility.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-lazy-loading",
+        "title": "What is lazy loading in Angular?",
+        "technology": "angular",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Lazy loading in Angular is a technique that loads feature modules only when they are needed, rather than at application startup. It improves performance by reducing the initial bundle size and speeding up the first load.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Lazy loading in Angular is an optimization strategy that helps improve performance by loading specific parts of the application only when required. Instead of downloading all modules and components when the app starts, Angular fetches feature modules on demand — typically when the user navigates to a particular route."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>By default, Angular eagerly loads all modules at startup. With lazy loading, feature modules are split into separate chunks, and Angular loads them only when their routes are accessed. This reduces the initial load time and makes the application faster and more efficient."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: Setting up lazy loading in app-routing.module.ts\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\n\nconst routes: Routes = [\n  { path: '', redirectTo: 'home', pathMatch: 'full' },\n  { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },\n  { path: 'products', loadChildren: () => import('./products/products.module').then(m => m.ProductsModule) }\n];\n\n@NgModule({\n  imports: [RouterModule.forRoot(routes)],\n  exports: [RouterModule]\n})\nexport class AppRoutingModule {}"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, the <code>home</code> and <code>products</code> feature modules are not loaded until the user navigates to their respective routes. Each module is fetched dynamically using the <code>loadChildren</code> property."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Creating a Lazy-Loaded Module</strong><br>Use the Angular CLI to generate a module with routing configured for lazy loading:<br><code>ng generate module products --route products --module app.module</code>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: products-routing.module.ts\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { ProductListComponent } from './product-list/product-list.component';\n\nconst routes: Routes = [\n  { path: '', component: ProductListComponent }\n];\n\n@NgModule({\n  imports: [RouterModule.forChild(routes)],\n  exports: [RouterModule]\n})\nexport class ProductsRoutingModule {}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Lazy Loading</strong><br><ul><li>Reduces initial bundle size for faster application startup.</li><li>Improves overall app performance by loading only necessary modules.</li><li>Enhances scalability — new modules can be added easily without affecting initial load time.</li><li>Better user experience on slower networks or large applications.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Eager Loading vs Lazy Loading</strong>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Eager Loading",
+                        "Lazy Loading"
+                    ],
+                    "rows": [
+                        [
+                            "When Loaded",
+                            "All modules loaded at startup.",
+                            "Modules loaded on demand when needed."
+                        ],
+                        [
+                            "Performance",
+                            "Slower initial load, faster subsequent navigation.",
+                            "Faster initial load, modules loaded asynchronously."
+                        ],
+                        [
+                            "Use Case",
+                            "Small or simple applications.",
+                            "Large-scale or modular applications."
+                        ]
+                    ],
+                    "caption": "Comparison between Eager and Lazy Loading"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Preloading Strategy</strong><br>Angular also provides a hybrid approach called <strong>preloading</strong>, where lazily loaded modules are fetched in the background after the app loads. You can enable it using the <code>PreloadAllModules</code> strategy:"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { PreloadAllModules, RouterModule } from '@angular/router';\n\nRouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of lazy loading as packing your app into ‘mini-bundles’ — instead of loading everything upfront, Angular loads each bundle only when the user needs it."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Lazy loading defers loading feature modules until needed.</li><li>Improves performance by reducing the initial bundle size.</li><li>Configured via <code>loadChildren</code> in the routing module.</li><li>Ideal for large, modular, and enterprise-level applications.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-change-detection-strategies",
+        "title": "What are change detection strategies in Angular, and how do they work?",
+        "technology": "angular",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "Change detection in Angular is the mechanism that keeps the view in sync with the component’s data. Angular provides two strategies — Default and OnPush — to determine when and how it checks for changes and updates the DOM.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Change detection in Angular is the process by which the framework synchronizes the application's data model (component properties) with the view (DOM). Whenever the data changes, Angular determines what parts of the view need to be updated and efficiently re-renders them. This is one of the most critical mechanisms in Angular’s performance model."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Change Detection Works</strong><br>Angular maintains a tree of components, each associated with a change detector. Whenever a change occurs (for example, a user event, async call, or timer), Angular traverses this tree and checks if the component’s data bindings have changed. If a change is detected, the DOM is updated accordingly."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Change Detection Strategies</strong><br>Angular provides two strategies to control how and when the change detection mechanism runs:"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Strategy",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            "<code>ChangeDetectionStrategy.Default</code>",
+                            "This is the default strategy. Angular checks every component in the component tree during every change detection cycle, whether or not its input data has changed. It’s simple but less efficient for large applications."
+                        ],
+                        [
+                            "<code>ChangeDetectionStrategy.OnPush</code>",
+                            "With this strategy, Angular only checks the component and its children when specific conditions occur — such as when an @Input() reference changes, an event originates from inside the component, or you manually trigger detection. This makes the app faster and more predictable."
+                        ]
+                    ],
+                    "caption": "Angular Change Detection Strategies"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, ChangeDetectionStrategy } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserCardComponent {\n  user = { name: 'Alice' };\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "In the example above, the component uses the <code>OnPush</code> strategy. Angular will only re-check this component when the <code>user</code> reference changes — not when you mutate its properties (e.g., <code>user.name = 'Bob'</code>)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When Does Angular Trigger Change Detection?</strong><br>Angular triggers change detection automatically in response to various async events, such as:<ul><li>User interactions (clicks, input changes, etc.)</li><li>Promises and Observables completing</li><li>setTimeout() and setInterval() callbacks</li><li>XHR or fetch responses</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Manually Controlling Change Detection</strong><br>For performance-sensitive applications, developers can control change detection manually using the <code>ChangeDetectorRef</code> API."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { ChangeDetectorRef, Component } from '@angular/core';\n\n@Component({ selector: 'app-demo', template: `{{ counter }}` })\nexport class DemoComponent {\n  counter = 0;\n  constructor(private cd: ChangeDetectorRef) {}\n\n  increment() {\n    this.counter++;\n    this.cd.detectChanges(); // manually trigger change detection\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Performance Considerations</strong><br><ul><li><code>Default</code> is simpler and sufficient for smaller apps but can become costly for large component trees.</li><li><code>OnPush</code> is more performant and should be used when components depend on immutable data or pure inputs.</li><li>Manual detection control (using <code>ChangeDetectorRef</code>) is useful for advanced optimization scenarios.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular change detection as a 'smart mirror' — by default it checks everything for changes, but with <code>OnPush</code> you tell it to look only when you know something has changed."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Change detection keeps the UI in sync with data changes.</li><li>Two strategies exist — Default (checks all) and OnPush (checks only when inputs or events trigger).</li><li>OnPush provides better performance for immutable and reactive data flows.</li><li>Developers can use <code>ChangeDetectorRef</code> for fine-grained control.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-zonejs-change-detection",
+        "title": "How does Angular’s Zone.js help in change detection?",
+        "technology": "angular",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "Zone.js is a library used by Angular to automatically track and intercept asynchronous operations such as events, promises, and timers. It notifies Angular whenever an async event completes so the framework can trigger change detection automatically.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Zone.js is a powerful library that Angular uses under the hood to manage asynchronous operations and automatically trigger change detection. Without it, developers would have to manually inform Angular every time something asynchronous (like an event, timer, or HTTP call) modifies the application state."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>What Is a Zone?</strong><br>A 'zone' is like an execution context that keeps track of all asynchronous tasks (e.g., setTimeout, event listeners, Promises). Zone.js patches these APIs so it can detect when they start and finish. Once an async task completes, Zone.js notifies Angular, which then runs the change detection cycle to update the UI."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Angular Uses Zone.js</strong><br>Angular creates a special zone called the <code>NgZone</code>. It wraps all asynchronous operations inside this zone. When an async event completes, Zone.js calls Angular’s internal mechanism to check for data changes and refresh the view."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, NgZone } from '@angular/core';\n\n@Component({ selector: 'app-zone-demo', template: `<p>{{ counter }}</p>` })\nexport class ZoneDemoComponent {\n  counter = 0;\n  constructor(private zone: NgZone) {\n    this.zone.runOutsideAngular(() => {\n      setInterval(() => {\n        this.counter++;\n        // Update runs outside Angular zone, so UI won't update automatically\n      }, 1000);\n    });\n  }\n\n  startDetection() {\n    this.zone.run(() => {\n      console.log('Entering Angular Zone');\n    });\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example:<ul><li><code>runOutsideAngular()</code> executes code without triggering change detection.</li><li><code>run()</code> brings execution back into the Angular zone, enabling automatic updates.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Zone.js Triggers Change Detection</strong><br>When an asynchronous operation (like <code>setTimeout()</code> or an HTTP call) finishes, Zone.js intercepts it and calls Angular’s internal <code>ApplicationRef.tick()</code> method. This initiates the change detection cycle, ensuring that the UI stays consistent with the data model."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Benefits of Using Zone.js</strong><br><ul><li>Automatically triggers change detection after async operations.</li><li>Eliminates the need for manual DOM updates.</li><li>Ensures the UI always reflects the latest application state.</li><li>Provides APIs to run code inside or outside Angular’s zone for performance tuning.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When You Might Disable Zone.js</strong><br>Advanced developers sometimes disable Zone.js (using <code>zone-flags.ts</code>) to gain full control over change detection — often in highly optimized or reactive applications that use manual <code>ChangeDetectorRef</code> or frameworks like <code>RxAngular</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Zone.js as Angular’s 'watchdog' for async operations — it keeps an eye on everything happening in the background and tells Angular, “Hey, something changed, time to update the view!”"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Zone.js tracks asynchronous operations and notifies Angular when they complete.</li><li>Angular uses <code>NgZone</code> to wrap these operations.</li><li>This allows Angular to automatically trigger change detection and update the DOM.</li><li>You can use <code>runOutsideAngular()</code> for performance-critical code that shouldn’t trigger detection.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-ngonchanges-vs-ngdocheck",
+        "title": "What is the purpose of ngOnChanges() and how does it differ from ngDoCheck()?",
+        "technology": "angular",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "ngOnChanges() and ngDoCheck() are Angular lifecycle hooks that detect and respond to changes in component data. ngOnChanges() automatically runs when @Input() values change, while ngDoCheck() allows developers to perform custom change detection logic beyond Angular’s default mechanism.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Angular provides lifecycle hooks that allow developers to tap into the change detection process and respond to data updates. Two important hooks for monitoring data changes are <code>ngOnChanges()</code> and <code>ngDoCheck()</code>. Both help in detecting changes to component state, but they serve different purposes and operate at different levels of precision."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>ngOnChanges()</strong><br>This hook is called automatically whenever the value of an <code>@Input()</code> property changes. It runs before <code>ngOnInit()</code> and receives a <code>SimpleChanges</code> object that contains the previous and current values of changed inputs."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`\n})\nexport class UserCardComponent implements OnChanges {\n  @Input() user!: { name: string };\n\n  ngOnChanges(changes: SimpleChanges) {\n    console.log('Previous:', changes['user'].previousValue);\n    console.log('Current:', changes['user'].currentValue);\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>ngOnChanges()</code> automatically detects when the <code>user</code> input changes and logs the old and new values. It is especially useful when you want to react only to input-bound property changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>ngDoCheck()</strong><br>While <code>ngOnChanges()</code> only detects <code>@Input()</code> changes, <code>ngDoCheck()</code> is a more powerful hook that lets developers implement <em>custom change detection logic</em>. It runs during every change detection cycle, even if inputs haven’t changed."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, Input, DoCheck } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  template: `<p>{{ user.name }}</p>`\n})\nexport class UserCardComponent implements DoCheck {\n  @Input() user!: { name: string };\n  private oldName = '';\n\n  ngDoCheck() {\n    if (this.user.name !== this.oldName) {\n      console.log('User name changed from', this.oldName, 'to', this.user.name);\n      this.oldName = this.user.name;\n    }\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>ngDoCheck()</code> manually checks for changes within the <code>user</code> object — something <code>ngOnChanges()</code> would not detect if only a property (not the object reference) changes."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "ngOnChanges()",
+                        "ngDoCheck()"
+                    ],
+                    "rows": [
+                        [
+                            "When Triggered",
+                            "When @Input() reference changes",
+                            "On every change detection cycle"
+                        ],
+                        [
+                            "Scope",
+                            "Tracks input-bound property changes",
+                            "Can detect deep or custom changes"
+                        ],
+                        [
+                            "Performance",
+                            "Lightweight",
+                            "Can be costly if overused"
+                        ],
+                        [
+                            "Use Case",
+                            "Reacting to @Input() updates",
+                            "Implementing custom change tracking logic"
+                        ]
+                    ],
+                    "caption": "Comparison between ngOnChanges() and ngDoCheck()"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Performance Considerations</strong><br><ul><li><code>ngOnChanges()</code> is more efficient since it only runs when input references change.</li><li><code>ngDoCheck()</code> provides flexibility but should be used carefully, as it runs very frequently during change detection cycles.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>ngOnChanges()</code> as Angular’s built-in observer for input updates, while <code>ngDoCheck()</code> is a manual magnifying glass — you use it when Angular’s default detection isn’t enough."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>ngOnChanges()</code> reacts to input-bound changes automatically.</li><li><code>ngDoCheck()</code> allows for custom logic to detect complex or deep changes.</li><li>Both help maintain UI consistency but differ in granularity and cost.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-forroot-forchild",
+        "title": "What are Angular modules’ forRoot() and forChild() methods used for?",
+        "technology": "angular",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "forRoot() and forChild() are Angular module configuration methods that help manage singleton services and routing across root and feature modules. forRoot() configures global providers and routes for the root module, while forChild() configures additional routes for feature modules without duplicating providers.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Angular, modules can include routing and services. The <code>forRoot()</code> and <code>forChild()</code> methods are conventions that help manage how routes and services are provided across different parts of an application — ensuring that global providers are instantiated only once, and feature modules get their own route configurations."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>The Problem They Solve</strong><br>When you import the same module (such as a routing or service module) into multiple feature modules, Angular might create multiple instances of services or conflicting route definitions. <code>forRoot()</code> and <code>forChild()</code> prevent this by clearly defining which module provides shared singletons (root-level) and which only extends configuration (child-level)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>forRoot()</strong><br>The <code>forRoot()</code> method is used in the <strong>root module</strong> (usually <code>AppModule</code>). It configures and provides application-wide services, singletons, and routes that should be initialized once for the entire application."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: AppRoutingModule with forRoot()\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { HomeComponent } from './home/home.component';\n\nconst routes: Routes = [\n  { path: '', component: HomeComponent }\n];\n\n@NgModule({\n  imports: [RouterModule.forRoot(routes)],\n  exports: [RouterModule]\n})\nexport class AppRoutingModule {}"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>RouterModule.forRoot()</code> sets up the application's root router. It defines the initial navigation paths and ensures that only one router service instance exists across the app."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>forChild()</strong><br>The <code>forChild()</code> method is used in <strong>feature modules</strong>. It allows these modules to define their own route configurations without re-initializing the router or global providers. This supports modular architecture and lazy loading."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: ProductsRoutingModule with forChild()\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\nimport { ProductListComponent } from './product-list/product-list.component';\nimport { ProductDetailComponent } from './product-detail/product-detail.component';\n\nconst routes: Routes = [\n  { path: '', component: ProductListComponent },\n  { path: ':id', component: ProductDetailComponent }\n];\n\n@NgModule({\n  imports: [RouterModule.forChild(routes)],\n  exports: [RouterModule]\n})\nexport class ProductsRoutingModule {}"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>RouterModule.forChild()</code> defines routes specific to the <code>ProductsModule</code>. It does not create a new router instance but instead extends the main router configuration."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>forRoot() and forChild() in Shared Modules</strong><br>Custom shared modules (e.g., logging or analytics) may also use the <code>forRoot()</code>/<code>forChild()</code> pattern to manage singleton service instantiation."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "// Example: SharedModule using forRoot()\n@NgModule({\n  providers: []\n})\nexport class SharedModule {\n  static forRoot(): ModuleWithProviders<SharedModule> {\n    return {\n      ngModule: SharedModule,\n      providers: [LoggingService] // Singleton provider\n    };\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "This ensures that the <code>LoggingService</code> is instantiated only once at the root level, even if <code>SharedModule</code> is imported in multiple places."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Method",
+                        "Used In",
+                        "Purpose",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "forRoot()",
+                            "Root module (AppModule)",
+                            "Configures global services and root routing",
+                            "RouterModule.forRoot(routes)"
+                        ],
+                        [
+                            "forChild()",
+                            "Feature module",
+                            "Defines module-specific routes without creating new instances",
+                            "RouterModule.forChild(routes)"
+                        ]
+                    ],
+                    "caption": "Differences Between forRoot() and forChild()"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Best Practices</strong><ul><li>Use <code>forRoot()</code> only once — in the root module.</li><li>Use <code>forChild()</code> in feature or lazy-loaded modules.</li><li>Do not import <code>RouterModule.forRoot()</code> in feature modules, as it can cause multiple router instances and unpredictable behavior.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>forRoot()</code> as setting up the main roads of your app, while <code>forChild()</code> adds local streets within neighborhoods (feature modules) without rebuilding the entire map."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li><code>forRoot()</code> initializes global providers and routing — used in the root module.</li><li><code>forChild()</code> defines feature module routes without duplicating providers.</li><li>Together, they ensure scalable, modular, and efficient routing and service management in Angular applications.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "angular-performance-optimization",
+        "title": "How does Angular handle performance optimization for large applications?",
+        "technology": "angular",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "Angular provides a variety of built-in tools and best practices for optimizing performance in large applications. These include efficient change detection strategies, lazy loading, Ahead-of-Time (AOT) compilation, tree-shaking, and other advanced techniques to minimize bundle size and rendering time.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>As Angular applications grow in size and complexity, performance optimization becomes essential to maintain fast loading times, smooth user interactions, and efficient change detection. Angular includes a robust set of features and optimization strategies designed to improve both runtime and build-time performance."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>1. Efficient Change Detection with OnPush</strong><br>By default, Angular checks all components in every change detection cycle. However, for large apps, this can be costly. Using <code>ChangeDetectionStrategy.OnPush</code> allows Angular to check components only when their input references change, significantly reducing unnecessary updates."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { Component, ChangeDetectionStrategy, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-user-profile',\n  template: `<h3>{{ user.name }}</h3>`,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserProfileComponent {\n  @Input() user!: { name: string };\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "This approach is especially effective when used with immutable data structures or RxJS streams that emit new values instead of mutating existing ones."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>2. Lazy Loading of Modules</strong><br>Angular supports <strong>lazy loading</strong>, which loads feature modules only when needed. This reduces the initial bundle size, improving startup performance for large-scale applications. Modules that are not immediately required by the user are loaded asynchronously upon navigation."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "{ path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) }"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>3. Ahead-of-Time (AOT) Compilation</strong><br>Angular’s AOT compiler converts TypeScript and HTML templates into optimized JavaScript during the build phase, rather than at runtime. This results in smaller, faster applications with fewer runtime errors."
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "ng build --prod --aot"
+                },
+                {
+                    "type": "text",
+                    "text": "AOT removes the need for the browser to compile templates, reducing the startup cost and improving performance, especially on low-powered devices."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>4. Tree Shaking and Bundle Optimization</strong><br>Tree shaking removes unused code from the final bundle. Angular’s build system (based on Webpack) automatically performs tree-shaking, minification, and dead-code elimination when building with production mode (<code>--configuration production</code>)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>5. Using TrackBy with *ngFor</strong><br>When rendering lists with <code>*ngFor</code>, Angular re-renders all elements when data changes by default. By providing a <code>trackBy</code> function, you can optimize list rendering by updating only the modified elements."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<li *ngFor=\"let user of users; trackBy: trackById\">{{ user.name }}</li>"
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "trackById(index: number, user: any): number {\n  return user.id;\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>6. Pure Pipes for Efficient Transformations</strong><br>Angular pipes are a great way to transform data in templates. Pure pipes execute only when input values change, unlike impure pipes, which run on every change detection cycle. Using pure pipes prevents redundant recalculations."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "@Pipe({ name: 'capitalize', pure: true })\nexport class CapitalizePipe implements PipeTransform {\n  transform(value: string): string {\n    return value.charAt(0).toUpperCase() + value.slice(1);\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>7. On-Demand Change Detection Control</strong><br>Developers can take control of change detection using <code>ChangeDetectorRef</code>. By detaching and reattaching detection manually, you can optimize performance in complex UIs with frequent updates."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "constructor(private cd: ChangeDetectorRef) {}\n\nngAfterViewInit() {\n  this.cd.detach(); // Stop automatic checking\n  setTimeout(() => {\n    this.cd.detectChanges(); // Manually trigger update\n  }, 1000);\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>8. Using Web Workers for Heavy Computations</strong><br>Angular supports Web Workers to offload computationally expensive tasks (like image processing or data parsing) from the main UI thread. This keeps the interface responsive."
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "ng generate web-worker app"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>9. Async and OnPush with RxJS</strong><br>Using the <code>async</code> pipe along with <code>OnPush</code> components minimizes subscriptions and ensures Angular unsubscribes automatically. This prevents memory leaks and unnecessary re-renders."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<p *ngIf=\"user$ | async as user\">Welcome, {{ user.name }}!</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>10. Preloading Strategies</strong><br>Angular’s Router offers preloading strategies that load lazy modules in the background after the main app is ready. This reduces navigation delays later on."
+                },
+                {
+                    "type": "code",
+                    "language": "typescript",
+                    "code": "import { PreloadAllModules, RouterModule } from '@angular/router';\n\nRouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>11. Using Pure Functions and Immutability</strong><br>Keeping your component logic pure (without side effects) and using immutable objects allows Angular to optimize rendering and makes debugging simpler. Immutable updates are especially effective when used with <code>OnPush</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>12. Production Builds and Source Map Optimization</strong><br>Always use production builds in deployment. Angular’s production build mode enables AOT, tree shaking, minification, and optimizations by default, drastically improving runtime speed and reducing bundle size."
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "ng build --configuration production"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>13. Server-Side Rendering (SSR)</strong><br>Using Angular Universal for server-side rendering improves perceived performance and SEO. The initial HTML is rendered on the server, so the app appears faster to users before the client-side bundle fully loads."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular’s performance optimizations as tuning an orchestra — lazy loading reduces the number of players on stage, OnPush ensures only the right ones play, and AOT ensures every note is ready before the concert begins."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><br><ul><li>Angular optimizes large apps through OnPush detection, lazy loading, AOT, and tree shaking.</li><li>TrackBy, pure pipes, and RxJS streams prevent redundant rendering.</li><li>Web workers, preloading, and SSR further enhance responsiveness.</li><li>Combining these strategies ensures Angular apps remain fast, scalable, and efficient even at enterprise scale.</li></ul>"
+                }
+            ]
+        }
     }
 ]
