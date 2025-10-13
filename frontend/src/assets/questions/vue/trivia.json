@@ -1,0 +1,2309 @@
+[
+    {
+        "id": "vue-introduction",
+        "title": "What is Vue.js?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "Vue.js is a progressive JavaScript framework used for building user interfaces and single-page applications (SPAs). It focuses on a view layer that is easy to integrate, reactive, and component-based, making it ideal for both small projects and large-scale enterprise applications.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue.js is an open-source JavaScript framework created by Evan You. It is designed to be progressive — meaning you can adopt it incrementally. Developers can use Vue for small parts of a page or build complete single-page applications (SPAs). Vue emphasizes simplicity, reactivity, and flexibility."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Core Concepts</strong><br>Vue is built around a component-based architecture. Each piece of the UI (a button, a form, a card, etc.) is a component that manages its own logic, styles, and template. These components communicate with each other using props and events, similar to React or Angular."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <h2>{{ message }}</h2>\n    <button @click=\"reverseMessage\">Reverse Message</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      message: 'Hello Vue!'\n    };\n  },\n  methods: {\n    reverseMessage() {\n      this.message = this.message.split('').reverse().join('');\n    }\n  }\n};\n</script>\n\n<style scoped>\nbutton {\n  background: #42b983;\n  color: white;\n  border: none;\n  padding: 10px;\n  cursor: pointer;\n}\n</style>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Reactive Data Binding</strong><br>Vue’s reactivity system automatically updates the DOM whenever the underlying data changes. This is achieved through its <em>virtual DOM</em> and dependency-tracking system. Developers simply modify state variables, and Vue takes care of efficiently updating the user interface."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Features</strong><ul><li><strong>Declarative Rendering</strong> – You describe what the UI should look like based on data, and Vue handles the updates.</li><li><strong>Component System</strong> – Everything in Vue is a component, making it modular and maintainable.</li><li><strong>Reactivity</strong> – Vue uses a reactive system to detect and reflect changes in data instantly.</li><li><strong>Transitions and Animations</strong> – Built-in support for smooth UI transitions.</li><li><strong>Routing and State Management</strong> – Handled via official libraries like Vue Router and Pinia (formerly Vuex).</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Use Vue.js?</strong><br>Vue is known for being lightweight and approachable. Its syntax feels familiar to developers with experience in HTML, CSS, and JavaScript. It also offers excellent documentation, making it beginner-friendly, while still powerful enough for advanced applications."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue.js as the perfect balance between React’s flexibility and Angular’s structure — simple enough to start quickly, yet powerful enough to scale for enterprise projects."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Vue.js is a progressive, reactive, and component-based JavaScript framework.</li><li>It’s easy to integrate into projects and can scale to complex SPAs.</li><li>Offers declarative templates, a reactive data model, and a clear separation of concerns.</li><li>Used widely for its simplicity, speed, and maintainability.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-vs-react",
+        "title": "What is the difference between Vue.js and React?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Vue.js and React are both popular JavaScript frameworks for building user interfaces, but they differ in design philosophy, syntax, reactivity handling, and learning curve. Vue is more opinionated and template-based, while React emphasizes JavaScript-driven, declarative UI creation using JSX.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue.js and React are two of the most widely used front-end frameworks in modern web development. Both aim to make building user interfaces more efficient, but they differ in structure, syntax, and design philosophy. While Vue is a full-featured framework with a focus on simplicity and declarative templates, React is a flexible library centered around JSX and functional programming."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Vue.js",
+                        "React"
+                    ],
+                    "rows": [
+                        [
+                            "Design Philosophy",
+                            "A progressive framework focusing on simplicity and integration.",
+                            "A library for building UIs emphasizing flexibility and JavaScript control."
+                        ],
+                        [
+                            "Syntax",
+                            "Uses HTML-based templates with directives (like v-if, v-for).",
+                            "Uses JSX — a syntax extension allowing HTML inside JavaScript."
+                        ],
+                        [
+                            "Reactivity",
+                            "Built-in reactivity system using proxies and dependency tracking.",
+                            "Uses a virtual DOM and state updates through hooks like useState()."
+                        ],
+                        [
+                            "Learning Curve",
+                            "Gentle — easy for beginners to pick up with existing HTML/CSS knowledge.",
+                            "Moderate — requires understanding of JSX, props, and functional components."
+                        ],
+                        [
+                            "State Management",
+                            "Uses Vuex (v2) or Pinia (v3+) as official state libraries.",
+                            "Uses Redux, Zustand, or React Context API for global state management."
+                        ],
+                        [
+                            "Routing",
+                            "Official router: Vue Router, tightly integrated.",
+                            "React Router is community-driven and separately maintained."
+                        ],
+                        [
+                            "Performance",
+                            "Excellent due to dependency tracking and efficient updates.",
+                            "Excellent due to virtual DOM and optimized diffing algorithm."
+                        ],
+                        [
+                            "Community",
+                            "Smaller but highly dedicated and documentation-focused.",
+                            "Larger ecosystem with extensive community support and third-party tools."
+                        ]
+                    ],
+                    "caption": "Comparison Between Vue.js and React"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Vue.js Approach</strong><br>Vue focuses on simplicity and separation of concerns. It allows developers to use declarative templates (HTML) while maintaining reactivity through its internal system. Vue offers official libraries for routing, state management, and animation, ensuring consistency across projects."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <p>{{ message }}</p>\n    <button @click=\"changeMessage\">Change</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return { message: 'Hello Vue!' };\n  },\n  methods: {\n    changeMessage() {\n      this.message = 'Message Updated!';\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>React Approach</strong><br>React promotes a JavaScript-first design. The UI is defined using JSX and controlled entirely through component state and props. This gives developers greater flexibility and control, but also requires a deeper understanding of JavaScript and rendering flow."
+                },
+                {
+                    "type": "code",
+                    "language": "jsx",
+                    "code": "import React, { useState } from 'react';\n\nfunction App() {\n  const [message, setMessage] = useState('Hello React!');\n\n  return (\n    <div>\n      <p>{message}</p>\n      <button onClick={() => setMessage('Message Updated!')}>Change</button>\n    </div>\n  );\n}\n\nexport default App;"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Performance Comparison</strong><br>Both frameworks use a virtual DOM for efficient rendering. Vue’s advantage lies in its fine-grained reactivity system that tracks dependencies automatically, while React relies on re-rendering virtual nodes and reconciling them efficiently through its diffing algorithm."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Use Cases</strong><br><ul><li><strong>Vue.js:</strong> Best for teams looking for simplicity, quick prototyping, and clear separation between logic and template.</li><li><strong>React:</strong> Ideal for complex UIs, large-scale apps, and teams familiar with JavaScript-first development.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue.js as a structured painter’s canvas — HTML templates define the layout, and reactivity adds life. React, on the other hand, is a sculptor’s tool — everything is carved directly with JavaScript."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Vue.js offers simplicity with HTML templates and built-in reactivity.</li><li>React offers flexibility with JSX and a functional, JavaScript-driven approach.</li><li>Both provide high performance, strong ecosystems, and component-based architecture.</li><li>Choice depends on team preference, project scale, and developer experience.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-instance",
+        "title": "What is a Vue instance?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "A Vue instance is the core object that powers every Vue application. It connects data, methods, and the DOM, enabling the framework’s reactivity system and component lifecycle to function properly.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Every Vue application starts with a Vue instance, created using the <code>createApp()</code> function in Vue 3 (or <code>new Vue()</code> in Vue 2). The Vue instance acts as the central controller of the app — it manages data, tracks dependencies, updates the DOM, and handles the component lifecycle."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How It Works</strong><br>When a Vue instance is created, it takes an options object containing properties like <code>data</code>, <code>methods</code>, <code>computed</code>, and <code>template</code>. Vue automatically binds these properties to the instance and makes them reactive — meaning any change in data triggers a re-render of the UI."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Vue 3 example\nimport { createApp } from 'vue';\n\nconst app = createApp({\n  data() {\n    return {\n      message: 'Hello Vue Instance!'\n    };\n  },\n  methods: {\n    reverseMessage() {\n      this.message = this.message.split('').reverse().join('');\n    }\n  }\n});\n\napp.mount('#app');"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, the Vue instance binds the <code>message</code> variable and the <code>reverseMessage()</code> method to the DOM element with the ID <code>app</code>. When the data changes, Vue automatically updates the view."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Lifecycle of a Vue Instance</strong><br>The Vue instance goes through several lifecycle stages: creation, mounting, updating, and unmounting. Hooks like <code>created()</code>, <code>mounted()</code>, and <code>updated()</code> allow developers to perform logic at specific points during this lifecycle."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Lifecycle Stage",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            "created()",
+                            "Called after the instance is created, but before it’s mounted to the DOM."
+                        ],
+                        [
+                            "mounted()",
+                            "Called once the instance is mounted and the DOM is accessible."
+                        ],
+                        [
+                            "updated()",
+                            "Triggered when reactive data changes cause a re-render."
+                        ],
+                        [
+                            "unmounted()",
+                            "Called when the instance is destroyed and removed from the DOM."
+                        ]
+                    ],
+                    "caption": "Vue Instance Lifecycle Hooks"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Reactive Nature</strong><br>Vue uses a dependency-tracking reactivity system. When a piece of data changes, Vue knows exactly which components or elements depend on it and updates only those parts of the DOM, ensuring efficiency and speed."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of a Vue instance as the brain of your app — it observes data, reacts to changes, and keeps the user interface synchronized automatically."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>The Vue instance connects data, logic, and the DOM.</li><li>Created using <code>createApp()</code> in Vue 3.</li><li>Manages reactivity and component lifecycle hooks.</li><li>Acts as the root of the Vue component tree.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-data-function",
+        "title": "What is the purpose of the data() function in Vue components?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The data() function in Vue components returns an object that defines the component’s reactive state. It ensures each component instance has its own independent copy of data, allowing Vue to track and update UI changes efficiently.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>data()</code> function in Vue components defines the reactive state of a component. It returns an object containing all reactive properties that can be used inside the template, computed properties, and methods. Any change in these properties triggers a re-render of the affected DOM elements."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "export default {\n  data() {\n    return {\n      count: 0,\n      message: 'Welcome to Vue!'\n    };\n  },\n  methods: {\n    increment() {\n      this.count++;\n    }\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>count</code> and <code>message</code> are reactive properties. When the <code>increment()</code> method is called, Vue automatically updates the template wherever <code>count</code> is displayed."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why data() Must Be a Function</strong><br>In Vue components, <code>data</code> must be a function that returns an object instead of a plain object. This ensures that each component instance maintains its own independent copy of the data, preventing unwanted shared state between components."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Correct: data is a function\nexport default {\n  data() {\n    return { message: 'Hello Vue!' };\n  }\n};\n\n// Incorrect: data as an object (shared across instances)\nexport default {\n  data: { message: 'Hello Vue!' }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "If <code>data</code> were a plain object, all instances of the component would share the same reference, causing one component’s state changes to affect others — which is almost never desired in UI design."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Reactivity Under the Hood</strong><br>Vue wraps data properties with getters and setters using Proxies (in Vue 3) or Object.defineProperty (in Vue 2). This allows Vue to track dependencies and re-render only the components that rely on updated data."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Accessing Data in Templates</strong><br>The properties defined in <code>data()</code> can be directly used in templates using the double curly braces (<code>{{ }}</code>) syntax or bound dynamically using directives like <code>v-bind</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <p>{{ message }}</p>\n    <button @click=\"increment\">Clicked {{ count }} times</button>\n  </div>\n</template>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>data()</code> as the heart of a Vue component — it provides the state that keeps your UI alive and reactive, updating instantly whenever the data changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>data()</code> defines the component’s reactive state.</li><li>It must return an object to ensure unique state per instance.</li><li>Changes to data automatically update the UI.</li><li>Vue uses proxies to track and efficiently re-render data-dependent elements.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-interpolation",
+        "title": "What is interpolation in Vue?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "Interpolation in Vue is a technique that allows you to embed dynamic data from your component into the template using the double curly braces syntax {{ }}. It is primarily used to display reactive data and automatically updates when the data changes.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Interpolation is one of the most fundamental features in Vue.js. It allows developers to render dynamic values into the DOM by embedding component data directly within templates. Vue uses its reactivity system to ensure that whenever data changes, the corresponding part of the DOM is automatically updated."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <h2>{{ message }}</h2>\n    <p>The count is: {{ count }}</p>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      message: 'Hello, Vue!',\n      count: 5\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, the <code>{{ message }}</code> and <code>{{ count }}</code> expressions are examples of Vue interpolation. The expressions are evaluated in the component’s reactive context — when <code>message</code> or <code>count</code> changes, Vue automatically updates the text displayed in the DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Expression Support</strong><br>Interpolation supports simple JavaScript expressions, allowing you to perform inline calculations or transformations directly inside templates. However, these should be kept simple and side-effect-free."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<p>{{ count * 2 }}</p>\n<p>{{ message.toUpperCase() }}</p>\n<p>{{ user.firstName + ' ' + user.lastName }}</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, the expressions are dynamically evaluated and updated whenever the related data changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Escaping and Security</strong><br>By default, Vue escapes HTML characters inside interpolation to prevent Cross-Site Scripting (XSS) attacks. For example, <code>{{ '<strong>Hello</strong>' }}</code> will render as literal text rather than bolded HTML. If you intentionally need to render raw HTML, you should use the <code>v-html</code> directive instead."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of interpolation as a live data window into your component — whenever your state changes, the displayed values automatically stay in sync."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Interpolation uses <code>{{ }}</code> to render dynamic values in templates.</li><li>Supports simple JavaScript expressions.</li><li>Automatically updates when reactive data changes.</li><li>Escapes HTML by default to ensure security.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-dynamic-attribute-binding",
+        "title": "How do you bind HTML attributes dynamically in Vue?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "In Vue, you can dynamically bind HTML attributes to reactive data using the v-bind directive (or the shorthand ':'). It allows you to make attributes like class, id, src, href, and others update automatically when data changes.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Dynamic attribute binding is a core feature of Vue.js that allows developers to connect DOM attributes to component data reactively. This is achieved using the <code>v-bind</code> directive or its shorthand syntax <code>:</code>. Vue will automatically update the attribute whenever the corresponding data property changes."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <img v-bind:src=\"imageSrc\" v-bind:alt=\"description\" />\n    <a :href=\"profileUrl\">Visit Profile</a>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      imageSrc: 'https://vuejs.org/images/logo.png',\n      description: 'Vue.js Logo',\n      profileUrl: 'https://vuejs.org'\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, Vue binds the <code>src</code>, <code>alt</code>, and <code>href</code> attributes to reactive data. When any of these data properties are updated, the DOM attributes automatically reflect the new values."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Dynamic Class and Style Binding</strong><br>Vue provides powerful syntax for binding <code>class</code> and <code>style</code> attributes dynamically, allowing conditional or multiple bindings based on data or computed properties."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<div :class=\"{ active: isActive, 'text-large': isLarge }\"></div>\n<div :style=\"{ color: textColor, fontSize: fontSize + 'px' }\"></div>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>:class</code> dynamically adds or removes CSS classes based on boolean values, while <code>:style</code> updates inline styles reactively based on the component’s data."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Binding Multiple Attributes</strong><br>You can also bind multiple attributes at once using an object with <code>v-bind</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<button v-bind=\"{ id: buttonId, disabled: isDisabled, title: tooltip }\">Click Me</button>"
+                },
+                {
+                    "type": "text",
+                    "text": "This approach is useful when dynamically setting multiple attributes that come from a single data object or computed property."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Security Note</strong><br>Vue automatically escapes attribute values to prevent injection vulnerabilities. However, developers should still avoid binding untrusted user input directly to sensitive attributes like <code>href</code> or <code>src</code> without validation."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-bind</code> as a dynamic bridge between your JavaScript data and HTML attributes — whenever data changes, the DOM updates automatically, keeping everything perfectly in sync."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Use <code>v-bind</code> or <code>:</code> to dynamically bind HTML attributes.</li><li>Commonly used for <code>src</code>, <code>href</code>, <code>class</code>, and <code>style</code>.</li><li>Supports conditional, multiple, and object-based bindings.</li><li>Keeps DOM attributes reactive and automatically updated.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-v-if-directive",
+        "title": "What does the v-if directive do?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The v-if directive in Vue is used to conditionally render elements in the DOM. It ensures that elements are created or removed entirely based on the truthiness of a given expression, improving performance and logic control in templates.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>v-if</code> directive is one of Vue’s core conditional rendering features. It allows developers to control whether an element or component should exist in the DOM based on a Boolean expression. When the condition evaluates to <code>true</code>, Vue renders the element. If it’s <code>false</code>, Vue removes it entirely from the DOM."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <h2 v-if=\"isLoggedIn\">Welcome back, {{ username }}!</h2>\n    <h2 v-else>Please log in to continue.</h2>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      isLoggedIn: false,\n      username: 'Mina'\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, when <code>isLoggedIn</code> is <code>true</code>, the greeting message is displayed. When it’s <code>false</code>, the login prompt appears instead. Vue completely removes or adds these elements from the DOM, rather than hiding them with CSS."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Performance Advantage</strong><br>Because <code>v-if</code> removes elements from the DOM, it’s ideal for conditions that don’t change frequently. Vue only re-renders the affected elements when the condition toggles, leading to efficient updates."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>v-if vs v-show</strong><br>While <code>v-if</code> adds and removes elements from the DOM, <code>v-show</code> simply toggles the CSS <code>display</code> property. Use <code>v-show</code> for frequently toggled elements and <code>v-if</code> for rarely changing ones."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Directive",
+                        "Behavior",
+                        "Use Case"
+                    ],
+                    "rows": [
+                        [
+                            "v-if",
+                            "Adds/removes element from DOM",
+                            "For conditional rendering of rarely toggled content"
+                        ],
+                        [
+                            "v-show",
+                            "Toggles element visibility using CSS",
+                            "For frequently toggled content"
+                        ]
+                    ],
+                    "caption": "Comparison Between v-if and v-show"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using v-else and v-else-if</strong><br>Vue supports <code>v-else</code> and <code>v-else-if</code> for handling multiple conditions in sequence, similar to if-else statements in JavaScript."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<p v-if=\"score > 90\">Excellent!</p>\n<p v-else-if=\"score > 75\">Good job!</p>\n<p v-else>Keep trying!</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-if</code> as Vue’s smart gatekeeper — it decides whether an element should exist at all, not just whether it should be visible."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>v-if</code> conditionally adds or removes elements from the DOM.</li><li>Ideal for rendering content that doesn’t change often.</li><li>Can be paired with <code>v-else</code> and <code>v-else-if</code> for multi-condition logic.</li><li>Use <code>v-show</code> instead for simple visibility toggling.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-v-for-directive",
+        "title": "What is the purpose of the v-for directive?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The v-for directive in Vue is used to render a list of elements or components by iterating over an array or object. It helps generate dynamic lists efficiently while maintaining Vue’s reactivity system for updates.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>v-for</code> directive in Vue allows developers to loop through arrays, objects, or numerical ranges to generate elements dynamically. Each item in the list is bound to its data, and Vue automatically updates the DOM when the underlying array or object changes."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <ul>\n    <li v-for=\"(fruit, index) in fruits\" :key=\"index\">\n      {{ index + 1 }}. {{ fruit }}\n    </li>\n  </ul>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      fruits: ['Apple', 'Banana', 'Orange']\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>v-for</code> iterates through the <code>fruits</code> array and renders a list item for each fruit. The <code>:key</code> attribute helps Vue efficiently track each node’s identity, improving rendering performance and enabling smooth updates."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Iterating Over Objects</strong><br>You can also use <code>v-for</code> to iterate over object properties, accessing both the key and value."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<ul>\n  <li v-for=\"(value, key) in user\" :key=\"key\">\n    {{ key }}: {{ value }}\n  </li>\n</ul>\n\n<script>\nexport default {\n  data() {\n    return {\n      user: {\n        name: 'Mina',\n        age: 28,\n        city: 'Istanbul'\n      }\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using v-for with Components</strong><br><code>v-for</code> can also be used to render multiple component instances dynamically."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<user-card v-for=\"user in users\" :key=\"user.id\" :name=\"user.name\" :age=\"user.age\"></user-card>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, a <code>user-card</code> component is rendered for each object in the <code>users</code> array, passing data via props. Vue keeps each instance reactive and efficiently updates only those that change."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Keys and Performance</strong><br>The <code>:key</code> attribute is crucial for maintaining performance and predictable re-rendering. Without unique keys, Vue may reuse or misplace DOM elements, causing visual or logical errors."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-for</code> as Vue’s automatic loop engine — it transforms data collections into dynamic, reactive elements that stay perfectly synchronized with your component state."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>v-for</code> loops over arrays, objects, or ranges.</li><li>Each iteration can access item, index, and key.</li><li>Must include a unique <code>:key</code> for efficient updates.</li><li>Used for lists, dynamic components, and reactive data rendering.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-v-model-input-handling",
+        "title": "How do you handle user input with v-model?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The v-model directive in Vue creates two-way data binding between form inputs and component data. It automatically synchronizes user input with the component’s data properties, keeping the UI and application state in sync.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>v-model</code> directive in Vue is used to handle user input efficiently by creating a two-way binding between form elements and the component’s data. This means that when a user types in an input field, the data automatically updates, and when the data changes programmatically, the input reflects the new value instantly."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <input v-model=\"username\" placeholder=\"Enter your name\" />\n    <p>Hello, {{ username }}!</p>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      username: ''\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>v-model</code> binds the <code>username</code> data property to the input field. As the user types, <code>username</code> updates automatically. Similarly, if you modify <code>username</code> in JavaScript, the input field will also reflect that change."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Supported Form Elements</strong><br><code>v-model</code> works on various input types, including text fields, checkboxes, radio buttons, selects, and textareas."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Text input -->\n<input v-model=\"message\" />\n\n<!-- Checkbox -->\n<input type=\"checkbox\" v-model=\"isChecked\" />\n\n<!-- Radio -->\n<input type=\"radio\" value=\"Male\" v-model=\"gender\" />\n<input type=\"radio\" value=\"Female\" v-model=\"gender\" />\n\n<!-- Select -->\n<select v-model=\"selected\">\n  <option disabled value=\"\">Please choose one</option>\n  <option>Apple</option>\n  <option>Banana</option>\n</select>"
+                },
+                {
+                    "type": "text",
+                    "text": "Each example demonstrates how Vue keeps input values synchronized with their respective reactive data properties automatically, eliminating the need for manual event handling."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Modifiers in v-model</strong><br>Vue provides modifiers to handle specific input behaviors:<ul><li><code>.lazy</code> – updates the model only when the input loses focus.</li><li><code>.number</code> – automatically converts the input value to a number.</li><li><code>.trim</code> – trims whitespace from the input.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<input v-model.lazy=\"message\" placeholder=\"Updates on blur\" />\n<input v-model.number=\"age\" type=\"number\" />\n<input v-model.trim=\"name\" />"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-model</code> as a live connection between your data and form inputs — when one changes, the other updates automatically without writing extra event listeners."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>v-model</code> enables two-way binding between form elements and data.</li><li>Automatically keeps input fields and data synchronized.</li><li>Works with text, checkboxes, radio buttons, selects, and more.</li><li>Modifiers like <code>.lazy</code>, <code>.number</code>, and <code>.trim</code> enhance flexibility.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-v-show-vs-v-if",
+        "title": "What is the difference between v-show and v-if?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "Both v-show and v-if are Vue directives for conditional rendering, but they work differently. v-if adds or removes elements from the DOM based on conditions, while v-show toggles their visibility using CSS display property.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Vue.js, both <code>v-show</code> and <code>v-if</code> control whether an element should be visible or not, but they achieve this in different ways. Understanding their differences is key to optimizing performance and controlling DOM behavior."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>v-if: Conditional Rendering</strong><br><code>v-if</code> completely adds or removes an element from the DOM depending on whether its condition evaluates to true or false. If the condition is false, the element does not exist in the DOM at all."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <p v-if=\"isVisible\">This text is conditionally rendered.</p>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      isVisible: true\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "When <code>isVisible</code> is set to <code>false</code>, the element is removed from the DOM. This makes <code>v-if</code> more performance-efficient for content that changes infrequently."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>v-show: Conditional Display</strong><br><code>v-show</code> always keeps the element in the DOM but toggles its visibility using the CSS <code>display</code> property."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <p v-show=\"isVisible\">This text is always in the DOM but may be hidden.</p>\n</template>"
+                },
+                {
+                    "type": "text",
+                    "text": "When <code>isVisible</code> is <code>false</code>, the element remains in the DOM but is hidden by applying <code>display: none</code>. This makes <code>v-show</code> faster for frequently toggled elements since it doesn’t destroy or recreate the element."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Directive",
+                        "DOM Behavior",
+                        "Best Use Case"
+                    ],
+                    "rows": [
+                        [
+                            "v-if",
+                            "Adds or removes elements from the DOM",
+                            "Use when condition changes rarely (e.g., login screens, modals)"
+                        ],
+                        [
+                            "v-show",
+                            "Toggles element visibility with CSS",
+                            "Use when condition changes frequently (e.g., tab switching, dropdowns)"
+                        ]
+                    ],
+                    "caption": "Comparison Between v-if and v-show"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using v-else and v-else-if with v-if</strong><br><code>v-if</code> supports chaining with <code>v-else-if</code> and <code>v-else</code> for multiple conditional branches, while <code>v-show</code> does not support such combinations."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<p v-if=\"score >= 90\">Excellent!</p>\n<p v-else-if=\"score >= 75\">Good job!</p>\n<p v-else>Keep practicing!</p>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-if</code> as building or tearing down walls — it removes or creates elements completely, while <code>v-show</code> simply turns the lights on or off by hiding or showing what’s already there."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>v-if</code> adds or removes elements from the DOM.</li><li><code>v-show</code> toggles visibility using CSS <code>display</code>.</li><li><code>v-if</code> is better for infrequent toggling, while <code>v-show</code> suits frequent updates.</li><li>Use <code>v-if</code> with <code>v-else</code> and <code>v-else-if</code> for multi-branch conditions.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-computed-properties",
+        "title": "What are computed properties in Vue?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Computed properties in Vue are special properties that automatically update when their dependent data changes. They are primarily used to calculate derived state efficiently, caching results until their dependencies change.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Computed properties in Vue are a powerful way to define reactive logic that depends on existing data. They act like dynamic properties that automatically re-evaluate when the data they depend on changes — and they cache the result until dependencies are updated again."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <p>First Name: {{ firstName }}</p>\n    <p>Last Name: {{ lastName }}</p>\n    <p>Full Name (computed): {{ fullName }}</p>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      firstName: 'Mina',\n      lastName: 'Yilmaz'\n    };\n  },\n  computed: {\n    fullName() {\n      return this.firstName + ' ' + this.lastName;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>fullName</code> is a computed property that automatically re-calculates when <code>firstName</code> or <code>lastName</code> changes. Vue caches its value until one of these dependencies updates, avoiding unnecessary re-renders."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Computed Properties Work</strong><br>When Vue initializes a computed property, it tracks the reactive dependencies used inside the property. When any of those dependencies change, Vue marks the computed property as 'dirty' and re-evaluates it upon the next access."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Computed vs Methods</strong><br>While both can return derived values, computed properties are cached and only re-run when dependencies change. In contrast, methods are executed every time they are called, regardless of data changes."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Computed",
+                        "Method"
+                    ],
+                    "rows": [
+                        [
+                            "Caching",
+                            "Yes (re-evaluates only when dependencies change)",
+                            "No (runs every time it’s called)"
+                        ],
+                        [
+                            "Use Case",
+                            "For derived or reactive data",
+                            "For event-driven or non-reactive actions"
+                        ],
+                        [
+                            "Performance",
+                            "Optimized for efficiency",
+                            "Less efficient for repeated calls"
+                        ]
+                    ],
+                    "caption": "Comparison Between Computed Properties and Methods"
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "computed: {\n  reversedMessage() {\n    return this.message.split('').reverse().join('');\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, the computed property <code>reversedMessage</code> will only re-run when <code>message</code> changes, not on every render cycle."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Computed Getters and Setters</strong><br>Computed properties can also include a setter to handle updates in both directions."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "computed: {\n  fullName: {\n    get() {\n      return this.firstName + ' ' + this.lastName;\n    },\n    set(value) {\n      const parts = value.split(' ');\n      this.firstName = parts[0];\n      this.lastName = parts[1];\n    }\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "Now, assigning a value like <code>this.fullName = 'Jane Doe'</code> automatically updates <code>firstName</code> and <code>lastName</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of computed properties as smart variables that know when and how to update — they deliver dynamic results while minimizing unnecessary recalculations."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Computed properties calculate values based on reactive data.</li><li>They are cached until dependencies change.</li><li>Useful for derived state and transformations.</li><li>Support both getters and setters for two-way interaction.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-methods-property",
+        "title": "What is the purpose of the methods property in a Vue component?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The methods property in a Vue component defines reusable functions that perform logic or actions such as event handling, data manipulation, or API calls. Unlike computed properties, methods execute every time they are called and are not cached.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The <code>methods</code> property in Vue is used to define functions that perform actions or logic in response to user interactions or internal events. Methods are accessible throughout the template, event handlers, and component logic, and can modify reactive data directly."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <p>Count: {{ count }}</p>\n    <button @click=\"increment\">Increase</button>\n    <button @click=\"reset\">Reset</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      count: 0\n    };\n  },\n  methods: {\n    increment() {\n      this.count++;\n    },\n    reset() {\n      this.count = 0;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, two methods — <code>increment()</code> and <code>reset()</code> — modify the <code>count</code> data property in response to button clicks. Methods are typically used for user interaction handling and application logic."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Characteristics</strong><ul><li>Methods can access component data via <code>this</code>.</li><li>They are executed each time they’re called (no caching).</li><li>They’re ideal for event handling, API calls, or computations that don’t need memoization.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Methods vs Computed Properties</strong><br>While both can return values, methods are re-executed every time they’re invoked — even if the data hasn’t changed. Computed properties, on the other hand, cache results until dependencies are modified."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "methods: {\n  reversedMessage() {\n    return this.message.split('').reverse().join('');\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "In this case, calling <code>reversedMessage()</code> multiple times recalculates the reversed string each time, unlike a computed property which would reuse the cached value."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Methods in Event Handling</strong><br>Methods are often connected to template events using the <code>@</code> shorthand for <code>v-on</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<button @click=\"sayHello\">Click Me</button>\n\n<script>\nexport default {\n  methods: {\n    sayHello() {\n      alert('Hello from Vue!');\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Best Practices</strong><ul><li>Keep methods focused — each should perform a single logical task.</li><li>Use methods for imperative actions (e.g., API calls, mutations).</li><li>Use computed properties for derived data, not methods.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>methods</code> as the muscle of your Vue component — they perform actions, respond to user input, and make your application interactive and dynamic."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>The <code>methods</code> property defines reusable functions inside Vue components.</li><li>Methods can modify data, handle events, or trigger side effects.</li><li>They execute every time they’re called (not cached).</li><li>Best used for actions, while computed properties suit derived state.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-event-listening",
+        "title": "How do you listen for events in Vue?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "Vue provides an elegant system for event listening using the v-on directive (or its shorthand @) to handle user interactions such as clicks, inputs, keypresses, and custom component events.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Vue, you can listen for DOM or custom events using the <code>v-on</code> directive or its shorthand <code>@</code>. This directive allows you to attach event listeners directly within your templates, linking user interactions like clicks or keypresses to component methods."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <button v-on:click=\"sayHello\">Click Me</button>\n    <button @dblclick=\"resetCounter\">Double Click to Reset</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return { counter: 0 };\n  },\n  methods: {\n    sayHello() {\n      alert('Hello from Vue!');\n      this.counter++;\n    },\n    resetCounter() {\n      this.counter = 0;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>@click</code> and <code>@dblclick</code> are used to listen for click and double-click events. Each event triggers the corresponding method defined in the component."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Event Modifiers</strong><br>Vue offers event modifiers to simplify common event handling patterns. Modifiers are appended with a dot (.) to the event name and prevent the need for manual event manipulation in JavaScript."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Modifier",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            ".stop",
+                            "Calls event.stopPropagation() to prevent event bubbling."
+                        ],
+                        [
+                            ".prevent",
+                            "Calls event.preventDefault() to prevent default behavior."
+                        ],
+                        [
+                            ".capture",
+                            "Adds the event listener in capture mode."
+                        ],
+                        [
+                            ".once",
+                            "Executes the event handler only once."
+                        ],
+                        [
+                            ".self",
+                            "Triggers the handler only if the event is fired on the element itself."
+                        ]
+                    ],
+                    "caption": "Common Vue Event Modifiers"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<button @click.stop=\"handleClick\">Click without bubbling</button>\n<form @submit.prevent=\"submitForm\">\n  <input v-model=\"name\" />\n  <button type=\"submit\">Submit</button>\n</form>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, the <code>.stop</code> modifier stops the click event from bubbling up the DOM, while <code>.prevent</code> prevents the form from performing its default submit action."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Listening for Keyboard and Mouse Events</strong><br>You can also listen for specific keys or mouse buttons using key modifiers."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<input @keyup.enter=\"submitForm\" placeholder=\"Press Enter to submit\" />\n<button @click.right=\"showContextMenu\">Right-click Me</button>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this snippet, <code>@keyup.enter</code> triggers only when the Enter key is pressed, and <code>@click.right</code> listens specifically for right-clicks."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Listening for Custom Events Between Components</strong><br>Child components can emit custom events using <code>$emit</code>, and parent components can listen for them using <code>v-on</code> or <code>@</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Child.vue -->\n<template>\n  <button @click=\"$emit('increment', 1)\">Add 1</button>\n</template>\n\n<!-- Parent.vue -->\n<template>\n  <div>\n    <child-component @increment=\"addToCount\" />\n    <p>Count: {{ count }}</p>\n  </div>\n</template>\n\n<script>\nimport ChildComponent from './Child.vue';\nexport default {\n  components: { ChildComponent },\n  data() {\n    return { count: 0 };\n  },\n  methods: {\n    addToCount(amount) {\n      this.count += amount;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "This parent-child communication pattern is fundamental in Vue. The child emits an event, and the parent listens and reacts to it — a key concept for clean, modular component design."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> You can think of Vue’s event system as a flexible bridge — it connects user actions, DOM events, and component communication in a unified and reactive way."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Use <code>v-on</code> or <code>@</code> to listen for events.</li><li>Attach handlers to DOM events like clicks or keypresses.</li><li>Use modifiers like <code>.prevent</code> or <code>.stop</code> for cleaner logic.</li><li>Emit and listen for custom component events using <code>$emit</code>.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-cli-new-project",
+        "title": "How do you create a new Vue project using the CLI?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "You can create a new Vue project using the official Vue CLI by running commands in the terminal. The CLI helps scaffold projects with preconfigured build tools and optional integrations like TypeScript, Vue Router, and Vuex.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The Vue CLI (Command Line Interface) is a powerful tool that simplifies the setup and management of Vue.js applications. It automates project scaffolding, configuration, and optimization for development and production environments."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 1: Install Vue CLI Globally</strong><br>Before creating a project, install the Vue CLI globally using npm or yarn."
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "npm install -g @vue/cli\n# or\nyarn global add @vue/cli"
+                },
+                {
+                    "type": "text",
+                    "text": "Once installed, verify the installation by checking the version:"
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "vue --version"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 2: Create a New Vue Project</strong><br>Use the <code>vue create</code> command followed by your project name."
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "vue create my-vue-app"
+                },
+                {
+                    "type": "text",
+                    "text": "The CLI will prompt you to select preset configurations. You can choose the default setup (Babel + ESLint) or manually select features like TypeScript, Vue Router, Vuex, CSS preprocessors, and unit testing."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 3: Navigate and Run the Application</strong><br>Once the setup is complete, navigate into your project directory and start the development server."
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "cd my-vue-app\nnpm run serve"
+                },
+                {
+                    "type": "text",
+                    "text": "By default, your app will be available at <code>http://localhost:8080</code>. The server automatically updates the browser when you modify files, thanks to hot module replacement (HMR)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 4: Explore the Project Structure</strong><br>A Vue CLI project includes a structured layout optimized for scalability:"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Folder/File",
+                        "Purpose"
+                    ],
+                    "rows": [
+                        [
+                            "src/",
+                            "Contains your application's source code (components, assets, views, etc.)"
+                        ],
+                        [
+                            "public/",
+                            "Holds static assets and the base HTML file."
+                        ],
+                        [
+                            "package.json",
+                            "Defines dependencies, scripts, and project metadata."
+                        ],
+                        [
+                            "babel.config.js",
+                            "Manages Babel configuration for JavaScript transpilation."
+                        ],
+                        [
+                            "vue.config.js",
+                            "Optional configuration file for customizing build settings."
+                        ]
+                    ],
+                    "caption": "Vue CLI Project Structure Overview"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 5: Add Plugins and Features</strong><br>Vue CLI allows you to add official plugins anytime using the <code>vue add</code> command. For example:"
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "vue add router\nvue add vuex"
+                },
+                {
+                    "type": "text",
+                    "text": "This installs and configures Vue Router or Vuex automatically without manual setup."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> The Vue CLI acts like a smart assistant — it not only builds the foundation for your app but also evolves with it, letting you integrate tools and features as your project grows."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Install Vue CLI globally using npm or yarn.</li><li>Create a new project with <code>vue create project-name</code>.</li><li>Use interactive prompts to choose your setup.</li><li>Run <code>npm run serve</code> to start the development server.</li><li>Extend functionality with <code>vue add</code> plugins anytime.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-computed-vs-watchers",
+        "title": "What is the difference between computed properties and watchers in Vue?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Computed properties and watchers in Vue both respond to changes in reactive data, but they serve different purposes. Computed properties are used to derive and cache data, while watchers are used to perform side effects or execute logic when data changes.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Both computed properties and watchers in Vue observe reactive data and react to changes, but they are designed for different use cases. Computed properties are ideal for deriving values based on other data, whereas watchers are useful for performing side effects like API calls, logging, or manual data updates."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Computed Properties</strong><br>Computed properties automatically update when their reactive dependencies change. They are **cached** until a dependency changes again, making them ideal for data transformation or calculated outputs."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "export default {\n  data() {\n    return {\n      firstName: 'Mina',\n      lastName: 'Yilmaz'\n    };\n  },\n  computed: {\n    fullName() {\n      return this.firstName + ' ' + this.lastName;\n    }\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>fullName</code> automatically re-calculates whenever <code>firstName</code> or <code>lastName</code> changes, but Vue caches the result for performance until those dependencies update."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Watchers</strong><br>Watchers allow you to 'watch' specific data sources and execute a function whenever that data changes. They are useful for performing asynchronous or imperative tasks — for example, calling an API when a value changes."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "export default {\n  data() {\n    return {\n      searchQuery: ''\n    };\n  },\n  watch: {\n    searchQuery(newValue, oldValue) {\n      console.log(`Search changed from ${oldValue} to ${newValue}`);\n      this.fetchResults(newValue);\n    }\n  },\n  methods: {\n    fetchResults(query) {\n      // Example API call\n      console.log('Fetching data for', query);\n    }\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, the watcher tracks <code>searchQuery</code> and triggers an API call whenever the value changes. Unlike computed properties, watchers do not return a value — they perform side effects."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Computed Properties",
+                        "Watchers"
+                    ],
+                    "rows": [
+                        [
+                            "Purpose",
+                            "Derive or calculate new data",
+                            "Perform side effects when data changes"
+                        ],
+                        [
+                            "Caching",
+                            "Yes – cached until dependencies change",
+                            "No – runs every time data changes"
+                        ],
+                        [
+                            "Return Value",
+                            "Returns a computed value",
+                            "Executes a function, no return value"
+                        ],
+                        [
+                            "Use Case",
+                            "Display reactive derived data",
+                            "API calls, logging, manual data synchronization"
+                        ]
+                    ],
+                    "caption": "Comparison Between Computed Properties and Watchers"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When to Use Each</strong><ul><li>Use <code>computed</code> for declarative data transformations that are displayed in the template.</li><li>Use <code>watch</code> for imperative logic, like fetching data or reacting to user input changes.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of computed properties as <em>smart derived variables</em> and watchers as <em>reactive observers</em> that perform tasks when data changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Computed properties are used for data derivation and are cached for performance.</li><li>Watchers are used for running code or side effects when data changes.</li><li>Computed = declarative; Watch = imperative.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-lifecycle-hooks",
+        "title": "What are lifecycle hooks in Vue and when are they used?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Every Vue component goes through a series of lifecycle stages — creation, mounting, updating, and unmounting. Vue provides lifecycle hooks, which are special functions you can define to run code automatically at these stages."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "export default {\n  data() {\n    return {\n      message: 'Hello Vue!'\n    };\n  },\n  created() {\n    console.log('Component is created!');\n  },\n  mounted() {\n    console.log('Component is mounted to the DOM!');\n  },\n  updated() {\n    console.log('Component has re-rendered!');\n  },\n  unmounted() {\n    console.log('Component has been removed from the DOM!');\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "Each hook corresponds to a specific stage of the component lifecycle. For example, <code>created()</code> runs when the component is initialized, while <code>mounted()</code> runs when the component is added to the DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Commonly Used Lifecycle Hooks</strong>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Hook",
+                        "When It Runs",
+                        "Typical Use Case"
+                    ],
+                    "rows": [
+                        [
+                            "beforeCreate",
+                            "Before data observation and events are set up",
+                            "Rarely used; low-level hook for advanced debugging"
+                        ],
+                        [
+                            "created",
+                            "After instance is created and reactive data is available",
+                            "Initialize data or fetch initial data"
+                        ],
+                        [
+                            "beforeMount",
+                            "Before component is mounted to the DOM",
+                            "Prepare final changes before mounting"
+                        ],
+                        [
+                            "mounted",
+                            "After the component is mounted to the DOM",
+                            "Access the DOM or third-party libraries"
+                        ],
+                        [
+                            "beforeUpdate",
+                            "Before reactive data causes re-rendering",
+                            "Perform checks before DOM updates"
+                        ],
+                        [
+                            "updated",
+                            "After DOM updates due to reactive data changes",
+                            "React to DOM changes or perform animations"
+                        ],
+                        [
+                            "beforeUnmount",
+                            "Before the component is destroyed",
+                            "Cleanup operations or cancel timers"
+                        ],
+                        [
+                            "unmounted",
+                            "After the component is destroyed and removed from DOM",
+                            "Release resources, event listeners, or observers"
+                        ]
+                    ],
+                    "caption": "Vue Lifecycle Hook Sequence"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Lifecycle Hook Flow</strong><br>1️⃣ <code>beforeCreate</code> → 2️⃣ <code>created</code> → 3️⃣ <code>beforeMount</code> → 4️⃣ <code>mounted</code><br>Then for updates: 5️⃣ <code>beforeUpdate</code> → 6️⃣ <code>updated</code><br>And finally for teardown: 7️⃣ <code>beforeUnmount</code> → 8️⃣ <code>unmounted</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Use Case Example</strong><br>Fetching data when a component mounts is one of the most common lifecycle hook patterns:"
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "export default {\n  data() {\n    return { users: [] };\n  },\n  async mounted() {\n    const res = await fetch('https://api.example.com/users');\n    this.users = await res.json();\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, the <code>mounted()</code> hook ensures the component is attached to the DOM before fetching and displaying data."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of lifecycle hooks as checkpoints — moments in a component’s journey where you can pause, inspect, or intervene to perform logic, cleanup, or side effects."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Lifecycle hooks run at specific stages of a component’s creation, update, and destruction.</li><li>Commonly used hooks include <code>created()</code>, <code>mounted()</code>, and <code>updated()</code>.</li><li>They’re essential for handling initialization, DOM access, and cleanup logic.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-directives",
+        "title": "What are Vue directives and how do they work?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Vue directives are special HTML attributes prefixed with 'v-' that allow you to bind data, react to events, or manipulate the DOM dynamically. They are the foundation of Vue’s declarative rendering system.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>In Vue, directives are custom HTML attributes prefixed with <code>v-</code> that provide reactive behavior to DOM elements. They allow you to bind data, listen for events, show or hide elements, and apply dynamic logic directly in templates without writing manual JavaScript for DOM manipulation."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <p v-if=\"isVisible\">This paragraph is conditionally rendered.</p>\n    <p v-bind:title=\"message\">Hover to see the message.</p>\n    <button v-on:click=\"toggleVisibility\">Toggle Visibility</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      isVisible: true,\n      message: 'Hello from Vue!'\n    };\n  },\n  methods: {\n    toggleVisibility() {\n      this.isVisible = !this.isVisible;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, three directives are used:<br>• <code>v-if</code> conditionally renders an element.<br>• <code>v-bind</code> dynamically binds a JavaScript value to an attribute.<br>• <code>v-on</code> listens for user events like clicks."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Directives Work</strong><br>When Vue compiles a template, it parses all directives and establishes reactivity links between the DOM and your component data. Whenever the underlying data changes, Vue automatically updates the DOM to reflect the new state — no manual DOM manipulation required."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Common Built-in Directives</strong>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Directive",
+                        "Description"
+                    ],
+                    "rows": [
+                        [
+                            "v-if / v-else / v-else-if",
+                            "Conditionally render elements based on a boolean expression."
+                        ],
+                        [
+                            "v-show",
+                            "Toggles visibility using the CSS display property."
+                        ],
+                        [
+                            "v-for",
+                            "Loops through arrays or objects to render lists."
+                        ],
+                        [
+                            "v-bind",
+                            "Binds dynamic attributes or props to elements and components."
+                        ],
+                        [
+                            "v-on",
+                            "Attaches event listeners to DOM elements."
+                        ],
+                        [
+                            "v-model",
+                            "Creates two-way data binding with form inputs."
+                        ],
+                        [
+                            "v-html",
+                            "Renders raw HTML content inside an element."
+                        ],
+                        [
+                            "v-text",
+                            "Updates an element’s text content directly."
+                        ]
+                    ],
+                    "caption": "Common Vue Directives and Their Usage"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Custom Directives</strong><br>Vue also allows developers to define custom directives for specialized DOM behavior. Custom directives are registered using <code>app.directive()</code> in Vue 3."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "app.directive('focus', {\n  mounted(el) {\n    el.focus();\n  }\n});"
+                },
+                {
+                    "type": "text",
+                    "text": "Now, using <code>v-focus</code> in your template automatically focuses the element when mounted."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of directives as instructions for the DOM — they tell Vue what to do with elements when your data changes, keeping everything reactive and declarative."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Directives in Vue start with the prefix <code>v-</code> and enhance HTML behavior.</li><li>They dynamically bind data, handle events, and control the DOM.</li><li>Vue provides built-in directives like <code>v-if</code>, <code>v-for</code>, <code>v-bind</code>, and <code>v-on</code>.</li><li>You can create custom directives for advanced, reusable behavior.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-v-bind-v-on",
+        "title": "What is the purpose of v-bind and v-on?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "The v-bind and v-on directives in Vue are used to dynamically bind attributes and handle events, respectively. They are essential for connecting data and interactivity in Vue components.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br><code>v-bind</code> and <code>v-on</code> are two of Vue’s most fundamental directives. They enable dynamic, reactive behavior by connecting data to attributes (<code>v-bind</code>) and by handling user interactions (<code>v-on</code>)."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>v-bind: Dynamic Attribute Binding</strong><br>The <code>v-bind</code> directive binds a JavaScript expression or variable to an HTML attribute. This allows the attribute to update automatically whenever the bound data changes."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <img v-bind:src=\"imageUrl\" v-bind:alt=\"description\" />\n  <a v-bind:href=\"profileUrl\">View Profile</a>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      imageUrl: 'https://example.com/avatar.png',\n      description: 'User Avatar',\n      profileUrl: 'https://example.com/user'\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Whenever <code>imageUrl</code> or <code>description</code> changes, the <code>src</code> and <code>alt</code> attributes of the image element update automatically. Vue handles these updates reactively without manual DOM manipulation."
+                },
+                {
+                    "type": "text",
+                    "text": "The shorthand syntax for <code>v-bind</code> is simply a colon (<code>:</code>):"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<img :src=\"imageUrl\" :alt=\"description\" />"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>v-on: Event Handling</strong><br>The <code>v-on</code> directive attaches event listeners to DOM elements or components. It executes a method when the event occurs, such as a click, input, or keypress."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <button v-on:click=\"increment\">Click Me ({{ count }})</button>\n</template>\n\n<script>\nexport default {\n  data() {\n    return { count: 0 };\n  },\n  methods: {\n    increment() {\n      this.count++;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>v-on:click</code> listens for the click event and executes the <code>increment()</code> method, which updates <code>count</code>. Vue automatically updates the template to reflect the new value."
+                },
+                {
+                    "type": "text",
+                    "text": "The shorthand syntax for <code>v-on</code> is the <code>@</code> symbol:"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<button @click=\"increment\">Click Me</button>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Combining v-bind and v-on</strong><br>You can use both directives together for dynamic and interactive behavior. For example:"
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<button :class=\"buttonClass\" @click=\"toggleTheme\">\n  Toggle Theme\n</button>\n\n<script>\nexport default {\n  data() {\n    return {\n      darkMode: false\n    };\n  },\n  computed: {\n    buttonClass() {\n      return this.darkMode ? 'btn-dark' : 'btn-light';\n    }\n  },\n  methods: {\n    toggleTheme() {\n      this.darkMode = !this.darkMode;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, <code>v-bind</code> dynamically sets the class based on the <code>darkMode</code> state, and <code>v-on</code> listens for the click event to toggle between themes."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Directive",
+                        "Purpose",
+                        "Shorthand"
+                    ],
+                    "rows": [
+                        [
+                            "v-bind",
+                            "Binds data to element attributes dynamically",
+                            ":"
+                        ],
+                        [
+                            "v-on",
+                            "Listens for and handles user or component events",
+                            "@"
+                        ]
+                    ],
+                    "caption": "Comparison Between v-bind and v-on"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-bind</code> as Vue’s 'data-to-DOM bridge' and <code>v-on</code> as its 'DOM-to-data bridge' — together, they form the core of Vue’s reactive interaction model."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>v-bind</code> dynamically binds attributes to data values.</li><li><code>v-on</code> listens for DOM or custom component events.</li><li>Both have shorthand notations (<code>:</code> and <code>@</code>) for cleaner templates.</li><li>They are fundamental to Vue’s declarative and reactive nature.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-parent-to-child",
+        "title": "How do you pass data from a parent component to a child component?",
+        "technology": "vue",
+        "difficulty": "easy",
+        "importance": 5,
+        "description": "In Vue, data is passed from a parent component to a child component using props. Props are custom attributes that allow parent components to send data down the component tree in a one-way data flow.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue uses a one-way data flow, meaning data can only flow from parent to child components. This is achieved through <strong>props</strong>, which are custom attributes that let a parent component pass data down to a child. The child component then receives these props as reactive variables."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 1: Define Props in the Child Component</strong><br>Props are declared in the child component using the <code>props</code> option. They define what kind of data the component expects to receive."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Child.vue\n<template>\n  <div>\n    <h2>User: {{ name }}</h2>\n    <p>Age: {{ age }}</p>\n  </div>\n</template>\n\n<script>\nexport default {\n  props: {\n    name: String,\n    age: Number\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 2: Pass Data from the Parent Component</strong><br>In the parent component, you use the child component’s custom attributes to pass data as props."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Parent.vue -->\n<template>\n  <Child :name=\"userName\" :age=\"userAge\" />\n</template>\n\n<script>\nimport Child from './Child.vue';\n\nexport default {\n  components: { Child },\n  data() {\n    return {\n      userName: 'Mina',\n      userAge: 28\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>:name</code> and <code>:age</code> use <code>v-bind</code> shorthand to dynamically bind the parent’s data (<code>userName</code> and <code>userAge</code>) to the child’s props."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 3: Prop Validation</strong><br>Vue allows defining prop types and validation rules to ensure data integrity."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "props: {\n  name: {\n    type: String,\n    required: true\n  },\n  age: {\n    type: Number,\n    default: 18,\n    validator: (value) => value > 0\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "This ensures that <code>name</code> must always be a string, and <code>age</code> must be a positive number. Vue will warn you in the console if the wrong type is passed."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>One-Way Data Flow</strong><br>Props are <em>read-only</em> — child components should not modify them directly. If you need to modify the data, emit an event to the parent instead (explained in the next question)."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of props as parameters you pass to a function — the parent supplies the input, and the child uses it, but does not alter it."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Props let parent components pass data down to child components.</li><li>They are reactive but read-only within the child.</li><li>Props can be validated for type, requirement, and default values.</li><li>Use <code>v-bind</code> or <code>:</code> shorthand for dynamic binding.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-child-to-parent",
+        "title": "How does Vue handle component communication (child to parent)?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "In Vue, child components communicate with parent components using custom events. The child emits an event with optional data using $emit(), and the parent listens for that event using v-on or the @ shorthand.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue’s event system allows child components to send messages to their parent components. This is done using the <code>$emit()</code> method, which emits a custom event that the parent can listen for. This keeps data flow structured — from parent to child via props, and from child to parent via events."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 1: Emit an Event from the Child Component</strong><br>The child component uses the <code>$emit()</code> method to trigger an event, optionally passing data as an argument."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Child.vue -->\n<template>\n  <button @click=\"$emit('increment', 1)\">Add 1</button>\n</template>"
+                },
+                {
+                    "type": "text",
+                    "text": "In this example, when the button is clicked, the child component emits an event called <code>increment</code> and passes a value of <code>1</code> as data."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 2: Listen for the Event in the Parent Component</strong><br>The parent component listens for the event using <code>v-on</code> or the shorthand <code>@</code> syntax and executes a corresponding method."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Parent.vue -->\n<template>\n  <div>\n    <p>Count: {{ count }}</p>\n    <Child @increment=\"increaseCount\" />\n  </div>\n</template>\n\n<script>\nimport Child from './Child.vue';\n\nexport default {\n  components: { Child },\n  data() {\n    return { count: 0 };\n  },\n  methods: {\n    increaseCount(amount) {\n      this.count += amount;\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "The parent listens for the <code>increment</code> event and runs <code>increaseCount()</code> when it occurs, updating the <code>count</code> value accordingly."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Step 3: Emitting Custom Events with Data</strong><br>You can emit complex data like objects or arrays, not just numbers or strings."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- Child.vue -->\n<button @click=\"$emit('send-user', { name: 'Mina', age: 28 })\">\n  Send User Data\n</button>\n\n<!-- Parent.vue -->\n<Child @send-user=\"handleUserData\" />\n\n<script>\nexport default {\n  methods: {\n    handleUserData(user) {\n      console.log('Received user:', user);\n    }\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>One-Way Communication Rule</strong><br>Vue enforces a clear, one-way communication structure:<ul><li><strong>Parent → Child:</strong> via props</li><li><strong>Child → Parent:</strong> via custom events</li></ul>This makes applications more predictable and easier to debug."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Event Names</strong><br>Event names are typically written in kebab-case (e.g., <code>user-selected</code>). The parent must use the same case when listening for the event."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<Child @user-selected=\"onUserSelected\" />"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>$emit</code> as the child’s voice — it notifies the parent that something happened, while the parent decides how to respond."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Child components communicate with parents using <code>$emit()</code>.</li><li>Parents listen for events with <code>v-on</code> or <code>@</code>.</li><li>Data can be passed upward as event arguments.</li><li>Combining props and events ensures a clean, one-way data flow between components.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-mixins",
+        "title": "What are mixins in Vue and why are they useful?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Mixins in Vue are reusable pieces of logic that can be shared across multiple components. They help eliminate code duplication by allowing components to inherit shared data, methods, and lifecycle hooks.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Mixins in Vue allow you to define reusable functionality that can be shared across multiple components. They help reduce redundancy by bundling related data, computed properties, methods, and lifecycle hooks into a single file that can be imported wherever needed."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Mixins Exist</strong><br>In large applications, it’s common for multiple components to need the same logic — for example, fetching data, formatting dates, or responding to window resize events. Instead of duplicating this code, you can define it once in a mixin and reuse it."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// loggerMixin.js\nexport default {\n  data() {\n    return {\n      createdAt: new Date()\n    };\n  },\n  methods: {\n    logMessage(message) {\n      console.log(`[${this.createdAt.toISOString()}] ${message}`);\n    }\n  },\n  mounted() {\n    this.logMessage('Component mounted');\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using a Mixin in a Component</strong><br>To use the mixin, import it into your component and include it in the <code>mixins</code> array."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// MyComponent.vue\n<template>\n  <div>\n    <button @click=\"logMessage('Hello from MyComponent!')\">Log Message</button>\n  </div>\n</template>\n\n<script>\nimport loggerMixin from './loggerMixin.js';\n\nexport default {\n  mixins: [loggerMixin],\n  mounted() {\n    this.logMessage('MyComponent has been mounted!');\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, <code>MyComponent</code> automatically inherits the data, methods, and lifecycle hooks defined in <code>loggerMixin</code>. Both the mixin’s <code>mounted()</code> and the component’s <code>mounted()</code> hooks run."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Mixins Merge</strong><br>When a component and a mixin contain overlapping options (like methods or lifecycle hooks), Vue merges them intelligently:<ul><li>Data and methods are merged; component definitions take precedence.</li><li>Lifecycle hooks (like <code>mounted()</code>) from both are called in sequence — mixin first, component second.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "export default {\n  data() {\n    return { shared: true };\n  },\n  mounted() {\n    console.log('Mixin mounted');\n  }\n};"
+                },
+                {
+                    "type": "text",
+                    "text": "If the component also defines a <code>mounted()</code> hook, both will run, allowing multiple behaviors to coexist cleanly."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Mixins</strong><ul><li>Promote code reusability and reduce duplication.</li><li>Organize shared logic (API fetching, event handling, etc.) in one place.</li><li>Encourage consistent patterns across the codebase.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Limitations</strong><ul><li>When many mixins are used, it may become hard to trace where certain logic comes from (known as the 'name collision' or 'implicit behavior' problem).</li><li>For better scalability, Vue 3 encourages using the Composition API and composables instead of traditional mixins.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of mixins as <em>blueprints</em> — they inject shared behaviors into components without repeating code, helping you maintain DRY (Don’t Repeat Yourself) principles."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Mixins let you share reusable logic like data, methods, and hooks.</li><li>They are merged with component options automatically.</li><li>Mixins execute their lifecycle hooks before the component’s own hooks.</li><li>In Vue 3, the Composition API provides a more modern alternative to mixins.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-sfc-vs-global-components",
+        "title": "What is the difference between single-file components and global components?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Single-File Components (SFCs) and global components differ in scope and structure. SFCs define components in .vue files with encapsulated templates, scripts, and styles, while global components are registered once and accessible throughout the application.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue components can be created as <strong>Single-File Components (SFCs)</strong> or <strong>Global Components</strong>. Both define reusable UI pieces, but they differ in organization, scope, and how they are registered within a Vue application."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections — <template>, <script>, and <style>. They provide a modular, maintainable way to build complex applications."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- UserCard.vue -->\n<template>\n  <div class=\"user-card\">\n    <h2>{{ name }}</h2>\n    <p>{{ email }}</p>\n  </div>\n</template>\n\n<script>\nexport default {\n  props: ['name', 'email']\n};\n</script>\n\n<style scoped>\n.user-card { border: 1px solid #ddd; padding: 10px; }\n</style>"
+                },
+                {
+                    "type": "text",
+                    "text": "SFCs promote better organization by separating structure, logic, and styling within a single file while keeping them tightly coupled for easier maintenance. They are registered locally within the parent component or automatically via file-based routing tools like Vite or Nuxt."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// App.vue\n<template>\n  <UserCard name=\"Mina\" email=\"mina@example.com\" />\n</template>\n\n<script>\nimport UserCard from './UserCard.vue';\nexport default { components: { UserCard } };\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Global Components</strong><br>Global components, on the other hand, are registered once in your app’s entry point (usually <code>main.js</code>) and can be used anywhere without importing them explicitly."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// main.js\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport BaseButton from './components/BaseButton.vue';\n\nconst app = createApp(App);\napp.component('BaseButton', BaseButton);\napp.mount('#app');"
+                },
+                {
+                    "type": "text",
+                    "text": "Now the <code>BaseButton</code> component can be used in any template throughout the app without the need for imports."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<!-- AnyComponent.vue -->\n<template>\n  <BaseButton>Click Me</BaseButton>\n</template>"
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Aspect",
+                        "Single-File Components (SFCs)",
+                        "Global Components"
+                    ],
+                    "rows": [
+                        [
+                            "Definition",
+                            "Components defined in .vue files with template, script, and style sections",
+                            "Components registered globally via app.component()"
+                        ],
+                        [
+                            "Scope",
+                            "Available only in components where imported",
+                            "Available everywhere in the app"
+                        ],
+                        [
+                            "Usage",
+                            "Locally registered and explicitly imported",
+                            "Globally available without import"
+                        ],
+                        [
+                            "Organization",
+                            "Encourages modularity and reusability",
+                            "Useful for shared UI elements like buttons or modals"
+                        ],
+                        [
+                            "Performance",
+                            "Scoped registration reduces memory overhead",
+                            "Can increase bundle size if overused"
+                        ]
+                    ],
+                    "caption": "Comparison Between Single-File and Global Components"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>When to Use Each</strong><ul><li>Use <strong>SFCs</strong> for application-specific, modular, and reusable components that benefit from encapsulation.</li><li>Use <strong>Global Components</strong> for shared UI elements like buttons, icons, or form fields that appear across multiple views.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of global components as public utilities — accessible everywhere but should be used sparingly, while SFCs are private blueprints — focused and modular for specific tasks."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>SFCs are defined in <code>.vue</code> files and locally registered for better modularity.</li><li>Global components are registered once and accessible throughout the app.</li><li>Use SFCs for maintainable large-scale apps, and global components for common UI building blocks.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-conditional-list-rendering",
+        "title": "How does Vue handle conditional rendering and list rendering efficiently?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Vue handles conditional and list rendering efficiently through its virtual DOM diffing system. Directives like v-if, v-show, and v-for control what is rendered while Vue updates only the necessary parts of the DOM when data changes.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue provides efficient and declarative ways to control rendering using directives like <code>v-if</code>, <code>v-show</code>, and <code>v-for</code>. These directives determine whether elements should appear in the DOM and how lists of elements are dynamically generated and updated. Vue’s virtual DOM efficiently detects what has changed and updates only the affected parts, rather than re-rendering the entire DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Conditional Rendering</strong><br>Conditional rendering in Vue is handled primarily with <code>v-if</code>, <code>v-else-if</code>, <code>v-else</code>, and <code>v-show</code>."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <p v-if=\"isLoggedIn\">Welcome back, {{ username }}!</p>\n    <p v-else>Please log in to continue.</p>\n\n    <button v-show=\"!isLoggedIn\">Login</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      isLoggedIn: false,\n      username: 'Mina'\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here’s how it works:<ul><li><code>v-if</code> adds or removes elements from the DOM completely based on the condition. It’s useful when the condition changes infrequently.</li><li><code>v-show</code> toggles the element’s CSS <code>display</code> property without adding or removing it from the DOM, which is more efficient for frequent toggling.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>List Rendering</strong><br>Vue’s <code>v-for</code> directive is used to render lists of items efficiently. Each list item is tracked using a <code>key</code>, allowing Vue to reuse and reorder DOM elements instead of re-creating them from scratch."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <ul>\n    <li v-for=\"user in users\" :key=\"user.id\">\n      {{ user.name }}\n    </li>\n  </ul>\n</template>\n\n<script>\nexport default {\n  data() {\n    return {\n      users: [\n        { id: 1, name: 'Alice' },\n        { id: 2, name: 'Bob' },\n        { id: 3, name: 'Charlie' }\n      ]\n    };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "The <code>:key</code> attribute helps Vue track each item’s identity when updating the DOM. This makes updates more efficient, as Vue can determine what has changed, added, or removed using its virtual DOM diffing algorithm."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Directive",
+                        "Purpose",
+                        "Efficiency Note"
+                    ],
+                    "rows": [
+                        [
+                            "v-if / v-else-if / v-else",
+                            "Conditionally add or remove elements from the DOM",
+                            "Slower if toggled frequently (creates/destroys elements)"
+                        ],
+                        [
+                            "v-show",
+                            "Toggle element visibility using CSS display",
+                            "Faster for frequent toggling"
+                        ],
+                        [
+                            "v-for",
+                            "Render a list of elements based on an array or object",
+                            "Highly optimized with key tracking and virtual DOM diffing"
+                        ]
+                    ],
+                    "caption": "Comparison of Conditional and List Rendering Techniques"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why It’s Efficient</strong><br>Vue uses a <em>virtual DOM</em> to compare the current and previous states of the UI. When changes occur, Vue only updates the parts that differ, instead of re-rendering the entire view. This ensures performance even in large lists or when toggling content rapidly."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-if</code> as removing or inserting items from a shelf and <code>v-show</code> as simply covering or uncovering them — both are efficient, but suited for different situations."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>v-if</code> removes or inserts elements into the DOM.</li><li><code>v-show</code> toggles visibility via CSS.</li><li><code>v-for</code> efficiently renders dynamic lists using keys.</li><li>Vue’s virtual DOM minimizes unnecessary DOM updates for smooth performance.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-router-navigation",
+        "title": "What is the Vue Router and how is it used for navigation?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Vue Router is the official routing library for Vue.js. It allows developers to create single-page applications (SPAs) with dynamic navigation and component-based routing without reloading the page.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue Router is an official library that enables navigation between different views or components in a Vue application. It transforms a Vue app into a Single-Page Application (SPA) by mapping URLs (routes) to specific components and handling transitions dynamically without reloading the page."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Installing Vue Router</strong><br>To use Vue Router, install it with npm or yarn:"
+                },
+                {
+                    "type": "code",
+                    "language": "bash",
+                    "code": "npm install vue-router\n# or\nyarn add vue-router"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Defining Routes</strong><br>Routes are defined as objects, where each route maps a URL path to a specific component."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// router.js\nimport { createRouter, createWebHistory } from 'vue-router';\nimport Home from './components/Home.vue';\nimport About from './components/About.vue';\n\nconst routes = [\n  { path: '/', component: Home },\n  { path: '/about', component: About }\n];\n\nconst router = createRouter({\n  history: createWebHistory(),\n  routes\n});\n\nexport default router;"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using the Router in Your App</strong><br>Once defined, the router must be registered in the main Vue application instance."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// main.js\nimport { createApp } from 'vue';\nimport App from './App.vue';\nimport router from './router';\n\nconst app = createApp(App);\napp.use(router);\napp.mount('#app');"
+                },
+                {
+                    "type": "text",
+                    "text": "Now your application can handle different pages without reloading. The <code>&lt;router-view&gt;</code> element acts as a placeholder that dynamically displays the active route’s component."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<template>\n  <div>\n    <nav>\n      <router-link to=\"/\">Home</router-link>\n      <router-link to=\"/about\">About</router-link>\n    </nav>\n\n    <router-view></router-view>\n  </div>\n</template>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Navigation Works</strong><br>• <code>&lt;router-link&gt;</code> creates navigable links without refreshing the page.<br>• <code>&lt;router-view&gt;</code> displays the matched component for the current route.<br>• Vue Router automatically updates the browser’s history using the HTML5 History API."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Dynamic and Nested Routes</strong><br>Vue Router supports dynamic routes (e.g., user profiles) and nested routes for hierarchical views."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "{ path: '/user/:id', component: UserProfile }"
+                },
+                {
+                    "type": "text",
+                    "text": "Access dynamic parameters in the component using <code>this.$route.params.id</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Programmatic Navigation</strong><br>You can also navigate using JavaScript instead of router-link components:"
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "this.$router.push('/about');\nthis.$router.replace('/');"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Navigation Guards</strong><br>Vue Router includes navigation guards (e.g., <code>beforeEach</code>) to control access to routes, often used for authentication or logging."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "router.beforeEach((to, from, next) => {\n  if (to.path === '/admin' && !isLoggedIn()) {\n    next('/login');\n  } else {\n    next();\n  }\n});"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Vue Router</strong><ul><li>Enables navigation without page reloads.</li><li>Supports nested, dynamic, and lazy-loaded routes.</li><li>Integrates with browser history and back navigation.</li><li>Works seamlessly with Vue’s reactivity system.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue Router as the GPS of your application — it knows where you are, where you’re going, and updates the view without ever refreshing the page."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Vue Router maps URL paths to components for single-page navigation.</li><li>Use <router-link> for navigation and <router-view> to display views.</li><li>Supports dynamic, nested, and programmatic navigation.</li><li>Navigation guards help manage route access and user flow.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-reactivity-system",
+        "title": "What is the Vue reactivity system and how does it work internally?",
+        "technology": "vue",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "The Vue reactivity system is the core mechanism that automatically updates the DOM whenever data changes. Internally, it uses proxies (in Vue 3) to track dependencies and trigger re-renders when reactive data is modified.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The Vue reactivity system is what makes Vue applications dynamic and responsive. It allows your UI to automatically update when underlying data changes — without manually manipulating the DOM. In Vue 3, this system is powered by <strong>ES6 Proxies</strong>, which intercept and track operations on reactive objects."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>How Vue Reactivity Works</strong><br>Vue’s reactivity is built around three key concepts:<ul><li><strong>Reactive Data</strong>: Data that Vue tracks for changes.</li><li><strong>Dependency Tracking</strong>: Vue keeps track of which components or functions depend on which pieces of data.</li><li><strong>Reactivity Triggers</strong>: When data changes, Vue automatically re-runs or re-renders the parts of the app that depend on that data.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>1. Creating Reactive Data</strong><br>In Vue 3, the <code>reactive()</code> and <code>ref()</code> APIs from the Composition API are used to create reactive data sources."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "import { reactive, ref } from 'vue';\n\nconst state = reactive({ count: 0 });\nconst message = ref('Hello Vue!');"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, both <code>state</code> and <code>message</code> become reactive — Vue wraps them in a proxy that intercepts reads and writes to track changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>2. Tracking Dependencies</strong><br>When a component renders and accesses reactive properties, Vue records which reactive values were used. These dependencies are stored in an internal data structure called a <strong>Dependency Map</strong> (a WeakMap under the hood)."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Pseudo-code of dependency tracking\nfunction track(target, key) {\n  const effect = activeEffect; // current rendering effect\n  if (effect) {\n    let depsMap = targetMap.get(target);\n    if (!depsMap) targetMap.set(target, (depsMap = new Map()));\n\n    let dep = depsMap.get(key);\n    if (!dep) depsMap.set(key, (dep = new Set()));\n\n    dep.add(effect);\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "Every time a reactive property is accessed during rendering, Vue calls <code>track()</code> to register the current watcher or computed effect as a dependency."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>3. Triggering Updates</strong><br>When a reactive value changes, Vue triggers an update by looking up all the effects (like component re-renders or computed properties) that depend on that property, then re-executes them."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Pseudo-code of triggering updates\nfunction trigger(target, key) {\n  const depsMap = targetMap.get(target);\n  if (!depsMap) return;\n  const dep = depsMap.get(key);\n  if (dep) {\n    dep.forEach(effect => effect());\n  }\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "This ensures that only the parts of the app that depend on the modified property are re-run, leading to efficient updates instead of full-page re-renders."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>4. Vue 2 vs Vue 3 Reactivity</strong><br>In Vue 2, reactivity was achieved with <code>Object.defineProperty()</code> — Vue defined getters and setters for each property. However, it couldn’t detect new properties or array index changes easily.<br><br>In Vue 3, the system uses <strong>Proxies</strong>, which can intercept all property operations (get, set, delete, etc.), enabling full reactivity without these limitations."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Feature",
+                        "Vue 2 (Object.defineProperty)",
+                        "Vue 3 (Proxy)"
+                    ],
+                    "rows": [
+                        [
+                            "Detect new properties",
+                            "❌ Not supported",
+                            "✅ Supported"
+                        ],
+                        [
+                            "Detect array index changes",
+                            "❌ Limited",
+                            "✅ Fully supported"
+                        ],
+                        [
+                            "Performance",
+                            "Moderate",
+                            "Faster and more efficient"
+                        ],
+                        [
+                            "Memory usage",
+                            "Higher due to watchers",
+                            "Lower, centralized dependency tracking"
+                        ]
+                    ],
+                    "caption": "Comparison of Vue 2 and Vue 3 Reactivity Systems"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>5. Computed Properties and Watchers</strong><br>Computed properties in Vue use this same reactivity mechanism but cache results until their dependencies change. Watchers use reactive tracking to run custom logic when specific data updates."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "import { reactive, computed, watch } from 'vue';\n\nconst state = reactive({ count: 0 });\nconst doubled = computed(() => state.count * 2);\n\nwatch(() => state.count, (newVal, oldVal) => {\n  console.log('Count changed:', oldVal, '→', newVal);\n});"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, both <code>computed()</code> and <code>watch()</code> rely on Vue’s dependency tracking to know when <code>state.count</code> changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>6. Virtual DOM Integration</strong><br>When data changes, Vue marks affected components for re-rendering. During the next render cycle, Vue’s virtual DOM efficiently diffs the new and old virtual trees and updates only the changed elements in the real DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why It’s Efficient</strong><br>Vue’s reactivity is fine-grained — it tracks dependencies at the property level. This means only the parts of your UI that depend on changed data are updated. Combined with virtual DOM diffing, this provides excellent runtime performance even for large applications."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Vue reactivity system as an intelligent observer — it watches over your data, remembers what depends on it, and instantly updates only what’s necessary when something changes."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Vue’s reactivity system tracks dependencies using Proxies and WeakMaps.</li><li>Reactive objects trigger updates only for the affected properties.</li><li>Vue 3’s Proxy-based reactivity is faster, more complete, and easier to maintain than Vue 2’s system.</li><li>Computed properties and watchers build upon the same reactive foundation.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-composition-api",
+        "title": "What are Vue Composition APIs (setup(), ref, reactive) and why were they introduced?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "The Vue Composition API provides a flexible and scalable way to organize component logic using functions like setup(), ref(), and reactive(). It was introduced in Vue 3 to improve reusability, maintainability, and TypeScript support compared to the Options API.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>The Composition API is a new way to write components in Vue 3. It provides greater flexibility and control over organizing logic inside components by using functions like <code>setup()</code>, <code>ref()</code>, and <code>reactive()</code>. This API was introduced to address the limitations of the traditional Options API, making complex component logic easier to read, reuse, and test."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why the Composition API Was Introduced</strong><br>In large applications, the Options API (using data, methods, computed, etc.) often leads to scattered logic — related code gets separated into different options, making it harder to maintain and reuse. The Composition API solves this by allowing developers to group related logic together using plain JavaScript functions."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Example of Composition API\n<template>\n  <div>\n    <p>Count: {{ count }}</p>\n    <button @click=\"increment\">Increment</button>\n  </div>\n</template>\n\n<script>\nimport { ref } from 'vue';\n\nexport default {\n  setup() {\n    const count = ref(0);\n    const increment = () => count.value++;\n\n    return { count, increment };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Key Concepts in the Composition API</strong>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>1. setup() Function</strong><br>The <code>setup()</code> function is the entry point of the Composition API. It runs before the component is created and is used to declare reactive state, computed properties, watchers, and lifecycle hooks.<br><br>Anything returned from <code>setup()</code> becomes available in the component template."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "setup() {\n  const name = ref('Mina');\n  const greet = () => console.log(`Hello, ${name.value}!`);\n\n  return { name, greet };\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>2. ref()</strong><br><code>ref()</code> creates a reactive reference to a primitive value (like numbers, strings, or booleans). When you update <code>ref.value</code>, Vue automatically tracks and re-renders any parts of the UI that depend on it."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "const message = ref('Hello');\nmessage.value = 'Hi there!';"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>3. reactive()</strong><br><code>reactive()</code> creates a reactive object instead of a primitive. It’s ideal for tracking multiple properties within an object or array."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "const user = reactive({ name: 'Alice', age: 25 });\nuser.age++; // Triggers reactivity automatically"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>4. Combining ref() and reactive()</strong><br>You can combine both approaches — use <code>ref()</code> for single values and <code>reactive()</code> for complex objects. They can also be mixed within the same component for flexibility."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "const count = ref(0);\nconst user = reactive({ name: 'Mina', score: 10 });"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of the Composition API</strong><ul><li>Better logic organization and reuse through composable functions.</li><li>Improved TypeScript support and static analysis.</li><li>Cleaner separation of concerns for large components.</li><li>Fully compatible with existing Options API — both can coexist in the same project.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Composition API as building blocks: instead of being restricted to predefined sections (data, methods, computed), you freely compose logic like LEGO pieces — reusable, organized, and scalable."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li><code>setup()</code> is the core entry point for the Composition API.</li><li><code>ref()</code> makes primitive values reactive.</li><li><code>reactive()</code> makes entire objects reactive.</li><li>Introduced to improve reusability, readability, and TypeScript compatibility.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vuex-state-management",
+        "title": "What is the purpose of Vuex, and how does it help manage state in large applications?",
+        "technology": "vue",
+        "difficulty": "medium",
+        "importance": 5,
+        "description": "Vuex is a state management library for Vue.js applications. It provides a centralized store for all components, ensuring predictable state mutations and simplifying data flow across large-scale apps.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vuex is Vue’s official <strong>state management pattern and library</strong>. It serves as a centralized store that manages shared data and ensures all components access and modify it in a consistent, predictable way. This is crucial in large-scale applications where multiple components depend on or modify the same state."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Core Concepts of Vuex</strong><br>Vuex is built around four key elements: <strong>State</strong>, <strong>Getters</strong>, <strong>Mutations</strong>, and <strong>Actions</strong>."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Concept",
+                        "Purpose",
+                        "Example"
+                    ],
+                    "rows": [
+                        [
+                            "State",
+                            "Holds the centralized data",
+                            "user.name, cartItems, authToken"
+                        ],
+                        [
+                            "Getters",
+                            "Computed properties for the store",
+                            "getters.cartTotal"
+                        ],
+                        [
+                            "Mutations",
+                            "Synchronous functions to modify state",
+                            "commit('addToCart', item)"
+                        ],
+                        [
+                            "Actions",
+                            "Asynchronous operations that commit mutations",
+                            "dispatch('fetchProducts')"
+                        ]
+                    ],
+                    "caption": "Core Elements of Vuex Store"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Vuex Store Example</strong>"
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// store.js\nimport { createStore } from 'vuex';\n\nconst store = createStore({\n  state() {\n    return {\n      count: 0,\n      user: { name: 'Mina' }\n    };\n  },\n  getters: {\n    upperName: (state) => state.user.name.toUpperCase()\n  },\n  mutations: {\n    increment(state) {\n      state.count++;\n    }\n  },\n  actions: {\n    asyncIncrement({ commit }) {\n      setTimeout(() => commit('increment'), 500);\n    }\n  }\n});\n\nexport default store;"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Using the Store in Components</strong><br>Once created, the store is registered globally and accessed via the <code>useStore()</code> function in components."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "<template>\n  <div>\n    <p>Count: {{ store.state.count }}</p>\n    <button @click=\"store.commit('increment')\">Increment</button>\n  </div>\n</template>\n\n<script>\nimport { useStore } from 'vuex';\n\nexport default {\n  setup() {\n    const store = useStore();\n    return { store };\n  }\n};\n</script>"
+                },
+                {
+                    "type": "text",
+                    "text": "Here, the component accesses the store’s <code>state</code> and triggers updates using <code>commit()</code> and <code>dispatch()</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Data Flow in Vuex</strong><br>Vuex enforces a one-way data flow:<br><br><ul><li><strong>State</strong>: The single source of truth.</li><li><strong>View</strong>: Displays state and triggers actions.</li><li><strong>Actions</strong>: Commit mutations asynchronously (e.g., API calls).</li><li><strong>Mutations</strong>: Synchronously change state.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Advantages of Vuex</strong><ul><li>Centralized state management — a single source of truth.</li><li>Predictable state transitions through mutations.</li><li>Improved debugging and time-travel debugging via DevTools.</li><li>Easy synchronization between components sharing data.</li></ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Vuex vs. Pinia</strong><br>Pinia, introduced later, is the official replacement for Vuex in Vue 3. It simplifies syntax, supports the Composition API natively, and reduces boilerplate while maintaining similar concepts like <code>state</code>, <code>getters</code>, and <code>actions</code>."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vuex as a shared control center: instead of each component managing its own data independently, they all communicate with the same centralized store — ensuring consistency and predictability."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>Vuex provides a centralized, predictable state management system.</li><li>Components share data through a single source of truth — the store.</li><li>Mutations update state synchronously; actions handle async operations.</li><li>Ideal for large-scale apps where multiple components depend on shared state.</li></ul>"
+                }
+            ]
+        }
+    },
+    {
+        "id": "vue-virtual-dom-diffing",
+        "title": "How does Vue’s virtual DOM and diffing algorithm optimize updates?",
+        "technology": "vue",
+        "difficulty": "hard",
+        "importance": 5,
+        "description": "Vue’s virtual DOM acts as an in-memory representation of the actual DOM. Its diffing algorithm efficiently detects and applies only the necessary updates to the real DOM, reducing reflows and improving performance.",
+        "answer": {
+            "blocks": [
+                {
+                    "type": "text",
+                    "text": "<strong>Overview</strong><br><br>Vue’s virtual DOM is a lightweight JavaScript representation of the real DOM. Instead of directly manipulating the browser’s DOM — which is slow — Vue updates a virtual copy in memory and then compares it to the previous version using a process called <strong>diffing</strong>. After detecting the differences, Vue efficiently updates only the parts of the real DOM that have changed, resulting in faster rendering performance."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>1. The Problem with Direct DOM Manipulation</strong><br>Manipulating the real DOM frequently can be slow because each update triggers <em>recalculations of layout</em> and <em>repaints</em>. This becomes especially costly when multiple updates happen in quick succession, such as when reacting to user input or large data changes."
+                },
+                {
+                    "type": "text",
+                    "text": "To solve this, Vue uses a <strong>virtual DOM</strong> (a memory-based representation of the DOM structure). This allows Vue to compute the minimal set of changes needed before touching the real DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>2. What Is the Virtual DOM?</strong><br>The virtual DOM (vDOM) is a tree of JavaScript objects that mirrors the structure of your UI. Each element in the UI is represented as a <strong>VNode</strong> (Virtual Node), containing information like the tag name, attributes, children, and event listeners."
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Example virtual DOM node representation\n{\n  tag: 'div',\n  props: { id: 'app' },\n  children: [\n    { tag: 'h1', children: ['Hello Vue!'] },\n    { tag: 'button', props: { onClick: handleClick }, children: ['Click me'] }\n  ]\n}"
+                },
+                {
+                    "type": "text",
+                    "text": "Instead of touching the actual DOM immediately, Vue constructs and updates this virtual representation during rendering."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>3. The Diffing Algorithm</strong><br>When reactive data changes, Vue re-renders the component and creates a <strong>new virtual DOM tree</strong>. It then compares this new tree to the previous one (a process known as <em>diffing</em>), determines what has changed, and applies only the minimal set of updates to the real DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "Vue’s diffing algorithm works efficiently using several strategies:<ul><li><strong>Same Type Check:</strong> If two nodes have different tags, Vue replaces the old one entirely.</li><li><strong>Props Diffing:</strong> If two nodes have the same tag, Vue compares their attributes and updates only the changed ones.</li><li><strong>Children Comparison:</strong> For lists or nested elements, Vue compares keys and reuses existing DOM nodes whenever possible.</li></ul>"
+                },
+                {
+                    "type": "code",
+                    "language": "javascript",
+                    "code": "// Example of diffing behavior\nconst oldVNode = h('div', { class: 'red' }, 'Hello');\nconst newVNode = h('div', { class: 'blue' }, 'Hello World');\n\n// Vue detects:\n// - class changed from 'red' → 'blue'\n// - text changed from 'Hello' → 'Hello World'\n// Only these updates are applied to the real DOM."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>4. Keyed Updates for Lists</strong><br>When rendering lists (using v-for), Vue uses <code>key</code> attributes to efficiently track items. This prevents unnecessary re-renders when items are reordered or updated."
+                },
+                {
+                    "type": "code",
+                    "language": "html",
+                    "code": "<ul>\n  <li v-for=\"user in users\" :key=\"user.id\">{{ user.name }}</li>\n</ul>"
+                },
+                {
+                    "type": "text",
+                    "text": "Without a proper <code>key</code>, Vue may re-render entire lists unnecessarily because it cannot tell which item corresponds to which DOM element. With keys, Vue can reorder elements instead of recreating them, which saves performance."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>5. Batch and Async Updates</strong><br>Vue batches DOM updates asynchronously. When multiple reactive changes occur in the same tick, Vue queues them and performs all updates together in the next event loop cycle using its <strong>nextTick()</strong> mechanism. This prevents unnecessary re-renders and ensures smooth UI updates."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>6. Virtual DOM vs Real DOM Performance</strong><br>Direct DOM manipulation triggers expensive layout recalculations, whereas virtual DOM updates are computed in memory. Only the minimal, necessary DOM operations are performed, drastically reducing CPU and memory overhead."
+                },
+                {
+                    "type": "list",
+                    "columns": [
+                        "Aspect",
+                        "Real DOM",
+                        "Virtual DOM"
+                    ],
+                    "rows": [
+                        [
+                            "Update Speed",
+                            "Slow (direct manipulation)",
+                            "Fast (in-memory comparison)"
+                        ],
+                        [
+                            "Re-rendering",
+                            "Whole tree may refresh",
+                            "Only changed parts updated"
+                        ],
+                        [
+                            "Memory Usage",
+                            "Lower",
+                            "Slightly higher (virtual tree stored in memory)"
+                        ],
+                        [
+                            "Performance",
+                            "Costly on frequent updates",
+                            "Optimized via batching and diffing"
+                        ]
+                    ],
+                    "caption": "Comparison between Real DOM and Virtual DOM"
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>7. Internal Optimization Techniques</strong><ul><li><strong>Static Tree Hoisting:</strong> Static parts of the template are skipped during updates.</li><li><strong>Patch Flags:</strong> Vue marks which parts of the template are dynamic, so it updates only those parts.</li><li><strong>Block Tree Optimization:</strong> Groups dynamic nodes together for faster diffing.</li></ul>These compiler-level optimizations further minimize the amount of DOM work during updates."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>8. Real-World Example</strong><br>When you update a single value in a large list, Vue doesn’t re-render the whole list. Instead, the virtual DOM detects exactly which element changed and only patches that DOM node — often just one line of text."
+                },
+                {
+                    "type": "text",
+                    "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue’s virtual DOM like a smart editor — it reviews the changes before applying them to the final document, ensuring only the necessary parts are rewritten instead of retyping the entire page."
+                },
+                {
+                    "type": "text",
+                    "text": "<strong>Summary</strong><ul><li>The virtual DOM is a lightweight JS representation of the UI.</li><li>Vue’s diffing algorithm compares new and old virtual trees to detect changes.</li><li>Only the changed parts of the DOM are updated (patching).</li><li>Batching and compiler optimizations ensure smooth and efficient rendering.</li><li>This system enables Vue to maintain high performance even with complex UIs.</li></ul>"
+                }
+            ]
+        }
+    }
+]
