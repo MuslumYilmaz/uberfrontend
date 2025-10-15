@@ -425,6 +425,55 @@ h1 { color: var(--ink); }
   gap: 10px;
 }
 
+/* ensure hover element sits above the full-row anchor */
+.desc-tip-target { position: relative; z-index: 20; cursor: pointer; }
+
+/* ---------- PrimeNG tooltip restyle ---------- */
+/* Scope to our specific tooltip via tooltipStyleClass="desc-tip" */
+:host ::ng-deep .p-tooltip.desc-tip {
+  pointer-events: none;                        /* avoids flicker */
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,.55));
+  z-index: 9999;                               /* above row overlay */
+  animation: tip-fade .14s ease-out both;
+}
+
+:host ::ng-deep .p-tooltip.desc-tip .p-tooltip-arrow {
+  width: 10px; height: 10px;
+  border: none;                                /* remove default borders */
+  background: #2b2f38;                         /* arrow matches panel */
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 8px 18px rgba(0,0,0,.35);
+}
+
+/* Prime puts directional classes on the root; nudge the arrow a bit */
+:host ::ng-deep .p-tooltip.desc-tip.p-tooltip-bottom .p-tooltip-arrow { top: -5px; }
+:host ::ng-deep .p-tooltip.desc-tip.p-tooltip-top    .p-tooltip-arrow { bottom: -5px; }
+:host ::ng-deep .p-tooltip.desc-tip.p-tooltip-right  .p-tooltip-arrow { left: -5px; }
+:host ::ng-deep .p-tooltip.desc-tip.p-tooltip-left   .p-tooltip-arrow { right: -5px; }
+
+:host ::ng-deep .p-tooltip.desc-tip .p-tooltip-text {
+  background: #2b2f38;                         /* panel bg */
+  color: #e7eaf0;                              /* text */
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  max-width: 40rem;                            /* ~640px */
+  white-space: pre-wrap;                       /* keep newlines */
+}
+
+/* subtle fade/scale */
+@keyframes tip-fade {
+  from { opacity: 0; transform: translateY(4px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* respect motion prefs */
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep .p-tooltip.desc-tip { animation: none; }
+}
+
 /* Responsive: stack header rows on small screens */
 @media (max-width: 640px) {
   .tag-filter__header {

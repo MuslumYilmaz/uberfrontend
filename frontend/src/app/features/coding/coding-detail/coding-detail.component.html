@@ -42,8 +42,30 @@
           <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
           <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
 
-          <div class="whitespace-pre-wrap text-sm leading-6">
-            {{ descriptionText() }}
+          <!-- ✨ Add this: description summary/prose -->
+          <div *ngIf="(descSummary() || descriptionText()) as prose"
+            class="whitespace-pre-wrap text-sm opacity-90 mt-3">
+            {{ prose }}
+          </div>
+
+          <!-- After your description summary/prose -->
+          <div *ngIf="descArgs().length" class="mt-4">
+            <h3 class="text-sm font-semibold mb-1">Arguments</h3>
+            <ul class="text-sm space-y-1">
+              <li *ngFor="let a of descArgs()">
+                <code class="opacity-80">{{a.name}}</code>
+                <span *ngIf="a.type" class="opacity-60">: {{a.type}}</span>
+                <span *ngIf="a.desc"> — {{a.desc}}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div *ngIf="descReturns()" class="mt-3 text-sm">
+            <h3 class="text-sm font-semibold mb-1">Returns</h3>
+            <div>
+              <span *ngIf="descReturns()?.type"><code class="opacity-80">{{descReturns()?.type}}</code> — </span>
+              <span>{{descReturns()?.desc}}</span>
+            </div>
           </div>
 
           <ng-container *ngIf="combinedExamples()">
@@ -58,12 +80,10 @@
                 </button>
               </div>
 
-              <div class="h-48 relative overflow-hidden">
-                <app-monaco-editor class="h-full rounded border border-white/10 pointer-events-none select-none"
-                  [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
-                  [readOnly]="true" [options]="examplesMonacoOptions">
-                </app-monaco-editor>
-              </div>
+              <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
+                [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560" [interactive]="false">
+              </app-monaco-editor>
             </div>
           </ng-container>
 
@@ -76,26 +96,55 @@
         <!-- Solution Panel -->
         <div *ngIf="activePanel()===1" class="space-y-4">
           <ng-container *ngIf="showSolutionWarning(); else solutionContent">
-            <div class="solution-warning rounded border border-yellow-400 bg-yellow-100/10 p-4 flex gap-3">
-              <div class="icon-warning"><i class="pi pi-exclamation-triangle"></i></div>
-              <div class="content">
-                <h3 class="font-semibold mb-2">Are you sure you want to see the solution?</h3>
-                <p class="mb-3">You’re about to reveal the full answer and overwrite your editor with the solution code.
-                </p>
-                <div class="actions flex items-center gap-3">
-                  <button pButton label="Show solution" class="p-button-danger"
-                    (click)="confirmSolutionReveal()"></button>
-                  <button pButton label="Cancel" class="p-button-text" (click)="cancelSolutionReveal()"></button>
-                </div>
+            <div class="solution-warning ...">
+              ...
+              <div class="actions flex items-center gap-3">
+                <!-- Rename + change handler: just view, don't overwrite -->
+                <button pButton label="View solution" class="p-button-danger"
+                  (click)="confirmSolutionReveal()"></button>
+
+                <button pButton label="Cancel" class="p-button-text" (click)="cancelSolutionReveal()"></button>
               </div>
             </div>
           </ng-container>
 
           <ng-template #solutionContent>
-            <h2 class="text-base font-semibold">Solution Explanation</h2>
-            <div class="whitespace-pre-wrap text-xs leading-5">
-              {{ question()?.solution }}
+            <h2 class="text-base font-semibold">Solution</h2>
+            <div class="whitespace-pre-wrap text-xs leading-5 mb-3">
+              {{ solutionInfo().explanation || 'No explanation provided.' }}
             </div>
+
+            <div class="h-56">
+              <app-monaco-editor class="h-full rounded border border-white/10" [code]="solutionCodeForCurrentLang()"
+                [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true"
+                [options]="examplesMonacoOptions">
+              </app-monaco-editor>
+            </div>
+
+            <!-- keep this to explicitly overwrite the editor -->
+            <button pButton label="Load into editor" class="mt-3 p-button-text"
+              (click)="loadSolutionIntoEditor()"></button>
+          </ng-template>
+
+          <ng-template #solutionContent>
+            <h2 class="text-base font-semibold">Solution</h2>
+
+            <!-- Explanation -->
+            <div class="whitespace-pre-wrap text-xs leading-5 mb-3">
+              {{ solutionInfo().explanation || 'No explanation provided.' }}
+            </div>
+
+            <!-- Code (JS/TS tabs already exist at the top of the right column; here we just mirror current selection) -->
+            <div class="h-56">
+              <app-monaco-editor class="h-full rounded border border-white/10" [code]="solutionCodeForCurrentLang()"
+                [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true"
+                [options]="examplesMonacoOptions">
+              </app-monaco-editor>
+            </div>
+
+            <!-- Optional: a small CTA to overwrite editor with solution -->
+            <button pButton label="Load into editor" class="mt-3 p-button-text"
+              (click)="confirmSolutionReveal()"></button>
           </ng-template>
         </div>
       </div>

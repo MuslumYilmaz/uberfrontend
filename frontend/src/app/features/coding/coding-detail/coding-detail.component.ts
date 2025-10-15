@@ -294,11 +294,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   descriptionText = computed(() => {
     const q = this.question();
     if (!q) return '';
-    if (typeof q.description === 'object' && q.description !== null) {
-      return (q.description as StructuredDescription).text || '';
-    }
-    return q.description || '';
+    const d = q.description;
+    if (typeof d === 'string') return d;
+    if (d && typeof d === 'object') return (d as StructuredDescription).summary || '';
+    return '';
   });
+
   descriptionExamples = computed(() => {
     const q = this.question();
     if (!q) return [] as string[];
@@ -1359,14 +1360,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   startHorizontalDrag = (ev: PointerEvent) => {
     ev.preventDefault();
     this.draggingHorizontal = true;
-    const totalWidth = window.innerWidth;
     this.startX = ev.clientX;
     this.startRatioH = this.horizontalRatio();
-    this.copiedExamples.set(true);
+
+    const stop = () => { this.draggingHorizontal = false; document.removeEventListener('pointerup', stop); };
     (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
-    const stop = () => { this.draggingHorizontal = false; this.copiedExamples.set(false); document.removeEventListener('pointerup', stop); };
     document.addEventListener('pointerup', stop);
   };
+
 
   private onPointerMoveHorizontal = (ev: PointerEvent) => {
     if (!this.draggingHorizontal) return;
@@ -1462,30 +1463,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // ... inside loadSolutionCode(), JS/TS branch:
     const lang = this.jsLang();
-    const solution = this.getSolution(q, lang);
-    const fallback = this.getSolution(q, lang === 'ts' ? 'js' : 'ts');
-    const value = solution || fallback || '';
+    const block = this.solutionInfo();
+    const value =
+      (lang === 'ts' && block.codeTs?.trim()) ? block.codeTs :
+        (block.codeJs?.trim() ? block.codeJs : this.getSolution(q, lang) || this.getSolution(q, lang === 'ts' ? 'js' : 'ts') || '');
+
     this.editorContent.set(value);
 
-    if (this.tech !== 'angular') {
-      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: value })); } catch { }
-      this.codeStore.saveJs(q.id, value, lang);
-    }
+    try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: value })); } catch { }
+    this.codeStore.saveJs(q.id, value, lang);
 
     this.activePanel.set(1);
     this.topTab.set('code');
   }
 
-  onSolutionTabClick() {
-    if (this.descCollapsed()) this.toggleDescription();
-    this.activePanel.set(1);
-    this.showSolutionWarning.set(true);
-  }
-  confirmSolutionReveal() {
-    this.loadSolutionCode();
-    this.showSolutionWarning.set(false);
-  }
   cancelSolutionReveal() {
     this.showSolutionWarning.set(false);
     this.activePanel.set(0);
@@ -1763,4 +1756,83 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.openDirs.set(opened);
   }
 
+  // ---- Description normalizers ----
+  descSummary = computed(() => {
+    const q = this.question(); if (!q) return '';
+    if (q.description && typeof q.description === 'object') {
+      return (q.description as StructuredDescription).summary || '';
+    }
+    // fallback to plain description (what you already had)
+    return this.descriptionText(); // uses your existing helper
+  });
+
+  descArgs = computed(() => {
+    const q = this.question(); if (!q) return [] as Array<{ name: string; type?: string; desc?: string }>;
+    if (q.description && typeof q.description === 'object') {
+      return (q.description as StructuredDescription).arguments || [];
+    }
+    return [];
+  });
+
+  descReturns = computed(() => {
+    const q = this.question(); if (!q) return null as null | { type?: string; desc?: string };
+    if (q.description && typeof q.description === 'object') {
+      return (q.description as StructuredDescription).returns || null;
+    }
+    return null;
+  });
+
+  // keep your existing descriptionExamples()/combinedExamples()
+
+  // ---- Solution normalizer ----
+  solutionInfo = computed(() => {
+    const q = this.question(); if (!q) return { explanation: '', codeJs: '', codeTs: '' };
+    const block = (q as any).solutionBlock as { explanation?: string; codeJs?: string; codeTs?: string } | undefined;
+
+    // preferred: solutionBlock
+    if (block) {
+      return {
+        explanation: block.explanation || (q.solution || ''),
+        codeJs: block.codeJs || (q.solution ?? ''),   // fallback to legacy strings
+        codeTs: block.codeTs || (q as any).solutionTs || ''
+      };
+    }
+
+    // legacy: use solution as code/explanation best-effort
+    return {
+      explanation: (q.solution && /\w/.test(q.solution) ? q.solution : ''),
+      codeJs: (q as any).solution || '',
+      codeTs: (q as any).solutionTs || ''
+    };
+  });
+
+  // Convenience for showing the code in the Solution tab in the current JS/TS choice
+  solutionCodeForCurrentLang = computed(() => {
+    const s = this.solutionInfo();
+    return this.jsLang() === 'ts' && (s.codeTs?.trim()?.length)
+      ? s.codeTs
+      : s.codeJs;
+  });
+
+  onSolutionTabClick() {
+    if (this.descCollapsed()) this.toggleDescription();
+    this.activePanel.set(1);
+    // Only warn when it makes sense (course context, etc.)
+    if (this.shouldWarnForSolution()) {
+      this.showSolutionWarning.set(true);
+    } else {
+      this.showSolutionWarning.set(false);
+    }
+  }
+
+  // “View solution” from the warning — don’t overwrite code.
+  confirmSolutionReveal() {
+    this.showSolutionWarning.set(false);
+    this.activePanel.set(1); // shows read-only solution panel
+  }
+
+  // Keep a dedicated overwrite action
+  loadSolutionIntoEditor() {
+    this.loadSolutionCode(); // your existing method that writes into the editor
+  }
 }

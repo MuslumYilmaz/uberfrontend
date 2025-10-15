@@ -47,3 +47,35 @@ html, body {
 /* Only affect widgets inside this page */
 .coding-detail :where(.p-component) { font-size: .875rem; } /* 14px */
 .coding-detail :where(.p-dialog .p-dialog-header, .p-dialog .p-dialog-content) { font-size: .875rem; }
+
+/* styles.scss — GLOBAL */
+.p-tooltip.desc-tip {
+  pointer-events: none;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,.55));
+  z-index: 9999;
+  animation: tip-fade .12s ease-out both;
+}
+
+.p-tooltip.desc-tip .p-tooltip-text {
+  background: #1c1f24;
+  color: #e9edf3;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;          /* smaller text */
+  line-height: 1.35;
+  max-width: 32rem;         /* ~512px */
+  white-space: pre-wrap;
+}
+
+.p-tooltip.desc-tip .p-tooltip-arrow {
+  width: 8px; height: 8px;
+  border: none;
+  background: #1c1f24;
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 6px 14px rgba(0,0,0,.35);
+}
+@keyframes tip-fade {
+  from { opacity:0; transform: translateY(4px) scale(.98); }
+  to   { opacity:1; transform: translateY(0)    scale(1); }
+}

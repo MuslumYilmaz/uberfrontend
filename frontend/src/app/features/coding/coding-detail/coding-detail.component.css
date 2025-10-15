@@ -263,3 +263,30 @@
 .file-row .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .file-row .crumb { margin-left: auto; opacity: .55; font-size: 11px; white-space: nowrap; }
 .children { margin: 2px 0 2px 0; }
+
+/* --- Examples editor auto-height --- */
+.examples-block {            /* container can be as tall as needed */
+  width: 100%;
+}
+
+.examples-block app-monaco-editor {
+  display: block;
+  width: 100%;
+}
+
+/* Monaco needs explicit auto-height on its internals */
+:host ::ng-deep .examples-block .monaco-editor,
+:host ::ng-deep .examples-block .monaco-editor .overflow-guard {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Ensure the scrollable area stretches with content */
+:host ::ng-deep .examples-block .monaco-scrollable-element {
+  min-height: 100% !important;
+}
+
+/* Optional: hide minimap for this tiny read-only block, if enabled globally */
+:host ::ng-deep .examples-block .minimap {
+  display: none !important;
+}

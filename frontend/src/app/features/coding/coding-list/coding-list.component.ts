@@ -13,11 +13,12 @@ import { SliderModule } from 'primeng/slider';
 import { BehaviorSubject, combineLatest, forkJoin, of } from 'rxjs';
 import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 
+import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 
-type StructuredDescription = { text: string; examples?: string[] };
+type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
 type Kind = 'coding' | 'trivia' | 'debug' | 'all';
 
@@ -88,7 +89,8 @@ function inferCategory(q: any): CategoryKey {
   const title = String(q.title || '').toLowerCase();
   const desc = typeof q.description === 'string'
     ? q.description.toLowerCase()
-    : (q.description?.text || '').toLowerCase();
+    : (q.description?.summary || q.description?.text || '').toLowerCase();
+
   if (SYSTEM_TITLE_HINTS.some(h => title.includes(h) || desc.includes(h))) return 'system';
 
   return 'js-fn';
@@ -106,7 +108,8 @@ function inferCategory(q: any): CategoryKey {
     ProgressSpinnerModule,
     InputTextModule,
     ChipModule,
-    FormsModule
+    FormsModule,
+    TooltipModule
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
@@ -163,6 +166,7 @@ export class CodingListComponent {
 
   public tagMatchMode: 'all' | 'any' = 'all';
 
+  currentCompanySlug: string | null = null;
 
   // company slug from parent param (:slug) OR ?c=
   companySlug$ = (this.route.parent
@@ -441,13 +445,20 @@ export class CodingListComponent {
       const target = e.target as HTMLElement;
       if (!target.closest('.sort-wrap')) this.closeSort();
     }, { capture: true });
+
+    this.companySlug$.subscribe(slug => {
+      this.currentCompanySlug = slug || null;
+    });
   }
 
   // ---------- helpers used by template ----------
   descriptionText(q: Question): string {
-    const desc: any = (q as any).description;
-    if (desc && typeof desc === 'object') return (desc as StructuredDescription).text || '';
-    return q.description || '';
+    const d: any = (q as any).description;
+    if (typeof d === 'string') return d;
+    if (d && typeof d === 'object') {
+      return (d.summary || d.text || '') as string;
+    }
+    return '';
   }
 
   linkTo(q: Row): any[] {
@@ -686,4 +697,16 @@ export class CodingListComponent {
     }
   }
 
+  preview(text: string, max = 80): string {
+    if (!text) return '';
+    const t = text.trim();
+    if (t.length <= max) return t;
+    return t.slice(0, max).trimEnd() + '…';
+  }
+
+  go(q: Row, list: Row[]) {
+    const commands = this.linkTo(q);
+    const state = this.stateForNav(list, q, this.currentCompanySlug);
+    this.router.navigate(commands, { state });
+  }
 }
