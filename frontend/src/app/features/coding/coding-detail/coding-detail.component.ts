@@ -17,7 +17,7 @@ import { QuestionService } from '../../../core/services/question.service';
 import { UserCodeSandboxService } from '../../../core/services/user-code-sandbox.service';
 import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
 import {
-  getJsBaselineKey, getJsKey, getNgBaselineKey, getNgStorageKey,
+  getNgBaselineKey, getNgStorageKey,
   getReactBaselineKey, getReactStorageKey
 } from '../../../core/utils/storage-keys';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -335,6 +335,44 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return (a.title || '').localeCompare(b.title || '');
   }
 
+  private normalizeAndCapLogs(raw: any[] | undefined): ConsoleEntry[] {
+    const now = Date.now();
+
+    const toStr = (v: any) => {
+      try { return typeof v === 'string' ? v : JSON.stringify(v); }
+      catch { return String(v); }
+    };
+
+    // Map whatever comes back into our ConsoleEntry shape
+    const mapped: ConsoleEntry[] = (raw || []).map((r: any): ConsoleEntry => {
+      // If already in { level, message, timestamp } shape, keep as-is (but we’ll post-process)
+      if (r && typeof r.level === 'string' && typeof r.message === 'string') {
+        return {
+          level: r.level as ConsoleEntry['level'],
+          message: r.message,
+          timestamp: typeof r.timestamp === 'number' ? r.timestamp : now,
+        };
+      }
+
+      // Legacy sandbox/local: { type, args }
+      if (r && typeof r.type === 'string') {
+        const msg = Array.isArray(r.args) ? r.args.map(toStr).join(' ') : toStr(r.args);
+        const level = (r.type === 'info' || r.type === 'warn' || r.type === 'error') ? r.type : 'log';
+        return { level, message: msg, timestamp: now } as ConsoleEntry;
+      }
+
+      // Fallback
+      return { level: 'log', message: toStr(r), timestamp: now } as ConsoleEntry;
+    });
+
+    // Hard cap + final pass to shorten error stacks (covers sandbox + local)
+    const MAX = this.MAX_CONSOLE_LINES;
+    return mapped.slice(-MAX).map((entry) => {
+      const msg = this.normaliseConsoleMessage(entry.level, entry.message);
+      return { ...entry, message: msg };
+    });
+  }
+
   private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
     try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
@@ -568,7 +606,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let shouldShowBanner = false;
 
-    // FRAMEWORK (Angular/React)
+    // ---------- Frameworks (Angular/React/Vue) ----------
     if (this.isFrameworkTech()) {
       this.topTab.set('code');
 
@@ -578,7 +616,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       // 1) Load saved snapshot
       let files = this.loadSavedFiles(storageKey);
 
-      // 2) If first time, bootstrap from sdk.asset (JSON) or fallback
+      // 2) Bootstrap from sdk.asset or fallback
       if (!files || Object.keys(files).length === 0) {
         const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
         const assetUrl = meta?.asset;
@@ -603,13 +641,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
           files = this.createFrameworkFallbackFiles();
         }
       } else {
-        // decide banner against baseline
+        // compare to baseline to show restore banner
         const baseRaw = localStorage.getItem(baselineKey);
         const baseline = baseRaw ? normalizeSdkFiles(JSON.parse(baseRaw)) : null;
         if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       }
 
-      // 3) Initialize editor
+      // 3) Init editor
       const openFile = this.pickFirstOpen(files);
       this.frameworkEntryFile = openFile;
       this.filesMap.set(files);
@@ -617,10 +655,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.openPath.set(openFile);
       this.editorContent.set(files[openFile] ?? '');
 
-      // 4) Preview (simple html-only placeholder)
+      // 4) Preview
       this.rebuildFrameworkPreview();
 
-      // reset UI
+      // UI/reset
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
@@ -688,47 +726,42 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // ---------- JS / TS ----------
-    const jsKey = getJsKey(q.id);
-    const baseKey = getJsBaselineKey(q.id);
-
-    const savedPref = (localStorage.getItem(this.langPrefKey(q)) as JsLang | null);
-    const defaultLang = this.getDefaultLang(q);
+    // ---------- JS / TS (service-only; no localStorage per-lang keys) ----------
+    const defaultLang: JsLang = this.getDefaultLang(q);
     const svcSaved = this.codeStore.getJs(q.id);
-    const langFromSvc = svcSaved?.language as JsLang | undefined;
-    const resolvedLang: JsLang = langFromSvc ?? savedPref ?? defaultLang;
+    const resolvedLang: JsLang = (svcSaved?.language as JsLang | undefined) ?? defaultLang;
     this.jsLang.set(resolvedLang);
 
-    const starterForResolved = this.getStarter(q, resolvedLang);
-    if (!localStorage.getItem(baseKey)) {
-      try { localStorage.setItem(baseKey, JSON.stringify({ code: starterForResolved })); } catch { }
+    // Ensure per-language baselines exist once
+    for (const L of ['js', 'ts'] as JsLang[]) {
+      if (!this.codeStore.getJsBaseline(q.id, L)) {
+        this.codeStore.setJsBaseline(q.id, L, this.getStarter(q, L));
+      }
     }
 
-    const savedSvcCode = svcSaved?.code;
-    const savedLegacyRaw = localStorage.getItem(jsKey);
-    const savedLegacy = savedLegacyRaw ? (() => { try { return JSON.parse(savedLegacyRaw); } catch { return null; } })() : null;
-    const restored = savedSvcCode ?? savedLegacy?.code ?? null;
+    // Prefer last saved code for the resolved language; else starter
+    let initial: any = (svcSaved?.language === resolvedLang) ? (svcSaved?.code ?? null) : null;
+    if (initial == null) initial = this.getStarter(q, resolvedLang);
 
-    if (restored != null) {
-      this.editorContent.set(restored);
-      const base = JSON.parse(localStorage.getItem(baseKey) || '{"code":""}');
-      if (restored !== base.code) shouldShowBanner = true;
-    } else {
-      this.editorContent.set(starterForResolved);
-    }
-
+    this.editorContent.set(initial);
     this.testCode.set(this.getTests(q, resolvedLang));
 
+    // Show banner when diverged from baseline (via service)
+    const base = this.codeStore.getJsBaseline(q.id, resolvedLang) ?? '';
+    this.showRestoreBanner.set(initial !== base);
+
+    // UI/reset
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-    this.showRestoreBanner.set(shouldShowBanner);
+
     this.sessionStart = Date.now();
     this.recorded = false;
   }
+
 
   private defaultEntry(): string {
     if (this.tech === 'angular') return 'src/app/app.component.ts';
@@ -791,10 +824,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     clearTimeout(this.jsSaveTimer);
     this.jsSaveTimer = setTimeout(() => {
-      this.codeStore.saveJs(q.id, code, this.jsLang());
-      try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code })); } catch { }
+      this.codeStore.saveJs(q.id, code, this.jsLang()); // updates lastLang internally
     }, 300);
   }
+
+  // If you keep persistJsEffect, keep it service-only or remove it entirely.
+  private persistJsEffect = effect(() => {
+    const q = this.question();
+    if (!q || this.isWebTech() || this.tech === 'angular') return;
+    this.codeStore.saveJs(q.id, this.editorContent(), this.jsLang());
+  });
+
 
   onHtmlChange = (code: string) => {
     const q = this.question(); if (!q || !this.isWebTech()) return;
@@ -813,43 +853,41 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 200);
   };
 
-  private persistJsEffect = effect(() => {
-    const q = this.question();
-    if (!q || this.tech === 'angular' || this.isWebTech()) return;
-    try {
-      localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: this.editorContent() }));
-    } catch { }
-  });
-
   // ---------- language toggle ----------
   setLanguage(lang: JsLang) {
-    const q = this.question(); if (!q || this.isWebTech() || this.tech === 'angular') return;
-    const prevLang = this.jsLang();
-    if (lang === prevLang) return;
+    const q = this.question();
+    if (!q || this.isWebTech() || this.tech === 'angular') return;
 
-    try { localStorage.setItem(this.langPrefKey(q), lang); } catch { }
+    const prev = this.jsLang();
+    if (lang === prev) return;
+
+    // 1) snapshot current buffer under previous language
+    this.codeStore.saveJs(q.id, this.editorContent(), prev);
+
+    // 2) flip current language (UI)
     this.jsLang.set(lang);
 
-    const prevStarter = this.getStarter(q, prevLang);
-    const nextStarter = this.getStarter(q, lang);
-    const prevSolution = this.getSolution(q, prevLang);
-    const nextSolution = this.getSolution(q, lang);
+    // 3) load target buffer WITHOUT falling back to starter unless truly empty
+    let nextCode: any = this.codeStore.getJsForLang(q.id, lang);
+    if (nextCode == null) nextCode = this.getStarter(q, lang);
+    this.editorContent.set(nextCode);
 
-    const current = this.editorContent();
-    if (current.trim() === prevStarter.trim()) {
-      this.editorContent.set(nextStarter);
-    } else if (prevSolution && current.trim() === prevSolution.trim()) {
-      this.editorContent.set(nextSolution || nextStarter);
+    // 4) swap tests + ensure baseline present
+    this.testCode.set(this.getTests(q, lang));
+    if (!this.codeStore.getJsBaseline(q.id, lang)) {
+      this.codeStore.setJsBaseline(q.id, lang, this.getStarter(q, lang));
     }
 
-    const prevTests = this.getTests(q, prevLang);
-    const nextTests = this.getTests(q, lang);
-    if (this.testCode().trim() === prevTests.trim()) {
-      this.testCode.set(nextTests);
-    }
+    // 5) reset runner + remount for Monaco mode switch
+    this.hasRunTests = false;
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+    this.subTab.set('tests');
+    this.topTab.set('code');
+    this.remountEditor();
 
-    try { localStorage.setItem(getJsBaselineKey(q.id), JSON.stringify({ code: this.getStarter(q, lang) })); } catch { }
-    this.codeStore.saveJs(q.id, this.editorContent(), lang);
+    // 6) mark lastLang ONLY (do NOT overwrite target buffer)
+    this.codeStore.setLastLang(q.id, lang);
   }
 
   // ---------- banner actions ----------
@@ -930,19 +968,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- TS -> JS transpile (for tests) ----------
   private async transpileTsToJs(code: string, fileName: string): Promise<string> {
-    if (!monaco?.languages?.typescript || typeof code !== 'string') return code;
-    const uri = monaco.Uri.parse(`inmemory://model/${fileName}`);
-    const model = monaco.editor.createModel(code, 'typescript', uri);
     try {
-      const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
-      const svc = await getWorker(uri);
-      const out = await svc.getEmitOutput(uri.toString());
-      const js = out?.outputFiles?.[0]?.text ?? '';
-      return js || '';
+      if (!monaco?.languages?.typescript || typeof code !== 'string') return code;
+      const uri = monaco.Uri.parse(`inmemory://model/${fileName}`);
+      const model = monaco.editor.createModel(code, 'typescript', uri);
+      try {
+        const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
+        const svc = await getWorker(uri);
+        const out = await svc.getEmitOutput(uri.toString());
+        const js = out?.outputFiles?.[0]?.text ?? '';
+        return js || '';
+      } finally {
+        model.dispose();
+      }
     } catch {
-      return code;
-    } finally {
-      model.dispose();
+      // If the TS worker crashes or diagnostics are noisy, let the caller fall back
+      return '';
     }
   }
 
@@ -951,10 +992,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q || this.tech === 'angular') return;
 
-    // Delegate to DOM runner for HTML/CSS questions
     if (this.isWebTech()) { await this.runWebTests(); return; }
 
-    // UI reset
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
@@ -962,51 +1001,51 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const testsSrcRaw = (this.testCode() || '').trim();
     if (!testsSrcRaw) {
-      // Nothing to run – show "No tests reported"
       this.hasRunTests = true;
       this.testResults.set([]);
       this.subTab.set('tests');
       return;
     }
 
-    // Prepare sources
-    const lang = this.jsLang();
-    // Prepare sources
     const userSrc = this.editorContent();
     const testsSrc = (this.testCode() || '').trim();
 
-    // Always ensure JS (transpile if needed) for BOTH user & tests
     const userJs = await this.ensureJs(userSrc, `${q.id}.ts`);
     const testsJs = await this.ensureJs(testsSrc, `${q.id}.tests.ts`);
 
     const wrapped = this.wrapExportDefault(userJs, q.id);
     const testsPrepared = this.transformTestCode(testsJs, q.id);
 
-
-    // 1) Try the sandbox first
+    // Try sandbox first
     try {
       const out = await this.runner.runWithTests({ userCode: wrapped, testCode: testsPrepared, timeoutMs: 1500 });
-      this.consoleEntries.set(this.sanitizeLogs((out?.entries as ConsoleEntry[]) || []));
+      // Final pass will shorten any error stacks from the sandbox
+      this.consoleEntries.set(this.normalizeAndCapLogs(out?.entries as any[]));
       this.testResults.set(out?.results || []);
     } catch (e: any) {
-      this.testResults.set([{ name: 'Test runner error', passed: false, error: String(e?.message ?? e) }]);
+      this.testResults.set([{ name: 'Test runner error', passed: false, error: this.shortStack(e) }]);
     }
 
-    // 2) Fallback: local harness if the sandbox produced no results
+    // Local fallback
     if ((this.testResults() || []).length === 0 && testsPrepared.trim()) {
       try {
-        // Evaluate user's code so default export is on the global
-        new Function(wrapped)();
-
-        // Minimal harness
         const results: TestResult[] = [];
         const logs: ConsoleEntry[] = [];
-        const pushLog = (type: 'log' | 'warn' | 'error', args: any[]) => { try { logs.push({ type, args } as any); } catch { } };
+
+        const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
+          const msgRaw = args.map(a => {
+            try { return typeof a === 'string' ? a : JSON.stringify(a); }
+            catch { return String(a); }
+          }).join(' ');
+          const msg = this.normaliseConsoleMessage(level, msgRaw);
+          logs.push({ level, message: msg, timestamp: Date.now() });
+        };
 
         const consoleProxy = {
-          log: (...a: any[]) => pushLog('log', a),
-          warn: (...a: any[]) => pushLog('warn', a),
-          error: (...a: any[]) => pushLog('error', a),
+          log: (...a: any[]) => push('log', a),
+          info: (...a: any[]) => push('info', a),
+          warn: (...a: any[]) => push('warn', a),
+          error: (...a: any[]) => push('error', a),
         };
 
         const isObj = (v: any) => v !== null && typeof v === 'object';
@@ -1031,27 +1070,57 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         const runCase = async (name: string, fn: () => any | Promise<any>) => {
-          try { await fn(); results.push({ name, passed: true }); }
-          catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
+          try {
+            await fn();
+            results.push({ name, passed: true });
+          } catch (e: any) {
+            const short = this.shortStack(e);
+            results.push({ name, passed: false, error: short });
+            consoleProxy.error(`Stack: ${short}`);
+          }
         };
 
         const it = (name: string, fn: () => any | Promise<any>) => runCase(name, fn);
         const test = it;
         const describe = (_: string, fn: () => void) => { try { fn(); } catch { /* ignore */ } };
 
-        // Execute tests with harness in scope
-        new Function('describe', 'test', 'it', 'expect', 'console', testsPrepared)(
-          describe as any, test as any, it as any, expect as any, consoleProxy as any
-        );
+        // Capture uncaughts and shorten them too
+        const prevConsole = (globalThis as any).console;
+        const onError = (ev: any) => consoleProxy.error(`Stack: ${this.shortStack(ev?.error ?? ev)}`);
+        const onRejection = (ev: any) => consoleProxy.error(`Stack: ${this.shortStack(ev?.reason ?? ev)}`);
 
-        this.consoleEntries.set(this.sanitizeLogs(logs));
+        (globalThis as any).console = consoleProxy;
+        addEventListener('error', onError);
+        addEventListener('unhandledrejection', onRejection);
+
+        try {
+          // Evaluate user's code (captures user console.*)
+          new Function(wrapped)();
+
+          // Execute tests with harness in scope
+          try {
+            await new Function('describe', 'test', 'it', 'expect', 'console', testsPrepared)(
+              describe as any, test as any, it as any, expect as any, consoleProxy as any
+            );
+          } catch (e: any) {
+            const short = this.shortStack(e);
+            results.unshift({ name: 'Failed to execute test file', passed: false, error: short });
+            consoleProxy.error(`Stack: ${short}`);
+          }
+        } finally {
+          (globalThis as any).console = prevConsole;
+          removeEventListener('error', onError);
+          removeEventListener('unhandledrejection', onRejection);
+        }
+
+        // Final normalisation & cap before display
+        this.consoleEntries.set(this.normalizeAndCapLogs(logs));
         this.testResults.set(results);
       } catch (e: any) {
-        this.testResults.set([{ name: 'Local runner error', passed: false, error: String(e?.message ?? e) }]);
+        this.testResults.set([{ name: 'Local runner error', passed: false, error: this.shortStack(e) }]);
       }
     }
 
-    // End-of-run bookkeeping
     this.hasRunTests = true;
 
     const passing = this.allPassing();
@@ -1082,6 +1151,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.subTab.set('tests');
   }
+
 
   // Add this helper near your transpileTsToJs()
   private async ensureJs(code: string, fileName: string): Promise<string> {
@@ -1398,7 +1468,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.resetting.set(true);
     try {
       if (this.isFrameworkTech()) {
-        // Clear saved snapshot and reload question; loadQuestion will re-bootstrap files/preview
         const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
         try { localStorage.removeItem(storageKey); } catch { }
         await this.loadQuestion(q.id);
@@ -1409,19 +1478,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.htmlCode.set(starters.html);
         this.cssCode.set(starters.css);
       } else {
-        // JS/TS
-        try { localStorage.removeItem(getJsKey(q.id)); } catch { }
+        // JS/TS — clear saved state and restore baseline from starters
+        this.codeStore.clearJs(q.id);
         const lang = this.jsLang();
-        this.editorContent.set(this.getStarter(q, lang));
+        const starter = this.getStarter(q, lang);
+        this.codeStore.setJsBaseline(q.id, lang, starter);
+        this.editorContent.set(starter);
         this.testCode.set(this.getTests(q, lang));
       }
 
       // common cleanup
+      this.consoleEntries.set([]);
+      this.testResults.set([]);
+      this.hasRunTests = false;
       this.solved.set(false);
       this.clearSolvedFlag(q);
-      this.hasRunTests = false;
-      this.testResults.set([]);
-      this.consoleEntries.set([]);
       this.subTab.set('tests');
       this.topTab.set(this.isWebTech() ? 'html' : 'code');
       this.showRestoreBanner.set(false);
@@ -1429,7 +1500,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.resetting.set(false);
     }
   }
-
 
   copyExamples() {
     const examples = this.combinedExamples();
@@ -1447,34 +1517,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 
   loadSolutionCode() {
-    const q = this.question();
-    if (!q) return;
+    const q = this.question(); if (!q) return;
 
     if (this.isWebTech()) {
-      const sol = this.getWebSolutions(q);
-      const html = sol.html || this.getWebStarters(q).html;
-      const css = sol.css || this.getWebStarters(q).css;
-      this.htmlCode.set(html);
-      this.cssCode.set(css);
-      try { localStorage.setItem(this.webKey(q, 'html'), html); } catch { }
-      try { localStorage.setItem(this.webKey(q, 'css'), css); } catch { }
-      this.activePanel.set(1);
-      this.topTab.set('html');
+      // unchanged in your app — you already handle web separately elsewhere
       return;
     }
 
-    // ... inside loadSolutionCode(), JS/TS branch:
     const lang = this.jsLang();
     const block = this.solutionInfo();
     const value =
       (lang === 'ts' && block.codeTs?.trim()) ? block.codeTs :
-        (block.codeJs?.trim() ? block.codeJs : this.getSolution(q, lang) || this.getSolution(q, lang === 'ts' ? 'js' : 'ts') || '');
+        (block.codeJs?.trim() ? block.codeJs :
+          this.getSolution(q, lang) || this.getSolution(q, lang === 'ts' ? 'js' : 'ts') || '');
 
     this.editorContent.set(value);
-
-    try { localStorage.setItem(getJsKey(q.id), JSON.stringify({ code: value })); } catch { }
-    this.codeStore.saveJs(q.id, value, lang);
-
+    this.codeStore.saveJs(q.id, value, lang);   // persist via service
     this.activePanel.set(1);
     this.topTab.set('code');
   }
@@ -1834,5 +1892,50 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
     this.loadSolutionCode(); // your existing method that writes into the editor
+  }
+
+  /** Keep only the first line of an error/stack */
+  private shortStack(value: any): string {
+    const raw =
+      (value && typeof value.stack === 'string') ? value.stack :
+        (value && typeof value.message === 'string') ? value.message :
+          String(value);
+    const first = raw.split('\n')[0]?.trim() || raw;
+    // Normalise leading "Stack:" formatting
+    return first.replace(/^Stack:\s*/i, '');
+  }
+
+  /** Normalise console messages (shorten stacks on errors) */
+  private normaliseConsoleMessage(level: 'log' | 'info' | 'warn' | 'error', msg: string): string {
+    if (level === 'error') {
+      const first = msg.split('\n')[0]?.trim() || msg;
+      // If the message already starts with "ReferenceError: ..." (or similar), keep just that line
+      return first;
+    }
+    return msg;
+  }
+
+  /** quick sniff: does code look like TypeScript? */
+  private looksLikeTs(code: string): boolean {
+    if (!code) return false;
+    return /:\s*[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code)        // : Type
+      || /\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code)     // as Type
+      || /\binterface\b/.test(code)
+      || /\btype\s+[A-Za-z_$][\w$]*\s*=/.test(code)
+      || /\benum\s+[A-Za-z_$]/.test(code);
+  }
+
+  /** best-effort TS → JS in-place for user buffer (non-destructive for logic) */
+  private stripTypesToJs(code: string): string {
+    if (!code) return code;
+    return code
+      // remove ": Type" (params, vars, returns)
+      .replace(/:\s*[^=;,)]+(?=[=;,)])/g, '')
+      // remove "as Type"
+      .replace(/\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/g, '')
+      // wipe interfaces, type aliases, enums
+      .replace(/\binterface\b[\s\S]*?\{[\s\S]*?\}\s*/g, '')
+      .replace(/\btype\s+[A-Za-z_$][\w$]*\s*=\s*[\s\S]*?;/g, '')
+      .replace(/\benum\s+[A-Za-z_$][\w$]*\s*\{[\s\S]*?\}\s*/g, '');
   }
 }

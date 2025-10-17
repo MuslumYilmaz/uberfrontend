@@ -1,48 +1,92 @@
-{
-  "id": "js-number-clamp",
-  "title": "Clamp",
-  "type": "coding",
-  "technology": "javascript",
-  "difficulty": "easy",
-      "tags": [
-      "promise",
-      "async"
+[
+  {
+    "id": "js-number-clamp",
+    "title": "Clamp",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "numbers",
+      "math",
+      "boundaries"
     ],
-  "description": {
-    "summary": "Implement a function `clamp(value, lower, upper)` to restrict `value` within inclusive `lower` and `upper` bounds.",
-    "arguments": [
-      {
-        "name": "value",
+    "description": {
+      "summary": "Implement a function `clamp(value, lower, upper)` that restricts `value` within inclusive `lower` and `upper` bounds.",
+      "arguments": [
+        {
+          "name": "value",
+          "type": "number",
+          "desc": "The number to clamp."
+        },
+        {
+          "name": "lower",
+          "type": "number",
+          "desc": "The lower bound."
+        },
+        {
+          "name": "upper",
+          "type": "number",
+          "desc": "The upper bound."
+        }
+      ],
+      "returns": {
         "type": "number",
-        "desc": "The number to clamp."
+        "desc": "The clamped number."
       },
-      {
-        "name": "lower",
-        "type": "number",
-        "desc": "The lower bound."
-      },
-      {
-        "name": "upper",
-        "type": "number",
-        "desc": "The upper bound."
-      }
-    ],
-    "returns": {
-      "type": "number",
-      "desc": "The clamped number."
+      "examples": [
+        "// Within the bounds\nclamp(3, 0, 5) // => 3",
+        "// Smaller than lower\nclamp(-10, -3, 5) // => -3",
+        "// Bigger than upper\nclamp(10, -5, 5) // => 5"
+      ]
     },
-    "examples": [
-      "// Within the bounds\nclamp(3, 0, 5) // => 3",
-      "// Smaller than lower\nclamp(-10, -3, 5) // => -3",
-      "// Bigger than upper\nclamp(10, -5, 5) // => 5"
-    ]
+    "starterCode": "export default function clamp(value, lower, upper) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "The purpose of `clamp()` is to ensure a number stays within a specific range. Think of it as a limit gate: if the value falls below `lower`, we pull it up; if it exceeds `upper`, we bring it down. This pattern is often used in animation limits, slider inputs, or percentage caps.\n\nAlgorithm:\n1. If `value < lower`, return `lower`.\n2. Else if `value > upper`, return `upper`.\n3. Otherwise, return `value`.\n\nThis keeps outputs predictable and avoids overflow or underflow issues.",
+      "codeJs": "export default function clamp(value, lower, upper) {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n",
+      "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n"
+    },
+    "tests": "import clamp from './clamp';\n\ndescribe('clamp', () => {\n  test('within range', () => expect(clamp(3, 0, 5)).toBe(3));\n  test('below lower', () => expect(clamp(-10, -3, 5)).toBe(-3));\n  test('above upper', () => expect(clamp(10, -5, 5)).toBe(5));\n});\n",
+    "testsTs": "import clamp from './clamp';\n\ndescribe('clamp (TypeScript)', () => {\n  it('should return the same value when within range', () => {\n    expect(clamp(3, 0, 5)).toBe(3);\n  });\n  it('should clamp to lower bound when below range', () => {\n    expect(clamp(-10, -3, 5)).toBe(-3);\n  });\n  it('should clamp to upper bound when above range', () => {\n    expect(clamp(10, -5, 5)).toBe(5);\n  });\n});\n"
   },
-  "starterCode": "export default function clamp(value, lower, upper) {\n  throw new Error('Not implemented');\n}\n",
-  "starterCodeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  throw new Error('Not implemented');\n}\n",
-  "solutionBlock": {
-    "explanation": "Check if `value` is below `lower` → return `lower`; above `upper` → return `upper`; otherwise return `value`.",
-    "codeJs": "export default function clamp(value, lower, upper){\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n",
-    "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n"
-  },
-  "tests": "import clamp from './clamp';\n\ndescribe('clamp', () => {\n  test('within', () => { expect(clamp(3,0,5)).toBe(3); });\n  test('lower', () => { expect(clamp(-10,-3,5)).toBe(-3); });\n  test('upper', () => { expect(clamp(10,-5,5)).toBe(5); });\n});\n"
-}
+  {
+    "id": "js-reverse-string",
+    "title": "Reverse a String",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "string",
+      "loop",
+      "algorithm"
+    ],
+    "description": {
+      "summary": "Implement a function `reverseString(str)` that returns the reversed version of the input string without using built-in methods like `.reverse()`.",
+      "arguments": [
+        {
+          "name": "str",
+          "type": "string",
+          "desc": "The input string to be reversed."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "The reversed string."
+      },
+      "examples": [
+        "// Basic example\nreverseString('abc') // => 'cba'",
+        "// Palindrome\nreverseString('racecar') // => 'racecar'",
+        "// With spaces and punctuation\nreverseString('A man, a plan') // => 'nalp a ,nam A'"
+      ]
+    },
+    "starterCode": "export default function reverseString(str) {\n  // TODO: Implement without using Array.prototype.reverse()\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function reverseString(str: string): string {\n  // TODO: Implement without using Array.prototype.reverse()\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Reversing a string means flipping its characters from end to start. Since the challenge restricts using built-ins like `.reverse()`, we can manually rebuild the string.\n\n### 🧠 Step-by-step reasoning:\n1. Start with an empty result string `out = ''`.\n2. Loop from the **last index (`str.length - 1`) down to 0**.\n3. On each step, append the current character to `out`.\n4. When the loop ends, `out` holds the reversed result.\n\n### ⚙️ Why this works\nStrings are immutable in JavaScript, so each concatenation forms a new string. That’s fine for small or medium inputs — O(n) time and O(n) space overall.\n\n### ⚠️ Edge cases\n- **Empty string:** returns `''`.\n- **Single character:** returns itself.\n- **Palindromes:** look identical when reversed.\n- **Unicode:** this basic version flips code units, which is fine for normal text but not grapheme clusters (like emoji combinations).\n\nThis simple loop is easy to read, performs well, and helps you understand string traversal from end to start.",
+      "codeJs": "export default function reverseString(str) {\n  let out = '';\n  for (let i = str.length - 1; i >= 0; i--) {\n    out += str[i];\n  }\n  return out;\n}\n",
+      "codeTs": "export default function reverseString(str: string): string {\n  let out = '';\n  for (let i = str.length - 1; i >= 0; i--) {\n    out += str[i];\n  }\n  return out;\n}\n"
+    },
+    "tests": "import reverseString from './reverseString';\n\ndescribe('reverseString', () => {\n  test('reverses simple strings', () => {\n    expect(reverseString('abc')).toBe('cba');\n    expect(reverseString('hello')).toBe('olleh');\n  });\n\n  test('handles palindromes', () => {\n    expect(reverseString('racecar')).toBe('racecar');\n  });\n\n  test('reverses with spaces and punctuation', () => {\n    expect(reverseString('A man, a plan')).toBe('nalp a ,nam A');\n  });\n\n  test('handles empty and single character', () => {\n    expect(reverseString('')).toBe('');\n    expect(reverseString('x')).toBe('x');\n  });\n});\n",
+    "testsTs": "import reverseString from './reverseString';\n\ndescribe('reverseString (TypeScript)', () => {\n  it('reverses simple strings', () => {\n    expect(reverseString('abc')).toBe('cba');\n    expect(reverseString('hello')).toBe('olleh');\n  });\n\n  it('handles palindromes', () => {\n    expect(reverseString('racecar')).toBe('racecar');\n  });\n\n  it('reverses with spaces and punctuation', () => {\n    expect(reverseString('A man, a plan')).toBe('nalp a ,nam A');\n  });\n\n  it('handles empty and single character', () => {\n    expect(reverseString('')).toBe('');\n    expect(reverseString('x')).toBe('x');\n  });\n});\n"
+  }
+]
