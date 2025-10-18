@@ -4,6 +4,7 @@
     "title": "Clamp",
     "type": "coding",
     "technology": "javascript",
+    "importance": 1,
     "difficulty": "easy",
     "tags": [
       "numbers",
@@ -34,9 +35,9 @@
         "desc": "The clamped number."
       },
       "examples": [
-        "// Within the bounds\nclamp(3, 0, 5) // => 3",
-        "// Smaller than lower\nclamp(-10, -3, 5) // => -3",
-        "// Bigger than upper\nclamp(10, -5, 5) // => 5"
+        "// Basic examples\nclamp(3, 0, 5) // => 3",
+        "clamp(-10, -3, 5) // => -3",
+        "clamp(10, -5, 5) // => 5"
       ]
     },
     "starterCode": "export default function clamp(value, lower, upper) {\n  throw new Error('Not implemented');\n}\n",
@@ -53,12 +54,11 @@
     "id": "js-reverse-string",
     "title": "Reverse a String",
     "type": "coding",
+    "importance": 4,
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "string",
-      "loop",
-      "algorithm"
+      "String"
     ],
     "description": {
       "summary": "Implement a function `reverseString(str)` that returns the reversed version of the input string without using built-in methods like `.reverse()`.",
@@ -93,12 +93,11 @@
     "id": "js-count-vowels",
     "title": "Count Vowels",
     "type": "coding",
+    "importance": 2,
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "string",
-      "regex",
-      "loop"
+      "String"
     ],
     "description": {
       "summary": "Implement a function `countVowels(str)` that returns how many vowels (a, e, i, o, u) exist in a given string, regardless of case.",
@@ -129,5 +128,698 @@
     },
     "tests": "import countVowels from './countVowels';\n\ndescribe('countVowels', () => {\n  test('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  test('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  test('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  test('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n",
     "testsTs": "import countVowels from './countVowels';\n\ndescribe('countVowels (TypeScript)', () => {\n  it('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  it('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  it('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  it('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n"
+  },
+  {
+    "id": "js-flatten-once",
+    "title": "Flatten One Level",
+    "type": "coding",
+    "importance": 3,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "Array"
+    ],
+    "description": {
+      "summary": "Implement a function `flattenOnce(arr)` that flattens a nested array by **one level only**. Elements that are not arrays should remain unchanged.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "any[]",
+          "desc": "The input array which may contain nested arrays."
+        }
+      ],
+      "returns": {
+        "type": "any[]",
+        "desc": "A new array flattened by one level."
+      },
+      "examples": [
+        "// Basic example\nflattenOnce([1, [2, 3], [4, [5]]]) // => [1, 2, 3, 4, [5]]",
+        "// Already flat\nflattenOnce([1, 2, 3]) // => [1, 2, 3]",
+        "// Mixed values\nflattenOnce([[1], 2, [3, [4]], 5]) // => [1, 2, 3, [4], 5]"
+      ]
+    },
+    "starterCode": "export default function flattenOnce(arr) {\n  // TODO: Flatten one level deep\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function flattenOnce(arr: any[]): any[] {\n  // TODO: Flatten one level deep\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Flattening by **one level** means unpacking only the first layer of nested arrays — not performing a deep recursion.\n\n### 🧠 Step-by-step reasoning:\n1. Create an empty array `result = []`.\n2. Loop through each element in `arr`.\n3. If an element is an array (`Array.isArray(el)`), spread its elements into `result`.\n4. Otherwise, push the element directly.\n5. Return the `result`.\n\n### ⚙️ Why this works\nThis approach uses a single pass (O(n)) and respects the rule of flattening just one level. It avoids recursion — deeper arrays remain nested.\n\n### ⚡ Alternative approach\nYou could use the built-in `.flat(1)` (modern JS) but implementing it manually builds stronger understanding.\n\n### ⚠️ Edge cases\n- Empty input → returns `[]`\n- Already flat → unchanged\n- Mixed array contents (numbers, objects, nested arrays) → only one layer unpacked\n\nThis problem is a great warm-up before writing a recursive `flatten()` that handles arbitrary depths.",
+      "codeJs": "export default function flattenOnce(arr) {\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
+      "codeTs": "export default function flattenOnce(arr: any[]): any[] {\n  const result: any[] = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n"
+    },
+    "tests": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce', () => {\n  test('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  test('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  test('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  test('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n",
+    "testsTs": "import flattenOnce from './flattenOnce';\n\ndescribe('flattenOnce (TypeScript)', () => {\n  it('flattens a simple nested array', () => {\n    expect(flattenOnce([1, [2, 3], [4, [5]]])).toEqual([1, 2, 3, 4, [5]]);\n  });\n\n  it('returns same array when already flat', () => {\n    expect(flattenOnce([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n\n  it('handles mixed array contents', () => {\n    expect(flattenOnce([[1], 2, [3, [4]], 5])).toEqual([1, 2, 3, [4], 5]);\n  });\n\n  it('returns empty array for empty input', () => {\n    expect(flattenOnce([])).toEqual([]);\n  });\n});\n"
+  },
+  {
+    "id": "js-unique-array",
+    "title": "Remove Duplicates",
+    "type": "coding",
+    "importance": 4,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "Array"
+    ],
+    "description": {
+      "summary": "Implement a function `unique(arr)` that returns a new array with duplicate values removed. The **original order** of elements must be preserved.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "T[]",
+          "desc": "An array of items that may contain duplicates."
+        }
+      ],
+      "returns": {
+        "type": "T[]",
+        "desc": "A new array with only unique elements, preserving their first occurrence order."
+      },
+      "examples": [
+        "// Basic example\nunique([1, 2, 2, 3, 1]) // => [1, 2, 3]",
+        "// Works with strings\nunique(['a', 'b', 'a', 'c', 'b']) // => ['a', 'b', 'c']",
+        "// Mixed types\nunique([1, '1', 1]) // => [1, '1']"
+      ]
+    },
+    "starterCode": "export default function unique(arr) {\n  // TODO: Return new array with duplicates removed\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function unique<T>(arr: T[]): T[] {\n  // TODO: Return new array with duplicates removed\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Removing duplicates means ensuring each element appears only once in the output array.\n\n### 🧠 Step-by-step reasoning:\n1. Create a `Set` to keep track of elements we've already seen.\n2. Create an empty result array `result = []`.\n3. Loop through the input array.\n4. For each element:\n   - If it’s **not** in the `Set`, add it to both `Set` and `result`.\n   - If it’s already in the `Set`, skip it.\n5. Return `result`.\n\n### ⚙️ Why this works\n`Set` automatically ignores duplicates, and by adding elements only when we first see them, we preserve the original order. Time complexity is **O(n)**, and space complexity is **O(n)**.\n\n### ⚡ Alternative approaches\n- **Using spread syntax:** `return [...new Set(arr)]` (fast but doesn’t teach algorithmic thinking).\n- **Using `filter` and `indexOf`:** works but has O(n²) complexity — not ideal for large arrays.\n\n### ⚠️ Edge cases\n- Empty array → returns `[]`\n- All unique → unchanged\n- All duplicates → only one element kept\n\nThis is a fundamental problem that tests your understanding of iteration, data structures, and algorithmic efficiency.",
+      "codeJs": "export default function unique(arr) {\n  const seen = new Set();\n  const result = [];\n  for (const item of arr) {\n    if (!seen.has(item)) {\n      seen.add(item);\n      result.push(item);\n    }\n  }\n  return result;\n}\n",
+      "codeTs": "export default function unique<T>(arr: T[]): T[] {\n  const seen = new Set<T>();\n  const result: T[] = [];\n  for (const item of arr) {\n    if (!seen.has(item)) {\n      seen.add(item);\n      result.push(item);\n    }\n  }\n  return result;\n}\n"
+    },
+    "tests": "import unique from './unique';\n\ndescribe('unique', () => {\n  test('removes duplicates from numbers', () => {\n    expect(unique([1, 2, 2, 3, 1])).toEqual([1, 2, 3]);\n  });\n\n  test('works with strings', () => {\n    expect(unique(['a', 'b', 'a', 'c', 'b'])).toEqual(['a', 'b', 'c']);\n  });\n\n  test('handles mixed types', () => {\n    expect(unique([1, '1', 1])).toEqual([1, '1']);\n  });\n\n  test('returns empty array when input is empty', () => {\n    expect(unique([])).toEqual([]);\n  });\n\n  test('returns identical array when all unique', () => {\n    expect(unique([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n});\n",
+    "testsTs": "import unique from './unique';\n\ndescribe('unique (TypeScript)', () => {\n  it('removes duplicates from numbers', () => {\n    expect(unique([1, 2, 2, 3, 1])).toEqual([1, 2, 3]);\n  });\n\n  it('works with strings', () => {\n    expect(unique(['a', 'b', 'a', 'c', 'b'])).toEqual(['a', 'b', 'c']);\n  });\n\n  it('handles mixed types', () => {\n    expect(unique([1, '1', 1])).toEqual([1, '1']);\n  });\n\n  it('returns empty array when input is empty', () => {\n    expect(unique([])).toEqual([]);\n  });\n\n  it('returns identical array when all unique', () => {\n    expect(unique([1, 2, 3])).toEqual([1, 2, 3]);\n  });\n});\n"
+  },
+  {
+    "id": "js-max-char",
+    "title": "Find Maximum Occurring Character",
+    "type": "coding",
+    "importance": 5,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "String"
+    ],
+    "description": {
+      "summary": "Implement a function `maxChar(str)` that returns the character that appears most frequently in a string.",
+      "arguments": [
+        {
+          "name": "str",
+          "type": "string",
+          "desc": "The input string to analyze."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "The single character with the highest frequency of occurrence."
+      },
+      "examples": [
+        "// Basic examples\nmaxChar('hello') // => 'l'\nmaxChar('aabbbcc') // => 'b'\nmaxChar('abcccccccd') // => 'c'\n// When multiple characters tie, return the first one found\nmaxChar('aabb') // => 'a'"
+      ]
+    },
+    "starterCode": "export default function maxChar(str) {\n  // TODO: Return the most frequent character in the string\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function maxChar(str: string): string {\n  // TODO: Return the most frequent character in the string\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "To find the character that appears most often, we can count how many times each character appears and then pick the one with the largest count.\n\n### 🧠 Step-by-step reasoning:\n1. Create an empty object `charCount` to store frequencies.\n2. Loop through each character in the string.\n3. For each one, increment its count in `charCount`.\n4. After counting, loop through the keys of `charCount` to find the one with the highest value.\n5. Return that character.\n\n### ⚙️ Why this works\nWe’re using a **hash map** (plain JS object) to efficiently count occurrences — each lookup and increment is O(1), giving us an overall O(n) time complexity.\n\n### ⚡ Alternative approach\n- You can also use `Array.prototype.reduce()` or `Map` for a more functional or explicit style.\n- If Unicode or emoji handling is needed, `Array.from(str)` is safer than splitting by character.\n\n### ⚠️ Edge cases\n- Empty string → return an empty string `''`\n- All characters appear once → return the first character\n- Case-sensitive: `'A'` and `'a'` are different\n\nThis question teaches how to use **frequency maps**, a pattern that appears in many algorithm problems (anagrams, histogram comparisons, etc.).",
+      "codeJs": "export default function maxChar(str) {\n  if (!str) return '';\n  const charCount = {};\n  let max = 0;\n  let maxChar = '';\n\n  for (const ch of str) {\n    charCount[ch] = (charCount[ch] || 0) + 1;\n    if (charCount[ch] > max) {\n      max = charCount[ch];\n      maxChar = ch;\n    }\n  }\n\n  return maxChar;\n}\n",
+      "codeTs": "export default function maxChar(str: string): string {\n  if (!str) return '';\n  const charCount: Record<string, number> = {};\n  let max = 0;\n  let maxChar = '';\n\n  for (const ch of str) {\n    charCount[ch] = (charCount[ch] || 0) + 1;\n    if (charCount[ch] > max) {\n      max = charCount[ch];\n      maxChar = ch;\n    }\n  }\n\n  return maxChar;\n}\n"
+    },
+    "tests": "import maxChar from './maxChar';\n\ndescribe('maxChar', () => {\n  test('finds the most common letter', () => {\n    expect(maxChar('hello')).toBe('l');\n  });\n\n  test('works with multiple repetitions', () => {\n    expect(maxChar('aabbbcc')).toBe('b');\n    expect(maxChar('abcccccccd')).toBe('c');\n  });\n\n  test('returns first character when tie', () => {\n    expect(maxChar('aabb')).toBe('a');\n  });\n\n  test('returns empty string when input is empty', () => {\n    expect(maxChar('')).toBe('');\n  });\n});\n",
+    "testsTs": "import maxChar from './maxChar';\n\ndescribe('maxChar (TypeScript)', () => {\n  it('finds the most common letter', () => {\n    expect(maxChar('hello')).toBe('l');\n  });\n\n  it('works with multiple repetitions', () => {\n    expect(maxChar('aabbbcc')).toBe('b');\n    expect(maxChar('abcccccccd')).toBe('c');\n  });\n\n  it('returns first character when tie', () => {\n    expect(maxChar('aabb')).toBe('a');\n  });\n\n  it('returns empty string when input is empty', () => {\n    expect(maxChar('')).toBe('');\n  });\n});\n"
+  },
+  {
+    "id": "js-capitalize-words",
+    "title": "Capitalize Words",
+    "type": "coding",
+    "importance": 3,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "String"
+    ],
+    "description": {
+      "summary": "Implement a function `capitalizeWords(sentence)` that returns the same string but with the first letter of each word capitalized.",
+      "arguments": [
+        {
+          "name": "sentence",
+          "type": "string",
+          "desc": "A sentence consisting of one or more words separated by spaces."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "A new string where each word starts with an uppercase letter, and the rest of the word remains in lowercase."
+      },
+      "examples": [
+        "// Basic examples",
+        "capitalizeWords('hello world') // => 'Hello World'",
+        "capitalizeWords('javascript is fun') // => 'Javascript Is Fun'",
+        "// Handles extra spaces",
+        "capitalizeWords('  welcome   to  earth  ') // => '  Welcome   To  Earth  '"
+      ]
+    },
+    "starterCode": "export default function capitalizeWords(sentence) {\n  // TODO: Capitalize first letter of each word\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function capitalizeWords(sentence: string): string {\n  // TODO: Capitalize first letter of each word\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Capitalizing each word means transforming only the **first character** of every word to uppercase while leaving the rest in lowercase.\n\n### 🧠 Step-by-step reasoning:\n1. Split the sentence into words using `.split(' ')`.\n2. Map through each word and:\n   - If the word is empty (from extra spaces), leave it unchanged.\n   - Otherwise, take `word[0].toUpperCase()` and append `word.slice(1).toLowerCase()`.\n3. Join all the words back together with spaces.\n4. Return the result.\n\n### ⚙️ Why this works\nThis method preserves multiple spaces, handles mixed-case inputs, and efficiently reconstructs the string with correct capitalization.\n\n### ⚡ Alternative approach\nYou could also iterate through the string directly, capitalizing after every space. That approach avoids splitting but is less readable for beginners.\n\n### ⚠️ Edge cases\n- Empty string → returns `''`\n- Multiple consecutive spaces → preserved\n- Already capitalized words → unchanged\n- Mixed case input → normalized to proper capitalization\n\nThis problem strengthens your understanding of **string iteration** and **immutable transformations**, core skills for interview challenges.",
+      "codeJs": "export default function capitalizeWords(sentence) {\n  if (!sentence) return '';\n  return sentence\n    .split(' ')\n    .map(word => {\n      if (!word) return word;\n      return word[0].toUpperCase() + word.slice(1).toLowerCase();\n    })\n    .join(' ');\n}\n",
+      "codeTs": "export default function capitalizeWords(sentence: string): string {\n  if (!sentence) return '';\n  return sentence\n    .split(' ')\n    .map(word => {\n      if (!word) return word;\n      return word[0].toUpperCase() + word.slice(1).toLowerCase();\n    })\n    .join(' ');\n}\n"
+    },
+    "tests": "import capitalizeWords from './capitalizeWords';\n\ndescribe('capitalizeWords', () => {\n  test('capitalizes each word in a simple sentence', () => {\n    expect(capitalizeWords('hello world')).toBe('Hello World');\n  });\n\n  test('handles mixed casing', () => {\n    expect(capitalizeWords('jaVaScript IS fUn')).toBe('Javascript Is Fun');\n  });\n\n  test('preserves multiple spaces', () => {\n    expect(capitalizeWords('  welcome   to  earth  ')).toBe('  Welcome   To  Earth  ');\n  });\n\n  test('returns empty string for empty input', () => {\n    expect(capitalizeWords('')).toBe('');\n  });\n});\n",
+    "testsTs": "import capitalizeWords from './capitalizeWords';\n\ndescribe('capitalizeWords (TypeScript)', () => {\n  it('capitalizes each word in a simple sentence', () => {\n    expect(capitalizeWords('hello world')).toBe('Hello World');\n  });\n\n  it('handles mixed casing', () => {\n    expect(capitalizeWords('jaVaScript IS fUn')).toBe('Javascript Is Fun');\n  });\n\n  it('preserves multiple spaces', () => {\n    expect(capitalizeWords('  welcome   to  earth  ')).toBe('  Welcome   To  Earth  ');\n  });\n\n  it('returns empty string for empty input', () => {\n    expect(capitalizeWords('')).toBe('');\n  });\n});\n"
+  },
+  {
+    "id": "js-sum-numbers",
+    "title": "Sum of Numbers in an Array",
+    "type": "coding",
+    "importance": 2,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "Array"
+    ],
+    "description": {
+      "summary": "Implement a function `sum(arr)` that returns the total of all numeric elements in the array, ignoring non-numeric values.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "any[]",
+          "desc": "An array containing numbers and possibly other types (e.g., strings, booleans, nulls)."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "desc": "The sum of all numeric elements in the array."
+      },
+      "examples": [
+        "// Basic examples\nsum([1, 2, 3]) // => 6",
+        "sum([10, '20', 30]) // => 40",
+        "// Ignores non-numbers\nsum(['a', 5, true, 7]) // => 12",
+        "// Handles empty array\nsum([]) // => 0"
+      ]
+    },
+    "starterCode": "export default function sum(arr) {\n  // TODO: Return the sum of all numeric elements, ignoring non-numbers\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function sum(arr: any[]): number {\n  // TODO: Return the sum of all numeric elements, ignoring non-numbers\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "To find the sum of numbers while ignoring non-numeric values, we can loop through the array and only add valid numbers.\n\n### 🧠 Step-by-step reasoning:\n1. Initialize a running total: `let total = 0`.\n2. Loop through each element in `arr`.\n3. Check if it's a number using `typeof x === 'number'` and `!isNaN(x)`.\n4. If valid, add it to `total`.\n5. Return the final total.\n\n### ⚙️ Why this works\nBy filtering out non-numeric types, we prevent errors or unintended additions. The logic runs in O(n) and works even with mixed data arrays.\n\n### ⚡ Alternative approach\nYou could use `arr.filter(Number.isFinite).reduce((a,b)=>a+b,0)`, but that’s less explicit for beginners and may coerce strings.\n\n### ⚠️ Edge cases\n- Empty array → returns 0\n- All non-numbers → returns 0\n- Includes NaN → ignored\n\nThis task reinforces your understanding of iteration, type checking, and numeric operations in JavaScript.",
+      "codeJs": "export default function sum(arr) {\n  let total = 0;\n  for (const el of arr) {\n    if (typeof el === 'number' && !isNaN(el)) {\n      total += el;\n    }\n  }\n  return total;\n}\n",
+      "codeTs": "export default function sum(arr: any[]): number {\n  let total = 0;\n  for (const el of arr) {\n    if (typeof el === 'number' && !isNaN(el)) {\n      total += el;\n    }\n  }\n  return total;\n}\n"
+    },
+    "tests": "import sum from './sum';\n\ndescribe('sum', () => {\n  test('sums numbers in a simple array', () => {\n    expect(sum([1, 2, 3])).toBe(6);\n  });\n\n  test('ignores non-numeric values', () => {\n    expect(sum(['a', 5, true, 7])).toBe(12);\n  });\n\n  test('handles mixed numeric strings gracefully', () => {\n    expect(sum([10, '20', 30])).toBe(40);\n  });\n\n  test('returns 0 for empty or all-non-numeric arrays', () => {\n    expect(sum([])).toBe(0);\n    expect(sum(['x', false, null])).toBe(0);\n  });\n});\n",
+    "testsTs": "import sum from './sum';\n\ndescribe('sum (TypeScript)', () => {\n  it('sums numbers in a simple array', () => {\n    expect(sum([1, 2, 3])).toBe(6);\n  });\n\n  it('ignores non-numeric values', () => {\n    expect(sum(['a', 5, true, 7])).toBe(12);\n  });\n\n  it('handles mixed numeric strings gracefully', () => {\n    expect(sum([10, '20', 30])).toBe(40);\n  });\n\n  it('returns 0 for empty or all-non-numeric arrays', () => {\n    expect(sum([])).toBe(0);\n    expect(sum(['x', false, null])).toBe(0);\n  });\n});\n"
+  },
+  {
+    "id": "js-compact",
+    "title": "Falsy Bouncer",
+    "type": "coding",
+    "importance": 3,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "Array"
+    ],
+    "description": {
+      "summary": "Implement a function `compact(arr)` that removes all falsy values (`false`, `0`, `''`, `null`, `undefined`, `NaN`) from an array.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "any[]",
+          "desc": "An array containing any types of elements, including falsy values."
+        }
+      ],
+      "returns": {
+        "type": "any[]",
+        "desc": "A new array with all falsy values removed."
+      },
+      "examples": [
+        "// Basic examples\ncompact([0, 1, false, 2, '', 3]) // => [1, 2, 3]",
+        "// Works with only truthy values\ncompact(['a', true, 42]) // => ['a', true, 42]",
+        "// Handles null and undefined\ncompact([null, undefined, 'x']) // => ['x']",
+        "// Handles NaN\ncompact([NaN, 1, 2]) // => [1, 2]"
+      ]
+    },
+    "starterCode": "export default function compact(arr) {\n  // TODO: Remove all falsy values from the array\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function compact(arr: any[]): any[] {\n  // TODO: Remove all falsy values from the array\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Falsy values in JavaScript include `false`, `0`, `''`, `null`, `undefined`, and `NaN`. Removing them is a classic filter problem.\n\n### 🧠 Step-by-step reasoning:\n1. Use the `Array.prototype.filter()` method.\n2. Inside the filter callback, simply return the element itself (`el => el`).\n3. JavaScript will treat falsy values as `false`, so they’re automatically excluded.\n\n### ⚙️ Why this works\nEach element is evaluated in a boolean context — only truthy values pass. This is a neat one-liner that elegantly cleans arrays.\n\n### ⚡ Alternative approach\nYou could use a manual loop and push truthy elements to a new array, but `filter(Boolean)` is both shorter and faster.\n\n### ⚠️ Edge cases\n- Empty array → returns `[]`\n- Array with all falsy values → returns `[]`\n- Mixed values → only truthy ones remain\n\nThis question is a favorite in interviews to test understanding of **truthy/falsy coercion** and functional array methods.",
+      "codeJs": "export default function compact(arr) {\n  return arr.filter(Boolean);\n}\n",
+      "codeTs": "export default function compact(arr: any[]): any[] {\n  return arr.filter(Boolean);\n}\n"
+    },
+    "tests": "import compact from './compact';\n\ndescribe('compact', () => {\n  test('removes falsy values', () => {\n    expect(compact([0, 1, false, 2, '', 3])).toEqual([1, 2, 3]);\n  });\n\n  test('returns same array when all truthy', () => {\n    expect(compact(['a', true, 42])).toEqual(['a', true, 42]);\n  });\n\n  test('removes null and undefined', () => {\n    expect(compact([null, undefined, 'x'])).toEqual(['x']);\n  });\n\n  test('removes NaN', () => {\n    expect(compact([NaN, 1, 2])).toEqual([1, 2]);\n  });\n\n  test('handles empty array', () => {\n    expect(compact([])).toEqual([]);\n  });\n});\n",
+    "testsTs": "import compact from './compact';\n\ndescribe('compact (TypeScript)', () => {\n  it('removes falsy values', () => {\n    expect(compact([0, 1, false, 2, '', 3])).toEqual([1, 2, 3]);\n  });\n\n  it('returns same array when all truthy', () => {\n    expect(compact(['a', true, 42])).toEqual(['a', true, 42]);\n  });\n\n  it('removes null and undefined', () => {\n    expect(compact([null, undefined, 'x'])).toEqual(['x']);\n  });\n\n  it('removes NaN', () => {\n    expect(compact([NaN, 1, 2])).toEqual([1, 2]);\n  });\n\n  it('handles empty array', () => {\n    expect(compact([])).toEqual([]);\n  });\n});\n"
+  },
+  {
+    "id": "js-arrays-equal",
+    "title": "Check if Two Arrays Are Equal",
+    "type": "coding",
+    "importance": 3,
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "Array"
+    ],
+    "description": {
+      "summary": "Implement a function `arraysEqual(a, b)` that returns `true` if both arrays contain the same elements in the same order.",
+      "arguments": [
+        {
+          "name": "a",
+          "type": "any[]",
+          "desc": "The first array to compare."
+        },
+        {
+          "name": "b",
+          "type": "any[]",
+          "desc": "The second array to compare."
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "desc": "`true` if both arrays are identical in length and elements (in the same order), otherwise `false`."
+      },
+      "examples": [
+        "// Basic examples\narraysEqual([1, 2, 3], [1, 2, 3]) // => true",
+        "arraysEqual([1, 2, 3], [3, 2, 1]) // => false",
+        "// Different lengths\narraysEqual([1, 2], [1, 2, 3]) // => false",
+        "// Works with strings\narraysEqual(['a', 'b'], ['a', 'b']) // => true",
+        "// Works with mixed types\narraysEqual([1, '2', 3], [1, 2, 3]) // => false"
+      ]
+    },
+    "starterCode": "export default function arraysEqual(a, b) {\n  // TODO: Return true if both arrays contain the same elements in the same order\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function arraysEqual(a: any[], b: any[]): boolean {\n  // TODO: Return true if both arrays contain the same elements in the same order\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "To check if two arrays are equal, we must ensure both:\n1. Have the same **length**.\n2. Have **identical elements** at each index.\n\n### 🧠 Step-by-step reasoning:\n1. Compare lengths — if they differ, immediately return `false`.\n2. Loop through each index.\n3. At every position, compare values with strict equality (`!==`).\n4. If any mismatch occurs, return `false`.\n5. If the loop completes without mismatches, return `true`.\n\n### ⚙️ Why this works\nBy using strict equality and order-based comparison, we ensure both content and sequence match exactly. This avoids the pitfalls of `JSON.stringify()` (which may fail with nested references or different object key order).\n\n### ⚡ Alternative approach\nYou could use `return JSON.stringify(a) === JSON.stringify(b);` for quick checks on flat arrays, but it’s less explicit and not recommended in production.\n\n### ⚠️ Edge cases\n- Empty arrays → `true`\n- Different lengths → `false`\n- Arrays with mixed types (e.g. `'2'` vs `2`) → `false`\n- Nested arrays → compares references, not deep equality\n\nThis exercise reinforces careful iteration and comparison logic — one of the most essential building blocks for interview coding questions.",
+      "codeJs": "export default function arraysEqual(a, b) {\n  if (a.length !== b.length) return false;\n  for (let i = 0; i < a.length; i++) {\n    if (a[i] !== b[i]) return false;\n  }\n  return true;\n}\n",
+      "codeTs": "export default function arraysEqual(a: any[], b: any[]): boolean {\n  if (a.length !== b.length) return false;\n  for (let i = 0; i < a.length; i++) {\n    if (a[i] !== b[i]) return false;\n  }\n  return true;\n}\n"
+    },
+    "tests": "import arraysEqual from './arraysEqual';\n\ndescribe('arraysEqual', () => {\n  test('returns true for identical arrays', () => {\n    expect(arraysEqual([1, 2, 3], [1, 2, 3])).toBe(true);\n  });\n\n  test('returns false for different element order', () => {\n    expect(arraysEqual([1, 2, 3], [3, 2, 1])).toBe(false);\n  });\n\n  test('returns false for different lengths', () => {\n    expect(arraysEqual([1, 2], [1, 2, 3])).toBe(false);\n  });\n\n  test('works with string arrays', () => {\n    expect(arraysEqual(['a', 'b'], ['a', 'b'])).toBe(true);\n  });\n\n  test('returns false for mixed type differences', () => {\n    expect(arraysEqual([1, '2', 3], [1, 2, 3])).toBe(false);\n  });\n\n  test('handles empty arrays', () => {\n    expect(arraysEqual([], [])).toBe(true);\n  });\n});\n",
+    "testsTs": "import arraysEqual from './arraysEqual';\n\ndescribe('arraysEqual (TypeScript)', () => {\n  it('returns true for identical arrays', () => {\n    expect(arraysEqual([1, 2, 3], [1, 2, 3])).toBe(true);\n  });\n\n  it('returns false for different element order', () => {\n    expect(arraysEqual([1, 2, 3], [3, 2, 1])).toBe(false);\n  });\n\n  it('returns false for different lengths', () => {\n    expect(arraysEqual([1, 2], [1, 2, 3])).toBe(false);\n  });\n\n  it('works with string arrays', () => {\n    expect(arraysEqual(['a', 'b'], ['a', 'b'])).toBe(true);\n  });\n\n  it('returns false for mixed type differences', () => {\n    expect(arraysEqual([1, '2', 3], [1, 2, 3])).toBe(false);\n  });\n\n  it('handles empty arrays', () => {\n    expect(arraysEqual([], [])).toBe(true);\n  });\n});\n"
+  },
+  {
+    "id": "js-debounce",
+    "title": "Debounce Function",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "tags": [
+      "async",
+      "timing",
+      "function"
+    ],
+    "importance": 5,
+    "description": {
+      "summary": "Implement a function `debounce(fn, delay)` that delays the execution of `fn` until a specified time (`delay` ms) has passed since the last invocation.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "Function",
+          "desc": "The function to be executed after the delay."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "desc": "The number of milliseconds to wait before executing the function."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A debounced version of the original function that delays execution until the delay period has elapsed."
+      },
+      "examples": [
+        "// Basic examples\ndebounce(() => console.log('Hello!'), 300)",
+        "// Multiple rapid calls — only last one runs\nconst log = debounce(() => console.log('Run!'), 500)\nlog()\nlog()\nlog() // Only this one executes after 500ms",
+        "// With arguments\nconst greet = debounce(name => console.log(`Hi ${name}`), 400)\ngreet('Alice')\ngreet('Bob') // Only 'Hi Bob' logs after 400ms"
+      ]
+    },
+    "starterCode": "export default function debounce(fn, delay) {\n  // TODO: Return a debounced function that delays execution until delay ms have passed\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function debounce<F extends (...a: any[]) => void>(fn: F, delay: number): F {\n  // TODO: Return a debounced function that delays execution until delay ms have passed\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "A **debounced function** ensures that a function (`fn`) runs **only after** a pause in calls for a given time (`delay`). It’s heavily used in UI patterns like search boxes, resize handlers, or API calls that shouldn’t fire too often.\n\n### 🧠 Step-by-step reasoning:\n1. Keep track of a `timeoutId` outside the returned function.\n2. When the returned function is called:\n   - Clear any existing timeout using `clearTimeout(timeoutId)`.\n   - Start a new one with `setTimeout(fn, delay)`.\n3. Only when the delay passes without another call will `fn` execute.\n\n### ⚙️ Why this works\nEach call resets the timer, so the function only executes after the last event in a burst — reducing redundant executions.\n\n### ⚡ Example use cases\n- Prevent firing an API request while typing.\n- Optimize scroll/resize events.\n- Avoid multiple button clicks triggering the same action.\n\n### ⚠️ Edge cases\n- Works best with non-returning (void) functions.\n- If immediate execution is needed, you can extend it with an `immediate` flag.\n\nMastering debounce is key for performance optimization and clean async UI logic — a recurring concept in frontend interviews.",
+      "codeJs": "export default function debounce(fn, delay) {\n  let timeoutId;\n  return function(...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn.apply(this, args), delay);\n  };\n}\n",
+      "codeTs": "export default function debounce<F extends (...a: any[]) => void>(fn: F, delay: number): F {\n  let timeoutId: ReturnType<typeof setTimeout>;\n  return function(this: any, ...args: Parameters<F>) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn.apply(this, args), delay);\n  } as F;\n}\n"
+    },
+    "tests": "import debounce from './debounce';\n\nconst wait = (ms) => new Promise((r) => setTimeout(r, ms));\n\ndescribe('debounce', () => {\n  test('calls function after delay', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 120);\n\n    debounced();\n    expect(calls).toBe(0);\n\n    await wait(140);\n    expect(calls).toBe(1);\n  });\n\n  test('resets timer on rapid calls (only last executes)', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 100);\n\n    debounced();\n    await wait(50);\n    debounced();\n    await wait(50);\n    debounced();\n\n    await wait(90);\n    expect(calls).toBe(0);\n\n    await wait(20);\n    expect(calls).toBe(1);\n  });\n\n  test('passes arguments (and preserves this via apply)', async () => {\n    let last = '';\n    const debounced = debounce(function (name) {\n      last = `Hi ${name}`;\n    }, 80);\n\n    debounced.call({ tag: 'ctx' }, 'Alice');\n    await wait(100);\n    expect(last).toBe('Hi Alice');\n  });\n});\n",
+    "testsTs": "import debounce from './debounce';\n\nconst wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));\n\ndescribe('debounce (TypeScript)', () => {\n  it('delays function execution', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 120);\n\n    debounced();\n    expect(calls).toBe(0);\n\n    await wait(140);\n    expect(calls).toBe(1);\n  });\n\n  it('restarts timer on multiple calls', async () => {\n    let calls = 0;\n    const debounced = debounce(() => { calls += 1; }, 100);\n\n    debounced();\n    await wait(50);\n    debounced();\n    await wait(50);\n    debounced();\n\n    await wait(90);\n    expect(calls).toBe(0);\n\n    await wait(20);\n    expect(calls).toBe(1);\n  });\n\n  it('forwards parameters correctly', async () => {\n    let captured = '';\n    const debounced = debounce((msg: string) => { captured = msg; }, 80);\n\n    debounced('Hello');\n    await wait(100);\n    expect(captured).toBe('Hello');\n  });\n});\n"
+  },
+  {
+    "id": "js-throttle",
+    "title": "Throttle Function",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "tags": [
+      "async",
+      "timing",
+      "function"
+    ],
+    "importance": 5,
+    "description": {
+      "summary": "Implement a function `throttle(fn, interval)` that ensures `fn` is executed at most once during every `interval` milliseconds, no matter how many times it's triggered.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "Function",
+          "desc": "The function to be throttled."
+        },
+        {
+          "name": "interval",
+          "type": "number",
+          "desc": "The time window (in milliseconds) within which subsequent calls are ignored."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A throttled version of the original function that executes at most once per interval."
+      },
+      "examples": [
+        "// Basic examples\nthrottle(() => console.log('Clicked!'), 1000)",
+        "// Multiple rapid calls — only first one executes within the interval\nconst log = throttle(() => console.log('Run!'), 500)\nlog()\nlog()\nlog() // Only the first logs immediately, rest ignored until 500ms passes",
+        "// With arguments\nconst greet = throttle(name => console.log(`Hi ${name}`), 800)\ngreet('Alice')\ngreet('Bob') // Only 'Hi Alice' logs immediately; 'Hi Bob' ignored until 800ms passes"
+      ]
+    },
+    "starterCode": "export default function throttle(fn, interval) {\n  // TODO: Execute fn at most once per interval\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function throttle<F extends (...a: any[]) => void>(fn: F, interval: number): F {\n  // TODO: Execute fn at most once per interval\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "A **throttled function** ensures that a function (`fn`) executes **at most once per given interval**, even if it's called multiple times. It’s commonly used in performance-sensitive event handlers like scroll, resize, and mousemove.\n\n### 🧠 Step-by-step reasoning:\n1. Track the **last execution time** using a variable (e.g. `lastTime`).\n2. When the returned function is called:\n   - Capture the **current time**.\n   - If the time since `lastTime` is greater than or equal to `interval`, execute `fn` and update `lastTime`.\n   - Otherwise, ignore the call.\n\n### ⚙️ Why this works\nThrottle enforces a cooldown period. Once `fn` runs, it won’t run again until the specified time passes.\n\n### ⚡ Example use cases\n- Limit scroll or resize event triggers.\n- Prevent rapid button spam.\n- Optimize continuous data fetch or DOM updates.\n\n### ⚠️ Edge cases\n- First call always fires immediately.\n- Works best for continuous triggers where you want consistent spacing.\n\nThrottle is an essential partner to Debounce — both manage **rate control** of function execution, a vital skill for performance optimization in frontend interviews.",
+      "codeJs": "export default function throttle(fn, interval) {\n  let lastTime = 0;\n  return function(...args) {\n    const now = Date.now();\n    if (now - lastTime >= interval) {\n      fn.apply(this, args);\n      lastTime = now;\n    }\n  };\n}\n",
+      "codeTs": "export default function throttle<F extends (...a: any[]) => void>(fn: F, interval: number): F {\n  let lastTime = 0;\n  return function(this: any, ...args: Parameters<F>) {\n    const now = Date.now();\n    if (now - lastTime >= interval) {\n      fn.apply(this, args);\n      lastTime = now;\n    }\n  } as F;\n}\n"
+    },
+    "tests": "import throttle from './throttle';\n\nconst wait = (ms) => new Promise((r) => setTimeout(r, ms));\n\ndescribe('throttle', () => {\n  test('executes immediately and ignores rapid calls', async () => {\n    let calls = 0;\n    const throttled = throttle(() => { calls += 1; }, 200);\n\n    throttled(); // should run immediately\n    throttled(); // ignored\n    throttled(); // ignored\n\n    expect(calls).toBe(1);\n\n    await wait(220);\n    throttled(); // should run after interval\n    expect(calls).toBe(2);\n  });\n\n  test('maintains correct interval spacing', async () => {\n    let timestamps = [];\n    const throttled = throttle(() => { timestamps.push(Date.now()); }, 100);\n\n    throttled();\n    await wait(30);\n    throttled();\n    await wait(80);\n    throttled(); // should run after ~110ms total\n\n    await wait(120);\n    throttled(); // another valid call\n\n    expect(timestamps.length).toBe(3);\n  });\n\n  test('passes arguments correctly', async () => {\n    let last = '';\n    const throttled = throttle((msg) => { last = msg; }, 150);\n\n    throttled('Hello');\n    throttled('World'); // ignored\n\n    await wait(160);\n    throttled('Again');\n\n    expect(last).toBe('Again');\n  });\n});\n",
+    "testsTs": "import throttle from './throttle';\n\nconst wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));\n\ndescribe('throttle (TypeScript)', () => {\n  it('executes immediately and ignores rapid calls', async () => {\n    let calls = 0;\n    const throttled = throttle(() => { calls += 1; }, 200);\n\n    throttled();\n    throttled();\n    throttled();\n\n    expect(calls).toBe(1);\n\n    await wait(220);\n    throttled();\n    expect(calls).toBe(2);\n  });\n\n  it('maintains proper intervals', async () => {\n    let times: number[] = [];\n    const throttled = throttle(() => { times.push(Date.now()); }, 100);\n\n    throttled();\n    await wait(30);\n    throttled();\n    await wait(80);\n    throttled();\n\n    await wait(120);\n    throttled();\n\n    expect(times.length).toBe(3);\n  });\n\n  it('passes arguments correctly', async () => {\n    let last = '';\n    const throttled = throttle((msg: string) => { last = msg; }, 150);\n\n    throttled('Hi');\n    throttled('Ignore');\n\n    await wait(160);\n    throttled('Final');\n\n    expect(last).toBe('Final');\n  });\n});\n"
+  },
+  {
+    "id": "js-deep-clone",
+    "title": "Deep Clone",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "object",
+      "recursion",
+      "clone",
+      "deep-copy"
+    ],
+    "importance": 5,
+    "description": {
+      "summary": "Implement a function `deepClone(value)` that creates a deep copy of the provided value, including nested objects, arrays, Dates, and RegExps.",
+      "arguments": [
+        {
+          "name": "value",
+          "type": "any",
+          "desc": "The value to deeply clone. Can be an object, array, Date, RegExp, or primitive."
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "desc": "A deep copy of the input value where all nested structures are duplicated rather than referenced."
+      },
+      "examples": [
+        "// Basic examples\ndeepClone({ a: 1, b: { c: 2 } }) // => { a: 1, b: { c: 2 } }",
+        "// Arrays and nested objects\nconst arr = [1, { x: 10 }, [2, 3]]\nconst copy = deepClone(arr)\ncopy[1].x = 99\n// arr stays unchanged",
+        "// Dates and RegExps\nconst obj = { d: new Date('2020-01-01'), r: /abc/i }\nconst clone = deepClone(obj)\nclone.d.setFullYear(2024)\n// obj.d still points to 2020"
+      ]
+    },
+    "starterCode": "export default function deepClone(value) {\n  // TODO: Return a deep-cloned copy of the input value\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function deepClone<T>(value: T): T {\n  // TODO: Return a deep-cloned copy of the input value\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Deep cloning means creating a **fully independent copy** of an object, including all its nested structures. Unlike shallow copies (`Object.assign`, spread syntax), a deep clone ensures modifying the clone doesn’t affect the original.\n\n### 🧠 Step-by-step reasoning:\n1. **Handle primitives** (numbers, strings, booleans, null, undefined): return as-is.\n2. **Handle special types**:\n   - `Date`: return a new Date with the same timestamp.\n   - `RegExp`: create a new RegExp with the same pattern and flags.\n3. **Handle arrays and objects**:\n   - Create a new array/object.\n   - Recursively deepClone each property or element.\n4. **Handle circular references** (optional, advanced): store references in a WeakMap to avoid infinite loops.\n\n### ⚙️ Why this works\nBy handling each data type explicitly and recursing through nested structures, we ensure no shared references remain between the original and the clone.\n\n### ⚡ Use cases\n- Copying nested state trees in Redux-like systems.\n- Serializing and restoring large data objects safely.\n- Avoiding accidental mutation in immutability-focused architectures.\n\n### ⚠️ Edge cases\n- Functions and DOM nodes aren’t cloned (should return same reference or be ignored).\n- Symbol keys and non-enumerable properties can be cloned if needed (beyond basic version).\n\nMastering deep cloning builds strong understanding of **recursion**, **reference vs value**, and **data structure traversal**, all key areas in frontend interviews.",
+      "codeJs": "export default function deepClone(value) {\n  if (value === null || typeof value !== 'object') return value;\n\n  if (value instanceof Date) return new Date(value.getTime());\n\n  if (value instanceof RegExp) {\n    const re = new RegExp(value.source, value.flags);\n    re.lastIndex = value.lastIndex;\n    return re;\n  }\n\n  if (Array.isArray(value)) {\n    return value.map(item => deepClone(item));\n  }\n\n  const clonedObj = {};\n  for (const key in value) {\n    if (Object.prototype.hasOwnProperty.call(value, key)) {\n      clonedObj[key] = deepClone(value[key]);\n    }\n  }\n  return clonedObj;\n}\n",
+      "codeTs": "export default function deepClone<T>(value: T): T {\n  if (value === null || typeof value !== 'object') return value;\n\n  if (value instanceof Date) return new Date(value.getTime()) as any;\n\n  if (value instanceof RegExp) {\n    const re = new RegExp(value.source, value.flags);\n    re.lastIndex = value.lastIndex;\n    return re as any;\n  }\n\n  if (Array.isArray(value)) {\n    return value.map(item => deepClone(item)) as any;\n  }\n\n  const clonedObj: any = {};\n  for (const key in value) {\n    if (Object.prototype.hasOwnProperty.call(value, key)) {\n      clonedObj[key] = deepClone((value as any)[key]);\n    }\n  }\n  return clonedObj;\n}\n"
+    },
+    "tests": "import deepClone from './deepClone';\n\ndescribe('deepClone', () => {\n  test('clones nested objects', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const clone = deepClone(obj);\n    expect(clone).toEqual(obj);\n    clone.b.c = 5;\n    expect(obj.b.c).toBe(2);\n  });\n\n  test('clones arrays correctly', () => {\n    const arr = [1, { x: 2 }, [3, 4]];\n    const clone = deepClone(arr);\n    expect(clone).toEqual(arr);\n    clone[1].x = 99;\n    expect(arr[1].x).toBe(2);\n  });\n\n  test('clones Date and RegExp instances', () => {\n    const obj = { d: new Date('2020-01-01T00:00:00Z'), r: /abc/i };\n    const clone = deepClone(obj);\n\n    // Date\n    expect(clone.d instanceof Date).toBe(true);\n    expect(clone.d === obj.d).toBe(false);   // instead of .not.toBe\n    expect(clone.d.getTime()).toBe(obj.d.getTime());\n\n    // RegExp (single guarded assertion)\n    const sameRegExp = (\n      clone.r instanceof RegExp &&\n      clone.r !== obj.r &&                       // avoids .not\n      clone.r.source === obj.r.source &&\n      (('flags' in clone.r && 'flags' in obj.r)\n        ? clone.r.flags === obj.r.flags\n        : String(clone.r) === String(obj.r)) &&\n      clone.r.lastIndex === obj.r.lastIndex\n    );\n    expect(sameRegExp).toBe(true);\n  });\n\n  test('returns primitives as-is', () => {\n    expect(deepClone(5)).toBe(5);\n    expect(deepClone('test')).toBe('test');\n    expect(deepClone(null)).toBe(null);\n  });\n});\n",
+    "testsTs": "import deepClone from './deepClone';\n\ndescribe('deepClone (TypeScript)', () => {\n  it('deeply clones nested objects', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const clone = deepClone(obj);\n    expect(clone).toEqual(obj);\n    clone.b.c = 99;\n    expect(obj.b.c).toBe(2);\n  });\n\n  it('clones arrays correctly', () => {\n    const arr = [1, { x: 10 }, [2, 3]];\n    const clone = deepClone(arr);\n    expect(clone).toEqual(arr);\n    clone[1].x = 50;\n    expect(arr[1].x).toBe(10);\n  });\n\n  it('handles Dates and RegExps robustly', () => {\n    const obj = { d: new Date('2020-01-01T00:00:00Z'), r: /test/g };\n    const clone = deepClone(obj);\n\n    // Date\n    expect(clone.d instanceof Date).toBe(true);\n    expect(clone.d === obj.d).toBe(false);\n    expect(clone.d.getTime()).toBe(obj.d.getTime());\n\n    // RegExp (single guarded assertion)\n    const sameRegExp = (\n      clone.r instanceof RegExp &&\n      clone.r !== obj.r &&\n      clone.r.source === obj.r.source &&\n      (('flags' in clone.r && 'flags' in obj.r)\n        ? clone.r.flags === obj.r.flags\n        : String(clone.r) === String(obj.r)) &&\n      clone.r.lastIndex === obj.r.lastIndex\n    );\n    expect(sameRegExp).toBe(true);\n  });\n\n  it('returns primitives unchanged', () => {\n    expect(deepClone('abc')).toBe('abc');\n    expect(deepClone(123)).toBe(123);\n  });\n});\n"
+  },
+  {
+    "id": "js-deep-equal",
+    "title": "Deep Equal",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "importance": 5,
+    "tags": [
+      "object",
+      "recursion",
+      "equality",
+      "comparison"
+    ],
+    "description": {
+      "summary": "Implement a function `deepEqual(a, b)` that returns `true` when two values are deeply equal — primitives by value and objects/arrays by recursively comparing their properties. Handle Dates, RegExps, and `NaN`.",
+      "arguments": [
+        {
+          "name": "a",
+          "type": "any",
+          "desc": "First value to compare."
+        },
+        {
+          "name": "b",
+          "type": "any",
+          "desc": "Second value to compare."
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "desc": "`true` if both inputs are deeply equal; otherwise `false`."
+      },
+      "examples": [
+        "// Basic examples\ndeepEqual(1, 1) // => true\ndeepEqual(1, '1') // => false",
+        "// Nested objects\ndeepEqual({ a: 1, b: { c: 2 } }, { a: 1, b: { c: 2 } }) // => true",
+        "// Arrays (order matters)\ndeepEqual([1, 2, 3], [1, 2, 3]) // => true\ndeepEqual([1, 2, 3], [3, 2, 1]) // => false",
+        "// Dates and RegExp\ndeepEqual(new Date('2020-01-01'), new Date('2020-01-01')) // => true\ndeepEqual(/ab/i, new RegExp('ab', 'i')) // => true",
+        "// Special values\ndeepEqual(NaN, NaN) // => true\ndeepEqual(null, undefined) // => false"
+      ]
+    },
+    "starterCode": "export default function deepEqual(a, b) {\n  // TODO: Compare two values for deep equality\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function deepEqual<T = any>(a: T, b: T): boolean {\n  // TODO: Compare two values for deep equality\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Deep equality means:\n- **Primitives** compare by value (`===`), except `NaN` which should equal `NaN`.\n- **Dates** compare by timestamp with `getTime()`.\n- **RegExp** compare by `source`, `flags`, and (optionally) `lastIndex`.\n- **Arrays**: same length and each element is deeply equal at the same index.\n- **Plain objects**: same set of own keys and each corresponding value is deeply equal.\n\nAlgorithm:\n1. Fast path: if `a === b` return `true` (covers most cases and shared reference).\n2. If both are numbers and both are `NaN`, return `true`.\n3. If types differ or either is `null`, return `false`.\n4. Handle `Date` and `RegExp` explicitly.\n5. Handle arrays: length then element-wise recursion.\n6. Handle plain objects: compare own keys and recurse for each key.\n\nThis covers the most common interview surface area without pulling in Maps/Sets/typed arrays. You can extend it later if needed.",
+      "codeJs": "export default function deepEqual(a, b) {\n  if (a === b) return true;\n\n  // NaN === NaN should be true\n  if (typeof a === 'number' && typeof b === 'number' && Number.isNaN(a) && Number.isNaN(b)) {\n    return true;\n  }\n\n  // Different types or nulls\n  if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') {\n    return false;\n  }\n\n  // Dates\n  if (a instanceof Date && b instanceof Date) {\n    return a.getTime() === b.getTime();\n  }\n\n  // RegExp\n  if (a instanceof RegExp && b instanceof RegExp) {\n    const same = a.source === b.source && a.flags === b.flags;\n    // If runner preserves lastIndex, include it; otherwise same stays enough\n    return same && a.lastIndex === b.lastIndex;\n  }\n\n  // Arrays\n  const aIsArr = Array.isArray(a);\n  const bIsArr = Array.isArray(b);\n  if (aIsArr || bIsArr) {\n    if (!(aIsArr && bIsArr)) return false;\n    if (a.length !== b.length) return false;\n    for (let i = 0; i < a.length; i++) {\n      if (!deepEqual(a[i], b[i])) return false;\n    }\n    return true;\n  }\n\n  // Plain objects (own, enumerable keys only)\n  const aKeys = Object.keys(a);\n  const bKeys = Object.keys(b);\n  if (aKeys.length !== bKeys.length) return false;\n  for (const k of aKeys) {\n    if (!Object.prototype.hasOwnProperty.call(b, k)) return false;\n    if (!deepEqual(a[k], b[k])) return false;\n  }\n  return true;\n}\n",
+      "codeTs": "export default function deepEqual<T = any>(a: T, b: T): boolean {\n  // Fast path\n  if (a === b) return true;\n\n  // NaN\n  if (typeof a === 'number' && typeof b === 'number' && Number.isNaN(a as any) && Number.isNaN(b as any)) {\n    return true;\n  }\n\n  if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') {\n    return false;\n  }\n\n  // Date\n  if (a instanceof Date && b instanceof Date) {\n    return a.getTime() === b.getTime();\n  }\n\n  // RegExp\n  if (a instanceof RegExp && b instanceof RegExp) {\n    const same = a.source === b.source && a.flags === b.flags;\n    return same && a.lastIndex === b.lastIndex;\n  }\n\n  // Arrays\n  const aIsArr = Array.isArray(a);\n  const bIsArr = Array.isArray(b);\n  if (aIsArr || bIsArr) {\n    if (!(aIsArr && bIsArr)) return false;\n    const aa = a as unknown as any[];\n    const bb = b as unknown as any[];\n    if (aa.length !== bb.length) return false;\n    for (let i = 0; i < aa.length; i++) {\n      if (!deepEqual(aa[i], bb[i])) return false;\n    }\n    return true;\n  }\n\n  // Plain objects\n  const aObj = a as Record<string, unknown>;\n  const bObj = b as Record<string, unknown>;\n  const aKeys = Object.keys(aObj);\n  const bKeys = Object.keys(bObj);\n  if (aKeys.length !== bKeys.length) return false;\n  for (const k of aKeys) {\n    if (!Object.prototype.hasOwnProperty.call(bObj, k)) return false;\n    if (!deepEqual((aObj as any)[k], (bObj as any)[k])) return false;\n  }\n  return true;\n}\n"
+    },
+    "tests": "import deepEqual from './deepEqual';\n\ndescribe('deepEqual', () => {\n  test('compares primitives', () => {\n    expect(deepEqual(1, 1)).toBe(true);\n    expect(deepEqual(1, '1')).toBe(false);\n    expect(deepEqual(NaN, NaN)).toBe(true);\n  });\n\n  test('compares nested objects', () => {\n    const a = { x: 1, y: { z: 2 } };\n    const b = { x: 1, y: { z: 2 } };\n    expect(deepEqual(a, b)).toBe(true);\n    const c = { x: 1, y: { z: 3 } };\n    expect(deepEqual(a, c)).toBe(false);\n  });\n\n  test('compares arrays (order matters)', () => {\n    expect(deepEqual([1, 2, 3], [1, 2, 3])).toBe(true);\n    expect(deepEqual([1, 2, 3], [3, 2, 1])).toBe(false);\n  });\n\n  test('handles Date and RegExp', () => {\n    const d1 = new Date('2020-01-01T00:00:00Z');\n    const d2 = new Date('2020-01-01T00:00:00Z');\n    expect(deepEqual(d1, d2)).toBe(true);\n\n    const r1 = /ab/i;\n    const r2 = new RegExp('ab', 'i');\n    expect(deepEqual(r1, r2)).toBe(true);\n  });\n\n  test('null vs undefined', () => {\n    expect(deepEqual(null, undefined)).toBe(false);\n  });\n});\n",
+    "testsTs": "import deepEqual from './deepEqual';\n\ndescribe('deepEqual (TypeScript)', () => {\n  it('compares primitives', () => {\n    expect(deepEqual(1, 1)).toBe(true);\n    expect(deepEqual(1 as any, '1' as any)).toBe(false);\n    expect(deepEqual(NaN, NaN)).toBe(true);\n  });\n\n  it('compares nested objects', () => {\n    const a = { x: 1, y: { z: 2 } };\n    const b = { x: 1, y: { z: 2 } };\n    expect(deepEqual(a, b)).toBe(true);\n    const c = { x: 1, y: { z: 3 } };\n    expect(deepEqual(a, c)).toBe(false);\n  });\n\n  it('compares arrays (order matters)', () => {\n    expect(deepEqual([1, 2, 3], [1, 2, 3])).toBe(true);\n    expect(deepEqual([1, 2, 3], [3, 2, 1])).toBe(false);\n  });\n\n  it('handles Date and RegExp', () => {\n    const d1 = new Date('2020-01-01T00:00:00Z');\n    const d2 = new Date('2020-01-01T00:00:00Z');\n    expect(deepEqual(d1, d2)).toBe(true);\n\n    const r1 = /ab/i;\n    const r2 = new RegExp('ab', 'i');\n    expect(deepEqual(r1, r2)).toBe(true);\n  });\n\n  it('null vs undefined', () => {\n    expect(deepEqual(null as any, undefined as any)).toBe(false);\n  });\n});\n"
+  },
+  {
+    "id": "js-flatten-depth",
+    "title": "Flatten with Depth",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "array",
+      "recursion",
+      "depth",
+      "flatten"
+    ],
+    "description": {
+      "summary": "Implement `flatten(arr, depth)` that flattens a nested array up to a given depth.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "any[]",
+          "desc": "Nested array to flatten."
+        },
+        {
+          "name": "depth",
+          "type": "number",
+          "desc": "Number of levels to flatten (default 1)."
+        }
+      ],
+      "returns": {
+        "type": "any[]",
+        "desc": "A new array flattened up to the given depth."
+      },
+      "examples": [
+        "// Basic examples\nflatten([1, [2, [3, [4]]]], 1) // => [1, 2, [3, [4]]]",
+        "flatten([1, [2, [3, [4]]]], 2) // => [1, 2, 3, [4]]",
+        "flatten([1, [2, [3, [4]]]], 3) // => [1, 2, 3, 4]",
+        "// Handles empty and non-nested arrays\nflatten([1, 2, 3], 2) // => [1, 2, 3]"
+      ]
+    },
+    "starterCode": "export default function flatten(arr, depth = 1) {\n  // TODO: Flatten array up to given depth\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function flatten(arr: any[], depth: number = 1): any[] {\n  // TODO: Flatten array up to given depth\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Flattening with depth means recursively expanding nested arrays only up to the given level.\n\n### Steps\n1. If `depth === 0`, return a shallow copy of `arr`.\n2. Loop through each element:\n   - If it’s an array and depth > 0 → recurse with `depth - 1`.\n   - Otherwise, push element as-is.\n3. Return the result.\n\nThis ensures controlled flattening and avoids deep recursion when not needed.",
+      "codeJs": "export default function flatten(arr, depth = 1) {\n  if (depth === 0) return arr.slice();\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el) && depth > 0) {\n      result.push(...flatten(el, depth - 1));\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
+      "codeTs": "export default function flatten(arr: any[], depth: number = 1): any[] {\n  if (depth === 0) return arr.slice();\n  const result: any[] = [];\n  for (const el of arr) {\n    if (Array.isArray(el) && depth > 0) {\n      result.push(...flatten(el, depth - 1));\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n"
+    },
+    "tests": "import flatten from './flatten';\n\ndescribe('flatten', () => {\n  test('flattens one level deep', () => {\n    expect(flatten([1, [2, [3, [4]]]], 1)).toEqual([1, 2, [3, [4]]]);\n  });\n\n  test('flattens two levels deep', () => {\n    expect(flatten([1, [2, [3, [4]]]], 2)).toEqual([1, 2, 3, [4]]);\n  });\n\n  test('flattens completely when depth is high', () => {\n    expect(flatten([1, [2, [3, [4]]]], 10)).toEqual([1, 2, 3, 4]);\n  });\n\n  test('handles empty and non-nested arrays', () => {\n    expect(flatten([], 2)).toEqual([]);\n    expect(flatten([1, 2, 3], 2)).toEqual([1, 2, 3]);\n  });\n});\n",
+    "testsTs": "import flatten from './flatten';\n\ndescribe('flatten (TypeScript)', () => {\n  it('flattens one level', () => {\n    expect(flatten([1, [2, [3, [4]]]], 1)).toEqual([1, 2, [3, [4]]]);\n  });\n\n  it('flattens up to given depth', () => {\n    expect(flatten([1, [2, [3, [4]]]], 2)).toEqual([1, 2, 3, [4]]);\n  });\n\n  it('fully flattens if depth is large', () => {\n    expect(flatten([1, [2, [3, [4]]]], 10)).toEqual([1, 2, 3, 4]);\n  });\n\n  it('returns array unchanged when already flat', () => {\n    expect(flatten([1, 2, 3], 2)).toEqual([1, 2, 3]);\n  });\n});\n"
+  },
+  {
+    "id": "js-curry-function",
+    "title": "Curry Function",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "importance": 5,
+    "tags": [
+      "function",
+      "closure",
+      "higher-order",
+      "currying"
+    ],
+    "description": {
+      "summary": "Implement a function `curry(fn)` that transforms a multi-argument function into a chain of single-argument functions.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "Function",
+          "desc": "A function that accepts multiple arguments."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A curried version of the input function that collects arguments until all are provided."
+      },
+      "examples": [
+        "// Basic example\nfunction add(a, b, c) { return a + b + c; }\nconst curriedAdd = curry(add);\ncurriedAdd(1)(2)(3) // => 6",
+        "// Partial application\nconst add5 = curriedAdd(2)(3);\nadd5(10) // => 15",
+        "// Works with different argument counts\nconst multiply = (a, b) => a * b;\ncurry(multiply)(4)(5) // => 20"
+      ]
+    },
+    "starterCode": "export default function curry(fn) {\n  // TODO: Transform fn into a curried version\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function curry(fn: Function): Function {\n  // TODO: Transform fn into a curried version\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Currying transforms a function of N parameters into a series of N unary functions, each capturing one argument until all are supplied.\n\n### 🧠 Step-by-step reasoning:\n1. **Understand function arity** — `fn.length` tells how many parameters the original function expects.\n2. **Collect arguments progressively** — every call stores arguments in closure scope.\n3. **When enough args are gathered**, execute `fn(...args)`.\n4. **Otherwise**, return a function waiting for more.\n\n### ⚙️ Why this works\nEach nested call keeps its context via closures, building up the arguments list until complete. This allows **partial application**, a core functional programming pattern that improves code reuse and flexibility.\n\n### 💡 Example\n```js\nfunction sum(a, b, c) { return a + b + c; }\nconst curriedSum = curry(sum);\ncurriedSum(1)(2)(3); // 6\ncurriedSum(1, 2)(3); // also works\n```\n\n### ⚠️ Edge cases\n- Single-argument functions return normally.\n- Extra arguments beyond `fn.length` are passed directly.\n\nCurrying is foundational in functional programming — it teaches closures, higher-order functions, and argument management.",
+      "codeJs": "export default function curry(fn) {\n  return function curried(...args) {\n    if (args.length >= fn.length) {\n      return fn(...args);\n    }\n    return (...next) => curried(...args, ...next);\n  };\n}\n",
+      "codeTs": "export default function curry(fn: Function): Function {\n  const curried = (...args: any[]): any => {\n    return args.length >= fn.length\n      ? fn(...args)\n      : (...next: any[]) => curried(...args, ...next);\n  };\n  return curried;\n}\n"
+    },
+    "tests": "import curry from './curry';\n\ndescribe('curry', () => {\n  test('curries a multi-argument function', () => {\n    const add = (a, b, c) => a + b + c;\n    const curriedAdd = curry(add);\n    expect(curriedAdd(1)(2)(3)).toBe(6);\n  });\n\n  test('supports partial application', () => {\n    const add = (a, b, c) => a + b + c;\n    const curriedAdd = curry(add);\n    const add5 = curriedAdd(2)(3);\n    expect(add5(10)).toBe(15);\n  });\n\n  test('works for 2-argument functions', () => {\n    const multiply = (a, b) => a * b;\n    const curried = curry(multiply);\n    expect(curried(4)(5)).toBe(20);\n  });\n\n  test('handles single-argument functions', () => {\n    const square = x => x * x;\n    const curriedSquare = curry(square);\n    expect(curriedSquare(5)).toBe(25);\n  });\n});\n",
+    "testsTs": "import curry from './curry';\n\ndescribe('curry (TypeScript)', () => {\n  it('curries a three-argument function', () => {\n    const add = (a: number, b: number, c: number) => a + b + c;\n    const curriedAdd = curry(add);\n    expect(curriedAdd(1)(2)(3)).toBe(6);\n  });\n\n  it('supports partial application', () => {\n    const add = (a: number, b: number, c: number) => a + b + c;\n    const curriedAdd = curry(add);\n    const add5 = curriedAdd(2)(3);\n    expect(add5(10)).toBe(15);\n  });\n\n  it('works with binary functions', () => {\n    const multiply = (a: number, b: number) => a * b;\n    const curriedMultiply = curry(multiply);\n    expect(curriedMultiply(4)(5)).toBe(20);\n  });\n\n  it('handles unary functions', () => {\n    const negate = (x: number) => -x;\n    const curriedNegate = curry(negate);\n    expect(curriedNegate(3)).toBe(-3);\n  });\n});\n"
+  },
+  {
+    "id": "js-memoize-function",
+    "title": "Memoization",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "importance": 5,
+    "tags": [
+      "function",
+      "performance",
+      "caching",
+      "optimization"
+    ],
+    "description": {
+      "summary": "Implement a function `memoize(fn)` that caches results of previous function calls to avoid recomputation.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "Function",
+          "desc": "A pure function whose results can be safely cached based on input arguments."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A new function that returns cached results for previously computed arguments."
+      },
+      "examples": [
+        "// Basic example\nconst slowAdd = (a, b) => { for (let i=0;i<1e6;i++); return a + b; };\nconst memoizedAdd = memoize(slowAdd);\nconsole.time('first'); memoizedAdd(3,4); console.timeEnd('first');\nconsole.time('second'); memoizedAdd(3,4); console.timeEnd('second'); // much faster",
+        "// Works with multiple arguments\nconst multiply = (a, b, c) => a * b * c;\nconst fastMultiply = memoize(multiply);\nfastMultiply(2,3,4) // computed\nfastMultiply(2,3,4) // cached",
+        "// Handles different input sets separately\nmemoizedAdd(5,5) // => 10 (new computation)"
+      ]
+    },
+    "starterCode": "export default function memoize(fn) {\n  // TODO: Cache function results by input arguments\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function memoize<F extends (...args: any[]) => any>(fn: F): F {\n  // TODO: Cache function results by input arguments\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Memoization is a technique to optimize performance by **caching results** of expensive function calls.\n\n### 🧠 Step-by-step reasoning:\n1. **Create a cache (Map)** to store argument–result pairs.\n2. When the memoized function is called:\n   - Convert arguments into a cache key (e.g., JSON string).\n   - If the key exists, return the cached result.\n   - Otherwise, compute the result, store it in the cache, and return it.\n3. Works best for **pure functions**—those that always produce the same output for the same input.\n\n### ⚙️ Why this works\nSubsequent calls with the same arguments are **O(1)** lookups instead of recomputation. Ideal for recursive algorithms (like Fibonacci) or expensive math operations.\n\n### ⚡ Example Use Case\n```js\nconst fib = n => (n <= 1 ? n : fib(n - 1) + fib(n - 2));\nconst memoFib = memoize(fib);\nconsole.time('fib'); memoFib(35); console.timeEnd('fib'); // much faster on second run\n```\n\n### ⚠️ Notes\n- Use `Map` for better performance over plain objects.\n- Works for serializable argument lists; for complex objects, consider using WeakMap or hashing.\n\nThis pattern is a cornerstone of **performance optimization** and functional programming.",
+      "codeJs": "export default function memoize(fn) {\n  const cache = new Map();\n  return function(...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) return cache.get(key);\n    const result = fn(...args);\n    cache.set(key, result);\n    return result;\n  };\n}\n",
+      "codeTs": "export default function memoize<F extends (...args: any[]) => any>(fn: F): F {\n  const cache = new Map<string, ReturnType<F>>();\n  const memoized = (...args: Parameters<F>): ReturnType<F> => {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) return cache.get(key)!;\n    const result = fn(...args);\n    cache.set(key, result);\n    return result;\n  };\n  return memoized as F;\n}\n"
+    },
+    "tests": "import memoize from './memoize';\n\ndescribe('memoize', () => {\n  test('caches results for repeated calls', () => {\n    let calls = 0;\n    const add = (a, b) => { calls++; return a + b; };\n    const memoAdd = memoize(add);\n    expect(memoAdd(1, 2)).toBe(3);\n    expect(memoAdd(1, 2)).toBe(3);\n    expect(calls).toBe(1);\n  });\n\n  test('handles different arguments separately', () => {\n    let calls = 0;\n    const multiply = (a, b) => { calls++; return a * b; };\n    const memoMult = memoize(multiply);\n    memoMult(2, 3);\n    memoMult(3, 4);\n    expect(calls).toBe(2);\n  });\n\n  test('works with multiple argument calls', () => {\n    const join = (...args) => args.join('-');\n    const memoJoin = memoize(join);\n    expect(memoJoin('a', 'b', 'c')).toBe('a-b-c');\n    expect(memoJoin('a', 'b', 'c')).toBe('a-b-c');\n  });\n});\n",
+    "testsTs": "import memoize from './memoize';\n\ndescribe('memoize (TypeScript)', () => {\n  it('caches computed results', () => {\n    let count = 0;\n    const add = (a: number, b: number) => { count++; return a + b; };\n    const memoAdd = memoize(add);\n    expect(memoAdd(3, 4)).toBe(7);\n    expect(memoAdd(3, 4)).toBe(7);\n    expect(count).toBe(1);\n  });\n\n  it('treats unique argument sets separately', () => {\n    let count = 0;\n    const diff = (a: number, b: number) => { count++; return a - b; };\n    const memoDiff = memoize(diff);\n    memoDiff(10, 5);\n    memoDiff(8, 3);\n    expect(count).toBe(2);\n  });\n\n  it('works for multi-arg functions', () => {\n    const concat = (...args: string[]) => args.join('_');\n    const memoConcat = memoize(concat);\n    expect(memoConcat('a', 'b', 'c')).toBe('a_b_c');\n    expect(memoConcat('a', 'b', 'c')).toBe('a_b_c');\n  });\n});\n"
+  },
+  {
+    "id": "js-compose",
+    "title": "Compose Function",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "function",
+      "composition",
+      "higher-order",
+      "utility"
+    ],
+    "description": {
+      "summary": "Implement a `compose(...fns)` function that takes multiple functions as arguments and returns a new function that applies them from **right to left**. The output of one function becomes the input of the previous one. If no functions are provided, return an identity function `(x) => x`.",
+      "arguments": [
+        {
+          "name": "fns",
+          "type": "Function[]",
+          "desc": "A list of functions to compose. The rightmost function can take multiple arguments; the rest are unary."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A composed function that runs all provided functions in right-to-left order."
+      },
+      "examples": [
+        "// Basic example",
+        "const add1 = n => n + 1;",
+        "const double = n => n * 2;",
+        "const subtract10 = n => n - 10;",
+        "const composedFn = compose(subtract10, double, add1);",
+        "composedFn(3); // => -2",
+        "",
+        "// Identity function",
+        "compose()(5); // => 5"
+      ]
+    },
+    "starterCode": "export default function compose(...fns) {\n  // TODO: Implement function composition (right-to-left)\n  throw new Error('Not implemented');\n}",
+    "starterCodeTs": "export default function compose(...fns: Function[]): Function {\n  // TODO: Implement function composition (right-to-left)\n  throw new Error('Not implemented');\n}",
+    "solutionBlock": {
+      "explanation": "Function composition creates a chain where each function’s output feeds into the next one, starting from the rightmost function.\n\n### Step-by-step logic:\n1. If no functions are passed, return identity `(x) => x`.\n2. Return a new function that takes an input value.\n3. Apply `reduceRight()` to run each function on the result of the previous one.\n\nThis pattern is common in functional programming and helps simplify complex transformations.",
+      "codeJs": "export default function compose(...fns) {\n  if (fns.length === 0) return x => x;\n  return function (input) {\n    return fns.reduceRight((acc, fn) => fn(acc), input);\n  };\n}",
+      "codeTs": "export default function compose(...fns: Function[]): Function {\n  if (fns.length === 0) return (x: any) => x;\n  return function (input: any) {\n    return fns.reduceRight((acc, fn) => fn(acc), input);\n  };\n}"
+    },
+    "tests": "import compose from './compose';\n\ndescribe('compose', () => {\n  const add1 = n => n + 1;\n  const double = n => n * 2;\n  const subtract10 = n => n - 10;\n\n  test('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  test('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  test('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(5)).toBe(5);\n  });\n});",
+    "testsTs": "import compose from './compose';\n\ndescribe('compose (TypeScript)', () => {\n  const add1 = (n: number) => n + 1;\n  const double = (n: number) => n * 2;\n  const subtract10 = (n: number) => n - 10;\n\n  it('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  it('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  it('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(10)).toBe(10);\n  });\n});"
+  },
+  {
+    "id": "js-group-by",
+    "title": "Group By",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "array",
+      "object",
+      "grouping",
+      "reduction"
+    ],
+    "description": {
+      "summary": "Implement a function `groupBy(arr, keyFn)` that groups array elements based on the result of applying a key function to each element.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "T[]",
+          "desc": "The array of elements to group."
+        },
+        {
+          "name": "keyFn",
+          "type": "(item: T) => K",
+          "desc": "A function that returns a key to group each element under."
+        }
+      ],
+      "returns": {
+        "type": "Record<K, T[]>",
+        "desc": "An object whose keys are the computed group keys, and values are arrays of elements belonging to each group."
+      },
+      "examples": [
+        "// Basic examples",
+        "groupBy([6.1, 4.2, 6.3], Math.floor) // => { '4': [4.2], '6': [6.1, 6.3] }",
+        "groupBy(['one', 'two', 'three'], str => str.length) // => { '3': ['one', 'two'], '5': ['three'] }",
+        "groupBy([{type:'a'}, {type:'b'}, {type:'a'}], x => x.type) // => { a: [{type:'a'}, {type:'a'}], b: [{type:'b'}] }"
+      ]
+    },
+    "starterCode": "export default function groupBy(arr, keyFn) {\n  // TODO: Group array elements by keyFn(item)\n  throw new Error('Not implemented');\n}",
+    "starterCodeTs": "export default function groupBy<T, K extends string | number | symbol>(arr: T[], keyFn: (item: T) => K): Record<K, T[]> {\n  // TODO: Group array elements by keyFn(item)\n  throw new Error('Not implemented');\n}",
+    "solutionBlock": {
+      "explanation": "`groupBy()` lets you transform a flat array into a categorized object based on a key function.\n\n### Step-by-step logic:\n1. Initialize an empty object `result = {}`.\n2. Iterate through `arr`.\n3. For each item, compute `key = keyFn(item)`.\n4. If `key` doesn’t exist in `result`, initialize it as an empty array.\n5. Push the item into `result[key]`.\n6. Return `result`.\n\n### Why this works\nThis pattern uses **reduction** to convert an array into a dictionary-like structure. It’s a powerful technique used in analytics, data manipulation, and API response formatting.\n\n### Edge cases\n- Empty array → returns `{}`\n- Duplicate keys → all items grouped together\n- Non-string keys → automatically converted to string in object keys",
+      "codeJs": "export default function groupBy(arr, keyFn) {\n  return arr.reduce((result, item) => {\n    const key = keyFn(item);\n    if (!result[key]) result[key] = [];\n    result[key].push(item);\n    return result;\n  }, {});\n}",
+      "codeTs": "export default function groupBy<T, K extends string | number | symbol>(arr: T[], keyFn: (item: T) => K): Record<K, T[]> {\n  return arr.reduce((result, item) => {\n    const key = keyFn(item);\n    if (!result[key]) result[key] = [];\n    result[key].push(item);\n    return result;\n  }, {} as Record<K, T[]>);\n}"
+    },
+    "tests": "import groupBy from './groupBy';\n\ndescribe('groupBy', () => {\n  test('groups numbers by Math.floor', () => {\n    const result = groupBy([6.1, 4.2, 6.3], Math.floor);\n    expect(result).toEqual({ 4: [4.2], 6: [6.1, 6.3] });\n  });\n\n  test('groups strings by length', () => {\n    const result = groupBy(['one', 'two', 'three'], str => str.length);\n    expect(result).toEqual({ 3: ['one', 'two'], 5: ['three'] });\n  });\n\n  test('groups objects by property', () => {\n    const data = [{ type: 'a' }, { type: 'b' }, { type: 'a' }];\n    const result = groupBy(data, x => x.type);\n    expect(result).toEqual({ a: [{ type: 'a' }, { type: 'a' }], b: [{ type: 'b' }] });\n  });\n\n  test('returns empty object for empty array', () => {\n    expect(groupBy([], Math.floor)).toEqual({});\n  });\n});",
+    "testsTs": "import groupBy from './groupBy';\n\ndescribe('groupBy (TypeScript)', () => {\n  it('groups numbers by Math.floor', () => {\n    const result = groupBy([6.1, 4.2, 6.3], Math.floor);\n    expect(result).toEqual({ 4: [4.2], 6: [6.1, 6.3] });\n  });\n\n  it('groups strings by length', () => {\n    const result = groupBy(['one', 'two', 'three'], str => str.length);\n    expect(result).toEqual({ 3: ['one', 'two'], 5: ['three'] });\n  });\n\n  it('groups objects by property', () => {\n    const data = [{ type: 'a' }, { type: 'b' }, { type: 'a' }];\n    const result = groupBy(data, x => x.type);\n    expect(result).toEqual({ a: [{ type: 'a' }, { type: 'a' }], b: [{ type: 'b' }] });\n  });\n\n  it('returns empty object for empty array', () => {\n    expect(groupBy([], Math.floor)).toEqual({});\n  });\n});"
   }
 ]

@@ -311,7 +311,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   combinedExamples = computed(() => {
     const exs = this.descriptionExamples();
     if (!exs || exs.length === 0) return '';
-    return exs.map((ex: any, i: any) => `// Example ${i + 1}\n${ex.trim()}`).join('\n\n// --------\n\n');
+    // Keep examples exactly as authored in JSON; one example per line or block.
+    // Add one blank line between examples for readability.
+    return exs
+      .map((ex: any) => (typeof ex === 'string' ? ex.replace(/\s+$/, '') : String(ex)))
+      .join('\n\n');
   });
 
   constructor(
