@@ -38,115 +38,130 @@
 
       <div class="flex-1 overflow-auto p-6 text-white">
         <!-- Description Panel -->
-        <div *ngIf="activePanel()===0" class="space-y-4">
-          <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
-          <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
+        <ng-container *ngIf="activePanel()===0">
+          <section class="space-y-4">
+            <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
+            <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
 
-          <!-- ✨ Add this: description summary/prose -->
-          <div *ngIf="(descSummary() || descriptionText()) as prose"
-            class="whitespace-pre-wrap text-sm opacity-90 mt-3">
-            {{ prose }}
-          </div>
-
-          <!-- After your description summary/prose -->
-          <div *ngIf="descArgs().length" class="mt-4">
-            <h3 class="text-sm font-semibold mb-1">Arguments</h3>
-            <ul class="text-sm space-y-1">
-              <li *ngFor="let a of descArgs()">
-                <code class="opacity-80">{{a.name}}</code>
-                <span *ngIf="a.type" class="opacity-60">: {{a.type}}</span>
-                <span *ngIf="a.desc"> — {{a.desc}}</span>
-              </li>
-            </ul>
-          </div>
-
-          <div *ngIf="descReturns()" class="mt-3 text-sm">
-            <h3 class="text-sm font-semibold mb-1">Returns</h3>
-            <div>
-              <span *ngIf="descReturns()?.type"><code class="opacity-80">{{descReturns()?.type}}</code> — </span>
-              <span>{{descReturns()?.desc}}</span>
+            <!-- Özet / prose -->
+            <div *ngIf="(descSummary() || descriptionText()) as prose"
+              class="whitespace-pre-wrap text-sm opacity-90 mt-3">
+              {{ prose }}
             </div>
-          </div>
 
-          <ng-container *ngIf="combinedExamples()">
-            <div class="mt-6">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs uppercase font-semibold">Examples</span>
-                <button
-                  class="flex items-center gap-1 bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded text-sm border border-gray-600"
-                  (click)="copyExamples()">
-                  <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
-                  <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
-                </button>
+            <!-- Argümanlar -->
+            <div *ngIf="descArgs().length" class="mt-4">
+              <h3 class="text-sm font-semibold mb-1">Arguments</h3>
+              <ul class="text-sm space-y-1">
+                <li *ngFor="let a of descArgs()">
+                  <code class="opacity-80">{{a.name}}</code>
+                  <span *ngIf="a.type" class="opacity-60">: {{a.type}}</span>
+                  <span *ngIf="a.desc"> — {{a.desc}}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Dönüş değeri -->
+            <div *ngIf="descReturns()" class="mt-3 text-sm">
+              <h3 class="text-sm font-semibold mb-1">Returns</h3>
+              <div>
+                <span *ngIf="descReturns()?.type"><code class="opacity-80">{{descReturns()?.type}}</code> — </span>
+                <span>{{descReturns()?.desc}}</span>
               </div>
-
-              <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
-                [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560" [interactive]="false">
-              </app-monaco-editor>
             </div>
-          </ng-container>
 
-          <div>
-            <button *ngIf="isFrameworkTech()" pButton label="Preview what you need to build" icon="pi pi-eye"
-              class="mt-6" (click)="openPreview()"></button>
-          </div>
-        </div>
+            <!-- Örnekler -->
+            <ng-container *ngIf="combinedExamples()">
+              <div class="mt-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs uppercase font-semibold">Examples</span>
+                  <button class="uf-btn" (click)="copyExamples()">
+                    <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
+                    <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
+                  </button>
+                </div>
+
+                <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                  [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
+                  [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560"
+                  [interactive]="false">
+                </app-monaco-editor>
+              </div>
+            </ng-container>
+
+            <!-- Framework önizleme düğmesi -->
+            <div>
+              <button *ngIf="isFrameworkTech()" pButton label="Preview what you need to build" icon="pi pi-eye"
+                class="mt-6" (click)="openPreview()"></button>
+            </div>
+          </section>
+        </ng-container>
+
 
         <!-- Solution Panel -->
-        <div *ngIf="activePanel()===1" class="space-y-4">
-          <ng-container *ngIf="showSolutionWarning(); else solutionContent">
-            <div class="solution-warning ...">
-              ...
-              <div class="actions flex items-center gap-3">
-                <!-- Rename + change handler: just view, don't overwrite -->
-                <button pButton label="View solution" class="p-button-danger"
-                  (click)="confirmSolutionReveal()"></button>
-
-                <button pButton label="Cancel" class="p-button-text" (click)="cancelSolutionReveal()"></button>
+        <ng-container *ngIf="activePanel()===1">
+          <section class="space-y-4">
+            <!-- Uyarı -->
+            <ng-container *ngIf="showSolutionWarning(); else solBody">
+              <div class="solution-warning">
+                <div class="flex items-start gap-3">
+                  <div class="icon-warning"><i class="pi pi-exclamation-triangle"></i></div>
+                  <div class="flex-1">
+                    <div class="font-medium mb-1">Are you sure you want to view the solution?</div>
+                    <div class="text-sm opacity-80 mb-3">
+                      Viewing the solution early can reduce learning benefits. You can still load it read-only.
+                    </div>
+                    <div class="actions flex items-center gap-3">
+                      <button pButton label="View solution" class="p-button-danger"
+                        (click)="confirmSolutionReveal()"></button>
+                      <button pButton label="Cancel" class="p-button-text" (click)="cancelSolutionReveal()"></button>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </ng-container>
+            </ng-container>
 
-          <ng-template #solutionContent>
-            <h2 class="text-base font-semibold">Solution</h2>
-            <div class="whitespace-pre-wrap text-sm leading-5 mb-3">
-              {{ solutionInfo().explanation || 'No explanation provided.' }}
-            </div>
+            <!-- İçerik -->
+            <ng-template #solBody>
+              <h2 class="text-base font-semibold">Solution</h2>
 
-            <div class="h-56">
-              <app-monaco-editor class="h-full rounded border border-white/10" [code]="solutionCodeForCurrentLang()"
-                [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true"
-                [options]="examplesMonacoOptions">
-              </app-monaco-editor>
-            </div>
+              <!-- Açıklama -->
+              <ng-container *ngIf="(solutionInfo().explanation || '').trim(); else noExpl">
+                <div class="text-sm leading-5 mb-3 prose prose-invert max-w-none"
+                  [innerHTML]="solutionExplanationHtml()">
+                </div>
+              </ng-container>
+              <ng-template #noExpl>
+                <div class="text-sm leading-5 mb-3 opacity-80">No explanation provided.</div>
+              </ng-template>
 
-            <!-- keep this to explicitly overwrite the editor -->
-            <button pButton label="Load into editor" class="mt-3 p-button-text"
-              (click)="loadSolutionIntoEditor()"></button>
-          </ng-template>
+              <!-- Başlık + aksiyonlar -->
+              <div class="sol-head flex items-center gap-2 mb-2">
+                <span class="uf-chip">{{ jsLang()==='ts' ? 'TypeScript' : 'JavaScript' }}</span>
 
-          <ng-template #solutionContent>
-            <h2 class="text-base font-semibold">Solution</h2>
+                <span class="ml-auto flex items-center gap-2">
+                  <button class="uf-btn" (click)="copySolutionCode()" title="Copy solution code">
+                    <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
+                    <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
+                  </button>
 
-            <!-- Explanation -->
-            <div class="whitespace-pre-wrap text-sm leading-5 mb-3">
-              {{ solutionInfo().explanation || 'No explanation provided.' }}
-            </div>
+                  <button class="uf-btn" (click)="loadSolutionIntoEditor()" title="Load this solution into the editor">
+                    Load into editor
+                  </button>
+                </span>
+              </div>
 
-            <!-- Code (JS/TS tabs already exist at the top of the right column; here we just mirror current selection) -->
-            <div class="h-56">
-              <app-monaco-editor class="h-full rounded border border-white/10" [code]="solutionCodeForCurrentLang()"
-                [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true"
-                [options]="examplesMonacoOptions">
-              </app-monaco-editor>
-            </div>
+              <!-- Read-only solution editor -->
+              <div class="rounded border border-white/10 pointer-events-none select-none w-full block">
+                <app-monaco-editor class="h-full rounded border border-white/10" [code]="solutionCodeForCurrentLang()"
+                  [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true" [autoHeight]="true"
+                  [options]="examplesMonacoOptions">
+                </app-monaco-editor>
+              </div>
+            </ng-template>
+          </section>
+        </ng-container>
 
-            <!-- Optional: a small CTA to overwrite editor with solution -->
-            <button pButton label="Load into editor" class="mt-3 p-button-text"
-              (click)="confirmSolutionReveal()"></button>
-          </ng-template>
-        </div>
       </div>
     </ng-container>
   </aside>
@@ -428,7 +443,8 @@
             </div>
 
             <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
-              (pointerdown)="startDrag($event)"></div>
+              (pointerdown)="startDrag($event)">
+            </div>
 
             <div class="flex-1 flex flex-col overflow-hidden min-h-0">
               <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">

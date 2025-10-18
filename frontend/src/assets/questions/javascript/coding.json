@@ -88,5 +88,46 @@
     },
     "tests": "import reverseString from './reverseString';\n\ndescribe('reverseString', () => {\n  test('reverses simple strings', () => {\n    expect(reverseString('abc')).toBe('cba');\n    expect(reverseString('hello')).toBe('olleh');\n  });\n\n  test('handles palindromes', () => {\n    expect(reverseString('racecar')).toBe('racecar');\n  });\n\n  test('reverses with spaces and punctuation', () => {\n    expect(reverseString('A man, a plan')).toBe('nalp a ,nam A');\n  });\n\n  test('handles empty and single character', () => {\n    expect(reverseString('')).toBe('');\n    expect(reverseString('x')).toBe('x');\n  });\n});\n",
     "testsTs": "import reverseString from './reverseString';\n\ndescribe('reverseString (TypeScript)', () => {\n  it('reverses simple strings', () => {\n    expect(reverseString('abc')).toBe('cba');\n    expect(reverseString('hello')).toBe('olleh');\n  });\n\n  it('handles palindromes', () => {\n    expect(reverseString('racecar')).toBe('racecar');\n  });\n\n  it('reverses with spaces and punctuation', () => {\n    expect(reverseString('A man, a plan')).toBe('nalp a ,nam A');\n  });\n\n  it('handles empty and single character', () => {\n    expect(reverseString('')).toBe('');\n    expect(reverseString('x')).toBe('x');\n  });\n});\n"
+  },
+  {
+    "id": "js-count-vowels",
+    "title": "Count Vowels",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "string",
+      "regex",
+      "loop"
+    ],
+    "description": {
+      "summary": "Implement a function `countVowels(str)` that returns how many vowels (a, e, i, o, u) exist in a given string, regardless of case.",
+      "arguments": [
+        {
+          "name": "str",
+          "type": "string",
+          "desc": "The input string to analyze."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "desc": "The number of vowels found in the string."
+      },
+      "examples": [
+        "// Basic examples\ncountVowels('hello') // => 2",
+        "countVowels('rhythm') // => 0",
+        "countVowels('AEIOU') // => 5",
+        "// Mixed case and spaces\ncountVowels('A quick brown fox') // => 5"
+      ]
+    },
+    "starterCode": "export default function countVowels(str) {\n  // TODO: Return how many vowels (a, e, i, o, u) are in the string\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function countVowels(str: string): number {\n  // TODO: Return how many vowels (a, e, i, o, u) are in the string\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "We need to count how many vowels appear in the string. A **vowel** is one of `'a', 'e', 'i', 'o', 'u'`, and both uppercase and lowercase should count.\n\n### 🧠 Step-by-step reasoning:\n1. Convert the string to lowercase so we don’t have to check for both cases.\n2. Loop through each character.\n3. For each one, check if it’s in the set `'aeiou'`.\n4. If it is, increment a counter.\n5. Return the total count.\n\n### ⚙️ Why this works\nThe lowercase conversion normalizes input. Checking membership with `includes()` makes the logic clear and readable. It runs in O(n) time and O(1) space.\n\n### ⚡ Alternative approach\nYou could also use a regular expression: `(str.match(/[aeiou]/gi) || []).length`. It’s concise but less explicit for beginners.\n\n### ⚠️ Edge cases\n- Empty string → `0`\n- No vowels → `0`\n- Case-insensitive (handles 'A' and 'a' equally)\n\nThis question checks basic string traversal and condition checking — a great warm-up before moving to regex or frequency-count problems.",
+      "codeJs": "export default function countVowels(str) {\n  const vowels = 'aeiou';\n  let count = 0;\n  for (const ch of str.toLowerCase()) {\n    if (vowels.includes(ch)) count++;\n  }\n  return count;\n}\n",
+      "codeTs": "export default function countVowels(str: string): number {\n  const vowels = 'aeiou';\n  let count = 0;\n  for (const ch of str.toLowerCase()) {\n    if (vowels.includes(ch)) count++;\n  }\n  return count;\n}\n"
+    },
+    "tests": "import countVowels from './countVowels';\n\ndescribe('countVowels', () => {\n  test('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  test('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  test('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  test('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n",
+    "testsTs": "import countVowels from './countVowels';\n\ndescribe('countVowels (TypeScript)', () => {\n  it('counts lowercase vowels', () => {\n    expect(countVowels('hello')).toBe(2);\n    expect(countVowels('rhythm')).toBe(0);\n  });\n\n  it('counts uppercase vowels', () => {\n    expect(countVowels('AEIOU')).toBe(5);\n  });\n\n  it('counts vowels in mixed case and spaces', () => {\n    expect(countVowels('A quick brown fox')).toBe(5);\n  });\n\n  it('handles empty string', () => {\n    expect(countVowels('')).toBe(0);\n  });\n});\n"
   }
 ]

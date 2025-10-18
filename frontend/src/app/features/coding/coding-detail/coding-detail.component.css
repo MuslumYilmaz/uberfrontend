@@ -12,6 +12,33 @@
   overflow-x: hidden !important;
 }
 
+/* scope to wherever you render the explanation */
+:host ::ng-deep .sol-h3 {
+  margin: 12px 0 6px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+:host ::ng-deep .sol-p {
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+:host ::ng-deep .sol-ol,
+:host ::ng-deep .sol-ul {
+  margin: 6px 0 12px;
+  padding-left: 1.25rem; /* ~ ml-5 */
+}
+
+:host ::ng-deep .sol-ol { list-style: decimal; }
+:host ::ng-deep .sol-ul { list-style: disc; }
+
+:host ::ng-deep code {
+  padding: 0 3px;
+  border-radius: 4px;
+  background: rgba(125,125,125,0.15);
+}
+
 /* (Already used in many places, but ensure the flex children can shrink) */
 .coding-detail .min-w-0,
 .coding-detail .flex-1 { min-width: 0; }
@@ -265,17 +292,10 @@
 .children { margin: 2px 0 2px 0; }
 
 /* --- Examples editor auto-height --- */
-.examples-block {            /* container can be as tall as needed */
-  width: 100%;
-}
-
-.examples-block app-monaco-editor {
-  display: block;
-  width: 100%;
-}
+.examples-block { width: 100%; }
+.examples-block app-monaco-editor { display: block; width: 100%; }
 
 /* Monaco needs explicit auto-height on its internals */
-:host ::ng-deep .examples-block .monaco-editor,
 :host ::ng-deep .examples-block .monaco-editor .overflow-guard {
   height: auto !important;
   min-height: 0 !important;
@@ -287,6 +307,59 @@
 }
 
 /* Optional: hide minimap for this tiny read-only block, if enabled globally */
-:host ::ng-deep .examples-block .minimap {
-  display: none !important;
+:host ::ng-deep .examples-block .minimap { display: none !important; }
+
+/* Make lines that start with "- " look like bullets */
+.prose p::marker { content: none; }
+.prose p { margin: 0 0 .5rem 0; }
+.prose p:has(> .dash-bullet) { margin-left: 1rem; }
+
+/* Inline code chip */
+.prose code {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  padding: .05rem .3rem;
+  border-radius: .25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .85em;
+}
+
+/* Solution header micro-polish */
+.sol-head .rounded { border-radius: 6px; }
+.sol-head button {
+  transition: background .15s ease, border-color .15s ease;
+}
+.sol-head button:hover {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.2);
+}
+
+/* --- UF buttons (shared) --- */
+.uf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: .25rem .75rem;          /* px-3 py-1 */
+  font-size: .875rem;              /* text-sm */
+  line-height: 1.25rem;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: .375rem;          /* rounded */
+  background: #1f2937;             /* bg-neutral-800 */
+  color: #e5e7eb;                  /* text-gray-200 */
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.uf-btn:hover { background: #374151; border-color: rgba(255,255,255,.24); }
+.uf-btn:active { transform: translateY(1px); }
+
+.uf-btn--ghost {                   /* texty button used in “Hide description”, etc. */
+  background: transparent;
+  border-color: rgba(255,255,255,.12);
+}
+.uf-btn--ghost:hover { background: rgba(255,255,255,.06); }
+
+.uf-chip {
+  display:inline-flex; align-items:center;
+  padding: 2px 6px; border-radius: 6px;
+  font-size: 10px; line-height: 1; opacity:.8;
+  border: 1px solid rgba(255,255,255,.12);
 }

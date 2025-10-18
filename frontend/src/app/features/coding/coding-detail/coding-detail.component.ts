@@ -5,7 +5,7 @@ import {
   AfterViewInit, Component, computed, effect, ElementRef, NgZone,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -1514,6 +1514,24 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         console.warn('Copy failed', e);
       });
   }
+
+  copySolutionCode() {
+    const code = this.solutionCodeForCurrentLang() || '';
+    if (!code.trim()) {
+      console.warn('No solution code to copy.');
+      return;
+    }
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        this.copiedExamples.set(true);
+        setTimeout(() => this.copiedExamples.set(false), 1200);
+      })
+      .catch((e) => {
+        console.error('Clipboard write failed', e);
+      });
+  }
+
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 
   loadSolutionCode() {
@@ -1938,4 +1956,106 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       .replace(/\btype\s+[A-Za-z_$][\w$]*\s*=\s*[\s\S]*?;/g, '')
       .replace(/\benum\s+[A-Za-z_$][\w$]*\s*\{[\s\S]*?\}\s*/g, '');
   }
+
+  // Turn "### Heading" into bold titles and strip emoji bullets.
+  // Also wrap inline `code` in <code>. Returns SafeHtml for [innerHTML].
+  private explanationToHtml(raw: string): SafeHtml {
+    if (!raw || !raw.trim()) {
+      return this.sanitizer.bypassSecurityTrustHtml('<p class="sol-p">No explanation provided.</p>');
+    }
+
+    // Decode any HTML entities that may have been double-escaped
+    raw = this.decodeHtmlEntities(raw);
+
+    // Best-effort strip of emoji pictographs (optional)
+    try { raw = raw.replace(/[\p{Extended_Pictographic}\u2600-\u27BF]/gu, ''); } catch { /* ignore */ }
+
+    const lines = raw.replace(/\r\n?/g, '\n').split('\n');
+
+    const escapeHtml = (t: string) =>
+      t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+    // Renders inline `code` spans safely
+    const renderInline = (t: string) => {
+      let out = '';
+      let last = 0;
+      const re = /`([^`]+)`/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(t))) {
+        out += escapeHtml(t.slice(last, m.index));         // text before code
+        out += `<code>${escapeHtml(m[1])}</code>`;         // code content
+        last = re.lastIndex;
+      }
+      out += escapeHtml(t.slice(last));                    // tail
+      return out;
+    };
+
+    let html = '';
+    let inUl = false;
+    let inOl = false;
+
+    const closeLists = () => {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (inOl) { html += '</ol>'; inOl = false; }
+    };
+
+    for (const rawLine of lines) {
+      const line = rawLine.trimRight();
+
+      // blank line -> break paragraph/list
+      if (!line.trim()) { closeLists(); continue; }
+
+      // "### Heading"
+      const mH3 = /^###\s*(.+)$/.exec(line);
+      if (mH3) {
+        closeLists();
+        html += `<h3 class="sol-h3">${escapeHtml(mH3[1])}</h3>`;
+        continue;
+      }
+
+      // ordered list: "1. Something"
+      const mOl = /^\d+\.\s+(.+)$/.exec(line);
+      if (mOl) {
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (!inOl) { html += '<ol class="sol-ol">'; inOl = true; }
+        html += `<li>${renderInline(mOl[1])}</li>`;
+        continue;
+      }
+
+      // unordered list: "- Something"
+      const mUl = /^-\s+(.+)$/.exec(line);
+      if (mUl) {
+        if (inOl) { html += '</ol>'; inOl = false; }
+        if (!inUl) { html += '<ul class="sol-ul">'; inUl = true; }
+        html += `<li>${renderInline(mUl[1])}</li>`;
+        continue;
+      }
+
+      // plain paragraph
+      closeLists();
+      html += `<p class="sol-p">${renderInline(line.trim())}</p>`;
+    }
+
+    closeLists();
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+
+  // Add once in the component (top-level private helper is fine)
+  private decodeHtmlEntities(s: string): string {
+    // Fast path for common entities (works even if double-escaped)
+    s = s
+      .replace(/&amp;(?=lt;|gt;|amp;|quot;|#39;)/g, '&') // &amp;lt; -> &lt; (etc.)
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+    return s;
+  }
+
+  // Computed value you can bind to
+  solutionExplanationHtml = computed(() =>
+    this.explanationToHtml(this.solutionInfo().explanation || '')
+  );
 }
