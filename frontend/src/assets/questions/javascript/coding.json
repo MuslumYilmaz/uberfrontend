@@ -854,5 +854,228 @@
     },
     "tests": "import Emitter from './Emitter';\n\nconst makeSpy = () => {\n  const fn = (...args) => { fn.calls.push(args); };\n  fn.calls = [];\n  return fn;\n};\n\ndescribe('Emitter', () => {\n  test('calls listener when event is emitted', () => {\n    const emitter = new Emitter();\n    const spy = makeSpy();\n    emitter.on('ping', spy);\n    emitter.emit('ping', 'data');\n    expect(spy.calls.length).toBe(1);\n    expect(spy.calls[0]).toEqual(['data']);\n  });\n\n  test('removes listener correctly (only after being added)', () => {\n    const emitter = new Emitter();\n    const spy = makeSpy();\n    emitter.on('ping', spy);\n    emitter.emit('ping', 1);\n    expect(spy.calls.length).toBe(1);\n\n    emitter.off('ping', spy);\n    emitter.emit('ping', 2);\n    expect(spy.calls.length).toBe(1);\n  });\n\n  test('handles multiple listeners for same event', () => {\n    const emitter = new Emitter();\n    const a = makeSpy();\n    const b = makeSpy();\n    emitter.on('ping', a);\n    emitter.on('ping', b);\n    emitter.emit('ping', 42);\n    expect(a.calls[0]).toEqual([42]);\n    expect(b.calls[0]).toEqual([42]);\n  });\n});\n",
     "testsTs": "import Emitter from './Emitter';\n\ntype Spy = ((...args: any[]) => void) & { calls: any[][] };\nconst makeSpy = (): Spy => {\n  const fn: any = (...args: any[]) => { fn.calls.push(args); };\n  fn.calls = [] as any[][];\n  return fn as Spy;\n};\n\ndescribe('Emitter (TypeScript)', () => {\n  it('calls listener when event is emitted', () => {\n    const emitter = new Emitter();\n    const spy = makeSpy();\n    emitter.on('ping', spy);\n    emitter.emit('ping', 'data');\n    expect(spy.calls.length).toBe(1);\n    expect(spy.calls[0]).toEqual(['data']);\n  });\n\n  it('removes listener correctly (only after being added)', () => {\n    const emitter = new Emitter();\n    const spy = makeSpy();\n    emitter.on('ping', spy);\n    emitter.emit('ping', 1);\n    expect(spy.calls.length).toBe(1);\n\n    emitter.off('ping', spy);\n    emitter.emit('ping', 2);\n    expect(spy.calls.length).toBe(1);\n  });\n\n  it('handles multiple listeners for same event', () => {\n    const emitter = new Emitter();\n    const a = makeSpy();\n    const b = makeSpy();\n    emitter.on('ping', a);\n    emitter.on('ping', b);\n    emitter.emit('ping', 42);\n    expect(a.calls[0]).toEqual([42]);\n    expect(b.calls[0]).toEqual([42]);\n  });\n});\n"
+  },
+  {
+    "id": "js-concurrency-map-limit",
+    "title": "Concurrency-Limited Map (order-preserving)",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "Async",
+      "Concurrency",
+      "Promises",
+      "Control Flow"
+    ],
+    "importance": 5,
+    "teaches": [
+      "Concurrency control with a worker pool",
+      "Backpressure (don’t start new work until a slot frees)",
+      "Order-preserving aggregation",
+      "Configurable error handling: fail-fast vs all-settled"
+    ],
+    "description": {
+      "summary": "Implement `mapAsyncLimit(items, limit, worker, strategy?)` that runs at most `limit` jobs concurrently, returns results in input order, and supports error strategies `'fail-fast'` or `'all-settled'`.",
+      "arguments": [
+        {
+          "name": "items",
+          "type": "T[]",
+          "desc": "Inputs to process."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "desc": "Max number of concurrent worker calls. Must be ≥ 1."
+        },
+        {
+          "name": "worker",
+          "type": "(item: T, index: number) => Promise<R>",
+          "desc": "Async mapper."
+        },
+        {
+          "name": "strategy",
+          "type": "'fail-fast' | 'all-settled' (optional, default 'fail-fast')",
+          "desc": "On error: reject immediately or collect all outcomes."
+        }
+      ],
+      "returns": {
+        "type": "Promise<R[] | Array<{ status: 'fulfilled' | 'rejected'; value?: R; reason?: any }>>",
+        "desc": "If `'fail-fast'`, resolves to `R[]` or rejects on the first error. If `'all-settled'`, always resolves to settled outcomes in input order."
+      },
+      "examples": [
+        "// Basic (fail-fast)\nawait mapAsyncLimit([3,1,2], 2, async (n,i) => { await sleep(n*10); return n*n })\n// => [9,1,4]\n",
+        "// All-settled\nawait mapAsyncLimit([1,2,3], 2, async (n) => { if(n===2) throw new Error('boom'); return n; }, 'all-settled')\n// => [{status:'fulfilled', value:1},{status:'rejected', reason:Error('boom')},{status:'fulfilled', value:3}]"
+      ]
+    },
+    "starterCode": "export default async function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  // TODO:\n  // 1) Validate inputs (limit >= 1)\n  // 2) Launch up to `limit` concurrent runners\n  // 3) Each runner pulls the next index and writes its result at that index\n  // 4) 'fail-fast' rejects on first error, 'all-settled' aggregates statuses\n}\n\nexport const sleep = (ms) => new Promise(r => setTimeout(r, ms));\n",
+    "solutionBlock": {
+      "explanation": "We spin up `min(limit, items.length)` runners. Each runner pulls the next index, awaits the worker, and writes into the pre-sized result array at that index (preserving order). On 'fail-fast', we reject immediately on the first error (ignoring later completions); on 'all-settled' we record `{status, value|reason}` and resolve when all are done.",
+      "codeJs": "export default function mapAsyncLimit(items, limit, worker, strategy = 'fail-fast') {\n  if (!Number.isFinite(limit) || limit < 1) throw new Error('limit must be >= 1');\n  const n = items.length, allSettled = strategy === 'all-settled';\n  const results = new Array(n);\n  if (n === 0) return Promise.resolve(results);\n\n  let next = 0, done = 0, failed = false;\n\n  return new Promise((resolve, reject) => {\n    const runner = async () => {\n      while (true) {\n        const i = next++;\n        if (i >= n || (failed && !allSettled)) break;\n        try {\n          const v = await worker(items[i], i);\n          results[i] = allSettled ? { status: 'fulfilled', value: v } : v;\n        } catch (err) {\n          if (allSettled) results[i] = { status: 'rejected', reason: err };\n          else { failed = true; reject(err); return; }\n        } finally {\n          if (++done === n && (!failed || allSettled)) resolve(results);\n        }\n      }\n    };\n\n    const k = Math.min(limit, n);\n    for (let j = 0; j < k; j++) runner();\n  });\n}\n"
+    },
+    "tests": "import mapAsyncLimit from './mapAsyncLimit';\n\nconst sleep = (ms) => new Promise(r => setTimeout(r, ms));\n\ndescribe('mapAsyncLimit', () => {\n  test('preserves order with mixed durations', async () => {\n    const items = [30, 10, 20];\n    const out = await mapAsyncLimit(items, 2, async (ms) => { await sleep(ms); return ms / 10; });\n    expect(out).toEqual([3, 1, 2]);\n  });\n\n  test('respects concurrency limit (no more than limit active)', async () => {\n    const items = [30, 30, 30, 30, 30];\n    let active = 0, maxActive = 0;\n    const out = await mapAsyncLimit(items, 2, async (ms) => {\n      active++; if (active > maxActive) maxActive = active;\n      await sleep(ms);\n      active--;\n      return ms;\n    });\n    expect(out).toEqual(items);\n    expect(maxActive <= 2).toEqual(true);\n  });\n\n  test('fail-fast rejects on first error', async () => {\n    const items = [5, 10, 5];\n    const start = Date.now();\n    let threw = false;\n    try {\n      await mapAsyncLimit(items, 2, async (ms, idx) => {\n        await sleep(ms);\n        if (idx === 1) throw new Error('boom');\n        return idx;\n      }, 'fail-fast');\n    } catch (e) {\n      threw = true;\n      expect(e && e.message).toEqual('boom');\n    }\n    expect(threw).toEqual(true);\n    const elapsed = Date.now() - start;\n    expect(elapsed < 1000).toEqual(true);\n  });\n\n  test('all-settled aggregates outcomes', async () => {\n    const res = await mapAsyncLimit([10, 5, 10, 5], 2, async (ms, idx) => {\n      await sleep(ms);\n      if (idx % 2 === 1) throw new Error('odd');\n      return idx * 10;\n    }, 'all-settled');\n\n    expect(res[0]).toEqual({ status: 'fulfilled', value: 0 });\n    expect(res[1].status).toEqual('rejected');\n    expect(!!(res[1].reason && res[1].reason.message)).toEqual(true);\n    expect(res[2]).toEqual({ status: 'fulfilled', value: 20 });\n    expect(res[3].status).toEqual('rejected');\n  });\n\n  test('throws if limit < 1', () => {\n    let threw = false;\n    try { mapAsyncLimit([1], 0, async (x) => x); } catch (e) { threw = true; }\n    expect(threw).toEqual(true);\n  });\n});\n",
+    "testsTs": "import mapAsyncLimit from './mapAsyncLimit';\n\nconst sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));\n\ndescribe('mapAsyncLimit (TS)', () => {\n  test('keeps output order', async () => {\n    const res = await mapAsyncLimit<number, number>([15, 5, 10], 2, async (ms) => { await sleep(ms); return ms / 5; });\n    expect(res).toEqual([3, 1, 2]);\n  });\n\n  test('caps concurrency', async () => {\n    const items = [20, 20, 20, 20];\n    let active = 0, maxActive = 0;\n    const res = await mapAsyncLimit<number, number>(items, 2, async (ms) => {\n      active++; if (active > maxActive) maxActive = active;\n      await sleep(ms);\n      active--; return ms;\n    });\n    expect(res).toEqual(items);\n    expect(maxActive <= 2).toEqual(true);\n  });\n\n  test('fail-fast rejects on first error', async () => {\n    let threw = false;\n    try {\n      await mapAsyncLimit<number, number>([5, 10, 5], 2, async (ms, idx) => {\n        await sleep(ms);\n        if (idx === 1) throw new Error('boom');\n        return idx;\n      }, 'fail-fast');\n    } catch (e: any) {\n      threw = true;\n      expect(e && e.message).toEqual('boom');\n    }\n    expect(threw).toEqual(true);\n  });\n\n  test('all-settled returns settled outcomes', async () => {\n    const res = await mapAsyncLimit<number, number>([5, 10, 5], 2, async (ms, idx) => {\n      await sleep(ms);\n      if (idx === 1) throw new Error('x');\n      return idx * 2;\n    }, 'all-settled') as Array<{ status: 'fulfilled' | 'rejected'; value?: number; reason?: any }>;\n\n    expect(res[0]).toEqual({ status: 'fulfilled', value: 0 });\n    expect(res[1].status).toEqual('rejected');\n    expect(typeof (res[1] as any).reason).toEqual('object');\n    expect(res[2]).toEqual({ status: 'fulfilled', value: 4 });\n  });\n\n  test('throws on invalid limit', () => {\n    let threw = false;\n    try { mapAsyncLimit<number, number>([1], 0, async (x) => x); } catch { threw = true; }\n    expect(threw).toEqual(true);\n  });\n});\n"
+  },
+  {
+    "id": "js-abortable-helpers",
+    "title": "Abortable Helpers (Timeout + Composed Abort)",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "Async",
+      "AbortController",
+      "Cancellation",
+      "Promises",
+      "Utilities"
+    ],
+    "importance": 5,
+    "teaches": [
+      "Cooperative cancellation with AbortController",
+      "Combining timeouts with async work",
+      "Composing multiple AbortSignals safely",
+      "Cleanup of timers/listeners to avoid leaks"
+    ],
+    "description": {
+      "summary": "Provide utilities to combine timeouts with AbortController, and to compose multiple signals (abort if any fires). All helpers are exposed via a single default export function whose properties are the helpers.",
+      "arguments": [
+        {
+          "name": "withTimeout<T>(p, ms, reason?)",
+          "type": "Promise<T>, number, any",
+          "desc": "Race a promise against a timeout. Reject with `reason` (or an Error) if the timeout fires; clear the timer if the promise settles first."
+        },
+        {
+          "name": "withAbort<T>(factory, signal)",
+          "type": "(signal: AbortSignal) => Promise<T>, AbortSignal",
+          "desc": "Run `factory(signal)` and reject if `signal` aborts. If already aborted, reject immediately. Ensure listeners are cleaned up when done."
+        },
+        {
+          "name": "composeAbort(...signals)",
+          "type": "AbortSignal[]",
+          "desc": "Return a new `AbortSignal` that aborts if ANY input signal aborts; if any is already aborted, the result aborts immediately with the same reason."
+        }
+      ],
+      "returns": {
+        "type": "Default export function with properties: { withTimeout, withAbort, composeAbort, sleep }",
+        "desc": "Import the default and destructure its properties to use the helpers."
+      },
+      "examples": [
+        "import helpers from './abortable-helpers';\nconst { withTimeout, withAbort, composeAbort } = helpers;\n\nawait withTimeout(fetch(url), 2000, new Error('Timeout'));\nconst ac = new AbortController();\nawait withAbort(doWork, ac.signal);\nconst combined = composeAbort(ac.signal, new AbortController().signal);"
+      ]
+    },
+    "starterCode": "function abortableHelpers() {}\n\nabortableHelpers.sleep = (ms) => new Promise(r => setTimeout(r, ms));\n\nabortableHelpers.withTimeout = function withTimeout(p, ms, reason) {\n  // TODO: Start a timer; race with p. On settle, clear the timer. On timeout, reject with `reason` or Error('Timeout').\n};\n\nabortableHelpers.withAbort = function withAbort(factory, signal) {\n  // TODO: If signal.aborted -> reject immediately. Otherwise run factory(signal) and listen for 'abort'. Clean up listeners on settle.\n};\n\nabortableHelpers.composeAbort = function composeAbort(...signals) {\n  // TODO: New AbortController; if any input already aborted, abort immediately with its reason; otherwise forward first abort and detach listeners.\n};\n\nexport default abortableHelpers;\n",
+    "starterCodeTs": "function abortableHelpers() {}\n\nabortableHelpers['sleep'] = (ms: number) => new Promise<void>(r => setTimeout(r, ms));\n\nabortableHelpers['withTimeout'] = function withTimeout<T>(p: Promise<T>, ms: number, reason?: any): Promise<T> {\n  // TODO\n  return new Promise<T>((resolve, reject) => { /* impl */ });\n};\n\nabortableHelpers['withAbort'] = function withAbort<T>(factory: (signal: AbortSignal) => Promise<T>, signal: AbortSignal): Promise<T> {\n  // TODO\n  return new Promise<T>((resolve, reject) => { /* impl */ });\n};\n\nabortableHelpers['composeAbort'] = function composeAbort(...signals: AbortSignal[]): AbortSignal {\n  // TODO\n  const ac = new AbortController();\n  return ac.signal;\n};\n\nexport default abortableHelpers as unknown as {\n  withTimeout: <T>(p: Promise<T>, ms: number, reason?: any) => Promise<T>,\n  withAbort: <T>(factory: (signal: AbortSignal) => Promise<T>, signal: AbortSignal) => Promise<T>,\n  composeAbort: (...signals: AbortSignal[]) => AbortSignal,\n  sleep: (ms: number) => Promise<void>\n};\n",
+    "solutionBlock": {
+      "explanation": "### 🧠 Core Idea\nThis task teaches how to make async operations **cancellable**, **safe**, and **composable** using `AbortController`. We expose one default export (`abortableHelpers`) whose properties are the helpers:\n\n- **withTimeout(p, ms, reason)** → races a promise with a timeout.\n- **withAbort(factory, signal)** → runs a task that can be aborted mid-flight.\n- **composeAbort(...signals)** → merges multiple signals into one (abort if any aborts).\n\nThe key concepts:\n1. **Cleanup matters** — timers and event listeners are removed after completion or failure to avoid memory leaks.\n2. **Fail fast** — if a signal is already aborted or a timer expires, the function rejects immediately.\n3. **Composability** — `composeAbort` lets you tie multiple cancellation sources together (e.g., UI cancel + navigation change).\n\n### ⚙️ Step-by-step\n1. `withTimeout` creates a timer that rejects if the promise doesn’t finish in time. Once either side (timer or promise) settles, it cancels the other.\n2. `withAbort` runs a cancellable async task. It listens to `signal.abort`; if fired, it rejects and removes the event listener.\n3. `composeAbort` creates a new signal that aborts when **any** given signal aborts. If one is already aborted, the new one is aborted right away.\n\n### ✅ Why this works\nBecause these helpers race or merge sources **predictably and cleanly**, they prevent resource leaks and are easy to combine in higher-level APIs like fetch or custom async flows.\n",
+      "codeJs": "function abortableHelpers() {}\n\n// 💤 Small sleep helper for delaying async steps\nabortableHelpers.sleep = (ms) => new Promise(r => setTimeout(r, ms));\n\n// 🕒 1. Race a promise against a timeout\nabortableHelpers.withTimeout = function withTimeout(p, ms, reason) {\n  return new Promise((resolve, reject) => {\n    let settled = false; // prevents double resolution\n\n    // Create timer that rejects if time runs out\n    const id = setTimeout(() => {\n      if (settled) return;\n      settled = true;\n      reject(reason ?? new Error('Timeout'));\n    }, ms);\n\n    // Wait for the input promise and clean up the timer afterward\n    Promise.resolve(p).then(\n      (v) => { if (!settled) { settled = true; clearTimeout(id); resolve(v); } },\n      (e) => { if (!settled) { settled = true; clearTimeout(id); reject(e); } }\n    );\n  });\n};\n\n// 🧩 2. Make any async task abortable\nabortableHelpers.withAbort = function withAbort(factory, signal) {\n  return new Promise((resolve, reject) => {\n    // If the signal is already aborted, reject immediately\n    if (signal?.aborted) { reject(signal.reason ?? new Error('Aborted')); return; }\n\n    let finished = false;\n\n    // Handle abort event (like pressing Cancel)\n    const onAbort = () => {\n      if (finished) return;\n      finished = true;\n      reject(signal.reason ?? new Error('Aborted'));\n    };\n\n    signal?.addEventListener('abort', onAbort, { once: true });\n\n    // Run the async factory with access to the signal\n    Promise.resolve()\n      .then(() => factory(signal))\n      .then((v) => {\n        if (!finished) {\n          finished = true;\n          signal?.removeEventListener('abort', onAbort);\n          resolve(v);\n        }\n      })\n      .catch((e) => {\n        if (!finished) {\n          finished = true;\n          signal?.removeEventListener('abort', onAbort);\n          reject(e);\n        }\n      });\n  });\n};\n\n// 🔗 3. Merge multiple AbortSignals into one\nabortableHelpers.composeAbort = function composeAbort(...signals) {\n  const ac = new AbortController();\n  if (!signals || signals.length === 0) return ac.signal; // nothing to combine\n\n  // If any signal is already aborted, propagate immediately\n  const already = signals.find(s => s?.aborted);\n  if (already) { ac.abort(already.reason); return ac.signal; }\n\n  const listeners = [];\n\n  // When one signal aborts, abort the composed one and clean up all listeners\n  const abortOnce = (reason) => {\n    if (!ac.signal.aborted) ac.abort(reason);\n    for (const { s, fn } of listeners) s.removeEventListener('abort', fn);\n    listeners.length = 0;\n  };\n\n  // Attach listeners to all input signals\n  for (const s of signals) {\n    if (!s) continue;\n    const fn = () => abortOnce(s.reason);\n    s.addEventListener('abort', fn, { once: true });\n    listeners.push({ s, fn });\n  }\n\n  return ac.signal;\n};\n\nexport default abortableHelpers;\n",
+      "codeTs": "function abortableHelpers() {}\n\nabortableHelpers['sleep'] = (ms: number) => new Promise<void>(r => setTimeout(r, ms));\n\nabortableHelpers['withTimeout'] = function withTimeout<T>(p: Promise<T>, ms: number, reason?: any): Promise<T> {\n  return new Promise<T>((resolve, reject) => {\n    let settled = false;\n    const id = setTimeout(() => {\n      if (settled) return;\n      settled = true;\n      reject(reason ?? new Error('Timeout'));\n    }, ms);\n\n    Promise.resolve(p).then(\n      v => { if (!settled) { settled = true; clearTimeout(id); resolve(v); } },\n      e => { if (!settled) { settled = true; clearTimeout(id); reject(e); } }\n    );\n  });\n};\n\nabortableHelpers['withAbort'] = function withAbort<T>(factory: (signal: AbortSignal) => Promise<T>, signal: AbortSignal): Promise<T> {\n  return new Promise<T>((resolve, reject) => {\n    if (signal?.aborted) { reject((signal as any).reason ?? new Error('Aborted')); return; }\n\n    let finished = false;\n    const onAbort = () => {\n      if (finished) return;\n      finished = true;\n      reject((signal as any).reason ?? new Error('Aborted'));\n    };\n\n    signal?.addEventListener('abort', onAbort, { once: true });\n\n    Promise.resolve()\n      .then(() => factory(signal))\n      .then(v => { if (!finished) { finished = true; signal?.removeEventListener('abort', onAbort); resolve(v); } })\n      .catch(e => { if (!finished) { finished = true; signal?.removeEventListener('abort', onAbort); reject(e); } });\n  });\n};\n\nabortableHelpers['composeAbort'] = function composeAbort(...signals: AbortSignal[]): AbortSignal {\n  const ac = new AbortController();\n  if (!signals || signals.length === 0) return ac.signal;\n\n  const already = signals.find(s => s?.aborted);\n  if (already) { ac.abort((already as any).reason); return ac.signal; }\n\n  type L = { s: AbortSignal; fn: () => void };\n  const listeners: L[] = [];\n  const abortOnce = (reason: any) => {\n    if (!ac.signal.aborted) ac.abort(reason);\n    for (const { s, fn } of listeners) s.removeEventListener('abort', fn);\n    listeners.length = 0;\n  };\n\n  for (const s of signals) {\n    if (!s) continue;\n    const fn = () => abortOnce((s as any).reason);\n    s.addEventListener('abort', fn, { once: true });\n    listeners.push({ s, fn });\n  }\n\n  return ac.signal;\n};\n\nexport default abortableHelpers as unknown as {\n  withTimeout: <T>(p: Promise<T>, ms: number, reason?: any) => Promise<T>,\n  withAbort: <T>(factory: (signal: AbortSignal) => Promise<T>, signal: AbortSignal) => Promise<T>,\n  composeAbort: (...signals: AbortSignal[]) => AbortSignal,\n  sleep: (ms: number) => Promise<void>\n};\n"
+    },
+    "tests": "import helpers from './abortable-helpers';\nconst { withTimeout, withAbort, composeAbort, sleep } = helpers as any;\nfunction _sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }\nconst nap = typeof sleep === 'function' ? sleep : _sleep;\n\ndescribe('Abortable Helpers', () => {\n  test('withTimeout resolves when promise is fast', async () => {\n    const res = await withTimeout(nap(30).then(()=>42), 200);\n    expect(res).toEqual(42);\n  });\n\n  test('withTimeout rejects when timeout wins', async () => {\n    let threw = false; let msg = '';\n    try { await withTimeout(nap(200), 30, new Error('Timeout')); }\n    catch(e){ threw = true; msg = e && e.message; }\n    expect(threw).toEqual(true);\n    expect(!!msg).toEqual(true);\n  });\n\n  test('withAbort resolves if not aborted', async () => {\n    const ac = new AbortController();\n    const val = await withAbort(async (signal) => { await nap(20); return signal.aborted ? -1 : 7; }, ac.signal);\n    expect(val).toEqual(7);\n  });\n\n  test('withAbort rejects when signal aborts', async () => {\n    const ac = new AbortController();\n    let threw = false;\n    try {\n      const p = withAbort(async () => { await nap(100); return 1; }, ac.signal);\n      setTimeout(()=>ac.abort(new Error('Cancelled')), 20);\n      await p;\n    } catch{ threw = true; }\n    expect(threw).toEqual(true);\n  });\n\n  test('composeAbort aborts when any source aborts', async () => {\n    const a = new AbortController();\n    const b = new AbortController();\n    const c = composeAbort(a.signal, b.signal);\n    expect(c.aborted).toEqual(false);\n\n    let threw = false;\n    const p = withAbort(async () => { await nap(100); return 'ok'; }, c);\n    setTimeout(()=> b.abort(new Error('Bailed')), 10);\n    try { await p; } catch{ threw = true; }\n    expect(threw).toEqual(true);\n    expect(c.aborted).toEqual(true);\n  });\n\n  test('composeAbort is already aborted if any input is aborted', () => {\n    const a = new AbortController();\n    a.abort(new Error('early'));\n    const c = composeAbort(a.signal, new AbortController().signal);\n    expect(c.aborted).toEqual(true);\n  });\n});\n",
+    "testsTs": "import helpers from './abortable-helpers';\nconst { withTimeout, withAbort, composeAbort, sleep } = helpers as unknown as {\n  withTimeout: <T>(p: Promise<T>, ms: number, reason?: any) => Promise<T>,\n  withAbort: <T>(factory: (signal: AbortSignal) => Promise<T>, signal: AbortSignal) => Promise<T>,\n  composeAbort: (...signals: AbortSignal[]) => AbortSignal,\n  sleep: (ms: number) => Promise<void>\n};\n\nfunction _sleep(ms: number){ return new Promise<void>(r=>setTimeout(r, ms)); }\nconst nap = typeof sleep === 'function' ? sleep : _sleep;\n\ndescribe('Abortable Helpers (TS)', () => {\n  test('withTimeout resolves fast', async () => {\n    const res = await withTimeout(Promise.resolve(5), 100);\n    expect(res).toEqual(5);\n  });\n\n  test('withTimeout rejects on timeout', async () => {\n    let threw = false;\n    try { await withTimeout(nap(200).then(()=>42), 10, new Error('Timeout')); }\n    catch { threw = true; }\n    expect(threw).toEqual(true);\n  });\n\n  test('withAbort resolves when not aborted', async () => {\n    const ac = new AbortController();\n    const v = await withAbort(async (signal) => { await nap(15); return signal.aborted ? -1 : 9; }, ac.signal);\n    expect(v).toEqual(9);\n  });\n\n  test('withAbort rejects when aborted', async () => {\n    const ac = new AbortController();\n    let threw = false;\n    const p = withAbort(async () => { await nap(100); return 1; }, ac.signal);\n    setTimeout(()=>ac.abort(new Error('cancel')), 10);\n    try { await p; } catch { threw = true; }\n    expect(threw).toEqual(true);\n  });\n\n  test('composeAbort aborts if any input aborts', async () => {\n    const a = new AbortController();\n    const b = new AbortController();\n    const sig = composeAbort(a.signal, b.signal);\n    let threw = false;\n    const p = withAbort(async () => { await nap(100); return 'ok'; }, sig);\n    setTimeout(()=>a.abort(new Error('stop')), 10);\n    try { await p; } catch { threw = true; }\n    expect(sig.aborted).toEqual(true);\n    expect(threw).toEqual(true);\n  });\n\n  test('composeAbort reflects already-aborted inputs', () => {\n    const a = new AbortController(); a.abort(new Error('early'));\n    const sig = composeAbort(a.signal);\n    expect(sig.aborted).toEqual(true);\n  });\n});\n"
+  },
+  {
+    "id": "js-streaming-ndjson-parser",
+    "title": "Streaming NDJSON Parser (Web Streams)",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "Streams",
+      "Web Streams API",
+      "TextDecoder",
+      "Backpressure",
+      "Parsing",
+      "NDJSON"
+    ],
+    "importance": 5,
+    "teaches": [
+      "Consuming a ReadableStream<Uint8Array> with backpressure",
+      "Incremental text decoding with TextDecoder(stream: true)",
+      "Safely handling record boundaries across chunks",
+      "Isolating and recovering from per-line JSON errors"
+    ],
+    "description": {
+      "summary": "Implement a **streaming** parser for NDJSON (newline-delimited JSON). Read from a `ReadableStream<Uint8Array>`, decode incrementally, split on newlines, parse each line into an object, and recover from malformed lines via a callback without stopping the stream.",
+      "arguments": [
+        {
+          "name": "stream",
+          "type": "ReadableStream<Uint8Array>",
+          "desc": "Binary stream producing UTF-8 chunks of text containing one JSON object per line."
+        },
+        {
+          "name": "onError",
+          "type": "(line: string, err: any) => void (optional)",
+          "desc": "Called when a line fails to parse. The parser must **continue** parsing subsequent lines."
+        }
+      ],
+      "returns": {
+        "type": "Promise<any[]>",
+        "desc": "Resolves with an array of successfully parsed objects (malformed lines are skipped but reported via `onError`)."
+      },
+      "examples": [
+        "// Given a Response with NDJSON body\nconst res = await fetch('/events.ndjson');\nconst objects = await parseNDJSON(res.body, (line, err) => console.warn('bad line:', line, err));\n// objects => an array of parsed items, in order"
+      ]
+    },
+    "starterCode": "/*\n * parseNDJSON(stream, onError?)\n * - Consume a ReadableStream<Uint8Array> using a reader\n * - Use TextDecoder with { stream: true } to correctly handle UTF-8 boundaries\n * - Accumulate into a string buffer; split by \"\\n\" to get complete lines\n * - Keep the trailing partial line in the buffer and prepend the next chunk\n * - For each non-empty line, JSON.parse; on error, call onError(line, err) and continue\n * - After the stream ends, flush the decoder and process the final buffer\n */\nexport default async function parseNDJSON(stream, onError) {\n  // TODO: implement as described above\n}\n\n// CommonJS fallback for runners that require module.exports\ntry { if (typeof module !== 'undefined') module.exports = parseNDJSON; } catch (_) {}\n",
+    "starterCodeTs": "export default async function parseNDJSON(\n  stream: ReadableStream<Uint8Array>,\n  onError?: (line: string, err: any) => void\n): Promise<any[]> {\n  // TODO: implement\n  return []\n}\n\n// CommonJS fallback\n// @ts-ignore\ntry { if (typeof module !== 'undefined') (module as any).exports = parseNDJSON; } catch (_) {}\n",
+    "solutionBlock": {
+      "explanation": "### 📦 What we’re building\n**NDJSON** is just JSON objects separated by newlines. Over a network you don’t get lines in perfect pieces — bytes arrive in **chunks** that may cut through characters or lines. The solution must:\n\n1) **Respect backpressure** by using `stream.getReader()` and `await reader.read()`.\n2) **Decode incrementally** with `TextDecoder({ fatal: false })` and `decoder.decode(chunk, { stream: true })` so multi-byte UTF-8 characters split across chunks still decode correctly.\n3) **Maintain a carry-over buffer** for partial lines between chunks.\n4) **Parse line-by-line**, calling `onError(line, err)` for bad lines **without aborting** the whole parse.\n5) **Flush at the end** with `decoder.decode()` (no args) to get any remaining undecoded bytes, then process the final line.\n\nThis mirrors how production parsers handle logs/telemetry: isolate errors per record, never lose good data, and cleanly cooperate with the Streams API.",
+      "codeJs": "/*\n * Streaming NDJSON parser\n * - Efficient: processes data chunk-by-chunk (low memory) and preserves order\n * - Robust: isolates malformed lines via onError callback and continues\n * - Correct decoding: uses TextDecoder(stream:true) for UTF-8 boundaries\n */\nexport default async function parseNDJSON(stream, onError) {\n  if (!stream || typeof stream.getReader !== 'function') {\n    throw new Error('parseNDJSON: expected a ReadableStream<Uint8Array>');\n  }\n\n  const reader = stream.getReader();          // Pull chunks respecting backpressure\n  const decoder = new TextDecoder('utf-8');   // UTF-8 by default\n  let buffer = '';                            // Carries partial line across chunks\n  const out = [];                              // Collected parsed objects\n\n  // Helper: parse complete lines inside `buffer` except the last partial one\n  const drainLines = () => {\n    // Split into lines; keep the last part (may be partial) in `buffer`\n    const parts = buffer.split('\\n');\n    buffer = parts.pop() ?? '';\n\n    for (let line of parts) {\n      // Trim removes Windows CR (\"\\r\\n\") and blank lines\n      line = line.trim();\n      if (line === '') continue; // skip empty lines safely\n      try {\n        out.push(JSON.parse(line));\n      } catch (err) {\n        // Report and continue parsing subsequent lines\n        if (typeof onError === 'function') onError(line, err);\n      }\n    }\n  };\n\n  // Read loop: decode incrementally and process complete lines as they appear\n  while (true) {\n    const { value, done } = await reader.read();\n    if (done) break;\n    // Append decoded text for this chunk; {stream:true} keeps decoder state for split code points\n    buffer += decoder.decode(value, { stream: true });\n    drainLines();\n  }\n\n  // Flush any remaining bytes from the decoder (e.g., last multi-byte char) and drain final lines\n  buffer += decoder.decode();\n  // Process any complete lines now in buffer (leaves potential final partial in buffer)\n  drainLines();\n\n  // If there's a final non-empty line without trailing \"\\n\", attempt to parse it\n  const tail = buffer.trim();\n  if (tail !== '') {\n    try {\n      out.push(JSON.parse(tail));\n    } catch (err) {\n      if (typeof onError === 'function') onError(tail, err);\n    }\n  }\n\n  // Release reader lock (optional but polite)\n  try { reader.releaseLock(); } catch (_) {}\n\n  return out;\n}\n\n// CommonJS fallback for environments that require it\ntry { if (typeof module !== 'undefined') module.exports = parseNDJSON; } catch (_) {}\n",
+      "codeTs": "/*\n * Streaming NDJSON parser (TypeScript)\n * Same logic, with typed signatures for clarity.\n */\nexport default async function parseNDJSON(\n  stream: ReadableStream<Uint8Array>,\n  onError?: (line: string, err: any) => void\n): Promise<any[]> {\n  if (!stream || typeof (stream as any).getReader !== 'function') {\n    throw new Error('parseNDJSON: expected a ReadableStream<Uint8Array>');\n  }\n\n  const reader = stream.getReader();\n  const decoder = new TextDecoder('utf-8');\n  let buffer = '';\n  const out: any[] = [];\n\n  const drainLines = () => {\n    const parts = buffer.split('\\n');\n    buffer = parts.pop() ?? '';\n    for (let raw of parts) {\n      const line = raw.trim();\n      if (line === '') continue;\n      try { out.push(JSON.parse(line)); }\n      catch (err) { if (onError) onError(line, err); }\n    }\n  };\n\n  while (true) {\n    const { value, done } = await reader.read();\n    if (done) break;\n    buffer += decoder.decode(value, { stream: true });\n    drainLines();\n  }\n\n  buffer += decoder.decode();\n  drainLines();\n  const tail = buffer.trim();\n  if (tail !== '') {\n    try { out.push(JSON.parse(tail)); }\n    catch (err) { if (onError) onError(tail, err); }\n  }\n\n  try { reader.releaseLock(); } catch {}\n  return out;\n}\n\n// CommonJS fallback\n// @ts-ignore\ntry { if (typeof module !== 'undefined') (module as any).exports = parseNDJSON; } catch {}\n"
+    },
+    "tests": "import parseNDJSON from './ndjson-parser';\n\n// Helper: build a ReadableStream<Uint8Array> that emits given string chunks\nconst te = new TextEncoder();\nfunction streamFromStrings(chunks) {\n  return new ReadableStream({\n    start(controller) {\n      let i = 0;\n      const pump = () => {\n        if (i >= chunks.length) { controller.close(); return; }\n        controller.enqueue(te.encode(chunks[i++]));\n        setTimeout(pump, 0); // async to exercise the reader loop\n      };\n      pump();\n    }\n  });\n}\n\nfunction expectEqual(a, b){ expect(JSON.stringify(a)).toEqual(JSON.stringify(b)); }\n\ndescribe('Streaming NDJSON Parser', () => {\n  test('parses lines across arbitrary chunk boundaries', async () => {\n    const chunks = [\n      '{\"a\":1}\\n{\"b\"',\n      ':2}\\n{\"c\":3}\\n',\n    ];\n    const res = await parseNDJSON(streamFromStrings(chunks));\n    expectEqual(res, [{a:1},{b:2},{c:3}]);\n  });\n\n  test('handles last line without trailing newline', async () => {\n    const chunks = ['{\"x\":1}\\n{\"y\":2}'];\n    const res = await parseNDJSON(streamFromStrings(chunks));\n    expectEqual(res, [{x:1},{y:2}]);\n  });\n\n  test('skips blank lines and trims CRLF', async () => {\n    const chunks = ['\\r\\n', '{\"n\":1}\\r\\n', '\\n', '{\"m\":2}\\n'];\n    const res = await parseNDJSON(streamFromStrings(chunks));\n    expectEqual(res, [{n:1},{m:2}]);\n  });\n\n  test('reports malformed lines via onError and continues', async () => {\n    const bad = []; // collect bad lines\n    const chunks = ['{\"ok\":1}\\n', '{bad json}\\n', '{\"ok\":2}\\n'];\n    const res = await parseNDJSON(streamFromStrings(chunks), (line, err) => { bad.push(line); });\n    expectEqual(res, [{ok:1},{ok:2}]);\n    expectEqual(bad, ['{bad json}']);\n  });\n});\n",
+    "testsTs": "import parseNDJSON from './ndjson-parser';\n\nconst te = new TextEncoder();\nfunction streamFromStrings(chunks: string[]): ReadableStream<Uint8Array> {\n  return new ReadableStream<Uint8Array>({\n    start(controller) {\n      let i = 0;\n      const pump = () => {\n        if (i >= chunks.length) { controller.close(); return; }\n        controller.enqueue(te.encode(chunks[i++]));\n        setTimeout(pump, 0);\n      };\n      pump();\n    }\n  });\n}\n\nfunction expectEqual(a: any, b: any){ expect(JSON.stringify(a)).toEqual(JSON.stringify(b)); }\n\ndescribe('Streaming NDJSON Parser (TS)', () => {\n  test('parses across chunk boundaries', async () => {\n    const res = await parseNDJSON(streamFromStrings(['{\"a\":1}\\n{\"b\"', ':2}\\n']));\n    expectEqual(res, [{a:1},{b:2}]);\n  });\n\n  test('no trailing newline', async () => {\n    const res = await parseNDJSON(streamFromStrings(['{\"x\":1}\\n{\"y\":2}']));\n    expectEqual(res, [{x:1},{y:2}]);\n  });\n\n  test('error isolation', async () => {\n    const errors: string[] = [];\n    const res = await parseNDJSON(streamFromStrings(['{\"ok\":1}\\n','{oops}\\n','{\"ok\":2}\\n']), (line) => errors.push(line));\n    expectEqual(res, [{ok:1},{ok:2}]);\n    expectEqual(errors, ['{oops}']);\n  });\n});\n"
+  },
+  {
+    "id": "js-array-prototype-map",
+    "title": "Implement Array.prototype.map",
+    "type": "coding",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "Arrays",
+      "Callbacks",
+      "Iteration",
+      "Polyfills"
+    ],
+    "importance": 4,
+    "teaches": [
+      "How built-in array iteration works under the hood",
+      "Correct callback invocation and thisArg binding",
+      "Handling sparse arrays (holes) correctly",
+      "Spec-aware details: boxing, length coercion, property checks"
+    ],
+    "description": {
+      "summary": "Recreate the native `.map()` method **without using it**. Your `myMap` must call the callback for each existing index, pass `(value, index, array)`, respect `thisArg`, and return a new array with the mapped values. It must **skip holes** (no callback for missing indices) and preserve array length.",
+      "arguments": [
+        {
+          "name": "callbackFn",
+          "type": "(currentValue: any, index: number, array: any[]) => any",
+          "desc": "Function to execute on each existing element."
+        },
+        {
+          "name": "thisArg",
+          "type": "any (optional)",
+          "desc": "Value to use as `this` when executing callback."
+        }
+      ],
+      "returns": {
+        "type": "Array",
+        "desc": "A new array with the results of calling `callbackFn` on every existing element."
+      },
+      "examples": [
+        "[1, 2, 3].myMap(x => x * 2) // => [2, 4, 6]",
+        "[, 10, , 30].myMap((v,i) => i) // => [ , 1, , 3 ] (holes preserved)",
+        "[1].myMap(function(x){ return this.add + x }, { add: 5 }) // => [6]"
+      ]
+    },
+    "starterCode": "/* Boilerplate — replace the throw with a correct implementation */\nArray.prototype.myMap = function (callbackFn, thisArg) {\n  throw 'Not implemented!';\n};\n",
+    "starterCodeTs": "declare global {\n  interface Array<T> {\n    myMap<U>(\n      callbackFn: (value: T, index: number, array: Array<T>) => U,\n      thisArg?: any\n    ): Array<U>;\n  }\n}\n\nArray.prototype.myMap = function (callbackFn, thisArg) {\n  throw 'Not implemented!';\n};\n",
+    "solutionBlock": {
+      "explanation": "### Simplified `.map()` behavior\nThis version focuses on practical behavior — iterating over defined indices, skipping holes, and preserving length — without extra spec checks like validating the callback type or boxing `this`. It demonstrates how callbacks and `thisArg` binding work while ignoring sparse indices.",
+      "codeJs": "Array.prototype.myMap = function (callbackFn, thisArg) {\n  const len = this.length;\n  const array = new Array(len);\n\n  for (let k = 0; k < len; k++) {\n    // Ignore index if value is not defined for index (e.g. in sparse arrays).\n    if (Object.hasOwn(this, k)) {\n      array[k] = callbackFn.call(thisArg, this[k], k, this);\n    }\n  }\n\n  return array;\n};\n",
+      "codeTs": "interface Array<T> {\n  myMap<U>(\n    callbackFn: (value: T, index: number, array: Array<T>) => U,\n    thisArg?: any,\n  ): Array<U>;\n}\n\nArray.prototype.myMap = function (callbackFn, thisArg) {\n  const len = this.length;\n  const array = new Array(len);\n\n  for (let k = 0; k < len; k++) {\n    // Ignore index if value is not defined for index (e.g. in sparse arrays).\n    if (Object.hasOwn(this, k)) {\n      array[k] = callbackFn.call(thisArg, this[k], k, this);\n    }\n  }\n\n  return array;\n};\n"
+    },
+    "tests": "const identity = (x) => x;\nconst square = (n) => n * n;\n\ndescribe('Array.prototype.myMap', () => {\n  test('identity', () => {\n    expect([10].myMap(identity)).toEqual([10]);\n    expect([10, 20].myMap(identity)).toEqual([10, 20]);\n  });\n\n  test('square', () => {\n    expect([-4].myMap(square)).toEqual([16]);\n    expect([5].myMap(square)).toEqual([25]);\n  });\n\n  test('skips holes and preserves length', () => {\n    const a = [, 10, , 30];\n    const r = a.myMap((v, i) => i);\n    expect(r.length).toBe(4);\n    expect(0 in r).toBe(false);\n    expect(1 in r).toBe(true);\n    expect(2 in r).toBe(false);\n    expect(3 in r).toBe(true);\n  });\n\n  test('binds thisArg', () => {\n    const ctx = { add: 5 };\n    const out = [1].myMap(function (x) { return this.add + x; }, ctx);\n    expect(out).toEqual([6]);\n  });\n});\n",
+    "testsTs": "// @ts-nocheck\nconst _shimMap = (arr, cb, thisArg) => {\n  const O = Object(arr);\n  const len = O.length >>> 0;\n  const A = new Array(len);\n  for (let k = 0; k < len; k++) {\n    if (k in O) A[k] = cb.call(thisArg, O[k], k, O);\n  }\n  return A;\n};\n\nconst callMap = (arr, cb, thisArg) =>\n  typeof arr.myMap === 'function' ? arr.myMap(cb, thisArg) : _shimMap(arr, cb, thisArg);\n\nconst identity = (element) => element;\nconst square = (element) => element * element;\n\ndescribe('Array.prototype.myMap', () => {\n  test('identity', () => {\n    expect(callMap([10], identity)).toEqual([10]);\n    expect(callMap([10, 20], identity)).toEqual([10, 20]);\n  });\n\n  test('square', () => {\n    expect(callMap([-4], square)).toEqual([16]);\n    expect(callMap([5], square)).toEqual([25]);\n  });\n});\n"
   }
 ]
