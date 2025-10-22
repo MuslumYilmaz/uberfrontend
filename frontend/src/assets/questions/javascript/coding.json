@@ -1178,5 +1178,186 @@
     },
     "tests": "describe('Array.prototype.myFilter', () => {\n  test('filters even numbers', () => {\n    const res = [1, 2, 3, 4, 5].myFilter(x => x % 2 === 0);\n    expect(res).toEqual([2, 4]);\n  });\n\n  test('returns empty array when nothing matches', () => {\n    const res = [1, 3, 5].myFilter(x => x % 2 === 0);\n    expect(res).toEqual([]);\n  });\n\n  test('does not mutate original array', () => {\n    const arr = [1, 2, 3];\n    arr.myFilter(x => x > 1);\n    expect(arr).toEqual([1, 2, 3]);\n  });\n\n  test('uses thisArg correctly', () => {\n    const ctx = { min: 3 };\n    const res = [1, 2, 3, 4, 5].myFilter(function(x) { return x > this.min; }, ctx);\n    expect(res).toEqual([4, 5]);\n  });\n\n  test('skips holes in sparse arrays', () => {\n    const arr = [1, , 3];\n    const res = arr.myFilter(x => true);\n    expect(res).toEqual([1, 3]);\n  });\n});\n",
     "testsTs": "describe('Array.prototype.myFilter (TypeScript)', () => {\n  it('should filter even numbers', () => {\n    const result = [1, 2, 3, 4, 5].myFilter(n => n % 2 === 0);\n    expect(result).toEqual([2, 4]);\n  });\n\n  it('should handle empty results correctly', () => {\n    const result = [1, 3, 5].myFilter(n => n % 2 === 0);\n    expect(result).toEqual([]);\n  });\n\n  it('should use thisArg for context', () => {\n    const ctx = { min: 3 };\n    const result = [1, 2, 3, 4, 5].myFilter(function(x) { return x > this.min; }, ctx);\n    expect(result).toEqual([4, 5]);\n  });\n});\n"
+  },
+  {
+    "id": "js-array-foreach",
+    "title": "Implement Array.forEach (no prototype mutation)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "arrays",
+      "iteration",
+      "callbacks",
+      "edge-cases"
+    ],
+    "description": {
+      "summary": "Write a `forEach` helper that invokes a callback for each existing element in an array, in order, without mutating prototypes. Tests sparse arrays, callback binding, and mutation during iteration.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "Array<any>",
+          "desc": "Source array to iterate. Sparse slots must be skipped."
+        },
+        {
+          "name": "callbackFn",
+          "type": "(value:any, index:number, array:any[]) => void",
+          "desc": "Function to invoke for each present element."
+        },
+        {
+          "name": "thisArg",
+          "type": "any (optional)",
+          "desc": "Value of `this` inside `callbackFn`."
+        }
+      ],
+      "returns": {
+        "type": "void",
+        "desc": "No return value (returns `undefined`)."
+      },
+      "examples": [
+        "// Sum values\nlet sum = 0; arrayForEach([1,2,3], v => { sum += v; }); // sum = 6",
+        "// Respect thisArg\nconst ctx = { seen: [] }; arrayForEach(['a','b'], function (v) { this.seen.push(v); }, ctx); // ctx.seen = ['a','b']",
+        "// Skip holes\nconst a = [1, , 3]; arrayForEach(a, (v, i) => { /* called for i=0 and i=2 only */ });"
+      ]
+    },
+    "starterCode": "export default function arrayForEach(arr, callbackFn, thisArg) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function arrayForEach<T>(\n  arr: (T | undefined)[],\n  callbackFn: (value: T, index: number, array: (T | undefined)[]) => void,\n  thisArg?: any,\n): void {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "Your function should behave like native `Array.prototype.forEach` for core cases: iterate left-to-right over **existing** indices, pass `(value, index, array)`, respect `thisArg`, return `undefined`, and snapshot `length` at start. Sparse slots (holes) must be skipped.\n\n### Baseline\nUse a simple `for` loop from `0..arr.length-1`, calling the callback each time. This naïve approach incorrectly visits holes and may also iterate over elements appended during iteration.\n\n**Complexity:** O(n) time, O(1) extra space.\n\n### Optimized\nSnapshot `const len = arr.length` once, then loop by index and guard with `Object.prototype.hasOwnProperty.call(arr, i)` to skip holes and elements deleted before visit. Using `callbackFn.call(thisArg, ...)` binds `this` correctly. Appends beyond the initial `len` are ignored—matching spec-like behavior.\n\n**Complexity:** O(n) time, O(1) space. This is optimal because each present element must be observed at most once.",
+      "codeJs": "export default function arrayForEach(arr, callbackFn, thisArg) {\n  if (!Array.isArray(arr)) throw new TypeError('arr must be an array');\n  if (typeof callbackFn !== 'function') throw new TypeError('callbackFn must be a function');\n  const len = arr.length; // snapshot length\n  const hasOwn = Object.prototype.hasOwnProperty;\n  for (let i = 0; i < len; i++) {\n    if (hasOwn.call(arr, i)) {\n      callbackFn.call(thisArg, arr[i], i, arr);\n    }\n  }\n  return undefined;\n}\n",
+      "codeTs": "export default function arrayForEach<T>(\n  arr: (T | undefined)[],\n  callbackFn: (value: T, index: number, array: (T | undefined)[]) => void,\n  thisArg?: any,\n): void {\n  if (!Array.isArray(arr)) throw new TypeError('arr must be an array');\n  if (typeof callbackFn !== 'function') throw new TypeError('callbackFn must be a function');\n  const len = arr.length; // snapshot length\n  const hasOwn = Object.prototype.hasOwnProperty;\n  for (let i = 0; i < len; i++) {\n    if (hasOwn.call(arr, i)) {\n      callbackFn.call(thisArg, arr[i] as T, i, arr);\n    }\n  }\n}\n"
+    },
+    "tests": "import arrayForEach from './file';\n\ndescribe('arrayForEach', () => {\n  test('iterates in order', () => {\n    const seen = [];\n    arrayForEach([3, 1, 2], (v) => seen.push(v));\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  test('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function (v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  test('skips holes (edge)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const seen = [];\n    arrayForEach(a, (v, i) => seen.push([v, i]));\n    expect(seen).toEqual([[1, 0], [3, 2]]);\n  });\n});\n",
+    "testsTs": "import arrayForEach from './file';\n\ndescribe('arrayForEach (TypeScript)', () => {\n  it('iterates in order', () => {\n    const a = [3, 1, 2];\n    const seen = [];\n    arrayForEach(a, (v) => { seen.push(v); });\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  it('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function (v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  it('skips holes (edge)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const result = [];\n    arrayForEach(a, (v, i) => { if (v !== undefined) result.push([v, i]); });\n    expect(result).toEqual([[1, 0], [3, 2]]);\n  });\n});\n"
+  },
+  {
+    "id": "js-create-counter",
+    "title": "Create a Counter Function",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "closures",
+      "functions",
+      "state",
+      "increment"
+    ],
+    "description": {
+      "summary": "Implement a function that returns a counter function. Each call to the returned function should increment and return the next integer, starting from the initial number `n`. Tests closure scope and persistent state handling.",
+      "arguments": [
+        {
+          "name": "n",
+          "type": "number",
+          "desc": "The starting integer for the counter."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A function that returns the next integer each time it’s called."
+      },
+      "examples": [
+        "// Example 1\nconst counter = createCounter(10);\ncounter(); // => 10\ncounter(); // => 11\ncounter(); // => 12",
+        "// Example 2\nconst counter = createCounter(-2);\ncounter(); // => -2\ncounter(); // => -1\ncounter(); // => 0"
+      ]
+    },
+    "starterCode": "export default function createCounter(n) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function createCounter(n: number): () => number {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "**Goal:** Preserve state between function calls using closures.\n\n### Baseline\nReturn an object or variable tracked outside the function, but that would leak global state or break encapsulation.\n\n### Optimized\nUse a closure: define an inner function that captures and mutates a local variable `n`. Each call increments and returns the new value. This ensures proper state isolation per counter instance.\n\n**Complexity:** O(1) time and O(1) space per call.\n\n**Real-world use:** API rate limiters, retry counters, or request sequence generators.",
+      "codeJs": "export default function createCounter(n) {\n  return function() {\n    const current = n;\n    n += 1;\n    return current;\n  };\n}\n",
+      "codeTs": "export default function createCounter(n: number): () => number {\n  return function(): number {\n    const current = n;\n    n += 1;\n    return current;\n  };\n}\n"
+    },
+    "tests": "import createCounter from './file';\n\ndescribe('createCounter', () => {\n  test('increments sequentially', () => {\n    const counter = createCounter(10);\n    expect(counter()).toBe(10);\n    expect(counter()).toBe(11);\n    expect(counter()).toBe(12);\n  });\n\n  test('works with negative numbers', () => {\n    const counter = createCounter(-2);\n    expect(counter()).toBe(-2);\n    expect(counter()).toBe(-1);\n    expect(counter()).toBe(0);\n  });\n\n  test('separate counters maintain independent state', () => {\n    const c1 = createCounter(0);\n    const c2 = createCounter(100);\n    expect(c1()).toBe(0);\n    expect(c2()).toBe(100);\n    expect(c1()).toBe(1);\n    expect(c2()).toBe(101);\n  });\n});\n",
+    "testsTs": "import createCounter from './file';\n\ndescribe('createCounter (TypeScript)', () => {\n  it('increments sequentially', () => {\n    const counter = createCounter(5);\n    expect(counter()).toBe(5);\n    expect(counter()).toBe(6);\n    expect(counter()).toBe(7);\n  });\n\n  it('works with negative numbers', () => {\n    const counter = createCounter(-2);\n    expect(counter()).toBe(-2);\n    expect(counter()).toBe(-1);\n    expect(counter()).toBe(0);\n  });\n\n  it('independent counters maintain separate state', () => {\n    const c1 = createCounter(1);\n    const c2 = createCounter(50);\n    expect(c1()).toBe(1);\n    expect(c2()).toBe(50);\n    expect(c1()).toBe(2);\n    expect(c2()).toBe(51);\n  });\n});\n"
+  },
+  {
+    "id": "js-is-object-empty",
+    "title": "Check if an Object or Array is Empty",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "objects",
+      "arrays",
+      "basics",
+      "validation"
+    ],
+    "description": {
+      "summary": "Implement a function that determines whether a given object or array is empty. Tests your ability to handle both array and object structures and reason about length and key-value pairs.",
+      "arguments": [
+        {
+          "name": "obj",
+          "type": "Object | Array",
+          "desc": "An object or array parsed from JSON."
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "desc": "Returns `true` if empty; otherwise `false`."
+      },
+      "examples": [
+        "// Example 1\nisEmpty({ x: 5, y: 42 }); // => false",
+        "// Example 2\nisEmpty({}); // => true",
+        "// Example 3\nisEmpty([null, false, 0]); // => false"
+      ]
+    },
+    "starterCode": "export default function isEmpty(obj) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function isEmpty(obj: Record<string, any> | any[]): boolean {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "**Goal:** Return `true` if the input object or array is empty.\n\n### Baseline\nCheck `Object.keys(obj).length === 0`. Works for plain objects, but may fail if input is an array — though arrays also have enumerable indices.\n\n### Optimized\nUse unified logic: if it's an array, check `length === 0`; otherwise, check `Object.keys(obj).length === 0`. Handles both cases properly.\n\n**Complexity:** O(1) time for arrays, O(n) for objects (keys enumeration), O(1) space.\n\n**Real-world use:** Common validation for API responses, form submissions, or state checks.",
+      "codeJs": "export default function isEmpty(obj) {\n  if (Array.isArray(obj)) return obj.length === 0;\n  if (obj && typeof obj === 'object') return Object.keys(obj).length === 0;\n  throw new TypeError('Expected object or array');\n}\n",
+      "codeTs": "export default function isEmpty(obj: Record<string, any> | any[]): boolean {\n  if (Array.isArray(obj)) return obj.length === 0;\n  if (obj && typeof obj === 'object') return Object.keys(obj).length === 0;\n  throw new TypeError('Expected object or array');\n}\n"
+    },
+    "tests": "import isEmpty from './file';\n\ndescribe('isEmpty', () => {\n  test('returns false for non-empty object', () => {\n    expect(isEmpty({ x: 5, y: 42 })).toBe(false);\n  });\n\n  test('returns true for empty object', () => {\n    expect(isEmpty({})).toBe(true);\n  });\n\n  test('returns false for non-empty array', () => {\n    expect(isEmpty([null, false, 0])).toBe(false);\n  });\n});\n",
+    "testsTs": "import isEmpty from './file';\n\ndescribe('isEmpty (TypeScript)', () => {\n  it('returns false for non-empty object', () => {\n    expect(isEmpty({ x: 5, y: 42 })).toBe(false);\n  });\n\n  it('returns true for empty object', () => {\n    expect(isEmpty({})).toBe(true);\n  });\n\n  it('returns false for non-empty array', () => {\n    expect(isEmpty([1, 2, 3])).toBe(false);\n  });\n});\n"
+  },
+  {
+    "id": "js-add-two-promises",
+    "title": "Add Two Promises",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "promises",
+      "async",
+      "functions",
+      "basics"
+    ],
+    "description": {
+      "summary": "Implement a function that takes two promises resolving to numbers and returns a new promise that resolves to their sum. Tests async/await usage and Promise handling.",
+      "arguments": [
+        {
+          "name": "promise1",
+          "type": "Promise<number>",
+          "desc": "A promise that resolves with a number."
+        },
+        {
+          "name": "promise2",
+          "type": "Promise<number>",
+          "desc": "Another promise that resolves with a number."
+        }
+      ],
+      "returns": {
+        "type": "Promise<number>",
+        "desc": "A promise resolving with the sum of the two resolved values."
+      },
+      "examples": [
+        "// Example 1\nconst p1 = new Promise(resolve => setTimeout(() => resolve(2), 20));\nconst p2 = new Promise(resolve => setTimeout(() => resolve(5), 60));\nawait addTwoPromises(p1, p2); // => 7",
+        "// Example 2\nconst p1 = new Promise(resolve => setTimeout(() => resolve(10), 50));\nconst p2 = new Promise(resolve => setTimeout(() => resolve(-12), 30));\nawait addTwoPromises(p1, p2); // => -2"
+      ]
+    },
+    "starterCode": "export default async function addTwoPromises(promise1, promise2) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default async function addTwoPromises(promise1: Promise<number>, promise2: Promise<number>): Promise<number> {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "explanation": "**Goal:** Return a promise that resolves to the sum of two asynchronous values.\n\n### Baseline\nChain nested `.then()` calls to wait for both promises and sum them. It works but is less readable and still resolves sequentially if written naïvely.\n\n### Optimized\nUse `Promise.all()` (or `async/await`) to resolve both values concurrently, then add them. This keeps code concise and waits only for the slower promise.\n\n**Complexity:** O(1) extra space; total time equals the slower promise’s resolution.\n\n**Real-world use:** Combining results of concurrent API calls or aggregating async computations.",
+      "codeJs": "export default async function addTwoPromises(promise1, promise2) {\n  const [a, b] = await Promise.all([promise1, promise2]);\n  return a + b;\n}\n",
+      "codeTs": "export default async function addTwoPromises(promise1: Promise<number>, promise2: Promise<number>): Promise<number> {\n  const [a, b] = await Promise.all([promise1, promise2]);\n  return a + b;\n}\n"
+    },
+    "tests": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles negative and positive mix', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with zero values (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(0), Promise.resolve(0));\n    expect(result).toBe(0);\n  });\n});\n",
+    "testsTs": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises (TypeScript)', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles mix of negative and positive', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with immediately resolved promises (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(3), Promise.resolve(4));\n    expect(result).toBe(7);\n  });\n});\n"
   }
 ]
