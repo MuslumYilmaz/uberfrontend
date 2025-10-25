@@ -47,13 +47,13 @@
       "approaches": [
         {
           "title": "Approach 1: Branching (readable baseline)",
-          "prose": "Straightforward comparisons. Easiest to read and extend (e.g., logging or metrics).",
+          "prose": "Idea: check the value against each bound and return the first applicable result.\n\nHow it works\n1. If value < lower, return lower (lift it up).\n2. Else if value > upper, return upper (cap it).\n3. Otherwise return value unchanged.\n\nWhy use it: very explicit and easy to debug or extend (e.g., add logs/metrics around each branch). Caller should still ensure lower \u2264 upper.",
           "codeJs": "export default function clamp(value, lower, upper) {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n",
           "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n"
         },
         {
           "title": "Approach 2: Math chaining (compact)",
-          "prose": "Use `Math.max` to lift the value to the lower bound, then `Math.min` to cap at the upper bound.",
+          "prose": "Idea: clamp in one expression — first lift to the lower bound, then cap to the upper bound.\n\nUse `Math.min(Math.max(value, lower), upper)` to ensure the value stays between both bounds.\n\nRead it as: *at least lower, at most upper.*\n\nWhy use it: terse, branch-free, and fast to read once familiar. Ensure `lower ≤ upper`; if not, the result may be surprising.",
           "codeJs": "export default function clamp(value, lower, upper) {\n  return Math.min(Math.max(value, lower), upper);\n}\n",
           "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  return Math.min(Math.max(value, lower), upper);\n}\n"
         }
