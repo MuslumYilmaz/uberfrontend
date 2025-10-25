@@ -1,90 +1,96 @@
 :host { display: block; }
 
-/* Keep Monaco pinned inside its column */
+/* ---------- Monaco: never overflow horizontally ---------- */
 :host ::ng-deep .monaco-editor,
-:host ::ng-deep .monaco-editor .overflow-guard {
-  max-width: 100% !important;
-  width: 100% !important;
+:host ::ng-deep .monaco-editor .overflow-guard { max-width: 100% !important; width: 100% !important; }
+:host ::ng-deep .monaco-editor .editor-scrollable { overflow-x: hidden !important; }
+:host ::ng-deep .monaco-editor .view-lines { font-size: 12px !important; line-height: 18px !important; }
+
+/* ---------- Rich text / prose base ---------- */
+:host ::ng-deep .prose { color:#e5e7eb; }
+:host ::ng-deep .prose h1, 
+:host ::ng-deep .prose h2, 
+:host ::ng-deep .prose h3 { font-weight:600; line-height:1.25; margin:.75rem 0 .5rem; }
+:host ::ng-deep .prose p { margin:0 0 .5rem 0; }
+:host ::ng-deep .prose ul { list-style:disc; margin:.25rem 0 .5rem 1.25rem; }
+:host ::ng-deep .prose ol { list-style:decimal; margin:.25rem 0 .5rem 1.25rem; }
+:host ::ng-deep .prose a { text-decoration:underline; }
+:host ::ng-deep .prose code {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  padding: .05rem .3rem;
+  border-radius: .25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .85em; /* will be additionally reduced below via .85em*.85em */
 }
 
-/* Belt-and-suspenders: never spill horizontally */
-:host ::ng-deep .monaco-editor .editor-scrollable {
-  overflow-x: hidden !important;
+/* inline code chips (also outside .prose, e.g., in Overview) */
+:host ::ng-deep code { padding:0 3px; border-radius:4px; background:rgba(125,125,125,.15); }
+
+/* ---------- Layout guards ---------- */
+.coding-detail .min-w-0, .coding-detail .flex-1 { min-width: 0; }
+.fixed-under-header { position:fixed; top:var(--app-safe-top,64px); right:0; left:0; bottom:56px; overflow:hidden; }
+
+/* ---------- Tabs / header micro-polish ---------- */
+.coding-detail .flex.items-center.border-b .px-4.py-2 { padding:.5rem .75rem; }
+.coding-detail select { 
+  appearance: none;
+  background:#1f2937; 
+  border:1px solid rgba(255,255,255,.10);
+  color:#e5e7eb; 
+  border-radius:6px; 
+  padding:.25rem .5rem; 
+  font-size:.75rem; 
+  line-height:1rem;
 }
+.coding-detail select:focus { outline: none; border-color:#60a5fa; box-shadow:0 0 0 2px rgba(96,165,250,.25); }
 
-/* scope to wherever you render the explanation */
-:host ::ng-deep .sol-h3 {
-  margin: 12px 0 6px;
-  font-weight: 600;
-  font-size: 1rem;
-}
+/* ---------- Splitters ---------- */
+.splitter{ width:5px; background:transparent; border-radius:25px; cursor:col-resize; transition:background-color .15s; }
+.splitter:hover, .splitter.dragging{ background-color:#3b82f6; }
+.horizontal-splitter{ height:5px; z-index:2; background:transparent; border-radius:25px; cursor:row-resize; user-select:none; transition:background-color .15s; }
+.horizontal-splitter:hover, .horizontal-splitter.dragging{ background-color:#3b82f6; }
 
-:host ::ng-deep .sol-p {
-  margin: 0 0 8px;
-  line-height: 1.5;
-}
-
-:host ::ng-deep .sol-ol,
-:host ::ng-deep .sol-ul {
-  margin: 6px 0 12px;
-  padding-left: 1.25rem; /* ~ ml-5 */
-}
-
-:host ::ng-deep .sol-ol { list-style: decimal; }
-:host ::ng-deep .sol-ul { list-style: disc; }
-
-:host ::ng-deep code {
-  padding: 0 3px;
-  border-radius: 4px;
-  background: rgba(125,125,125,0.15);
-}
-
-/* (Already used in many places, but ensure the flex children can shrink) */
-.coding-detail .min-w-0,
-.coding-detail .flex-1 { min-width: 0; }
-
-/* Full-viewport work area that never hides under header/footer */
-.fixed-under-header {
-  position: fixed;
-  top: var(--app-safe-top, 64px);
-  right: 0;
-  left: 0;
-  bottom: 56px; /* footer */
+/* ---------- Approaches list cards ---------- */
+.coding-detail .rounded-md.border {
+  background: rgba(255,255,255,.02);
+  border-color: rgba(255,255,255,.14) !important;
   overflow: hidden;
 }
+.coding-detail .rounded-md.border > .p-3 {
+  padding: .9rem .95rem;
+  background: transparent;
+}
+.coding-detail .rounded-md.border > .p-3 + .p-3 { border-top: 1px solid rgba(255,255,255,.08); }
+.coding-detail .rounded-md.border > .p-3 .flex.items-center.gap-2 { gap:.5rem; }
+.coding-detail .rounded-md.border > .p-3 h4 { font-weight:600; color:#e5e7eb; }
+.coding-detail .rounded-md.border > .p-3 .uf-btn { padding:.35rem .7rem; font-size:.85rem; }
 
-/* PrimeNG & Monaco touch-ups */
-:host ::ng-deep .p-component { font-size: .875rem; }
-:host ::ng-deep .monaco-editor .view-lines {
-  font-size: 12px !important;
-  line-height: 18px !important;
+/* make the Monaco block read as a card */
+.coding-detail .rounded-md.border app-monaco-editor {
+  display:block;
+  border-radius:8px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
 }
 
-/* Splitters */
-.splitter { width:5px; background:transparent; border-radius:25px; cursor:col-resize; transition:background-color .15s; }
-.splitter:hover,
-.splitter.dragging { background-color:#3b82f6; }
-
-.horizontal-splitter {
-  height: 5px;
-  z-index: 2;
-  background-color: transparent;
-  border-radius: 25px;
-  cursor: row-resize;
-  user-select: none;
-  transition: background-color .15s ease;
-  &:hover, &.dragging { background-color: #3b82f6; }
+/* ---------- Notes & Pitfalls tiles ---------- */
+.coding-detail .grid.md\:grid-cols-3.gap-3 { align-items: stretch; }
+.coding-detail .grid.md\:grid-cols-3.gap-3 > div {
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  min-height: 100%;
 }
-
-/* Solution warning */
-.solution-warning { font-size: 13px; padding: 1rem; }
-.icon-warning {
-  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9999px;
-  background: rgba(250,204,21,.08); border: 1px solid rgba(250,204,21,.25);
-  i { font-size: 16px; color: #facc15; }
+.coding-detail .grid.md\:grid-cols-3.gap-3 > div .text-xs.uppercase { 
+  letter-spacing:.06em; 
+  font-weight:700; 
+  color:#cbd5e1; 
 }
+.coding-detail .grid.md\:grid-cols-3.gap-3 > div ul { margin:.25rem 0 0 0; padding-left:1rem; }
+.coding-detail .grid.md\:grid-cols-3.gap-3 > div li { margin:.25rem 0; }
 
-/* Results scaling */
+/* ---------- Results / console panel ---------- */
 .results-panel { font-size:13px; line-height:1.4; }
 .results-panel .summary { font-size:12px; opacity:.95; }
 .results-panel .test-card { padding:8px; }
@@ -92,274 +98,194 @@
 .results-panel .test-name i { font-size:14px; }
 .results-panel .test-error { margin-top:4px; font-size:12px; }
 
-/* Banner + empty state icon */
-.restore-banner { line-height: 1.3; border-bottom: 1px solid rgba(0,0,0,.08); }
-.icon-hero {
-  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 9999px;
-  background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.25); margin: 0 auto;
-  i { font-size: 22px; color: #60a5fa; }
+/* ---------- Warning + banners ---------- */
+.solution-warning { font-size:13px; padding:1rem; }
+.icon-warning { display:grid; place-items:center; width:32px; height:32px; border-radius:9999px;
+  background:rgba(250,204,21,.08); border:1px solid rgba(250,204,21,.25); }
+.icon-warning i { font-size:16px; color:#facc15; }
+.restore-banner { line-height:1.3; border-bottom:1px solid rgba(0,0,0,.08); }
+.icon-hero { display:grid; place-items:center; width:56px; height:56px; border-radius:9999px;
+  background:rgba(59,130,246,.08); border:1px solid rgba(59,130,246,.25); margin:0 auto; }
+.icon-hero i { font-size:22px; color:#60a5fa; }
+
+/* ---------- File drawer ---------- */
+.file-drawer{ position:absolute; inset:0; pointer-events:none; z-index:50; }
+.file-drawer .backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.5); opacity:0; transition:opacity .18s ease; z-index:50; }
+.file-drawer .panel{ position:absolute; top:0; bottom:0; left:0; width:min(80vw,320px); background:#0b0b0b; border-right:1px solid rgba(255,255,255,.08); transform:translateX(-100%); transition:transform .2s ease; display:flex; flex-direction:column; pointer-events:auto; z-index:51; }
+.file-drawer.open { pointer-events:auto; }
+.file-drawer.open .backdrop { opacity:1; }
+.file-drawer.open .panel { transform:translateX(0); }
+.file-drawer .panel-header{ display:flex; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,.08); font-size:12px; color:#e5e7eb; }
+.file-drawer .panel-body{ overflow:auto; padding:6px; }
+
+/* ---------- File tree ---------- */
+.file-tree{ list-style:none; margin:0; padding:6px 0; font-size:12px; color:#d1d5db; }
+.file-tree ul{ list-style:none; margin:0; padding:0; }
+.tree-row{ display:flex; align-items:center; gap:8px; border-radius:6px; cursor:pointer; padding:4px 6px; user-select:none; }
+.tree-row:hover{ background:rgba(255,255,255,.06); }
+.folder-row .caret{ font-size:10px; opacity:.8; transition:transform .15s ease; }
+.folder-row.open .caret{ transform:rotate(90deg); }
+.folder-row .folder-ico{ font-size:12px; opacity:.85; }
+.file-row .file-ico{ font-size:11px; opacity:.7; }
+.file-row.active{ background:rgba(59,130,246,.12); color:#93c5fd; border-left:2px solid #3b82f6; }
+.file-row .name{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.children{ margin:2px 0; }
+
+/* ---------- Buttons (shared) ---------- */
+.uf-btn{ display:inline-flex; align-items:center; gap:.25rem; padding:.35rem .75rem; font-size:.875rem; line-height:1.25rem; border:1px solid rgba(255,255,255,.12); border-radius:.375rem; background:#1f2937; color:#e5e7eb; transition:background .15s ease, border-color .15s ease, color .15s ease; }
+.uf-btn:hover{ background:#374151; border-color:rgba(255,255,255,.24); }
+.uf-btn:active{ transform:translateY(1px); }
+.uf-btn--ghost{ background:transparent; border-color:rgba(255,255,255,.12); }
+.uf-btn--ghost:hover{ background:rgba(255,255,255,.06); }
+.uf-chip{ display:inline-flex; align-items:center; padding:2px 6px; border-radius:6px; font-size:10px; line-height:1; opacity:.8; border:1px solid rgba(255,255,255,.12); }
+
+/* ---------- Tiny icon button ---------- */
+.icon-btn{ display:inline-grid; place-items:center; width:28px; height:28px; border-radius:6px; background:transparent; border:1px solid rgba(255,255,255,.12); color:#e5e7eb; transition:background .15s ease, border-color .15s ease, transform .02s ease; }
+.icon-btn i{ font-size:12px; }
+.icon-btn:hover{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.2); }
+.icon-btn:active{ transform:translateY(1px); }
+
+/* ---------- Title truncation fixes ---------- */
+.coding-detail .rounded-md.border > .p-3 h4.truncate {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
 }
 
-/* StackBlitz crop + click masking */
-:host ::ng-deep .sb-cropper {
-  --sb-footer-h: 40px;   /* adjust if SB changes footer height */
-  position: relative;
-  overflow: hidden;      /* clip the extra space */
-  height: 100%;
+/* ---------- Notes & Pitfalls: single column ---------- */
+.coding-detail .grid.md\:grid-cols-3.gap-3 {
+  grid-template-columns: 1fr !important;
+  gap: .75rem;
 }
-
-/* host for the embed */
-:host ::ng-deep .sb-cropper .sb-slot {
-  position: absolute;
-  inset: 0;
-  z-index: 1;           /* sits under the mask */
-}
-
-/* put drawer above SB iframe (+ our ::before/::after masks) */
-.file-drawer { 
-  position: absolute; 
-  inset: 0; 
-  pointer-events: none;
-  z-index: 50;              /* NEW */
-}
-.file-drawer .backdrop { z-index: 50; }
-.file-drawer .panel { z-index: 51; }   /* panel above backdrop */
-
-/* already present, keep as-is */
-.file-drawer.open { pointer-events: auto; }
-.file-drawer.open .backdrop { opacity: 1; }
-.file-drawer.open .panel { transform: translateX(0); }
-
-/* fix the last nesting leftover */
-.horizontal-splitter:hover,
-.horizontal-splitter.dragging { background-color: #3b82f6; }
-
-/* crop footer by shifting iframe up a bit */
-:host ::ng-deep .sb-cropper .sb-slot iframe {
-  position: absolute;
-  inset: 0;
+.coding-detail .grid.md\:grid-cols-3.gap-3 > div {
   width: 100%;
-  height: calc(100% + var(--sb-footer-h));
-  transform: translateY(calc(var(--sb-footer-h) * -1));
-  border: 0;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
 }
 
-/* the visible mask that also blocks clicks to the real SB footer */
-:host ::ng-deep .sb-cropper::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: var(--sb-footer-h);
-  background: #0a0a0a;   /* match panel bg */
-  pointer-events: auto;  /* block clicks to footer */
-  z-index: 2;
+/* ---------- Approach header wraps nicely ---------- */
+.coding-detail .rounded-md.border > .p-3 .flex.items-center.gap-2 { flex-wrap: wrap; }
+.coding-detail .rounded-md.border > .p-3 .flex.items-center.gap-2 h4 {
+  font-size: .95rem;
+  line-height: 1.25;
+  font-weight: 600;
+  flex: 1 1 360px;
+  min-width: 260px;
+  margin-right: .5rem;
+  white-space: normal !important;
+  text-overflow: clip !important;
+  overflow: visible !important;
 }
-
-/* temporary full-overlay to block interactions while dragging splitters */
-.sb-cropper.sb-no-clicks::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  background: transparent;
-  pointer-events: auto;  /* swallow all events while dragging */
-}
-
-/* Tiny icon button (header) */
-.icon-btn {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #e5e7eb;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.02s ease;
-}
-.icon-btn i { font-size: 12px; }
-.icon-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-.icon-btn:active { transform: translateY(1px); }
-
-/* Off-canvas drawer root (disabled until open) */
-.file-drawer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-/* Backdrop */
-.file-drawer .backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity 0.18s ease;
-}
-
-/* Slide-in panel */
-.file-drawer .panel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: min(80vw, 320px);
-  background: #0b0b0b;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  transform: translateX(-100%);
-  transition: transform 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  pointer-events: auto;
-}
-
-/* Panel header */
-.file-drawer .panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 12px;
-  color: #e5e7eb;
-}
-
-/* Panel body */
-.file-drawer .panel-body {
-  overflow: auto;
-  padding: 6px;
-}
-
-/* File list */
-.file-drawer .file-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 12px;
-}
-.file-drawer .file-item {
-  padding: 6px 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: #d1d5db;
-}
-.file-drawer .file-item:hover { background: #1f2937; }
-.file-drawer .file-item.active {
-  background: #111827;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Open state */
-.file-drawer.open { pointer-events: auto; }
-.file-drawer.open .backdrop { opacity: 1; }
-.file-drawer.open .panel { transform: translateX(0); }
-
-/* Ensure the host container is positioning context for the absolute drawer */
-.bg-neutral-900.rounded-lg.shadow-sm.border.flex-1.flex.flex-col.overflow-hidden {
-  position: relative;
-}
-
-/* smooth-ish drawer */
-.file-drawer-enter { transform: translateX(-16px); opacity: 0; }
-.file-drawer-enter-active { transform: translateX(0); opacity: 1; transition: all .12s ease; }
-
-/* --- File tree --- */
-.file-tree { list-style: none; margin: 0; padding: 6px 0; font-size: 12px; color: #d1d5db; }
-.file-tree ul { list-style: none; margin: 0; padding: 0; }
-
-.tree-row {
-  display: flex; align-items: center; gap: 8px;
-  border-radius: 6px; cursor: pointer; padding: 4px 6px; user-select: none;
-}
-.tree-row:hover { background: rgba(255,255,255,.06); }
-
-.folder-row .caret { font-size: 10px; opacity: .8; transition: transform .15s ease; }
-.folder-row.open .caret { transform: rotate(90deg); }
-.folder-row .folder-ico { font-size: 12px; opacity: .85; }
-
-.file-row .file-ico { font-size: 11px; opacity: .7; }
-.file-row.active {
-  background: rgba(59,130,246,.12);
-  color: #93c5fd;
-  border-left: 2px solid #3b82f6;
-}
-.file-row .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.file-row .crumb { margin-left: auto; opacity: .55; font-size: 11px; white-space: nowrap; }
-.children { margin: 2px 0 2px 0; }
-
-/* --- Examples editor auto-height --- */
-.examples-block { width: 100%; }
-.examples-block app-monaco-editor { display: block; width: 100%; }
-
-/* Monaco needs explicit auto-height on its internals */
-:host ::ng-deep .examples-block .monaco-editor .overflow-guard {
-  height: auto !important;
-  min-height: 0 !important;
-}
-
-/* Ensure the scrollable area stretches with content */
-:host ::ng-deep .examples-block .monaco-scrollable-element {
-  min-height: 100% !important;
-}
-
-/* Optional: hide minimap for this tiny read-only block, if enabled globally */
-:host ::ng-deep .examples-block .minimap { display: none !important; }
-
-/* Make lines that start with "- " look like bullets */
-.prose p::marker { content: none; }
-.prose p { margin: 0 0 .5rem 0; }
-.prose p:has(> .dash-bullet) { margin-left: 1rem; }
-
-/* Inline code chip */
-.prose code {
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.12);
-  padding: .05rem .3rem;
-  border-radius: .25rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: .85em;
-}
-
-/* Solution header micro-polish */
-.sol-head .rounded { border-radius: 6px; }
-.sol-head button {
-  transition: background .15s ease, border-color .15s ease;
-}
-.sol-head button:hover {
-  background: rgba(255,255,255,.06);
-  border-color: rgba(255,255,255,.2);
-}
-
-/* --- UF buttons (shared) --- */
-.uf-btn {
+.coding-detail .rounded-md.border > .p-3 .uf-btn {
+  white-space: nowrap;
+  height: 32px;
+  padding: 0 .65rem;
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
-  padding: .25rem .75rem;          /* px-3 py-1 */
-  font-size: .875rem;              /* text-sm */
-  line-height: 1.25rem;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: .375rem;          /* rounded */
-  background: #1f2937;             /* bg-neutral-800 */
-  color: #e5e7eb;                  /* text-gray-200 */
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  line-height: 1;
 }
-.uf-btn:hover { background: #374151; border-color: rgba(255,255,255,.24); }
-.uf-btn:active { transform: translateY(1px); }
 
-.uf-btn--ghost {                   /* texty button used in “Hide description”, etc. */
+/* ---------- Approach header layout ---------- */
+.ap-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: .5rem;
+  margin-bottom: .25rem;
+}
+.ap-num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  font-size: 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,.10);
+}
+.ap-title { font-size: 1rem; line-height: 1.35; font-weight: 600; margin: 0; white-space: normal; }
+
+/* ---------- Toolbar ---------- */
+.ap-toolbar {
+  display: inline-flex;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: .25rem 0 .5rem;
+  background: #111827;
+}
+.ap-toolbar .seg-btn {
+  height: 32px;
+  padding: 0 .8rem;
+  font-size: .85rem;
+  line-height: 1;
+  color: #e5e7eb;
   background: transparent;
-  border-color: rgba(255,255,255,.12);
+  border: 0;
+  border-right: 1px solid rgba(255,255,255,.12);
+  cursor: pointer;
 }
-.uf-btn--ghost:hover { background: rgba(255,255,255,.06); }
+.ap-toolbar .seg-btn:last-child { border-right: 0; }
+.ap-toolbar .seg-btn:hover { background: rgba(255,255,255,.06); }
+.ap-toolbar .seg-btn:active { background: rgba(255,255,255,.1); }
 
-.uf-chip {
-  display:inline-flex; align-items:center;
-  padding: 2px 6px; border-radius: 6px;
-  font-size: 10px; line-height: 1; opacity:.8;
-  border: 1px solid rgba(255,255,255,.12);
+/* ---------- Code block styling / copy button ---------- */
+.coding-detail .rounded-md.border app-monaco-editor {
+  display: block;
+  border-radius: 8px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
 }
+.code-wrap { position: relative; }
+.copy-fab {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 34px; height: 34px;
+  border-radius: 9999px;
+  display: inline-grid; place-items: center;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.35);
+  color: #fff;
+  opacity: 0; transform: scale(.96);
+  transition: opacity .15s ease, transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.code-wrap:hover .copy-fab { opacity: 1; transform: scale(1); }
+.copy-fab:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.5); }
+.copy-fab:active { transform: scale(.98); }
+@media (hover: none) { .copy-fab { opacity: 1; } }
+.copy-fab.copied, .copy-fab i.pi-check { filter: drop-shadow(0 0 6px rgba(34,197,94,.45)); }
+
+/* ---------- Approach row grid ---------- */
+.ap-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+}
+.ap-actions { justify-self: end; }
+@media (max-width: 640px) {
+  .ap-row { grid-template-columns: auto 1fr; }
+  .ap-actions { grid-column: 1 / -1; margin-top: .25rem; }
+}
+.ap-row + .prose { margin-top: .5rem; }
+.ap-row + .code-wrap { margin-top: .5rem; }
+
+/* ===== Unified reading size for Description & Solution (calmer) ===== */
+:host {
+  --uf-body: 14px;
+  --uf-leading: 1.55;
+}
+.font-sm {
+  font-size: var(--uf-body);
+  line-height: var(--uf-leading);
+  color: #e6e6e6;
+}
+
+/* Ensure Tailwind's .prose inherits our sizes */
+:host ::ng-deep .prose{ font-size: inherit; line-height: inherit; }
+/* Inline code a touch smaller for contrast */
+:host ::ng-deep .prose code{ font-size: .85em; }
+/* Slightly tighter vertical rhythm for stacked sections */
+.coding-detail .space-y-4 > * + *{ margin-top: 20px; }

@@ -56,6 +56,28 @@ type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
   | { type: 'file'; name: string; path: string; crumb?: string };
 
+// --- Solution (structured) ---
+type UFApproach = {
+  title: string;
+  prose?: string;
+  codeJs?: string;
+  codeTs?: string;
+};
+
+type UFFollowUpRef = string | { id: string };
+
+type UFSolutionBlock = {
+  overview?: string;
+  approaches?: UFApproach[];
+  notes?: { pitfalls?: string[]; edgeCases?: string[]; techniques?: string[] };
+  followUp?: string[];
+  followUpQuestions?: UFFollowUpRef[];
+  resources?: { title: string; url: string }[];
+  explanation?: string;
+  codeJs?: string;
+  codeTs?: string;
+};
+
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
@@ -94,6 +116,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   subTab = signal<'code' | 'tests' | 'console'>('tests');
   editorRatio = signal(0.6);
   horizontalRatio = signal(0.3);
+
+  similarOpen = signal(true);
+
 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
@@ -171,6 +196,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   courseNav = signal<CourseNavState>(null);
   returnLabel = signal<string | null>(null);
   private returnTo: any[] | null = null;
+
+  copiedIdx: number | null = null;
+  private copyTimer?: any;
 
   // Practice session
   private practice: PracticeSession = null;
@@ -453,7 +481,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       // aside (description) width = horizontalRatio * 100%
       const initialAside =
         this.isWebTech() ? 0.28 :               // HTML/CSS: ~28% aside, 72% editors
-          this.tech === 'javascript' ? 0.36 :     // JS: a bit wider spec area
+          this.tech === 'javascript' ? 0.5 :     // JS: a bit wider spec area
             0.30;                                   // Frameworks: compact aside
       this.horizontalRatio.set(initialAside);
       this.lastAsideRatio = initialAside;       // keep for restore after collapse
@@ -492,6 +520,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
+    clearTimeout(this.copyTimer);
     document.body.style.overflow = '';
   }
 
@@ -1539,22 +1568,27 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 
   loadSolutionCode() {
-    const q = this.question(); if (!q) return;
+    const q = this.question(); if (!q || this.isWebTech()) return;
 
-    if (this.isWebTech()) {
-      // unchanged in your app — you already handle web separately elsewhere
-      return;
+    const s = this.structuredSolution();
+    const first = (s?.approaches && s.approaches[0]) || null;
+    let value = first ? this.codeFor(first) : '';
+
+    if (!value?.trim()) {
+      // legacy fallback
+      const lang = this.jsLang();
+      const block = this.solutionInfo();
+      value =
+        (lang === 'ts' && block.codeTs?.trim()) ? block.codeTs :
+          (block.codeJs?.trim() ? block.codeJs :
+            this.getSolution(q, lang) || this.getSolution(q, lang === 'ts' ? 'js' : 'ts') || '');
     }
 
-    const lang = this.jsLang();
-    const block = this.solutionInfo();
-    const value =
-      (lang === 'ts' && block.codeTs?.trim()) ? block.codeTs :
-        (block.codeJs?.trim() ? block.codeJs :
-          this.getSolution(q, lang) || this.getSolution(q, lang === 'ts' ? 'js' : 'ts') || '');
+    if (value?.trim()) {
+      this.editorContent.set(value);
+      this.codeStore.saveJs(q.id, value, this.jsLang());
+    }
 
-    this.editorContent.set(value);
-    this.codeStore.saveJs(q.id, value, lang);   // persist via service
     this.activePanel.set(1);
     this.topTab.set('code');
   }
@@ -1886,12 +1920,70 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   });
 
+  // NORMALIZED access to the *new* structured solution (keeps legacy fallback)
+  structuredSolution = computed<UFSolutionBlock>(() => {
+    const q = this.question();
+    const raw = (q as any)?.solutionBlock as UFSolutionBlock | undefined;
+    if (raw && (raw.overview || raw.approaches || raw.notes || raw.followUp || raw.resources)) {
+      return raw;
+    }
+    // fallback: map legacy fields if present so UI still renders
+    const legacy = this.solutionInfo(); // your existing { explanation, codeJs, codeTs }
+    return {
+      overview: legacy.explanation,
+      approaches: [{
+        title: 'Approach 1: Reference implementation',
+        prose: 'Baseline solution from legacy fields.',
+        codeJs: legacy.codeJs,
+        codeTs: legacy.codeTs
+      }]
+    };
+  });
+
+  // Convenience getters for template
+  approaches = computed<UFApproach[]>(() => this.structuredSolution()?.approaches ?? []);
+
+  hasAnyNotes = computed<boolean>(() => {
+    const n = this.structuredSolution()?.notes;
+    return !!(n && ((n.pitfalls?.length ?? 0) + (n.edgeCases?.length ?? 0) + (n.techniques?.length ?? 0)));
+  });
+
+  // Pick code for current lang
+  codeFor(ap: UFApproach): string {
+    return this.jsLang() === 'ts' ? (ap.codeTs ?? ap.codeJs ?? '') : (ap.codeJs ?? ap.codeTs ?? '');
+  }
+
+  // Load one approach directly into the editor (doesn't switch tabs)
+  loadApproach(ap: UFApproach) {
+    const code = this.codeFor(ap);
+    if (code?.trim()) {
+      this.editorContent.set(code);
+      const q = this.question();
+      if (q) this.codeStore.saveJs(q.id, code, this.jsLang());
+    }
+  }
+
+  // Tiny copier (you already have copySolutionCode for the legacy case)
+  async copyText(text: string) {
+    try { await navigator.clipboard.writeText(text ?? ''); } catch { }
+  }
+
+  // Render markdown-lite to safe HTML using your existing explanation parser
+  md(s?: string): SafeHtml {
+    return this.explanationToHtml(s ?? '');
+  }
+
   // Convenience for showing the code in the Solution tab in the current JS/TS choice
   solutionCodeForCurrentLang = computed(() => {
-    const s = this.solutionInfo();
-    return this.jsLang() === 'ts' && (s.codeTs?.trim()?.length)
-      ? s.codeTs
-      : s.codeJs;
+    const s = this.structuredSolution();
+    const first = (s?.approaches && s.approaches[0]) || null;
+    if (first) return this.codeFor(first);
+
+    // fallback to legacy single block
+    const legacy = this.solutionInfo();
+    return this.jsLang() === 'ts' && (legacy.codeTs?.trim()?.length)
+      ? legacy.codeTs
+      : legacy.codeJs;
   });
 
   onSolutionTabClick() {
@@ -2062,4 +2154,46 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   solutionExplanationHtml = computed(() =>
     this.explanationToHtml(this.solutionInfo().explanation || '')
   );
+
+  onCopyApproach(i: number, code: string) {
+    navigator.clipboard.writeText(code).catch(() => { });
+    this.copiedIdx = i;
+    clearTimeout(this.copyTimer);
+    this.copyTimer = setTimeout(() => (this.copiedIdx = null), 1200);
+  }
+
+  /** Normalize follow-up refs: accept ["id","id2"] or [{id:"id"}] */
+  private normalizeFollowUpRefs(
+    list: UFFollowUpRef[] | undefined
+  ): { id: string }[] {
+    const arr = Array.isArray(list) ? list : [];
+    return arr
+      .map((it) => (typeof it === 'string' ? { id: it } : it))
+      .filter((it) => typeof it.id === 'string' && it.id.trim().length > 0);
+  }
+
+  /** Find a question object by id from the loaded bank */
+  private findQuestionById(id: string): Question | undefined {
+    return (this.allQuestions || []).find(q => (q as any).id === id);
+  }
+
+  /** Simple, explicit follow-ups: resolve to {title, difficulty, link} and cap to 2 */
+  followUpItems = computed(() => {
+    const q = this.question();
+    if (!q) return [] as Array<{ id: string; title: string; difficulty: string; to: any[] }>;
+
+    const s = this.structuredSolution();
+    const explicit = this.normalizeFollowUpRefs(s?.followUpQuestions).slice(0, 2);
+
+    return explicit
+      .map(({ id }) => {
+        const target = this.findQuestionById(id);
+        if (!target) return null;
+        const title = (target as any).title || id;
+        const difficulty = String((target as any).difficulty || '').replace(/^\s*$/, '');
+        const to = ['/', (target as any).technology ?? this.tech, (target as any).type ?? this.kind, id];
+        return { id, title, difficulty, to };
+      })
+      .filter(Boolean) as Array<{ id: string; title: string; difficulty: string; to: any[] }>;
+  });
 }

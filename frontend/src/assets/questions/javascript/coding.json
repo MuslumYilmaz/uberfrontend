@@ -43,12 +43,54 @@
     "starterCode": "export default function clamp(value, lower, upper) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "explanation": "The purpose of `clamp()` is to ensure a number stays within a specific range. Think of it as a limit gate: if the value falls below `lower`, we pull it up; if it exceeds `upper`, we bring it down. This pattern is often used in animation limits, slider inputs, or percentage caps.\n\nAlgorithm:\n1. If `value < lower`, return `lower`.\n2. Else if `value > upper`, return `upper`.\n3. Otherwise, return `value`.\n\nThis keeps outputs predictable and avoids overflow or underflow issues.",
-      "codeJs": "export default function clamp(value, lower, upper) {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n",
-      "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n"
+      "overview": "Goal: ensure a number stays within an inclusive range. If `value < lower`, return `lower`; if `value > upper`, return `upper`; otherwise return `value`. Common in sliders, percentages, animations, and input sanitization.",
+      "approaches": [
+        {
+          "title": "Approach 1: Branching (readable baseline)",
+          "prose": "Straightforward comparisons. Easiest to read and extend (e.g., logging or metrics).",
+          "codeJs": "export default function clamp(value, lower, upper) {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n",
+          "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  if (value < lower) return lower;\n  if (value > upper) return upper;\n  return value;\n}\n"
+        },
+        {
+          "title": "Approach 2: Math chaining (compact)",
+          "prose": "Use `Math.max` to lift the value to the lower bound, then `Math.min` to cap at the upper bound.",
+          "codeJs": "export default function clamp(value, lower, upper) {\n  return Math.min(Math.max(value, lower), upper);\n}\n",
+          "codeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  return Math.min(Math.max(value, lower), upper);\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "`lower` should be `<= upper`. If not guaranteed by caller, normalize or assert.",
+          "`NaN` inputs propagate through `Math.min/max` → result becomes `NaN`. Decide whether to coerce or throw.",
+          "Non-number inputs (strings, null) will be coerced if you use Math.*; prefer validating types for clarity."
+        ],
+        "edgeCases": [
+          "value exactly equals `lower` or `upper` → return that bound.",
+          "Very large magnitudes: works, but be mindful of ±Infinity if it can appear.",
+          "Swapped bounds: if it can happen, you can fix with `[lower, upper] = lower <= upper ? [lower, upper] : [upper, lower]`."
+        ],
+        "techniques": [
+          "Guard + early return for clarity (Approach 1).",
+          "Functional composition feel with `Math.min(Math.max(...))` (Approach 2)."
+        ]
+      },
+      "followUpQuestions": [
+        "js-count-vowels",
+        "js-arrays-equal"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Math.max()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max"
+        },
+        {
+          "title": "MDN – Math.min()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min"
+        }
+      ]
     },
     "tests": "import clamp from './clamp';\n\ndescribe('clamp', () => {\n  test('within range', () => expect(clamp(3, 0, 5)).toBe(3));\n  test('below lower', () => expect(clamp(-10, -3, 5)).toBe(-3));\n  test('above upper', () => expect(clamp(10, -5, 5)).toBe(5));\n});\n",
-    "testsTs": "import clamp from './clamp';\n\ndescribe('clamp (TypeScript)', () => {\n  it('should return the same value when within range', () => {\n    expect(clamp(3, 0, 5)).toBe(3);\n  });\n  it('should clamp to lower bound when below range', () => {\n    expect(clamp(-10, -3, 5)).toBe(-3);\n  });\n  it('should clamp to upper bound when above range', () => {\n    expect(clamp(10, -5, 5)).toBe(5);\n  });\n});\n"
+    "testsTs": "import clamp from './clamp';\n\ndescribe('clamp (TypeScript)', () => {\n  it('returns the same value when within range', () => {\n    expect(clamp(3, 0, 5)).toBe(3);\n  });\n  it('clamps to lower bound when below range', () => {\n    expect(clamp(-10, -3, 5)).toBe(-3);\n  });\n  it('clamps to upper bound when above range', () => {\n    expect(clamp(10, -5, 5)).toBe(5);\n  });\n});\n"
   },
   {
     "id": "js-reverse-string",

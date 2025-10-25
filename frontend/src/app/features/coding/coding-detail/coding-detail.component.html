@@ -36,7 +36,7 @@
           icon="pi pi-chevron-left" (click)="toggleDescription()" aria-label="Hide description"></button>
       </div>
 
-      <div class="flex-1 overflow-auto p-6 text-white">
+      <div class="flex-1 overflow-auto p-6 font-sm">
         <!-- Description Panel -->
         <ng-container *ngIf="activePanel()===0">
           <section class="space-y-4">
@@ -44,15 +44,14 @@
             <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
 
             <!-- Özet / prose -->
-            <div *ngIf="(descSummary() || descriptionText()) as prose"
-              class="whitespace-pre-wrap text-sm opacity-90 mt-3">
+            <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3">
               {{ prose }}
             </div>
 
             <!-- Argümanlar -->
             <div *ngIf="descArgs().length" class="mt-4">
               <h3 class="text-sm font-semibold mb-1">Arguments</h3>
-              <ul class="text-sm space-y-1">
+              <ul class="font-sm space-y-1">
                 <li *ngFor="let a of descArgs()">
                   <code class="opacity-80">{{a.name}}</code>
                   <span *ngIf="a.type" class="opacity-60">: {{a.type}}</span>
@@ -66,7 +65,7 @@
               <h3 class="text-sm font-semibold mb-1">Returns</h3>
               <div>
                 <span *ngIf="descReturns()?.type"><code class="opacity-80">{{descReturns()?.type}}</code> — </span>
-                <span>{{descReturns()?.desc}}</span>
+                <span class="font-sm">{{descReturns()?.desc}}</span>
               </div>
             </div>
 
@@ -75,19 +74,39 @@
               <div class="mt-6">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-xs uppercase font-semibold">Examples</span>
-                  <button class="uf-btn" (click)="copyExamples()">
-                    <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
-                    <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
-                  </button>
                 </div>
 
-                <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                  [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
-                  [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560"
-                  [interactive]="false">
-                </app-monaco-editor>
+                <div class="code-wrap">
+                  <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                    [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
+                    [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560"
+                    [interactive]="false">
+                  </app-monaco-editor>
+
+                  <button class="copy-fab" aria-label="Copy examples" title="Copy" (click)="copyExamples()">
+                    <i class="pi" [ngClass]="copiedExamples() ? 'pi-check' : 'pi-copy'"></i>
+                  </button>
+                </div>
               </div>
             </ng-container>
+
+            <!-- Similar questions -->
+            <section *ngIf="followUpItems().length" class="mt-6">
+              <div
+                class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
+                (click)="similarOpen.set(!similarOpen())">
+                <h3 class="text-sm font-semibold">Similar questions</h3>
+                <i class="pi" [ngClass]="similarOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+              </div>
+
+              <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
+                <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
+                  class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
+                  <span class="truncate">{{ f.title }}</span>
+                  <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.difficulty || '—' }}</span>
+                </a>
+              </div>
+            </section>
 
             <!-- Framework önizleme düğmesi -->
             <div>
@@ -123,41 +142,103 @@
 
             <!-- İçerik -->
             <ng-template #solBody>
-              <h2 class="text-base font-semibold">Solution</h2>
+              <h2 class="text-base font-semibold mb-2">Solution</h2>
 
-              <!-- Açıklama -->
-              <ng-container *ngIf="(solutionInfo().explanation || '').trim(); else noExpl">
-                <div class="text-sm leading-5 mb-3 prose prose-invert max-w-none"
-                  [innerHTML]="solutionExplanationHtml()">
+              <!-- Overview -->
+              <section class="space-y-2 mb-5" *ngIf="structuredSolution()?.overview">
+                <h3 class="text-sm font-semibold opacity-90">Overview</h3>
+                <div class="solution-prose prose prose-invert max-w-none"
+                  [innerHTML]="md(structuredSolution()?.overview)"></div>
+              </section>
+
+              <!-- Approaches -->
+              <div class="p-3" *ngFor="let ap of approaches(); let i = index">
+                <div class="ap-row">
+                  <span class="ap-num">{{ i + 1 }}</span>
+                  <h4 class="ap-title">{{ ap.title }}</h4>
+                  <div class="ap-actions">
+                    <button class="uf-btn" (click)="loadApproach(ap)" title="Load into editor">
+                      Load into editor
+                    </button>
+                  </div>
                 </div>
-              </ng-container>
-              <ng-template #noExpl>
-                <div class="text-sm leading-5 mb-3 opacity-80">No explanation provided.</div>
-              </ng-template>
 
-              <!-- Başlık + aksiyonlar -->
-              <div class="sol-head flex items-center gap-2 mb-2">
-                <span class="uf-chip">{{ jsLang()==='ts' ? 'TypeScript' : 'JavaScript' }}</span>
+                <div *ngIf="ap.prose" class="solution-prose prose prose-invert max-w-none mb-3"
+                  [innerHTML]="md(ap.prose)"></div>
 
-                <span class="ml-auto flex items-center gap-2">
-                  <button class="uf-btn" (click)="copySolutionCode()" title="Copy solution code">
-                    <ng-container *ngIf="!copiedExamples()">Copy</ng-container>
-                    <ng-container *ngIf="copiedExamples()">Copied!</ng-container>
+                <div class="code-wrap">
+                  <app-monaco-editor class="rounded border border-white/10" [code]="codeFor(ap)"
+                    [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true" [autoHeight]="true"
+                    [options]="examplesMonacoOptions">
+                  </app-monaco-editor>
+
+                  <button class="copy-fab" aria-label="Copy code" title="Copy" (click)="onCopyApproach(i, codeFor(ap))">
+                    <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
                   </button>
-
-                  <button class="uf-btn" (click)="loadSolutionIntoEditor()" title="Load this solution into the editor">
-                    Load into editor
-                  </button>
-                </span>
+                </div>
               </div>
 
-              <!-- Read-only solution editor -->
-              <div class="rounded border border-white/10 pointer-events-none select-none w-full block">
-                <app-monaco-editor class="h-full rounded border border-white/10" [code]="solutionCodeForCurrentLang()"
-                  [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [readOnly]="true" [autoHeight]="true"
-                  [options]="examplesMonacoOptions">
-                </app-monaco-editor>
-              </div>
+              <!-- Notes / Pitfalls / Edge cases / Techniques -->
+              <section class="space-y-3 mb-6" *ngIf="hasAnyNotes()">
+                <h3 class="text-sm font-semibold opacity-90">Notes &amp; Pitfalls</h3>
+
+                <div class="grid md:grid-cols-3 gap-3">
+                  <div *ngIf="structuredSolution()?.notes?.pitfalls?.length" class="p-3 rounded border border-white/10">
+                    <div class="text-xs uppercase opacity-70 mb-2">Pitfalls</div>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                      <li class="font-sm" *ngFor="let p of structuredSolution()?.notes?.pitfalls">{{ p }}</li>
+                    </ul>
+                  </div>
+
+                  <div *ngIf="structuredSolution()?.notes?.edgeCases?.length"
+                    class="p-3 rounded border border-white/10">
+                    <div class="text-xs uppercase opacity-70 mb-2">Edge cases</div>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                      <li class="font-sm" *ngFor="let e of structuredSolution()?.notes?.edgeCases">{{ e }}</li>
+                    </ul>
+                  </div>
+
+                  <div *ngIf="structuredSolution()?.notes?.techniques?.length"
+                    class="p-3 rounded border border-white/10">
+                    <div class="text-xs uppercase opacity-70 mb-2">Techniques</div>
+                    <ul class="list-disc list-inside text-sm space-y-1">
+                      <li class="font-sm" *ngFor="let t of structuredSolution()?.notes?.techniques">{{ t }}</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Follow-up -->
+              <!-- Similar questions -->
+              <section *ngIf="followUpItems().length" class="mt-6">
+                <div
+                  class="flex items-center justify-between px-3 py-2 border border-white/15 rounded cursor-pointer select-none"
+                  (click)="similarOpen.set(!similarOpen())">
+                  <h3 class="text-sm font-semibold">Similar questions</h3>
+                  <i class="pi" [ngClass]="similarOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                </div>
+
+                <div *ngIf="similarOpen()" class="mt-1 rounded border border-white/10 overflow-hidden">
+                  <a *ngFor="let f of followUpItems()" [routerLink]="f.to"
+                    class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
+                    <span class="truncate">{{ f.title }}</span>
+                    <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.difficulty || '—' }}</span>
+                  </a>
+                </div>
+              </section>
+
+              <!-- Resources -->
+              <section class="space-y-2" *ngIf="structuredSolution()?.resources?.length">
+                <h3 class="text-sm font-semibold opacity-90">Resources</h3>
+                <ul class="text-sm space-y-1">
+                  <li class="font-sm" *ngFor="let r of structuredSolution()?.resources">
+                    <a class="underline text-yellow-300" [href]="r.url" target="_blank" rel="noopener noreferrer">
+                      {{ r.title }}
+                    </a>
+                  </li>
+                </ul>
+              </section>
+
             </ng-template>
           </section>
         </ng-container>
