@@ -289,3 +289,12 @@
 :host ::ng-deep .prose code{ font-size: .85em; }
 /* Slightly tighter vertical rhythm for stacked sections */
 .coding-detail .space-y-4 > * + *{ margin-top: 20px; }
+
+:host ::ng-deep .editor-fill,
+:host ::ng-deep .editor-fill > div,             /* wrapper root */
+:host ::ng-deep .editor-fill .monaco-editor,
+:host ::ng-deep .editor-fill .monaco-editor .overflow-guard {
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
