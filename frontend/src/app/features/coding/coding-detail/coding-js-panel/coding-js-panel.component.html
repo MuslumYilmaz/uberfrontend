@@ -1,0 +1,114 @@
+<div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
+    <!-- Header -->
+    <div class="flex items-center border-b border-white/10 px-4">
+        <div class="flex">
+            <button class="px-4 py-2" [class.opacity-100]="topTab()==='code'" [class.opacity-60]="topTab()!=='code'"
+                (click)="topTab.set('code')">&lt;/&gt; Code</button>
+            <button class="px-4 py-2" [class.opacity-100]="topTab()==='tests'" [class.opacity-60]="topTab()!=='tests'"
+                (click)="topTab.set('tests')"><i class="pi pi-clipboard mr-2"></i> Test cases</button>
+        </div>
+
+        <div class="ml-auto flex items-center gap-2">
+            <span class="text-xs opacity-70">Language</span>
+            <div class="lang-wrap">
+                <select #langSel class="lang-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
+                    aria-label="Editor language">
+                    <option value="js">JavaScript</option>
+                    <option value="ts">TypeScript</option>
+                </select>
+                <span class="select-caret" aria-hidden="true"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore banner -->
+    <div *ngIf="restoredFromStorage() && !restoreDismissed()"
+        class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
+        <span class="font-medium">Your code was restored from local storage.</span>
+        <div class="absolute right-2 inset-y-0 flex items-center gap-3">
+            <button class="underline font-medium" (click)="resetToDefault()">Reset to default</button>
+            <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
+        </div>
+    </div>
+
+    <!-- Editors -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <!-- TOP: code/tests editor area with adjustable height -->
+        <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
+            <!-- CODE editor -->
+            <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'">
+                <app-monaco-editor class="h-full editor-fill" [code]="editorContent()"
+                    [language]="jsLang()==='ts' ? 'typescript':'javascript'" [options]="editorOptions"
+                    (codeChange)="onCodeChange($event)">
+                </app-monaco-editor>
+            </div>
+
+            <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->
+            <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
+                <app-monaco-editor class="h-full editor-fill" [code]="testCode()"
+                    [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorOptions"
+                    (codeChange)="onTestsChange($event)">
+                </app-monaco-editor>
+            </div>
+        </div>
+
+        <!-- SPLITTER between editors and results -->
+        <div class="horizontal-splitter" [class.dragging]="isDraggingSplit()" (pointerdown)="startSplitDrag($event)">
+        </div>
+
+        <!-- BOTTOM: Actions + Results/Console -->
+        <div class="flex-1 min-h-0 flex flex-col border-t border-white/10">
+            <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
+                <button class="font-medium" (click)="runTests()" [disabled]="!(testCode()||'').trim()">▶ Run
+                    tests</button>
+                <button [class.text-white]="subTab()==='tests'" [class.text-gray-300]="subTab()!=='tests'"
+                    (click)="subTab.set('tests')">Results</button>
+                <button [class.text-white]="subTab()==='console'" [class.text-gray-300]="subTab()!=='console'"
+                    (click)="subTab.set('console')">Console</button>
+                <span class="ml-auto opacity-80" *ngIf="hasRunTests()">{{ passedCount() }}/{{ totalCount() }}
+                    passed</span>
+            </div>
+
+            <div class="flex-1 min-h-0 overflow-hidden">
+                <!-- Results -->
+                <div *ngIf="subTab()==='tests'" class="h-full overflow-auto p-3 results-panel">
+                    <div *ngIf="!hasRunTests()" class="h-full grid place-items-center text-[11px] text-gray-400">
+                        Run tests to see results.
+                    </div>
+
+                    <div *ngIf="hasRunTests()" class="space-y-2">
+                        <div class="summary mb-2">
+                            <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
+                            <ng-container *ngIf="totalCount() > 0">
+                                <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
+                                <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                            </ng-container>
+                        </div>
+
+                        <div *ngFor="let t of testResults()" class="test-card border rounded-md p-2"
+                            [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
+                            <div class="test-name">
+                                <i
+                                    [ngClass]="t.passed ? 'pi pi-check-circle text-green-400' : 'pi pi-times-circle text-red-400'"></i>
+                                <span>{{ t.name }}</span>
+                            </div>
+                            <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
+                                {{ t.error }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Console -->
+                <div *ngIf="subTab()==='console'" class="h-full overflow-auto p-3">
+                    <app-console-logger class="console-panel block w-full h-full" [entries]="consoleEntries()"
+                        [results]="testResults()" [max]="500" [autoScroll]="true"></app-console-logger>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>

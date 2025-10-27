@@ -2,7 +2,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
-  AfterViewInit, Component, computed, effect, ElementRef, NgZone,
+  AfterViewInit, Component, computed,
+  ElementRef, NgZone,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
@@ -14,7 +15,6 @@ import { filter, firstValueFrom } from 'rxjs';
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
-import { UserCodeSandboxService } from '../../../core/services/user-code-sandbox.service';
 import { matchesBaseline, normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
 import {
   getNgBaselineKey, getNgStorageKey,
@@ -30,10 +30,8 @@ import { DailyService } from '../../../core/services/daily.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
+import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 
-declare const monaco: any;
-
-type JsLang = 'js' | 'ts';
 type CourseNavState =
   | {
     breadcrumb?: { to: any[]; label: string };
@@ -83,7 +81,7 @@ type UFSolutionBlock = {
   standalone: true,
   imports: [
     CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
-    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent
+    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, CodingJsPanelComponent
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
@@ -107,9 +105,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   webHtml = () => this.htmlCode();
   webCss = () => this.cssCode();
 
-  // JS/TS language toggle (persisted per question)
-  jsLang = signal<JsLang>('js');
-
   // UI state
   topTab = signal<'code' | 'tests' | 'html' | 'css'>('code');
   activePanel = signal<number>(0);
@@ -119,6 +114,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   similarOpen = signal(true);
 
+  currentJsLang = signal<'js' | 'ts'>('js');
 
   // Collapsible left column
   private readonly COLLAPSED_PX = 48;
@@ -133,7 +129,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Context flags + course bits
   isCourseContext = signal(false);
   copiedExamples = signal(false);
-  isDraggingVertical = signal(false);
   isDraggingHorizontal = signal(false);
 
   courseIdFromState: string | null = null;
@@ -179,7 +174,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   showEditor = signal(true);
   showRestoreBanner = signal(false);
 
-  private jsSaveTimer: any = null;
   private webSaveTimer: any = null;
 
   private previewObjectUrl: string | null = null;
@@ -213,6 +207,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
   @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
+  @ViewChild('jsPanel') jsPanel?: CodingJsPanelComponent;
 
   // drag state
   private dragging = false;
@@ -223,8 +218,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private startRatioH = 0;
   private sessionStart = Date.now();
   private recorded = false;
-
-  private readonly MAX_CONSOLE_LINES = 500;
 
   // Preview dialog (Angular)
   previewVisible = false;
@@ -352,8 +345,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
     private zone: NgZone,
-    private codeStore: CodeStorageService,
-    private runner: UserCodeSandboxService,
+    public codeStore: CodeStorageService,
     private daily: DailyService,
     private activity: ActivityService,
     private http: HttpClient
@@ -365,44 +357,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const ib = Number((b as any).importance ?? 0);
     if (ia !== ib) return ib - ia;
     return (a.title || '').localeCompare(b.title || '');
-  }
-
-  private normalizeAndCapLogs(raw: any[] | undefined): ConsoleEntry[] {
-    const now = Date.now();
-
-    const toStr = (v: any) => {
-      try { return typeof v === 'string' ? v : JSON.stringify(v); }
-      catch { return String(v); }
-    };
-
-    // Map whatever comes back into our ConsoleEntry shape
-    const mapped: ConsoleEntry[] = (raw || []).map((r: any): ConsoleEntry => {
-      // If already in { level, message, timestamp } shape, keep as-is (but we’ll post-process)
-      if (r && typeof r.level === 'string' && typeof r.message === 'string') {
-        return {
-          level: r.level as ConsoleEntry['level'],
-          message: r.message,
-          timestamp: typeof r.timestamp === 'number' ? r.timestamp : now,
-        };
-      }
-
-      // Legacy sandbox/local: { type, args }
-      if (r && typeof r.type === 'string') {
-        const msg = Array.isArray(r.args) ? r.args.map(toStr).join(' ') : toStr(r.args);
-        const level = (r.type === 'info' || r.type === 'warn' || r.type === 'error') ? r.type : 'log';
-        return { level, message: msg, timestamp: now } as ConsoleEntry;
-      }
-
-      // Fallback
-      return { level: 'log', message: toStr(r), timestamp: now } as ConsoleEntry;
-    });
-
-    // Hard cap + final pass to shorten error stacks (covers sandbox + local)
-    const MAX = this.MAX_CONSOLE_LINES;
-    return mapped.slice(-MAX).map((entry) => {
-      const msg = this.normaliseConsoleMessage(entry.level, entry.message);
-      return { ...entry, message: msg };
-    });
   }
 
   private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
@@ -525,33 +479,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ---------- helpers to pick code by language ----------
-  private getDefaultLang(q: Question): JsLang {
-    const v = (q as any).languageDefault;
-    return v === 'ts' ? 'ts' : 'js';
-  }
-  private getStarter(q: any, lang: JsLang) {
-    return lang === 'ts' ? (q.starterCodeTs ?? q.starterCode ?? '') : (q.starterCode ?? q.starterCodeTs ?? '');
-  }
-  private getSolution(q: any, lang: JsLang) {
-    return lang === 'ts' ? (q.solutionTs ?? q.solution ?? '') : (q.solution ?? q.solutionTs ?? '');
-  }
-  private getTests(q: any, lang: JsLang) {
-    // most-specific first, then fallbacks
-    const keysJs = ['tests', 'testsJs', 'unitTests', 'spec', 'specs', 'testCode'];
-    const keysTs = ['testsTs', 'tests', 'unitTestsTs', 'specTs', 'specsTs', 'testCodeTs'];
-
-    const pick = (obj: any, keys: string[]) => {
-      for (const k of keys) {
-        const v = obj?.[k];
-        if (typeof v === 'string' && v.trim()) return v;
-      }
-      return '';
-    };
-
-    return lang === 'ts' ? pick(q, keysTs) : pick(q, keysJs);
-  }
-
-  private langPrefKey(q: Question) { return `uf:lang:${q.id}`; }
 
   // ---------- WEB (html/css) utilities ----------
   private pickString(obj: any, paths: string[]): string {
@@ -615,13 +542,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadSolvedFlag(q: Question) {
     try { return localStorage.getItem(this.solvedKey(q)) === 'true'; } catch { return false; }
   }
-  private saveSolvedFlag(q: Question, v: boolean) {
+  public saveSolvedFlag(q: Question, v: boolean) {
     try { localStorage.setItem(this.solvedKey(q), String(!!v)); } catch { }
   }
   private clearSolvedFlag(q: Question) {
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
-
   // ---------- Load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex(q => q.id === id);
@@ -634,9 +560,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.allQuestions[idx];
     this.question.set(q);
 
+    // common flags
     this.solved.set(this.loadSolvedFlag(q));
     this.loadCollapsePref(q);
-
     let shouldShowBanner = false;
 
     // ---------- Frameworks (Angular/React/Vue) ----------
@@ -649,7 +575,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       // 1) Load saved snapshot
       let files = this.loadSavedFiles(storageKey);
 
-      // 2) Bootstrap from sdk.asset or fallback
+      // 2) Bootstrap from SDK asset or fallback
       if (!files || Object.keys(files).length === 0) {
         const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
         const assetUrl = meta?.asset;
@@ -659,12 +585,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             files = normalizeSdkFiles(asset.files || {});
             const openFromAsset = (meta?.openFile ?? asset.openFile) || undefined;
 
-            // persist baseline + current
             try {
               localStorage.setItem(storageKey, JSON.stringify(files));
               localStorage.setItem(baselineKey, JSON.stringify(files));
             } catch { }
-            // choose entry
             const open = (openFromAsset || this.defaultEntry()).replace(/^\/+/, '');
             this.frameworkEntryFile = open;
           } catch {
@@ -680,18 +604,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
       }
 
-      // 3) Init editor
+      // 3) Init editor + preview
       const openFile = this.pickFirstOpen(files);
       this.frameworkEntryFile = openFile;
       this.filesMap.set(files);
       this.openAllDirsFromPaths(Object.keys(files));
       this.openPath.set(openFile);
       this.editorContent.set(files[openFile] ?? '');
-
-      // 4) Preview
       this.rebuildFrameworkPreview();
 
-      // UI/reset
+      // 4) UI reset
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
@@ -759,42 +681,38 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // ---------- JS / TS (service-only; no localStorage per-lang keys) ----------
-    const defaultLang: JsLang = this.getDefaultLang(q);
+    // ---------- Plain JS / TS ----------
+    // Parent no longer touches starters/tests; the child panel + CodeStorageService own it.
+    // Decide which language tab to show, then ask the child to init itself.
     const svcSaved = this.codeStore.getJs(q.id);
-    const resolvedLang: JsLang = (svcSaved?.language as JsLang | undefined) ?? defaultLang;
-    this.jsLang.set(resolvedLang);
+    const hinted = (q as any)?.defaultLang;
+    const resolvedLang: JsLang =
+      (svcSaved?.language === 'ts' || svcSaved?.language === 'js')
+        ? svcSaved.language
+        : (hinted === 'ts' ? 'ts' : 'js');
 
-    // Ensure per-language baselines exist once
-    for (const L of ['js', 'ts'] as JsLang[]) {
-      if (!this.codeStore.getJsBaseline(q.id, L)) {
-        this.codeStore.setJsBaseline(q.id, L, this.getStarter(q, L));
-      }
-    }
+    this.currentJsLang.set(resolvedLang);
 
-    // Prefer last saved code for the resolved language; else starter
-    let initial: any = (svcSaved?.language === resolvedLang) ? (svcSaved?.code ?? null) : null;
-    if (initial == null) initial = this.getStarter(q, resolvedLang);
-
-    this.editorContent.set(initial);
-    this.testCode.set(this.getTests(q, resolvedLang));
-
-    // Show banner when diverged from baseline (via service)
-    const base = this.codeStore.getJsBaseline(q.id, resolvedLang) ?? '';
-    this.showRestoreBanner.set(initial !== base);
-
-    // UI/reset
+    // UI/reset; banner is handled by the child if it wants one.
     this.activePanel.set(0);
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-
+    this.showRestoreBanner.set(false);
     this.sessionStart = Date.now();
     this.recorded = false;
+
+    // Let the child pull everything it needs (starters, tests, baselines) from the service/question.
+    // If the child isn't mounted yet, setTimeout defers until after view init.
+    setTimeout(() => this.jsPanel?.initFromQuestion(), 0);
   }
 
+  private getActiveJsLang(): 'js' | 'ts' {
+    const fromChild = this.jsPanel?.['jsLang']?.();
+    return (fromChild === 'ts' || fromChild === 'js') ? fromChild : this.currentJsLang();
+  }
 
   private defaultEntry(): string {
     if (this.tech === 'angular') return 'src/app/app.component.ts';
@@ -849,26 +767,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- code saving ----------
-  onJsCodeChange(code: string) {
-    this.editorContent.set(code);
-    const q = this.question();
-    if (!q || this.tech === 'angular' || this.isWebTech()) return;
-
-    clearTimeout(this.jsSaveTimer);
-    this.jsSaveTimer = setTimeout(() => {
-      this.codeStore.saveJs(q.id, code, this.jsLang()); // updates lastLang internally
-    }, 300);
-  }
-
-  // If you keep persistJsEffect, keep it service-only or remove it entirely.
-  private persistJsEffect = effect(() => {
-    const q = this.question();
-    if (!q || this.isWebTech() || this.tech === 'angular') return;
-    this.codeStore.saveJs(q.id, this.editorContent(), this.jsLang());
-  });
-
-
   onHtmlChange = (code: string) => {
     const q = this.question(); if (!q || !this.isWebTech()) return;
     this.htmlCode.set(code);
@@ -885,43 +783,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       try { localStorage.setItem(this.webKey(q, 'css'), code); } catch { }
     }, 200);
   };
-
-  // ---------- language toggle ----------
-  setLanguage(lang: JsLang) {
-    const q = this.question();
-    if (!q || this.isWebTech() || this.tech === 'angular') return;
-
-    const prev = this.jsLang();
-    if (lang === prev) return;
-
-    // 1) snapshot current buffer under previous language
-    this.codeStore.saveJs(q.id, this.editorContent(), prev);
-
-    // 2) flip current language (UI)
-    this.jsLang.set(lang);
-
-    // 3) load target buffer WITHOUT falling back to starter unless truly empty
-    let nextCode: any = this.codeStore.getJsForLang(q.id, lang);
-    if (nextCode == null) nextCode = this.getStarter(q, lang);
-    this.editorContent.set(nextCode);
-
-    // 4) swap tests + ensure baseline present
-    this.testCode.set(this.getTests(q, lang));
-    if (!this.codeStore.getJsBaseline(q.id, lang)) {
-      this.codeStore.setJsBaseline(q.id, lang, this.getStarter(q, lang));
-    }
-
-    // 5) reset runner + remount for Monaco mode switch
-    this.hasRunTests = false;
-    this.testResults.set([]);
-    this.consoleEntries.set([]);
-    this.subTab.set('tests');
-    this.topTab.set('code');
-    this.remountEditor();
-
-    // 6) mark lastLang ONLY (do NOT overwrite target buffer)
-    this.codeStore.setLastLang(q.id, lang);
-  }
 
   // ---------- banner actions ----------
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
@@ -999,176 +860,49 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ---------- TS -> JS transpile (for tests) ----------
-  private async transpileTsToJs(code: string, fileName: string): Promise<string> {
-    try {
-      if (!monaco?.languages?.typescript || typeof code !== 'string') return code;
-      const uri = monaco.Uri.parse(`inmemory://model/${fileName}`);
-      const model = monaco.editor.createModel(code, 'typescript', uri);
-      try {
-        const getWorker = await monaco.languages.typescript.getTypeScriptWorker();
-        const svc = await getWorker(uri);
-        const out = await svc.getEmitOutput(uri.toString());
-        const js = out?.outputFiles?.[0]?.text ?? '';
-        return js || '';
-      } finally {
-        model.dispose();
-      }
-    } catch {
-      // If the TS worker crashes or diagnostics are noisy, let the caller fall back
-      return '';
-    }
-  }
-
   // ---------- run tests (JS/TS) ----------
   async runTests(): Promise<void> {
     const q = this.question();
-    if (!q || this.tech === 'angular') return;
+    if (!q) return;
 
-    if (this.isWebTech()) { await this.runWebTests(); return; }
+    // Frameworks use the preview pipeline; nothing to run here.
+    if (this.isFrameworkTech()) return;
 
+    // HTML/CSS uses the DOM runner that lives in this component.
+    if (this.isWebTech()) {
+      await this.runWebTests();
+      return;
+    }
+
+    // Plain JS/TS -> delegate to child panel
     this.subTab.set('console');
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
-    const testsSrcRaw = (this.testCode() || '').trim();
-    if (!testsSrcRaw) {
-      this.hasRunTests = true;
-      this.testResults.set([]);
-      this.subTab.set('tests');
-      return;
-    }
+    // Ask the child to run; results/console/solved will arrive via outputs.
+    await this.jsPanel?.runTests();
 
-    const userSrc = this.editorContent();
-    const testsSrc = (this.testCode() || '').trim();
-
-    const userJs = await this.ensureJs(userSrc, `${q.id}.ts`);
-    const testsJs = await this.ensureJs(testsSrc, `${q.id}.tests.ts`);
-
-    const wrapped = this.wrapExportDefault(userJs, q.id);
-    const testsPrepared = this.transformTestCode(testsJs, q.id);
-
-    // Try sandbox first
-    try {
-      const out = await this.runner.runWithTests({ userCode: wrapped, testCode: testsPrepared, timeoutMs: 1500 });
-      // Final pass will shorten any error stacks from the sandbox
-      this.consoleEntries.set(this.normalizeAndCapLogs(out?.entries as any[]));
-      this.testResults.set(out?.results || []);
-    } catch (e: any) {
-      this.testResults.set([{ name: 'Test runner error', passed: false, error: this.shortStack(e) }]);
-    }
-
-    // Local fallback
-    if ((this.testResults() || []).length === 0 && testsPrepared.trim()) {
-      try {
-        const results: TestResult[] = [];
-        const logs: ConsoleEntry[] = [];
-
-        const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
-          const msgRaw = args.map(a => {
-            try { return typeof a === 'string' ? a : JSON.stringify(a); }
-            catch { return String(a); }
-          }).join(' ');
-          const msg = this.normaliseConsoleMessage(level, msgRaw);
-          logs.push({ level, message: msg, timestamp: Date.now() });
-        };
-
-        const consoleProxy = {
-          log: (...a: any[]) => push('log', a),
-          info: (...a: any[]) => push('info', a),
-          warn: (...a: any[]) => push('warn', a),
-          error: (...a: any[]) => push('error', a),
-        };
-
-        const isObj = (v: any) => v !== null && typeof v === 'object';
-        const deepEqual = (a: any, b: any): boolean => {
-          if (Object.is(a, b)) return true;
-          if (Array.isArray(a) && Array.isArray(b)) {
-            return a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
-          }
-          if (isObj(a) && isObj(b)) {
-            const ka = Object.keys(a), kb = Object.keys(b);
-            if (ka.length !== kb.length) return false;
-            for (const k of ka) if (!deepEqual(a[k], (b as any)[k])) return false;
-            return true;
-          }
-          return false;
-        };
-
-        const expect = (received: any) => ({
-          toBe: (exp: any) => { if (!Object.is(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to be ${JSON.stringify(exp)}`); },
-          toEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to equal ${JSON.stringify(exp)}`); },
-          toStrictEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to strictly equal ${JSON.stringify(exp)}`); },
-        });
-
-        const runCase = async (name: string, fn: () => any | Promise<any>) => {
-          try {
-            await fn();
-            results.push({ name, passed: true });
-          } catch (e: any) {
-            const short = this.shortStack(e);
-            results.push({ name, passed: false, error: short });
-            consoleProxy.error(`Stack: ${short}`);
-          }
-        };
-
-        const it = (name: string, fn: () => any | Promise<any>) => runCase(name, fn);
-        const test = it;
-        const describe = (_: string, fn: () => void) => { try { fn(); } catch { /* ignore */ } };
-
-        // Capture uncaughts and shorten them too
-        const prevConsole = (globalThis as any).console;
-        const onError = (ev: any) => consoleProxy.error(`Stack: ${this.shortStack(ev?.error ?? ev)}`);
-        const onRejection = (ev: any) => consoleProxy.error(`Stack: ${this.shortStack(ev?.reason ?? ev)}`);
-
-        (globalThis as any).console = consoleProxy;
-        addEventListener('error', onError);
-        addEventListener('unhandledrejection', onRejection);
-
-        try {
-          // Evaluate user's code (captures user console.*)
-          new Function(wrapped)();
-
-          // Execute tests with harness in scope
-          try {
-            await new Function('describe', 'test', 'it', 'expect', 'console', testsPrepared)(
-              describe as any, test as any, it as any, expect as any, consoleProxy as any
-            );
-          } catch (e: any) {
-            const short = this.shortStack(e);
-            results.unshift({ name: 'Failed to execute test file', passed: false, error: short });
-            consoleProxy.error(`Stack: ${short}`);
-          }
-        } finally {
-          (globalThis as any).console = prevConsole;
-          removeEventListener('error', onError);
-          removeEventListener('unhandledrejection', onRejection);
-        }
-
-        // Final normalisation & cap before display
-        this.consoleEntries.set(this.normalizeAndCapLogs(logs));
-        this.testResults.set(results);
-      } catch (e: any) {
-        this.testResults.set([{ name: 'Local runner error', passed: false, error: this.shortStack(e) }]);
-      }
-    }
-
+    // Mark completed locally for UI that depends on this flag.
     this.hasRunTests = true;
+
+    // Post-run bookkeeping (credit + celebration) if everything passed.
+    const qNow = this.question();         // re-read in case of navigation
+    if (!qNow) return;
 
     const passing = this.allPassing();
     this.solved.set(passing);
-    this.saveSolvedFlag(q, passing);
+    this.saveSolvedFlag(qNow, passing);
 
     if (passing) {
       this.creditDaily();
       this.activity.complete({
         kind: this.kind,
         tech: this.tech,
-        itemId: q.id,
+        itemId: qNow.id,
         source: 'tech',
         durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(q),
+        xp: this.xpFor(qNow),
         solved: true
       }).subscribe({
         next: (res: any) => {
@@ -1185,33 +919,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subTab.set('tests');
   }
 
-
-  // Add this helper near your transpileTsToJs()
-  private async ensureJs(code: string, fileName: string): Promise<string> {
-    if (!code) return '';
-
-    // Heuristic: does the code look like TypeScript?
-    const looksTs =
-      /:\s*[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code) || // type annotations
-      /\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code) || // "as" casts
-      /\binterface\b|\btype\s+[^=]+\=/.test(code) ||     // interfaces / type aliases
-      /\benum\s+[A-Za-z_$]/.test(code);                  // enums
-
-    if (this.jsLang() === 'ts' || looksTs) {
-      // Prefer real TS emit
-      const js = await this.transpileTsToJs(code, fileName);
-      if (js && js.trim()) return js;
-
-      // Fallback: strip some common TS syntax if monaco worker isn’t ready
-      return code
-        .replace(/:\s*[^=;,)]+(?=[=;,)])/g, '')         // remove ": type"
-        .replace(/\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/g, '') // remove "as Type"
-        .replace(/\binterface\b[\s\S]*?\{[\s\S]*?\}\s*/g, '') // drop interfaces
-        .replace(/\btype\s+[A-Za-z_$][\w$]*\s*=\s*[\s\S]*?;/g, ''); // drop type aliases
-    }
-
-    return code;
-  }
 
   // ---------- run tests (HTML/CSS DOM) ----------
   private fmt(v: any): string {
@@ -1349,17 +1056,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
-    // Angular and Web are still “mark complete” on submit (tests are optional)
-    if (this.tech === 'angular' || this.isWebTech()) {
-      if (this.isFrameworkTech() || this.isWebTech()) {
-        this.creditDaily();
-        this.recordCompletion('submit');
-        await this.celebrate('submit');
-        return;
-      }
+    // Angular/framework preview and Web DOM work are "mark complete" on submit.
+    if (this.isFrameworkTech() || this.isWebTech()) {
+      this.creditDaily();
+      this.recordCompletion('submit');
+      await this.celebrate('submit');
+      return;
     }
 
-    // JS/TS: always run tests
+    // JS/TS: always run tests (delegates to the panel).
     await this.runTests();
 
     // For debug, allow credit even if not all tests passed (avoid double-credit if runTests already did it)
@@ -1385,6 +1090,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.celebrate('submit');
     }
   }
+
 
   // --- handlers (reuse your global pointer listeners) ---
   startWebColumnDrag = (ev: PointerEvent) => {
@@ -1512,12 +1218,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cssCode.set(starters.css);
       } else {
         // JS/TS — clear saved state and restore baseline from starters
-        this.codeStore.clearJs(q.id);
-        const lang = this.jsLang();
-        const starter = this.getStarter(q, lang);
-        this.codeStore.setJsBaseline(q.id, lang, starter);
-        this.editorContent.set(starter);
-        this.testCode.set(this.getTests(q, lang));
+        // JS/TS — delegate to service, then re-init the child panel
+        this.jsPanel?.resetToDefault?.();
+        this.jsPanel?.initFromQuestion();
       }
 
       // common cleanup
@@ -1549,7 +1252,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   copySolutionCode() {
-    const code = this.solutionCodeForCurrentLang() || '';
+    const code = this.solutionCodeFor(this.getActiveJsLang()) || '';
     if (!code.trim()) {
       console.warn('No solution code to copy.');
       return;
@@ -1560,9 +1263,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.copiedExamples.set(true);
         setTimeout(() => this.copiedExamples.set(false), 1200);
       })
-      .catch((e) => {
-        console.error('Clipboard write failed', e);
-      });
+      .catch((e) => console.error('Clipboard write failed', e));
   }
 
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
@@ -1570,27 +1271,44 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   loadSolutionCode() {
     const q = this.question(); if (!q || this.isWebTech()) return;
 
+    const lang = this.getActiveJsLang();        // <-- live value at click time
     const s = this.structuredSolution();
-    const first = (s?.approaches && s.approaches[0]) || null;
-    let value = first ? this.codeFor(first) : '';
+    const first = s?.approaches?.[0];
+
+    let value = '';
+
+    if (first) {
+      value = (lang === 'ts')
+        ? (first.codeTs ?? '')
+        : (first.codeJs ?? '');
+    }
 
     if (!value?.trim()) {
-      // legacy fallback
-      const lang = this.jsLang();
       const block = this.solutionInfo();
-      value =
-        (lang === 'ts' && block.codeTs?.trim()) ? block.codeTs :
-          (block.codeJs?.trim() ? block.codeJs :
-            this.getSolution(q, lang) || this.getSolution(q, lang === 'ts' ? 'js' : 'ts') || '');
+      value = (lang === 'ts')
+        ? (block.codeTs ?? '')
+        : (block.codeJs ?? '');
     }
 
-    if (value?.trim()) {
-      this.editorContent.set(value);
-      this.codeStore.saveJs(q.id, value, this.jsLang());
+    if (!value?.trim()) return;
+
+    if (!this.isFrameworkTech()) {
+      // child will also TS→JS transpile when current tab is JS
+      this.jsPanel?.applySolution(value);
+      this.topTab.set('code');
+      return;
     }
 
-    this.activePanel.set(1);
-    this.topTab.set('code');
+    // frameworks unchanged
+    this.editorContent.set(value);
+  }
+
+  private solutionCodeFor(lang: 'js' | 'ts'): string {
+    const s = this.structuredSolution();
+    const first = s?.approaches?.[0];
+    if (first) return lang === 'ts' ? (first.codeTs ?? '') : (first.codeJs ?? '');
+    const legacy = this.solutionInfo();
+    return (lang === 'ts' && (legacy.codeTs?.trim()?.length)) ? legacy.codeTs : legacy.codeJs;
   }
 
   cancelSolutionReveal() {
@@ -1598,6 +1316,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePanel.set(0);
   }
 
+  onChildLang(v: 'js' | 'ts') {
+    this.currentJsLang.set(v);
+  }
   private creditDaily(): void {
     const q = this.question();
     if (!q) return;
@@ -1648,11 +1369,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (e) => console.error('record completion failed', e),
     });
-  }
-
-  private sanitizeLogs(list: ConsoleEntry[] | undefined): ConsoleEntry[] {
-    if (!Array.isArray(list) || list.length === 0) return [];
-    return list.slice(-this.MAX_CONSOLE_LINES);
   }
 
   langFromPath(p: string): 'typescript' | 'javascript' | 'html' | 'css' | 'json' | 'plaintext' {
@@ -1746,55 +1462,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       console.error('preview build failed', e);
       this.setPreviewHtml(null);
     }
-  }
-
-  private wrapExportDefault(src: string, _id: string): string {
-    let name: string | null = null;
-    let s = src;
-
-    // 1) export default function NAME(...) { ... }  -> function NAME(...) { ... }
-    s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, (_m, n) => {
-      name = n || '__UF_DefaultFn__';
-      return `function ${name}`;
-    });
-
-    // 2) export default class NAME {...} -> class NAME {...}
-    s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, (_m, n) => {
-      name = n || '__UF_DefaultClass__';
-      return `class ${name}`;
-    });
-
-    // 3) export default <expr>; -> const __UF_Default__ = <expr>;
-    if (!/\b__UF_Default(Fn|Class)__\b/.test(s)) {
-      const before = s;
-      s = s.replace(/\bexport\s+default\s+/m, 'const __UF_Default__ = ');
-      if (s !== before) name = name || '__UF_Default__';
-    }
-
-    // 4) Publish to globals (both generic and named)
-    s += `
-      ;globalThis.__UF_USER_DEFAULT__ = (typeof ${name} !== "undefined") ? ${name} : undefined;
-      ;try { if (${JSON.stringify(name)} && typeof ${name} !== "undefined") { globalThis[${JSON.stringify(name)}] = ${name}; } } catch {}
-    `;
-
-    return s;
-  }
-
-
-  private transformTestCode(src: string, _id: string): string {
-    const REL_DEFAULT = /import\s+([A-Za-z0-9_$*\s{},]+)\s+from\s+['"]\.\/[A-Za-z0-9_\-./]+['"];?/g;
-
-    let out = src.replace(REL_DEFAULT, (_m, bindings) => {
-      const first = bindings.includes('{')
-        ? bindings.replace(/[{}*\s]/g, '').split(',')[0] || '__user'
-        : bindings.trim();
-
-      // ✅ no TS here:
-      return `const ${first} = globalThis.__UF_USER_DEFAULT__;`;
-    });
-
-    out = out.replace(/^\s*import\s+[^;]+from\s+['"](jest|vitest)['"];\s*$/mg, '');
-    return out;
   }
 
   private setPreviewHtml(html: string | null) {
@@ -1950,17 +1617,27 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Pick code for current lang
   codeFor(ap: UFApproach): string {
-    return this.jsLang() === 'ts' ? (ap.codeTs ?? ap.codeJs ?? '') : (ap.codeJs ?? ap.codeTs ?? '');
+    return this.currentJsLang() === 'ts'
+      ? (ap.codeTs ?? '')
+      : (ap.codeJs ?? '');
   }
 
   // Load one approach directly into the editor (doesn't switch tabs)
   loadApproach(ap: UFApproach) {
-    const code = this.codeFor(ap);
-    if (code?.trim()) {
-      this.editorContent.set(code);
-      const q = this.question();
-      if (q) this.codeStore.saveJs(q.id, code, this.jsLang());
+    const lang = this.getActiveJsLang();
+    const code = lang === 'ts' ? (ap.codeTs ?? '') : (ap.codeJs ?? '');
+    if (!code?.trim()) return;
+
+    if (!this.isFrameworkTech() && !this.isWebTech()) {
+      this.jsPanel?.setCode(code);           // write into child editor
+      this.topTab.set('code');
+      return;
     }
+
+    // existing behavior for framework/web:
+    this.editorContent.set(code);
+    const q = this.question();
+    if (q) this.codeStore.saveJs(q.id, code, lang);
   }
 
   // Tiny copier (you already have copySolutionCode for the legacy case)
@@ -1981,7 +1658,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // fallback to legacy single block
     const legacy = this.solutionInfo();
-    return this.jsLang() === 'ts' && (legacy.codeTs?.trim()?.length)
+    return this.currentJsLang() === 'ts' && (legacy.codeTs?.trim()?.length)
       ? legacy.codeTs
       : legacy.codeJs;
   });
@@ -2027,30 +1704,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return first;
     }
     return msg;
-  }
-
-  /** quick sniff: does code look like TypeScript? */
-  private looksLikeTs(code: string): boolean {
-    if (!code) return false;
-    return /:\s*[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code)        // : Type
-      || /\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code)     // as Type
-      || /\binterface\b/.test(code)
-      || /\btype\s+[A-Za-z_$][\w$]*\s*=/.test(code)
-      || /\benum\s+[A-Za-z_$]/.test(code);
-  }
-
-  /** best-effort TS → JS in-place for user buffer (non-destructive for logic) */
-  private stripTypesToJs(code: string): string {
-    if (!code) return code;
-    return code
-      // remove ": Type" (params, vars, returns)
-      .replace(/:\s*[^=;,)]+(?=[=;,)])/g, '')
-      // remove "as Type"
-      .replace(/\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/g, '')
-      // wipe interfaces, type aliases, enums
-      .replace(/\binterface\b[\s\S]*?\{[\s\S]*?\}\s*/g, '')
-      .replace(/\btype\s+[A-Za-z_$][\w$]*\s*=\s*[\s\S]*?;/g, '')
-      .replace(/\benum\s+[A-Za-z_$][\w$]*\s*\{[\s\S]*?\}\s*/g, '');
   }
 
   // Turn "### Heading" into bold titles and strip emoji bullets.
@@ -2136,7 +1789,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
-
   // Add once in the component (top-level private helper is fine)
   private decodeHtmlEntities(s: string): string {
     // Fast path for common entities (works even if double-escaped)
@@ -2196,4 +1848,46 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .filter(Boolean) as Array<{ id: string; title: string; difficulty: string; to: any[] }>;
   });
+
+  // ---------- child outputs ----------
+  onChildSolved = (v: boolean) => {
+    this.solved.set(v);
+    const q = this.question();
+    if (!q) return;
+
+    this.saveSolvedFlag(q, v);
+
+    // If the panel ran tests directly (its own Run button), also handle crediting here.
+    if (v) {
+      this.creditDaily();
+      this.activity.complete({
+        kind: this.kind,
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
+        xp: this.xpFor(q),
+        solved: true
+      }).subscribe({
+        next: (res: any) => {
+          this.recorded = true;
+          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
+          this.activity.refreshSummary();
+        },
+        error: (e) => console.error('record completion failed', e),
+      });
+    }
+  };
+
+  onChildResults = (results: TestResult[]) => {
+    this.testResults.set(results);
+  };
+
+  onChildConsole = (entries: ConsoleEntry[]) => {
+    this.consoleEntries.set(entries);
+  };
+
+  onChildCode = (payload: { lang: 'js' | 'ts'; code: string }) => {
+    this.currentJsLang.set(payload.lang);
+  };
 }

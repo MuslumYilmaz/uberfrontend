@@ -28,40 +28,45 @@ export interface JsBundleV2 {
   updatedAt: string; // ISO
 }
 
-const DATA_VERSION = '2';                 // ⬅️ bump for schema changes
-const BASE = 'code:';                     // common base
+const DATA_VERSION = '2';
+const BASE = 'code:';
 const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v2:code:
 
-/** v1 key helpers (what you already have in LS today) */
+/** v1 key helpers (legacy) */
 const V1_PREFIX = 'v1:code:';
-const V1_JS_RECORD = (qid: string) => `${V1_PREFIX}js:${qid}`;                      // {"code":"...","language":"js|ts",...}
-const V1_JS_BASELINE = (qid: string, lang: JsLang) => `${V1_PREFIX}js:baseline:${qid}:${lang}`; // {"code":"..."}
+const V1_JS_RECORD = (qid: string) => `${V1_PREFIX}js:${qid}`;
+const V1_JS_BASELINE = (qid: string, lang: JsLang) => `${V1_PREFIX}js:baseline:${qid}:${lang}`;
 
-/** Non-service key currently used for lang preference; we’ll migrate & delete it */
+/** Old external pref key */
 const UF_LANG_PREF = (qid: string) => `uf:lang:${qid}`;
 
 /** v2 consolidated key (one per question) */
-const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`; // single blob for both js & ts
+const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`;
+
+/** Guard: is localStorage usable? (some browsers/iframes can throw) */
+function hasLocalStorage(): boolean {
+  try {
+    const k = '__ls_probe__';
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class CodeStorageService {
-  // ---- one-time migration guard
   private migrated = false;
 
-  // ---------- JS (consolidated) ----------
+  // ---------- PUBLIC: JS (consolidated) ----------
 
-  /**
-   * Return a JsSave snapshot shaped like v1 for compatibility with existing callers:
-   * - code = bundle[ lastLang ].code (or '')
-   * - language = lastLang (or 'js')
-   */
-  getJs(qid: string): JsSave | null {
+  getJs(qidRaw: string | number): JsSave | null {
     this.ensureMigrated();
-
+    const qid = String(qidRaw);
     const b = this.getBundle(qid);
     if (!b) return null;
-
-    const lang: JsLang = (b.lastLang as JsLang) || 'js';
+    const lang: JsLang = (b.lastLang === 'ts' || b.lastLang === 'js') ? b.lastLang : 'js';
     const code = (b[lang]?.code ?? '') as string;
     return {
       code,
@@ -72,16 +77,33 @@ export class CodeStorageService {
     };
   }
 
-  /**
-   * Save current buffer for a specific language (and mark it lastLang).
-   * Keeps everything in a single v2 blob.
-   */
-  saveJs(qid: string, code: string, lang: JsLang = 'js') {
+  saveJs(
+    qidRaw: string | number,
+    code: string,
+    lang: 'js' | 'ts' = 'js',
+    opts?: { force?: boolean } // ← allow bypass for "Reset to default"
+  ): void {
     this.ensureMigrated();
+    if (!hasLocalStorage()) return;
 
+    const qid = String(qidRaw);
     const now = new Date().toISOString();
     const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
+    const existing = cur[lang]?.code ?? '';
+    const baseline = cur[lang]?.baseline ?? null;
+
+    // 🚫 Guard 1: prevent accidental empty init overwriting valid user code
+    if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+      return;
+    }
+
+    // 🚫 Guard 2: prevent re-writing the baseline if we already have user code
+    if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+      return;
+    }
+
+    // ✅ Apply update
     const next: JsBundleV2 = {
       ...cur,
       [lang]: { ...(cur[lang] || {}), code },
@@ -90,14 +112,16 @@ export class CodeStorageService {
       updatedAt: now,
     };
 
-    localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+    try {
+      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+    } catch { }
   }
 
-  /**
-   * Optional helpers if you want to manage baselines from the component.
-   */
-  setJsBaseline(qid: string, lang: JsLang, baseline: string) {
+  setJsBaseline(qidRaw: string | number, lang: JsLang, baseline: string): void {
     this.ensureMigrated();
+    if (!hasLocalStorage()) return;
+    const qid = String(qidRaw);
+
     const now = new Date().toISOString();
     const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
@@ -107,115 +131,149 @@ export class CodeStorageService {
       version: 'v2',
       updatedAt: now,
     };
-    localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+
+    try {
+      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+    } catch { }
   }
 
-  getJsBaseline(qid: string, lang: JsLang): string | null {
+  getJsBaseline(qidRaw: string | number, lang: JsLang): string | null {
     this.ensureMigrated();
+    const qid = String(qidRaw);
     const b = this.getBundle(qid);
     return b?.[lang]?.baseline ?? null;
   }
 
+  /** Strict per-language getter (does not mutate lastLang) */
+  getJsForLang(qidRaw: string | number, lang: JsLang): string | null {
+    this.ensureMigrated();
+    const qid = String(qidRaw);
+    const b = this.getBundle(qid);
+    return (b && b[lang]?.code != null) ? (b[lang]!.code as string) : null;
+  }
+
+  /** Switch lastLang without touching code buffers. */
+  setLastLang(qidRaw: string | number, lang: JsLang): void {
+    this.ensureMigrated();
+    if (!hasLocalStorage()) return;
+    const qid = String(qidRaw);
+
+    const now = new Date().toISOString();
+    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const next: JsBundleV2 = { ...cur, lastLang: lang, version: 'v2', updatedAt: now };
+    try {
+      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+    } catch { }
+  }
+
   /** Clear everything for this question (both languages). */
-  clearJs(qid: string) {
+  clearJs(qidRaw: string | number): void {
+    if (!hasLocalStorage()) return;
+    const qid = String(qidRaw);
     try { localStorage.removeItem(V2_JS_BUNDLE(qid)); } catch { }
   }
 
-  // ---------- Angular (StackBlitz via SDK) ----------
+  // ---------- PUBLIC: Angular (StackBlitz snapshot) ----------
+
   private keyNg(qid: string) { return `${PREFIX}ng:${qid}`; }
 
-  getNg(qid: string): NgSave | null {
+  getNg(qidRaw: string | number): NgSave | null {
+    if (!hasLocalStorage()) return null;
+    const qid = String(qidRaw);
     const raw = localStorage.getItem(this.keyNg(qid));
     if (!raw) return null;
     try { return JSON.parse(raw) as NgSave; } catch { return null; }
   }
 
-  saveNg(qid: string, filesSnapshot: Record<string, string>, projectId?: string) {
+  saveNg(qidRaw: string | number, filesSnapshot: Record<string, string>, projectId?: string): void {
+    if (!hasLocalStorage()) return;
+    const qid = String(qidRaw);
     const files: Record<string, { code: string }> = {};
     for (const [path, code] of Object.entries(filesSnapshot)) files[path] = { code };
     const payload: NgSave = { files, projectId, version: 'v1', updatedAt: new Date().toISOString() };
-    localStorage.setItem(this.keyNg(qid), JSON.stringify(payload));
+    try {
+      localStorage.setItem(this.keyNg(qid), JSON.stringify(payload));
+    } catch { }
   }
 
-  clearNg(qid: string) { localStorage.removeItem(this.keyNg(qid)); }
+  clearNg(qidRaw: string | number): void {
+    if (!hasLocalStorage()) return;
+    const qid = String(qidRaw);
+    try { localStorage.removeItem(this.keyNg(qid)); } catch { }
+  }
 
   // ---------- purge / utils ----------
-  /** Matches any versioned keys this service writes (all versions). */
+
   static isOurKey(k: string): boolean {
-    // vX:code:ng:..., vX:code:js2:... (v2), vX:code:js:... (legacy), vX:code:js:baseline:...
     return /^v\d+:code:(ng|js2|js):/.test(k);
   }
 
-  /** Remove everything created by this service (all versions). */
   static purgeAll(): void {
+    if (!hasLocalStorage()) return;
     try {
       const keys = Object.keys(localStorage);
-      for (const k of keys) {
-        if (CodeStorageService.isOurKey(k)) localStorage.removeItem(k);
-      }
+      for (const k of keys) if (CodeStorageService.isOurKey(k)) localStorage.removeItem(k);
     } catch { }
   }
 
   // ---------- internals ----------
 
-  /** Read v2 consolidated blob */
   private getBundle(qid: string): JsBundleV2 | null {
+    if (!hasLocalStorage()) return null;
     const raw = localStorage.getItem(V2_JS_BUNDLE(qid));
     if (!raw) return null;
     try { return JSON.parse(raw) as JsBundleV2; } catch { return null; }
   }
 
-  /** One-time migration from:
-   *  - v1:code:js:<qid> (single-lang record with {code, language, ...})
-   *  - v1:code:js:baseline:<qid>:js|ts ({code})
-   *  - uf:lang:<qid> (preference)
-   * into:
-   *  - v2:code:js2:<qid>  (both langs + lastLang)
-   */
-  private ensureMigrated() {
+  /** One-time migration from v1 keys to v2 (no overwrite if v2 exists) */
+  private ensureMigrated(): void {
     if (this.migrated) return;
     this.migrated = true;
+    if (!hasLocalStorage()) return;
 
     try {
       const keys = Object.keys(localStorage);
-      // Collect question ids that have v1 JS records
       const qids = new Set<string>();
+
+      // capture both v1 record and baseline forms
       for (const k of keys) {
-        const m = k.match(/^v1:code:js:(?:baseline:)?([^:]+)/);
-        if (m) qids.add(m[1]);
+        // v1:code:js:<qid> or v1:code:js:baseline:<qid>:<lang>
+        const rec = k.match(/^v1:code:js:([^:]+)$/);
+        if (rec) { qids.add(rec[1]); continue; }
+        const base = k.match(/^v1:code:js:baseline:([^:]+):(js|ts)$/);
+        if (base) { qids.add(base[1]); continue; }
+        const pref = k.match(/^uf:lang:([^:]+)$/);
+        if (pref) { qids.add(pref[1]); continue; }
       }
 
       qids.forEach((qid) => this.migrateQuestionFromV1(qid));
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }
 
-  private migrateQuestionFromV1(qid: string) {
-    const existingV2 = this.getBundle(qid);
-    if (existingV2) return; // already migrated
+  private migrateQuestionFromV1(qid: string): void {
+    if (this.getBundle(qid)) return; // already migrated — never clobber
 
     const now = new Date().toISOString();
 
-    // 1) main v1 record (whatever last save was)
-    const v1Raw = localStorage.getItem(V1_JS_RECORD(qid));
+    // 1) main v1 record
     let v1: Partial<JsSave> | null = null;
-    try { v1 = v1Raw ? JSON.parse(v1Raw) : null; } catch { v1 = null; }
+    try {
+      const raw = localStorage.getItem(V1_JS_RECORD(qid));
+      v1 = raw ? JSON.parse(raw) : null;
+    } catch { v1 = null; }
 
     // 2) baselines
     const baseJs = this.readBaseline(V1_JS_BASELINE(qid, 'js'));
     const baseTs = this.readBaseline(V1_JS_BASELINE(qid, 'ts'));
 
-    // 3) lang preference key (external)
-    const pref = (localStorage.getItem(UF_LANG_PREF(qid)) as JsLang | null) ?? undefined;
+    // 3) lang preference
+    const prefRaw = localStorage.getItem(UF_LANG_PREF(qid));
+    const pref = (prefRaw === 'ts' || prefRaw === 'js') ? (prefRaw as JsLang) : undefined;
 
     if (!v1 && !baseJs && !baseTs && !pref) return; // nothing to migrate
 
-    const bundle: JsBundleV2 = {
-      version: 'v2',
-      updatedAt: now,
-      lastLang: (pref || v1?.language || 'js') as JsLang,
-    };
+    const bundle: JsBundleV2 = { version: 'v2', updatedAt: now, lastLang: (pref || v1?.language || 'js') as JsLang };
 
     if (v1?.language === 'js') {
       bundle.js = { code: v1.code ?? '', baseline: baseJs ?? undefined };
@@ -230,7 +288,7 @@ export class CodeStorageService {
 
     try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(bundle)); } catch { }
 
-    // Clean up v1 leftovers (optional but recommended)
+    // optional cleanup
     try { localStorage.removeItem(V1_JS_RECORD(qid)); } catch { }
     try { localStorage.removeItem(V1_JS_BASELINE(qid, 'js')); } catch { }
     try { localStorage.removeItem(V1_JS_BASELINE(qid, 'ts')); } catch { }
@@ -238,37 +296,90 @@ export class CodeStorageService {
   }
 
   private readBaseline(key: string): string | null {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
     try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
       const obj = JSON.parse(raw);
       return typeof obj?.code === 'string' ? obj.code : null;
-    } catch {
-      return null;
+    } catch { return null; }
+  }
+
+  initJs(qidRaw: string | number, lang: 'js' | 'ts', starter: string) {
+    this.ensureMigrated();
+    if (!hasLocalStorage()) {
+      return { initial: starter, restored: false };
     }
-  }
-
-  // ADD to CodeStorageService
-
-  /** Get the saved code for a specific language without changing lastLang. */
-  getJsForLang(qid: string, lang: JsLang): string | null {
-    this.ensureMigrated();
-    const b = this.getBundle(qid);
-    return (b && b[lang]?.code != null) ? (b[lang]!.code as string) : null;
-  }
-
-  /** Switch lastLang without touching code buffers. */
-  setLastLang(qid: string, lang: JsLang): void {
-    this.ensureMigrated();
+    const qid = String(qidRaw);
     const now = new Date().toISOString();
     const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
+    // Seed baseline once (no code write)
+    const baseline = cur[lang]?.baseline ?? null;
+    if (baseline == null) {
+      cur[lang] = { ...(cur[lang] || {}), baseline: starter, code: cur[lang]?.code ?? '' };
+    }
+
+    // Decide what to show
+    const saved = cur[lang]?.code ?? '';
+    const hasUser = saved.trim().length > 0;
+    const initial = hasUser ? saved : starter;
+    const restored = hasUser && saved.trim() !== (cur[lang]?.baseline ?? starter).trim();
+
+    // write back only if we changed baseline or lastLang; never write starter as code
+    const next: JsBundleV2 = { ...cur, lastLang: lang, version: 'v2', updatedAt: now };
+    try {
+      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+    } catch { }
+
+    return { initial, restored };
+  }
+
+  // in CodeStorageService
+  resetJsToBaseline(qidRaw: string | number, lang: 'js' | 'ts'): void {
+    this.ensureMigrated();
+    if (!hasLocalStorage()) return;
+    const qid = String(qidRaw);
+
+    const now = new Date().toISOString();
+    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const baseline = cur[lang]?.baseline ?? '';
+    // overwrite code with baseline explicitly (bypass normal guards)
     const next: JsBundleV2 = {
       ...cur,
+      [lang]: { ...(cur[lang] || {}), code: baseline, baseline },
       lastLang: lang,
       version: 'v2',
       updatedAt: now,
     };
-    localStorage.setItem((V2_JS_BUNDLE as any)(qid), JSON.stringify(next));
+
+    try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next)); } catch { }
+  }
+
+  resetJsBoth(
+    qidRaw: string | number,
+    starters?: { js?: string; ts?: string } // optional: pass to override/update baselines too
+  ): void {
+    this.ensureMigrated();
+    if (!hasLocalStorage()) return;
+
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const jsBaseline = starters?.js ?? cur.js?.baseline ?? '';
+    const tsBaseline = starters?.ts ?? cur.ts?.baseline ?? '';
+
+    const next: JsBundleV2 = {
+      ...cur,
+      js: { code: jsBaseline, baseline: jsBaseline },
+      ts: { code: tsBaseline, baseline: tsBaseline },
+      version: 'v2',
+      updatedAt: now,
+      // keep current lastLang so the same tab remains active after reset
+      lastLang: cur.lastLang ?? 'js',
+    };
+
+    try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next)); } catch { }
   }
 }
