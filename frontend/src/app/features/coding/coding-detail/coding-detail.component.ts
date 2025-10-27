@@ -60,6 +60,8 @@ type UFApproach = {
   prose?: string;
   codeJs?: string;
   codeTs?: string;
+  codeHtml?: string;
+  codeCss?: string;
 };
 
 type UFFollowUpRef = string | { id: string };
@@ -219,6 +221,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private sessionStart = Date.now();
   private recorded = false;
 
+  // --- HTML/CSS solution preview toggle ---
+  showingSolutionPreview = false;
+  private solutionPreviewUrl: SafeResourceUrl | null = null;
+
   // Preview dialog (Angular)
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
@@ -297,20 +303,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   /** live preview HTML for html/css mode */
   previewDocRaw = computed(() => {
     const css = this.cssCode() ?? '';
-    const html = this.htmlCode() ?? '';
-    return `<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light }
-  * { box-sizing: border-box }
-  html,body { height: 100%; background:#fff; color:#111; }
-  body {
-    margin:16px;
-    font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-  }
-  ${css}
-</style></head><body>${html}</body></html>`;
+    const html = this.unescapeJsLiterals(this.htmlCode() ?? '');
+    return this.buildWebPreviewDoc(html, css);
   });
+
 
   descriptionText = computed(() => {
     const q = this.question();
@@ -329,13 +325,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return (q as any).examples || [];
   });
+
   combinedExamples = computed(() => {
     const exs = this.descriptionExamples();
     if (!exs || exs.length === 0) return '';
-    // Keep examples exactly as authored in JSON; one example per line or block.
-    // Add one blank line between examples for readability.
+
     return exs
-      .map((ex: any) => (typeof ex === 'string' ? ex.replace(/\s+$/, '') : String(ex)))
+      .map((ex: any) => {
+        const raw = typeof ex === 'string' ? ex.trim() : String(ex);
+        return this.unescapeJsLiterals(raw);   // ✅ use your helper
+      })
       .join('\n\n');
   });
 
@@ -498,7 +497,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     return scan(obj?.web) || scan(obj) || '';
   }
-  private prettifyCss(css: string): string {
+  public prettifyCss(css: string): string {
     if (!css) return '';
     try {
       return css
@@ -513,25 +512,31 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const htmlRaw = this.pickString(q, [
       'web.starterHtml', 'starterHtml', 'htmlStarter', 'web.html', 'html'
     ]);
-
     let cssRaw = this.pickString(q, [
       'web.starterCss', 'starterCss', 'cssStarter', 'web.css', 'css', 'starterStyles', 'styles', 'starterCSS'
     ]);
     if (!cssRaw) cssRaw = this.findCssLike(q);
 
-    const html = htmlRaw || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
-    const css = this.prettifyCss(cssRaw || '');
+    const html = this.unescapeJsLiterals(htmlRaw) || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
+    const css = this.prettifyCss(this.unescapeJsLiterals(cssRaw) || '');
     return { html, css };
   }
+
   private getWebSolutions(q: any): { html: string; css: string } {
     const w = q.web ?? {};
-    const html = w.solutionHtml ?? q.solutionHtml ?? q.htmlSolution ?? w.htmlSolution ?? '';
-    const css = w.solutionCss ?? q.solutionCss ?? q.cssSolution ?? w.cssSolution ?? '';
-    return { html: String(html ?? ''), css: String(css ?? '') };
+    const html = w.solutionHtml ?? q.webSolutionHtml ?? q.solutionHtml ?? q.htmlSolution ?? w.htmlSolution ?? '';
+    const css = w.solutionCss ?? q.webSolutionCss ?? q.solutionCss ?? q.cssSolution ?? w.cssSolution ?? '';
+    return {
+      html: this.unescapeJsLiterals(String(html ?? '')),
+      css: this.unescapeJsLiterals(String(css ?? '')),
+    };
   }
+
   private getWebTests(q: any): string {
-    return this.pickString(q, ['web.tests', 'tests', 'testsDom', 'testsHtml']) || '';
+    const raw = this.pickString(q, ['web.tests', 'tests', 'testsDom', 'testsHtml']) || '';
+    return this.unescapeJsLiterals(raw);
   }
+
   private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
   private webBaseKey(q: Question, which: 'html' | 'css') {
     return `uf:web:baseline:v2:${which}:${q.id}`;
@@ -645,10 +650,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         if (s.startsWith('{')) {
           try {
             const obj = JSON.parse(s);
-            if (obj && typeof obj.code === 'string') return obj.code;
-          } catch { }
+            if (obj && typeof obj.code === 'string') return this.unescapeJsLiterals(obj.code);
+          } catch { /* ignore */ }
         }
-        return s;
+        return this.unescapeJsLiterals(s);
       };
 
       const savedHtml = normalizeSaved(localStorage.getItem(this.webKey(q, 'html')));
@@ -659,6 +664,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.htmlCode.set(html);
       this.cssCode.set(css);
+      this.scheduleWebPreview();
 
       try {
         const baseHtml = localStorage.getItem(htmlBaseKey) ?? '';
@@ -774,7 +780,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webSaveTimer = setTimeout(() => {
       try { localStorage.setItem(this.webKey(q, 'html'), code); } catch { }
     }, 200);
+    this.scheduleWebPreview(); // ✅
   };
+
   onCssChange = (code: string) => {
     const q = this.question(); if (!q || !this.isWebTech()) return;
     this.cssCode.set(code);
@@ -782,6 +790,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webSaveTimer = setTimeout(() => {
       try { localStorage.setItem(this.webKey(q, 'css'), code); } catch { }
     }, 200);
+    this.scheduleWebPreview(); // ✅
   };
 
   // ---------- banner actions ----------
@@ -1425,6 +1434,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 200);
   }
 
+  // --- WEB (html/css) preview rebuild (debounced, unified with frameworks) ---
+  private webPreviewTimer: any = null;
+
+  private scheduleWebPreview() {
+    if (!this.isWebTech()) return;
+    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
+    this.webPreviewTimer = setTimeout(() => {
+      try {
+        const htmlDoc = this.previewDocRaw();  // already unescapes HTML
+        this.setPreviewHtml(htmlDoc);          // ✅ reuse blob URL mechanism
+      } catch (e) {
+        console.error('web preview build failed', e);
+        this.setPreviewHtml(null);
+      }
+    }, 120);
+  }
 
   private remountEditor() {
     this.showEditor.set(false);
@@ -1624,20 +1649,35 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Load one approach directly into the editor (doesn't switch tabs)
   loadApproach(ap: UFApproach) {
+    if (this.isWebTech()) {
+      const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
+      const css = this.prettifyCss(this.unescapeJsLiterals(ap.codeCss ?? ''));
+
+      this.htmlCode.set(html);
+      this.cssCode.set(css);
+      this.topTab.set('html');
+      this.scheduleWebPreview();
+
+      const q = this.question();
+      if (q) {
+        try { localStorage.setItem(this.webKey(q, 'html'), html); } catch { }
+        try { localStorage.setItem(this.webKey(q, 'css'), css); } catch { }
+      }
+      return;
+    }
+
+    // JS/TS & frameworks (unchanged)
     const lang = this.getActiveJsLang();
     const code = lang === 'ts' ? (ap.codeTs ?? '') : (ap.codeJs ?? '');
     if (!code?.trim()) return;
 
-    if (!this.isFrameworkTech() && !this.isWebTech()) {
-      this.jsPanel?.setCode(code);           // write into child editor
+    if (!this.isFrameworkTech()) {
+      this.jsPanel?.setCode(code);
       this.topTab.set('code');
       return;
     }
 
-    // existing behavior for framework/web:
     this.editorContent.set(code);
-    const q = this.question();
-    if (q) this.codeStore.saveJs(q.id, code, lang);
   }
 
   // Tiny copier (you already have copySolutionCode for the legacy case)
@@ -1890,4 +1930,86 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   onChildCode = (payload: { lang: 'js' | 'ts'; code: string }) => {
     this.currentJsLang.set(payload.lang);
   };
+
+  /** Turn "\n", "\t", "\r" etc. into real characters. Leaves normal text alone. */
+  public unescapeJsLiterals(s: string | null | undefined): string {
+    if (!s) return '';
+    // Fast path: if no backslash-n/t/r, skip work
+    if (!/[\\][nrt\\'"]/.test(s)) return s;
+    return s
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\r')
+      .replace(/\\t/g, '\t')
+      .replace(/\\'/g, "'")
+      .replace(/\\"/g, '"')
+      .replace(/\\\\/g, '\\');
+  }
+
+  public prettifyHtml(html: string): string {
+    if (!html) return '';
+    try {
+      // cheap, readable formatting for small snippets
+      return html
+        .replace(/>\s*</g, '>\n<')
+        .replace(/\n{2,}/g, '\n')
+        .trim();
+    } catch { return html; }
+  }
+
+  openSolutionPreview() {
+    const q = this.question(); if (!q || !this.isWebTech()) return;
+    const sol = this.getWebSolutions(q);
+    const html = this.unescapeJsLiterals(sol.html || '');
+    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
+
+    const fullDoc = this.buildWebPreviewDoc(html, css);
+
+    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    const blob = new Blob([fullDoc], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    this.solutionPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+    this._previewUrl.set(this.solutionPreviewUrl);
+    this.showingSolutionPreview = true;
+  }
+
+  closeSolutionPreview() {
+    // revert to user’s code preview
+    this.scheduleWebPreview();
+    this.showingSolutionPreview = false;
+  }
+
+  // Add this helper near other helpers
+  private buildWebPreviewDoc(userHtml: string, css: string): string {
+    const html = (userHtml || '').trim();
+    const cssBlock = (css || '').trim();
+    const isFullDoc = /<!doctype\s+html/i.test(html) || /<html[\s>]/i.test(html);
+
+    if (isFullDoc) {
+      if (!cssBlock) return html;
+
+      // has <head>? inject <style> inside; else create one
+      if (/<head[\s>]/i.test(html)) {
+        return html.replace(/<head([^>]*)>/i, (_m, attrs) => `<head${attrs}>\n<style>\n${cssBlock}\n</style>`);
+      }
+      // no <head>, try to put one after <html …>
+      if (/<html[^>]*>/i.test(html)) {
+        return html.replace(/<html([^>]*)>/i,
+          (_m, attrs) => `<html${attrs}>\n<head><style>\n${cssBlock}\n</style></head>`);
+      }
+      // fallback (very unlikely)
+      return `<!doctype html><html><head><style>${cssBlock}</style></head><body>${html}</body></html>`;
+    }
+
+    // Not a full doc: wrap like before
+    return `<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root { color-scheme: light }
+  * { box-sizing: border-box }
+  html,body { height: 100%; background:#fff; color:#111; }
+  body { margin:16px; font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; }
+  ${cssBlock}
+</style></head><body>${html}</body></html>`;
+  }
 }

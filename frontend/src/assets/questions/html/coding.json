@@ -1,37 +1,95 @@
 [
     {
-        "id": "html-accordion",
-        "title": "Build an accessible accordion",
-        "description": "Create a collapsible accordion using semantic HTML (<button>, <section>) and proper ARIA so it is keyboard-accessible.",
-        "type": "coding",
-        "technology": "html",
-        "difficulty": "intermediate",
-        "tags": [
-            "html",
-            "aria",
-            "accessibility",
-            "semantics"
-        ],
-        "importance": 4,
-        "starterHtml": "<button class=\"accordion\" aria-expanded=\"false\" aria-controls=\"sect-1\" id=\"acc-1\">Section 1</button>\n<section id=\"sect-1\" hidden>\n  <p>Start here…</p>\n</section>",
-        "starterCss": ".accordion{display:block;padding:.5rem 1rem;border:1px solid #555;border-radius:6px;background:transparent;}\n[hidden]{display:none !important;}",
-        "tests": "it('button has the correct ARIA relationships', () => {\n  const btn = document.querySelector('button.accordion');\n  if(!btn) throw new Error('No <button class=\"accordion\"> found');\n  if(btn.getAttribute('id') !== 'acc-1') throw new Error('Button id should be \"acc-1\"');\n  if(btn.getAttribute('aria-controls') !== 'sect-1') throw new Error('aria-controls must reference #sect-1');\n  if(btn.getAttribute('aria-expanded') !== 'false') throw new Error('aria-expanded should be \"false\" initially');\n});\n\nit('section exists and is hidden initially', () => {\n  const sec = document.getElementById('sect-1');\n  if(!sec) throw new Error('Missing <section id=\"sect-1\">');\n  if(!sec.hasAttribute('hidden')) throw new Error('Section should have the [hidden] attribute initially');\n  const style = window.getComputedStyle(sec);\n  if(style.display !== 'none') throw new Error('Hidden section should be display:none via CSS');\n});"
-    },
-    {
-        "id": "html-form",
-        "title": "Semantic sign-up form",
-        "description": "Mark up a sign-up form with labels, required fields, and a plan selector using <fieldset>/<legend>.",
+        "id": "html-basic-structure",
+        "title": "🧩 1. Warm-Up: Basic Structure",
         "type": "coding",
         "technology": "html",
         "difficulty": "easy",
+        "importance": 1,
         "tags": [
-            "forms",
+            "html",
+            "basics",
             "semantics",
-            "a11y"
+            "beginner"
         ],
-        "importance": 3,
-        "starterHtml": "<form novalidate>\n  <label for=\"name\">Name</label>\n  <input id=\"name\" name=\"name\" required>\n\n  <label for=\"email\">Email</label>\n  <input id=\"email\" type=\"email\" name=\"email\" required>\n\n  <fieldset>\n    <legend>Plan</legend>\n    <label><input type=\"radio\" name=\"plan\" value=\"free\" checked> Free</label>\n    <label><input type=\"radio\" name=\"plan\" value=\"pro\"> Pro</label>\n  </fieldset>\n\n  <button type=\"submit\">Sign up</button>\n</form>",
-        "starterCss": "form{display:grid;gap:.75rem;max-width:420px}\nlabel{font-weight:600}\ninput,button{padding:.5rem;border:1px solid #555;border-radius:6px;background:transparent;color:inherit}",
-        "tests": "it('name and email inputs are labeled and required', () => {\n  const name = document.getElementById('name');\n  if(!name) throw new Error('Missing #name input');\n  if(!document.querySelector('label[for=\"name\"]')) throw new Error('Missing label for name');\n  if(!name.hasAttribute('required')) throw new Error('Name should be required');\n  const email = document.getElementById('email');\n  if(!email) throw new Error('Missing #email input');\n  if(!document.querySelector('label[for=\"email\"]')) throw new Error('Missing label for email');\n  if((email as HTMLInputElement).type !== 'email') throw new Error('Email input type should be email');\n  if(!email.hasAttribute('required')) throw new Error('Email should be required');\n});\n\nit('fieldset with legend and two radio options exists', () => {\n  const fs = document.querySelector('fieldset');\n  if(!fs) throw new Error('Missing <fieldset>');\n  const legend = fs.querySelector('legend');\n  if(!legend) throw new Error('Missing <legend> inside fieldset');\n  const radios = document.querySelectorAll('input[type=\"radio\"][name=\"plan\"]');\n  if(radios.length !== 2) throw new Error('Expected exactly 2 radio inputs named \"plan\"');\n});\n\nit('submit button is present', () => {\n  if(!document.querySelector('button[type=\"submit\"]')) throw new Error('Missing submit button');\n});"
+        "description": {
+            "summary": "Create a minimal HTML document that includes a title, a main heading, and a paragraph.",
+            "arguments": [
+                {
+                    "name": "<!DOCTYPE>",
+                    "type": "declaration",
+                    "desc": "Defines the document as HTML5."
+                },
+                {
+                    "name": "<html>",
+                    "type": "root element",
+                    "desc": "Wraps the entire content of the HTML document."
+                },
+                {
+                    "name": "<head>",
+                    "type": "metadata container",
+                    "desc": "Contains information like <title> and meta tags."
+                },
+                {
+                    "name": "<body>",
+                    "type": "content container",
+                    "desc": "Holds all visible content such as headings and paragraphs."
+                },
+                {
+                    "name": "<h1>, <p>",
+                    "type": "text elements",
+                    "desc": "Display a main heading and a short paragraph."
+                }
+            ],
+            "returns": {
+                "type": "markup",
+                "desc": "A valid minimal HTML document with basic structure and visible text."
+            },
+            "examples": [
+                "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>"
+            ]
+        },
+        "web": {
+            "starterHtml": "<!-- TODO: Create a minimal HTML document -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <!-- Add <title> element here -->\\n  </head>\\n  <body>\\n    <!-- Add a main heading (h1) -->\\n    <!-- Add a paragraph under the heading -->\\n  </body>\\n</html>",
+            "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}",
+            "tests": "it('contains <!DOCTYPE html> declaration', () => {\\n  const docType = document.doctype;\\n  expect(docType && docType.name.toLowerCase()).toBe('html');\\n});\\n\\nit('has a <title> element inside <head>', () => {\\n  const t = document.querySelector('head title');\\n  expect(!!t && t.textContent.trim().length > 0).toBe(true);\\n});\\n\\nit('has a single <h1> inside <body>', () => {\\n  const h1 = document.querySelectorAll('body h1');\\n  expect(h1.length).toBe(1);\\n});\\n\\nit('has at least one <p> element after the <h1>', () => {\\n  const h1 = document.querySelector('h1');\\n  const p = document.querySelector('p');\\n  expect(!!p && h1.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();\\n});"
+        },
+        "solutionBlock": {
+            "overview": "This warm-up introduces the structure of an HTML document: doctype, head, and body. You’ll create a simple page with a title, one heading, and one paragraph.",
+            "approaches": [
+                {
+                    "title": "Approach 1 – Basic HTML Skeleton",
+                    "prose": "Start with `<!DOCTYPE html>` to declare HTML5. Wrap everything in `<html>`. Inside `<head>`, add a `<title>`. Place visible content inside `<body>`, including `<h1>` and `<p>`.",
+                    "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
+                    "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Forgetting the <!DOCTYPE html> declaration can cause browsers to enter quirks mode.",
+                    "The <title> element must be inside <head>, not <body>."
+                ],
+                "techniques": [
+                    "Always define language using <html lang='en'>.",
+                    "Indent nested elements for readability."
+                ]
+            },
+            "resources": [
+                {
+                    "title": "MDN – HTML basics",
+                    "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics"
+                },
+                {
+                    "title": "MDN – The <head> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"
+                },
+                {
+                    "title": "MDN – The <title> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"
+                }
+            ]
+        },
+        "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
+        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }"
     }
 ]

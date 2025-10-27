@@ -70,7 +70,7 @@
             </div>
 
             <!-- Örnekler -->
-            <ng-container *ngIf="combinedExamples()">
+            <ng-container *ngIf="!isFrameworkTech() && !isWebTech() && combinedExamples()">
               <div class="mt-6">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-xs uppercase font-semibold">Examples</span>
@@ -87,6 +87,29 @@
                     <i class="pi" [ngClass]="copiedExamples() ? 'pi-check' : 'pi-copy'"></i>
                   </button>
                 </div>
+              </div>
+            </ng-container>
+
+            <!-- Frameworks + Web: show Solution CTA instead of Examples -->
+            <ng-container *ngIf="isFrameworkTech() || isWebTech()">
+              <div class="mt-6 flex items-center gap-3">
+                <button class="text-xs px-3 py-2 rounded border border-white/20 hover:bg-white/5"
+                  (click)="onSolutionTabClick()">
+                  View solution (read-only)
+                </button>
+
+                <!-- Only for JS/TS load; hidden on frameworks+web -->
+                <!-- (kept here for completeness but will not render because of *ngIf above) -->
+                <button *ngIf="false" class="text-xs px-3 py-2 rounded border border-white/20 hover:bg-white/5"
+                  (click)="loadSolutionIntoEditor()">
+                  Load solution into editor
+                </button>
+
+                <!-- Web (HTML/CSS): allow previewing the official solution -->
+                <button *ngIf="isWebTech()" class="text-xs px-3 py-2 rounded border border-white/20 hover:bg-white/5"
+                  (click)="openSolutionPreview()">
+                  Preview solution
+                </button>
               </div>
             </ng-container>
 
@@ -163,19 +186,53 @@
                   </div>
                 </div>
 
+                <!-- prose stays the same -->
                 <div *ngIf="ap.prose" class="solution-prose prose prose-invert max-w-none mb-3"
                   [innerHTML]="md(ap.prose)"></div>
 
-                <div class="code-wrap">
-                  <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                    [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
-                    [readOnly]="true" [autoHeight]="true" [options]="examplesMonacoOptions">
-                  </app-monaco-editor>
+                <!-- WEB: show HTML and CSS as separate, nicely labeled blocks -->
+                <ng-container *ngIf="isWebTech(); else nonWebApproach">
+                  <div class="code-wrap mb-2" *ngIf="ap.codeHtml">
+                    <div class="px-2 py-1 text-xs opacity-80">&lt;html&gt;</div>
+                    <app-monaco-editor
+                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                      [code]="prettifyHtml(unescapeJsLiterals(ap.codeHtml || ''))" [language]="'html'" [readOnly]="true"
+                      [autoHeight]="true" [options]="examplesMonacoOptions">
+                    </app-monaco-editor>
+                    <button class="copy-fab" aria-label="Copy HTML" title="Copy HTML"
+                      (click)="onCopyApproach(i, prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')))">
+                      <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
+                    </button>
+                  </div>
 
-                  <button class="copy-fab" aria-label="Copy code" title="Copy" (click)="onCopyApproach(i, codeFor(ap))">
-                    <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
-                  </button>
-                </div>
+                  <div class="code-wrap" *ngIf="ap.codeCss">
+                    <div class="px-2 py-1 text-xs opacity-80"># CSS</div>
+                    <app-monaco-editor
+                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                      [code]="prettifyCss(unescapeJsLiterals(ap.codeCss || ''))" [language]="'css'" [readOnly]="true"
+                      [autoHeight]="true" [options]="examplesMonacoOptions">
+                    </app-monaco-editor>
+                    <button class="copy-fab" aria-label="Copy CSS" title="Copy CSS"
+                      (click)="onCopyApproach(i, prettifyCss(unescapeJsLiterals(ap.codeCss || '')))">
+                      <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
+                    </button>
+                  </div>
+                </ng-container>
+
+                <!-- JS/TS path (unchanged) -->
+                <ng-template #nonWebApproach>
+                  <div class="code-wrap">
+                    <app-monaco-editor
+                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                      [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
+                      [readOnly]="true" [autoHeight]="true" [options]="examplesMonacoOptions">
+                    </app-monaco-editor>
+                    <button class="copy-fab" aria-label="Copy code" title="Copy"
+                      (click)="onCopyApproach(i, codeFor(ap))">
+                      <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
+                    </button>
+                  </div>
+                </ng-template>
               </div>
 
               <!-- Notes / Pitfalls / Edge cases / Techniques -->
@@ -253,8 +310,8 @@
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
-    <!-- Restore banner (non-Angular) -->
-    <div *ngIf="isFrameworkTech() && showRestoreBanner()"
+    <!-- Restore banner (frameworks + web) -->
+    <div *ngIf="(isFrameworkTech() || isWebTech()) && showRestoreBanner()"
       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
       <span class="font-medium">Your code was restored from client storage.</span>
       <div class="absolute right-2 inset-y-0 flex items-center gap-3">
@@ -262,6 +319,7 @@
         <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
       </div>
     </div>
+
 
     <!-- FRAMEWORK: Angular / React (our editor + our preview, no StackBlitz) -->
     <ng-container *ngIf="isFrameworkTech()">
@@ -413,10 +471,33 @@
 
                 <!-- TOP CONTENT -->
                 <div [style.flex]="'0 0 ' + (previewRatio()*100) + '%'" class="relative min-h-[160px]">
+                  <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400"
+                    [style.display]="isPreviewTop() ? 'grid' : 'none'">
+                    Building preview…
+                  </div>
+
+                  <!-- WEB PREVIEW TOGGLE -->
+                  <div *ngIf="isWebTech()" class="absolute top-2 right-3 z-20 flex items-center gap-2">
+                    <!-- Show Preview button (when not showing solution) -->
+                    <button *ngIf="!showingSolutionPreview"
+                      class="text-xs px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500"
+                      (click)="openSolutionPreview()">
+                      Show preview
+                    </button>
+
+                    <!-- Close banner (when showing solution) -->
+                    <div *ngIf="showingSolutionPreview"
+                      class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
+                      <span class="font-medium">Showing solution preview</span>
+                      <button class="text-xs underline" (click)="closeSolutionPreview()">Close preview</button>
+                    </div>
+                  </div>
+
+                  <!-- Existing iframe -->
                   <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white"
                     [style.display]="isPreviewTop() ? 'block' : 'none'"
                     sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation"
-                    [attr.srcdoc]="previewDocRaw()" referrerpolicy="no-referrer">
+                    [src]="previewUrl()" referrerpolicy="no-referrer">
                   </iframe>
 
                   <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">
@@ -447,27 +528,30 @@
                   <div class="flex-1 min-h-0 overflow-hidden">
                     <!-- Results -->
                     <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel">
+                      <!-- 1) No tests at all -->
                       <div class="h-full grid place-items-center text-xs text-gray-400" *ngIf="!hasAnyTests()">
                         No tests provided for this challenge yet.
                       </div>
 
-                      <div *ngIf="hasAnyTests()" class="space-y-2">
+                      <!-- 2) Tests exist but not run yet -->
+                      <div class="h-full grid place-items-center text-xs text-gray-400"
+                        *ngIf="hasAnyTests() && !hasRunTests">
+                        Run tests to see results.
+                      </div>
+
+                      <!-- 3) Tests run: show summary + list -->
+                      <div *ngIf="hasAnyTests() && hasRunTests" class="space-y-2">
                         <div class="summary mb-2">
                           <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
-                          <ng-container *ngIf="totalCount() > 0">
-                            <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
-                            <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
-                          </ng-container>
-                          <ng-container *ngIf="totalCount() === 0">
-                            <span class="text-yellow-400 ml-2">No tests run yet</span>
-                          </ng-container>
+                          <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
+                          <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
                         </div>
 
                         <div *ngFor="let t of testResults()" class="test-card border rounded-md"
                           [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
                           <div class="test-name">
                             <i [ngClass]="t.passed ? 'pi pi-check-circle text-green-400'
-                                   : 'pi pi-times-circle text-red-400'"></i>
+               : 'pi pi-times-circle text-red-400'"></i>
                             <span>{{ t.name }}</span>
                           </div>
                           <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
@@ -476,6 +560,7 @@
                         </div>
                       </div>
                     </div>
+
 
                     <!-- Console -->
                     <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
