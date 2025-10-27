@@ -987,48 +987,36 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const code = (this.testCode() || '').trim();
     if (!code) {
-      // nothing to run
       this.hasRunTests = true;
       this.testResults.set([]);
       return;
     }
 
-    const iframe = this.previewFrame?.nativeElement;
-    if (!iframe) return;
+    // Build a complete HTML doc from the current editor values (not the preview)
+    const htmlDoc = this.previewDocRaw(); // already uses buildWebPreviewDoc(html, css)
 
-    await this.ensurePreviewLoaded(iframe);
-    const doc = iframe.contentDocument as Document;
-    const win = iframe.contentWindow as Window;
+    // Mount into an offscreen iframe so tests don't rely on the visible preview
+    const { frame, doc, win } = await this.mountScratchDoc(htmlDoc);
 
     const results: TestResult[] = [];
     const it = async (name: string, fn: () => any | Promise<any>) => {
       try { await fn(); results.push({ name, passed: true }); }
       catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
     };
-    // alias
     const test = it;
-
     const expect = this.makeDomExpect(doc, win);
 
-    // small helpers
     const q$ = (sel: string) => doc.querySelector(sel);
     const qa$ = (sel: string) => Array.from(doc.querySelectorAll(sel));
 
     try {
-      // Execute tests with a controlled scope
-      const runner = new Function(
-        'document',
-        'window',
-        'it',
-        'test',
-        'expect',
-        'q',
-        'qa',
-        code
-      );
+      const runner = new Function('document', 'window', 'it', 'test', 'expect', 'q', 'qa', code);
       await runner.call(undefined, doc, win, it, test, expect as any, q$, qa$);
     } catch (e: any) {
       results.unshift({ name: 'Failed to execute test file', passed: false, error: String(e?.message ?? e) });
+    } finally {
+      // Clean up the hidden frame regardless of pass/fail
+      try { frame.remove(); } catch { /* ignore */ }
     }
 
     this.testResults.set(results);
@@ -1037,6 +1025,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const passing = this.allPassing();
     this.solved.set(passing);
     this.saveSolvedFlag(q, passing);
+
     if (passing) {
       this.creditDaily();
       this.activity.complete({
@@ -1223,8 +1212,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         const starters = this.getWebStarters(q);
         try { localStorage.removeItem(this.webKey(q, 'html')); } catch { }
         try { localStorage.removeItem(this.webKey(q, 'css')); } catch { }
+
+        // Reset to starter code
         this.htmlCode.set(starters.html);
         this.cssCode.set(starters.css);
+
+        // ✅ Rebuild preview from fresh starter HTML/CSS
+        this.scheduleWebPreview();
       } else {
         // JS/TS — clear saved state and restore baseline from starters
         // JS/TS — delegate to service, then re-init the child panel
@@ -2011,5 +2005,26 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   body { margin:16px; font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; }
   ${cssBlock}
 </style></head><body>${html}</body></html>`;
+  }
+
+  // Place near other private helpers
+  private async mountScratchDoc(html: string): Promise<{ frame: HTMLIFrameElement; doc: Document; win: Window }> {
+    const frame = document.createElement('iframe');
+    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    frame.style.cssText = 'position:fixed;left:-10000px;top:-10000px;width:0;height:0;border:0;visibility:hidden;';
+    document.body.appendChild(frame);
+
+    const doc = frame.contentDocument as Document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    await new Promise<void>((res) => {
+      if (doc.readyState === 'complete' || doc.readyState === 'interactive') res();
+      else doc.addEventListener('DOMContentLoaded', () => res(), { once: true });
+    });
+
+    const win = frame.contentWindow as Window;
+    return { frame, doc, win };
   }
 }
