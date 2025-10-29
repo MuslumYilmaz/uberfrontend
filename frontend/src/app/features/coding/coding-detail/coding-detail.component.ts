@@ -143,10 +143,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     lineHeight: 18,
     minimap: { enabled: false },
     tabSize: 2,
-    wordWrap: 'on' as const,          // ✅ wrap long lines
-    wordWrapColumn: 100,              // nice bound; tweak as you like
+    insertSpaces: true,          // ✅ force spaces
+    detectIndentation: false,    // ✅ don't auto-guess
+    wordWrap: 'on' as const,
+    wordWrapColumn: 100,
     scrollBeyondLastColumn: 2,
-    automaticLayout: true,            // ✅ resize with container
+    automaticLayout: true,
   };
 
   examplesMonacoOptions = {
@@ -161,13 +163,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     overviewRulerLanes: 0,
     scrollbar: {
       vertical: 'hidden' as const,
-      horizontal: 'hidden' as const,  // ✅ no horizontal bar on examples
+      horizontal: 'hidden' as const,
       useShadows: false,
       verticalScrollbarSize: 0,
       horizontalScrollbarSize: 0,
       alwaysConsumeMouseWheel: false,
     },
-    wordWrap: 'on' as const,          // ✅ wrap here too
+    tabSize: 2,
+    insertSpaces: true,          // ✅ force spaces
+    detectIndentation: false,    // ✅ don't auto-guess
+    wordWrap: 'on' as const,
     automaticLayout: true,
   };
 
@@ -1192,9 +1197,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openPreview() {
     const url = this.previewUrl(); if (!url) return;
-    this.previewOnlyUrl = url;
+    this.previewOnlyUrl = url;   // ✅ still SafeResourceUrl
     this.previewVisible = true;
   }
+
   closePreview() { this.previewVisible = false; setTimeout(() => { this.previewOnlyUrl = null; }, 200); }
 
   // ---------- reset ----------
@@ -1486,11 +1492,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private setPreviewHtml(html: string | null) {
     try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
     if (!html) { this.previewObjectUrl = null; this._previewUrl.set(null); return; }
+
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
+
+    // ✅ IMPORTANT: mark as SafeResourceUrl
     this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
+
 
   isOpen = (p: string) => this.openDirs().has(p);
   toggleDir(p: string) {
@@ -1610,11 +1620,32 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   structuredSolution = computed<UFSolutionBlock>(() => {
     const q = this.question();
     const raw = (q as any)?.solutionBlock as UFSolutionBlock | undefined;
+
+    // If a real structured block exists, return it
     if (raw && (raw.overview || raw.approaches || raw.notes || raw.followUp || raw.resources)) {
       return raw;
     }
-    // fallback: map legacy fields if present so UI still renders
-    const legacy = this.solutionInfo(); // your existing { explanation, codeJs, codeTs }
+
+    // Legacy JS/TS fallback (what you already had)
+    const legacy = this.solutionInfo();
+
+    // ✅ NEW: If this is an HTML/CSS challenge, fallback to web solution fields
+    if (this.isWebTech()) {
+      const web = this.getWebSolutions(q as any); // uses your existing helper
+      if ((web.html && web.html.trim()) || (web.css && web.css.trim())) {
+        return {
+          overview: legacy.explanation,
+          approaches: [{
+            title: 'Approach 1: Official web solution',
+            prose: 'Mapped from legacy web.solutionHtml / web.solutionCss fields.',
+            codeHtml: web.html,
+            codeCss: web.css
+          }]
+        };
+      }
+    }
+
+    // Default (legacy JS/TS)
     return {
       overview: legacy.explanation,
       approaches: [{
@@ -1627,7 +1658,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   // Convenience getters for template
-  approaches = computed<UFApproach[]>(() => this.structuredSolution()?.approaches ?? []);
+  approaches = computed<UFApproach[]>(() => {
+    const arr = this.structuredSolution()?.approaches ?? [];
+    // Map to prettified copies for display
+    return arr.map(ap => ({
+      ...ap,
+      codeHtml: this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? '')),
+      codeCss: this.prettifyCss(this.unescapeJsLiterals(ap.codeCss ?? '')),
+      // keep JS/TS as-is
+      codeJs: ap.codeJs,
+      codeTs: ap.codeTs,
+    }));
+  });
 
   hasAnyNotes = computed<boolean>(() => {
     const n = this.structuredSolution()?.notes;
@@ -1941,13 +1983,77 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public prettifyHtml(html: string): string {
     if (!html) return '';
-    try {
-      // cheap, readable formatting for small snippets
-      return html
-        .replace(/>\s*</g, '>\n<')
-        .replace(/\n{2,}/g, '\n')
-        .trim();
-    } catch { return html; }
+
+    // Fast bail-out for already indented multi-line code blocks
+    const hasLinebreaks = /\n/.test(html);
+    const src = hasLinebreaks ? html : html.replace(/>\s+</g, '><'); // collapse internal whitespace if one-liner
+
+    // Tokenize tags vs text
+    const tokens: string[] = [];
+    const re = /(<[^>]+>|[^<]+)/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(src))) tokens.push(m[0]);
+
+    // HTML voids that don’t change indent
+    const voids = new Set([
+      'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link',
+      'meta', 'param', 'source', 'track', 'wbr'
+    ]);
+
+    // Tags whose inner text should not be reflowed/indented
+    const rawBlocks = new Set(['pre', 'code', 'textarea', 'script', 'style']);
+
+    let out: string[] = [];
+    let indent = 0;
+    const step = '  '; // 2 spaces
+    let inRaw: string | null = null;
+
+    const openTagName = (t: string) => {
+      const m = /^<\s*([a-zA-Z0-9:-]+)/.exec(t);
+      return m ? m[1].toLowerCase() : '';
+    };
+
+    const closeTagName = (t: string) => {
+      const m = /^<\s*\/\s*([a-zA-Z0-9:-]+)/.exec(t);
+      return m ? m[1].toLowerCase() : '';
+    };
+
+    for (const t of tokens) {
+      if (inRaw) {
+        out.push(t); // keep raw content as-is
+        if (t.toLowerCase().includes(`</${inRaw}>`)) inRaw = null;
+        continue;
+      }
+
+      if (t.startsWith('<')) {
+        const isClose = /^<\s*\//.test(t);
+        const isSelfClose = /\/\s*>$/.test(t);
+        const name = isClose ? closeTagName(t) : openTagName(t);
+
+        // Closing tag -> outdent first
+        if (isClose) indent = Math.max(0, indent - 1);
+
+        // Decide line prefix
+        out.push(step.repeat(indent) + t.trim());
+
+        // Opening tag (not self-close/void) increases indent
+        if (!isClose && !isSelfClose && !voids.has(name)) {
+          // Raw blocks: switch to passthrough until we meet their close tag
+          if (rawBlocks.has(name)) {
+            inRaw = name;
+          } else {
+            indent++;
+          }
+        }
+      } else {
+        // Text node
+        const txt = t.replace(/\s+/g, ' ').trim();
+        if (txt) out.push(step.repeat(indent) + txt);
+      }
+    }
+
+    // Join and ensure one newline between blocks
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
 
   openSolutionPreview() {
@@ -1955,15 +2061,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const sol = this.getWebSolutions(q);
     const html = this.unescapeJsLiterals(sol.html || '');
     const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
-
-    const fullDoc = this.buildWebPreviewDoc(html, css);
+    const full = this.buildWebPreviewDoc(html, css);
 
     try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
-    const blob = new Blob([fullDoc], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    this.solutionPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
 
+    const blob = new Blob([full], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+
+    // ✅ SafeResourceUrl here too
+    this.solutionPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this._previewUrl.set(this.solutionPreviewUrl);
+
     this.showingSolutionPreview = true;
   }
 
@@ -2027,4 +2135,4 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const win = frame.contentWindow as Window;
     return { frame, doc, win };
   }
-}
+} 

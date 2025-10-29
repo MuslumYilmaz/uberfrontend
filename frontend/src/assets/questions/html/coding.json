@@ -1,7 +1,7 @@
 [
     {
         "id": "html-basic-structure",
-        "title": "🧩 1. Warm-Up: Basic Structure",
+        "title": "Warm-Up: Basic Structure",
         "type": "coding",
         "technology": "html",
         "difficulty": "easy",
@@ -91,5 +91,194 @@
         },
         "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
         "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }"
+    },
+    {
+        "id": "html-inline-vs-block",
+        "title": "Inline vs Block Elements",
+        "type": "coding",
+        "technology": "html",
+        "difficulty": "easy",
+        "importance": 1,
+        "tags": [
+            "html",
+            "display",
+            "inline",
+            "block",
+            "semantics",
+            "beginner"
+        ],
+        "description": {
+            "summary": "Add two paragraphs, an image, and a bold word inside one of the paragraphs. Then, explain which of them are inline and which are block elements.",
+            "arguments": [
+                {
+                    "name": "<p>",
+                    "type": "block element",
+                    "desc": "Paragraphs are block-level elements that start on a new line by default."
+                },
+                {
+                    "name": "<img>",
+                    "type": "replaced inline element",
+                    "desc": "Images are inline by default and sit in the text flow."
+                },
+                {
+                    "name": "<strong>",
+                    "type": "inline element",
+                    "desc": "Used to strongly emphasize text; does not break the line."
+                },
+                {
+                    "name": "<section id='explanation'>",
+                    "type": "section",
+                    "desc": "Briefly state which elements are inline vs block."
+                }
+            ],
+            "returns": {
+                "type": "markup",
+                "desc": "A small page with two paragraphs, one inline image, bolded text inside a paragraph, and a short explanation of inline vs block."
+            },
+            "examples": [
+                "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>First paragraph.</p>\\n    <p>Second paragraph with a <strong>bold</strong> word and an image: <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /></p>\\n    <section id='explanation'>\\n      <p>The <p> element is block; the <img> and <strong> elements are inline.</p>\\n    </section>\\n  </body>\\n</html>"
+            ]
+        },
+        "web": {
+            "starterHtml": "<!-- TODO: Add two <p>, an <img>, and a <strong> inside one paragraph. Then explain which are inline vs block. -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>Task: Add two paragraphs. In the second one, include a <strong>bold</strong> word and an inline <img>. Then, write an explanation below.</p>\\n\\n    <!-- Paragraph 1 -->\\n\\n    <!-- Paragraph 2 with a <strong>word</strong> and an <img> -->\\n\\n    <!-- Explanation area -->\\n    <section id='explanation'>\\n      <!-- Briefly state which elements are inline vs block (p is block; img and strong are inline) -->\\n    </section>\\n  </body>\\n</html>",
+            "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
+            "tests": "it('has at least two <p> elements', () => {\\n  const ps = document.querySelectorAll('p');\\n  expect(ps.length >= 2).toBe(true);\\n});\\n\\nit('has an <img> element present', () => {\\n  const im = document.querySelector('img');\\n  expect(!!im).toBeTruthy();\\n});\\n\\nit('has a <strong> inside one of the paragraphs', () => {\\n  const strongInP = document.querySelector('p strong');\\n  expect(!!strongInP).toBeTruthy();\\n});\\n\\nit('computed display defaults match: <p> is block, <img> is inline, <strong> is inline', () => {\\n  const p = document.querySelector('p');\\n  const img = document.querySelector('img');\\n  const strong = document.querySelector('strong');\\n  const gp = window.getComputedStyle(p).display;\\n  const gi = window.getComputedStyle(img).display;\\n  const gs = window.getComputedStyle(strong).display;\\n  expect(gp).toBe('block');\\n  expect(gi).toBe('inline');\\n  expect(gs).toBe('inline');\\n});\\n\\nit('has an explanation section that references inline vs block for p, img, and strong', () => {\\n  const exp = document.querySelector('#explanation');\\n  expect(!!exp).toBeTruthy();\\n  const t = (exp.textContent || '').toLowerCase();\\n  expect(t.includes('inline')).toBeTruthy();\\n  expect(t.includes('block')).toBeTruthy();\\n  expect(t.includes('p')).toBeTruthy();\\n  expect(t.includes('img')).toBeTruthy();\\n  expect(t.includes('strong')).toBeTruthy();\\n});"
+        },
+        "solutionBlock": {
+            "overview": "Paragraphs (<p>) are block-level elements: they start on a new line and take up the full width available. The image (<img>) and the emphasis element (<strong>) are inline by default: they do not force a new line and flow with surrounding text.",
+            "approaches": [
+                {
+                    "title": "Approach 1 – Minimal semantic example",
+                    "prose": "Create two paragraphs. Put a <strong>bold</strong> word inside one paragraph and an <img> next to text so you can see inline flow. Add a short explanation of which are inline vs block.",
+                    "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image\\n      <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n\\n    <section id='explanation'>\\n      <p>The <p> element is block-level, while the <img> and <strong> elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
+                    "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nimg { vertical-align: middle; }"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Do not wrap block elements like <p> inside inline-only elements.",
+                    "Avoid placing block elements directly inside <p> — paragraphs cannot contain other block elements."
+                ],
+                "techniques": [
+                    "Use <section id='explanation'> (or a <div>) to keep the explanation separate.",
+                    "Inline elements (like <strong> and <img>) flow within a line; block elements start on a new line."
+                ]
+            },
+            "resources": [
+                {
+                    "title": "MDN – Block and inline layout in normal flow",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flow_layout/Block_and_inline_layout_in_normal_flow"
+                },
+                {
+                    "title": "MDN – <p> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"
+                },
+                {
+                    "title": "MDN – <img> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
+                },
+                {
+                    "title": "MDN – <strong> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"
+                }
+            ]
+        },
+        "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n    <section id='explanation'>\\n      <p>The <p> element is block; the <img> and <strong> elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
+        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nimg { vertical-align: middle; }"
+    },
+    {
+        "id": "html-links-and-images",
+        "title": "Links and Images",
+        "type": "coding",
+        "technology": "html",
+        "difficulty": "easy",
+        "importance": 1,
+        "tags": [
+            "html",
+            "links",
+            "images",
+            "accessibility",
+            "beginner"
+        ],
+        "description": {
+            "summary": "Create a clickable image that links to another website in a new tab, with accessible alt text.",
+            "arguments": [
+                {
+                    "name": "<a>",
+                    "type": "anchor element",
+                    "desc": "Wraps content to make it clickable and navigates to another page or resource."
+                },
+                {
+                    "name": "href",
+                    "type": "attribute",
+                    "desc": "Specifies the URL to navigate to when the link is clicked."
+                },
+                {
+                    "name": "target=\"_blank\"",
+                    "type": "attribute",
+                    "desc": "Opens the link in a new browser tab or window."
+                },
+                {
+                    "name": "rel=\"noopener noreferrer\"",
+                    "type": "attribute",
+                    "desc": "Protects from tab-napping and improves security when using target=\"_blank\"."
+                },
+                {
+                    "name": "<img>",
+                    "type": "inline replaced element",
+                    "desc": "Displays an image; must include an alt attribute for accessibility."
+                }
+            ],
+            "returns": {
+                "type": "markup",
+                "desc": "A clickable image linking to an external site that opens in a new tab and uses safe attributes."
+            },
+            "examples": [
+                "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n  </body>\\n</html>"
+            ]
+        },
+        "web": {
+            "starterHtml": "<!-- TODO: Make the image clickable and link to another website -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Links and Images</title>\\n  </head>\\n  <body>\\n    <h1>Clickable Image Practice</h1>\\n    <p>Your goal: make the image below link to another site.</p>\\n\\n    <!-- Add an <a> tag that wraps this image -->\\n    <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt=''>\\n\\n    <!-- The link should open in a new tab (target='_blank') and have rel='noopener noreferrer' -->\\n  </body>\\n</html>",
+            "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}",
+            "tests": "it('has an <a> element with an href attribute', () => {\\n  const a = document.querySelector('a');\\n  expect(a && a.hasAttribute('href')).toBe(true);\\n});\\n\\nit('has target=\"_blank\" on the <a> element', () => {\\n  const a = document.querySelector('a');\\n  expect(a && a.getAttribute('target')).toBe('_blank');\\n});\\n\\nit('has rel=\"noopener noreferrer\" on the <a> element', () => {\\n  const a = document.querySelector('a');\\n  const rel = a ? a.getAttribute('rel') : '';\\n  expect(rel && rel.includes('noopener') && rel.includes('noreferrer')).toBe(true);\\n});\\n\\nit('has an <img> element inside the <a> element', () => {\\n  const img = document.querySelector('a img');\\n  expect(!!img).toBe(true);\\n});\\n\\nit('the <img> has a non-empty alt attribute', () => {\\n  const img = document.querySelector('a img');\\n  const alt = img ? img.getAttribute('alt') : '';\\n  expect(alt && alt.trim().length > 0).toBe(true);\\n});"
+        },
+        "solutionBlock": {
+            "overview": "Wrap an image inside an <a> element to make it clickable. Use target='_blank' and rel='noopener noreferrer' for security and accessibility. Always provide alt text for images to ensure they’re usable by screen readers.",
+            "approaches": [
+                {
+                    "title": "Approach 1 – Secure clickable image link with heading",
+                    "prose": "A small heading and instruction paragraph make the UI clearer. The <a> wraps the <img> to make it clickable. Use target='_blank' for a new tab and rel='noopener noreferrer' for safety.",
+                    "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n  </body>\\n</html>",
+                    "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Forgetting rel='noopener noreferrer' can create a security risk when opening in a new tab.",
+                    "Leaving the alt attribute empty makes the image inaccessible."
+                ],
+                "techniques": [
+                    "Wrap <img> directly inside <a> for a clickable image.",
+                    "Always combine target='_blank' with rel='noopener noreferrer' when linking externally.",
+                    "Use a short heading or text cue to guide users visually."
+                ]
+            },
+            "resources": [
+                {
+                    "title": "MDN – <a> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"
+                },
+                {
+                    "title": "MDN – <img> element",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
+                },
+                {
+                    "title": "MDN – Security considerations with target=\"_blank\"",
+                    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#security_and_privacy_concerns"
+                }
+            ]
+        },
+        "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n  </body>\\n</html>",
+        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }"
     }
 ]

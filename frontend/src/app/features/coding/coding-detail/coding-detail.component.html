@@ -494,11 +494,10 @@
                   </div>
 
                   <!-- Existing iframe -->
-                  <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white"
-                    [style.display]="isPreviewTop() ? 'block' : 'none'"
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation"
-                    [src]="previewUrl()" referrerpolicy="no-referrer">
-                  </iframe>
+                  <iframe *ngIf="previewUrl()" [src]="previewUrl()"
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                    class="absolute inset-0 w-full h-full border-0 bg-white" referrerpolicy="no-referrer"
+                    [style.display]="isPreviewTop() ? 'block' : 'none'"></iframe>
 
                   <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">
                     <app-monaco-editor class="h-full" [code]="testCode()" [language]="'javascript'"
