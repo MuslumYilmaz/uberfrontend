@@ -7,10 +7,10 @@ import {
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { filter, firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom, Subject, takeUntil } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
@@ -184,6 +184,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private webSaveTimer: any = null;
 
   private previewObjectUrl: string | null = null;
+  private destroy$ = new Subject<void>();
+  private lastPreviewHtml: string | null = null;
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -451,6 +453,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
+    this.router.events
+      .pipe(
+        filter(
+          (e): e is NavigationStart =>
+            e instanceof NavigationStart && e.navigationTrigger === 'popstate'
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.router.navigateByUrl('/coding', { replaceUrl: true });
+      });
+
     document.body.style.overflow = 'hidden';
   }
 
@@ -479,6 +493,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
     clearTimeout(this.copyTimer);
+
+    this.destroy$.next();
+    this.destroy$.complete();
+
     document.body.style.overflow = '';
   }
 
@@ -1196,8 +1214,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   openPreview() {
-    const url = this.previewUrl(); if (!url) return;
-    this.previewOnlyUrl = url;   // ✅ still SafeResourceUrl
+    if (!this.lastPreviewHtml) return;
+    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    const blob = new Blob([this.lastPreviewHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    this.previewObjectUrl = url;
+    this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
     this.previewVisible = true;
   }
 
@@ -1490,17 +1512,45 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setPreviewHtml(html: string | null) {
-    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
-    if (!html) { this.previewObjectUrl = null; this._previewUrl.set(null); return; }
+    this.lastPreviewHtml = html;
 
+    // cleanup old URL
+    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    this.previewObjectUrl = null;
+
+    const frameEl = this.previewFrame?.nativeElement;
+
+    // If the iframe isn’t in the view yet, try once on the next frame and bail.
+    if (!frameEl) {
+      requestAnimationFrame(() => {
+        const f = this.previewFrame?.nativeElement;
+        if (f) this.setPreviewHtml(html); // one-shot retry
+      });
+      return;
+    }
+
+    // Empty -> clear content
+    if (!html) {
+      const doc = frameEl.contentDocument;
+      if (doc) { doc.open(); doc.write('<!doctype html><meta charset="utf-8">'); doc.close(); }
+      return;
+    }
+
+    // Build blob URL & load
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
 
-    // ✅ IMPORTANT: mark as SafeResourceUrl
-    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+    // First mount: if no document yet, set src so the frame initializes,
+    // then subsequent updates use location.replace (no history bloat).
+    const cw = frameEl.contentWindow;
+    if (cw) {
+      cw.location.replace(url);
+    } else {
+      frameEl.onload = () => frameEl.contentWindow?.location.replace(url);
+      frameEl.setAttribute('src', url);
+    }
   }
-
 
   isOpen = (p: string) => this.openDirs().has(p);
   toggleDir(p: string) {
