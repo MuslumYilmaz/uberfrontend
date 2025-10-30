@@ -1213,6 +1213,40 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
+  showPreview(kind: 'user' | 'solution' = 'user') {
+    let full: string | null = null;
+
+    if (kind === 'solution') {
+      const q = this.question(); if (!q) return;
+      const sol = this.getWebSolutions(q);
+      const html = this.unescapeJsLiterals(sol.html || '');
+      const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
+      full = this.buildWebPreviewDoc(html, css);
+    } else {
+      // From editors (what you see in the live pane)
+      full = this.previewDocRaw();
+    }
+
+    if (!full) return;
+
+    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    const blob = new Blob([full], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+
+    this.previewObjectUrl = url;
+    this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    this.previewVisible = true;
+  }
+
+  closePreview() {
+    this.previewVisible = false;
+    setTimeout(() => {
+      try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+      this.previewObjectUrl = null;
+      this.previewOnlyUrl = null;
+    }, 200);
+  }
+
   openPreview() {
     if (!this.lastPreviewHtml) return;
     try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
@@ -1223,7 +1257,30 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.previewVisible = true;
   }
 
-  closePreview() { this.previewVisible = false; setTimeout(() => { this.previewOnlyUrl = null; }, 200); }
+  // Replace the right preview with the official solution (no modal)
+  openSolutionPreview() {
+    const q = this.question(); if (!q || !this.isWebTech()) return;
+    const sol = this.getWebSolutions(q);
+    const html = this.unescapeJsLiterals(sol.html || '');
+    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
+    const full = this.buildWebPreviewDoc(html, css);
+
+    // 🔁 Paint the right-side iframe
+    this.setPreviewHtml(full);
+
+    // UI flag + make sure the top area is on the Preview tab
+    this.showingSolutionPreview = true;
+    this.previewTopTab.set('preview');
+  }
+
+  // Go back to the user’s code in the right preview
+  closeSolutionPreview() {
+    // 🔁 Rebuild from current editor code
+    this.scheduleWebPreview();
+
+    this.showingSolutionPreview = false;
+  }
+
 
   // ---------- reset ----------
   async resetQuestion() {
@@ -2104,31 +2161,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Join and ensure one newline between blocks
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-  }
-
-  openSolutionPreview() {
-    const q = this.question(); if (!q || !this.isWebTech()) return;
-    const sol = this.getWebSolutions(q);
-    const html = this.unescapeJsLiterals(sol.html || '');
-    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
-    const full = this.buildWebPreviewDoc(html, css);
-
-    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
-
-    const blob = new Blob([full], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-
-    // ✅ SafeResourceUrl here too
-    this.solutionPreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    this._previewUrl.set(this.solutionPreviewUrl);
-
-    this.showingSolutionPreview = true;
-  }
-
-  closeSolutionPreview() {
-    // revert to user’s code preview
-    this.scheduleWebPreview();
-    this.showingSolutionPreview = false;
   }
 
   // Add this helper near other helpers
