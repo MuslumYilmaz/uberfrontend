@@ -803,7 +803,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webSaveTimer = setTimeout(() => {
       try { localStorage.setItem(this.webKey(q, 'html'), code); } catch { }
     }, 200);
-    this.scheduleWebPreview(); // ✅
+
+    this.exitSolutionPreview('user edited HTML');   // 👈
+    this.scheduleWebPreview();
   };
 
   onCssChange = (code: string) => {
@@ -813,7 +815,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.webSaveTimer = setTimeout(() => {
       try { localStorage.setItem(this.webKey(q, 'css'), code); } catch { }
     }, 200);
-    this.scheduleWebPreview(); // ✅
+
+    this.exitSolutionPreview('user edited CSS');    // 👈
+    this.scheduleWebPreview();
   };
 
   // ---------- banner actions ----------
@@ -1247,6 +1251,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 200);
   }
 
+  private exitSolutionPreview(reason?: string) {
+    if (!this.showingSolutionPreview) return;
+    this.showingSolutionPreview = false;
+  }
+
   openPreview() {
     if (!this.lastPreviewHtml) return;
     try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
@@ -1275,10 +1284,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Go back to the user’s code in the right preview
   closeSolutionPreview() {
-    // 🔁 Rebuild from current editor code
+    this.exitSolutionPreview('user closed banner'); // 👈
     this.scheduleWebPreview();
-
-    this.showingSolutionPreview = false;
   }
 
 
@@ -1521,8 +1528,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
     this.webPreviewTimer = setTimeout(() => {
       try {
-        const htmlDoc = this.previewDocRaw();  // already unescapes HTML
-        this.setPreviewHtml(htmlDoc);          // ✅ reuse blob URL mechanism
+        // If we’re showing solution but we’re rebuilding from editors, exit.
+        this.exitSolutionPreview('rebuilding from editors'); // 👈
+
+        const htmlDoc = this.previewDocRaw();
+        this.setPreviewHtml(htmlDoc);
       } catch (e) {
         console.error('web preview build failed', e);
         this.setPreviewHtml(null);
