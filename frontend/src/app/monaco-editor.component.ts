@@ -17,7 +17,7 @@ declare global {
   styles: [`
     :host { display:block; width:100%; }
     /* When autoHeight=false, give container a default height so it doesn't collapse */
-    :host(.fixed-height) > div { height: 192px; }
+    :host(.fixed-height) > div { height: 100%; }
   `],
 })
 export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
