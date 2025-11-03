@@ -31,6 +31,7 @@ import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-bu
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
+import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
 
 type CourseNavState =
   | {
@@ -83,7 +84,7 @@ type UFSolutionBlock = {
   standalone: true,
   imports: [
     CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
-    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, CodingJsPanelComponent
+    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, CodingJsPanelComponent, CodingWebPanelComponent
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
@@ -217,6 +218,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
   @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
   @ViewChild('jsPanel') jsPanel?: CodingJsPanelComponent;
+  @ViewChild('webPanel') webPanel?: CodingWebPanelComponent;
 
   // drag state
   private dragging = false;
@@ -1268,18 +1270,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Replace the right preview with the official solution (no modal)
   openSolutionPreview() {
-    const q = this.question(); if (!q || !this.isWebTech()) return;
-    const sol = this.getWebSolutions(q);
-    const html = this.unescapeJsLiterals(sol.html || '');
-    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
-    const full = this.buildWebPreviewDoc(html, css);
-
-    // 🔁 Paint the right-side iframe
-    this.setPreviewHtml(full);
-
-    // UI flag + make sure the top area is on the Preview tab
-    this.showingSolutionPreview = true;
-    this.previewTopTab.set('preview');
+    this.webPanel?.openSolutionPreview();
   }
 
   // Go back to the user’s code in the right preview
@@ -1296,36 +1287,56 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.resetting.set(true);
     try {
+      // --- common preview cleanup (blob URLs, modal, solution flag) ---
+      try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { /* noop */ }
+      this.previewObjectUrl = null;
+      this.previewVisible = false;
+      this.previewOnlyUrl = null;
+      this.exitSolutionPreview('reset question');
+      // clear right-side iframe immediately to avoid “stale” page
+      this.setPreviewHtml(null);
+
       if (this.isFrameworkTech()) {
+        // Frameworks: wipe snapshot & reload fresh
         const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
-        try { localStorage.removeItem(storageKey); } catch { }
+        try { localStorage.removeItem(storageKey); } catch { /* noop */ }
+        // also clear in-memory map and open path so UI resets instantly
+        this.filesMap.set({});
+        this.openPath.set('');
         await this.loadQuestion(q.id);
       } else if (this.isWebTech()) {
-        const starters = this.getWebStarters(q);
-        try { localStorage.removeItem(this.webKey(q, 'html')); } catch { }
-        try { localStorage.removeItem(this.webKey(q, 'css')); } catch { }
+        // HTML/CSS: allow child to do its own housekeeping if available
+        this.webPanel?.externalResetToDefault?.();
 
-        // Reset to starter code
+        // Clear saved user code
+        try { localStorage.removeItem(this.webKey(q, 'html')); } catch { /* noop */ }
+        try { localStorage.removeItem(this.webKey(q, 'css')); } catch { /* noop */ }
+
+        // Restore starters
+        const starters = this.getWebStarters(q);
         this.htmlCode.set(starters.html);
         this.cssCode.set(starters.css);
 
-        // ✅ Rebuild preview from fresh starter HTML/CSS
+        // Rebuild preview from fresh code
         this.scheduleWebPreview();
+
+        // UI tabs for web mode
+        this.topTab.set('html');
+        this.subTab.set('tests');
       } else {
-        // JS/TS — clear saved state and restore baseline from starters
-        // JS/TS — delegate to service, then re-init the child panel
+        // Plain JS/TS
         this.jsPanel?.resetToDefault?.();
         this.jsPanel?.initFromQuestion();
+        this.topTab.set('code');
+        this.subTab.set('tests');
       }
 
-      // common cleanup
+      // --- common cleanup / flags ---
       this.consoleEntries.set([]);
       this.testResults.set([]);
       this.hasRunTests = false;
       this.solved.set(false);
       this.clearSolvedFlag(q);
-      this.subTab.set('tests');
-      this.topTab.set(this.isWebTech() ? 'html' : 'code');
       this.showRestoreBanner.set(false);
     } finally {
       this.resetting.set(false);
@@ -1806,16 +1817,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
       const css = this.prettifyCss(this.unescapeJsLiterals(ap.codeCss ?? ''));
 
-      this.htmlCode.set(html);
-      this.cssCode.set(css);
-      this.topTab.set('html');
-      this.scheduleWebPreview();
+      this.webPanel?.applySolution({ html, css });
 
-      const q = this.question();
-      if (q) {
-        try { localStorage.setItem(this.webKey(q, 'html'), html); } catch { }
-        try { localStorage.setItem(this.webKey(q, 'css'), css); } catch { }
-      }
+      this.exitSolutionPreview('approach -> applySolution');
+      this.topTab.set('html');
       return;
     }
 
