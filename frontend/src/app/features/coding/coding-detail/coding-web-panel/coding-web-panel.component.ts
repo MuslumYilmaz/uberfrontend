@@ -381,7 +381,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     return this.unescapeJsLiterals(pick(q, ['web.tests', 'tests', 'testsDom', 'testsHtml']) || '');
   }
 
-  private initFromQuestion(): void {
+  public initFromQuestion(): void {
     const q = this.question;
     if (!q) return;
 

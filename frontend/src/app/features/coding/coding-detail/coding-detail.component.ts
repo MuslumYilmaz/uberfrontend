@@ -101,13 +101,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private openDirs = signal<Set<string>>(new Set());
 
-
-  // WEB (HTML/CSS)
-  private htmlCode = signal<string>('');
-  private cssCode = signal<string>('');
-  webHtml = () => this.htmlCode();
-  webCss = () => this.cssCode();
-
   // UI state
   topTab = signal<'code' | 'tests' | 'html' | 'css'>('code');
   activePanel = signal<number>(0);
@@ -182,8 +175,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   showEditor = signal(true);
   showRestoreBanner = signal(false);
 
-  private webSaveTimer: any = null;
-
   private previewObjectUrl: string | null = null;
   private destroy$ = new Subject<void>();
   private lastPreviewHtml: string | null = null;
@@ -229,10 +220,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private startRatioH = 0;
   private sessionStart = Date.now();
   private recorded = false;
-
-  // --- HTML/CSS solution preview toggle ---
-  showingSolutionPreview = false;
-  private solutionPreviewUrl: SafeResourceUrl | null = null;
 
   // Preview dialog (Angular)
   previewVisible = false;
@@ -308,14 +295,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.practice ? (this.practice.index + 1 < this.practice.items.length)
       : (this.currentIndex + 1 < this.allQuestions.length);
   }
-
-  /** live preview HTML for html/css mode */
-  previewDocRaw = computed(() => {
-    const css = this.cssCode() ?? '';
-    const html = this.unescapeJsLiterals(this.htmlCode() ?? '');
-    return this.buildWebPreviewDoc(html, css);
-  });
-
 
   descriptionText = computed(() => {
     const q = this.question();
@@ -502,26 +481,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.style.overflow = '';
   }
 
-  // ---------- helpers to pick code by language ----------
-
   // ---------- WEB (html/css) utilities ----------
-  private pickString(obj: any, paths: string[]): string {
-    for (const p of paths) {
-      const val = p.split('.').reduce((o: any, k) => (o && k in o ? (o as any)[k] : undefined), obj as any);
-      if (typeof val === 'string' && val.trim()) return val;
-    }
-    return '';
-  }
-  private findCssLike(obj: any): string {
-    const scan = (o: any) => {
-      if (!o || typeof o !== 'object') return '';
-      for (const [k, v] of Object.entries(o)) {
-        if (typeof v === 'string' && /css/i.test(k) && !/solution/i.test(k) && v.trim()) return v;
-      }
-      return '';
-    };
-    return scan(obj?.web) || scan(obj) || '';
-  }
   public prettifyCss(css: string): string {
     if (!css) return '';
     try {
@@ -532,39 +492,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         .replace(/\n\s*\n/g, '\n')
         .trim();
     } catch { return css; }
-  }
-  private getWebStarters(q: any): { html: string; css: string } {
-    const htmlRaw = this.pickString(q, [
-      'web.starterHtml', 'starterHtml', 'htmlStarter', 'web.html', 'html'
-    ]);
-    let cssRaw = this.pickString(q, [
-      'web.starterCss', 'starterCss', 'cssStarter', 'web.css', 'css', 'starterStyles', 'styles', 'starterCSS'
-    ]);
-    if (!cssRaw) cssRaw = this.findCssLike(q);
-
-    const html = this.unescapeJsLiterals(htmlRaw) || `<!-- Start here: ${q.title ?? 'Challenge'} -->`;
-    const css = this.prettifyCss(this.unescapeJsLiterals(cssRaw) || '');
-    return { html, css };
-  }
-
-  private getWebSolutions(q: any): { html: string; css: string } {
-    const w = q.web ?? {};
-    const html = w.solutionHtml ?? q.webSolutionHtml ?? q.solutionHtml ?? q.htmlSolution ?? w.htmlSolution ?? '';
-    const css = w.solutionCss ?? q.webSolutionCss ?? q.solutionCss ?? q.cssSolution ?? w.cssSolution ?? '';
-    return {
-      html: this.unescapeJsLiterals(String(html ?? '')),
-      css: this.unescapeJsLiterals(String(css ?? '')),
-    };
-  }
-
-  private getWebTests(q: any): string {
-    const raw = this.pickString(q, ['web.tests', 'tests', 'testsDom', 'testsHtml']) || '';
-    return this.unescapeJsLiterals(raw);
-  }
-
-  private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
-  private webBaseKey(q: Question, which: 'html' | 'css') {
-    return `uf:web:baseline:v2:${which}:${q.id}`;
   }
 
   // ---------- solved persistence ----------
@@ -661,56 +588,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.horizontalRatio.set(preferred);
       this.lastAsideRatio = preferred;
 
-      const starters = this.getWebStarters(q);
-      const htmlBaseKey = this.webBaseKey(q, 'html');
-      const cssBaseKey = this.webBaseKey(q, 'css');
-
-      if (!localStorage.getItem(htmlBaseKey)) try { localStorage.setItem(htmlBaseKey, starters.html); } catch { }
-      if (!localStorage.getItem(cssBaseKey)) try { localStorage.setItem(cssBaseKey, starters.css); } catch { }
-
-      const normalizeSaved = (raw: string | null) => {
-        if (raw == null) return null;
-        const s = raw.trim();
-        if (!s) return null;
-        if (s.startsWith('{')) {
-          try {
-            const obj = JSON.parse(s);
-            if (obj && typeof obj.code === 'string') return this.unescapeJsLiterals(obj.code);
-          } catch { /* ignore */ }
-        }
-        return this.unescapeJsLiterals(s);
-      };
-
-      const savedHtml = normalizeSaved(localStorage.getItem(this.webKey(q, 'html')));
-      const savedCss = normalizeSaved(localStorage.getItem(this.webKey(q, 'css')));
-
-      const html = savedHtml ?? starters.html;
-      const css = savedCss ?? starters.css;
-
-      this.htmlCode.set(html);
-      this.cssCode.set(css);
-      this.scheduleWebPreview();
-
-      try {
-        const baseHtml = localStorage.getItem(htmlBaseKey) ?? '';
-        const baseCss = localStorage.getItem(cssBaseKey) ?? '';
-        if ((savedHtml && savedHtml !== baseHtml) || (savedCss && savedCss !== baseCss)) {
-          shouldShowBanner = true;
-        }
-      } catch { }
-
-      this.testCode.set(this.getWebTests(q));
-      this.topTab.set('html');
+      // Reset common UI
+      this.topTab.set('tests');            // parent doesn't own HTML/CSS editors anymore
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
-      this.showRestoreBanner.set(shouldShowBanner);
+      this.showRestoreBanner.set(false);
       this.sessionStart = Date.now();
       this.recorded = false;
+
+      // Let the child own starters, storage, preview, tests
+      setTimeout(() => this.webPanel?.initFromQuestion(), 0);
       return;
     }
+
 
     // ---------- Plain JS / TS ----------
     // Parent no longer touches starters/tests; the child panel + CodeStorageService own it.
@@ -798,30 +691,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onHtmlChange = (code: string) => {
-    const q = this.question(); if (!q || !this.isWebTech()) return;
-    this.htmlCode.set(code);
-    clearTimeout(this.webSaveTimer);
-    this.webSaveTimer = setTimeout(() => {
-      try { localStorage.setItem(this.webKey(q, 'html'), code); } catch { }
-    }, 200);
-
-    this.exitSolutionPreview('user edited HTML');   // 👈
-    this.scheduleWebPreview();
-  };
-
-  onCssChange = (code: string) => {
-    const q = this.question(); if (!q || !this.isWebTech()) return;
-    this.cssCode.set(code);
-    clearTimeout(this.webSaveTimer);
-    this.webSaveTimer = setTimeout(() => {
-      try { localStorage.setItem(this.webKey(q, 'css'), code); } catch { }
-    }, 200);
-
-    this.exitSolutionPreview('user edited CSS');    // 👈
-    this.scheduleWebPreview();
-  };
-
   // ---------- banner actions ----------
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
   async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
@@ -903,12 +772,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
-    // Frameworks use the preview pipeline; nothing to run here.
     if (this.isFrameworkTech()) return;
 
-    // HTML/CSS uses the DOM runner that lives in this component.
     if (this.isWebTech()) {
-      await this.runWebTests();
+      // Delegate testing completely to the web panel
+      this.subTab.set('tests');
+      this.hasRunTests = false;
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      await this.webPanel?.runWebTests?.();     // emits results via (results) output
+      this.hasRunTests = true;
       return;
     }
 
@@ -917,31 +790,19 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-
-    // Ask the child to run; results/console/solved will arrive via outputs.
     await this.jsPanel?.runTests();
-
-    // Mark completed locally for UI that depends on this flag.
     this.hasRunTests = true;
 
-    // Post-run bookkeeping (credit + celebration) if everything passed.
-    const qNow = this.question();         // re-read in case of navigation
-    if (!qNow) return;
-
+    const qNow = this.question(); if (!qNow) return;
     const passing = this.allPassing();
     this.solved.set(passing);
     this.saveSolvedFlag(qNow, passing);
-
     if (passing) {
       this.creditDaily();
       this.activity.complete({
-        kind: this.kind,
-        tech: this.tech,
-        itemId: qNow.id,
-        source: 'tech',
-        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(qNow),
-        solved: true
+        kind: this.kind, tech: this.tech, itemId: qNow.id,
+        source: 'tech', durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
+        xp: this.xpFor(qNow), solved: true
       }).subscribe({
         next: (res: any) => {
           this.recorded = true;
@@ -950,132 +811,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         error: (e) => console.error('record completion failed', e),
       });
-
       await this.celebrate('tests');
     }
-
     this.subTab.set('tests');
-  }
-
-
-  // ---------- run tests (HTML/CSS DOM) ----------
-  private fmt(v: any): string {
-    try {
-      if (v instanceof Element) return `<${v.tagName.toLowerCase()}>`;
-      return JSON.stringify(v);
-    } catch { return String(v); }
-  }
-
-  private makeDomExpect(doc: Document, win: Window) {
-    const expect = (received: any) => ({
-      toBe: (exp: any) => {
-        if (received !== exp) throw new Error(`Expected ${this.fmt(received)} to be ${this.fmt(exp)}`);
-      },
-      toBeTruthy: () => {
-        if (!received) throw new Error(`Expected value to be truthy, got ${this.fmt(received)}`);
-      },
-      toHaveAttribute: (name: string, value?: string) => {
-        if (!(received instanceof Element)) throw new Error('toHaveAttribute expects an Element');
-        const got = received.getAttribute(name);
-        const ok = (value === undefined) ? got !== null : got === value;
-        if (!ok) throw new Error(`Expected element to have [${name}${value !== undefined ? `="${value}"` : ''}], got ${this.fmt(got)}`);
-      },
-      toHaveText: (substr: string) => {
-        if (!(received instanceof Element)) throw new Error('toHaveText expects an Element');
-        const txt = (received.textContent || '').trim();
-        if (!txt.includes(substr)) throw new Error(`Expected text to include "${substr}", got "${txt}"`);
-      },
-      toBeVisible: () => {
-        if (!(received instanceof Element)) throw new Error('toBeVisible expects Element');
-        const cs = win.getComputedStyle(received);
-        if (cs.display === 'none' || cs.visibility === 'hidden') {
-          throw new Error('Element is not visible');
-        }
-      }
-    });
-    return expect;
-  }
-
-  private async ensurePreviewLoaded(frame: HTMLIFrameElement): Promise<void> {
-    const d = frame.contentDocument;
-    if (d && d.readyState === 'complete') return;
-    await new Promise<void>((res) => {
-      const on = () => { frame.removeEventListener('load', on); res(); };
-      frame.addEventListener('load', on, { once: true });
-    });
-  }
-
-  async runWebTests(): Promise<void> {
-    const q = this.question();
-    if (!q || !this.isWebTech()) return;
-
-    this.subTab.set('tests');
-    this.hasRunTests = false;
-    this.testResults.set([]);
-    this.consoleEntries.set([]);
-
-    const code = (this.testCode() || '').trim();
-    if (!code) {
-      this.hasRunTests = true;
-      this.testResults.set([]);
-      return;
-    }
-
-    // Build a complete HTML doc from the current editor values (not the preview)
-    const htmlDoc = this.previewDocRaw(); // already uses buildWebPreviewDoc(html, css)
-
-    // Mount into an offscreen iframe so tests don't rely on the visible preview
-    const { frame, doc, win } = await this.mountScratchDoc(htmlDoc);
-
-    const results: TestResult[] = [];
-    const it = async (name: string, fn: () => any | Promise<any>) => {
-      try { await fn(); results.push({ name, passed: true }); }
-      catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
-    };
-    const test = it;
-    const expect = this.makeDomExpect(doc, win);
-
-    const q$ = (sel: string) => doc.querySelector(sel);
-    const qa$ = (sel: string) => Array.from(doc.querySelectorAll(sel));
-
-    try {
-      const runner = new Function('document', 'window', 'it', 'test', 'expect', 'q', 'qa', code);
-      await runner.call(undefined, doc, win, it, test, expect as any, q$, qa$);
-    } catch (e: any) {
-      results.unshift({ name: 'Failed to execute test file', passed: false, error: String(e?.message ?? e) });
-    } finally {
-      // Clean up the hidden frame regardless of pass/fail
-      try { frame.remove(); } catch { /* ignore */ }
-    }
-
-    this.testResults.set(results);
-    this.hasRunTests = true;
-
-    const passing = this.allPassing();
-    this.solved.set(passing);
-    this.saveSolvedFlag(q, passing);
-
-    if (passing) {
-      this.creditDaily();
-      this.activity.complete({
-        kind: this.kind,
-        tech: this.tech,
-        itemId: q.id,
-        source: 'tech',
-        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(q),
-        solved: true
-      }).subscribe({
-        next: (res: any) => {
-          this.recorded = true;
-          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
-          this.activity.refreshSummary();
-        },
-        error: (e) => console.error('record completion failed', e),
-      });
-
-      await this.celebrate('tests');
-    }
   }
 
   // ---------- submit ----------
@@ -1219,31 +957,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.zone.run(() => this.horizontalRatio.set(newRatio));
   };
 
-  showPreview(kind: 'user' | 'solution' = 'user') {
-    let full: string | null = null;
-
-    if (kind === 'solution') {
-      const q = this.question(); if (!q) return;
-      const sol = this.getWebSolutions(q);
-      const html = this.unescapeJsLiterals(sol.html || '');
-      const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
-      full = this.buildWebPreviewDoc(html, css);
-    } else {
-      // From editors (what you see in the live pane)
-      full = this.previewDocRaw();
-    }
-
-    if (!full) return;
-
-    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
-    const blob = new Blob([full], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-
-    this.previewObjectUrl = url;
-    this.previewOnlyUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    this.previewVisible = true;
-  }
-
   closePreview() {
     this.previewVisible = false;
     setTimeout(() => {
@@ -1251,11 +964,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.previewObjectUrl = null;
       this.previewOnlyUrl = null;
     }, 200);
-  }
-
-  private exitSolutionPreview(reason?: string) {
-    if (!this.showingSolutionPreview) return;
-    this.showingSolutionPreview = false;
   }
 
   openPreview() {
@@ -1274,11 +982,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Go back to the user’s code in the right preview
-  closeSolutionPreview() {
-    this.exitSolutionPreview('user closed banner'); // 👈
-    this.scheduleWebPreview();
-  }
-
+  closeSolutionPreview() { this.webPanel?.closeSolutionPreview?.(); }
 
   // ---------- reset ----------
   async resetQuestion() {
@@ -1292,7 +996,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.previewObjectUrl = null;
       this.previewVisible = false;
       this.previewOnlyUrl = null;
-      this.exitSolutionPreview('reset question');
       // clear right-side iframe immediately to avoid “stale” page
       this.setPreviewHtml(null);
 
@@ -1305,25 +1008,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.openPath.set('');
         await this.loadQuestion(q.id);
       } else if (this.isWebTech()) {
-        // HTML/CSS: allow child to do its own housekeeping if available
         this.webPanel?.externalResetToDefault?.();
-
-        // Clear saved user code
-        try { localStorage.removeItem(this.webKey(q, 'html')); } catch { /* noop */ }
-        try { localStorage.removeItem(this.webKey(q, 'css')); } catch { /* noop */ }
-
-        // Restore starters
-        const starters = this.getWebStarters(q);
-        this.htmlCode.set(starters.html);
-        this.cssCode.set(starters.css);
-
-        // Rebuild preview from fresh code
-        this.scheduleWebPreview();
-
-        // UI tabs for web mode
-        this.topTab.set('html');
+        // Parent does not manage web preview or storage anymore
+        this.topTab.set('tests');
         this.subTab.set('tests');
-      } else {
+      }
+      else {
         // Plain JS/TS
         this.jsPanel?.resetToDefault?.();
         this.jsPanel?.initFromQuestion();
@@ -1493,7 +1183,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.openPath.set(path);
     this.frameworkEntryFile = path;
     this.editorContent.set(files[path] ?? '');
-    this.remountEditor();
   }
 
   toggleFiles() { this.showFileDrawer.set(!this.showFileDrawer()); }
@@ -1529,31 +1218,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.setPreviewHtml(null);
       });
     }, 200);
-  }
-
-  // --- WEB (html/css) preview rebuild (debounced, unified with frameworks) ---
-  private webPreviewTimer: any = null;
-
-  private scheduleWebPreview() {
-    if (!this.isWebTech()) return;
-    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
-    this.webPreviewTimer = setTimeout(() => {
-      try {
-        // If we’re showing solution but we’re rebuilding from editors, exit.
-        this.exitSolutionPreview('rebuilding from editors'); // 👈
-
-        const htmlDoc = this.previewDocRaw();
-        this.setPreviewHtml(htmlDoc);
-      } catch (e) {
-        console.error('web preview build failed', e);
-        this.setPreviewHtml(null);
-      }
-    }, 120);
-  }
-
-  private remountEditor() {
-    this.showEditor.set(false);
-    setTimeout(() => this.showEditor.set(true), 0);
   }
 
   /** Rebuilds the preview iframe for framework techs using the saved files */
@@ -1747,43 +1411,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // NORMALIZED access to the *new* structured solution (keeps legacy fallback)
   structuredSolution = computed<UFSolutionBlock>(() => {
     const q = this.question();
-    const raw = (q as any)?.solutionBlock as UFSolutionBlock | undefined;
-
-    // If a real structured block exists, return it
-    if (raw && (raw.overview || raw.approaches || raw.notes || raw.followUp || raw.resources)) {
-      return raw;
-    }
-
-    // Legacy JS/TS fallback (what you already had)
+    const block = (q as any)?.solutionBlock as UFSolutionBlock | undefined;
+    if (block) return block;
     const legacy = this.solutionInfo();
-
-    // ✅ NEW: If this is an HTML/CSS challenge, fallback to web solution fields
-    if (this.isWebTech()) {
-      const web = this.getWebSolutions(q as any); // uses your existing helper
-      if ((web.html && web.html.trim()) || (web.css && web.css.trim())) {
-        return {
-          overview: legacy.explanation,
-          approaches: [{
-            title: 'Approach 1: Official web solution',
-            prose: 'Mapped from legacy web.solutionHtml / web.solutionCss fields.',
-            codeHtml: web.html,
-            codeCss: web.css
-          }]
-        };
-      }
-    }
-
-    // Default (legacy JS/TS)
-    return {
-      overview: legacy.explanation,
-      approaches: [{
-        title: 'Approach 1: Reference implementation',
-        prose: 'Baseline solution from legacy fields.',
-        codeJs: legacy.codeJs,
-        codeTs: legacy.codeTs
-      }]
-    };
+    return { overview: legacy.explanation };
   });
+
 
   // Convenience getters for template
   approaches = computed<UFApproach[]>(() => {
@@ -1819,7 +1452,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.webPanel?.applySolution({ html, css });
 
-      this.exitSolutionPreview('approach -> applySolution');
       this.topTab.set('html');
       return;
     }
@@ -1881,27 +1513,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
     this.loadSolutionCode(); // your existing method that writes into the editor
-  }
-
-  /** Keep only the first line of an error/stack */
-  private shortStack(value: any): string {
-    const raw =
-      (value && typeof value.stack === 'string') ? value.stack :
-        (value && typeof value.message === 'string') ? value.message :
-          String(value);
-    const first = raw.split('\n')[0]?.trim() || raw;
-    // Normalise leading "Stack:" formatting
-    return first.replace(/^Stack:\s*/i, '');
-  }
-
-  /** Normalise console messages (shorten stacks on errors) */
-  private normaliseConsoleMessage(level: 'log' | 'info' | 'warn' | 'error', msg: string): string {
-    if (level === 'error') {
-      const first = msg.split('\n')[0]?.trim() || msg;
-      // If the message already starts with "ReferenceError: ..." (or similar), keep just that line
-      return first;
-    }
-    return msg;
   }
 
   // Turn "### Heading" into bold titles and strip emoji bullets.
@@ -2176,60 +1787,5 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Join and ensure one newline between blocks
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-  }
-
-  // Add this helper near other helpers
-  private buildWebPreviewDoc(userHtml: string, css: string): string {
-    const html = (userHtml || '').trim();
-    const cssBlock = (css || '').trim();
-    const isFullDoc = /<!doctype\s+html/i.test(html) || /<html[\s>]/i.test(html);
-
-    if (isFullDoc) {
-      if (!cssBlock) return html;
-
-      // has <head>? inject <style> inside; else create one
-      if (/<head[\s>]/i.test(html)) {
-        return html.replace(/<head([^>]*)>/i, (_m, attrs) => `<head${attrs}>\n<style>\n${cssBlock}\n</style>`);
-      }
-      // no <head>, try to put one after <html …>
-      if (/<html[^>]*>/i.test(html)) {
-        return html.replace(/<html([^>]*)>/i,
-          (_m, attrs) => `<html${attrs}>\n<head><style>\n${cssBlock}\n</style></head>`);
-      }
-      // fallback (very unlikely)
-      return `<!doctype html><html><head><style>${cssBlock}</style></head><body>${html}</body></html>`;
-    }
-
-    // Not a full doc: wrap like before
-    return `<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-  :root { color-scheme: light }
-  * { box-sizing: border-box }
-  html,body { height: 100%; background:#fff; color:#111; }
-  body { margin:16px; font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; }
-  ${cssBlock}
-</style></head><body>${html}</body></html>`;
-  }
-
-  // Place near other private helpers
-  private async mountScratchDoc(html: string): Promise<{ frame: HTMLIFrameElement; doc: Document; win: Window }> {
-    const frame = document.createElement('iframe');
-    frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
-    frame.style.cssText = 'position:fixed;left:-10000px;top:-10000px;width:0;height:0;border:0;visibility:hidden;';
-    document.body.appendChild(frame);
-
-    const doc = frame.contentDocument as Document;
-    doc.open();
-    doc.write(html);
-    doc.close();
-
-    await new Promise<void>((res) => {
-      if (doc.readyState === 'complete' || doc.readyState === 'interactive') res();
-      else doc.addEventListener('DOMContentLoaded', () => res(), { once: true });
-    });
-
-    const win = frame.contentWindow as Window;
-    return { frame, doc, win };
   }
 } 

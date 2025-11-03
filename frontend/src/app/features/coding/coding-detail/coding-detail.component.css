@@ -51,29 +51,6 @@
 .horizontal-splitter{ height:5px; z-index:2; background:transparent; border-radius:25px; cursor:row-resize; user-select:none; transition:background-color .15s; }
 .horizontal-splitter:hover, .horizontal-splitter.dragging{ background-color:#3b82f6; }
 
-/* ---------- Approaches list cards ---------- */
-.coding-detail .rounded-md.border {
-  background: rgba(255,255,255,.02);
-  border-color: rgba(255,255,255,.14) !important;
-  overflow: hidden;
-}
-.coding-detail .rounded-md.border > .p-3 {
-  padding: .9rem .95rem;
-  background: transparent;
-}
-.coding-detail .rounded-md.border > .p-3 + .p-3 { border-top: 1px solid rgba(255,255,255,.08); }
-.coding-detail .rounded-md.border > .p-3 .flex.items-center.gap-2 { gap:.5rem; }
-.coding-detail .rounded-md.border > .p-3 h4 { font-weight:600; color:#e5e7eb; }
-.coding-detail .rounded-md.border > .p-3 .uf-btn { padding:.35rem .7rem; font-size:.85rem; }
-
-/* make the Monaco block read as a card */
-.coding-detail .rounded-md.border app-monaco-editor {
-  display:block;
-  border-radius:8px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.10);
-}
-
 /* ---------- Notes & Pitfalls tiles ---------- */
 .coding-detail .grid.md\:grid-cols-3.gap-3 { align-items: stretch; }
 .coding-detail .grid.md\:grid-cols-3.gap-3 > div {
@@ -90,13 +67,7 @@
 .coding-detail .grid.md\:grid-cols-3.gap-3 > div ul { margin:.25rem 0 0 0; padding-left:1rem; }
 .coding-detail .grid.md\:grid-cols-3.gap-3 > div li { margin:.25rem 0; }
 
-/* ---------- Results / console panel ---------- */
-.results-panel { font-size:13px; line-height:1.4; }
-.results-panel .summary { font-size:12px; opacity:.95; }
-.results-panel .test-card { padding:8px; }
-.results-panel .test-name { display:flex; align-items:center; gap:8px; font-weight:500; font-size:13px; }
-.results-panel .test-name i { font-size:14px; }
-.results-panel .test-error { margin-top:4px; font-size:12px; }
+
 
 /* ---------- Warning + banners ---------- */
 .solution-warning { font-size:13px; padding:1rem; }
@@ -104,9 +75,6 @@
   background:rgba(250,204,21,.08); border:1px solid rgba(250,204,21,.25); }
 .icon-warning i { font-size:16px; color:#facc15; }
 .restore-banner { line-height:1.3; border-bottom:1px solid rgba(0,0,0,.08); }
-.icon-hero { display:grid; place-items:center; width:56px; height:56px; border-radius:9999px;
-  background:rgba(59,130,246,.08); border:1px solid rgba(59,130,246,.25); margin:0 auto; }
-.icon-hero i { font-size:22px; color:#60a5fa; }
 
 /* ---------- File drawer ---------- */
 .file-drawer{ position:absolute; inset:0; pointer-events:none; z-index:50; }
@@ -145,13 +113,6 @@
 .icon-btn:hover{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.2); }
 .icon-btn:active{ transform:translateY(1px); }
 
-/* ---------- Title truncation fixes ---------- */
-.coding-detail .rounded-md.border > .p-3 h4.truncate {
-  overflow: visible !important;
-  text-overflow: clip !important;
-  white-space: normal !important;
-}
-
 /* ---------- Notes & Pitfalls: single column ---------- */
 .coding-detail .grid.md\:grid-cols-3.gap-3 {
   grid-template-columns: 1fr !important;
@@ -162,28 +123,6 @@
   background: rgba(255,255,255,.02);
   border: 1px solid rgba(255,255,255,.14);
   border-radius: 10px;
-}
-
-/* ---------- Approach header wraps nicely ---------- */
-.coding-detail .rounded-md.border > .p-3 .flex.items-center.gap-2 { flex-wrap: wrap; }
-.coding-detail .rounded-md.border > .p-3 .flex.items-center.gap-2 h4 {
-  font-size: .95rem;
-  line-height: 1.25;
-  font-weight: 600;
-  flex: 1 1 360px;
-  min-width: 260px;
-  margin-right: .5rem;
-  white-space: normal !important;
-  text-overflow: clip !important;
-  overflow: visible !important;
-}
-.coding-detail .rounded-md.border > .p-3 .uf-btn {
-  white-space: nowrap;
-  height: 32px;
-  padding: 0 .65rem;
-  display: inline-flex;
-  align-items: center;
-  line-height: 1;
 }
 
 /* ---------- Approach header layout ---------- */
@@ -205,38 +144,7 @@
 }
 .ap-title { font-size: 1rem; line-height: 1.35; font-weight: 600; margin: 0; white-space: normal; }
 
-/* ---------- Toolbar ---------- */
-.ap-toolbar {
-  display: inline-flex;
-  gap: 0;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 8px;
-  overflow: hidden;
-  margin: .25rem 0 .5rem;
-  background: #111827;
-}
-.ap-toolbar .seg-btn {
-  height: 32px;
-  padding: 0 .8rem;
-  font-size: .85rem;
-  line-height: 1;
-  color: #e5e7eb;
-  background: transparent;
-  border: 0;
-  border-right: 1px solid rgba(255,255,255,.12);
-  cursor: pointer;
-}
-.ap-toolbar .seg-btn:last-child { border-right: 0; }
-.ap-toolbar .seg-btn:hover { background: rgba(255,255,255,.06); }
-.ap-toolbar .seg-btn:active { background: rgba(255,255,255,.1); }
-
 /* ---------- Code block styling / copy button ---------- */
-.coding-detail .rounded-md.border app-monaco-editor {
-  display: block;
-  border-radius: 8px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.10);
-}
 .code-wrap { position: relative; }
 .copy-fab {
   position: absolute;
