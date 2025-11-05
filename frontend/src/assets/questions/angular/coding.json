@@ -26,53 +26,66 @@
     ]
   },
   {
-    "id": "angular-pipe",
-    "title": "Create a Custom Pipe",
-    "description": "Implement an Angular pipe named `truncate` that abbreviates a string to a given length and adds ellipsis.",
+    "id": "angular-counter-starter",
+    "title": "Counter (Standalone Components + Signals)",
+    "description": {
+      "summary": "Build a simple counter using Angular's standalone components and signals. Add increment, decrement, and reset buttons. Disable the decrement button when the counter is at zero, and display the count in a child component.",
+      "arguments": [
+        {
+          "name": "signal()",
+          "type": "reactive primitive",
+          "desc": "A reactive state variable from Angular's reactivity model, used to store and update the count."
+        },
+        {
+          "name": "computed()",
+          "type": "derived value",
+          "desc": "Used to create derived reactive values such as whether the count is zero."
+        },
+        {
+          "name": "Standalone components",
+          "type": "component structure",
+          "desc": "Both the main AppComponent and DisplayComponent are standalone components using 'imports' instead of NgModule."
+        },
+        {
+          "name": "Input binding",
+          "type": "data flow",
+          "desc": "The parent component passes the current count to the child DisplayComponent via an @Input property."
+        },
+        {
+          "name": "Event binding",
+          "type": "interaction",
+          "desc": "The buttons call increment, decrement, and reset methods using (click) handlers."
+        }
+      ],
+      "returns": {
+        "type": "Angular app",
+        "desc": "A minimal Angular counter app that demonstrates reactive state updates with signals."
+      },
+      "examples": [
+        "User clicks '+' → counter increases by one.",
+        "User clicks '−' → counter decreases by one (unless it’s already zero).",
+        "User clicks 'Reset' → counter returns to zero."
+      ]
+    },
     "type": "coding",
     "technology": "angular",
-    "difficulty": "intermediate",
+    "difficulty": "beginner",
     "tags": [
-      "pipes",
-      "angular"
+      "components",
+      "signals",
+      "inputs-outputs"
     ],
     "importance": 3,
     "sdk": {
-      "asset": "assets/sb/angular-pipe.v2.json",
-      "openFile": "/src/app/truncate.pipe.ts",
-      "storageKey": "v2:ui:angular:angular-pipe"
+      "asset": "assets/sb/angular-counter.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-counter-starter"
     },
-    "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-truncate-pipe?embed=1&file=src/app/truncate.pipe.ts",
-    "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-truncate-pipe-solution?embed=1&file=src/app/truncate.pipe.ts",
     "companies": [
       "google",
-      "airbnb"
-    ]
-  },
-  {
-    "id": "angular-interceptor",
-    "title": "Implement an HTTP Interceptor",
-    "description": "Write an Angular `HttpInterceptor` that adds an `Authorization` header to all outgoing HTTP requests.",
-    "type": "coding",
-    "technology": "angular",
-    "difficulty": "advanced",
-    "tags": [
-      "https",
-      "interceptor",
-      "angular"
-    ],
-    "importance": 4,
-    "sdk": {
-      "asset": "assets/sb/angular-interceptor.v2.json",
-      "openFile": "/src/app/auth.interceptor.ts",
-      "storageKey": "v2:ui:angular:angular-interceptor"
-    },
-    "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-http-interceptor?embed=1&file=src/app/auth.interceptor.ts",
-    "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-http-interceptor-solution?embed=1&file=src/app/auth.interceptor.ts",
-    "companies": [
-      "amazon",
-      "microsoft",
+      "meta",
       "uber"
-    ]
+    ],
+    "solutionAsset": "assets/sb/angular-counter-solution.v2.json"
   }
 ]

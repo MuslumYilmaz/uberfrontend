@@ -1,0 +1,39 @@
+{
+  "version": "v2",
+  "type": "user-interface",
+  "title": "Angular Counter (solution: classic component properties)",
+  "openFile": "/src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"angular-counter-solution\",\n  \"private\": true\n}\n"
+    },
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Counter (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+    "/src/app/app.component.ts": {
+      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  count = 0;\n\n  get isZero(): boolean {\n    return this.count === 0;\n  }\n\n  inc(): void {\n    this.count++;\n  }\n\n  dec(): void {\n    if (!this.isZero) {\n      this.count--;\n    }\n  }\n\n  reset(): void {\n    this.count = 0;\n  }\n}\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Counter (Solution)</h1>\n\n    <div class=\"panel\">\n      <div class=\"value\">{{ count }}</div>\n      <div class=\"actions\">\n        <button (click)=\"dec()\" [disabled]=\"isZero\" aria-label=\"decrement\">−</button>\n        <button (click)=\"inc()\" aria-label=\"increment\">+</button>\n        <button (click)=\"reset()\" class=\"ghost\" aria-label=\"reset\">Reset</button>\n      </div>\n    </div>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;}\n.value{font-size:48px;line-height:1;font-weight:800;text-align:center;margin-bottom:12px;}\n.actions{display:flex;gap:8px;justify-content:center}\nbutton{background:#a3e635;color:#111;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}\nbutton[disabled]{opacity:.5;cursor:not-allowed}\nbutton.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151}\n"
+    },
+    "/src/styles.css": {
+      "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+    }
+  }
+}
