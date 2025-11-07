@@ -1,0 +1,20 @@
+[
+    {
+        "id": "ng-debug-counter-change-detection",
+        "title": "Counter not updating",
+        "difficulty": "intermediate",
+        "importance": 3,
+        "tags": [
+            "signals",
+            "change-detection",
+            "components"
+        ],
+        "description": {
+            "text": "The counter button renders but the value never increases due to a logic bug. Fix the increment logic so the value updates correctly."
+        },
+        "sdk": {
+            "asset": "assets/sb/angular/debug/counter-fix.json",
+            "openFile": "src/app/app.component.ts"
+        }
+    }
+]

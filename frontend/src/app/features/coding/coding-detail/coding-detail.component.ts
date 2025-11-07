@@ -336,7 +336,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private daily: DailyService,
     private activity: ActivityService,
     private http: HttpClient
-  ) { }
+  ) {
+    this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
+  }
 
   // ---------- helpers ----------
   private static sortForPractice(a: Question, b: Question): number {

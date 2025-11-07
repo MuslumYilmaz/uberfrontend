@@ -38,17 +38,17 @@
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
             <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'">
-                <app-monaco-editor class="h-full editor-fill" [code]="editorContent()"
-                    [language]="jsLang()==='ts' ? 'typescript':'javascript'" [options]="editorOptions"
-                    (codeChange)="onCodeChange($event)">
+                <app-monaco-editor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
+                    [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                    [options]="editorOptions" (codeChange)="onCodeChange($event)">
                 </app-monaco-editor>
             </div>
 
             <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->
             <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
-                <app-monaco-editor class="h-full editor-fill" [code]="testCode()"
-                    [language]="jsLang()==='ts' ? 'typescript' : 'javascript'" [options]="editorOptions"
-                    (codeChange)="onTestsChange($event)">
+                <app-monaco-editor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-tests'"
+                    [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+                    [options]="editorOptions" (codeChange)="onTestsChange($event)">
                 </app-monaco-editor>
             </div>
         </div>

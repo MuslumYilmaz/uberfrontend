@@ -1,0 +1,52 @@
+{
+  "version": "v2",
+  "type": "user-interface",
+  "title": "Custom Form Validator (simple)",
+  "openFile": "/src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "@angular/forms": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"demo\",\n  \"private\": true\n}\n"
+    },
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Simple Form</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+
+    "/src/app/app.component.ts": {
+      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { DisplayComponent } from './display.component';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule, DisplayComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  model = { name: '', email: '' };\n  submit() { alert('Saved: ' + JSON.stringify(this.model)); console.log(this.model); }\n}\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:420px;\">\n    <h1 style=\"margin:0 0 12px 0; font-size:20px; font-weight:700;\">Simple Form</h1>\n\n    <form (ngSubmit)=\"submit()\" #f=\"ngForm\" style=\"display:grid; gap:12px;\">\n      <label style=\"display:grid; gap:6px;\">\n        <span>Name</span>\n        <input name=\"name\" [(ngModel)]=\"model.name\" />\n      </label>\n\n      <label style=\"display:grid; gap:6px;\">\n        <span>Email</span>\n        <input name=\"email\" [(ngModel)]=\"model.email\" type=\"email\" />\n      </label>\n\n      <button type=\"submit\">Save</button>\n    </form>\n\n    <pre style=\"margin-top:12px; background:#0b1020; padding:8px; border-radius:8px;\">{{ model | json }}</pre>\n\n    <app-display [data]=\"model\"></app-display>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": "input {\n  background: #111827;\n  color: #e5e7eb;\n  border: 1px solid #1f2937;\n  border-radius: 8px;\n  padding: 10px;\n}\n\nbutton {\n  background: #a3e635;\n  color: #111;\n  border: none;\n  border-radius: 8px;\n  padding: 10px 14px;\n  font-weight: 600;\n  cursor: pointer;\n}\n"
+    },
+
+    "/src/app/display.component.ts": {
+      "code": "import { Component, Input } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-display',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './display.component.html',\n  styleUrls: ['./display.component.css']\n})\nexport class DisplayComponent {\n  @Input() data: { name: string; email: string } | null = null;\n}\n"
+    },
+    "/src/app/display.component.html": {
+      "code": "<div class=\"box\">\n  <h2>Display Component</h2>\n  <p><strong>Name:</strong> {{ data?.name || '-' }}</p>\n  <p><strong>Email:</strong> {{ data?.email || '-' }}</p>\n</div>\n"
+    },
+    "/src/app/display.component.css": {
+      "code": ".box {\n  margin-top: 24px;\n  padding: 12px;\n  border: 1px dashed #3b82f6;\n  border-radius: 8px;\n}\n\n.box h2 {\n  margin: 0 0 8px 0;\n  font-size: 16px;\n  color: #3b82f6;\n}\n"
+    },
+
+    "/src/styles.css": {
+      "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+    }
+  }
+}

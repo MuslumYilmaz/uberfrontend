@@ -1,0 +1,11 @@
+{
+    "dependencies": {
+        "vue": "3.x"
+    },
+    "openFile": "/src/App.ts",
+    "files": {
+        "/index.html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body><div id=\"app\"></div><script type=\"module\" src=\"/src/main.ts\"></script></body></html>",
+        "/src/main.ts": "import { createApp } from 'vue';\nimport App from './App';\ncreateApp(App).mount('#app');\n",
+        "/src/App.ts": "export default { template: `<div style=\\\"font-family:system-ui;padding:16px\\\"><h1>Counter</h1><p data-testid=\\\"value\\\">{{ n }}</p><button @click=\\\"dec\\\">-</button><button @click=\\\"inc\\\">+</button></div>`,\n  data(){ return { n: 0 }; },\n  methods:{ inc(){ this.n += 1; }, dec(){ this.n = Math.max(0, this.n-1); } }\n}\n"
+    }
+}

@@ -1,0 +1,22 @@
+[
+    {
+        "id": "react-counter",
+        "title": "Build a Counter component",
+        "description": "Create a <Counter/> with + / - buttons and a value. Value must never drop below 0.",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "easy",
+        "tags": [
+            "react",
+            "state",
+            "components"
+        ],
+        "importance": 2,
+        "sdk": {
+            "asset": "assets/sb/react-counter.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-counter"
+        },
+        "stackblitzEmbedUrl": "https://stackblitz.com/edit/react-ts?embed=1&file=src/App.tsx"
+    }
+]

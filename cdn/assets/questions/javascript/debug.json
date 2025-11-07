@@ -1,0 +1,59 @@
+[
+    {
+        "id": "js-debug-off-by-one",
+        "title": "Fix off-by-one in `chunk`",
+        "difficulty": "intermediate",
+        "importance": 3,
+        "tags": [
+            "arrays",
+            "bugs",
+            "edge-cases"
+        ],
+        "description": {
+            "text": "The current implementation of `chunk(arr, size)` occasionally drops the last group or returns an empty chunk when size divides the length exactly. Find and fix the bug.",
+            "examples": [
+                "chunk([1,2,3,4,5], 2) // [[1,2],[3,4],[5]]",
+                "chunk([1,2,3,4], 2)   // [[1,2],[3,4]]"
+            ]
+        },
+        "starterCode": "export default function chunk(arr, size){\n  if(!Array.isArray(arr) || size <= 0) return [];\n  const out = [];\n  for(let i = 0; i <= arr.length; i += size){ // BUG: '<='\n    out.push(arr.slice(i, i + size));\n  }\n  return out;\n}\n",
+        "tests": "import chunk from './js-debug-off-by-one';\n\ndescribe('chunk', () => {\n  test('splits into uneven groups', () => {\n    expect(chunk([1,2,3,4,5], 2)).toEqual([[1,2],[3,4],[5]]);\n  });\n\n  test('exactly divisible should not add empty chunk', () => {\n    expect(chunk([1,2,3,4], 2)).toEqual([[1,2],[3,4]]);\n  });\n\n  test('invalid size or non-array returns []', () => {\n    expect(chunk([1,2,3], 0)).toEqual([]);\n    // @ts-ignore\n    expect(chunk(null, 2)).toEqual([]);\n  });\n});\n",
+        "solution": "export default function chunk(arr, size){\n  if(!Array.isArray(arr) || size <= 0) return [];\n  const out = [];\n  for(let i = 0; i < arr.length; i += size){\n    out.push(arr.slice(i, i + size));\n  }\n  return out;\n}\n"
+    },
+    {
+        "id": "js-debug-mutating-input",
+        "title": "Stop mutating input in `unique`",
+        "difficulty": "easy",
+        "importance": 2,
+        "tags": [
+            "arrays",
+            "immutability"
+        ],
+        "description": {
+            "text": "`unique(arr)` must return a new array of unique items while leaving the input array untouched.",
+            "examples": [
+                "const a = [2,2,1,3,1];\nconst b = unique(a);\n// b: [2,1,3]\n// a must remain [2,2,1,3,1]"
+            ]
+        },
+        "starterCode": "export default function unique(arr){\n  // BUG: sorts in-place and mutates input\n  return Array.from(new Set(arr.sort()));\n}\n",
+        "tests": "import unique from './js-debug-mutating-input';\n\ndescribe('unique', () => {\n  test('returns unique values', () => {\n    expect(unique([2,2,1,3,1])).toEqual([2,1,3]);\n  });\n\n  test('does not mutate input', () => {\n    const a = [2,2,1,3,1];\n    unique(a);\n    expect(a).toEqual([2,2,1,3,1]);\n  });\n});\n",
+        "solution": "export default function unique(arr){\n  return Array.from(new Set(arr.slice()));\n}\n"
+    },
+    {
+        "id": "js-debug-async-race",
+        "title": "Fix async race in `fetchWithCache`",
+        "difficulty": "hard",
+        "importance": 4,
+        "tags": [
+            "async",
+            "cache",
+            "promises"
+        ],
+        "description": {
+            "text": "Multiple simultaneous calls with the same key should share the same in-flight request. Fix the race so only one network call happens per key until it resolves."
+        },
+        "starterCode": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  // BUG: not sharing in-flight promise\n  const p = fetcher().then(res => { cache.set(key, res); inflight.delete(key); return res; });\n  inflight.set(key, p);\n  return p;\n}\n",
+        "tests": "import fetchWithCache from './js-debug-async-race';\n\ndescribe('fetchWithCache', () => {\n  test('shares in-flight promise for concurrent calls', async () => {\n    let calls = 0;\n    const fetcher = async () => { calls++; await new Promise(r=>setTimeout(r,20)); return 'OK'; };\n    const [a,b,c] = await Promise.all([\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher),\n      fetchWithCache('k', fetcher)\n    ]);\n    expect(a).toBe('OK');\n    expect(b).toBe('OK');\n    expect(c).toBe('OK');\n    expect(calls).toBe(1);\n  });\n\n  test('uses cached value on subsequent calls after resolve', async () => {\n    let calls = 0;\n    const fetcher = async () => { calls++; return 'VAL'; };\n    await fetchWithCache('x', fetcher);\n    const v2 = await fetchWithCache('x', fetcher);\n    expect(v2).toBe('VAL');\n    expect(calls).toBe(1);\n  });\n});\n",
+        "solution": "const cache = new Map();\nconst inflight = new Map();\n\nexport default async function fetchWithCache(key, fetcher){\n  if(cache.has(key)) return cache.get(key);\n  if(inflight.has(key)) return inflight.get(key);\n  const p = fetcher().then(res => { cache.set(key, res); inflight.delete(key); return res; });\n  inflight.set(key, p);\n  return p;\n}\n"
+    }
+]

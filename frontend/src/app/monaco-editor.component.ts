@@ -42,6 +42,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() minHeight = 24;
 
   @Output() codeChange = new EventEmitter<string>();
+  @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
 
   // ADD
   private editor!: any;
@@ -49,9 +50,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private suppressNextModelUpdate = false;
   private disposed = false;
   private resizeObs?: ResizeObserver;
-  // BELOW: private resizeObs?: ResizeObserver;
-  private static seq = 0;                                // NEW
-  private readonly modelId = `uf-${++MonacoEditorComponent.seq}`; // NEW
+  private static seq = 0;
+  private get _modelId(): string {
+    return this.modelKey || `uf-${++MonacoEditorComponent.seq}`;
+  }
+
 
   private readonly amdLoaderPath = 'assets/monaco/min/vs/loader.js';
   private readonly vsBasePath = 'assets/monaco/min/vs';
@@ -176,7 +179,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     try { this.editor?.dispose?.(); } catch { }
     try { this.model?.dispose?.(); } catch { }  // keep this
   }
-  
+
   // ---------- helpers ----------
 
   private normalizeLanguage(lang: string): string {
@@ -300,7 +303,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     const ext = langNorm === 'typescript' ? 'ts' : 'js';
 
     // Per-instance, per-language URI (prevents cross-instance collisions)
-    const uri = window.monaco.Uri.parse(`inmemory://uf/${this.modelId}.${ext}`);
+    const uri = window.monaco.Uri.parse(`inmemory://uf/${this._modelId}.${ext}`); // use getter
 
     // If our current model is for another language/ext, dispose it (it’s ours)
     if (this.model && this.model.uri.toString() !== uri.toString()) {

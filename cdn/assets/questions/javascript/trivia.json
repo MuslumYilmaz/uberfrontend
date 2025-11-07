@@ -1,0 +1,2837 @@
+[
+  {
+    "id": "js-event-loop",
+    "title": "Explain the JavaScript Event Loop",
+    "description": "JavaScript runs on a single thread. Each cycle: it executes synchronous code, drains all microtasks (e.g., Promise callbacks), then runs one macrotask (e.g., setTimeout) before repeating. This is why Promises run before timers and why long microtask chains can block rendering.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "event-loop",
+      "async",
+      "microtasks"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "microsoft",
+      "uber",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Big Picture</strong>\n\nJavaScript runs <strong>on a single thread</strong>, meaning it can only do <strong>one thing at a time</strong>. So how does it handle things like <code>setTimeout</code>, <code>fetch</code>, or <code>Promise.then</code> without freezing? That’s where the <strong>event loop</strong> comes in.\n\nThink of it like a manager that decides <em>what piece of code runs next</em> among all waiting tasks."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>The Three Main Parts</strong>\n\nThe JavaScript runtime manages execution using three core parts: the <strong>Call Stack</strong>, <strong>Task Queues</strong>, and the <strong>Event Loop</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Component",
+            "Purpose",
+            "Examples / Details"
+          ],
+          "rows": [
+            [
+              "<strong>Call Stack</strong>",
+              "Where synchronous code runs, line by line. If a function takes too long here, everything else waits (blocking).",
+              "<code>console.log</code>, loops, math operations, synchronous functions"
+            ],
+            [
+              "<strong>Task Queues (two types)</strong>",
+              "Where async tasks wait until the stack is clear — split into Microtask and Macrotask queues.",
+              "Async callbacks, Promises, timers, I/O events"
+            ],
+            [
+              "<strong>Microtask Queue</strong>",
+              "Smaller, high-priority tasks that run immediately after the stack is clear.",
+              "<code>Promise.then</code>, <code>queueMicrotask</code>, <code>process.nextTick</code>"
+            ],
+            [
+              "<strong>Macrotask Queue</strong>",
+              "Larger, lower-priority tasks that can yield to the browser for rendering between runs.",
+              "<code>setTimeout</code>, DOM events, I/O, <code>setInterval</code>"
+            ]
+          ],
+          "caption": "Call Stack and Task Queues at a glance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-repeat'></i> <strong>The Event Loop</strong>\n\nThe event loop constantly checks:\n1. Is the call stack empty?  \n2. Any microtasks waiting? → Run all of them.  \n3. Take one macrotask and run it.  \nThen the cycle repeats forever."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('A');\n\nsetTimeout(() => console.log('B (macrotask)'));\n\nPromise.resolve()\n  .then(() => console.log('C (microtask)'))\n  .then(() => console.log('D (microtask)'));\n\nconsole.log('E');\n\n// Output:\n// A\n// E\n// C\n// D\n// B"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this order?</strong>\n- <code>A</code> and <code>E</code> → run first (synchronous stack).  \n- Then the event loop runs <strong>all microtasks</strong> → <code>C</code>, <code>D</code>.  \n- Finally, the next macrotask runs → <code>B</code>.  \n\nThat’s why <strong>Promises always run before timers</strong>, even when scheduled “at the same time.”"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Microtasks vs. Macrotasks (Summary)</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Type",
+            "Examples",
+            "Runs When",
+            "Priority"
+          ],
+          "rows": [
+            [
+              "<strong>Microtask</strong>",
+              "<code>Promise.then</code>, <code>queueMicrotask</code>",
+              "After the current call stack, before rendering",
+              "High"
+            ],
+            [
+              "<strong>Macrotask</strong>",
+              "<code>setTimeout</code>, <code>setInterval</code>, DOM events",
+              "After microtasks, allows rendering",
+              "Normal"
+            ]
+          ],
+          "caption": "Microtasks run before macrotasks within each event loop cycle."
+        },
+        {
+          "type": "text",
+          "text": "After each macrotask, <strong>all microtasks</strong> are drained before the next one starts. That’s why too many microtasks (like recursive Promises) can block rendering."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function loop() {\n  Promise.resolve().then(loop); // microtask recursion\n}\nloop(); // browser freezes — it never yields control back"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-server'></i> <strong>In Node.js</strong>\n\nThe event loop runs through several <strong>phases</strong>:\n<pre class='md-pre'>timers → pending callbacks → poll → check → close callbacks</pre>\nMicrotasks (<code>Promise.then</code>, <code>process.nextTick</code>) run <strong>after each phase</strong>, unlike browsers where they run once per loop."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n\n// Common order:\n// microtask → timer → immediate"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript executes <strong>synchronously</strong> on a single thread.  \n- The <strong>event loop</strong> coordinates between the stack and queues.  \n- <strong>Microtasks</strong> (Promises) always run before <strong>macrotasks</strong> (timers).  \n- Too many microtasks can freeze rendering.  \n- Use macrotasks for deferred work and microtasks for quick follow-ups."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re the only cashier at a store. You serve one customer at a time (the call stack). When a customer needs to grab something, you tell them to step aside (macrotask). But before you call the next one, you handle quick questions like ‘Can I get a receipt?’ (microtasks). You repeat this all day — that’s the event loop!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-closures",
+    "title": "Explain Closures in JavaScript",
+    "description": "A closure happens when a function keeps access to variables from its outer scope, even after that outer function has finished. It’s how JavaScript allows private data and persistent state inside functions.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "closure",
+      "scope",
+      "lexical-environment",
+      "function"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA **closure** is when a function remembers variables from the place where it was created — not from where it is called. It means inner functions can keep using values from an outer function, even after that outer function has finished running."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Simple example\nfunction makeCounter() {\n  let count = 0; // stays in memory\n  return function () {\n    count++;\n    return count;\n  };\n}\n\nconst counter = makeCounter();\nconsole.log(counter()); // 1\nconsole.log(counter()); // 2\n\n// The inner function still 'remembers' count"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lock'></i> <strong>Why It’s Useful</strong>\n\nClosures are powerful because they let you:\n- Keep variables **private** (not accessible globally)\n- Store **state** between function calls\n- Create **helpers** like <code>once()</code>, <code>memoize()</code>, and other reusable patterns"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: once()\nfunction once(fn) {\n  let called = false;\n  let value;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      value = fn.apply(this, args);\n    }\n    return value;\n  };\n}\n\nconst init = once(() => console.log('Initialized'));\ninit(); // Logs once\ninit(); // Does nothing — remembers state"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>var</code> in loops creates one shared variable for all iterations — so all functions close over the same value:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const funcs = [];\nfor (var i = 0; i < 3; i++) {\n  funcs.push(() => i);\n}\nconsole.log(funcs.map(fn => fn())); // [3, 3, 3]"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fixes:</strong>\n- Use <code>let</code> for block scoping\n- Or use an IIFE (immediately invoked function) to capture a copy"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Fix with let\nfor (let j = 0; j < 3; j++) {\n  setTimeout(() => console.log(j), 0);\n}\n// 0 1 2"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-memory'></i> <strong>Memory Notes</strong>\n\nClosures keep their referenced variables alive as long as the inner function exists. This can accidentally hold big objects or DOM elements in memory, so always clean up unused references."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Functions automatically form closures in JavaScript.  \n- Inner functions remember outer variables (their <strong>lexical scope</strong>).  \n- Used for data privacy, persistence, and modular code.  \n- Use <code>let</code>/<code>const</code> to avoid loop bugs.  \n- Don’t overuse closures in long-lived objects to prevent memory leaks."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you leave a room (outer function ends), but you gave your friend (inner function) a copy of the key to your drawer (variables). Even though you’re gone, they can still open it — that’s a closure!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-this-keyword",
+    "title": "Explain the `this` keyword in JavaScript",
+    "description": "The value of `this` in JavaScript depends on how a function is called — not where it’s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "this",
+      "context",
+      "binding",
+      "function"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> in JavaScript is determined by <strong>how a function is called</strong>, not by where it is written. It points to the <strong>execution context</strong> — the object that 'owns' the function at the time of invocation."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Call Type",
+            "Value of <code>this</code>",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<strong>Global / Default</strong>",
+              "In browsers → <code>window</code>, in strict mode → <code>undefined</code>",
+              "<code>console.log(this)</code>"
+            ],
+            [
+              "<strong>Object method</strong>",
+              "The object before the dot",
+              "<code>user.sayHi()</code> → <code>this === user</code>"
+            ],
+            [
+              "<strong>Constructor</strong>",
+              "The newly created instance",
+              "<code>new Person()</code>"
+            ],
+            [
+              "<strong>Explicit binding</strong>",
+              "Set manually using <code>call</code>, <code>apply</code>, or <code>bind</code>",
+              "<code>fn.call(obj)</code> → <code>this === obj</code>"
+            ],
+            [
+              "<strong>Arrow function</strong>",
+              "Does not bind <code>this</code>; inherits it from its outer scope",
+              "<code>() => this</code> inside an object → outer <code>this</code>"
+            ]
+          ],
+          "caption": "How `this` changes based on how the function is called."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 1: Default binding\nfunction show() {\n  console.log(this);\n}\nshow(); // window (or undefined in strict mode)"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 2: Method call\nconst user = {\n  name: 'Mia',\n  greet() {\n    console.log('Hi, ' + this.name);\n  }\n};\nuser.greet(); // 'Hi, Mia'"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 3: Detached method loses context\nconst greetFn = user.greet;\ngreetFn(); // undefined or 'Hi, undefined' — this is lost"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-link'></i> <strong>Fixing Lost Context</strong>\n\nYou can control or preserve <code>this</code> explicitly using:\n- <code>call()</code> / <code>apply()</code> → call immediately\n- <code>bind()</code> → return a new function with fixed <code>this</code>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const boundGreet = user.greet.bind(user);\nboundGreet(); // 'Hi, Mia'"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Arrow Functions</strong>\n\nArrow functions **don’t have their own <code>this</code>**. They inherit it from the surrounding scope. Great for callbacks that need lexical <code>this</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function Timer() {\n  this.seconds = 0;\n  setInterval(() => {\n    this.seconds++;\n    console.log(this.seconds);\n  }, 1000);\n}\nnew Timer(); // works fine\n\n// But using a normal function would break:\n// setInterval(function() { this.seconds++ }, 1000); // this = undefined"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting <code>new</code> → <code>this</code> becomes global (or undefined in strict mode)\n- Losing context when passing methods as callbacks\n- Misusing arrow functions in class methods (they can’t be rebound)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>this</code> depends on the <strong>call site</strong>, not where the function is defined.  \n- Arrow functions don’t have their own <code>this</code>.  \n- <code>call</code>, <code>apply</code>, and <code>bind</code> let you control <code>this</code> explicitly.  \n- <code>new</code> creates a new object and binds <code>this</code> to it."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>this</code> as the person holding the phone 📱 — not the number you dialed. The number (function) stays the same, but who picks up (the object that calls it) decides what <code>this</code> will be."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-hoisting-tdz",
+    "title": "Explain Hoisting and the Temporal Dead Zone (TDZ)",
+    "description": "During the creation phase, JavaScript moves declarations to the top of their scope (hoisting). However, variables declared with `let` and `const` exist in a 'temporal dead zone' until their declaration is reached, making them inaccessible before initialization.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "hoisting",
+      "temporal-dead-zone",
+      "scope",
+      "variables"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore JavaScript executes any code, it first scans your script to find all variable and function declarations. It sets up memory for them in a process called <strong>hoisting</strong>. But — not all declarations behave the same way."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Declaration Type",
+            "Hoisted?",
+            "Initialized Before Declaration?",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<code>var</code>",
+              "Yes",
+              "✅ Initialized to <code>undefined</code>",
+              "<code>console.log(a); var a = 5;</code> → undefined"
+            ],
+            [
+              "<code>let</code>",
+              "Yes",
+              "❌ In TDZ (no access before declaration)",
+              "<code>console.log(b); let b = 5;</code> → ReferenceError"
+            ],
+            [
+              "<code>const</code>",
+              "Yes",
+              "❌ In TDZ (must be initialized immediately)",
+              "<code>const c = 10;</code>"
+            ],
+            [
+              "<code>function</code>",
+              "Yes (fully hoisted)",
+              "✅ Can be called before definition",
+              "<code>foo(); function foo() {}</code>"
+            ]
+          ],
+          "caption": "How different declarations behave during hoisting."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-up-long'></i> <strong>What is Hoisting?</strong>\n\nHoisting means declarations are <strong>moved to the top of their scope</strong> before code runs. This doesn’t mean your code is literally moved — it’s just how JavaScript’s memory setup works during the 'creation phase' of execution."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 1: var is hoisted\nconsole.log(name); // undefined\nvar name = 'Alice';\n// JS internally treats it like:\n// var name;\n// console.log(name);\n// name = 'Alice';"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The Temporal Dead Zone (TDZ)</strong>\n\nFor <code>let</code> and <code>const</code>, the variable exists but is not initialized yet. The time between the start of the scope and the actual declaration line is called the <strong>temporal dead zone</strong>. Accessing the variable in this zone causes a <code>ReferenceError</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 2: let and TDZ\nconsole.log(age); // ❌ ReferenceError\nlet age = 25;\n\n// In memory:\n// TDZ starts → variable exists but not initialized\n// Declaration reached → initialized to 25"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Functions vs Variables</strong>\n\nFunction declarations are hoisted <strong>with their full definition</strong>, so you can call them before they appear. But <strong>function expressions</strong> (especially with <code>let</code> or <code>const</code>) behave like normal variables."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 3: function vs expression\nsayHi(); // ✅ Works\nfunction sayHi() { console.log('Hi!'); }\n\nsayHello(); // ❌ ReferenceError\nconst sayHello = function() { console.log('Hello!'); };"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Thinking <code>let</code> or <code>const</code> aren’t hoisted (they are — just uninitialized).  \n- Forgetting that accessing them early throws an error, not <code>undefined</code>.  \n- Mixing function declarations and expressions in confusing ways."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript hoists all declarations before execution.  \n- <code>var</code> → initialized as <code>undefined</code>.  \n- <code>let</code> / <code>const</code> → uninitialized, causing a TDZ.  \n- <code>function</code> declarations → fully hoisted and callable early.  \n- Avoid referencing variables before their declaration line."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a classroom roll call 📋. The teacher knows all students’ names at the start (hoisting), but only after they say 'here' (initialization) can they answer questions. Until then, they’re in the **temporal dead zone**!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-var-let-const-hoisting",
+    "title": "Explain the difference in hoisting between `var`, `let`, and `const`",
+    "description": "All variable declarations are hoisted, but only `var` is initialized with `undefined`. Variables declared with `let` and `const` exist in the temporal dead zone until execution reaches their declaration, making them inaccessible beforehand.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "tags": [
+      "hoisting",
+      "variables",
+      "let",
+      "const",
+      "scope"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAll variable declarations are **hoisted** — meaning they’re recognized by JavaScript before execution. However, only <code>var</code> is **initialized** immediately with <code>undefined</code>. <code>let</code> and <code>const</code> are hoisted too, but they stay in the **temporal dead zone (TDZ)** until the actual declaration line."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Keyword",
+            "Hoisted?",
+            "Initialized Before Declaration?",
+            "Accessible Before Declaration?",
+            "Reassignable?",
+            "Redeclarable?"
+          ],
+          "rows": [
+            [
+              "<code>var</code>",
+              "✅ Yes",
+              "✅ Initialized to <code>undefined</code>",
+              "✅ Yes (but value = undefined)",
+              "✅ Yes",
+              "✅ Yes"
+            ],
+            [
+              "<code>let</code>",
+              "✅ Yes",
+              "❌ Not initialized (TDZ)",
+              "❌ No — ReferenceError",
+              "✅ Yes",
+              "❌ No"
+            ],
+            [
+              "<code>const</code>",
+              "✅ Yes",
+              "❌ Not initialized (TDZ)",
+              "❌ No — ReferenceError",
+              "❌ No (must initialize immediately)",
+              "❌ No"
+            ]
+          ],
+          "caption": "Hoisting and accessibility differences between var, let, and const."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-up-long'></i> <strong>How It Works Under the Hood</strong>\n\nWhen the JavaScript engine creates an execution context, it allocates memory for all declared variables:\n- <code>var</code> is assigned <code>undefined</code> immediately.\n- <code>let</code> and <code>const</code> are known but remain uninitialized until their declaration line is reached."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example 1: var\nconsole.log(a); // undefined\nvar a = 10;\n\n// Example 2: let\nconsole.log(b); // ❌ ReferenceError (TDZ)\nlet b = 10;\n\n// Example 3: const\nconsole.log(c); // ❌ ReferenceError (TDZ)\nconst c = 10;"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The Temporal Dead Zone (TDZ)</strong>\n\nThe TDZ is the time between entering a scope and the moment a <code>let</code> or <code>const</code> variable is declared. Accessing it during this period throws a <code>ReferenceError</code>. It helps prevent using variables before they're safely initialized."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "{\n  // TDZ starts\n  console.log(x); // ❌ ReferenceError\n  let x = 5; // TDZ ends here\n  console.log(x); // ✅ 5\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>All declarations are hoisted</strong>, but initialization differs.\n- <code>var</code> → hoisted + initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but uninitialized (TDZ).\n- Accessing <code>let</code> or <code>const</code> before declaration → <code>ReferenceError</code>.\n- <code>const</code> also requires immediate initialization."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re checking into a hotel 🏨. Rooms (<code>var</code>, <code>let</code>, <code>const</code>) are reserved at check-in (hoisting), but only <code>var</code> gets its key immediately. <code>let</code> and <code>const</code> exist but you can’t enter until the receptionist actually hands over the key — that’s the **temporal dead zone**!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-promises-async-await",
+    "title": "Promises and async/await",
+    "description": "Promises represent a value that may be available now, later, or never. `async/await` is syntax sugar over Promises that makes asynchronous code look synchronous, while preserving microtask scheduling and error propagation via rejections.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "promises",
+      "async-await",
+      "microtasks",
+      "error-handling",
+      "concurrency"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>Promise</strong> is a container for an eventual result: <code>pending → fulfilled</code> (resolved) or <code>pending → rejected</code>. <code>async/await</code> makes working with Promises easier: <code>await</code> pauses within an <code>async</code> function until the Promise settles, then returns the value or throws the rejection."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "What it means",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<strong>Promise states</strong>",
+              "pending → fulfilled / rejected",
+              "<code>new Promise((res, rej) => ...)</code>"
+            ],
+            [
+              "<strong>Thenables</strong>",
+              "Anything with <code>.then</code> behaves like a Promise",
+              "Libraries often return thenables"
+            ],
+            [
+              "<strong>Microtasks</strong>",
+              "Promise callbacks (<code>.then/.catch/.finally</code>) run as <em>microtasks</em>",
+              "Run after current stack, before timers"
+            ],
+            [
+              "<strong>async</strong>",
+              "Marks a function that <em>always returns a Promise</em>",
+              "<code>async function f(){ return 1 }</code>"
+            ],
+            [
+              "<strong>await</strong>",
+              "Pauses inside <code>async</code> until the Promise settles",
+              "<code>const data = await fetch(...)</code>"
+            ]
+          ],
+          "caption": "Promises and async/await at a glance."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Basic Promise\nfunction getUser(id) {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => resolve({ id, name: 'John' }), 200);\n  });\n}\n\ngetUser(1)\n  .then(u => u.name)\n  .then(name => console.log(name))\n  .catch(err => console.error('Error:', err))\n  .finally(() => console.log('done'));"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Equivalent with async/await\nasync function main() {\n  try {\n    const u = await getUser(1); // waits for fulfillment\n    console.log(u.name);\n  } catch (err) {\n    console.error('Error:', err); // rejections become throw\n  } finally {\n    console.log('done');\n  }\n}\nmain();"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-people-arrows'></i> <strong>Sequential vs Parallel</strong>\n\nUsing <code>await</code> inside a loop can serialize work unintentionally. Create Promises first, then <code>await Promise.all</code> for parallelism."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// ❌ Sequential (slow)\nfor (const url of urls) {\n  const res = await fetch(url);\n  results.push(await res.json());\n}\n\n// ✅ Parallel (fast)\nconst promises = urls.map(url => fetch(url).then(r => r.json()));\nconst results = await Promise.all(promises);"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Promise combinators</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "API",
+            "Settles When",
+            "Behavior"
+          ],
+          "rows": [
+            [
+              "<code>Promise.all([...])</code>",
+              "All fulfill or one rejects",
+              "Fast-fail; rejects on first rejection"
+            ],
+            [
+              "<code>Promise.allSettled([...])</code>",
+              "All settle",
+              "Never rejects; returns statuses"
+            ],
+            [
+              "<code>Promise.race([...])</code>",
+              "First settles",
+              "Adopts winner's state/value"
+            ],
+            [
+              "<code>Promise.any([...])</code>",
+              "First fulfillment",
+              "Rejects only if <em>all</em> reject (AggregateError)"
+            ]
+          ],
+          "caption": "Choosing the right combinator."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Error handling</strong>\n\nWith Promises, use <code>.catch</code> or the second arg of <code>.then</code>. With <code>async/await</code>, use <code>try/catch</code>. Unhandled rejections can crash Node.js (depending on version) or show as console warnings in browsers."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Handling errors: async/await\nasync function load() {\n  try {\n    const data = await fetch('/api').then(r => {\n      if (!r.ok) throw new Error('HTTP ' + r.status);\n      return r.json();\n    });\n    return data;\n  } catch (e) {\n    // handle or rethrow\n    throw e;\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common pitfalls</strong>\n\n- Forgetting to <code>return</code> inside <code>.then</code> chains → next <code>.then</code> gets <code>undefined</code>.\n- Using <code>await</code> in <code>Array.prototype.forEach</code> (it won’t await). Prefer <code>for...of</code> or <code>Promise.all</code>.\n- Assuming <code>async</code> functions throw synchronously — they return a rejected Promise instead.\n- No built-in cancellation for Promises (use <code>AbortController</code> with <code>fetch</code> or libraries that support cancel)."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// from callback to Promise\nfunction readFileP(path) {\n  const fs = require?.('fs'); // works in Node\n  return new Promise((resolve, reject) => {\n    fs.readFile(path, 'utf8', (err, data) => {\n      if (err) reject(err); else resolve(data);\n    });\n  });\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Promises model eventual results and schedule callbacks as <strong>microtasks</strong>.\n- <code>async/await</code> is Promise syntax sugar: clearer flow, same semantics.\n- Prefer parallel with <code>Promise.all</code>; avoid accidental serialization.\n- Use <code>try/catch</code> (or <code>.catch</code>) and pick the right combinator for your needs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a Promise as an order ticket 🧾: you place the order (create Promise), you’ll be notified when it’s ready (microtask). With <code>await</code>, you stand by the counter for <em>just that ticket</em> without blocking other customers — when it’s ready, you pick it up and continue."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-event-delegation",
+    "title": "Explain Event Delegation in JavaScript",
+    "description": "Event delegation is a technique where a single event listener on a parent element handles events for multiple child elements by using event bubbling and checking the event target.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "medium",
+    "tags": [
+      "event-delegation",
+      "dom",
+      "events",
+      "bubbling"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n**Event delegation** lets you attach **one event listener** to a **common ancestor** instead of multiple listeners to each child. When an event occurs, it bubbles up the DOM, and you check which child element triggered it using <code>event.target</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: Without delegation\nconst items = document.querySelectorAll('li');\nitems.forEach(item => item.addEventListener('click', () => {\n  console.log('Clicked:', item.textContent);\n}));"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: With event delegation\nconst list = document.querySelector('ul');\nlist.addEventListener('click', (event) => {\n  if (event.target.tagName === 'LI') {\n    console.log('Clicked:', event.target.textContent);\n  }\n});"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "Explanation",
+            "Example / Note"
+          ],
+          "rows": [
+            [
+              "<strong>Event Bubbling</strong>",
+              "Events start from the target element and bubble up to its ancestors.",
+              "<code>click</code> on <code>li</code> → bubbles to <code>ul</code>"
+            ],
+            [
+              "<strong>event.target</strong>",
+              "The original element that triggered the event.",
+              "Used to identify which child was clicked"
+            ],
+            [
+              "<strong>event.currentTarget</strong>",
+              "The element that the event listener is attached to.",
+              "Usually the parent in delegation"
+            ]
+          ],
+          "caption": "How event delegation uses bubbling and target references."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Why Use Event Delegation?</strong>\n\n- Better **performance** — fewer event listeners in the DOM.\n- Handles **dynamic elements** added later (since the listener is on a stable ancestor).\n- Cleaner, more maintainable code for lists, tables, or repeated components."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: Dynamic content\nconst container = document.querySelector('#buttons');\n\ncontainer.addEventListener('click', (e) => {\n  if (e.target.matches('button.delete')) {\n    e.target.remove();\n  }\n});\n\n// Works even if buttons are added later!"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting to check <code>event.target</code> → all clicks bubble and trigger the handler.\n- Relying on <code>event.target</code> when nested elements are inside clickable items (use <code>.closest()</code> to handle this safely)."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: Using closest() for nested targets\nlist.addEventListener('click', (event) => {\n  const li = event.target.closest('li');\n  if (!li) return; // click outside any li\n  console.log('Clicked item:', li.textContent);\n});"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Attach listener on parent, not each child.\n- Use event bubbling + <code>event.target</code> (or <code>closest()</code>) to detect the real source.\n- Improves performance and works for dynamically added elements."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine a restaurant. Instead of each waiter (child) taking orders, there’s one manager (parent) who hears all requests and decides who called — that’s **event delegation**!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-null-undefined-undeclared",
+    "title": "What is the difference between a variable that is: null, undefined or undeclared?",
+    "description": "In JavaScript, `undefined` means a variable has been declared but not assigned a value, `null` means an intentional empty value, and `undeclared` means the variable has never been defined in the current scope.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "null",
+      "undefined",
+      "undeclared",
+      "types",
+      "variables"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, we have three different 'empty' states for variables — <code>undefined</code>, <code>null</code>, and <code>undeclared</code>. Each one tells a different story about the variable’s existence and purpose."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Type",
+            "Meaning",
+            "Example",
+            "typeof Result"
+          ],
+          "rows": [
+            [
+              "<code>undefined</code>",
+              "Variable declared but not assigned a value.",
+              "<code>let a;</code><br><code>console.log(a); // undefined</code>",
+              "<code>'undefined'</code>"
+            ],
+            [
+              "<code>null</code>",
+              "Intentional absence of value.",
+              "<code>let b = null;</code><br><code>console.log(b); // null</code>",
+              "<code>'object'</code> (historical bug)"
+            ],
+            [
+              "<code>undeclared</code>",
+              "Variable not declared at all in current scope.",
+              "<code>console.log(c); // ❌ ReferenceError</code>",
+              "—"
+            ]
+          ],
+          "caption": "Quick comparison of undefined, null, and undeclared."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>undefined</strong>\n\n- A variable automatically becomes <code>undefined</code> when it is declared but not initialized.\n- It also appears when accessing missing object properties or parameters that were not passed."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let name;\nconsole.log(name); // undefined\n\nconst user = {};\nconsole.log(user.age); // undefined\n\nfunction greet(message) {\n  console.log(message); // undefined if no argument\n}\ngreet();"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>null</strong>\n\n- <code>null</code> is something you assign deliberately to indicate that a variable should be empty.\n- It’s a developer’s way of saying, “I know this exists, but it currently has no value.”"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let selectedUser = null; // intentionally empty\nif (!selectedUser) {\n  console.log('No user selected');\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>undeclared</strong>\n\n- A variable that has never been declared in the current scope.\n- Trying to read it results in a <code>ReferenceError</code>.\n- Accidentally assigning to it (without <code>let</code>, <code>const</code>, or <code>var</code>) creates a global variable in non-strict mode — which is almost always a mistake."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(x); // ❌ ReferenceError: x is not defined\n\nfunction test() {\n  y = 10; // creates global variable in non-strict mode\n}\ntest();\nconsole.log(window.y); // 10"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusions</strong>\n\n- <code>typeof null</code> returns <code>'object'</code> — this is a long-standing bug in JavaScript.\n- <code>undefined == null</code> is <strong>true</strong> because both mean 'no value'.\n- <code>undefined === null</code> is <strong>false</strong> because they are different types."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(undefined == null);  // true\nconsole.log(undefined === null); // false"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>undefined</strong>: Variable exists but has no value yet — default initial state used by JavaScript.\n- <strong>null</strong>: Deliberate empty value — use when you want to reset or clear a variable explicitly.\n- <strong>undeclared</strong>: Variable not defined in the current scope — avoid entirely; it signals a missing declaration or typo."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you ordered coffee ☕:\n- <strong>undefined</strong> → The cup exists, but it’s still empty because no one poured coffee yet.\n- <strong>null</strong> → You got an empty cup on purpose (you asked for none).\n- <strong>undeclared</strong> → There’s no cup at all — you never placed an order."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-equality-vs-strict-equality",
+    "title": "What is the difference between == and === in JavaScript?",
+    "description": "In JavaScript, `==` is the loose equality operator that compares values after type conversion, while `===` is the strict equality operator that compares both value and type without conversion.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "operators",
+      "comparison",
+      "types",
+      "javascript"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, both `==` and `===` are used for comparing two values, but they behave very differently.\n\n- `==` (loose equality) **converts the operands** to the same type before comparison.\n- `===` (strict equality) **checks both value and type** without converting anything."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Operator",
+            "Compares",
+            "Does Type Conversion?",
+            "Example",
+            "Result"
+          ],
+          "rows": [
+            [
+              "<code>==</code>",
+              "Value only",
+              "Yes",
+              "<code>'5' == 5</code>",
+              "<code>true</code>"
+            ],
+            [
+              "<code>===</code>",
+              "Value and Type",
+              "No",
+              "<code>'5' === 5</code>",
+              "<code>false</code>"
+            ]
+          ],
+          "caption": "Quick comparison between loose (==) and strict (===) equality."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Loose Equality (==)</strong>\n\n- Automatically converts operands to the same type before comparing.\n- Can cause confusing results because of type coercion.\n- Useful only when you explicitly want type conversion."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('5' == 5);      // true (string converted to number)\nconsole.log(0 == false);     // true\nconsole.log(null == undefined); // true\nconsole.log('' == 0);        // true (empty string converts to 0)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Strict Equality (===)</strong>\n\n- Compares **both type and value** exactly as they are.\n- Does not perform type coercion.\n- This is the recommended operator for most cases."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('5' === 5);    // false (string vs number)\nconsole.log(0 === false);   // false (number vs boolean)\nconsole.log(null === undefined); // false (different types)\nconsole.log(5 === 5);       // true"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types.\n- Example: `[] == false` → `true`, but `[] === false` → `false`.\n- Always use `===` unless you specifically need type coercion (which is rare)."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log([] == false);  // true (empty array converts to false)\nconsole.log([] === false); // false"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>==</strong>: Compares values after converting their types. May return unexpected results.\n- <strong>===</strong>: Compares both value and type. Safer and preferred in almost all cases.\n\n👉 Rule of thumb: If you’re not sure — use <code>===</code>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine two people named Alex:\n- Using <strong>==</strong> is like saying “they have the same name” — even if one is human and one is a robot.\n- Using <strong>===</strong> is like saying “same name <em>and</em> same species” — no confusion at all."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-hoisting",
+    "title": "Explain 'hoisting' in JavaScript",
+    "description": "Hoisting is JavaScript’s default behavior of moving declarations to the top of their scope before code execution. In practice, it means you can use certain variables and functions before declaring them — but only partially.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "hoisting",
+      "scope",
+      "variables",
+      "functions"
+    ],
+    "importance": 2,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore your code runs, JavaScript’s engine scans the scope and moves **declarations** (not initializations) to the top. This is called <strong>hoisting</strong>.\n\nIt applies to <code>var</code> variables, function declarations, and class declarations — but with different effects."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Type",
+            "Is Hoisted?",
+            "Initialized Before Use?",
+            "Notes"
+          ],
+          "rows": [
+            [
+              "<code>var</code>",
+              "Yes",
+              "No (initialized as <code>undefined</code>)",
+              "Accessible before declaration, but value is <code>undefined</code>."
+            ],
+            [
+              "<code>let</code> & <code>const</code>",
+              "Yes (declared, but in TDZ)",
+              "No (ReferenceError if accessed early)",
+              "They exist in memory but cannot be accessed before declaration due to the Temporal Dead Zone."
+            ],
+            [
+              "Function declarations",
+              "Yes",
+              "Yes",
+              "Fully hoisted — can be called before defined."
+            ],
+            [
+              "Function expressions / arrow functions",
+              "No (unless assigned to <code>var</code>, then value is <code>undefined</code>)",
+              "No",
+              "They behave like normal variables; not callable before definition."
+            ]
+          ],
+          "caption": "Summary of hoisting behavior for different declarations."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: var Hoisting</strong>\n\nA variable declared with <code>var</code> is hoisted to the top of its scope, but only its declaration — not its assignment."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(a); // undefined\nvar a = 5;\nconsole.log(a); // 5"
+        },
+        {
+          "type": "text",
+          "text": "Under the hood, the code above is interpreted like this:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "var a;\nconsole.log(a); // undefined\na = 5;\nconsole.log(a); // 5"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: let and const Hoisting</strong>\n\nAlthough <code>let</code> and <code>const</code> are hoisted, they live in a special phase called the **Temporal Dead Zone (TDZ)**. You can’t access them until the line where they are declared."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(x); // ❌ ReferenceError\nlet x = 10;\nconsole.log(x); // ✅ 10"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Function Hoisting</strong>\n\nFunction declarations are fully hoisted, meaning you can call them before they appear in the code."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "sayHello(); // ✅ Works fine\n\nfunction sayHello() {\n  console.log('Hello!');\n}"
+        },
+        {
+          "type": "text",
+          "text": "However, function expressions or arrow functions are <strong>not hoisted</strong> the same way:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "greet(); // ❌ TypeError: greet is not a function\n\nvar greet = function() {\n  console.log('Hi there!');\n};"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nHoisting doesn’t move code literally — it’s about how JavaScript’s memory is allocated before execution.\n\nVariables and functions are known to the engine before code runs, which is why you can sometimes access them early."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Declarations</strong> (not assignments) are hoisted.\n- <code>var</code> → hoisted and initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but in TDZ (can’t access early).\n- Function declarations → fully hoisted.\n- Function expressions → treated as variables, not hoisted safely."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of hoisting like setting the stage before a play:\n- <code>var</code> = the actor is on stage but asleep (exists, but undefined).\n- <code>let</code>/<code>const</code> = actor is behind the curtain (exists, but unreachable).\n- Function declaration = actor is fully ready, already rehearsed.\n- Function expression = actor hasn’t arrived yet — script will fail if you try to cue them early."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-higher-order-function",
+    "title": "What is the definition of a higher-order function?",
+    "description": "A higher-order function is a function that either takes another function as an argument, returns a function, or does both. It treats functions as values, enabling powerful patterns like callbacks, closures, and function composition.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "functions",
+      "functional-programming",
+      "callbacks",
+      "closures"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, a <strong>higher-order function</strong> is any function that either:\n- Takes one or more functions as arguments, <em>or</em>\n- Returns another function as its result.\n\nIn other words, it treats functions as values — passing them around just like variables."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Accepts functions as arguments",
+              "A function receives another function and calls it inside.",
+              "<code>setTimeout(() => console.log('Hi!'), 1000)</code>"
+            ],
+            [
+              "Returns a function",
+              "A function produces another function when called.",
+              "<code>function multiplier(x) { return y => x * y }</code>"
+            ]
+          ],
+          "caption": "The two main ways a function can be considered higher-order."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example 1: Taking a Function as an Argument</strong>\n\nFunctions like <code>map</code>, <code>filter</code>, and <code>forEach</code> are classic examples — they take another function and apply it to elements of an array."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const numbers = [1, 2, 3, 4];\nconst doubled = numbers.map(n => n * 2);\nconsole.log(doubled); // [2, 4, 6, 8]"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example 2: Returning a Function</strong>\n\nA function can return another function that 'remembers' the outer scope — this is often used in currying or closures."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function greet(message) {\n  return function(name) {\n    console.log(`${message}, ${name}!`);\n  };\n}\n\nconst sayHello = greet('Hello');\nsayHello('Alice'); // Hello, Alice!"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Why It Matters</strong>\n\nHigher-order functions are the foundation of modern JavaScript patterns like:\n- **Callbacks** (e.g., event handlers)\n- **Promises and async/await**\n- **Functional utilities** like <code>map</code>, <code>reduce</code>, <code>filter</code>\n- **Middleware and decorators** in frameworks like Express or Redux."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nA higher-order function:\n- Takes one or more functions as parameters **or** returns a function.\n- Enables reusability and abstraction in code.\n- Is a key building block of functional programming in JavaScript."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a higher-order function like a chef that doesn’t cook food directly — it takes other chefs (functions) and tells them <em>how</em> to cook. The chef can even create a new chef recipe on the spot and hand it back to you!"
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-event-bubbling-capturing",
+    "title": "What is event bubbling and capturing in JavaScript?",
+    "description": "Event bubbling and capturing define the order in which events propagate through the DOM. Bubbling moves upward from the target element to its ancestors, while capturing moves downward from the root to the target.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "dom",
+      "events",
+      "bubbling",
+      "capturing",
+      "event-propagation"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nWhen an event (like a click) occurs in the DOM, it doesn’t just happen on one element. Instead, it travels through a **three-phase path**:\n\n1. **Capturing phase** – The event travels from the root of the document down to the target element.\n2. **Target phase** – The event occurs on the exact target element.\n3. **Bubbling phase** – The event bubbles up from the target element back to the root."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Phase",
+            "Direction",
+            "Triggered On",
+            "Listener Option"
+          ],
+          "rows": [
+            [
+              "Capturing",
+              "Top → Down",
+              "From document to target",
+              "<code>addEventListener('click', handler, true)</code>"
+            ],
+            [
+              "Target",
+              "—",
+              "Actual element clicked",
+              "Event fires directly on target"
+            ],
+            [
+              "Bubbling",
+              "Bottom → Up",
+              "From target to document",
+              "<code>addEventListener('click', handler)</code> (default)"
+            ]
+          ],
+          "caption": "The three phases of DOM event propagation."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Bubbling (Default Behavior)</strong>\n\nWhen you click on a nested element, the event first triggers on the innermost element and then moves upward to its ancestors."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<div id='parent'>\n  <button id='child'>Click Me</button>\n</div>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "document.getElementById('parent').addEventListener('click', () => {\n  console.log('Parent clicked');\n});\n\ndocument.getElementById('child').addEventListener('click', () => {\n  console.log('Child clicked');\n});"
+        },
+        {
+          "type": "text",
+          "text": "Output when you click the button:\n<pre class='md-pre'><code>Child clicked\nParent clicked</code></pre>\n\nThe event starts at the <code>button</code> (target) and bubbles up to the <code>div</code>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Capturing Phase</strong>\n\nIf you set the third parameter of <code>addEventListener</code> to <code>true</code>, the handler will fire during the capturing phase instead of bubbling."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "document.getElementById('parent').addEventListener('click', () => {\n  console.log('Parent capturing');\n}, true);\n\ndocument.getElementById('child').addEventListener('click', () => {\n  console.log('Child clicked');\n});"
+        },
+        {
+          "type": "text",
+          "text": "Output when you click the button:\n<pre class='md-pre'><code>Parent capturing\nChild clicked</code></pre>\n\nNow the parent reacts first because the event is captured while traveling down the DOM tree."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping Event Propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> → stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> → also prevents other handlers on the same element from firing."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "child.addEventListener('click', e => {\n  e.stopPropagation();\n  console.log('Only child handled this.');\n});"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The event path has three phases: capturing → target → bubbling.\n- Bubbling is the **default** in JavaScript.\n- You can listen in the capturing phase by passing <code>true</code> as the third argument.\n- <code>stopPropagation()</code> prevents the event from continuing.\n\nThis knowledge is crucial for efficient event handling and **event delegation** in complex UIs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of event flow like a water drop hitting nested cups:\n- **Capturing:** The water flows from the biggest cup down to the smallest one.\n- **Target:** The drop hits the smallest cup (the clicked element).\n- **Bubbling:** The water splashes back up through the larger cups."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-call-apply-bind",
+    "title": "What is the difference between call(), apply(), and bind() in JavaScript?",
+    "description": "All three methods are used to control the value of `this` when calling a function. The difference is how they pass arguments and when the function is executed.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "functions",
+      "this",
+      "context",
+      "call-apply-bind"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, functions are special objects — they have built-in methods like <code>call()</code>, <code>apply()</code>, and <code>bind()</code> that allow you to explicitly set what <code>this</code> refers to when a function runs.\n\nThey all help you reuse a function with different objects as its <code>this</code> context."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Method",
+            "When It's Executed",
+            "How Arguments Are Passed",
+            "Return Value"
+          ],
+          "rows": [
+            [
+              "<code>call()</code>",
+              "Immediately",
+              "As a comma-separated list",
+              "Return value of the function"
+            ],
+            [
+              "<code>apply()</code>",
+              "Immediately",
+              "As an array (or array-like)",
+              "Return value of the function"
+            ],
+            [
+              "<code>bind()</code>",
+              "Later (creates a new function)",
+              "As a comma-separated list",
+              "New function with bound context"
+            ]
+          ],
+          "caption": "Comparison between call(), apply(), and bind()."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example Setup</strong>\n\nLet's start with a simple function that uses <code>this</code>:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const person = { name: 'Alice' };\n\nfunction greet(greeting, punctuation) {\n  console.log(`${greeting}, ${this.name}${punctuation}`);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>1. call()</strong>\n\n<code>call()</code> invokes the function immediately and passes arguments one by one."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "greet.call(person, 'Hello', '!'); // Hello, Alice!"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>2. apply()</strong>\n\n<code>apply()</code> is just like <code>call()</code>, but it takes arguments as an array."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "greet.apply(person, ['Hi', '!!']); // Hi, Alice!!"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>3. bind()</strong>\n\n<code>bind()</code> does not run the function immediately. Instead, it returns a new function with a permanently bound <code>this</code> value."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const greetAlice = greet.bind(person, 'Hey');\ngreetAlice('!!!'); // Hey, Alice!!!"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nA frequent confusion is expecting <code>bind()</code> to call the function immediately. Remember: it only returns a new function — you have to call it manually later."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const fn = greet.bind(person, 'Hello');\nfn('!'); // Works\n// greet.bind(person, 'Hello')('!') also works"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- **call()** → Calls immediately, arguments as a list.\n- **apply()** → Calls immediately, arguments as an array.\n- **bind()** → Returns a new function (call it later).\n\nAll three methods let you control what <code>this</code> refers to."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like renting a car:\n- <strong>call()</strong> → You rent and drive it right away.\n- <strong>apply()</strong> → You rent and drive it right away, but hand over your passengers list (array).\n- <strong>bind()</strong> → You book it for later — the car is reserved and ready to use when you need it."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-foreach-vs-map",
+    "title": "Can you describe the main difference between Array.forEach() and Array.map() methods and why you would pick one versus the other?",
+    "description": "Both forEach() and map() loop through array elements, but map() creates and returns a new array, while forEach() simply executes a function for each element without returning anything.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "arrays",
+      "loops",
+      "functional-programming",
+      "array-methods"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>forEach()</code> and <code>map()</code> are used to iterate over arrays, but they serve **different purposes**:\n\n- <strong>forEach()</strong> is for performing side effects (like logging or updating variables). It doesn’t return anything useful.\n- <strong>map()</strong> transforms data — it creates a **new array** based on what you return in each iteration."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "<code>forEach()</code>",
+            "<code>map()</code>"
+          ],
+          "rows": [
+            [
+              "Return value",
+              "<code>undefined</code>",
+              "New array with transformed values"
+            ],
+            [
+              "Purpose",
+              "Execute side effects (e.g., log, mutate external state)",
+              "Transform data into a new array"
+            ],
+            [
+              "Mutates original array?",
+              "No (but can if you explicitly modify it)",
+              "No"
+            ],
+            [
+              "Chaining",
+              "No — returns undefined",
+              "Yes — returns a new array"
+            ],
+            [
+              "Typical use case",
+              "Logging, counters, DOM manipulation",
+              "Mapping API results, converting data"
+            ]
+          ],
+          "caption": "Differences between forEach() and map()."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: forEach()</strong>\n\nUsed when you want to **do something** for each element, not necessarily produce a new array."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const nums = [1, 2, 3];\nnums.forEach(n => console.log(n * 2));\n\n// Output:\n// 2\n// 4\n// 6\n// (forEach returns undefined)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: map()</strong>\n\nUsed when you want to **transform** each element and keep the results in a new array."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const nums = [1, 2, 3];\nconst doubled = nums.map(n => n * 2);\n\nconsole.log(doubled); // [2, 4, 6]"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>map()</code> just for its side effects. Since it expects you to return something, doing so wastes performance and memory.\n\nIf you’re not using the returned array, you probably meant <code>forEach()</code>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// ❌ Wrong: using map() for side effects only\nnumbers.map(n => console.log(n)); // just prints, no new array needed\n\n// ✅ Correct:\nnumbers.forEach(n => console.log(n));"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Use forEach()</strong> → when you want to iterate and perform an action (no return).\n- <strong>Use map()</strong> → when you want to create a new array by transforming data.\n\nIf you need chaining or data transformation, always prefer <code>map()</code>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine sorting mail:\n- <strong>forEach()</strong> → you open each envelope and read it.\n- <strong>map()</strong> → you open each envelope, copy the letter, and build a new stack of letters — the transformed result."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-cookie-sessionstorage-localstorage",
+    "title": "Describe the difference between a cookie, sessionStorage and localStorage in browsers",
+    "description": "Cookies, sessionStorage, and localStorage all store data in the browser, but they differ in size limits, expiration, and how they are sent to the server.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "storage",
+      "cookies",
+      "localstorage",
+      "sessionstorage",
+      "web-apis"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBrowsers provide several ways to store data on the client side. The three most common are:\n- <strong>Cookies</strong> – small pieces of data sent to and from the server.\n- <strong>localStorage</strong> – stores data persistently in the browser.\n- <strong>sessionStorage</strong> – stores data temporarily for one browser tab session."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Cookies",
+            "localStorage",
+            "sessionStorage"
+          ],
+          "rows": [
+            [
+              "Lifetime",
+              "Can have an expiration date or last until manually deleted",
+              "Persists indefinitely until cleared",
+              "Cleared when the tab or browser is closed"
+            ],
+            [
+              "Storage limit",
+              "~4KB",
+              "~5–10MB",
+              "~5–10MB"
+            ],
+            [
+              "Accessible from JavaScript?",
+              "Yes (unless flagged HttpOnly)",
+              "Yes",
+              "Yes"
+            ],
+            [
+              "Automatically sent to server?",
+              "Yes — sent with every HTTP request to matching domain",
+              "No",
+              "No"
+            ],
+            [
+              "Primary use",
+              "Authentication, server sessions, user tracking",
+              "Client-side caching, preferences, offline data",
+              "Temporary state per tab (e.g., wizard steps)"
+            ],
+            [
+              "Shared between tabs?",
+              "Yes (same domain)",
+              "Yes (same domain)",
+              "No — per tab only"
+            ]
+          ],
+          "caption": "Comparison between cookies, localStorage, and sessionStorage."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Cookies</strong>\n\n- Can be read by both the browser and the server.\n- Often used for authentication tokens or session IDs.\n- Sent automatically with requests to matching domains.\n\n```javascript\ndocument.cookie = 'theme=dark; expires=Fri, 31 Dec 2025 23:59:59 GMT; path=/';\n```"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>localStorage</strong>\n\n- Stores data **persistently** — it remains even after closing the browser.\n- Only accessible through JavaScript (never sent to the server).\n\n```javascript\nlocalStorage.setItem('theme', 'dark');\nconsole.log(localStorage.getItem('theme')); // 'dark'\n```"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>sessionStorage</strong>\n\n- Works just like localStorage but is **limited to one tab**.\n- The data disappears when the tab is closed.\n\n```javascript\nsessionStorage.setItem('tab', 'checkout');\nconsole.log(sessionStorage.getItem('tab')); // 'checkout'\n```"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Security Notes</strong>\n\n- Never store sensitive data (like passwords or tokens) in localStorage or sessionStorage — they are easily accessible by JavaScript.\n- For secure cookies, use the <code>HttpOnly</code> and <code>Secure</code> flags so they can’t be accessed via JavaScript and are only sent over HTTPS."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- **Cookies:** Small, server-aware, and often used for authentication.\n- **localStorage:** Large, persistent, and purely client-side.\n- **sessionStorage:** Temporary, tab-specific storage.\n\nChoose based on how long the data should live and whether the server needs to read it."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of them like hotel storage options:\n- **Cookies:** Front desk storage — accessible by staff (server) and you (browser).\n- **localStorage:** Your personal locker — data stays even if you leave and come back later.\n- **sessionStorage:** Your room table — data disappears when you check out (close the tab)."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-prototypal-inheritance",
+    "title": "Explain how prototypal inheritance works in JavaScript",
+    "description": "Prototypal inheritance means that objects in JavaScript can inherit properties and methods from other objects through a prototype chain.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "prototypes",
+      "inheritance",
+      "oop",
+      "objects"
+    ],
+    "importance": 5,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, objects don’t inherit from classes (like in many other languages). Instead, they inherit directly from **other objects**. This is called <strong>prototypal inheritance</strong>.\n\nEvery object has an internal link to another object called its <strong>prototype</strong>. If you try to access a property that doesn’t exist on the object itself, JavaScript looks for it on the prototype — and keeps going up the <strong>prototype chain</strong> until it finds it or reaches <code>null</code>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "Description",
+            "Example / Notes"
+          ],
+          "rows": [
+            [
+              "<strong>Prototype</strong>",
+              "The object from which another object inherits properties.",
+              "<code>Object.getPrototypeOf(obj)</code> returns it."
+            ],
+            [
+              "<strong>Prototype Chain</strong>",
+              "A chain of linked objects that JS traverses when looking up properties.",
+              "Ends when reaching <code>Object.prototype</code> → <code>null</code>."
+            ],
+            [
+              "<strong>__proto__</strong>",
+              "A reference to an object's prototype (legacy but still widely used).",
+              "Equivalent to <code>Object.getPrototypeOf(obj)</code>."
+            ],
+            [
+              "<strong>constructor.prototype</strong>",
+              "Defines the prototype for all objects created by a constructor function.",
+              "Used when creating objects via <code>new</code>."
+            ]
+          ],
+          "caption": "Key concepts in JavaScript's prototypal inheritance model."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: Simple Inheritance</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const animal = {\n  eats: true,\n  walk() {\n    console.log('Animal walks');\n  }\n};\n\nconst dog = Object.create(animal); // dog inherits from animal\n\ndog.barks = true;\n\ndog.walk(); // 'Animal walks' (inherited)\nconsole.log(dog.eats); // true"
+        },
+        {
+          "type": "text",
+          "text": "Here’s what happens when you call <code>dog.walk()</code>:\n1. JS looks for <code>walk</code> on <code>dog</code>.\n2. It doesn’t find it, so it looks at <code>dog.__proto__</code> (which points to <code>animal</code>).\n3. Finds <code>walk</code> there and executes it."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Using constructor functions</strong>\n\nBefore ES6 classes, developers often used constructor functions to define prototypes:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function Animal(name) {\n  this.name = name;\n}\n\nAnimal.prototype.speak = function() {\n  console.log(`${this.name} makes a sound.`);\n};\n\nconst cat = new Animal('Milo');\ncat.speak(); // Milo makes a sound."
+        },
+        {
+          "type": "text",
+          "text": "All objects created using <code>new Animal()</code> share the same <code>speak()</code> method via <code>Animal.prototype</code> — not a copy for each instance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>ES6 class syntax</strong>\n\nES6 <code>class</code> syntax is just syntactic sugar over the same prototypal mechanism."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n  speak() {\n    console.log(`${this.name} makes a sound.`);\n  }\n}\n\nclass Dog extends Animal {\n  speak() {\n    console.log(`${this.name} barks.`);\n  }\n}\n\nconst rex = new Dog('Rex');\nrex.speak(); // Rex barks"
+        },
+        {
+          "type": "text",
+          "text": "Behind the scenes, <code>Dog</code> inherits from <code>Animal</code> by setting <code>Dog.prototype.__proto__ = Animal.prototype</code>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nPrototypal inheritance doesn’t copy properties — it links objects. If you change a method on the prototype, all objects linked to it see the change immediately."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "animal.walk = function() { console.log('Animal strolls'); };\n\ndog.walk(); // 'Animal strolls' (updated for all inheriting objects)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Every object in JS has a prototype (except <code>Object.prototype</code>).\n- Property lookups follow the prototype chain.\n- Prototypal inheritance <strong>links</strong> objects — it doesn’t clone them.\n- Modern <code>class</code> syntax still uses prototypes under the hood."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a family tree:\n- Each child (object) can use traits from their parent (prototype).\n- If the child doesn’t have a skill, it checks if the parent does.\n- If not, it goes further up the chain — until there’s no ancestor left."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-data-types",
+    "title": "What are the various data types in JavaScript?",
+    "description": "JavaScript has 8 main data types — 7 primitive types and 1 non-primitive (object) type.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "data-types",
+      "basics",
+      "fundamentals",
+      "primitives",
+      "objects"
+    ],
+    "importance": 2,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\\n\\nJavaScript values fall into two main categories:\\n- **Primitive types** — stored directly, immutable, and compared by value.\\n- **Non-primitive type** — objects, which are mutable and compared by reference.\\n\\nThere are **8 total data types** in JavaScript (as of ES2020)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Category",
+            "Data Type",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Primitive",
+              "<strong>Number</strong>",
+              "Represents both integers and floating-point numbers.",
+              "<code>42</code>, <code>3.14</code>, <code>NaN</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>String</strong>",
+              "Represents text data enclosed in quotes.",
+              "<code>'Hello'</code>, <code>\\\"World\\\"</code>, <code>`Hi`</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Boolean</strong>",
+              "Represents true/false values.",
+              "<code>true</code>, <code>false</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Undefined</strong>",
+              "A variable that has been declared but not assigned a value.",
+              "<code>let x; console.log(x); // undefined</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Null</strong>",
+              "An intentional empty value (represents 'nothing').",
+              "<code>let y = null;</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>Symbol</strong>",
+              "A unique and immutable value often used as object keys.",
+              "<code>const id = Symbol('id');</code>"
+            ],
+            [
+              "Primitive",
+              "<strong>BigInt</strong>",
+              "Used for integers larger than <code>2^53 - 1</code>.",
+              "<code>12345678901234567890n</code>"
+            ],
+            [
+              "Non-Primitive",
+              "<strong>Object</strong>",
+              "Used to store collections of data and more complex entities.",
+              "<code>{ name: 'Alice', age: 25 }</code>"
+            ]
+          ],
+          "caption": "JavaScript data types at a glance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can’t be changed directly — any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // ❌ has no effect\\nconsole.log(str); // 'Hi'\\n```"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Objects Are Mutable</strong>\\n\\nObjects, arrays, and functions can be modified because they are stored by reference."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const user = { name: 'Alice' };\\nconst ref = user;\\nref.name = 'Bob';\\nconsole.log(user.name); // 'Bob' (same reference)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> — this is a well-known JavaScript quirk kept for backward compatibility."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(typeof null); // 'object'"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- **Primitive types (7):** Number, String, Boolean, Undefined, Null, Symbol, BigInt.\n- **Non-primitive type (1):** Object.\n\nEverything else in JavaScript (arrays, functions, dates, regex, etc.) is an object."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of primitives as single paper notes — once written, they can’t be changed. Objects are like folders — you can add, remove, or edit their contents anytime."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-nan-property",
+    "title": "What is the NaN property in JavaScript?",
+    "description": "NaN stands for 'Not-a-Number'. It represents a value that is not a valid number result in JavaScript.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "nan",
+      "number",
+      "global-object",
+      "isnan",
+      "type-coercion"
+    ],
+    "importance": 2,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<code>NaN</code> stands for <strong>Not-a-Number</strong>. It is a special numeric value that represents the result of an invalid mathematical operation — something that cannot produce a meaningful number."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log(0 / 0);         // NaN\nconsole.log(parseInt('Hi'));  // NaN\nconsole.log(Math.sqrt(-1));   // NaN"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Property",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<strong>Type</strong>",
+              "The type of <code>NaN</code> is actually <code>number</code>.",
+              "<code>typeof NaN // 'number'</code>"
+            ],
+            [
+              "<strong>Equality</strong>",
+              "<code>NaN</code> is the only value in JavaScript that is <strong>not equal to itself</strong>.",
+              "<code>NaN === NaN // false</code>"
+            ],
+            [
+              "<strong>Check</strong>",
+              "Use <code>Number.isNaN()</code> to check if a value is truly NaN.",
+              "<code>Number.isNaN(NaN) // true</code>"
+            ]
+          ],
+          "caption": "Key characteristics of NaN in JavaScript."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong>\n\nThe global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn’t perform type coercion."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "isNaN('Hello');         // true ❌ (string coerced)\nNumber.isNaN('Hello');   // false ✅"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>NaN</code> represents 'Not-a-Number' but its type is actually <code>number</code>.\n- It results from invalid numeric operations.\n- It’s the only value in JS that is not equal to itself.\n- Use <code>Number.isNaN()</code> instead of <code>isNaN()</code> to check safely."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>NaN</code> like a 'broken calculator' output — the operation ran, but the result doesn’t make mathematical sense, so JavaScript gives you NaN instead of crashing."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-currying",
+    "title": "What is currying in JavaScript?",
+    "description": "Currying is a functional programming technique in JavaScript where a function is transformed into a sequence of functions, each taking a single argument.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "currying",
+      "functional-programming",
+      "closure",
+      "functions"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nCurrying transforms a function that takes multiple arguments into a chain of functions, each taking one argument at a time. It allows partial application — creating new functions by pre-filling some arguments."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Normal function\nfunction add(a, b, c) {\n  return a + b + c;\n}\n\n// Curried version\nfunction curriedAdd(a) {\n  return function(b) {\n    return function(c) {\n      return a + b + c;\n    };\n  };\n}\n\nconsole.log(curriedAdd(2)(3)(4)); // 9"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "Explanation",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Partial Application",
+              "You can call a curried function one step at a time and reuse intermediate results.",
+              "<code>const add5 = curriedAdd(5);<br>add5(2)(3); // 10</code>"
+            ],
+            [
+              "Function Composition",
+              "Currying makes it easier to build reusable pipelines of small functions.",
+              "<code>const multiply = a => b => a * b;<br>const double = multiply(2);<br>double(10); // 20</code>"
+            ],
+            [
+              "Closures in Action",
+              "Each inner function 'remembers' the outer function’s arguments through closure.",
+              "<code>curriedAdd(1)(2)(3); // Works because of lexical scope</code>"
+            ]
+          ],
+          "caption": "Key benefits and characteristics of currying."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Modern Short Syntax</strong>\n\nYou can write curried functions using arrow functions for brevity:\n\n```javascript\nconst add = a => b => c => a + b + c;\n\nconsole.log(add(1)(2)(3)); // 6\n```"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Currying transforms multi-argument functions into nested single-argument ones.\n- Enables partial application and functional composition.\n- Helps create reusable, modular logic in a clean, declarative way.\n- Commonly used in frameworks like React, Redux, and functional libraries like Lodash or Ramda."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of currying like a vending machine: instead of inserting all coins at once, you insert them one by one — and after the last coin, you finally get your snack."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-callbacks",
+    "title": "What are callbacks in JavaScript?",
+    "description": "A callback is a function passed as an argument to another function to be executed later, often after a task is completed.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "callback",
+      "functions",
+      "asynchronous",
+      "event-loop",
+      "higher-order-functions"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "uber"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>callback</strong> is simply a function passed into another function as an argument, to be <em>called back</em> later when a certain task finishes. It’s a fundamental pattern in JavaScript, especially in asynchronous programming."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: synchronous callback\nfunction greet(name) {\n  console.log('Hello, ' + name);\n}\n\nfunction processUserInput(callback) {\n  const name = 'Alice';\n  callback(name);\n}\n\nprocessUserInput(greet); // Hello, Alice"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Callbacks in Asynchronous Code</strong>\n\nCallbacks are also used to handle tasks that take time (like network requests or file loading), so the program can keep running while waiting for them to finish."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('Start');\n\nsetTimeout(function() {\n  console.log('This runs later');\n}, 1000);\n\nconsole.log('End');\n// Output: Start → End → This runs later"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "Explanation",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Synchronous Callback",
+              "Executed immediately during the function call.",
+              "<code>[1,2,3].forEach(num => console.log(num));</code>"
+            ],
+            [
+              "Asynchronous Callback",
+              "Executed later, after a delay or async operation finishes.",
+              "<code>fs.readFile('data.txt', callback);</code>"
+            ],
+            [
+              "Callback Hell",
+              "When many callbacks are nested inside each other, making code hard to read.",
+              "<code>getData(() => getMore(() => getEvenMore()));</code>"
+            ]
+          ],
+          "caption": "Common callback types and use cases."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A callback is a function passed as an argument to another function.\n- Allows asynchronous and event-driven behavior.\n- Can cause 'callback hell' when deeply nested — use Promises or async/await instead.\n- Core part of how JavaScript handles non-blocking operations."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like leaving your phone number with someone: you don’t wait on the line — they’ll call you <em>back</em> when they’re ready."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-arrow-functions",
+    "title": "What are arrow functions in JavaScript?",
+    "description": "Arrow functions are a shorter syntax for writing functions in JavaScript, introduced in ES6. They don’t have their own `this`, `arguments`, or `prototype`.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "arrow-functions",
+      "es6",
+      "this-binding",
+      "functions",
+      "syntax"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nArrow functions provide a compact syntax for writing functions. They are especially useful for callbacks and one-liners. However, unlike regular functions, they do not have their own <code>this</code> or <code>arguments</code> binding."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Traditional function\nfunction add(a, b) {\n  return a + b;\n}\n\n// Arrow function\nconst addArrow = (a, b) => a + b;\n\nconsole.log(addArrow(2, 3)); // 5"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Shorter Syntax",
+              "No need for the <code>function</code> keyword or curly braces for one-liners.",
+              "<code>const double = x => x * 2;</code>"
+            ],
+            [
+              "Implicit Return",
+              "If the body has a single expression, its value is returned automatically.",
+              "<code>const add = (a, b) => a + b;</code>"
+            ],
+            [
+              "Lexical <code>this</code>",
+              "Arrow functions don’t create their own <code>this</code> — they inherit it from the surrounding scope.",
+              "<code>this</code> inside arrow → same as outside"
+            ],
+            [
+              "No <code>arguments</code>",
+              "They don’t have an <code>arguments</code> object — use rest parameters instead.",
+              "<code>const fn = (...args) => console.log(args);</code>"
+            ]
+          ],
+          "caption": "Key differences between arrow functions and traditional functions."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Arrow functions and `this`</strong>\n\nIn regular functions, <code>this</code> depends on how the function is called. But in arrow functions, <code>this</code> is <strong>lexically bound</strong> — it refers to the value of <code>this</code> in the outer scope."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function Counter() {\n  this.count = 0;\n  setInterval(() => {\n    this.count++;\n    console.log(this.count);\n  }, 1000);\n}\n\nnew Counter(); // Works ✅ — 'this' refers to the Counter instance"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Be careful:</strong>\n\n- You can’t use arrow functions as constructors (<code>new</code> keyword will throw an error).\n- They also don’t have their own <code>prototype</code>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Shorter syntax for cleaner code.\n- Lexically binds <code>this</code> and doesn’t create its own <code>arguments</code>.\n- Great for callbacks, array methods, and event handlers.\n- Avoid them when you need your own <code>this</code> or when defining class methods."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of arrow functions as assistants — they don’t have their own <code>this</code>; they simply use their boss’s <code>this</code> from the outer scope."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-object-destructuring",
+    "title": "What is Object Destructuring in JavaScript?",
+    "description": "Object destructuring is a concise way to extract values from objects (or arrays) and assign them to variables using a syntax that mirrors the object’s structure. It was introduced in ES6 to make code cleaner and more readable.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "easy",
+    "tags": [
+      "object-destructuring",
+      "es6",
+      "syntax",
+      "variables",
+      "objects"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nObject destructuring lets you extract specific properties from an object and assign them to variables in a single line. Instead of accessing each property individually, you can unpack multiple values at once using a clear and declarative syntax."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Without destructuring\nconst user = { name: 'Alice', age: 25, city: 'Paris' };\nconst name = user.name;\nconst age = user.age;\n\n// With destructuring\nconst { name, age } = user;\n\nconsole.log(name); // 'Alice'\nconsole.log(age);  // 25"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How it works</strong>\n\nWhen you destructure an object, JavaScript matches variable names to property keys. If a key doesn’t exist in the object, its variable will be <code>undefined</code>.\n\nYou can also rename variables, set default values, and extract nested properties — all within the same expression."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Basic Destructuring",
+              "Extracts properties directly into variables.",
+              "<code>const { name, age } = user;</code>"
+            ],
+            [
+              "Renaming Variables",
+              "You can rename a property while destructuring.",
+              "<code>const { name: userName } = user;</code>"
+            ],
+            [
+              "Default Values",
+              "Provide defaults for missing properties.",
+              "<code>const { country = 'Unknown' } = user;</code>"
+            ],
+            [
+              "Nested Destructuring",
+              "Extract properties from nested objects easily.",
+              "<code>const { address: { city } } = person;</code>"
+            ],
+            [
+              "Combining with Rest",
+              "Capture remaining properties using the rest operator.",
+              "<code>const { name, ...details } = user;</code>"
+            ]
+          ],
+          "caption": "Common patterns and extensions of object destructuring."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Nested and renamed destructuring example\nconst person = {\n  name: 'Bob',\n  location: { city: 'Berlin', country: 'Germany' },\n  age: 30\n};\n\nconst { name: fullName, location: { city, country } } = person;\n\nconsole.log(fullName); // Bob\nconsole.log(city);     // Berlin"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>Destructuring in Function Parameters</strong>\n\nYou can destructure objects directly inside function parameters. This makes your functions cleaner and self-documenting, especially when handling configuration objects or API responses."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function displayUser({ name, age, city }) {\n  console.log(`${name} is ${age} years old and lives in ${city}.`);\n}\n\ndisplayUser({ name: 'Alice', age: 25, city: 'Paris' });\n// Output: Alice is 25 years old and lives in Paris."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common Pitfalls</strong>\n\n- Variable names must match property names unless you rename them explicitly.\n- If you try to destructure <code>null</code> or <code>undefined</code>, it throws an error because they aren’t objects.\n- Always ensure the object exists before destructuring — or use default values to avoid runtime errors."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Safe destructuring with default empty object\nconst data = null;\nconst { title = 'Untitled' } = data || {};\nconsole.log(title); // 'Untitled'"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Object destructuring allows you to unpack values from objects easily.\n- Supports renaming, default values, and nested extraction.\n- Improves code readability and reduces repetition.\n- Commonly used in React props, API data handling, and modern JS functions."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of destructuring like unpacking a suitcase: instead of taking each item one by one, you open it once and pull out exactly what you need — all in one move."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-design-patterns",
+    "title": "What do you mean by JavaScript Design Patterns?",
+    "description": "JavaScript design patterns are reusable solutions to common programming problems. They provide structured approaches for organizing code, improving maintainability, scalability, and readability in both small and large applications.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "design-patterns",
+      "architecture",
+      "object-oriented",
+      "functional-programming",
+      "best-practices"
+    ],
+    "importance": 2,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nDesign patterns in JavaScript are tried-and-tested templates that solve recurring software design problems. They represent best practices refined by developers over years of experience and can be adapted to specific use cases. Patterns are not pieces of code you copy and paste, but concepts and structures that guide how you architect your applications."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Why Design Patterns Matter</strong>\n\nJavaScript applications, especially large ones, often become complex with many interdependent components. Design patterns help structure this complexity by:\n- Promoting **code reusability** and **modularity**.\n- Making code easier to maintain, test, and extend.\n- Encouraging **clear communication** among developers using shared vocabulary.\n- Preventing reinventing the wheel by reusing established best practices."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Category",
+            "Description",
+            "Examples"
+          ],
+          "rows": [
+            [
+              "<strong>Creational Patterns</strong>",
+              "Deal with object creation mechanisms, trying to create objects in a way that suits the situation.",
+              "<code>Singleton</code>, <code>Factory</code>, <code>Builder</code>, <code>Prototype</code>"
+            ],
+            [
+              "<strong>Structural Patterns</strong>",
+              "Explain how to compose classes or objects into larger structures while keeping flexibility.",
+              "<code>Module</code>, <code>Decorator</code>, <code>Adapter</code>, <code>Facade</code>"
+            ],
+            [
+              "<strong>Behavioral Patterns</strong>",
+              "Focus on how objects communicate and cooperate with each other.",
+              "<code>Observer</code>, <code>Strategy</code>, <code>Command</code>, <code>Mediator</code>"
+            ]
+          ],
+          "caption": "The three main categories of JavaScript design patterns."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Common JavaScript Design Patterns</strong>\n\nLet’s look at a few widely used patterns in JavaScript development:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 1. Module Pattern — encapsulation using closures\nconst CounterModule = (function() {\n  let count = 0;\n  return {\n    increment() { count++; console.log(count); },\n    reset() { count = 0; console.log('Reset!'); }\n  };\n})();\n\nCounterModule.increment(); // 1\nCounterModule.increment(); // 2\nCounterModule.reset(); // Reset!"
+        },
+        {
+          "type": "text",
+          "text": "The **Module Pattern** helps keep variables private and exposes only the functionality you want, preventing global namespace pollution — one of the most useful patterns in JavaScript before ES6 modules."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 2. Singleton Pattern — one instance shared across application\nclass AppSettings {\n  constructor() {\n    if (AppSettings.instance) return AppSettings.instance;\n    this.theme = 'dark';\n    AppSettings.instance = this;\n  }\n}\n\nconst a = new AppSettings();\nconst b = new AppSettings();\nconsole.log(a === b); // true"
+        },
+        {
+          "type": "text",
+          "text": "The **Singleton Pattern** ensures that only one instance of a class exists throughout the app — commonly used for global state or configuration management."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 3. Observer Pattern — event-based communication\nclass Observable {\n  constructor() { this.subscribers = []; }\n  subscribe(fn) { this.subscribers.push(fn); }\n  notify(data) { this.subscribers.forEach(fn => fn(data)); }\n}\n\nconst newsFeed = new Observable();\nnewsFeed.subscribe(news => console.log('Breaking:', news));\nnewsFeed.notify('New JavaScript version released!');"
+        },
+        {
+          "type": "text",
+          "text": "The **Observer Pattern** enables one-to-many communication — when one object’s state changes, all its dependents are automatically notified. It forms the foundation of event systems and frameworks like React’s state updates and RxJS observables."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>Design Patterns and Modern Frameworks</strong>\n\nModern JavaScript libraries and frameworks implement many design patterns internally:\n- **React** uses the Observer pattern for state updates and the Composite pattern for UI trees.\n- **Angular** leverages Dependency Injection (a creational pattern) and the Module pattern.\n- **Vue** uses a reactive Observer pattern for efficient DOM reactivity.\n- **Redux** is a combination of Command, Observer, and Singleton concepts.\n\nUnderstanding these patterns helps developers reason about how frameworks work under the hood and write cleaner, more scalable code."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>When to Use Design Patterns</strong>\n\nNot every problem needs a design pattern — overusing them can lead to unnecessary complexity. You should apply them when:\n- The same design problem occurs multiple times.\n- You want to improve code readability and reduce coupling.\n- Your codebase is growing and needs a consistent architecture.\n- Teams need a shared structure and predictable patterns."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Design patterns are reusable solutions to common programming problems.\n- They improve scalability, maintainability, and readability.\n- JavaScript uses patterns like Module, Singleton, Observer, and Factory widely.\n- Frameworks like React, Angular, and Vue are built upon these principles.\n- Apply them wisely — patterns should simplify, not complicate, your code."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of design patterns as blueprints for building software. You don’t copy the blueprint exactly — you adapt it to your project, knowing that others have successfully used that same design to build reliable and maintainable structures before."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-deferred-scripts",
+    "title": "What is the role of deferred scripts in JavaScript?",
+    "description": "Deferred scripts are JavaScript files that load in parallel with HTML parsing but execute only after the document has been fully parsed. They help improve page load performance by preventing render-blocking behavior.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "script-loading",
+      "performance",
+      "html",
+      "defer",
+      "async"
+    ],
+    "importance": 1,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nNormally, when the browser encounters a <code>&lt;script&gt;</code> tag during HTML parsing, it stops rendering, fetches the script, and executes it immediately before continuing. This behavior blocks the page rendering process and slows down the perceived load time.\n\nDeferred scripts solve this problem by allowing the browser to continue parsing HTML while downloading the script in the background — executing it only after the entire document is parsed."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Regular script (blocks rendering) -->\n<script src=\"main.js\"></script>\n\n<!-- Deferred script (non-blocking) -->\n<script src=\"main.js\" defer></script>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Attribute",
+            "When It Executes",
+            "HTML Parsing",
+            "Use Case"
+          ],
+          "rows": [
+            [
+              "<strong>No Attribute</strong>",
+              "Immediately, as soon as it's downloaded.",
+              "Blocks HTML parsing until execution finishes.",
+              "Small scripts or inline JS that must run early."
+            ],
+            [
+              "<strong>defer</strong>",
+              "After HTML parsing completes (in order).",
+              "Does not block HTML parsing.",
+              "Scripts that depend on the DOM being ready."
+            ],
+            [
+              "<strong>async</strong>",
+              "As soon as it's downloaded (not ordered).",
+              "Does not block HTML parsing, but order is unpredictable.",
+              "Independent scripts like analytics or ads."
+            ]
+          ],
+          "caption": "Comparison of normal, async, and deferred script loading."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>How Deferred Scripts Work Internally</strong>\n\n1. The browser encounters a <code>&lt;script defer&gt;</code> tag while parsing HTML.\n2. It starts downloading the script in parallel with HTML parsing.\n3. The script is queued for execution after the document has been fully parsed.\n4. Deferred scripts preserve their order — if multiple scripts are marked as <code>defer</code>, they will execute sequentially in the order they appear in the document.\n\nThis makes <code>defer</code> especially useful for including multiple dependent scripts without blocking page rendering."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Both scripts load in parallel but run after HTML parsing -->\n<script src=\"lib.js\" defer></script>\n<script src=\"app.js\" defer></script>\n<!-- Guaranteed: lib.js runs before app.js -->"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Why Deferred Scripts Are Important</strong>\n\n- They **improve performance** by eliminating render-blocking delays.\n- The **DOM is fully available** when they execute, meaning no need to wait for <code>DOMContentLoaded</code> manually.\n- **Execution order is preserved**, unlike with <code>async</code>.\n- They are **ideal for application scripts** that depend on the DOM or other scripts.\n\nDeferred scripts effectively allow your HTML, CSS, and JS to load concurrently without competing for render time."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// main.js (loaded with defer)\nconsole.log(document.readyState); // 'interactive' or 'complete'\n\nwindow.addEventListener('DOMContentLoaded', () => {\n  console.log('DOM fully parsed before script ran!');\n});"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Key Considerations</strong>\n\n- The <code>defer</code> attribute only works for **external scripts** (those with <code>src</code> attributes).\n- Inline scripts cannot use <code>defer</code>.\n- In old browsers (pre-HTML5), support for <code>defer</code> was inconsistent, but it’s now standard in all major browsers.\n- Combining <code>defer</code> and <code>async</code> on the same script is invalid — only one behavior applies."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>defer</code> allows scripts to load without blocking HTML parsing.\n- Deferred scripts execute only after the DOM is fully parsed.\n- Execution order is maintained as per their order in the document.\n- Perfect for DOM-dependent scripts or modular JavaScript bundles.\n- Leads to faster, smoother user experiences and better performance scores (like in Lighthouse)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>defer</code> like scheduling a meeting after you've finished your main work — the script is downloaded while you’re busy, but it only executes once your workspace (HTML) is ready. It keeps everything efficient and orderly."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-classes",
+    "title": "What are classes in JavaScript?",
+    "description": "Classes in JavaScript are syntactic sugar over prototype-based inheritance. Introduced in ES6, they provide a cleaner and more familiar syntax for creating objects and handling inheritance, making JavaScript feel more like traditional object-oriented languages.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "classes",
+      "oop",
+      "inheritance",
+      "es6",
+      "syntax"
+    ],
+    "importance": 3,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nJavaScript classes are templates for creating objects that encapsulate data (properties) and behavior (methods). While they resemble classes in languages like Java or C#, under the hood they still use **prototypes** — a fundamental feature of JavaScript’s object system.\n\nThe class syntax provides a more structured, readable, and modern way to define constructor functions, methods, and inheritance."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Defining a simple class\nclass Person {\n  constructor(name, age) {\n    this.name = name;\n    this.age = age;\n  }\n\n  greet() {\n    console.log(`Hello, my name is ${this.name}`);\n  }\n}\n\nconst alice = new Person('Alice', 25);\nalice.greet(); // Hello, my name is Alice"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>How Classes Work Internally</strong>\n\n- The <code>class</code> syntax is **syntactic sugar** over constructor functions and the prototype chain.\n- Each class has a special <code>constructor()</code> method that initializes new objects.\n- Methods defined inside a class are automatically added to the prototype, not the instance.\n- This keeps memory usage efficient since all instances share the same methods."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Constructor",
+              "A special method used for initializing objects when a class is instantiated.",
+              "<code>constructor(name) { this.name = name; }</code>"
+            ],
+            [
+              "Instance Methods",
+              "Functions shared by all instances through the prototype.",
+              "<code>greet() { console.log(this.name); }</code>"
+            ],
+            [
+              "Static Methods",
+              "Methods called directly on the class, not instances.",
+              "<code>static info() { console.log('This is a Person class'); }</code>"
+            ],
+            [
+              "Getters & Setters",
+              "Allow controlled access to properties.",
+              "<code>get age() { return this._age; }</code>"
+            ]
+          ],
+          "caption": "Core components and features of JavaScript classes."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code-branch'></i> <strong>Inheritance with Classes</strong>\n\nJavaScript supports class inheritance using the <code>extends</code> keyword. The child class inherits properties and methods from the parent class and can add its own. The <code>super()</code> keyword allows calling the parent’s constructor or methods."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "class Animal {\n  constructor(name) {\n    this.name = name;\n  }\n\n  speak() {\n    console.log(`${this.name} makes a sound.`);\n  }\n}\n\nclass Dog extends Animal {\n  speak() {\n    console.log(`${this.name} barks.`);\n  }\n}\n\nconst dog = new Dog('Rex');\ndog.speak(); // Rex barks."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Behind the Scenes</strong>\n\nEven though classes look new, they’re still built on top of JavaScript’s **prototype chain**:\n- Every class has a hidden <code>[[Prototype]]</code> link.\n- The class body methods are added to <code>ClassName.prototype</code>.\n- When you call a method on an instance, JavaScript looks it up through this prototype chain.\n\nThis means the following two approaches are equivalent in behavior:\n\n```javascript\nfunction Person(name) {\n  this.name = name;\n}\nPerson.prototype.greet = function() {\n  console.log('Hello, ' + this.name);\n};\n```\n\n```javascript\nclass Person {\n  constructor(name) {\n    this.name = name;\n  }\n  greet() {\n    console.log('Hello, ' + this.name);\n  }\n}\n```"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important Details</strong>\n\n- Class declarations are **not hoisted** like function declarations. You must define them before using them.\n- You can define **anonymous classes** or assign them to variables.\n- By default, class methods are **non-enumerable**, meaning they don’t show up in <code>for...in</code> loops.\n- Using <code>new</code> is mandatory when instantiating classes — calling a class as a function throws an error."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: static method and getter\nclass MathHelper {\n  static square(n) {\n    return n * n;\n  }\n\n  get description() {\n    return 'This class provides math utilities.';\n  }\n}\n\nconsole.log(MathHelper.square(5)); // 25\nconst helper = new MathHelper();\nconsole.log(helper.description); // This class provides math utilities."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Classes define blueprints for creating objects with shared behavior.\n- They simplify working with prototypes and inheritance.\n- Support constructors, instance methods, static methods, and getters/setters.\n- Classes improve code organization and readability, making OOP patterns easier to implement in JavaScript.\n- Under the hood, they’re still prototype-based — just easier to read and maintain."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a class like a cookie cutter 🍪 — it defines the shape and design. Each cookie (object) made from it shares the same structure, but with its own details (property values)."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-object-creation-methods",
+    "title": "In JavaScript, how many different methods can you make an object?",
+    "description": "There are several ways to create objects in JavaScript — each serving a unique purpose. From using object literals to the Object.create() method and ES6 classes, these approaches allow developers to structure data and behavior in flexible ways.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "objects",
+      "oop",
+      "object-creation",
+      "prototypes",
+      "es6"
+    ],
+    "importance": 2,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nJavaScript is an object-oriented language built around objects and prototypes. There isn’t just one way to create an object — there are **multiple**, each suited to different use cases. Some are simple and declarative, while others give fine-grained control over inheritance and property configuration."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-list-ol'></i> <strong>1. Object Literal Syntax</strong>\n\nThis is the simplest and most common way to create objects in JavaScript. You directly define key-value pairs inside curly braces."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 1. Object literal\nconst person = {\n  name: 'Alice',\n  age: 25,\n  greet() {\n    console.log(`Hello, I am ${this.name}`);\n  }\n};\n\nperson.greet(); // Hello, I am Alice"
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** When you need a quick, simple object with fixed structure. Ideal for configurations, settings, or small data objects."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>2. Using the <code>new Object()</code> Constructor</strong>\n\nThe <code>Object</code> constructor creates an empty object, after which you can manually add properties."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 2. Using new Object()\nconst user = new Object();\nuser.name = 'Bob';\nuser.age = 30;\nuser.greet = function() {\n  console.log('Hi, I am ' + this.name);\n};\n\nuser.greet(); // Hi, I am Bob"
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** Rarely used in modern code — the object literal is cleaner and faster. But useful when creating objects dynamically in certain APIs or legacy systems."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gear'></i> <strong>3. Using a Constructor Function</strong>\n\nBefore ES6 introduced classes, constructor functions were the main way to create reusable object blueprints. You use the <code>new</code> keyword to create instances."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 3. Constructor function\nfunction Car(make, model) {\n  this.make = make;\n  this.model = model;\n}\n\nCar.prototype.start = function() {\n  console.log(`${this.make} ${this.model} is starting...`);\n};\n\nconst car1 = new Car('Toyota', 'Corolla');\ncar1.start(); // Toyota Corolla is starting..."
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** When you need multiple objects of the same type that share methods. It provides structure and supports prototype-based inheritance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-building'></i> <strong>4. Using ES6 Classes</strong>\n\nClasses are syntactic sugar over constructor functions. They provide a more intuitive and readable way to define object blueprints with methods and inheritance."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 4. Using ES6 class\nclass Animal {\n  constructor(name) {\n    this.name = name;\n  }\n\n  speak() {\n    console.log(`${this.name} makes a sound.`);\n  }\n}\n\nconst dog = new Animal('Rex');\ndog.speak(); // Rex makes a sound."
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** Perfect for creating structured, reusable object templates in modern applications. Supports clean inheritance and encapsulation."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>5. Using Object.create()</strong>\n\n<code>Object.create()</code> allows you to create a new object and manually specify its prototype. This is extremely powerful for prototype-based inheritance and building lightweight objects."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 5. Using Object.create()\nconst prototypeCar = {\n  start() {\n    console.log('Car started');\n  }\n};\n\nconst myCar = Object.create(prototypeCar);\nmyCar.make = 'Tesla';\nmyCar.start(); // Car started"
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** When you need fine control over inheritance or want to create an object that directly inherits from another without using classes or constructors."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-file-code'></i> <strong>6. Using Factory Functions</strong>\n\nA factory function returns a new object each time it’s called, without using <code>new</code>. It’s simple and doesn’t rely on prototypes unless explicitly set."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 6. Factory function\nfunction createUser(name, age) {\n  return {\n    name,\n    age,\n    greet() {\n      console.log(`Hi, I'm ${this.name}`);\n    }\n  };\n}\n\nconst user1 = createUser('Eve', 22);\nuser1.greet(); // Hi, I'm Eve"
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** When you need simple, self-contained object creation without worrying about prototypes or class inheritance. Common in functional programming and React-style design."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-database'></i> <strong>7. Using JSON.parse()</strong>\n\nYou can create objects by parsing a JSON string, commonly used when fetching data from APIs or files."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// 7. Using JSON.parse()\nconst jsonString = '{ \"name\": \"Alice\", \"age\": 25 }';\nconst obj = JSON.parse(jsonString);\nconsole.log(obj.name); // Alice"
+        },
+        {
+          "type": "text",
+          "text": "✅ **When to use:** Ideal when receiving JSON data from a server or a configuration file. It quickly transforms string data into usable JavaScript objects."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Method",
+            "Keyword/Function",
+            "Prototype Handling",
+            "Common Use Case"
+          ],
+          "rows": [
+            [
+              "Object Literal",
+              "{ }",
+              "Implicit (Object.prototype)",
+              "Quick object creation"
+            ],
+            [
+              "new Object()",
+              "new Object()",
+              "Implicit (Object.prototype)",
+              "Legacy/rare use"
+            ],
+            [
+              "Constructor Function",
+              "new Function()",
+              "Manual prototype linkage",
+              "Reusable templates"
+            ],
+            [
+              "ES6 Class",
+              "class ...",
+              "Automatic prototype linkage",
+              "Structured OOP"
+            ],
+            [
+              "Object.create()",
+              "Object.create()",
+              "Explicit prototype assignment",
+              "Fine control over inheritance"
+            ],
+            [
+              "Factory Function",
+              "function()",
+              "None unless manually added",
+              "Functional, flexible object creation"
+            ],
+            [
+              "JSON.parse()",
+              "JSON.parse()",
+              "Plain object (no methods)",
+              "Convert API or config data"
+            ]
+          ],
+          "caption": "Summary of all common object creation methods in JavaScript."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript offers many ways to create objects, each with different flexibility and purpose.\n- **Object literals** are simplest, **classes and constructors** handle structure and inheritance, and **Object.create()** gives manual control.\n- **Factory functions** and **JSON parsing** fit data-driven or functional approaches.\n- Choosing the right one depends on whether you need inheritance, performance, or simplicity."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of object creation methods like different ways to build a house:\n- **Object literal:** Prefab home — quick and easy.\n- **Constructor/Class:** Architect-designed — reusable blueprint.\n- **Factory function:** Custom-built home — flexible but independent.\n- **Object.create():** Extension — built from an existing foundation.\nEach approach gives you a new home (object), but the building method depends on your needs."
+        }
+      ]
+    }
+  },
+  {
+    "id": "js-memoization",
+    "title": "What is memoization in JavaScript?",
+    "description": "Memoization is an optimization technique that speeds up function execution by caching previously computed results. When the same inputs occur again, the cached result is returned instantly, avoiding redundant calculations.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "memoization",
+      "optimization",
+      "performance",
+      "functions",
+      "cache"
+    ],
+    "importance": 4,
+    "companies": [
+      "google",
+      "meta",
+      "amazon",
+      "microsoft",
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nMemoization is a **performance optimization technique** used to make expensive function calls faster by storing (or caching) their results. The next time the function is called with the same arguments, the stored result is returned instead of recalculating it.\n\nThis technique is especially useful in **recursive computations** (like Fibonacci sequences) or **functions that are called repeatedly with identical inputs**."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Basic memoization example\nfunction memoize(fn) {\n  const cache = {};\n  return function(...args) {\n    const key = JSON.stringify(args);\n    if (cache[key]) {\n      console.log('Fetching from cache:', key);\n      return cache[key];\n    }\n    console.log('Calculating result for:', key);\n    const result = fn(...args);\n    cache[key] = result;\n    return result;\n  };\n}\n\n// Slow recursive function (Fibonacci)\nfunction slowFib(n) {\n  if (n <= 1) return n;\n  return slowFib(n - 1) + slowFib(n - 2);\n}\n\n// Memoized version\nconst fastFib = memoize(slowFib);\n\nconsole.log(fastFib(10)); // Calculates\nconsole.log(fastFib(10)); // Returns from cache"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How It Works</strong>\n\n1. The function is wrapped in a **higher-order function** that maintains a cache (usually an object or Map).\n2. When the function is called, the wrapper checks if the input has been seen before.\n3. If found in cache, the stored value is returned immediately.\n4. If not found, the function runs normally, stores its result in the cache, and then returns it.\n\nThe key concept: **trade space for time** — use memory to store results and avoid unnecessary computation."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Aspect",
+            "Description",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Purpose",
+              "Reduce repeated computation by caching results.",
+              "<code>fastFib(40)</code> runs almost instantly after the first call."
+            ],
+            [
+              "Cache Key",
+              "A string or serialized form of the input arguments.",
+              "<code>JSON.stringify(args)</code> or using <code>Map</code>."
+            ],
+            [
+              "Storage",
+              "Typically an object or Map used as a lookup table.",
+              "<code>const cache = new Map();</code>"
+            ],
+            [
+              "Trade-off",
+              "Uses extra memory but saves CPU cycles for repeated inputs.",
+              "Best when function is called frequently with same parameters."
+            ]
+          ],
+          "caption": "Memoization at a glance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>Memoization vs. Caching</strong>\n\nWhile both involve storing data for faster future access, **memoization** is function-specific — it stores **function return values** based on input arguments. General caching, on the other hand, can apply to data from APIs, databases, or file systems.\n\nIn other words:\n- **Memoization** → optimization at the **function level**.\n- **Caching** → broader concept used in **networking, databases, or browsers**."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Using Map for better performance\nfunction memoizeMap(fn) {\n  const cache = new Map();\n  return function(...args) {\n    const key = args.toString();\n    if (cache.has(key)) return cache.get(key);\n    const result = fn(...args);\n    cache.set(key, result);\n    return result;\n  };\n}\n\nconst add = (a, b) => a + b;\nconst memoizedAdd = memoizeMap(add);\n\nconsole.log(memoizedAdd(2, 3)); // 5 (calculated)\nconsole.log(memoizedAdd(2, 3)); // 5 (cached)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>When to Use and When Not To</strong>\n\n✅ **Use memoization when:**\n- A function performs expensive or repetitive calculations.\n- The same inputs occur frequently.\n- The function is pure — it always returns the same output for the same inputs.\n\n🚫 **Avoid memoization when:**\n- The input range is very large (cache will grow uncontrollably).\n- The function relies on external state or randomness.\n- The computation is cheap (the overhead of caching may outweigh benefits)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Real-World Use Cases</strong>\n\n- **React’s useMemo() and useCallback():** Prevent re-rendering by memoizing values or functions between renders.\n- **API call optimization:** Cache API responses to avoid fetching the same data multiple times.\n- **Dynamic programming:** In problems like Fibonacci, factorial, or pathfinding (e.g., Dijkstra’s algorithm), memoization avoids redundant recursive calls.\n- **Machine learning pipelines:** Memoizing preprocessing steps for repeated datasets."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: API response caching\nasync function memoizedFetch(url) {\n  const cache = memoizedFetch.cache || (memoizedFetch.cache = {});\n  if (cache[url]) return cache[url];\n  const response = await fetch(url);\n  const data = await response.json();\n  cache[url] = data;\n  return data;\n}\n\n// First call fetches from network, second from cache\nawait memoizedFetch('https://api.example.com/data');\nawait memoizedFetch('https://api.example.com/data');"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Memoization caches function results to avoid recomputation.\n- Best for expensive, pure, and repetitive function calls.\n- Can be implemented using objects or Maps as cache stores.\n- Saves time but uses additional memory.\n- Core concept behind performance optimizations in React, Lodash, and Redux selectors."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of memoization like remembering math homework answers — once you’ve solved a problem, you don’t need to redo it every time someone asks. You just recall the answer instantly."
+        }
+      ]
+    }
+  }
+]

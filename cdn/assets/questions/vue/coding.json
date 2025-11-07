@@ -1,0 +1,22 @@
+[
+    {
+        "id": "vue-counter",
+        "title": "Build a Counter component",
+        "description": "Create a <Counter/> with + / - buttons and a value. Value must never drop below 0.",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "easy",
+        "tags": [
+            "vue",
+            "components",
+            "reactivity"
+        ],
+        "importance": 2,
+        "sdk": {
+            "asset": "assets/sb/vue-counter.v1.json",
+            "openFile": "/src/App.ts",
+            "storageKey": "v2:ui:vue:vue-counter"
+        },
+        "stackblitzEmbedUrl": "https://stackblitz.com/edit/vue-ts?embed=1&file=src/App.ts"
+    }
+]

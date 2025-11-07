@@ -48,6 +48,9 @@ const UF_LANG_PREF = (qid: string) => `uf:lang:${qid}`;
 /** v2 consolidated key (one per question) */
 const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`;
 
+/** one-time flag so we don't re-copy on every load */
+const MIGRATION_FLAG_JS_IDB = 'uf:js:idb:migrated:v1';
+
 /** Guard: is localStorage usable? (some browsers/iframes can throw) */
 function hasLocalStorage(): boolean {
   try {
@@ -537,5 +540,41 @@ export class CodeStorageService {
       js: b?.js ? { updatedAt: toMs(b.js.updatedAt), hasCode: !!(b.js.code && b.js.code.trim()) } : undefined,
       ts: b?.ts ? { updatedAt: toMs(b.ts.updatedAt), hasCode: !!(b.ts.code && b.ts.code.trim()) } : undefined,
     };
+  }
+
+  /**
+ * One-time migration: copy all v2 JS bundles from localStorage into IndexedDB.
+ * Safe to call on startup; it no-ops after the first successful run.
+ */
+  async migrateAllJsToIndexedDbOnce(): Promise<void> {
+    if (!hasLocalStorage()) return;
+
+    // Already migrated? bail.
+    if (localStorage.getItem(MIGRATION_FLAG_JS_IDB) === '1') {
+      return;
+    }
+
+    try {
+      const keys = Object.keys(localStorage);
+
+      for (const k of keys) {
+        // only care about our consolidated v2 JS bundles
+        if (!k.startsWith('v2:code:js2:')) continue;
+
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+
+        try {
+          await LF_JS.setItem(k, raw);   // mirror LS -> IDB as-is
+        } catch {
+          // ignore per-key failure; continue others
+        }
+      }
+
+      // mark as done (even if a few keys failed; worst case they'll sync on next save)
+      localStorage.setItem(MIGRATION_FLAG_JS_IDB, '1');
+    } catch {
+      // swallow: if this explodes, normal lazy-writes will still populate IDB over time
+    }
   }
 }
