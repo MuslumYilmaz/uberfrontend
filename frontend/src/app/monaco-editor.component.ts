@@ -43,10 +43,15 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   @Output() codeChange = new EventEmitter<string>();
 
+  // ADD
   private editor!: any;
+  private model?: any;                  // NEW: keep a handle to the model
   private suppressNextModelUpdate = false;
   private disposed = false;
   private resizeObs?: ResizeObserver;
+  // BELOW: private resizeObs?: ResizeObserver;
+  private static seq = 0;                                // NEW
+  private readonly modelId = `uf-${++MonacoEditorComponent.seq}`; // NEW
 
   private readonly amdLoaderPath = 'assets/monaco/min/vs/loader.js';
   private readonly vsBasePath = 'assets/monaco/min/vs';
@@ -57,10 +62,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
     window.monaco?.editor?.setTheme?.(this.theme);
 
-    // Base options (we control automaticLayout depending on autoHeight)
+    const langNorm = this.normalizeLanguage(this.language);
+
+    // Base options (do NOT pass "value" here; model will carry the text)
     const baseOpts = {
-      value: this.code ?? '',
-      language: this.normalizeLanguage(this.language),
+      language: langNorm,
       theme: this.theme,
       readOnly: this.readOnly,
       automaticLayout: !this.autoHeight,
@@ -69,12 +75,18 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       ...this.options,
     };
 
-    // If not autoHeight, ensure element has a height (Tailwind h-full needs a parent height)
     if (!this.autoHeight) {
       (this.container.nativeElement.parentElement as HTMLElement)?.classList.add('fixed-height');
     }
 
-    this.editor = window.monaco.editor.create(this.container.nativeElement, baseOpts);
+    // ✅ Create the model first with a deterministic URI/extension
+    this.createOrSwapModel(langNorm, this.code ?? '');
+
+    // Then create the editor bound to that model
+    this.editor = window.monaco.editor.create(this.container.nativeElement, {
+      ...baseOpts,
+      model: this.model,
+    });
 
     // Mirror -> @Output
     this.editor.onDidChangeModelContent?.(() => {
@@ -83,7 +95,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       if (this.autoHeight) this.fit();
     });
 
-    // Auto-height adjustments
+    // Auto-height handling
     if (this.autoHeight) {
       this.editor.updateOptions({
         scrollbar: {
@@ -97,42 +109,34 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         wordWrap: 'on',
       });
 
-      // React to content-size changes
       this.editor.onDidContentSizeChange?.(() => this.fit());
 
-      // Width changes (since automaticLayout is off in autoHeight mode)
       this.resizeObs = new ResizeObserver(() => this.layoutToCurrentSize());
       this.resizeObs.observe(this.container.nativeElement);
 
-      // Initial fit
       setTimeout(() => this.fit());
     }
 
-    // Interactivity (click-through for “display-only” examples)
     this.applyInteractivity();
-
-    // One more layout tick in case the host just mounted
     setTimeout(() => this.layoutToCurrentSize(), 0);
   }
 
+
   ngOnChanges(changes: SimpleChanges) {
-    if (!this.editor) return;
+    if (!this.editor && !this.model) return;
 
     if (changes['code'] && !changes['code'].isFirstChange()) {
-      const current = this.editor.getValue();
-      if (this.code !== current) {
+      const next = this.code ?? '';
+      if (this.model && this.model.getValue?.() !== next) {
         this.suppressNextModelUpdate = true;
-        this.editor.setValue(this.code ?? '');
+        this.model.setValue(next);
       }
       if (this.autoHeight) this.fit();
     }
 
     if (changes['language'] && !changes['language'].isFirstChange()) {
-      const model = this.editor.getModel?.();
-      const lang = this.normalizeLanguage(this.language);
-      if (model && window.monaco?.editor?.setModelLanguage) {
-        window.monaco.editor.setModelLanguage(model, lang);
-      }
+      const langNorm = this.normalizeLanguage(this.language);
+      this.createOrSwapModel(langNorm, this.code ?? '');   // ✅ swap model by extension
     }
 
     if (changes['theme'] && !changes['theme'].isFirstChange()) {
@@ -140,14 +144,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     if (changes['options'] && !changes['options'].isFirstChange()) {
-      // Preserve our automaticLayout decision
       const next = { automaticLayout: !this.autoHeight, ...this.options };
-      this.editor.updateOptions(next);
+      this.editor?.updateOptions(next);
       if (this.autoHeight) this.fit();
     }
 
     if (changes['readOnly'] && !changes['readOnly'].isFirstChange()) {
-      this.editor.updateOptions({ readOnly: this.readOnly });
+      this.editor?.updateOptions({ readOnly: this.readOnly });
     }
 
     if (changes['interactive'] && !changes['interactive'].isFirstChange()) {
@@ -155,8 +158,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     if (changes['autoHeight'] && !changes['autoHeight'].isFirstChange()) {
-      // Toggle automaticLayout and sizing strategy
-      this.editor.updateOptions({ automaticLayout: !this.autoHeight });
+      this.editor?.updateOptions({ automaticLayout: !this.autoHeight });
       if (this.autoHeight) {
         (this.container.nativeElement.parentElement as HTMLElement)?.classList.remove('fixed-height');
         this.fit();
@@ -167,12 +169,14 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     }
   }
 
+
   ngOnDestroy() {
     this.disposed = true;
-    try { this.resizeObs?.disconnect(); } catch { /* ignore */ }
-    try { this.editor?.dispose?.(); } catch { /* ignore */ }
+    try { this.resizeObs?.disconnect(); } catch { }
+    try { this.editor?.dispose?.(); } catch { }
+    try { this.model?.dispose?.(); } catch { }  // keep this
   }
-
+  
   // ---------- helpers ----------
 
   private normalizeLanguage(lang: string): string {
@@ -251,6 +255,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           const monaco = (window as any).monaco;
           const ts = monaco.languages.typescript;
 
+          // NEW: ensure models sync early and soften diagnostics for “module not found” cases
+          ts.typescriptDefaults.setEagerModelSync?.(true);   // push models to the worker ASAP
+          ts.typescriptDefaults.addExtraLib?.(
+            'declare module "*";',
+            'file:///node_modules/@types/__uf_any__/index.d.ts'
+          );
+
           ts.typescriptDefaults.setCompilerOptions({
             allowJs: true,
             target: monaco.languages.typescript.ScriptTarget.ES2020,
@@ -283,5 +294,38 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       s.onerror = () => { console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath); resolve(); };
       document.body.appendChild(s);
     });
+  }
+
+  private createOrSwapModel(langNorm: string, code: string) {
+    const ext = langNorm === 'typescript' ? 'ts' : 'js';
+
+    // Per-instance, per-language URI (prevents cross-instance collisions)
+    const uri = window.monaco.Uri.parse(`inmemory://uf/${this.modelId}.${ext}`);
+
+    // If our current model is for another language/ext, dispose it (it’s ours)
+    if (this.model && this.model.uri.toString() !== uri.toString()) {
+      try { this.model.dispose(); } catch { }
+      this.model = undefined;
+    }
+
+    // If a model with this URI already exists (e.g., re-init), reuse it
+    let existing = window.monaco.editor.getModel(uri);
+    if (existing) {
+      // Ensure language + contents are what we want
+      if (window.monaco?.editor?.setModelLanguage) {
+        window.monaco.editor.setModelLanguage(existing, langNorm);
+      }
+      const nextVal = code ?? '';
+      if (existing.getValue() !== nextVal) existing.setValue(nextVal);
+      this.model = existing;
+    } else {
+      // Create a fresh model
+      this.model = window.monaco.editor.createModel(code ?? '', langNorm, uri);
+    }
+
+    // Attach to editor if already created
+    if (this.editor) {
+      this.editor.setModel(this.model);
+    }
   }
 }

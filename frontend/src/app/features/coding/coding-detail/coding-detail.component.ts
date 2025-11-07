@@ -608,7 +608,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // ---------- Plain JS / TS ----------
     // Parent no longer touches starters/tests; the child panel + CodeStorageService own it.
     // Decide which language tab to show, then ask the child to init itself.
-    const svcSaved = this.codeStore.getJs(q.id);
+    const svcSaved = await this.codeStore.getJsAsync(q.id);
     const hinted = (q as any)?.defaultLang;
     const resolvedLang: JsLang =
       (svcSaved?.language === 'ts' || svcSaved?.language === 'js')
@@ -1112,9 +1112,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activePanel.set(0);
   }
 
-  onChildLang(v: 'js' | 'ts') {
-    this.currentJsLang.set(v);
+  onChildLang(lang: 'js' | 'ts') {
+    this.currentJsLang.set(lang);
   }
+
   private creditDaily(): void {
     const q = this.question();
     if (!q) return;

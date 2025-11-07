@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import localForage from 'localforage';
 
 type JsLang = 'js' | 'ts';
 type CodeFormat = 'javascript' | 'typescript';
@@ -21,14 +22,18 @@ export interface NgSave {
 
 /** New consolidated per-question blob */
 export interface JsBundleV2 {
-  js?: { code?: string; baseline?: string };
-  ts?: { code?: string; baseline?: string };
+  js?: { code?: string; baseline?: string; updatedAt?: string };   // CHANGED
+  ts?: { code?: string; baseline?: string; updatedAt?: string };   // CHANGED
   lastLang?: JsLang;
   version: 'v2';
   updatedAt: string; // ISO
 }
 
 const DATA_VERSION = '2';
+
+const LF_JS = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_js' });
+const LF_NG = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_ng' });
+
 const BASE = 'code:';
 const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v2:code:
 
@@ -106,7 +111,7 @@ export class CodeStorageService {
     // ✅ Apply update
     const next: JsBundleV2 = {
       ...cur,
-      [lang]: { ...(cur[lang] || {}), code },
+      [lang]: { ...(cur[lang] || {}), code, updatedAt: now },   // CHANGED
       lastLang: lang,
       version: 'v2',
       updatedAt: now,
@@ -381,5 +386,156 @@ export class CodeStorageService {
     };
 
     try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next)); } catch { }
+  }
+
+  async resetJsBothAsync(
+    qidRaw: string | number,
+    starters?: { js?: string; ts?: string }
+  ): Promise<void> {
+    this.resetJsBoth(qidRaw, starters); // updates LS
+    const qid = String(qidRaw);
+    const lsRaw = localStorage.getItem(V2_JS_BUNDLE(qid));
+    if (lsRaw) { try { await LF_JS.setItem(V2_JS_BUNDLE(qid), lsRaw); } catch { /* ignore */ } }
+  }
+
+  // ---------- ASYNC (IndexedDB) JS API: non-breaking side-by-side ----------
+
+  /** Read the v2 JS bundle from IndexedDB (falls back to localStorage if not found) */
+  async getJsAsync(qidRaw: string | number): Promise<JsSave | null> {
+    const qid = String(qidRaw);
+
+    // Try IDB first
+    const raw = await LF_JS.getItem<string>(V2_JS_BUNDLE(qid));
+    if (raw) {
+      try {
+        const b = JSON.parse(raw) as JsBundleV2;
+        const lang: JsLang = (b.lastLang === 'ts' || b.lastLang === 'js') ? b.lastLang : 'js';
+        const code = (b[lang]?.code ?? '') as string;
+        return {
+          code,
+          language: lang,
+          format: lang === 'ts' ? 'typescript' : 'javascript',
+          version: 'v2',
+          updatedAt: b.updatedAt,
+        };
+      } catch { /* fall through */ }
+    }
+
+    // Fallback to your existing localStorage bundle (so current users still work)
+    return this.getJs(qid);
+  }
+
+  /** Write v2 JS bundle to IndexedDB (and mirror to localStorage for compatibility) */
+  async saveJsAsync(
+    qidRaw: string | number,
+    code: string,
+    lang: JsLang = 'js',
+    opts?: { force?: boolean }
+  ): Promise<void> {
+    // Reuse the existing guards & shape by calling your current saveJs first (writes to LS)
+    this.saveJs(qidRaw, code, lang, opts);
+
+    // Then mirror LS → IDB so future reads can use IndexedDB
+    const qid = String(qidRaw);
+    const lsRaw = localStorage.getItem(V2_JS_BUNDLE(qid));
+    if (lsRaw) {
+      try { await LF_JS.setItem(V2_JS_BUNDLE(qid), lsRaw); } catch { /* ignore */ }
+    }
+  }
+
+  /** Set baseline in IDB too (mirrors your current baseline logic) */
+  async setJsBaselineAsync(qidRaw: string | number, lang: JsLang, baseline: string): Promise<void> {
+    this.setJsBaseline(qidRaw, lang, baseline); // keep existing behavior + guards
+
+    const qid = String(qidRaw);
+    const lsRaw = localStorage.getItem(V2_JS_BUNDLE(qid));
+    if (lsRaw) {
+      try { await LF_JS.setItem(V2_JS_BUNDLE(qid), lsRaw); } catch { /* ignore */ }
+    }
+  }
+
+  /** Strict per-language getter (IDB first, then LS) */
+  async getJsForLangAsync(qidRaw: string | number, lang: JsLang): Promise<string | null> {
+    const qid = String(qidRaw);
+    const raw = await LF_JS.getItem<string>(V2_JS_BUNDLE(qid));
+    if (raw) {
+      try {
+        const b = JSON.parse(raw) as JsBundleV2;
+        return (b && b[lang]?.code != null) ? (b[lang]!.code as string) : null;
+      } catch { /* fall through */ }
+    }
+    return this.getJsForLang(qid, lang);
+  }
+
+  /** Async clear for IDB (keeps your existing LS clear) */
+  async clearJsAsync(qidRaw: string | number): Promise<void> {
+    this.clearJs(qidRaw); // clears LS
+    const qid = String(qidRaw);
+    try { await LF_JS.removeItem(V2_JS_BUNDLE(qid)); } catch { /* ignore */ }
+  }
+
+  // helper (optional but tidy)
+  private async getBundleAsync(qidRaw: string | number): Promise<JsBundleV2 | null> {
+    const qid = String(qidRaw);
+    const raw = await LF_JS.getItem<string>(V2_JS_BUNDLE(qid));
+    if (raw) { try { return JSON.parse(raw) as JsBundleV2; } catch { /* ignore */ } }
+    // fallback to LS if IDB missing/invalid
+    try {
+      const ls = localStorage.getItem(V2_JS_BUNDLE(qid));
+      return ls ? (JSON.parse(ls) as JsBundleV2) : null;
+    } catch { return null; }
+  }
+
+  // replace your current initJsAsync with this:
+  async initJsAsync(
+    qidRaw: string | number,
+    lang: 'js' | 'ts',
+    starter: string
+  ): Promise<{ initial: string; restored: boolean }> {
+    const qid = String(qidRaw);
+
+    // Try bundle from IDB/LS
+    const b = await this.getBundleAsync(qid);
+    if (b) {
+      // seed baseline if missing (don’t write starter as code)
+      const base = (b[lang]?.baseline ?? null) ?? starter;
+      const code = (b[lang]?.code ?? '') as string;
+      const hasUser = code.trim().length > 0;
+
+      const initial = hasUser ? code : starter;
+      const restored = hasUser && code.trim() !== base.trim();
+
+      // keep lastLang consistent (no-op if unchanged)
+      try {
+        const next: JsBundleV2 = { ...b, lastLang: lang, version: 'v2', updatedAt: new Date().toISOString() };
+        localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+        await LF_JS.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
+      } catch { /* ignore */ }
+
+      return { initial, restored };
+    }
+
+    // First-time path: fall back to your LS initializer (seeds baseline)
+    return this.initJs(qid, lang, starter);
+  }
+
+  // NEW: read last selected language (IDB first, then LS)
+  async getLastLang(qidRaw: string | number): Promise<JsLang | null> {
+    const b = await this.getBundleAsync(qidRaw);
+    const v = b?.lastLang;
+    return (v === 'js' || v === 'ts') ? v : null;
+  }
+
+  // NEW: tiny meta for deciding preferred lang on hydrate
+  async getJsMetaAsync(qidRaw: string | number): Promise<{
+    js?: { updatedAt?: number; hasCode: boolean };
+    ts?: { updatedAt?: number; hasCode: boolean };
+  }> {
+    const b = await this.getBundleAsync(qidRaw);
+    const toMs = (s?: string) => s ? Date.parse(s) : undefined;
+    return {
+      js: b?.js ? { updatedAt: toMs(b.js.updatedAt), hasCode: !!(b.js.code && b.js.code.trim()) } : undefined,
+      ts: b?.ts ? { updatedAt: toMs(b.ts.updatedAt), hasCode: !!(b.ts.code && b.ts.code.trim()) } : undefined,
+    };
   }
 }

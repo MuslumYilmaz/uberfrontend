@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, computed, signal } from '@angular/core';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
@@ -18,7 +18,7 @@ export type JsLang = 'js' | 'ts';
   templateUrl: './coding-js-panel.component.html',
   styleUrls: ['./coding-js-panel.component.css']
 })
-export class CodingJsPanelComponent implements OnChanges {
+export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   /* ---------- Inputs ---------- */
   @Input() question: Question | null = null;   // <- allow null until bound
   @Input() tech: Tech = 'javascript';         // for future-proofing
@@ -63,6 +63,18 @@ export class CodingJsPanelComponent implements OnChanges {
   isDraggingSplit = this._draggingSplit.asReadonly();
   private _hydrating = true;
 
+  ngOnInit() {
+    window.addEventListener('beforeunload', this._persistLangOnUnload);
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('beforeunload', this._persistLangOnUnload);
+  }
+
+  private _persistLangOnUnload = () => {
+    const q = this.question; if (q) this.codeStore.setLastLang(q.id, this.jsLang());
+  };
+
   private endHydrationSoon() {
     requestAnimationFrame(() =>
       requestAnimationFrame(() => { this._hydrating = false; })
@@ -75,25 +87,34 @@ export class CodingJsPanelComponent implements OnChanges {
 
   dismissRestoreBanner() { this.restoreDismissed.set(true); }
 
-  resetToDefault() {
-    const q = this.question; if (!q) return;
-    const lang = this.jsLang();
+  async resetToDefault(): Promise<void> {
+    const q = this.question;
+    if (!q) return;
 
+    const lang = this.jsLang();
     const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
 
-    // persist reset for BOTH langs (also updates baselines)
-    this.codeStore.resetJsBoth(q.id, { js: starterJs, ts: starterTs });
+    // 1) Persist fresh baselines + code for BOTH languages in LS and IDB
+    await this.codeStore.resetJsBothAsync(q.id, { js: starterJs, ts: starterTs });
 
-    // update visible editor to current tab's starter
+    // 2) Hydrate editor with the active language's starter
     const currentStarter = (lang === 'ts') ? starterTs : starterJs;
     this.editorContent.set(currentStarter);
 
-    // clear banner
-    this.restoredFromStorage.set(false);
-    this.restoreDismissed.set(true);
+    // 3) Ensure per-lang record exists and last write wins (bypass guards)
+    await this.codeStore.saveJsAsync(q.id, currentStarter, lang, { force: true });
 
-    // notify parent
+    // 4) Banner & UI state
+    this.restoredFromStorage.set(false); // no user divergence after a clean reset
+    this.restoreDismissed.set(true);     // hide the banner immediately
+
+    // 5) Notify parent listeners
     this.codeChange.emit({ lang, code: currentStarter });
+
+    // 6) Optional: clear local test/console state for a clean slate
+    this.hasRunTests.set(false);
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
   }
 
   passedCount = computed(() => this.testResults().filter(r => r.passed).length);
@@ -141,92 +162,136 @@ export class CodingJsPanelComponent implements OnChanges {
   }
 
   /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */
-  initFromQuestion() {
+  /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */
+  async initFromQuestion() {
     const q = this.question as Question; if (!q) return;
     this._hydrating = true;
 
-    const global = this.codeStore.getJs(q.id);
-    const preferred: JsLang =
-      (global?.code?.trim()?.length && (global.language === 'ts' || global.language === 'js'))
-        ? global.language
-        : this.jsLang();
+    // 1) Decide preferred language early (before Monaco renders)
+    const last = await this.codeStore.getLastLang(q.id);           // NEW
+    const meta = await this.codeStore.getJsMetaAsync(q.id).catch(() => null as any); // NEW
+    let preferred: JsLang | null = null;
+
+    if (last === 'js' || last === 'ts') {
+      preferred = last;
+    } else if (meta) {
+      const jsHas = !!meta?.js?.hasCode, tsHas = !!meta?.ts?.hasCode;
+      if (jsHas && tsHas) {
+        const j = meta?.js?.updatedAt ?? 0, t = meta?.ts?.updatedAt ?? 0;
+        preferred = (j >= t) ? 'js' : 'ts';
+      } else if (jsHas) preferred = 'js';
+      else if (tsHas) preferred = 'ts';
+    }
+    if (!preferred) preferred = 'js';
+
     this.jsLang.set(preferred);
-
-    // 🔔 notify parent about the resolved current language
     this.langChange.emit(preferred);
+    await this.codeStore.setLastLang(q.id, preferred);             // keep sticky
 
-    // safe starters
-    const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
-    const starter = preferred === 'ts' ? starterTs : starterJs;
+    // 2) Ensure per-lang slots exist (post-migration safety)
+    const { js: sJs, ts: sTs } = this.startersForBoth(q);
+    const jsSlot = await this.codeStore.getJsForLangAsync(q.id, 'js');
+    if (!(typeof jsSlot === 'string' && jsSlot.trim())) {
+      await this.codeStore.saveJsAsync(q.id, sJs, 'js', { force: true });
+    }
+    const tsSlot = await this.codeStore.getJsForLangAsync(q.id, 'ts');
+    if (!(typeof tsSlot === 'string' && tsSlot.trim())) {
+      await this.codeStore.saveJsAsync(q.id, sTs, 'ts', { force: true });
+    }
 
-    const { initial, restored } = this.codeStore.initJs(q.id, preferred, starter);
+    // 3) Hydrate editor/tests for chosen lang
+    const starter = preferred === 'ts' ? sTs : sJs;
+    const { initial, restored } = await this.codeStore.initJsAsync(q.id, preferred, starter);
+
     this.editorContent.set(initial);
     this.testCode.set(this.pickTests(q as any, preferred));
 
     this.restoredFromStorage.set(restored);
     this.restoreDismissed.set(false);
 
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => { this._hydrating = false; })
-    );
+    // Nudge Monaco once the first frame is ready (prevents first-frame squiggles)
+    queueMicrotask(() => window.dispatchEvent(new Event('resize')));   // NEW
+
+    // End hydration on next tick
+    requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
   }
 
-  setLanguage(lang: string) {
-    const v: JsLang = (lang === 'ts') ? 'ts' : 'js';
-    if (v === this.jsLang()) return;
-    const q = this.question; if (!q) return;
+  // REPLACE your current setLanguage with this one
+  async setLanguage(lang: string) {
+    const next: JsLang = (lang === 'ts') ? 'ts' : 'js';
+    if (next === this.jsLang()) return;
 
-    // persist current lang before switching (user-initiated)
+    const q = this.question;
+    if (!q) return;
+
+    // 1) Persist current code for the current lang (unless we're hydrating)
     if (!this._hydrating) {
-      this.codeStore.saveJs(q.id, this.editorContent(), this.jsLang());
+      await this.codeStore.saveJsAsync(q.id, this.editorContent(), this.jsLang());
     }
 
-    this._hydrating = true;
-
-    // remember banner state
+    // Snapshot UI flags so we don't lose the banner states
     const bannerWasRestored = this.restoredFromStorage();
     const bannerWasDismissed = this.restoreDismissed();
 
-    // switch
-    this.jsLang.set(v);
+    this._hydrating = true;
+    this.jsLang.set(next);
+    this.langChange.emit(next);
+    await this.codeStore.setLastLang(q.id, next);
 
-    // 🔔 notify parent immediately
-    this.langChange.emit(v);
-
+    // 2) Pull any existing code for the target language
     const { js: starterJs, ts: starterTs } = this.startersForBoth(q as Question);
-    const starterNext = v === 'ts' ? starterTs : starterJs;
+    const rawPerLang = await this.codeStore.getJsForLangAsync(q.id, next);
 
-    const perLang = this.codeStore.getJsForLang(q.id, v);
-    const next = (typeof perLang === 'string' && perLang.trim().length)
-      ? perLang
-      : starterNext;
+    let nextCode = (typeof rawPerLang === 'string' && rawPerLang.trim())
+      ? rawPerLang
+      : '';
 
-    this.editorContent.set(next);
+    // 3) If target slot is empty, seed it intelligently
+    if (!nextCode) {
+      if (next === 'js') {
+        // We’re switching TS -> JS: derive JS from current TS editor
+        const tsNow = this.editorContent();
+        // If current lang was already JS (edge case), just use it; else transpile/strip
+        nextCode = (this.jsLang() === 'js') ? tsNow : await this.ensureJs(tsNow, `${q.id}.ts`);
+        if (!nextCode?.trim()) nextCode = starterJs;
+      } else {
+        // Switching JS -> TS: simplest & safest default is to copy JS verbatim
+        // (or pick starterTs if you want a typed scaffold)
+        const jsNow = this.editorContent();
+        nextCode = jsNow?.trim() ? jsNow : starterTs;
+      }
 
-    // restore banner state
+      // Persist the seed so subsequent switches are stable
+      await this.codeStore.saveJsAsync(q.id, nextCode, next, { force: true });
+    }
+
+    // 4) Hydrate editor + tests for the new lang
+    this.editorContent.set(nextCode);
+    this.testCode.set(this.pickTests(q as any, next));
+
+    // Restore banners as they were
     this.restoredFromStorage.set(bannerWasRestored);
     this.restoreDismissed.set(bannerWasDismissed);
 
-    this.testCode.set(this.pickTests(q as any, v));
+    // Reset local UI state
     this.topTab.set('code');
     this.subTab.set('tests');
     this.hasRunTests.set(false);
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
+    // End hydration
     this.endHydrationSoon();
   }
 
   /* ---------- Handlers ---------- */
-  onCodeChange(code: string) {
-    if (this._hydrating) return;           // 🛡️ ignore editor’s initial emissions
+  async onCodeChange(code: string) {
+    if (this._hydrating) return;
     const q = this.question; if (!q) return;
-
-    // avoid redundant writes when nothing changed
     if (code === this.editorContent()) return;
 
     this.editorContent.set(code);
-    this.codeStore.saveJs(q.id, code, this.jsLang());
+    await this.codeStore.saveJsAsync(q.id, code, this.jsLang());
     this.codeChange.emit({ lang: this.jsLang(), code });
   }
 
@@ -433,10 +498,10 @@ export class CodingJsPanelComponent implements OnChanges {
   }
 
   // inside CodingJsPanelComponent
-  public setCode(code: string) {
+  public async setCode(code: string) {
     this.editorContent.set(code);
     const q = this.question;
-    if (q) this.codeStore.saveJs(q.id, code, this.jsLang());
+    if (q) await this.codeStore.saveJsAsync(q.id, code, this.jsLang());
     this.codeChange.emit({ lang: this.jsLang(), code });
   }
 
