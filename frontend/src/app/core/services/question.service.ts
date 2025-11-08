@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 import { Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
 
@@ -29,8 +30,17 @@ export class QuestionService {
         const cached = localStorage.getItem(key);
         if (cached) return of(JSON.parse(cached) as Question[]);
 
-        // Accept any shape and normalize to Question[]
-        return this.http.get<any>(this.url(technology, kind)).pipe(
+        const cdnUrl = this.cdnUrl(technology, kind);
+        const assetsUrl = this.assetUrl(technology, kind);
+
+        // Try CDN first (if configured); fall back to local assets.
+        const source$ = cdnUrl
+          ? this.http.get<any>(cdnUrl).pipe(
+            catchError(() => this.http.get<any>(assetsUrl))
+          )
+          : this.http.get<any>(assetsUrl);
+
+        return source$.pipe(
           map((raw) => this.normalizeQuestions(raw, technology, kind)),
           catchError(() => of([] as Question[])),
           tap((list) => localStorage.setItem(key, JSON.stringify(list)))
@@ -59,17 +69,28 @@ export class QuestionService {
   }
 
   /** System design list (simple cache). */
+  /** System design list (simple cache). */
   loadSystemDesign(): Observable<any[]> {
     const key = `${this.cachePrefix}system-design`;
     const cached = localStorage.getItem(key);
     if (cached) return of(JSON.parse(cached) as any[]);
 
-    return this.http
-      .get<any[]>(`assets/questions/system-design/system-design.json`)
-      .pipe(
-        catchError(() => of([] as any[])),
-        tap((qs) => localStorage.setItem(key, JSON.stringify(qs)))
-      );
+    const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
+    const cdnUrl = cdnBase
+      ? `${cdnBase}/questions/system-design/system-design.json`
+      : null;
+    const assetsUrl = 'assets/questions/system-design/system-design.json';
+
+    const source$ = cdnUrl
+      ? this.http.get<any[]>(cdnUrl).pipe(
+        catchError(() => this.http.get<any[]>(assetsUrl))
+      )
+      : this.http.get<any[]>(assetsUrl);
+
+    return source$.pipe(
+      catchError(() => of([] as any[])),
+      tap((qs) => localStorage.setItem(key, JSON.stringify(qs)))
+    );
   }
 
   /** Handy during development: clear all cached lists managed by this service. */
@@ -84,8 +105,14 @@ export class QuestionService {
   private key(tech: Tech, kind: Kind) {
     return `${this.cachePrefix}${tech}:${kind}`;
   }
-  private url(tech: Tech, kind: Kind) {
+  private assetUrl(tech: Tech, kind: Kind) {
     return `assets/questions/${tech}/${kind}.json`;
+  }
+
+  private cdnUrl(tech: Tech, kind: Kind): string {
+    const base = (environment as any).cdnBaseUrl;
+    if (!base) return '';
+    return `${String(base).replace(/\/+$/, '')}/questions/${tech}/${kind}.json`;
   }
 
   /** Normalize any supported JSON shape to Question[] and add safe defaults. */

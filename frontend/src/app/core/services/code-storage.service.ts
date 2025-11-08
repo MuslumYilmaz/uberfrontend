@@ -395,11 +395,27 @@ export class CodeStorageService {
     qidRaw: string | number,
     starters?: { js?: string; ts?: string }
   ): Promise<void> {
-    this.resetJsBoth(qidRaw, starters); // updates LS
+    this.ensureMigrated();
     const qid = String(qidRaw);
-    const lsRaw = localStorage.getItem(V2_JS_BUNDLE(qid));
-    if (lsRaw) { try { await LF_JS.setItem(V2_JS_BUNDLE(qid), lsRaw); } catch { /* ignore */ } }
+    const now = new Date().toISOString();
+
+    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const jsBaseline = starters?.js ?? cur.js?.baseline ?? '';
+    const tsBaseline = starters?.ts ?? cur.ts?.baseline ?? '';
+
+    const next: JsBundleV2 = {
+      ...cur,
+      js: { code: jsBaseline, baseline: jsBaseline, updatedAt: now },
+      ts: { code: tsBaseline, baseline: tsBaseline, updatedAt: now },
+      version: 'v2',
+      updatedAt: now,
+      lastLang: cur.lastLang ?? 'js',
+    };
+
+    await this.saveBundlePrimary(qid, next);
   }
+
 
   // ---------- ASYNC (IndexedDB) JS API: non-breaking side-by-side ----------
 
@@ -428,33 +444,66 @@ export class CodeStorageService {
     return this.getJs(qid);
   }
 
-  /** Write v2 JS bundle to IndexedDB (and mirror to localStorage for compatibility) */
+  /** Write v2 JS bundle to IndexedDB (primary) with localStorage as fallback */
   async saveJsAsync(
     qidRaw: string | number,
     code: string,
     lang: JsLang = 'js',
     opts?: { force?: boolean }
   ): Promise<void> {
-    // Reuse the existing guards & shape by calling your current saveJs first (writes to LS)
-    this.saveJs(qidRaw, code, lang, opts);
-
-    // Then mirror LS → IDB so future reads can use IndexedDB
+    this.ensureMigrated();
     const qid = String(qidRaw);
-    const lsRaw = localStorage.getItem(V2_JS_BUNDLE(qid));
-    if (lsRaw) {
-      try { await LF_JS.setItem(V2_JS_BUNDLE(qid), lsRaw); } catch { /* ignore */ }
+    const now = new Date().toISOString();
+
+    // Read current bundle (IDB first, then LS)
+    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const existing = cur[lang]?.code ?? '';
+    const baseline = cur[lang]?.baseline ?? null;
+
+    // Guard 1: don't overwrite non-empty user code with empty value (unless force)
+    if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+      return;
     }
+
+    // Guard 2: don't "revert" to baseline if user already has custom code (unless force)
+    if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+      return;
+    }
+
+    const next: JsBundleV2 = {
+      ...cur,
+      [lang]: { ...(cur[lang] || {}), code, updatedAt: now },
+      lastLang: lang,
+      version: 'v2',
+      updatedAt: now,
+    };
+
+    await this.saveBundlePrimary(qid, next);
+
   }
 
-  /** Set baseline in IDB too (mirrors your current baseline logic) */
+  /** Set baseline; write to IDB primarily, LS as fallback */
   async setJsBaselineAsync(qidRaw: string | number, lang: JsLang, baseline: string): Promise<void> {
-    this.setJsBaseline(qidRaw, lang, baseline); // keep existing behavior + guards
-
+    this.ensureMigrated();
     const qid = String(qidRaw);
-    const lsRaw = localStorage.getItem(V2_JS_BUNDLE(qid));
-    if (lsRaw) {
-      try { await LF_JS.setItem(V2_JS_BUNDLE(qid), lsRaw); } catch { /* ignore */ }
-    }
+    const now = new Date().toISOString();
+
+    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const next: JsBundleV2 = {
+      ...cur,
+      [lang]: {
+        code: cur[lang]?.code ?? baseline,
+        baseline,
+        updatedAt: cur[lang]?.updatedAt ?? now,
+      },
+      version: 'v2',
+      updatedAt: now,
+    };
+
+    await this.saveBundlePrimary(qid, next);
+
   }
 
   /** Strict per-language getter (IDB first, then LS) */
@@ -470,11 +519,13 @@ export class CodeStorageService {
     return this.getJsForLang(qid, lang);
   }
 
-  /** Async clear for IDB (keeps your existing LS clear) */
+  /** Async clear: remove from IDB first, then LS */
   async clearJsAsync(qidRaw: string | number): Promise<void> {
-    this.clearJs(qidRaw); // clears LS
     const qid = String(qidRaw);
     try { await LF_JS.removeItem(V2_JS_BUNDLE(qid)); } catch { /* ignore */ }
+    if (hasLocalStorage()) {
+      try { localStorage.removeItem(V2_JS_BUNDLE(qid)); } catch { /* ignore */ }
+    }
   }
 
   // helper (optional but tidy)
@@ -489,37 +540,81 @@ export class CodeStorageService {
     } catch { return null; }
   }
 
-  // replace your current initJsAsync with this:
+  private async saveBundlePrimary(
+    qid: string,
+    bundle: JsBundleV2,
+    opts?: { silent?: boolean }
+  ): Promise<void> {
+    const key = V2_JS_BUNDLE(qid);
+
+    try {
+      // Primary: IndexedDB
+      await LF_JS.setItem(key, JSON.stringify(bundle));
+      return;
+    } catch {
+      // Fallback: localStorage (only if available)
+      if (!hasLocalStorage()) {
+        if (!opts?.silent) {
+          // optionally log in dev
+        }
+        return;
+      }
+      try {
+        localStorage.setItem(key, JSON.stringify(bundle));
+      } catch {
+        // Out of quota both in IDB/LS → nothing else to do.
+      }
+    }
+  }
+
   async initJsAsync(
     qidRaw: string | number,
     lang: 'js' | 'ts',
     starter: string
   ): Promise<{ initial: string; restored: boolean }> {
     const qid = String(qidRaw);
+    const now = new Date().toISOString();
 
-    // Try bundle from IDB/LS
-    const b = await this.getBundleAsync(qid);
-    if (b) {
-      // seed baseline if missing (don’t write starter as code)
-      const base = (b[lang]?.baseline ?? null) ?? starter;
-      const code = (b[lang]?.code ?? '') as string;
-      const hasUser = code.trim().length > 0;
+    const existing = await this.getBundleAsync(qid);
+    if (existing) {
+      const cur: JsBundleV2 = { ...existing };
 
-      const initial = hasUser ? code : starter;
-      const restored = hasUser && code.trim() !== base.trim();
+      // Seed baseline if missing (do NOT write starter as user code)
+      if (!cur[lang]?.baseline) {
+        cur[lang] = {
+          ...(cur[lang] || {}),
+          baseline: starter,
+          code: cur[lang]?.code ?? '',
+        };
+      }
 
-      // keep lastLang consistent (no-op if unchanged)
-      try {
-        const next: JsBundleV2 = { ...b, lastLang: lang, version: 'v2', updatedAt: new Date().toISOString() };
-        localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
-        await LF_JS.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
-      } catch { /* ignore */ }
+      const saved = cur[lang]?.code ?? '';
+      const base = cur[lang]?.baseline ?? starter;
+      const hasUser = saved.trim().length > 0;
+
+      const initial = hasUser ? saved : starter;
+      const restored = hasUser && saved.trim() !== base.trim();
+
+      cur.lastLang = lang;
+      cur.version = 'v2';
+      cur.updatedAt = now;
+
+      await this.saveBundlePrimary(qid, cur, { silent: true });
 
       return { initial, restored };
     }
 
-    // First-time path: fall back to your LS initializer (seeds baseline)
-    return this.initJs(qid, lang, starter);
+    // First-time: create a fresh bundle with baseline only.
+    const fresh: JsBundleV2 = {
+      version: 'v2',
+      updatedAt: now,
+      lastLang: lang,
+      [lang]: { baseline: starter, code: '' },
+    };
+
+    await this.saveBundlePrimary(qid, fresh, { silent: true });
+
+    return { initial: starter, restored: false };
   }
 
   // NEW: read last selected language (IDB first, then LS)
