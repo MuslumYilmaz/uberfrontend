@@ -72,7 +72,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   private _persistLangOnUnload = () => {
-    const q = this.question; if (q) this.codeStore.setLastLang(q.id, this.jsLang());
+    const q = this.question;
+    if (q) void this.codeStore.setLastLangAsync(q.id, this.jsLang());
   };
 
   private endHydrationSoon() {
@@ -186,7 +187,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     this.jsLang.set(preferred);
     this.langChange.emit(preferred);
-    await this.codeStore.setLastLang(q.id, preferred);             // keep sticky
+    await this.codeStore.setLastLangAsync(q.id, preferred);        // keep sticky
 
     // 2) Ensure per-lang slots exist (post-migration safety)
     const { js: sJs, ts: sTs } = this.startersForBoth(q);
@@ -236,7 +237,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this._hydrating = true;
     this.jsLang.set(next);
     this.langChange.emit(next);
-    await this.codeStore.setLastLang(q.id, next);
+    await this.codeStore.setLastLangAsync(q.id, next);
 
     // 2) Pull any existing code for the target language
     const { js: starterJs, ts: starterTs } = this.startersForBoth(q as Question);

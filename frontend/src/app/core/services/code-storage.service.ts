@@ -29,10 +29,20 @@ export interface JsBundleV2 {
   updatedAt: string; // ISO
 }
 
+type WebLang = 'html' | 'css';
+
+export interface WebBundleV2 {
+  html?: { code?: string; baseline?: string; updatedAt?: string };
+  css?: { code?: string; baseline?: string; updatedAt?: string };
+  version: 'v2';
+  updatedAt: string;
+}
+
 const DATA_VERSION = '2';
 
 const LF_JS = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_js' });
 const LF_NG = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_ng' });
+const LF_WEB = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_web' });
 
 const BASE = 'code:';
 const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v2:code:
@@ -47,6 +57,7 @@ const UF_LANG_PREF = (qid: string) => `uf:lang:${qid}`;
 
 /** v2 consolidated key (one per question) */
 const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`;
+const V2_WEB_BUNDLE = (qid: string) => `${PREFIX}web2:${qid}`;
 
 /** one-time flag so we don't re-copy on every load */
 const MIGRATION_FLAG_JS_IDB = 'uf:js:idb:migrated:v1';
@@ -88,61 +99,15 @@ export class CodeStorageService {
   saveJs(
     qidRaw: string | number,
     code: string,
-    lang: 'js' | 'ts' = 'js',
-    opts?: { force?: boolean } // ← allow bypass for "Reset to default"
+    lang: JsLang = 'js',
+    opts?: { force?: boolean }
   ): void {
-    this.ensureMigrated();
-    if (!hasLocalStorage()) return;
-
-    const qid = String(qidRaw);
-    const now = new Date().toISOString();
-    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
-
-    const existing = cur[lang]?.code ?? '';
-    const baseline = cur[lang]?.baseline ?? null;
-
-    // 🚫 Guard 1: prevent accidental empty init overwriting valid user code
-    if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
-      return;
-    }
-
-    // 🚫 Guard 2: prevent re-writing the baseline if we already have user code
-    if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
-      return;
-    }
-
-    // ✅ Apply update
-    const next: JsBundleV2 = {
-      ...cur,
-      [lang]: { ...(cur[lang] || {}), code, updatedAt: now },   // CHANGED
-      lastLang: lang,
-      version: 'v2',
-      updatedAt: now,
-    };
-
-    try {
-      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
-    } catch { }
+    // Legacy wrapper: use async path (IDB-first).
+    void this.saveJsAsync(qidRaw, code, lang, opts);
   }
 
   setJsBaseline(qidRaw: string | number, lang: JsLang, baseline: string): void {
-    this.ensureMigrated();
-    if (!hasLocalStorage()) return;
-    const qid = String(qidRaw);
-
-    const now = new Date().toISOString();
-    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
-
-    const next: JsBundleV2 = {
-      ...cur,
-      [lang]: { code: cur[lang]?.code ?? baseline, baseline },
-      version: 'v2',
-      updatedAt: now,
-    };
-
-    try {
-      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
-    } catch { }
+    void this.setJsBaselineAsync(qidRaw, lang, baseline);
   }
 
   getJsBaseline(qidRaw: string | number, lang: JsLang): string | null {
@@ -161,18 +126,9 @@ export class CodeStorageService {
   }
 
   /** Switch lastLang without touching code buffers. */
+  // LEGACY sync helper: delegate to async, avoid direct LS writes.
   setLastLang(qidRaw: string | number, lang: JsLang): void {
-    this.ensureMigrated();
-    if (!hasLocalStorage()) return;
-    const qid = String(qidRaw);
-
-    const now = new Date().toISOString();
-    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
-
-    const next: JsBundleV2 = { ...cur, lastLang: lang, version: 'v2', updatedAt: now };
-    try {
-      localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next));
-    } catch { }
+    void this.setLastLangAsync(qidRaw, lang);
   }
 
   /** Clear everything for this question (both languages). */
@@ -343,52 +299,22 @@ export class CodeStorageService {
   }
 
   // in CodeStorageService
-  resetJsToBaseline(qidRaw: string | number, lang: 'js' | 'ts'): void {
-    this.ensureMigrated();
-    if (!hasLocalStorage()) return;
-    const qid = String(qidRaw);
-
-    const now = new Date().toISOString();
-    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
-
-    const baseline = cur[lang]?.baseline ?? '';
-    // overwrite code with baseline explicitly (bypass normal guards)
-    const next: JsBundleV2 = {
-      ...cur,
-      [lang]: { ...(cur[lang] || {}), code: baseline, baseline },
-      lastLang: lang,
-      version: 'v2',
-      updatedAt: now,
-    };
-
-    try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next)); } catch { }
+  resetJsToBaseline(qidRaw: string | number, lang: JsLang): void {
+    // Minimal implementation: load current bundle and push baseline into code via async helpers.
+    void (async () => {
+      const qid = String(qidRaw);
+      const cur = await this.getBundleAsync(qid);
+      const baseline = cur?.[lang]?.baseline ?? '';
+      if (!baseline) return;
+      await this.saveJsAsync(qid, baseline, lang, { force: true });
+    })();
   }
 
   resetJsBoth(
     qidRaw: string | number,
-    starters?: { js?: string; ts?: string } // optional: pass to override/update baselines too
+    starters?: { js?: string; ts?: string }
   ): void {
-    this.ensureMigrated();
-    if (!hasLocalStorage()) return;
-
-    const qid = String(qidRaw);
-    const now = new Date().toISOString();
-    const cur = this.getBundle(qid) || { version: 'v2', updatedAt: now } as JsBundleV2;
-
-    const jsBaseline = starters?.js ?? cur.js?.baseline ?? '';
-    const tsBaseline = starters?.ts ?? cur.ts?.baseline ?? '';
-
-    const next: JsBundleV2 = {
-      ...cur,
-      js: { code: jsBaseline, baseline: jsBaseline },
-      ts: { code: tsBaseline, baseline: tsBaseline },
-      version: 'v2',
-      updatedAt: now,
-      // keep current lastLang so the same tab remains active after reset
-      lastLang: cur.lastLang ?? 'js',
-    };
-
-    try { localStorage.setItem(V2_JS_BUNDLE(qid), JSON.stringify(next)); } catch { }
+    void this.resetJsBothAsync(qidRaw, starters);
   }
 
   async resetJsBothAsync(
@@ -637,6 +563,68 @@ export class CodeStorageService {
     };
   }
 
+  async setLastLangAsync(qidRaw: string | number, lang: JsLang): Promise<void> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+
+    // Reuse existing bundle (IDB first, then LS)
+    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+
+    const next: JsBundleV2 = {
+      ...cur,
+      lastLang: lang,
+      version: 'v2',
+      updatedAt: now,
+    };
+
+    await this.saveBundlePrimary(qid, next, { silent: true });
+  }
+
+  private async getWebBundleAsync(qidRaw: string | number): Promise<WebBundleV2 | null> {
+    const qid = String(qidRaw);
+
+    // IDB first
+    const raw = await LF_WEB.getItem<string>(V2_WEB_BUNDLE(qid));
+    if (raw) {
+      try { return JSON.parse(raw) as WebBundleV2; } catch { /* ignore */ }
+    }
+
+    // Fallback: localStorage (legacy / migration)
+    if (hasLocalStorage()) {
+      try {
+        const ls = localStorage.getItem(V2_WEB_BUNDLE(qid));
+        return ls ? (JSON.parse(ls) as WebBundleV2) : null;
+      } catch { /* ignore */ }
+    }
+
+    return null;
+  }
+
+  private async saveWebBundlePrimary(
+    qid: string,
+    bundle: WebBundleV2,
+    opts?: { silent?: boolean }
+  ): Promise<void> {
+    const key = V2_WEB_BUNDLE(qid);
+
+    try {
+      await LF_WEB.setItem(key, JSON.stringify(bundle));
+      return;
+    } catch {
+      if (!hasLocalStorage()) {
+        if (!opts?.silent) {
+          // optionally log in dev
+        }
+        return;
+      }
+      try {
+        localStorage.setItem(key, JSON.stringify(bundle));
+      } catch {
+        // both stores failed; nothing else to do
+      }
+    }
+  }
+
   /**
  * One-time migration: copy all v2 JS bundles from localStorage into IndexedDB.
  * Safe to call on startup; it no-ops after the first successful run.
@@ -670,6 +658,123 @@ export class CodeStorageService {
       localStorage.setItem(MIGRATION_FLAG_JS_IDB, '1');
     } catch {
       // swallow: if this explodes, normal lazy-writes will still populate IDB over time
+    }
+  }
+
+  async initWebAsync(
+    qidRaw: string | number,
+    starters: { html: string; css: string }
+  ): Promise<{ html: string; css: string; restored: boolean }> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+
+    let bundle = await this.getWebBundleAsync(qid);
+
+    // First-time: create baseline-only bundle
+    if (!bundle) {
+      bundle = {
+        version: 'v2',
+        updatedAt: now,
+        html: { baseline: starters.html, code: '' },
+        css: { baseline: starters.css, code: '' },
+      };
+      await this.saveWebBundlePrimary(qid, bundle, { silent: true });
+      return { html: starters.html, css: starters.css, restored: false };
+    }
+
+    // Ensure structure
+    if (!bundle.html) bundle.html = {};
+    if (!bundle.css) bundle.css = {};
+
+    // Seed missing baselines without overwriting code
+    if (!bundle.html.baseline) bundle.html.baseline = starters.html;
+    if (!bundle.css.baseline) bundle.css.baseline = starters.css;
+
+    const rawHtml = bundle.html.code ?? '';
+    const rawCss = bundle.css.code ?? '';
+
+    const htmlBase = bundle.html.baseline || starters.html;
+    const cssBase = bundle.css.baseline || starters.css;
+
+    const htmlHasUser = rawHtml.trim().length > 0;
+    const cssHasUser = rawCss.trim().length > 0;
+
+    const htmlInitial = htmlHasUser ? rawHtml : htmlBase;
+    const cssInitial = cssHasUser ? rawCss : cssBase;
+
+    const restored =
+      (htmlHasUser && rawHtml.trim() !== htmlBase.trim()) ||
+      (cssHasUser && rawCss.trim() !== cssBase.trim());
+
+    bundle.updatedAt = now;
+    await this.saveWebBundlePrimary(qid, bundle, { silent: true });
+
+    return { html: htmlInitial, css: cssInitial, restored };
+  }
+
+  async saveWebAsync(
+    qidRaw: string | number,
+    which: WebLang,
+    code: string,
+    opts?: { force?: boolean }
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+
+    const cur = (await this.getWebBundleAsync(qid)) || {
+      version: 'v2',
+      updatedAt: now,
+      html: {},
+      css: {},
+    } as WebBundleV2;
+
+    const part = cur[which] || {};
+    const existing = part.code ?? '';
+    const baseline = part.baseline ?? null;
+
+    // Guard 1: don't clobber non-empty user code with empty string (unless forced)
+    if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+      return;
+    }
+
+    // Guard 2: don't silently revert to baseline when user already has custom code
+    if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+      return;
+    }
+
+    cur[which] = { ...part, code, updatedAt: now };
+    cur.updatedAt = now;
+
+    await this.saveWebBundlePrimary(qid, cur);
+  }
+
+  async resetWebBothAsync(
+    qidRaw: string | number,
+    starters?: { html?: string; css?: string }
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+    const cur = (await this.getWebBundleAsync(qid)) || { version: 'v2', updatedAt: now } as WebBundleV2;
+
+    const htmlBaseline = starters?.html ?? cur.html?.baseline ?? '';
+    const cssBaseline = starters?.css ?? cur.css?.baseline ?? '';
+
+    const next: WebBundleV2 = {
+      ...cur,
+      html: { code: htmlBaseline, baseline: htmlBaseline, updatedAt: now },
+      css: { code: cssBaseline, baseline: cssBaseline, updatedAt: now },
+      version: 'v2',
+      updatedAt: now,
+    };
+
+    await this.saveWebBundlePrimary(qid, next);
+  }
+
+  async clearWebAsync(qidRaw: string | number): Promise<void> {
+    const qid = String(qidRaw);
+    try { await LF_WEB.removeItem(V2_WEB_BUNDLE(qid)); } catch { /* ignore */ }
+    if (hasLocalStorage()) {
+      try { localStorage.removeItem(V2_WEB_BUNDLE(qid)); } catch { /* ignore */ }
     }
   }
 }

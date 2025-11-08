@@ -17,6 +17,7 @@ import { ButtonModule } from 'primeng/button';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { ActivityService } from '../../../../core/services/activity.service';
+import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { DailyService } from '../../../../core/services/daily.service';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
@@ -238,7 +239,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     private sanitizer: DomSanitizer,
     private zone: NgZone,
     private daily: DailyService,
-    private activity: ActivityService
+    private activity: ActivityService,
+    private codeStorage: CodeStorageService
   ) { }
 
   // --- refs
@@ -308,7 +310,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
   ngOnChanges(ch: SimpleChanges): void {
     if (ch['question'] && this.question) {
-      this.initFromQuestion();
+      void this.initFromQuestion();
     }
   }
 
@@ -326,10 +328,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     window.removeEventListener('pointercancel', this.onPointerUp);
     if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
   }
-
-  // -------- persistence keys (unchanged) --------
-  private webKey(q: Question, which: 'html' | 'css') { return `uf:web:${which}:${q.id}`; }
-  private webBaseKey(q: Question, which: 'html' | 'css') { return `uf:web:baseline:v2:${which}:${q.id}`; }
 
   // -------- init from question (unchanged logic) --------
   private getWebStarters(q: any): { html: string; css: string } {
@@ -381,42 +379,18 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     return this.unescapeJsLiterals(pick(q, ['web.tests', 'tests', 'testsDom', 'testsHtml']) || '');
   }
 
-  public initFromQuestion(): void {
+  public async initFromQuestion(): Promise<void> {
     const q = this.question;
     if (!q) return;
 
     const starters = this.getWebStarters(q);
-    const htmlBaseKey = this.webBaseKey(q, 'html');
-    const cssBaseKey = this.webBaseKey(q, 'css');
 
-    if (!localStorage.getItem(htmlBaseKey)) try { localStorage.setItem(htmlBaseKey, starters.html); } catch { }
-    if (!localStorage.getItem(cssBaseKey)) try { localStorage.setItem(cssBaseKey, starters.css); } catch { }
+    // HTML/CSS come from shared IndexedDB-backed storage
+    const { html, css, restored } = await this.codeStorage.initWebAsync(q.id, starters);
 
-    const normalizeSaved = (raw: string | null) => {
-      if (raw == null) return null;
-      const s = raw.trim();
-      if (!s) return null;
-      if (s.startsWith('{')) {
-        try {
-          const obj = JSON.parse(s);
-          if (obj && typeof obj.code === 'string') return this.unescapeJsLiterals(obj.code);
-        } catch { }
-      }
-      return this.unescapeJsLiterals(s);
-    };
-
-    const savedHtml = normalizeSaved(localStorage.getItem(this.webKey(q, 'html')));
-    const savedCss = normalizeSaved(localStorage.getItem(this.webKey(q, 'css')));
-    this.htmlCode.set(savedHtml ?? starters.html);
-    this.cssCode.set(savedCss ?? starters.css);
-
-    // show banner if diverged from baseline
-    try {
-      const baseHtml = localStorage.getItem(htmlBaseKey) ?? '';
-      const baseCss = localStorage.getItem(cssBaseKey) ?? '';
-      const changed = (savedHtml && savedHtml !== baseHtml) || (savedCss && savedCss !== baseCss);
-      this.showRestoreBanner.set(!!changed);
-    } catch { this.showRestoreBanner.set(false); }
+    this.htmlCode.set(html);
+    this.cssCode.set(css);
+    this.showRestoreBanner.set(restored);
 
     this.testCode.set(this.getWebTests(q));
     this.hasRunTests = false;
@@ -425,9 +399,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.sessionStart = Date.now();
     this.recorded = false;
 
-    // initial preview
     this.scheduleWebPreview();
   }
+
 
   // ---------- save + preview ----------
   onHtmlChange = (code: string) => {
@@ -435,8 +409,12 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.htmlCode.set(code);
     clearTimeout(this.webSaveTimer);
     this.webSaveTimer = setTimeout(() => {
-      try { localStorage.setItem(this.webKey(q, 'html'), code); } catch { }
+      const qid = this.question?.id;
+      if (qid) {
+        void this.codeStorage.saveWebAsync(qid, 'html', code);
+      }
     }, 200);
+
 
     this.exitSolutionPreview('user edited HTML');
     this.scheduleWebPreview();
@@ -447,7 +425,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.cssCode.set(code);
     clearTimeout(this.webSaveTimer);
     this.webSaveTimer = setTimeout(() => {
-      try { localStorage.setItem(this.webKey(q, 'css'), code); } catch { }
+      const qid = this.question?.id;
+      if (qid) {
+        void this.codeStorage.saveWebAsync(qid, 'css', code);
+      }
     }, 200);
 
     this.exitSolutionPreview('user edited CSS');
@@ -487,36 +468,27 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.showingSolutionPreview = false;
   }
 
-  public externalResetToDefault(): void {
+  public async externalResetToDefault(): Promise<void> {
     const q = this.question; if (!q) return;
 
-    // Prefer baseline, fallback to starters
     const starters = this.getWebStarters(q);
-    const baseHtml = localStorage.getItem(this.webBaseKey(q, 'html'));
-    const baseCss = localStorage.getItem(this.webBaseKey(q, 'css'));
 
-    const nextHtml = (baseHtml ?? starters.html);
-    const nextCss = (baseCss ?? starters.css);
-
-    // Avoid writing stale content back over the reset
     if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
 
-    // Clear saved (mutable) copies so subsequent loads start from baseline
-    try { localStorage.removeItem(this.webKey(q, 'html')); } catch { }
-    try { localStorage.removeItem(this.webKey(q, 'css')); } catch { }
-    try { localStorage.removeItem(this.solvedKey(q)); } catch { }
+    await this.codeStorage.resetWebBothAsync(q.id, starters);
 
-    // Update in-memory editors immediately
-    this.htmlCode.set(nextHtml);
-    this.cssCode.set(nextCss);
-
-    // Rebuild preview + clear results/console
+    this.htmlCode.set(starters.html);
+    this.cssCode.set(starters.css);
     this.scheduleWebPreview();
+
     this.consoleEntries.set([]);
     this.testResults.set([]);
     this.hasRunTests = false;
     this.showRestoreBanner.set(false);
+
+    try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
+
 
   // ---------- tests ----------
   async runWebTests(): Promise<void> {
@@ -596,14 +568,20 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   async resetQuestion() {
     const q = this.question; if (!q) return;
     const starters = this.getWebStarters(q);
-    try { localStorage.removeItem(this.webKey(q, 'html')); } catch { }
-    try { localStorage.removeItem(this.webKey(q, 'css')); } catch { }
+
+    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+
+    await this.codeStorage.resetWebBothAsync(q.id, starters);
+
     this.htmlCode.set(starters.html);
     this.cssCode.set(starters.css);
     this.scheduleWebPreview();
+
     this.consoleEntries.set([]);
     this.testResults.set([]);
     this.hasRunTests = false;
+    this.showRestoreBanner.set(false);
+
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
 
@@ -681,7 +659,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private setPreviewHtml(html: string | null) {
     this.lastPreviewHtml = html;
 
-    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    try {
+      if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl);
+    } catch { }
     this.previewObjectUrl = null;
 
     const frameEl = this.previewFrame?.nativeElement;
@@ -695,7 +675,13 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     if (!html) {
       const doc = frameEl.contentDocument;
-      if (doc) { doc.open(); doc.write('<!doctype html><meta charset="utf-8">'); doc.close(); }
+      if (doc) {
+        doc.open();
+        doc.write('<!doctype html><meta charset="utf-8">');
+        doc.close();
+      }
+      // important: clear url so the "Building preview…" condition is correct
+      this._previewUrl.set(null);
       return;
     }
 
@@ -703,12 +689,17 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
 
+    // keep iframe navigation
     const cw = frameEl.contentWindow;
-    if (cw) cw.location.replace(url);
-    else {
+    if (cw) {
+      cw.location.replace(url);
+    } else {
       frameEl.onload = () => frameEl.contentWindow?.location.replace(url);
       frameEl.setAttribute('src', url);
     }
+
+    // 👇 update the reactive url used by the template
+    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
 
   /** Apply solution into editors, persist, and rebuild preview (invoked by parent). */
@@ -738,8 +729,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.cssCode.set(nextCss);
 
     // 4) Persist immediately (so a refresh keeps the applied solution)
-    try { localStorage.setItem(this.webKey(q, 'html'), nextHtml); } catch { }
-    try { localStorage.setItem(this.webKey(q, 'css'), nextCss); } catch { }
+    void this.codeStorage.saveWebAsync(q.id, 'html', nextHtml, { force: true });
+    void this.codeStorage.saveWebAsync(q.id, 'css', nextCss, { force: true });
+
 
     // 5) Close any "solution preview" banner state and restore normal preview pipeline
     this.exitSolutionPreview('load into editor');
