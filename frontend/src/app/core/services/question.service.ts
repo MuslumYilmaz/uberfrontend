@@ -14,7 +14,8 @@ type DataVersion = { version: string };
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
-  private readonly cachePrefix = 'qcache:';
+  private readonly cachePrefix = 'qcache:';          // normalized cache
+  private readonly overridePrefix = 'qoverride:';    // manual/local overrides
   private readonly dvKey = `${this.cachePrefix}dv`;
   private version$?: Observable<string>;
 
@@ -22,18 +23,41 @@ export class QuestionService {
 
   // ---------- public API ----------------------------------------------------
 
-  /** Load questions for a given tech + kind. Handles array OR single-object JSON. */
+  /**
+   * Load questions for a given tech + kind.
+   *
+   * Order of precedence:
+   * 1. Local override in localStorage (qoverride:<tech>:<kind>)
+   * 2. Cached normalized list (qcache:<tech>:<kind>)
+   * 3. CDN JSON (if cdnBaseUrl configured)
+   * 4. Assets JSON under assets/questions/<tech>/<kind>.json
+   */
   loadQuestions(technology: Tech, kind: Kind): Observable<Question[]> {
     return this.getVersion().pipe(
       switchMap(() => {
-        const key = this.key(technology, kind);
-        const cached = localStorage.getItem(key);
-        if (cached) return of(JSON.parse(cached) as Question[]);
+        const oKey = this.overrideKey(technology, kind);
+        const cKey = this.key(technology, kind);
 
+        // 1) Local override: lets you edit questions via devtools without touching CDN.
+        const overrideRaw = this.safeGet(oKey);
+        if (overrideRaw) {
+          const parsed = this.safeParse(overrideRaw);
+          const list = this.normalizeQuestions(parsed, technology, kind);
+          return of(list);
+        }
+
+        // 2) Normal cached list
+        const cachedRaw = this.safeGet(cKey);
+        if (cachedRaw) {
+          const parsed = this.safeParse(cachedRaw);
+          const list = this.normalizeQuestions(parsed, technology, kind);
+          return of(list);
+        }
+
+        // 3/4) Remote source (CDN → assets)
         const cdnUrl = this.cdnUrl(technology, kind);
         const assetsUrl = this.assetUrl(technology, kind);
 
-        // Try CDN first (if configured); fall back to local assets.
         const source$ = cdnUrl
           ? this.http.get<any>(cdnUrl).pipe(
             catchError(() => this.http.get<any>(assetsUrl))
@@ -43,7 +67,10 @@ export class QuestionService {
         return source$.pipe(
           map((raw) => this.normalizeQuestions(raw, technology, kind)),
           catchError(() => of([] as Question[])),
-          tap((list) => localStorage.setItem(key, JSON.stringify(list)))
+          tap((list) => {
+            // store normalized list in cache key
+            this.safeSet(cKey, JSON.stringify(list));
+          })
         );
       })
     );
@@ -69,11 +96,13 @@ export class QuestionService {
   }
 
   /** System design list (simple cache). */
-  /** System design list (simple cache). */
   loadSystemDesign(): Observable<any[]> {
     const key = `${this.cachePrefix}system-design`;
-    const cached = localStorage.getItem(key);
-    if (cached) return of(JSON.parse(cached) as any[]);
+    const cachedRaw = this.safeGet(key);
+    if (cachedRaw) {
+      const parsed = this.safeParse(cachedRaw);
+      if (Array.isArray(parsed)) return of(parsed as any[]);
+    }
 
     const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
     const cdnUrl = cdnBase
@@ -89,14 +118,39 @@ export class QuestionService {
 
     return source$.pipe(
       catchError(() => of([] as any[])),
-      tap((qs) => localStorage.setItem(key, JSON.stringify(qs)))
+      tap((qs) => this.safeSet(key, JSON.stringify(qs)))
     );
   }
 
-  /** Handy during development: clear all cached lists managed by this service. */
+  /** Clear all normalized caches (does NOT clear local overrides). */
   clearCache(): void {
+    if (!this.hasLocalStorage()) return;
     Object.keys(localStorage).forEach((k) => {
       if (k.startsWith(this.cachePrefix)) localStorage.removeItem(k);
+    });
+  }
+
+  // ---------- overrides (for you / devtools) --------------------------------
+
+  /** Manually set a local override list. */
+  setLocalOverride(technology: Tech, kind: Kind, questions: Question[] | any): void {
+    const key = this.overrideKey(technology, kind);
+    const normalized = this.normalizeQuestions(questions, technology, kind);
+    this.safeSet(key, JSON.stringify(normalized));
+  }
+
+  /** Remove a specific override so CDN/assets are used again. */
+  clearLocalOverride(technology: Tech, kind: Kind): void {
+    const key = this.overrideKey(technology, kind);
+    if (!this.hasLocalStorage()) return;
+    try { localStorage.removeItem(key); } catch { /* ignore */ }
+  }
+
+  /** Nuke all overrides. */
+  clearAllOverrides(): void {
+    if (!this.hasLocalStorage()) return;
+    Object.keys(localStorage).forEach((k) => {
+      if (k.startsWith(this.overridePrefix)) localStorage.removeItem(k);
     });
   }
 
@@ -105,6 +159,11 @@ export class QuestionService {
   private key(tech: Tech, kind: Kind) {
     return `${this.cachePrefix}${tech}:${kind}`;
   }
+
+  private overrideKey(tech: Tech, kind: Kind) {
+    return `${this.overridePrefix}${tech}:${kind}`;
+  }
+
   private assetUrl(tech: Tech, kind: Kind) {
     return `assets/questions/${tech}/${kind}.json`;
   }
@@ -117,10 +176,6 @@ export class QuestionService {
 
   /** Normalize any supported JSON shape to Question[] and add safe defaults. */
   private normalizeQuestions(raw: any, technology: Tech, kind: Kind): Question[] {
-    // Supported shapes:
-    // - Array<Question>
-    // - { questions: Question[] }
-    // - Single Question object
     const list: any[] = Array.isArray(raw)
       ? raw
       : Array.isArray(raw?.questions)
@@ -131,7 +186,6 @@ export class QuestionService {
 
     const normalized: Question[] = list.map((q: any) => ({
       ...q,
-      // Ensure these exist so downstream code (sorting, language defaults) is happy
       technology: q?.technology ?? technology,
       type: q?.type ?? kind,
       difficulty: q?.difficulty ?? 'easy',
@@ -139,7 +193,6 @@ export class QuestionService {
       languageDefault: q?.languageDefault ?? 'js',
     }));
 
-    // Keep your previous sort: importance desc, then title asc
     normalized.sort((a, b) => {
       const ia = Number((a as any).importance ?? 0);
       const ib = Number((b as any).importance ?? 0);
@@ -150,7 +203,7 @@ export class QuestionService {
     return normalized;
   }
 
-  /** Fetch data-version once; invalidate local cache when it changes. */
+  /** Fetch data-version once; invalidate normalized cache when it changes. */
   private getVersion(): Observable<string> {
     if (!this.version$) {
       this.version$ = this.http.get<DataVersion>('assets/data-version.json').pipe(
@@ -164,12 +217,51 @@ export class QuestionService {
   }
 
   private ensureCacheVersion(ver: string): void {
+    if (!this.hasLocalStorage()) return;
+
     const prev = localStorage.getItem(this.dvKey);
     if (prev !== ver) {
+      // Clear ONLY normalized caches; keep manual overrides intact.
       Object.keys(localStorage).forEach((k) => {
         if (k.startsWith(this.cachePrefix)) localStorage.removeItem(k);
       });
       localStorage.setItem(this.dvKey, ver);
     }
+  }
+
+  // ---------- small helpers -------------------------------------------------
+
+  private hasLocalStorage(): boolean {
+    try {
+      const k = '__q_probe__';
+      localStorage.setItem(k, '1');
+      localStorage.removeItem(k);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private safeGet(key: string): string | null {
+    if (!this.hasLocalStorage()) return null;
+    try {
+      const v = localStorage.getItem(key);
+      return v && v.trim().length ? v : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private safeSet(key: string, value: string): void {
+    if (!this.hasLocalStorage()) return;
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // ignore quota issues; worst case falls back to network next load
+    }
+  }
+
+  private safeParse(raw: string): any | null {
+    try { return JSON.parse(raw); } catch { return null; }
   }
 }

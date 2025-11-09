@@ -48,26 +48,73 @@
               {{ prose }}
             </div>
 
-            <!-- Argümanlar -->
-            <div *ngIf="descArgs().length" class="mt-4">
+            <!-- Algo-style questions: Arguments -->
+            <div *ngIf="!isFrameworkTech() && !isWebTech() && descArgs().length" class="mt-4">
               <h3 class="text-sm font-semibold mb-1">Arguments</h3>
               <ul class="font-sm space-y-1">
                 <li *ngFor="let a of descArgs()">
-                  <code class="opacity-80">{{a.name}}</code>
-                  <span *ngIf="a.type" class="opacity-60">: {{a.type}}</span>
-                  <span *ngIf="a.desc"> — {{a.desc}}</span>
+                  <code class="opacity-80">{{ a.name }}</code>
+                  <span *ngIf="a.type" class="opacity-60">: {{ a.type }}</span>
+                  <span *ngIf="a.desc"> — {{ a.desc }}</span>
                 </li>
               </ul>
             </div>
 
-            <!-- Dönüş değeri -->
-            <div *ngIf="descReturns()" class="mt-3 text-sm">
+            <!-- Algo-style questions: Returns -->
+            <div *ngIf="!isFrameworkTech() && !isWebTech() && descReturns()" class="mt-3 text-sm">
               <h3 class="text-sm font-semibold mb-1">Returns</h3>
               <div>
-                <span *ngIf="descReturns()?.type"><code class="opacity-80">{{descReturns()?.type}}</code> — </span>
-                <span class="font-sm">{{descReturns()?.desc}}</span>
+                <span *ngIf="descReturns()?.type">
+                  <code class="opacity-80">{{ descReturns()?.type }}</code> —
+                </span>
+                <span class="font-sm">{{ descReturns()?.desc }}</span>
               </div>
             </div>
+
+            <!-- Framework / UI questions: Specs -->
+            <ng-container *ngIf="(isFrameworkTech() || isWebTech()) && descSpecs() as specs">
+
+              <!-- Tech focus chips -->
+              <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
+                <span *ngFor="let t of specs.techFocus" class="uf-chip">
+                  {{ t }}
+                </span>
+              </div>
+
+              <!-- Framework preview button styled like the yellow banner -->
+              <div *ngIf="isFrameworkTech()" class="mt-6">
+                <button
+                  class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-2 hover:bg-yellow-400 transition"
+                  (click)="openFrameworkSolutionPreview()">
+                  <i class="pi pi-eye text-sm"></i>
+                  <span class="font-medium">Preview what you need to build</span>
+                </button>
+              </div>
+
+              <!-- Requirements -->
+              <div *ngIf="specs.requirements?.length" class="mt-4">
+                <h3 class="text-sm font-semibold mb-1">Requirements</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let r of specs.requirements">{{ r }}</li>
+                </ul>
+              </div>
+
+              <!-- Expected behavior -->
+              <div *ngIf="specs.expectedBehavior?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Expected behavior</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let b of specs.expectedBehavior">{{ b }}</li>
+                </ul>
+              </div>
+
+              <!-- Implementation notes -->
+              <div *ngIf="specs.implementationNotes?.length" class="mt-3">
+                <h3 class="text-sm font-semibold mb-1">Implementation notes</h3>
+                <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
+                  <li *ngFor="let n of specs.implementationNotes">{{ n }}</li>
+                </ul>
+              </div>
+            </ng-container>
 
             <!-- Örnekler -->
             <ng-container *ngIf="!isFrameworkTech() && !isWebTech() && combinedExamples()">
@@ -131,11 +178,6 @@
               </div>
             </section>
 
-            <!-- Framework önizleme düğmesi -->
-            <div>
-              <button *ngIf="isFrameworkTech()" pButton label="Preview what you need to build" icon="pi pi-eye"
-                class="mt-6" (click)="openPreview()"></button>
-            </div>
           </section>
         </ng-container>
 
@@ -180,7 +222,9 @@
                   <span class="ap-num">{{ i + 1 }}</span>
                   <h4 class="ap-title">{{ ap.title }}</h4>
                   <div class="ap-actions">
-                    <button class="uf-btn" (click)="loadApproach(ap)" title="Load into editor">
+                    <button class="uf-btn"
+                      *ngIf="(isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs))"
+                      (click)="loadApproach(ap)" title="Load into editor">
                       Load into editor
                     </button>
                   </div>
@@ -221,7 +265,8 @@
 
                 <!-- JS/TS path (unchanged) -->
                 <ng-template #nonWebApproach>
-                  <div class="code-wrap">
+                  <!-- Only show inline code for plain JS/TS. Frameworks use the Files section instead. -->
+                  <div class="code-wrap" *ngIf="!isFrameworkTech() && !isWebTech()">
                     <app-monaco-editor
                       class="rounded border border-white/10 pointer-events-none select-none w-full block"
                       [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
@@ -233,6 +278,40 @@
                     </button>
                   </div>
                 </ng-template>
+
+                <!-- Solution Files (read-only) -->
+                <section *ngIf="isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold">Files</h3>
+                    <button type="button" class="uf-btn text-[10px]" (click)="loadSolutionIntoEditor()"
+                      title="Replace all files with the official solution">
+                      Load into editor
+                    </button>
+                  </div>
+
+                  <!-- File tabs -->
+                  <div class="solution-files-tabs">
+                    <button *ngFor="let p of solutionFileList()" type="button" class="sol-file-tab"
+                      [class.active]="solutionCurrentPath() === p" (click)="openSolutionFile(p)">
+                      {{ solutionShortName(p) }}
+                    </button>
+                  </div>
+
+                  <!-- Active file viewer -->
+                  <div class="code-wrap mt-2">
+                    <app-monaco-editor
+                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                      [code]="solutionFilesMap()[solutionCurrentPath()] || ''"
+                      [language]="langFromPath(solutionCurrentPath())" [readOnly]="true"
+                      [options]="examplesMonacoOptions" [autoHeight]="true">
+                    </app-monaco-editor>
+
+                    <button class="copy-fab" aria-label="Copy file" title="Copy"
+                      (click)="copyText(solutionFilesMap()[solutionCurrentPath()] || '')">
+                      <i class="pi" [ngClass]="copiedSolutionFile() ? 'pi-check' : 'pi-copy'"></i>
+                    </button>
+                  </div>
+                </section>
               </div>
 
               <!-- Notes / Pitfalls / Edge cases / Techniques -->
@@ -313,9 +392,29 @@
     <!-- Restore banner (frameworks) -->
     <div *ngIf="isFrameworkTech() && showRestoreBanner()"
       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
-      <span class="font-medium">Your code was restored from client storage.</span>
+
+      <!-- Message -->
+      <span class="font-medium" *ngIf="viewingSolution(); else restoredMsg">
+        You're viewing the solution code.
+      </span>
+      <ng-template #restoredMsg>
+        <span class="font-medium">
+          We loaded your last code from this browser.
+        </span>
+      </ng-template>
+
+      <!-- Actions -->
       <div class="absolute right-2 inset-y-0 flex items-center gap-3">
-        <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
+        <!-- When showing solution: allow revert -->
+        <button *ngIf="viewingSolution()" class="underline font-medium" (click)="revertToUserCodeFromBanner()">
+          Revert to your code
+        </button>
+
+        <!-- When just restored prior work: allow reset to starter -->
+        <button *ngIf="!viewingSolution()" class="underline font-medium" (click)="resetFromBanner()">
+          Reset to starter code
+        </button>
+
         <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
       </div>
     </div>
@@ -410,10 +509,20 @@
           </div>
 
           <!-- RIGHT: your own preview iframe -->
+          <!-- RIGHT: preview iframe (user code or solution preview) -->
           <div class="relative min-w-0 min-h-0">
+            <!-- Banner when showing official solution preview -->
+            <div *ngIf="showingFrameworkSolutionPreview()"
+              class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
+              <span class="font-medium">Showing solution preview</span>
+              <button class="text-xs underline" (click)="closeFrameworkSolutionPreview()">Close preview</button>
+            </div>
+
+            <!-- Empty-state message (only when there is truly no preview URL) -->
             <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400">
               No preview yet. Click “Rebuild preview”.
             </div>
+
             <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" referrerpolicy="no-referrer"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation">
             </iframe>

@@ -206,3 +206,54 @@
   max-height: 100% !important;
 }
 
+/* ----- Solution files tabs (GreatFrontEnd-style) ----- */
+.solution-files-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 2px 2px 6px;
+  margin: 0 -2px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.solution-files-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+.solution-files-tabs::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 253, 0.35);
+  border-radius: 9999px;
+}
+
+/* File pills */
+.sol-file-tab {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 253, 0.12);
+  background: rgba(15, 23, 42, 0.96);
+  color: #9ca3af;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.05s ease;
+}
+
+.sol-file-tab:hover {
+  background: rgba(30, 64, 175, 0.35);
+  border-color: rgba(129, 140, 248, 0.7);
+  color: #e5e7eb;
+}
+
+.sol-file-tab.active {
+  background: #111827;
+  color: #f9fafb;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
+}

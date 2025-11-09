@@ -205,6 +205,48 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Solved persistence
   solved = signal(false);
 
+  descSpecs = computed(() => {
+    const q = this.question();
+    if (!q || !q.description || typeof q.description !== 'object') return null;
+
+    const d = q.description as any;
+    const specs = d.specs || null;
+
+    if (!specs) return null;
+
+    return {
+      requirements: specs.requirements as string[] | undefined,
+      expectedBehavior: specs.expectedBehavior as string[] | undefined,
+      implementationNotes: specs.implementationNotes as string[] | undefined,
+      techFocus: specs.techFocus as string[] | undefined,
+    };
+  });
+
+  // --- Solution files (read-only, GreatFrontEnd-style) ---
+  solutionFilesMap = signal<Record<string, string>>({});
+  solutionOpenPath = signal<string>('');
+
+  // sorted list of solution file paths
+  solutionFileList = computed(() => {
+    const files = this.solutionFilesMap();
+    return Object.keys(files).sort((a, b) => {
+      const da = a.split('/').length, db = b.split('/').length;
+      if (da !== db) return da - db;
+      return a.localeCompare(b);
+    });
+  });
+
+  solutionCurrentPath = computed(() => {
+    const list = this.solutionFileList();
+    if (!list.length) return '';
+    return this.solutionOpenPath() || list[0];
+  });
+
+  solutionCurrentFileLabel = computed(() => this.solutionShortName(this.solutionCurrentPath()));
+
+  copiedSolutionFile = signal(false);
+  viewingSolution = signal(false);
+
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
   @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
@@ -271,6 +313,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private _previewUrl = signal<SafeResourceUrl | null>(null);
   previewUrl = () => this._previewUrl();
 
+  // Framework-only: whether right preview is showing solution UI instead of user code
+  showingFrameworkSolutionPreview = signal(false);
+
   isDraggingCols = signal(false);
   isDraggingRight = signal(false);
   showFileDrawer = signal(false);
@@ -282,6 +327,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private draggingPreview = false;
   private startYPreview = 0;
   private startPreviewRatio = 0;
+
+  // backup before loading solution files so we can restore user code
+  private userFilesBackup: Record<string, string> | null = null
 
   // Footer helpers
   get progressText() {
@@ -508,6 +556,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
   // ---------- Load question ----------
+  // ---------- Load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex(q => q.id === id);
     if (idx < 0) {
@@ -518,6 +567,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
     this.question.set(q);
+
+    // reset solution files for new question before loading
+    this.solutionFilesMap.set({});
+    this.solutionOpenPath.set('');
+
+    await this.loadSolutionAssetIfAny(q);
 
     // common flags
     this.solved.set(this.loadSolvedFlag(q));
@@ -531,13 +586,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
       const baselineKey = this.tech === 'angular' ? getNgBaselineKey(q) : getReactBaselineKey(q);
 
-      // 1) Load saved snapshot
+      // 1) Load saved snapshot (user code)
       let files = this.loadSavedFiles(storageKey);
 
-      // 2) Bootstrap from SDK asset or fallback
+      // 2) Bootstrap from SDK asset or fallback if no saved snapshot
       if (!files || Object.keys(files).length === 0) {
         const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
         const assetUrl = meta?.asset;
+
         if (assetUrl) {
           try {
             const asset = await this.fetchSdkAsset(assetUrl);
@@ -547,7 +603,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
             try {
               localStorage.setItem(storageKey, JSON.stringify(files));
               localStorage.setItem(baselineKey, JSON.stringify(files));
-            } catch { }
+            } catch { /* ignore */ }
+
             const open = (openFromAsset || this.defaultEntry()).replace(/^\/+/, '');
             this.frameworkEntryFile = open;
           } catch {
@@ -557,13 +614,60 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
           files = this.createFrameworkFallbackFiles();
         }
       } else {
-        // compare to baseline to show restore banner
+        // 3) We have a saved snapshot; decide if we should show the restore banner
+
         const baseRaw = localStorage.getItem(baselineKey);
-        const baseline = baseRaw ? normalizeSdkFiles(JSON.parse(baseRaw)) : null;
-        if (baseline && !matchesBaseline(files, baseline)) shouldShowBanner = true;
+
+        if (!baseRaw) {
+          // Migration / legacy case:
+          // Users may have saved code before baselines existed.
+          // Try to reconstruct a baseline from the SDK asset; if that fails,
+          // treat the snapshot as "modified" so we show the restore banner.
+
+          const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
+          const assetUrl = meta?.asset;
+
+          if (assetUrl) {
+            try {
+              const asset = await this.fetchSdkAsset(assetUrl);
+              const baseline = normalizeSdkFiles(asset.files || {}) || {};
+              const hasBaseline = Object.keys(baseline).length > 0;
+
+              if (hasBaseline) {
+                try {
+                  localStorage.setItem(baselineKey, JSON.stringify(baseline));
+                } catch { /* ignore */ }
+
+                if (!matchesBaseline(files, baseline)) {
+                  shouldShowBanner = true;
+                }
+              } else {
+                // No usable baseline from asset → just show banner
+                shouldShowBanner = true;
+              }
+            } catch {
+              // Could not load asset → conservatively show banner
+              shouldShowBanner = true;
+            }
+          } else {
+            // No asset info; we can't know the starter → show banner
+            shouldShowBanner = true;
+          }
+        } else {
+          // Normal path: compare snapshot vs stored baseline
+          try {
+            const baseline = normalizeSdkFiles(JSON.parse(baseRaw));
+            if (baseline && !matchesBaseline(files, baseline)) {
+              shouldShowBanner = true;
+            }
+          } catch {
+            // Baseline is unreadable → treat as modified
+            shouldShowBanner = true;
+          }
+        }
       }
 
-      // 3) Init editor + preview
+      // 4) Init editor + preview
       const openFile = this.pickFirstOpen(files);
       this.frameworkEntryFile = openFile;
       this.filesMap.set(files);
@@ -572,13 +676,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.editorContent.set(files[openFile] ?? '');
       this.rebuildFrameworkPreview();
 
-      // 4) UI reset
+      // 5) UI reset
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
       this.showRestoreBanner.set(shouldShowBanner);
+      this.viewingSolution.set(false);
       this.sessionStart = Date.now();
       this.recorded = false;
       return;
@@ -591,7 +696,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.lastAsideRatio = preferred;
 
       // Reset common UI
-      this.topTab.set('tests');            // parent doesn't own HTML/CSS editors anymore
+      this.topTab.set('tests'); // parent doesn't own HTML/CSS editors anymore
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
@@ -605,7 +710,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => this.webPanel?.initFromQuestion(), 0);
       return;
     }
-
 
     // ---------- Plain JS / TS ----------
     // Parent no longer touches starters/tests; the child panel + CodeStorageService own it.
@@ -633,6 +737,46 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // Let the child pull everything it needs (starters, tests, baselines) from the service/question.
     // If the child isn't mounted yet, setTimeout defers until after view init.
     setTimeout(() => this.jsPanel?.initFromQuestion(), 0);
+  }
+
+
+  private async loadSolutionAssetIfAny(q: Question): Promise<void> {
+    const assetPath = (q as any).solutionAsset as string | undefined;
+
+    if (!assetPath) {
+      this.solutionFilesMap.set({});
+      this.solutionOpenPath.set('');
+      return;
+    }
+
+    try {
+      const raw: any = await this.fetchSdkAsset(assetPath);
+
+      // Accept:
+      // - v1: { "/path": "code", ... }
+      // - v2: { files: { "/path": { code: "..." } }, openFile?: "..." }
+      const normalized = normalizeSdkFiles(raw.files || raw || {});
+      const keys = Object.keys(normalized || {});
+
+      if (!keys.length) {
+        console.warn('[solutionAsset] No files in', assetPath, raw);
+        this.solutionFilesMap.set({});
+        this.solutionOpenPath.set('');
+        return;
+      }
+
+      const metaOpen = (raw.openFile || '').replace(/^\/+/, '');
+      const initial = metaOpen && normalized[metaOpen]
+        ? metaOpen
+        : keys[0];
+
+      this.solutionFilesMap.set(normalized);
+      this.solutionOpenPath.set(initial);
+    } catch (err) {
+      console.error('[solutionAsset] Failed to load', assetPath, err);
+      this.solutionFilesMap.set({});
+      this.solutionOpenPath.set('');
+    }
   }
 
   private getActiveJsLang(): 'js' | 'ts' {
@@ -986,6 +1130,53 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Go back to the user’s code in the right preview
   closeSolutionPreview() { this.webPanel?.closeSolutionPreview?.(); }
 
+  private exitFrameworkSolutionPreview() {
+    if (!this.showingFrameworkSolutionPreview()) return;
+    this.showingFrameworkSolutionPreview.set(false);
+  }
+
+  openFrameworkSolutionPreview() {
+    if (!this.isFrameworkTech()) return;
+
+    const sol = this.solutionFilesMap();
+    if (!sol || !Object.keys(sol).length) {
+      console.warn('[framework] No solutionAsset files available for preview.');
+      return;
+    }
+
+    try {
+      let html: string | null = null;
+
+      if (this.tech === 'react') {
+        html = makeReactPreviewHtml(sol);
+      } else if (this.tech === 'angular') {
+        html = makeAngularPreviewHtmlV1(sol);
+      } else if (this.tech === 'vue') {
+        html = makeVuePreviewHtml(sol);
+      }
+
+      if (!html) return;
+
+      this.setPreviewHtml(html);
+      this.showingFrameworkSolutionPreview.set(true);
+    } catch (e) {
+      console.error('[framework] Failed to build framework solution preview', e);
+    }
+  }
+
+  async closeFrameworkSolutionPreview() {
+    if (!this.showingFrameworkSolutionPreview()) return;
+    this.showingFrameworkSolutionPreview.set(false);
+
+    // Restore preview back to user's current code
+    try {
+      await this.rebuildFrameworkPreview();
+    } catch (err) {
+      console.error('[framework] Failed to rebuild preview after closing solution preview', err);
+      this.setPreviewHtml(null);
+    }
+  }
+
   // ---------- reset ----------
   async resetQuestion() {
     const q = this.question();
@@ -1067,9 +1258,23 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
 
   loadSolutionCode() {
-    const q = this.question(); if (!q || this.isWebTech()) return;
+    const q = this.question();
+    if (!q) return;
 
-    const lang = this.getActiveJsLang();        // <-- live value at click time
+    // --- Framework techs: use solutionAsset files, not inline snippets ---
+    if (this.isFrameworkTech()) {
+      const sol = this.solutionFilesMap();
+      if (Object.keys(sol || {}).length) {
+        this.applyFrameworkSolutionFiles();
+        return;
+      }
+      // If no solutionAsset, fall through to legacy snippet behavior.
+    }
+
+    // --- Non-framework (JS/TS, etc.): keep existing behavior ---
+    if (this.isWebTech()) return; // web panel handles its own solution
+
+    const lang = this.getActiveJsLang();
     const s = this.structuredSolution();
     const first = s?.approaches?.[0];
 
@@ -1090,15 +1295,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!value?.trim()) return;
 
-    if (!this.isFrameworkTech()) {
-      // child will also TS→JS transpile when current tab is JS
-      this.jsPanel?.applySolution(value);
-      this.topTab.set('code');
-      return;
-    }
-
-    // frameworks unchanged
-    this.editorContent.set(value);
+    this.jsPanel?.applySolution(value);
+    this.topTab.set('code');
   }
 
   private solutionCodeFor(lang: 'js' | 'ts'): string {
@@ -1203,11 +1401,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // update in-memory map
     this.filesMap.update(m => ({ ...m, [path]: code }));
 
-    // persist whole snapshot (so we can restore all files)
+    // persist whole snapshot
     const storageKey = this.tech === 'angular' ? getNgStorageKey(q) : getReactStorageKey(q);
     try { localStorage.setItem(storageKey, JSON.stringify(this.filesMap())); } catch { }
 
-    // Debounced rebuild hook
+    // If they edit code, stop showing solution preview and go back to their own build
+    this.exitFrameworkSolutionPreview();
+
+    // Rebuild from user code
     this.scheduleRebuild();
   }
 
@@ -1274,10 +1475,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Empty -> clear content
+    // Empty -> clear content + reactive url (so *ngIf="!previewUrl()" is correct)
     if (!html) {
       const doc = frameEl.contentDocument;
-      if (doc) { doc.open(); doc.write('<!doctype html><meta charset="utf-8">'); doc.close(); }
+      if (doc) {
+        doc.open();
+        doc.write('<!doctype html><meta charset="utf-8">');
+        doc.close();
+      }
+      this._previewUrl.set(null);
       return;
     }
 
@@ -1286,8 +1492,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
 
-    // First mount: if no document yet, set src so the frame initializes,
-    // then subsequent updates use location.replace (no history bloat).
     const cw = frameEl.contentWindow;
     if (cw) {
       cw.location.replace(url);
@@ -1295,6 +1499,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       frameEl.onload = () => frameEl.contentWindow?.location.replace(url);
       frameEl.setAttribute('src', url);
     }
+
+    // Keep previewUrl() in sync for template conditions
+    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
 
   isOpen = (p: string) => this.openDirs().has(p);
@@ -1447,35 +1654,110 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       : (ap.codeJs ?? '');
   }
 
-  // Load one approach directly into the editor (doesn't switch tabs)
+  // Load one approach directly into the appropriate editor
   loadApproach(ap: UFApproach) {
+    // 1) HTML/CSS questions → delegate to web panel
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
       const css = this.prettifyCss(this.unescapeJsLiterals(ap.codeCss ?? ''));
 
       this.webPanel?.applySolution({ html, css });
-
       this.topTab.set('html');
       return;
     }
 
-    // JS/TS & frameworks (unchanged)
-    const lang = this.getActiveJsLang();
-    const code = lang === 'ts' ? (ap.codeTs ?? '') : (ap.codeJs ?? '');
-    if (!code?.trim()) return;
+    // 2) Framework questions (Angular / React / Vue)
+    // 2) Framework questions (Angular / React / Vue)
+    if (this.isFrameworkTech()) {
+      // If solution preview is open, close it so iframe goes back to normal flow
+      if (this.showingFrameworkSolutionPreview()) {
+        this.closeFrameworkSolutionPreview();
+      }
 
-    if (!this.isFrameworkTech()) {
-      this.jsPanel?.setCode(code);
-      this.topTab.set('code');
+      // Prefer TS for Angular-style solutions, else JS
+      const code = (ap.codeTs && ap.codeTs.trim())
+        ? ap.codeTs!
+        : (ap.codeJs || '');
+
+      if (!code.trim()) {
+        return;
+      }
+
+      const targetPath =
+        this.openPath()
+        || this.frameworkEntryFile
+        || this.defaultEntry();
+
+      const nextFiles = { ...this.filesMap(), [targetPath]: code };
+
+      this.filesMap.set(nextFiles);
+      this.openPath.set(targetPath);
+      this.frameworkEntryFile = targetPath;
+      this.editorContent.set(code);
+
+      const q = this.question();
+      if (q) {
+        const storageKey =
+          this.tech === 'angular' ? getNgStorageKey(q)
+            : this.tech === 'react' ? getReactStorageKey(q)
+              : null;
+
+        if (storageKey) {
+          try { localStorage.setItem(storageKey, JSON.stringify(nextFiles)); } catch { }
+        }
+      }
+
+      this.scheduleRebuild();
       return;
     }
 
-    this.editorContent.set(code);
+    // 3) Plain JS / TS questions
+    const lang = this.getActiveJsLang();
+    let code = lang === 'ts'
+      ? (ap.codeTs ?? '')
+      : (ap.codeJs ?? '');
+
+    // Fallback: if selected lang empty, but other exists, use that.
+    if (!code.trim()) {
+      code = (ap.codeTs || ap.codeJs || '');
+    }
+
+    if (!code.trim()) return;
+
+    this.jsPanel?.applySolution(code);
+    this.topTab.set('code');
   }
 
   // Tiny copier (you already have copySolutionCode for the legacy case)
   async copyText(text: string) {
-    try { await navigator.clipboard.writeText(text ?? ''); } catch { }
+    const value = text ?? '';
+    if (!value.trim()) {
+      console.warn('[copyText] No content to copy.');
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        await navigator.clipboard.writeText(value);
+      } else {
+        // Fallback for older / restricted environments
+        const ta = document.createElement('textarea');
+        ta.value = value;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+
+      this.copiedSolutionFile.set(true);
+      setTimeout(() => this.copiedSolutionFile.set(false), 1200);
+    } catch (err) {
+      console.error('[copyText] Copy failed', err);
+    }
   }
 
   // Render markdown-lite to safe HTML using your existing explanation parser
@@ -1515,7 +1797,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
-    this.loadSolutionCode(); // your existing method that writes into the editor
+    // If solution preview is open, close it
+    if (this.showingFrameworkSolutionPreview()) {
+      this.closeFrameworkSolutionPreview();
+    }
+
+    this.loadSolutionCode(); // existing behavior
   }
 
   // Turn "### Heading" into bold titles and strip emoji bullets.
@@ -1790,5 +2077,114 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Join and ensure one newline between blocks
     return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  public solutionShortName(path: string): string {
+    if (!path) return '';
+    const clean = path.replace(/^\/+/, '');
+    const i = clean.lastIndexOf('/');
+    return i >= 0 ? clean.slice(i + 1) : clean;
+  }
+
+  openSolutionFile(path: string) {
+    const files = this.solutionFilesMap();
+    if (!path || !(path in files)) return;
+    this.solutionOpenPath.set(path);
+  }
+
+  private applyFrameworkSolutionFiles(): void {
+    const q = this.question();
+    if (!q) return;
+
+    // Leaving preview mode; we’re now in real solution-in-editor mode
+    this.showingFrameworkSolutionPreview.set(false);
+
+    const sol = this.solutionFilesMap();
+    const solKeys = Object.keys(sol || {});
+    if (!solKeys.length) {
+      console.warn('[solutionAsset] No solution files to apply.');
+      return;
+    }
+
+    // Backup current user files once (latest state before solution)
+    if (!this.userFilesBackup) {
+      this.userFilesBackup = { ...this.filesMap() };
+    }
+
+    const nextFiles = { ...sol };
+    const open = this.pickFirstOpen(nextFiles);
+
+    this.filesMap.set(nextFiles);
+    this.openPath.set(open);
+    this.frameworkEntryFile = open;
+    this.editorContent.set(nextFiles[open] ?? '');
+
+    const storageKey =
+      this.tech === 'angular'
+        ? getNgStorageKey(q)
+        : this.tech === 'react'
+          ? getReactStorageKey(q)
+          : getReactStorageKey(q); // adjust if you add a dedicated Vue key
+
+    try {
+      if (storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify(nextFiles));
+      }
+    } catch {
+      // ignore
+    }
+
+    // We’re now explicitly in "viewing solution" mode
+    this.viewingSolution.set(true);
+    this.showRestoreBanner.set(true);
+
+    this.scheduleRebuild();
+  }
+
+  revertToUserCodeFromBanner() {
+    const q = this.question();
+    if (!q) {
+      this.showRestoreBanner.set(false);
+      this.viewingSolution.set(false);
+      this.userFilesBackup = null;
+      return;
+    }
+
+    // If we somehow don't have a backup, just hide the banner.
+    if (!this.userFilesBackup || Object.keys(this.userFilesBackup).length === 0) {
+      this.showRestoreBanner.set(false);
+      this.viewingSolution.set(false);
+      return;
+    }
+
+    const nextFiles = { ...this.userFilesBackup };
+    this.filesMap.set(nextFiles);
+
+    const open = this.pickFirstOpen(nextFiles);
+    this.openPath.set(open);
+    this.frameworkEntryFile = open;
+    this.editorContent.set(nextFiles[open] ?? '');
+
+    const storageKey =
+      this.tech === 'angular'
+        ? getNgStorageKey(q)
+        : this.tech === 'react'
+          ? getReactStorageKey(q)
+          : getReactStorageKey(q); // same note as above
+
+    try {
+      if (storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify(nextFiles));
+      }
+    } catch {
+      // ignore
+    }
+
+    // Clear solution mode + backup
+    this.viewingSolution.set(false);
+    this.showRestoreBanner.set(false);
+    this.userFilesBackup = null;
+
+    this.scheduleRebuild();
   }
 } 
