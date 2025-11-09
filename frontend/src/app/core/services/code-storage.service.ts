@@ -38,6 +38,21 @@ export interface WebBundleV2 {
   updatedAt: string;
 }
 
+type FrameworkTech = 'angular' | 'react' | 'vue';
+
+interface FrameworkFileState {
+  code?: string;
+  baseline?: string;
+  updatedAt?: string;
+}
+
+interface FrameworkBundleV2 {
+  files: Record<string, FrameworkFileState>;
+  entryFile?: string;
+  version: 'v2';
+  updatedAt: string; // ISO
+}
+
 const DATA_VERSION = '2';
 
 const LF_JS = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_js' });
@@ -58,6 +73,7 @@ const UF_LANG_PREF = (qid: string) => `uf:lang:${qid}`;
 /** v2 consolidated key (one per question) */
 const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`;
 const V2_WEB_BUNDLE = (qid: string) => `${PREFIX}web2:${qid}`;
+const V2_FW_BUNDLE = (tech: FrameworkTech, qid: string) => `${PREFIX}fw2:${tech}:${qid}`;
 
 /** one-time flag so we don't re-copy on every load */
 const MIGRATION_FLAG_JS_IDB = 'uf:js:idb:migrated:v1';
@@ -776,5 +792,256 @@ export class CodeStorageService {
     if (hasLocalStorage()) {
       try { localStorage.removeItem(V2_WEB_BUNDLE(qid)); } catch { /* ignore */ }
     }
+  }
+
+  private async getFrameworkBundleAsync(
+    tech: FrameworkTech,
+    qidRaw: string | number
+  ): Promise<FrameworkBundleV2 | null> {
+    const qid = String(qidRaw);
+    const key = V2_FW_BUNDLE(tech, qid);
+
+    // IDB first
+    try {
+      const raw = await LF_NG.getItem<string>(key);
+      if (raw) return JSON.parse(raw) as FrameworkBundleV2;
+    } catch { /* ignore */ }
+
+    // Fallback: localStorage (for migration / legacy)
+    if (hasLocalStorage()) {
+      try {
+        const ls = localStorage.getItem(key);
+        if (ls) return JSON.parse(ls) as FrameworkBundleV2;
+      } catch { /* ignore */ }
+    }
+
+    return null;
+  }
+
+  private async saveFrameworkBundlePrimary(
+    tech: FrameworkTech,
+    qidRaw: string | number,
+    bundle: FrameworkBundleV2,
+    opts?: { silent?: boolean }
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const key = V2_FW_BUNDLE(tech, qid);
+    const payload = JSON.stringify(bundle);
+
+    try {
+      await LF_NG.setItem(key, payload);
+      return;
+    } catch {
+      if (!hasLocalStorage()) {
+        if (!opts?.silent) {
+          // optional log
+        }
+        return;
+      }
+      try {
+        localStorage.setItem(key, payload);
+      } catch {
+        // out of quota both places; nothing else to do
+      }
+    }
+  }
+
+  async initFrameworkAsync(
+    qidRaw: string | number,
+    tech: FrameworkTech,
+    starters: Record<string, string>,
+    entryHint?: string
+  ): Promise<{ files: Record<string, string>; entryFile: string; restored: boolean }> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+
+    let bundle = await this.getFrameworkBundleAsync(tech, qid);
+
+    // First time: seed from starters as baselines, no user code yet.
+    if (!bundle) {
+      const files: Record<string, FrameworkFileState> = {};
+      for (const [path, base] of Object.entries(starters || {})) {
+        const p = path.replace(/^\/+/, '');
+        files[p] = { baseline: base, code: '', updatedAt: now };
+      }
+
+      const entryFile =
+        (entryHint && files[entryHint.replace(/^\/+/, '')])
+          ? entryHint.replace(/^\/+/, '')
+          : Object.keys(files)[0] || '';
+
+      bundle = { files, entryFile, version: 'v2', updatedAt: now };
+      await this.saveFrameworkBundlePrimary(tech, qid, bundle, { silent: true });
+
+      const initialFiles: Record<string, string> = {};
+      for (const [p, st] of Object.entries(files)) {
+        initialFiles[p] = st.baseline || '';
+      }
+
+      return { files: initialFiles, entryFile, restored: false };
+    }
+
+    // Existing bundle: ensure all starter baselines exist, detect restore.
+    let restored = false;
+    const out: Record<string, string> = {};
+    const mergedPaths = new Set([
+      ...Object.keys(bundle.files || {}),
+      ...Object.keys(starters || {}),
+    ]);
+
+    for (const rawPath of mergedPaths) {
+      const path = rawPath.replace(/^\/+/, '');
+      const cur = bundle.files[path] || {};
+      const starterBase = starters[path];
+
+      // Seed baseline from starters if missing
+      const baseline = cur.baseline ?? starterBase ?? '';
+      const code = cur.code ?? '';
+
+      if (!cur.baseline && baseline) {
+        cur.baseline = baseline;
+      }
+
+      // Compute visible content: user code if any, else baseline
+      const visible = code || baseline || '';
+      out[path] = visible;
+
+      // Mark restored if user code diverged from baseline
+      if (code && baseline && code.trim() !== baseline.trim()) {
+        restored = true;
+      }
+
+      // Ensure we write back the updated file state
+      cur.updatedAt = cur.updatedAt ?? now;
+      bundle.files[path] = cur;
+    }
+
+    // Ensure entry file
+    if (!bundle.entryFile || !out[bundle.entryFile]) {
+      const guess =
+        (entryHint && out[entryHint.replace(/^\/+/, '')])
+          ? entryHint.replace(/^\/+/, '')
+          : Object.keys(out)[0] || '';
+      bundle.entryFile = guess;
+    }
+
+    bundle.updatedAt = now;
+    await this.saveFrameworkBundlePrimary(tech, qid, bundle, { silent: true });
+
+    return {
+      files: out,
+      entryFile: bundle.entryFile!,
+      restored,
+    };
+  }
+
+  async saveFrameworkFileAsync(
+    qidRaw: string | number,
+    tech: FrameworkTech,
+    pathRaw: string,
+    code: string,
+    opts?: { force?: boolean }
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const path = pathRaw.replace(/^\/+/, '');
+    const now = new Date().toISOString();
+
+    const cur = (await this.getFrameworkBundleAsync(tech, qid)) || {
+      files: {},
+      version: 'v2',
+      updatedAt: now,
+    } as FrameworkBundleV2;
+
+    const prev = cur.files[path] || {};
+    const existing = prev.code ?? '';
+    const baseline = prev.baseline ?? null;
+
+    // Guard 1: don't wipe non-empty with empty (unless force)
+    if (!opts?.force && (!code || !code.trim()) && existing.trim()) {
+      return;
+    }
+
+    // Guard 2: don't silently revert to baseline if user already diverged (unless force)
+    if (
+      !opts?.force &&
+      existing.trim() &&
+      baseline != null &&
+      code === baseline
+    ) {
+      return;
+    }
+
+    cur.files[path] = {
+      ...prev,
+      code,
+      updatedAt: now,
+    };
+    cur.updatedAt = now;
+
+    await this.saveFrameworkBundlePrimary(tech, qid, cur);
+  }
+
+  async resetFrameworkAsync(
+    qidRaw: string | number,
+    tech: FrameworkTech,
+    starters: Record<string, string>,
+    entryHint?: string
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+    const files: Record<string, FrameworkFileState> = {};
+
+    for (const [pathRaw, base] of Object.entries(starters || {})) {
+      const path = pathRaw.replace(/^\/+/, '');
+      files[path] = { baseline: base, code: base, updatedAt: now };
+    }
+
+    const entryFile =
+      (entryHint && files[entryHint.replace(/^\/+/, '')])
+        ? entryHint.replace(/^\/+/, '')
+        : Object.keys(files)[0] || '';
+
+    const bundle: FrameworkBundleV2 = {
+      files,
+      entryFile,
+      version: 'v2',
+      updatedAt: now,
+    };
+
+    await this.saveFrameworkBundlePrimary(tech, qid, bundle);
+  }
+
+  async setFrameworkBundleAsync(
+    qidRaw: string | number,
+    tech: FrameworkTech,
+    files: Record<string, string>,
+    entryFile?: string
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const now = new Date().toISOString();
+
+    const nextFiles: Record<string, FrameworkFileState> = {};
+    for (const [pRaw, code] of Object.entries(files || {})) {
+      const p = pRaw.replace(/^\/+/, '');
+      nextFiles[p] = {
+        code,
+        baseline: nextFiles[p]?.baseline, // keep existing if any in future extensions
+        updatedAt: now,
+      };
+    }
+
+    const ef =
+      (entryFile && nextFiles[entryFile.replace(/^\/+/, '')])
+        ? entryFile.replace(/^\/+/, '')
+        : Object.keys(nextFiles)[0] || '';
+
+    const bundle: FrameworkBundleV2 = {
+      files: nextFiles,
+      entryFile: ef,
+      version: 'v2',
+      updatedAt: now,
+    };
+
+    await this.saveFrameworkBundlePrimary(tech, qid, bundle);
   }
 }
