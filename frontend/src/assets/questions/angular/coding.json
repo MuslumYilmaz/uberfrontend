@@ -27,55 +27,42 @@
   },
   {
     "id": "angular-counter-starter",
-    "title": "Counter (Standalone Components + Signals)",
-    "description": {
-      "summary": "Build a simple counter using Angular's standalone components and signals. Add increment, decrement, and reset buttons. Disable the decrement button when the counter is at zero, and display the count in a child component.",
-      "arguments": [
-        {
-          "name": "signal()",
-          "type": "reactive primitive",
-          "desc": "A reactive state variable from Angular's reactivity model, used to store and update the count."
-        },
-        {
-          "name": "computed()",
-          "type": "derived value",
-          "desc": "Used to create derived reactive values such as whether the count is zero."
-        },
-        {
-          "name": "Standalone components",
-          "type": "component structure",
-          "desc": "Both the main AppComponent and DisplayComponent are standalone components using 'imports' instead of NgModule."
-        },
-        {
-          "name": "Input binding",
-          "type": "data flow",
-          "desc": "The parent component passes the current count to the child DisplayComponent via an @Input property."
-        },
-        {
-          "name": "Event binding",
-          "type": "interaction",
-          "desc": "The buttons call increment, decrement, and reset methods using (click) handlers."
-        }
-      ],
-      "returns": {
-        "type": "Angular app",
-        "desc": "A minimal Angular counter app that demonstrates reactive state updates with signals."
-      },
-      "examples": [
-        "User clicks '+' → counter increases by one.",
-        "User clicks '−' → counter decreases by one (unless it’s already zero).",
-        "User clicks 'Reset' → counter returns to zero."
-      ]
-    },
+    "title": "Counter (Standalone Component)",
     "type": "coding",
     "technology": "angular",
     "difficulty": "beginner",
+    "importance": 3,
     "tags": [
       "components",
-      "signals",
-      "inputs-outputs"
+      "event-binding",
+      "state"
     ],
-    "importance": 3,
+    "description": {
+      "summary": "Build a simple counter using an Angular standalone component. Add increment, decrement, and reset buttons. Disable the decrement button when the counter is at zero.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Display the current count value.",
+          "Provide \"+\", \"-\", and \"Reset\" buttons.",
+          "Disable the decrement button when the count is 0."
+        ],
+        "expectedBehavior": [
+          "Clicking \"+\" increases the count by 1.",
+          "Clicking \"-\" decreases the count by 1, but never below 0.",
+          "Clicking \"Reset\" sets the count back to 0."
+        ],
+        "implementationNotes": [
+          "Use a regular class property (e.g. `count = 0`) to store state.",
+          "Use template event bindings like `(click)=\"...\"` for button actions.",
+          "No need for child components, signals, or advanced patterns in this starter."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Basic state management in a component",
+          "Event binding and conditional disabling"
+        ]
+      }
+    },
     "sdk": {
       "asset": "assets/sb/angular-counter.v2.json",
       "openFile": "/src/app/app.component.ts",
