@@ -703,8 +703,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   /** Apply solution into editors, persist, and rebuild preview (invoked by parent). */
-  public applySolution(payload: { html?: string; css?: string } | string): void {
-    console.log('called');
+  public async applySolution(payload: { html?: string; css?: string } | string): Promise<void> {
     const q = this.question;
     if (!q) return;
 
@@ -713,7 +712,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     let nextCss = '';
 
     if (typeof payload === 'string') {
-      // Backward-compat: a single HTML string (rarely used). Treat as full HTML; clear CSS.
       nextHtml = this.unescapeJsLiterals(payload);
       nextCss = '';
     } else {
@@ -721,28 +719,30 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       nextCss = this.prettifyCss(this.unescapeJsLiterals(payload?.css ?? ''));
     }
 
-    // 2) Cancel pending debounced saves (avoid racing stale writes)
-    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+    // 2) Cancel pending debounced saves
+    if (this.webSaveTimer) {
+      clearTimeout(this.webSaveTimer);
+      this.webSaveTimer = null;
+    }
 
-    // 3) Update editors (signals)
+    // 3) Update editors
     this.htmlCode.set(nextHtml);
     this.cssCode.set(nextCss);
 
-    // 4) Persist immediately (so a refresh keeps the applied solution)
-    void this.codeStorage.saveWebAsync(q.id, 'html', nextHtml, { force: true });
-    void this.codeStorage.saveWebAsync(q.id, 'css', nextCss, { force: true });
+    // 4) Persist immediately (force = bypass guards)
+    await this.codeStorage.saveWebAsync(q.id, 'html', nextHtml, { force: true });
+    await this.codeStorage.saveWebAsync(q.id, 'css', nextCss, { force: true });
 
-
-    // 5) Close any "solution preview" banner state and restore normal preview pipeline
+    // 5) Exit solution preview state
     this.exitSolutionPreview('load into editor');
 
-    // 6) Clear "restored" banner since we’ve explicitly set the code now
+    // 6) No "restored" banner; this is explicit now
     this.showRestoreBanner.set(false);
 
-    // 7) Rebuild live preview from editors
+    // 7) Rebuild preview from editors
     this.scheduleWebPreview();
 
-    // 8) UX niceties: land the user on Preview top tab, Results subtab reset
+    // 8) UX resets
     this.previewTopTab.set('preview');
     this.subTab.set('tests');
     this.hasRunTests = false;
