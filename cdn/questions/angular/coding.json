@@ -63,6 +63,28 @@
         ]
       }
     },
+    "solutionBlock": {
+      "overview": "This exercise requires a single piece of state: the number of times the user has interacted with the counter. Store it in a component property (e.g. `count = 0`) on a standalone root component. Use three buttons wired with Angular event bindings to increment, decrement, and reset that state. Guard the decrement so the value never drops below zero and expose a simple derived flag to control the disabled state of the \"-\" button.\n\n**Test cases**\n- Click \"+\" once → count becomes `1`.\n- Click \"+\" multiple times → count increases by 1 on each click.\n- With count at `0`, \"-\" is disabled and clicking it does nothing.\n- From a positive value, clicking \"-\" decreases the count by 1, but never below `0`.\n- From a positive value, clicking \"Reset\" sets count back to `0` and disables \"-\" again.",
+      "approaches": [
+        {
+          "title": "Standalone component with internal state and guarded decrement",
+          "prose": "Use a single standalone `AppComponent` that holds the `count` state.\n\n1. Declare `count = 0` as a class property.\n2. Add methods `inc()`, `dec()`, and `reset()`.\n   - `inc()` increments `count` by 1.\n   - `dec()` decrements only when `count` is greater than 0.\n   - `reset()` sets `count` to 0.\n3. Bind the methods to the buttons with `(click)` in the template.\n4. Bind the disabled state of the decrement button to a derived check, e.g. `isZero` getter returning `count === 0`.\n\nThis keeps the implementation minimal while showing how to wire state, events, and disabled UI in a standalone Angular component.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Counter</h1>\n        <div class=\"value\">{{ count }}</div>\n        <div class=\"actions\">\n          <button (click)=\"dec()\" [disabled]=\"isZero\" aria-label=\"decrement\">−</button>\n          <button (click)=\"inc()\" aria-label=\"increment\">+</button>\n          <button (click)=\"reset()\" class=\"ghost\" aria-label=\"reset\">Reset</button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#e5e7eb;}`,\n    `.card{padding:16px 20px;background:#0b1020;border-radius:12px;border:1px solid #1f2937;display:grid;gap:12px;}`,\n    `.value{font-size:40px;font-weight:800;text-align:center;}`,\n    `.actions{display:flex;gap:8px;justify-content:center;}`,\n    `button{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;}`,\n    `button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;}`\n  ]\n})\nexport class AppComponent {\n  count = 0;\n\n  get isZero(): boolean {\n    return this.count === 0;\n  }\n\n  inc(): void {\n    this.count++;\n  }\n\n  dec(): void {\n    if (!this.isZero) {\n      this.count--;\n    }\n  }\n\n  reset(): void {\n    this.count = 0;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing the count to go below 0 when handling the decrement.",
+          "Forgetting to bind the disabled state of the decrement button, which makes the UX unclear.",
+          "Mutating state in the template instead of through clear component methods."
+        ],
+        "techniques": [
+          "Using a standalone component with `standalone: true` and `imports` instead of NgModule.",
+          "Using a derived getter (`isZero`) for simple view logic instead of duplicating conditions.",
+          "Keeping all state and logic colocated in the root component for a small exercise."
+        ]
+      }
+    },
     "sdk": {
       "asset": "assets/sb/angular-counter.v2.json",
       "openFile": "/src/app/app.component.ts",
