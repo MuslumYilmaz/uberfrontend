@@ -26,6 +26,7 @@ import { DailyService } from '../../../core/services/daily.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
+import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
 
@@ -80,7 +81,7 @@ type UFSolutionBlock = {
   standalone: true,
   imports: [
     CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
-    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, CodingJsPanelComponent, CodingWebPanelComponent
+    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
@@ -248,6 +249,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('previewSplit', { read: ElementRef }) previewSplit?: ElementRef<HTMLDivElement>;
   @ViewChild('jsPanel') jsPanel?: CodingJsPanelComponent;
   @ViewChild('webPanel') webPanel?: CodingWebPanelComponent;
+  @ViewChild('frameworkPanel') frameworkPanel?: CodingFrameworkPanelComponent;
 
   // drag state
   private dragging = false;
@@ -577,48 +579,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // ---------- Frameworks (Angular/React/Vue) ----------
     if (this.isFrameworkTech()) {
-      const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
-
-      let starters: Record<string, string> = {};
-      let entryHint: string | undefined;
-
-      if (meta?.asset) {
-        try {
-          const asset = await this.fetchSdkAsset(meta.asset);
-          starters = normalizeSdkFiles(asset.files || {});
-          entryHint = (meta.openFile || asset.openFile || this.defaultEntry()).replace(/^\/+/, '');
-        } catch {
-          starters = this.createFrameworkFallbackFiles();
-          entryHint = this.defaultEntry();
-        }
-      } else {
-        starters = this.createFrameworkFallbackFiles();
-        entryHint = this.defaultEntry();
-      }
-
-      const { files, entryFile, restored } =
-        await this.codeStore.initFrameworkAsync(q.id, this.tech as any, starters, entryHint);
-
-      this.filesMap.set(files);
-      this.frameworkEntryFile = entryFile;
-      this.openAllDirsFromPaths(Object.keys(files));
-      this.openPath.set(entryFile);
-      this.editorContent.set(files[entryFile] ?? '');
-      await this.rebuildFrameworkPreview();
-
+      // Reset shared UI bits
       this.activePanel.set(0);
       this.subTab.set('tests');
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
-      this.showRestoreBanner.set(restored);
+      this.showRestoreBanner.set(false);
       this.viewingSolution.set(false);
       this.sessionStart = Date.now();
       this.recorded = false;
 
+      // Let the dedicated panel bootstrap itself
+      setTimeout(() => this.frameworkPanel?.initFromQuestion(), 0);
       return;
     }
-
 
     // ---------- HTML / CSS ----------
     if (this.isWebTech()) {
@@ -770,7 +745,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- banner actions ----------
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
-  async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
+
+  resetFromBanner() {
+    if (this.isFrameworkTech()) {
+      this.frameworkPanel?.resetToStarter();
+      this.showRestoreBanner.set(false);
+      return;
+    }
+    this.resetQuestion();
+    this.showRestoreBanner.set(false);
+  }
 
   private shouldWarnForSolution(): boolean {
     return this.isCourseContext() && localStorage.getItem(this.SOLUTION_WARN_SKIP_KEY) !== 'true';
@@ -1067,45 +1051,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   openFrameworkSolutionPreview() {
-    if (!this.isFrameworkTech()) return;
-
-    const sol = this.solutionFilesMap();
-    if (!sol || !Object.keys(sol).length) {
-      console.warn('[framework] No solutionAsset files available for preview.');
-      return;
-    }
-
-    try {
-      let html: string | null = null;
-
-      if (this.tech === 'react') {
-        html = makeReactPreviewHtml(sol);
-      } else if (this.tech === 'angular') {
-        html = makeAngularPreviewHtmlV1(sol);
-      } else if (this.tech === 'vue') {
-        html = makeVuePreviewHtml(sol);
-      }
-
-      if (!html) return;
-
-      this.setPreviewHtml(html);
-      this.showingFrameworkSolutionPreview.set(true);
-    } catch (e) {
-      console.error('[framework] Failed to build framework solution preview', e);
-    }
+    this.frameworkPanel?.openSolutionPreview();
   }
 
   async closeFrameworkSolutionPreview() {
-    if (!this.showingFrameworkSolutionPreview()) return;
-    this.showingFrameworkSolutionPreview.set(false);
-
-    // Restore preview back to user's current code
-    try {
-      await this.rebuildFrameworkPreview();
-    } catch (err) {
-      console.error('[framework] Failed to rebuild preview after closing solution preview', err);
-      this.setPreviewHtml(null);
-    }
+    await this.frameworkPanel?.closeSolutionPreview();
   }
 
   // ---------- reset ----------
@@ -1124,38 +1074,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setPreviewHtml(null);
 
       if (this.isFrameworkTech()) {
-        const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
-
-        let starters: Record<string, string> = {};
-        let entryHint: string | undefined;
-
-        if (meta?.asset) {
-          try {
-            const asset = await this.fetchSdkAsset(meta.asset);
-            starters = normalizeSdkFiles(asset.files || {});
-            entryHint = (meta.openFile || asset.openFile || this.defaultEntry()).replace(/^\/+/, '');
-          } catch {
-            starters = this.createFrameworkFallbackFiles();
-            entryHint = this.defaultEntry();
-          }
-        } else {
-          starters = this.createFrameworkFallbackFiles();
-          entryHint = this.defaultEntry();
-        }
-
-        await this.codeStore.resetFrameworkAsync(q.id, this.tech as any, starters, entryHint);
-
-        const { files, entryFile } =
-          await this.codeStore.initFrameworkAsync(q.id, this.tech as any, starters, entryHint);
-
-        this.filesMap.set(files);
-        this.openAllDirsFromPaths(Object.keys(files));
-        this.openPath.set(entryFile);
-        this.frameworkEntryFile = entryFile;
-        this.editorContent.set(files[entryFile] ?? '');
-        await this.rebuildFrameworkPreview();
-
-        this.showRestoreBanner.set(false);
+        this.frameworkPanel?.resetToStarter();
       } else if (this.isWebTech()) {
         this.webPanel?.externalResetToDefault?.();
         // Parent does not manage web preview or storage anymore
@@ -1374,7 +1293,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /** Rebuilds the preview iframe for framework techs using the saved files */
-  /** Rebuilds the preview iframe for framework techs (safe) */
   async rebuildFrameworkPreview() {
     try {
       const files = this.filesMap();
@@ -1617,43 +1535,23 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // 2) Framework questions (Angular / React / Vue)
     if (this.isFrameworkTech()) {
-      // If solution preview is open, close it so iframe goes back to normal flow
-      if (this.showingFrameworkSolutionPreview()) {
-        this.closeFrameworkSolutionPreview();
-      }
-
-      // Prefer TS for Angular-style solutions, else JS
-      const code = (ap.codeTs && ap.codeTs.trim())
-        ? ap.codeTs!
-        : (ap.codeJs || '');
-
-      if (!code.trim()) {
+      // Prefer solutionAsset files if present: hand off to framework panel
+      const sol = this.solutionFilesMap();
+      if (sol && Object.keys(sol).length) {
+        this.frameworkPanel?.applySolutionFiles();
         return;
       }
 
-      const targetPath =
-        this.openPath()
-        || this.frameworkEntryFile
-        || this.defaultEntry();
+      // Fallback: if this approach has inline framework code, push it into the current file
+      const code =
+        (ap.codeTs && ap.codeTs.trim())
+          ? ap.codeTs
+          : (ap.codeJs || '');
 
-      const nextFiles = { ...this.filesMap(), [targetPath]: code };
+      if (!code?.trim()) return;
 
-      this.filesMap.set(nextFiles);
-      this.openPath.set(targetPath);
-      this.frameworkEntryFile = targetPath;
-      this.editorContent.set(code);
-
-      const q = this.question();
-      if (q) {
-        void this.codeStore.setFrameworkBundleAsync(
-          q.id,
-          this.tech as any,
-          nextFiles,
-          targetPath
-        );
-      }
-
-      this.scheduleRebuild();
+      // Let the framework panel handle saving + preview rebuild
+      this.frameworkPanel?.onFrameworkCodeChange(code);
       return;
     }
 
@@ -1673,7 +1571,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.jsPanel?.applySolution(code);
     this.topTab.set('code');
   }
-
 
   // Tiny copier (you already have copySolutionCode for the legacy case)
   async copyText(text: string) {
@@ -1744,12 +1641,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Keep a dedicated overwrite action
   loadSolutionIntoEditor() {
-    // If solution preview is open, close it
-    if (this.showingFrameworkSolutionPreview()) {
-      this.closeFrameworkSolutionPreview();
+    // For frameworks: delegate to panel; for JS/TS keep existing behavior.
+    if (this.isFrameworkTech()) {
+      this.frameworkPanel?.applySolutionFiles();
+      return;
     }
-
-    this.loadSolutionCode(); // existing behavior
+    this.loadSolutionCode(); // JS/TS legacy
   }
 
   // Turn "### Heading" into bold titles and strip emoji bullets.
@@ -2080,44 +1977,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.scheduleRebuild();
   }
 
-
-  revertToUserCodeFromBanner(): void {
-    const q = this.question();
-    if (!q) {
-      this.showRestoreBanner.set(false);
-      this.viewingSolution.set(false);
-      this.userFilesBackup = null;
-      return;
-    }
-
-    if (!this.userFilesBackup || Object.keys(this.userFilesBackup).length === 0) {
-      // No backup available — just exit solution view
-      this.showRestoreBanner.set(false);
-      this.viewingSolution.set(false);
-      return;
-    }
-
-    const nextFiles = { ...this.userFilesBackup };
-    this.filesMap.set(nextFiles);
-
-    const open = this.pickFirstOpen(nextFiles);
-    this.openPath.set(open);
-    this.frameworkEntryFile = open;
-    this.editorContent.set(nextFiles[open] ?? '');
-
-    // Persist restored user bundle via CodeStorageService (no localStorage)
-    void this.codeStore.setFrameworkBundleAsync(
-      q.id,
-      this.tech as any,
-      nextFiles,
-      open
-    );
-
-    // Exit solution mode
-    this.viewingSolution.set(false);
-    this.showRestoreBanner.set(false);
-    this.userFilesBackup = null;
-
-    this.scheduleRebuild();
+  revertToUserCodeFromBanner() {
+    this.frameworkPanel?.revertToUserCodeFromBanner();
   }
 } 

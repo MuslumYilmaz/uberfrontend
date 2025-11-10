@@ -1,0 +1,138 @@
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Drawer overlay lives inside the panel container (which is relative) */
+.file-drawer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+.file-drawer .backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  opacity: 0;
+  transition: opacity .18s ease;
+  z-index: 50;
+}
+.file-drawer .panel {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: min(80vw, 320px);
+  background: #0b0b0b;
+  border-right: 1px solid rgba(255,255,255,.08);
+  transform: translateX(-100%);
+  transition: transform .2s ease;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 51;
+}
+.file-drawer.open { pointer-events: auto; }
+.file-drawer.open .backdrop { opacity: 1; }
+.file-drawer.open .panel { transform: translateX(0); }
+
+.file-drawer .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 12px;
+  color: #e5e7eb;
+}
+.file-drawer .panel-body {
+  overflow: auto;
+  padding: 6px;
+}
+
+/* File tree */
+.file-tree,
+.file-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.file-tree {
+  padding: 6px 0;
+  font-size: 12px;
+  color: #d1d5db;
+}
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 6px;
+  user-select: none;
+}
+.tree-row:hover {
+  background: rgba(255,255,255,.06);
+}
+.folder-row .caret {
+  font-size: 10px;
+  opacity: .8;
+  transition: transform .15s ease;
+}
+.folder-row.open .caret {
+  transform: rotate(90deg);
+}
+.folder-row .folder-ico {
+  font-size: 12px;
+  opacity: .85;
+}
+.file-row .file-ico {
+  font-size: 11px;
+  opacity: .7;
+}
+.file-row.active {
+  background: rgba(59,130,246,.12);
+  color: #93c5fd;
+  border-left: 2px solid #3b82f6;
+}
+.file-row .name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.children {
+  margin: 2px 0;
+}
+
+/* Small square icon buttons (hamburger / close) */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.12);
+  color: #e5e7eb;
+  transition: background .15s ease, border-color .15s ease, transform .02s ease;
+}
+.icon-btn i {
+  font-size: 12px;
+}
+.icon-btn:hover {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.2);
+}
+.icon-btn:active {
+  transform: translateY(1px);
+}
+
+/* Ensure Monaco fills the left column inside this panel */
+:host ::ng-deep .editor-fill,
+:host ::ng-deep .editor-fill > div,
+:host ::ng-deep .editor-fill .monaco-editor,
+:host ::ng-deep .editor-fill .monaco-editor .overflow-guard {
+  height: 100% !important;
+  max-height: 100% !important;
+}
