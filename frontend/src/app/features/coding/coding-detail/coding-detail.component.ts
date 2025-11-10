@@ -24,7 +24,9 @@ import type { Tech } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { DailyService } from '../../../core/services/daily.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
+import { writeHtmlToIframe } from '../../../core/utils/iframe-preview.util';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
+import { fetchSdkAsset, resolveSolutionFiles, SdkAsset } from '../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
@@ -41,12 +43,6 @@ type CourseNavState =
 type Kind = 'coding' | 'debug';
 type PracticeItem = { tech: Tech; kind: Kind | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
-
-type SdkAsset = {
-  files: Record<string, string>;
-  dependencies?: Record<string, string>;
-  openFile?: string;
-};
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
@@ -656,34 +652,25 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
-      const raw: any = await this.fetchSdkAsset(assetPath);
+      const raw = await fetchSdkAsset(this.http, assetPath);
+      const { files, initialPath } = resolveSolutionFiles(raw);
 
-      // Accept:
-      // - v1: { "/path": "code", ... }
-      // - v2: { files: { "/path": { code: "..." } }, openFile?: "..." }
-      const normalized = normalizeSdkFiles(raw.files || raw || {});
-      const keys = Object.keys(normalized || {});
-
-      if (!keys.length) {
+      if (!Object.keys(files).length) {
         console.warn('[solutionAsset] No files in', assetPath, raw);
         this.solutionFilesMap.set({});
         this.solutionOpenPath.set('');
         return;
       }
 
-      const metaOpen = (raw.openFile || '').replace(/^\/+/, '');
-      const initial = metaOpen && normalized[metaOpen]
-        ? metaOpen
-        : keys[0];
-
-      this.solutionFilesMap.set(normalized);
-      this.solutionOpenPath.set(initial);
+      this.solutionFilesMap.set(files);
+      this.solutionOpenPath.set(initialPath);
     } catch (err) {
       console.error('[solutionAsset] Failed to load', assetPath, err);
       this.solutionFilesMap.set({});
       this.solutionOpenPath.set('');
     }
   }
+
 
   private getActiveJsLang(): 'js' | 'ts' {
     const fromChild = this.jsPanel?.['jsLang']?.();
@@ -709,38 +696,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (found) return found;
     const [first] = Object.keys(files);
     return (first || dflt).replace(/^\/+/, '');
-  }
-
-  private async fetchSdkAsset(url: string): Promise<SdkAsset> {
-    // Resolve relative to <base href> to support subpaths
-    const href = new URL(url, document.baseURI).toString();
-    return await firstValueFrom(this.http.get<SdkAsset>(href));
-  }
-
-  private createFrameworkFallbackFiles(): Record<string, string> {
-    if (this.tech === 'react') {
-      return {
-        'public/index.html': `<!doctype html><html><head><meta charset="utf-8"><title>React</title></head><body><div id="root">React preview placeholder</div></body></html>`,
-        'src/App.tsx': `export default function App(){ return <div>Hello React</div> }`,
-      };
-    } else {
-      return {
-        'src/app/app.component.ts': `import { Component } from '@angular/core';\n@Component({selector:'app-root', standalone:true, template:\`<h1>Hello Angular</h1>\`})\nexport class AppComponent{}`,
-        'src/main.ts': `import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent);`,
-        'index.html': `<!doctype html><html><head><meta charset="utf-8"><title>Angular</title></head><body><app-root>Angular preview placeholder</app-root></body></html>`,
-      };
-    }
-  }
-
-  private loadSavedFiles(storageKey: string): Record<string, string> | null {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return null;
-      const parsed = normalizeSdkFiles(JSON.parse(raw));
-      return Object.keys(parsed || {}).length > 0 ? parsed : null;
-    } catch {
-      return null;
-    }
   }
 
   // ---------- banner actions ----------
@@ -1140,7 +1095,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isFrameworkTech()) {
       const sol = this.solutionFilesMap();
       if (Object.keys(sol || {}).length) {
-        this.applyFrameworkSolutionFiles();
+        this.frameworkPanel?.applySolutionFiles();
         return;
       }
       // If no solutionAsset, fall through to legacy snippet behavior.
@@ -1267,19 +1222,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isWebTech(): boolean { return this.tech === 'html' || this.tech === 'css'; }
   isFrameworkTech(): boolean { return this.tech === 'angular' || this.tech === 'react' || this.tech === 'vue'; }
 
-  onFrameworkCodeChange(code: string) {
-    this.editorContent.set(code);
-    const q = this.question(); if (!q) return;
-
-    const path = this.openPath() || this.frameworkEntryFile; if (!path) return;
-
-    this.filesMap.update(m => ({ ...m, [path]: code }));
-    void this.codeStore.saveFrameworkFileAsync(q.id, this.tech as any, path, code);
-
-    this.exitFrameworkSolutionPreview();
-    this.scheduleRebuild();
-  }
-
   private rebuildTimer: any = null;
   private scheduleRebuild() {
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
@@ -1325,50 +1267,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setPreviewHtml(html: string | null) {
-    this.lastPreviewHtml = html;
-
-    // cleanup old URL
-    try { if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl); } catch { }
-    this.previewObjectUrl = null;
-
     const frameEl = this.previewFrame?.nativeElement;
-
-    // If the iframe isn’t in the view yet, try once on the next frame and bail.
-    if (!frameEl) {
-      requestAnimationFrame(() => {
-        const f = this.previewFrame?.nativeElement;
-        if (f) this.setPreviewHtml(html); // one-shot retry
-      });
-      return;
-    }
-
-    // Empty -> clear content + reactive url (so *ngIf="!previewUrl()" is correct)
-    if (!html) {
-      const doc = frameEl.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write('<!doctype html><meta charset="utf-8">');
-        doc.close();
-      }
-      this._previewUrl.set(null);
-      return;
-    }
-
-    // Build blob URL & load
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    this.previewObjectUrl = url;
-
-    const cw = frameEl.contentWindow;
-    if (cw) {
-      cw.location.replace(url);
-    } else {
-      frameEl.onload = () => frameEl.contentWindow?.location.replace(url);
-      frameEl.setAttribute('src', url);
-    }
-
-    // Keep previewUrl() in sync for template conditions
-    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+    const current = this._previewUrl() || null;
+    writeHtmlToIframe(frameEl, this.sanitizer, html, current, v => this._previewUrl.set(v));
   }
 
   isOpen = (p: string) => this.openDirs().has(p);
@@ -1934,47 +1835,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const files = this.solutionFilesMap();
     if (!path || !(path in files)) return;
     this.solutionOpenPath.set(path);
-  }
-
-  private applyFrameworkSolutionFiles(): void {
-    const q = this.question();
-    if (!q) return;
-
-    // Exit solution preview if active
-    this.showingFrameworkSolutionPreview.set(false);
-
-    const sol = this.solutionFilesMap();
-    const solKeys = Object.keys(sol || {});
-    if (!solKeys.length) {
-      console.warn('[solutionAsset] No solution files to apply.');
-      return;
-    }
-
-    // Backup current user files before overwriting
-    if (!this.userFilesBackup) {
-      this.userFilesBackup = { ...this.filesMap() };
-    }
-
-    const nextFiles = { ...sol };
-    const open = this.pickFirstOpen(nextFiles);
-
-    this.filesMap.set(nextFiles);
-    this.openPath.set(open);
-    this.frameworkEntryFile = open;
-    this.editorContent.set(nextFiles[open] ?? '');
-
-    // Persist solution bundle via CodeStorageService (no localStorage)
-    void this.codeStore.setFrameworkBundleAsync(
-      q.id,
-      this.tech as any,
-      nextFiles,
-      open
-    );
-
-    // Enter solution view mode
-    this.viewingSolution.set(true);
-    this.showRestoreBanner.set(true);
-    this.scheduleRebuild();
   }
 
   revertToUserCodeFromBanner() {

@@ -420,10 +420,9 @@
     </div>
 
     <!-- FRAMEWORK PANEL -->
-    <app-coding-framework-panel #frameworkPanel *ngIf="isFrameworkTech()" [question]="question()!" [tech]="tech"
-      [editorOptions]="editorMonacoOptions" [solutionFilesMap]="solutionFilesMap()">
-    </app-coding-framework-panel>
-
+    <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"
+      [tech]="tech" [editorOptions]="editorMonacoOptions"
+      [solutionFilesMap]="solutionFilesMap()"></app-coding-framework-panel>
 
     <!-- NON-FRAMEWORK: WEB or JS -->
     <ng-container *ngIf="!isFrameworkTech()">

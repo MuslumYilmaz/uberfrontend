@@ -14,21 +14,14 @@ import {
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { firstValueFrom } from 'rxjs';
 import { Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { makeAngularPreviewHtmlV1 } from '../../../../core/utils/angular-preview-builder';
 import { makeReactPreviewHtml } from '../../../../core/utils/react-preview-builder';
-import { normalizeSdkFiles } from '../../../../core/utils/snapshot.utils';
+import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../../core/utils/vue-preview-builder';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
-
-type SdkAsset = {
-  files: Record<string, string>;
-  dependencies?: Record<string, string>;
-  openFile?: string;
-};
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
@@ -287,27 +280,42 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
     const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
 
     let starters: Record<string, string> = {};
-    let entryHint: string | undefined;
+    let entryHint: string;
 
     if (meta?.asset) {
       try {
-        const asset = await this.fetchSdkAsset(meta.asset);
-        starters = normalizeSdkFiles(asset.files || {});
-        entryHint = (meta.openFile || asset.openFile || this.defaultEntry()).replace(/^\/+/, '');
+        // Use shared util to fetch the asset
+        const raw = await fetchSdkAsset(this.http, meta.asset);
+
+        // Prefer explicit openFile from meta, otherwise asset.openFile
+        const { files, initialPath } = resolveSolutionFiles({
+          ...raw,
+          openFile: meta.openFile || raw.openFile,
+        });
+
+        if (!Object.keys(files).length) {
+          throw new Error('Empty sdk asset files');
+        }
+
+        starters = files;
+        entryHint = initialPath || this.defaultEntry();
       } catch (e) {
         console.warn('[framework-panel] asset load failed, using fallback', e);
         starters = this.createFrameworkFallbackFiles();
         entryHint = this.defaultEntry();
       }
     } else {
+      // No sdk asset → fall back to minimal starter set
       starters = this.createFrameworkFallbackFiles();
       entryHint = this.defaultEntry();
     }
 
+    // If caller requested a hard reset, overwrite stored workspace
     if (opts?.forceReset) {
       await this.codeStore.resetFrameworkAsync(q.id, this.tech as any, starters, entryHint);
     }
 
+    // Initialize from storage (may restore previous work)
     const { files, entryFile, restored } =
       await this.codeStore.initFrameworkAsync(q.id, this.tech as any, starters, entryHint);
 
@@ -363,13 +371,24 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
     const path = this.openPath() || this.frameworkEntryFile;
     if (!path) return;
 
+    // update current file content
     this.filesMap.update(m => ({ ...m, [path]: code }));
+
+    // persist user changes
     void this.codeStore.saveFrameworkFileAsync(q.id, this.tech as any, path, code);
 
-    // any edit exits solution/solution-preview modes
-    this.viewingSolution.set(false);
-    this.showingFrameworkSolutionPreview.set(false);
-    this.showRestoreBanner.set(false);
+    // If user was viewing the solution, mark it as edited
+    // but keep the restore banner visible so they can still revert manually.
+    if (this.viewingSolution()) {
+      this.viewingSolution.set(false);
+      // Do NOT hide the banner here — user can still click "Revert to your code"
+      // this.showRestoreBanner.set(false);
+    }
+
+    // Close solution preview (if open)
+    if (this.showingFrameworkSolutionPreview()) {
+      this.showingFrameworkSolutionPreview.set(false);
+    }
 
     this.scheduleRebuild();
   }
@@ -477,11 +496,6 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
     if (found) return found;
     const [first] = Object.keys(files);
     return (first || dflt).replace(/^\/+/, '');
-  }
-
-  private async fetchSdkAsset(url: string): Promise<SdkAsset> {
-    const href = new URL(url, document.baseURI).toString();
-    return await firstValueFrom(this.http.get<SdkAsset>(href));
   }
 
   private createFrameworkFallbackFiles(): Record<string, string> {
