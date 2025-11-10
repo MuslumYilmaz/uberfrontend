@@ -1,27 +1,10 @@
 <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
 
     <!-- Restore banner -->
-    <div *ngIf="showRestoreBanner()"
-        class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
-        <span class="font-medium" *ngIf="viewingSolution(); else restoredMsg">
-            You're viewing the solution code.
-        </span>
-        <ng-template #restoredMsg>
-            <span class="font-medium">
-                We loaded your last code from this browser.
-            </span>
-        </ng-template>
-
-        <div class="absolute right-2 inset-y-0 flex items-center gap-3">
-            <button *ngIf="viewingSolution()" class="underline font-medium" (click)="revertToUserCodeFromBanner()">
-                Revert to your code
-            </button>
-            <button *ngIf="!viewingSolution()" class="underline font-medium" (click)="resetToStarter()">
-                Reset to starter code
-            </button>
-            <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
-        </div>
-    </div>
+    <app-restore-banner [isVisible]="showRestoreBanner()" [isSolution]="viewingSolution()"
+        (reset)="viewingSolution() ? revertToUserCodeFromBanner() : resetToStarter()"
+        (dismiss)="dismissRestoreBanner()">
+    </app-restore-banner>
 
     <!-- File Drawer -->
     <div class="file-drawer" [class.open]="showFileDrawer()">

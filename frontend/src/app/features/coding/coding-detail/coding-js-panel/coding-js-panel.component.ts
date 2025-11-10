@@ -5,6 +5,7 @@ import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { UserCodeSandboxService } from '../../../../core/services/user-code-sandbox.service';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 
 declare const monaco: any;
@@ -14,7 +15,7 @@ export type JsLang = 'js' | 'ts';
 @Component({
   selector: 'app-coding-js-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent],
+  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent],
   templateUrl: './coding-js-panel.component.html',
   styleUrls: ['./coding-js-panel.component.css']
 })

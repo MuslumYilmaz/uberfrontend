@@ -10,12 +10,11 @@ import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-brows
 import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { filter, firstValueFrom, Subject, takeUntil } from 'rxjs';
+import { filter, Subject, takeUntil } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
-import { normalizeSdkFiles } from '../../../core/utils/snapshot.utils';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
@@ -26,7 +25,7 @@ import { DailyService } from '../../../core/services/daily.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
 import { writeHtmlToIframe } from '../../../core/utils/iframe-preview.util';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
-import { fetchSdkAsset, resolveSolutionFiles, SdkAsset } from '../../../core/utils/solution-asset.util';
+import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
@@ -166,7 +165,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // loading / reset / banner
   resetting = signal(false);
   showEditor = signal(true);
-  showRestoreBanner = signal(false);
 
   private previewObjectUrl: string | null = null;
   private destroy$ = new Subject<void>();
@@ -238,7 +236,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   solutionCurrentFileLabel = computed(() => this.solutionShortName(this.solutionCurrentPath()));
 
   copiedSolutionFile = signal(false);
-  viewingSolution = signal(false);
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
@@ -581,8 +578,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
-      this.showRestoreBanner.set(false);
-      this.viewingSolution.set(false);
       this.sessionStart = Date.now();
       this.recorded = false;
 
@@ -604,7 +599,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
-      this.showRestoreBanner.set(false);
       this.sessionStart = Date.now();
       this.recorded = false;
 
@@ -632,7 +626,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-    this.showRestoreBanner.set(false);
     this.sessionStart = Date.now();
     this.recorded = false;
 
@@ -696,19 +689,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     if (found) return found;
     const [first] = Object.keys(files);
     return (first || dflt).replace(/^\/+/, '');
-  }
-
-  // ---------- banner actions ----------
-  dismissRestoreBanner() { this.showRestoreBanner.set(false); }
-
-  resetFromBanner() {
-    if (this.isFrameworkTech()) {
-      this.frameworkPanel?.resetToStarter();
-      this.showRestoreBanner.set(false);
-      return;
-    }
-    this.resetQuestion();
-    this.showRestoreBanner.set(false);
   }
 
   private shouldWarnForSolution(): boolean {
@@ -1050,7 +1030,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.hasRunTests = false;
       this.solved.set(false);
       this.clearSolvedFlag(q);
-      this.showRestoreBanner.set(false);
     } finally {
       this.resetting.set(false);
     }
@@ -1835,9 +1814,5 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const files = this.solutionFilesMap();
     if (!path || !(path in files)) return;
     this.solutionOpenPath.set(path);
-  }
-
-  revertToUserCodeFromBanner() {
-    this.frameworkPanel?.revertToUserCodeFromBanner();
   }
 } 

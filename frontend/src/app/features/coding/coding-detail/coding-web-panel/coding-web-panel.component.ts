@@ -20,12 +20,13 @@ import { ActivityService } from '../../../../core/services/activity.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { DailyService } from '../../../../core/services/daily.service';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-web-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule],
+  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent],
   styles: [`
   /* Unified Results/Console typography */
   .uf-results, .uf-results * {
@@ -73,21 +74,12 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
   template: `
 <div class="w-full min-h-0 flex flex-col flex-1">
   <!-- Banner -->
-  <div *ngIf="showRestoreBanner()"
-      class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
-    <span class="font-medium">
-      {{ viewingSolution() ? "You’re viewing the solution code." : "Your code was restored from local storage." }}
-    </span>
-    <div class="absolute right-2 inset-y-0 flex items-center gap-3">
-      <button class="underline font-medium"
-              *ngIf="viewingSolution()"
-              (click)="resetFromBanner()">Revert to your code</button>
-      <button class="underline font-medium"
-              *ngIf="!viewingSolution()"
-              (click)="resetFromBanner()">Reset to default</button>
-      <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
-    </div>
-  </div>
+  <app-restore-banner
+    [isVisible]="showRestoreBanner()"
+    [isSolution]="viewingSolution()"
+    (reset)="resetFromBanner()"
+    (dismiss)="dismissRestoreBanner()">
+  </app-restore-banner>
 
   <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
     <div class="flex-1 min-h-0 flex">

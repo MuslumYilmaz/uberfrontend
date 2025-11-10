@@ -22,6 +22,7 @@ import { makeReactPreviewHtml } from '../../../../core/utils/react-preview-build
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../../core/utils/vue-preview-builder';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 
 type TreeNode =
   | { type: 'dir'; name: string; path: string; children: TreeNode[] }
@@ -30,7 +31,7 @@ type TreeNode =
 @Component({
   selector: 'app-coding-framework-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent],
+  imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent],
   templateUrl: './coding-framework-panel.component.html',
   styleUrls: ['./coding-framework-panel.component.css'],
 })

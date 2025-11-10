@@ -74,7 +74,6 @@
 .icon-warning { display:grid; place-items:center; width:32px; height:32px; border-radius:9999px;
   background:rgba(250,204,21,.08); border:1px solid rgba(250,204,21,.25); }
 .icon-warning i { font-size:16px; color:#facc15; }
-.restore-banner { line-height:1.3; border-bottom:1px solid rgba(0,0,0,.08); }
 
 /* ---------- Buttons (shared) ---------- */
 .uf-btn{ display:inline-flex; align-items:center; gap:.25rem; padding:.35rem .75rem; font-size:.875rem; line-height:1.25rem; border:1px solid rgba(255,255,255,.12); border-radius:.375rem; background:#1f2937; color:#e5e7eb; transition:background .15s ease, border-color .15s ease, color .15s ease; }

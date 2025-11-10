@@ -389,35 +389,6 @@
 
   <!-- RIGHT COLUMN -->
   <main class="flex-1 flex flex-col overflow-hidden">
-    <!-- Restore banner (frameworks) -->
-    <div *ngIf="isFrameworkTech() && showRestoreBanner()"
-      class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
-
-      <!-- Message -->
-      <span class="font-medium" *ngIf="viewingSolution(); else restoredMsg">
-        You're viewing the solution code.
-      </span>
-      <ng-template #restoredMsg>
-        <span class="font-medium">
-          We loaded your last code from this browser.
-        </span>
-      </ng-template>
-
-      <!-- Actions -->
-      <div class="absolute right-2 inset-y-0 flex items-center gap-3">
-        <!-- When showing solution: allow revert -->
-        <button *ngIf="viewingSolution()" class="underline font-medium" (click)="revertToUserCodeFromBanner()">
-          Revert to your code
-        </button>
-
-        <!-- When just restored prior work: allow reset to starter -->
-        <button *ngIf="!viewingSolution()" class="underline font-medium" (click)="resetFromBanner()">
-          Reset to starter code
-        </button>
-
-        <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
-      </div>
-    </div>
 
     <!-- FRAMEWORK PANEL -->
     <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"

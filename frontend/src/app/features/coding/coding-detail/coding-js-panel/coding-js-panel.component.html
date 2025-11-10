@@ -22,19 +22,9 @@
     </div>
 
     <!-- Restore banner -->
-    <div *ngIf="restoredFromStorage() && !restoreDismissed()"
-        class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
-        <span class="font-medium">
-            {{ viewingSolution() ? "You’re viewing the solution code." : "Your code was restored from local storage." }}
-        </span>
-        <div class="absolute right-2 inset-y-0 flex items-center gap-3">
-            <button class="underline font-medium" *ngIf="viewingSolution()" (click)="resetToDefault()">Revert to your
-                code</button>
-            <button class="underline font-medium" *ngIf="!viewingSolution()" (click)="resetToDefault()">Reset to
-                default</button>
-            <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
-        </div>
-    </div>
+    <app-restore-banner [isVisible]="restoredFromStorage() && !restoreDismissed()" [isSolution]="viewingSolution()"
+        (reset)="resetToDefault()" (dismiss)="dismissRestoreBanner()">
+    </app-restore-banner>
 
     <!-- Editors -->
     <div class="flex-1 flex flex-col overflow-hidden">
