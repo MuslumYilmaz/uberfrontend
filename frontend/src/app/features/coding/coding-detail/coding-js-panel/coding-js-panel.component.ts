@@ -82,6 +82,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     );
   }
 
+  viewingSolution = signal(false);
+
   // --- restore banner state ---
   restoredFromStorage = signal(false);
   restoreDismissed = signal(false);
@@ -294,6 +296,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.editorContent.set(code);
     await this.codeStore.saveJsAsync(q.id, code, this.jsLang());
     this.codeChange.emit({ lang: this.jsLang(), code });
+
+    if (this.viewingSolution()) {
+      this.viewingSolution.set(false);
+      // keep banner visible for manual revert
+    }
   }
 
   // Tests change is fine – it doesn't touch question
@@ -519,7 +526,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       // convert if it looks like TS (ensureJs already handles detection + fallbacks)
       code = await this.ensureJs(code, 'solution.ts');
     }
-    this.setCode(code);
-  }
 
+    // Set the code and persist immediately
+    await this.setCode(code);
+
+    // Mark the solution banner visible
+    this.viewingSolution.set(true);
+    this.restoredFromStorage.set(true);
+    this.restoreDismissed.set(false);
+  }
 }

@@ -74,10 +74,17 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
 <div class="w-full min-h-0 flex flex-col flex-1">
   <!-- Banner -->
   <div *ngIf="showRestoreBanner()"
-       class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
-    <span class="font-medium">Your code was restored from local storage.</span>
+      class="restore-banner px-3 py-1.5 bg-yellow-200 text-black text-xs relative text-center">
+    <span class="font-medium">
+      {{ viewingSolution() ? "You’re viewing the solution code." : "Your code was restored from local storage." }}
+    </span>
     <div class="absolute right-2 inset-y-0 flex items-center gap-3">
-      <button class="underline font-medium" (click)="resetFromBanner()">Reset to default</button>
+      <button class="underline font-medium"
+              *ngIf="viewingSolution()"
+              (click)="resetFromBanner()">Revert to your code</button>
+      <button class="underline font-medium"
+              *ngIf="!viewingSolution()"
+              (click)="resetFromBanner()">Reset to default</button>
       <button class="opacity-70 hover:opacity-100" (click)="dismissRestoreBanner()">✕</button>
     </div>
   </div>
@@ -271,6 +278,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   isDraggingCols = signal(false);
   isDraggingRight = signal(false);
 
+  viewingSolution = signal(false);
+
   // results/console
   testResults = signal<TestResult[]>([]);
   consoleEntries = signal<ConsoleEntry[]>([]);
@@ -300,6 +309,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   // session/credit
   private sessionStart = Date.now();
   private recorded = false;
+
 
   // computed preview doc = build from current editors
   previewDocRaw = computed(() => {
@@ -415,10 +425,14 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       }
     }, 200);
 
+    if (this.viewingSolution()) {
+      this.viewingSolution.set(false);
+      // keep banner visible for manual revert
+    }
 
     this.exitSolutionPreview('user edited HTML');
     this.scheduleWebPreview();
-  }
+  };
 
   onCssChange = (code: string) => {
     const q = this.question; if (!q) return;
@@ -430,6 +444,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
         void this.codeStorage.saveWebAsync(qid, 'css', code);
       }
     }, 200);
+
+    if (this.viewingSolution()) {
+      this.viewingSolution.set(false);
+      // keep banner visible for manual revert
+    }
 
     this.exitSolutionPreview('user edited CSS');
     this.scheduleWebPreview();
@@ -737,7 +756,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.exitSolutionPreview('load into editor');
 
     // 6) No "restored" banner; this is explicit now
-    this.showRestoreBanner.set(false);
+    this.viewingSolution.set(true);
+    this.showRestoreBanner.set(true);
 
     // 7) Rebuild preview from editors
     this.scheduleWebPreview();
