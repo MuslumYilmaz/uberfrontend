@@ -8,9 +8,9 @@
         "importance": 3,
         "tags": [
             "react",
-            "components",
             "state",
-            "event-handling"
+            "event-handlers",
+            "components"
         ],
         "description": {
             "summary": "Build a simple <Counter /> component that displays a value and has '+' and '-' buttons. The count must never go below 0.",
@@ -28,8 +28,8 @@
                 ],
                 "implementationNotes": [
                     "Use React state (useState) to store the count.",
-                    "Guard the decrement handler to avoid negative values (e.g. Math.max(0, count - 1)).",
-                    "Keep everything in a single component for this exercise."
+                    "Guard the decrement so it never sets a negative value.",
+                    "Keep everything in a single small component for this exercise."
                 ],
                 "techFocus": [
                     "React useState",
@@ -39,24 +39,22 @@
             }
         },
         "solutionBlock": {
-            "overview": "This exercise focuses on basic React state and event handling. Use a single piece of state for the count, and two handlers for increment and decrement. The only critical edge case is to ensure the count never becomes negative.\n\n**Test cases**\n- Initial render shows `0`.\n- Clicking '+' repeatedly increases the displayed value.\n- Clicking '-' at 0 does nothing and keeps the value at 0.\n- From a positive value, clicking '-' decreases the count by 1 each time.",
+            "overview": "Use a single piece of state managed with `useState(0)` to store the count. The '+' button increments by 1. The '-' button should call `setCount` with `Math.max(0, count - 1)` (or equivalent) so the value never goes negative.\n\n**Key ideas**\n- Co-locate state in the component.\n- Use click handlers for both buttons.\n- Always guard the decrement.\n\n**Test cases**\n- Initial render shows `0`.\n- Clicking '+' increments.\n- Clicking '-' at 0 leaves the value at 0.\n- From a positive value, clicking '-' decrements by 1 but never below 0.",
             "approaches": [
                 {
                     "title": "Single component with guarded decrement",
-                    "prose": "Use `useState` to store the count, define `increment` and `decrement` handlers, and ensure `decrement` never pushes the state below 0.",
-                    "codeTs": "import React, { useState } from 'react';\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n\n  const increment = () => {\n    setCount((prev) => prev + 1);\n  };\n\n  const decrement = () => {\n    setCount((prev) => (prev > 0 ? prev - 1 : 0));\n  };\n\n  return (\n    <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#020817', color: '#e5e7eb', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif' }}>\n      <section style={{ padding: '16px 20px', borderRadius: '12px', background: '#020817', border: '1px solid #111827', display: 'grid', gap: '10px', minWidth: '220px' }}>\n        <h1 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>Counter</h1>\n        <div data-testid=\"value\" style={{ fontSize: '40px', fontWeight: 800, textAlign: 'center' }}>\n          {count}\n        </div>\n        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>\n          <button\n            onClick={decrement}\n            disabled={count === 0}\n            aria-label=\"decrement\"\n            style={{ padding: '8px 14px', borderRadius: '999px', border: 'none', cursor: count === 0 ? 'not-allowed' : 'pointer', opacity: count === 0 ? 0.5 : 1 }}\n          >\n            -\n          </button>\n          <button\n            onClick={increment}\n            aria-label=\"increment\"\n            style={{ padding: '8px 14px', borderRadius: '999px', border: 'none', cursor: 'pointer', background: '#2563eb', color: '#f9fafb', fontWeight: 600 }}\n          >\n            +\n          </button>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+                    "prose": "Store `count` in state and provide two handlers: one to increment, one to decrement. The decrement handler uses `Math.max(0, count - 1)` so the count never becomes negative.",
+                    "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
                 }
             ],
             "notes": {
                 "pitfalls": [
-                    "Allowing the count to go negative.",
-                    "Updating state directly instead of using the functional form of setState when deriving from previous value.",
-                    "Forgetting to wire the disabled state for the '-' button, which makes the behavior less clear."
+                    "Updating the value without clamping, which allows negatives.",
+                    "Recomputing from stale state instead of using the current value correctly."
                 ],
                 "techniques": [
                     "Using `useState` for local component state.",
-                    "Using functional updates `setCount(prev => ...)` when the new value depends on the previous.",
-                    "Deriving simple UI rules (like disabled) from state instead of tracking extra flags."
+                    "Guarding updates with `Math.max`."
                 ]
             }
         },
