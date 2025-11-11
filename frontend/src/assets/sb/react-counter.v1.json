@@ -8,8 +8,8 @@
     "files": {
         "package.json": "{\n  \"name\": \"react-counter\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
         "public/index.html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body><div id=\"root\"></div></body></html>",
-        "src/index.tsx": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
-        "src/App.tsx": "import React, {useState} from 'react';\nexport default function App(){\n  const [n,setN] = useState(0);\n  return (\n    <div style={{fontFamily:'system-ui',padding:16}}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{n}</p>\n      <button onClick={()=>setN(Math.max(0,n-1))}>-</button>\n      <button onClick={()=>setN(n+1)}>+</button>\n    </div>\n  );\n}\n",
-        "tsconfig.json": "{ \"compilerOptions\": { \"jsx\": \"react-jsx\", \"target\":\"ES2020\", \"module\":\"ESNext\" } }"
+        "src/index.tsx": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+        "src/App.tsx": "import React from 'react';\n\nexport default function App() {\n  // TODO: Implement the Counter component with + / - buttons.\n  // - Show the current value\n  // - Do not allow it to go below 0\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">0</p>\n      <button>-</button>\n      <button>+</button>\n    </main>\n  );\n}\n",
+        "tsconfig.json": "{ \"compilerOptions\": { \"jsx\": \"react-jsx\", \"target\": \"ES2020\", \"module\": \"ESNext\" } }"
     }
 }
