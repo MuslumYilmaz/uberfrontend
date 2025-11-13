@@ -547,7 +547,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
   // ---------- Load question ----------
-  // ---------- Load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex(q => q.id === id);
     if (idx < 0) {
