@@ -17,9 +17,39 @@ export class QuestionService {
   private readonly cachePrefix = 'qcache:';          // normalized cache
   private readonly overridePrefix = 'qoverride:';    // manual/local overrides
   private readonly dvKey = `${this.cachePrefix}dv`;
+
+  // NEW: CDN / LocalStorage switcher flag
+  private readonly cdnFlagKey = 'uf:cdn:enabled';
+  // Varsayılan: environment.cdnBaseUrl varsa CDN açık kabul ediyoruz
+  private readonly defaultCdnEnabled =
+    typeof (environment as any).cdnEnabled === 'boolean'
+      ? (environment as any).cdnEnabled
+      : !!(environment as any).cdnBaseUrl;
   private version$?: Observable<string>;
 
   constructor(private http: HttpClient) { }
+
+  // ------- PUBLIC FLAG API -------------------------------------
+
+  /** Runtime'da CDN'i aç/kapatmak için. Örn: settings ekranından çağır. */
+  setCdnEnabled(enabled: boolean): void {
+    this.safeSet(this.cdnFlagKey, enabled ? '1' : '0');
+    // Mod değişince eski normalized cache'leri temizlemek mantıklı
+    this.clearCache();
+  }
+
+  /** Şu an CDN modunun açık mı, local-only mod mu olduğunu döner. */
+  isCdnEnabled(): boolean {
+    return this.cdnEnabled;
+  }
+
+  // Internal getter
+  private get cdnEnabled(): boolean {
+    const raw = this.safeGet(this.cdnFlagKey);
+    if (raw === '0' || raw === 'false') return false;
+    if (raw === '1' || raw === 'true') return true;
+    return this.defaultCdnEnabled;
+  }
 
   // ---------- public API ----------------------------------------------------
 
@@ -38,7 +68,7 @@ export class QuestionService {
         const oKey = this.overrideKey(technology, kind);
         const cKey = this.key(technology, kind);
 
-        // 1) Local override: lets you edit questions via devtools without touching CDN.
+        // 1) Local override
         const overrideRaw = this.safeGet(oKey);
         if (overrideRaw) {
           const parsed = this.safeParse(overrideRaw);
@@ -54,9 +84,12 @@ export class QuestionService {
           return of(list);
         }
 
-        // 3/4) Remote source (CDN → assets)
-        const cdnUrl = this.cdnUrl(technology, kind);
+        // 3) Remote source:
+        //    - cdnEnabled === true  → CDN + fallback assets
+        //    - cdnEnabled === false → direkt assets (CDN yok)
         const assetsUrl = this.assetUrl(technology, kind);
+        const useCdn = this.cdnEnabled;
+        const cdnUrl = useCdn ? this.cdnUrl(technology, kind) : '';
 
         const source$ = cdnUrl
           ? this.http.get<any>(cdnUrl).pipe(
@@ -68,13 +101,13 @@ export class QuestionService {
           map((raw) => this.normalizeQuestions(raw, technology, kind)),
           catchError(() => of([] as Question[])),
           tap((list) => {
-            // store normalized list in cache key
             this.safeSet(cKey, JSON.stringify(list));
           })
         );
       })
     );
   }
+
 
   /** Load all questions for multiple techs (for companies pages, etc.). */
   loadAllQuestions(kind: Exclude<Kind, 'debug'>): Observable<MixedQuestion[]> {
@@ -104,8 +137,11 @@ export class QuestionService {
       if (Array.isArray(parsed)) return of(parsed as any[]);
     }
 
+    // Burada da offline LS-only davranışı istemiyorsan
+    // cdnEnabled check'i kaldırıp sadece CDN seçimini yapalım.
     const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
-    const cdnUrl = cdnBase
+    const useCdn = this.cdnEnabled;
+    const cdnUrl = useCdn && cdnBase
       ? `${cdnBase}/questions/system-design/system-design.json`
       : null;
     const assetsUrl = 'assets/questions/system-design/system-design.json';
