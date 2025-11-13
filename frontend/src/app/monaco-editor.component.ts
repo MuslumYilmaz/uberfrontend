@@ -52,9 +52,19 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private resizeObs?: ResizeObserver;
   private static seq = 0;
   private get _modelId(): string {
-    return this.modelKey || `uf-${++MonacoEditorComponent.seq}`;
-  }
+    // modelKey verilmişse aynen kullan (src/App.tsx vs)
+    if (this.modelKey) return this.modelKey;
 
+    // fallback: uf-1.ts / uf-2.js vs.
+    const baseExt =
+      this.normalizeLanguage(this.language) === 'typescript'
+        ? 'ts'
+        : this.normalizeLanguage(this.language) === 'javascript'
+          ? 'js'
+          : 'txt';
+
+    return `uf-${++MonacoEditorComponent.seq}.${baseExt}`;
+  }
 
   private readonly amdLoaderPath = 'assets/monaco/min/vs/loader.js';
   private readonly vsBasePath = 'assets/monaco/min/vs';
@@ -300,21 +310,20 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   private createOrSwapModel(langNorm: string, code: string) {
-    const ext = langNorm === 'typescript' ? 'ts' : 'js';
+    const rawId = this._modelId; // src/App.tsx, uf-1.ts, vs.
 
-    // Per-instance, per-language URI (prevents cross-instance collisions)
-    const uri = window.monaco.Uri.parse(`inmemory://uf/${this._modelId}.${ext}`); // use getter
+    // Dosya path’ini düzgün bir file:// URI’sine çevir
+    const normalizedPath = rawId.replace(/^file:\/\//, '').replace(/^\/+/, '');
+    const uri = window.monaco.Uri.parse(`file:///${normalizedPath}`);
 
-    // If our current model is for another language/ext, dispose it (it’s ours)
+    // Eğer eski model başka bir URI’ye aitse dispose et
     if (this.model && this.model.uri.toString() !== uri.toString()) {
       try { this.model.dispose(); } catch { }
       this.model = undefined;
     }
 
-    // If a model with this URI already exists (e.g., re-init), reuse it
     let existing = window.monaco.editor.getModel(uri);
     if (existing) {
-      // Ensure language + contents are what we want
       if (window.monaco?.editor?.setModelLanguage) {
         window.monaco.editor.setModelLanguage(existing, langNorm);
       }
@@ -322,11 +331,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       if (existing.getValue() !== nextVal) existing.setValue(nextVal);
       this.model = existing;
     } else {
-      // Create a fresh model
       this.model = window.monaco.editor.createModel(code ?? '', langNorm, uri);
     }
 
-    // Attach to editor if already created
     if (this.editor) {
       this.editor.setModel(this.model);
     }
