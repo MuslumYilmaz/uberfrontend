@@ -86,7 +86,7 @@
       }
     },
     "sdk": {
-      "asset": "assets/sb/angular-counter.v2.json",
+      "asset": "assets/sb/angular/question/angular-counter.v2.json",
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-counter-starter"
     },
@@ -95,6 +95,6 @@
       "meta",
       "uber"
     ],
-    "solutionAsset": "assets/sb/angular-counter-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json"
   }
 ]

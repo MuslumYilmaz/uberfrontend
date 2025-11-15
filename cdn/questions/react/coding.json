@@ -59,11 +59,11 @@
             }
         },
         "sdk": {
-            "asset": "assets/sb/react-counter.v1.json",
+            "asset": "assets/sb/react/question/react-counter.v1.json",
             "openFile": "/src/App.tsx",
             "storageKey": "v2:ui:react:react-counter"
         },
-        "solutionAsset": "assets/sb/react-counter-solution.v1.json",
+        "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
         "companies": [
             "meta",
             "google"

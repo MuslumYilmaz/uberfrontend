@@ -66,10 +66,10 @@
             }
         },
         "sdk": {
-            "asset": "assets/sb/vue-counter.v1.json",
+            "asset": "assets/sb/vue/question/vue-counter.v1.json",
             "openFile": "/src/App.vue",
             "storageKey": "v1:ui:vue:vue-counter"
         },
-        "solutionAsset": "assets/sb/vue-counter-solution.v1.json"
+        "solutionAsset": "assets/sb/vue/solution/vue-counter-solution.v1.json"
     }
 ]
