@@ -45,6 +45,40 @@ function isAbsoluteUrl(url: string): boolean {
 }
 
 /**
+ * Local'de klasör yapısı ne olursa olsun (assets/sb/...),
+ * CDN'de hep `sb/<filename>` pattern'ine map eder.
+ *
+ * Örnek:
+ *  - assets/sb/react-counter.v1.json
+ *  - assets/sb/angular/question/angular-counter.v2.json
+ * CDN:
+ *  - sb/react-counter.v1.json
+ *  - sb/angular-counter.v2.json
+ */
+function buildCdnUrl(url: string, cdnBase: string): string {
+    const normalizedPath = url.replace(/^\/+/, ''); // baştaki '/' leri temizle
+
+    // Zaten 'sb/...' ile başlıyorsa olduğu gibi kullan
+    if (normalizedPath.startsWith('sb/')) {
+        return `${cdnBase}/${normalizedPath}`;
+    }
+
+    // assets/sb/... ise sadece dosya adını al ve sb/ altına koy
+    if (normalizedPath.startsWith('assets/sb/')) {
+        const fileName = normalizedPath.split('/').pop()!; // angular-counter.v2.json
+        return `${cdnBase}/sb/${fileName}`;
+    }
+
+    // Genel fallback: assets/ prefix'ini sil, kalan kısmı kullan
+    let cdnPath = normalizedPath;
+    if (cdnPath.startsWith('assets/')) {
+        cdnPath = cdnPath.replace(/^assets\//, '');
+    }
+
+    return `${cdnBase}/${cdnPath}`;
+}
+
+/**
  * Fetch a solution/sdk asset JSON, resolving against CDN if enabled,
  * otherwise falling back to <base href>/assets.
  */
@@ -58,27 +92,16 @@ export async function fetchSdkAsset(http: HttpClient, url: string): Promise<SdkA
         return await firstValueFrom(http.get<SdkAsset>(url));
     }
 
-    // 2) CDN URL’ini hazırla
     const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
     const useCdn = isCdnEnabledByFlag() && !!cdnBase;
 
-    // Örnek: url = 'assets/sb/react-counter.v1.json'
-    const normalizedPath = url.replace(/^\/+/, '');
-
-    // CDN'de 'assets/' klasörü yok → strip et
-    let cdnPath = normalizedPath;
-    if (cdnPath.startsWith('assets/')) {
-        cdnPath = cdnPath.replace(/^assets\//, ''); // 'assets/sb/...' → 'sb/...'
-    }
-
-    const cdnUrl = useCdn && cdnBase
-        ? `${cdnBase}/${cdnPath}`                 // https://uberfrontend-six.vercel.app/sb/...
-        : null;
-
-    // 3) Local URL: eski davranış (her zaman assets'li)
+    // Local URL: Angular'ın baseHref'ine göre
     const localUrl = new URL(url, document.baseURI).toString();
 
-    // 4) Önce CDN, patlarsa local
+    // 2) CDN URL'i
+    const cdnUrl = useCdn && cdnBase ? buildCdnUrl(url, cdnBase) : null;
+
+    // 3) Önce CDN, patlarsa local
     if (cdnUrl) {
         try {
             return await firstValueFrom(http.get<SdkAsset>(cdnUrl));
