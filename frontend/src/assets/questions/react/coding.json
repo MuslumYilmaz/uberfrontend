@@ -1,7 +1,7 @@
 [
     {
         "id": "react-counter",
-        "title": "1Counter (Component with Guarded Decrement)",
+        "title": "Counter (Component with Guarded Decrement)",
         "type": "coding",
         "technology": "react",
         "difficulty": "beginner",

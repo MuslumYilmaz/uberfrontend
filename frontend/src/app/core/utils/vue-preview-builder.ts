@@ -1,24 +1,39 @@
 /** Minimal Vue 3 preview (v1)
- *  Expect a module component in: src/App.ts or src/App.js
- *  The file should `export default { template: '...', ... }`
- *  or `export default defineComponent({ template: '...', ... })`
+ *  Supports:
+ *   - src/App.vue  (SFC with <template> + <script setup> or normal <script>)
+ *   - src/App.ts   (module)
+ *   - src/App.js   (module)
+ *  The produced module must define:  const App = { ... }
  */
 export function makeVuePreviewHtml(files: Record<string, string>): string {
-    const user =
-        files['src/App.ts'] ??
-        files['src/App.js'] ??
-        // fallback – if someone wrote an SFC, tell them what to do in v1
-        `export default { template: '<div style="padding:12px">Hello Vue 👋</div>' }`;
+  // --- 1) Try SFC first ------------------------------------------------------
+  let user: string | undefined;
 
-    const css =
-        files['src/styles.css'] ??
-        files['src/App.css'] ??
-        files['public/styles.css'] ??
-        '';
+  if (files['src/App.vue']) {
+    const sfc = parseSfc(files['src/App.vue']!);
+    // parseSfc zaten App tanımını üretiyor; burada ekstra bir şey yapmıyoruz
+    user = sfc.script;
+  }
 
-    const appModuleSrc = rewriteVueModuleToUMD(user);
+  // --- 2) TS/JS module fallback ----------------------------------------------
+  user =
+    user ||
+    files['src/App.ts'] ||
+    files['src/App.js'] ||
+    `export default { template: '<div style="padding:12px">Hello Vue 👋</div>' }`;
 
-    return `<!doctype html>
+  // --- 3) Load CSS -----------------------------------------------------------
+  const css =
+    files['src/styles.css'] ??
+    files['src/App.css'] ??
+    files['public/styles.css'] ??
+    '';
+
+  // --- 4) Transform module to UMD-style script ------------------------------
+  const appModuleSrc = rewriteVueModuleToUMD(user);
+
+  // --- 5) Produce the full HTML preview -------------------------------------
+  return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -33,6 +48,7 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
     #_uf_overlay pre{white-space:pre-wrap;margin:0}
     #_uf_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
+
   <!-- Vue 3 (global build with compiler) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <!-- Babel for TS -> JS -->
@@ -46,114 +62,210 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
     <div id="_uf_overlay_meta" class="meta"></div>
   </div>
 
-  <!-- keep user code as text; we transform at runtime for nicer errors -->
+  <!-- user code -->
   <script id="_uf_user_src" type="text/plain">
 ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
   </script>
 
   <script>
-    (function(){
-      const overlay = document.getElementById('_uf_overlay');
-      const overlayMsg = document.getElementById('_uf_overlay_msg');
-      const overlayMeta = document.getElementById('_uf_overlay_meta');
+  (function(){
+    const overlay = document.getElementById('_uf_overlay');
+    const overlayMsg = document.getElementById('_uf_overlay_msg');
+    const overlayMeta = document.getElementById('_uf_overlay_meta');
 
-      function showOverlay(msg, meta){
-        try{
-          overlayMsg.textContent = msg || 'Unknown error';
-          overlayMeta.textContent = meta || '';
-          overlay.style.display = 'block';
-        }catch{}
+    function showOverlay(msg, meta){
+      try {
+        overlayMsg.textContent = msg || 'Unknown error';
+        overlayMeta.textContent = meta || '';
+        overlay.style.display = 'block';
+      } catch {}
+    }
+
+    function hideOverlay(){
+      try {
+        overlay.style.display = 'none';
+        overlayMsg.textContent = '';
+        overlayMeta.textContent = '';
+      } catch {}
+    }
+
+    window.addEventListener('error', (e) => {
+      const msg = String(e && (e.message || e.error || 'Error'));
+      const loc = e?.filename ? e.filename + (e.lineno ? ':'+e.lineno : '') : '';
+      const stack = e?.error?.stack ? '\\n\\n' + e.error.stack : '';
+      showOverlay(msg + stack, loc);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      const r = e?.reason || e?.message || 'Unhandled promise rejection';
+      const stack = r?.stack ? '\\n\\n' + r.stack : '';
+      showOverlay(String(r) + stack, '');
+    });
+
+    function compileTS(src){
+      try{
+        const out = Babel.transform(src, {
+          filename: 'App.ts',
+          sourceType: 'script',
+          presets: [['typescript', { isTSX:false, allExtensions:true }]],
+          retainLines: true,
+          sourceMaps: 'inline',
+          comments: false,
+          compact: false
+        });
+        return (out && out.code) ? (out.code + '\\n//# sourceURL=App.ts') : src;
+      }catch(e){
+        showOverlay(e?.message || e, 'App.ts');
+        throw e;
       }
-      function hideOverlay(){
-        try{
-          overlay.style.display = 'none';
-          overlayMsg.textContent = '';
-          overlayMeta.textContent = '';
-        }catch{}
-      }
+    }
 
-      window.addEventListener('error', (e) => {
-        const basic = String(e && (e.message || e.error || 'Error'));
-        const where = (e && e.filename) ? (e.filename + (e.lineno ? (':' + e.lineno + (e.colno ? ':' + e.colno : '')) : '')) : '';
-        const stack = e && e.error && e.error.stack ? '\\n\\n' + e.error.stack : '';
-        showOverlay(basic + stack, where);
-      });
-      window.addEventListener('unhandledrejection', (e) => {
-        const r = e && (e.reason || e.message) || 'Unhandled promise rejection';
-        const stack = r && r.stack ? '\\n\\n' + r.stack : '';
-        showOverlay(String(r) + stack, '');
-      });
+    function start(){
+      const raw = document.getElementById('_uf_user_src').textContent || '';
 
-      function compileTS(src){
-        try{
-          const out = Babel.transform(src, {
-            filename: 'App.ts',
-            sourceType: 'script',
-            presets: [['typescript', { isTSX:false, allExtensions:true }]],
-            retainLines: true, sourceMaps: 'inline', comments: false, compact: false
-          });
-          return (out && out.code) ? (out.code + '\\n//# sourceURL=App.ts') : src;
-        }catch(e){
-          showOverlay((e && (e.message || e)) || 'Compile error', 'App.ts');
-          throw e;
+      const compiled =
+        /:\\s*[A-Za-z_$]/.test(raw) || /interface\\b|type\\b/.test(raw)
+          ? compileTS(raw)
+          : raw;
+
+      try{
+        hideOverlay();
+        const run = new Function('Vue', compiled + '\\n;return (typeof App !== "undefined") ? App : undefined;');
+        const AppRef = run(Vue);
+        if (!AppRef) {
+          const q = String.fromCharCode(96);
+          showOverlay(
+            'No App component found. In v1, make sure your code defines ' +
+            q + 'const App = { ... }' + q + ' or ' +
+            q + 'export default { ... }' + q + '.',
+            'App'
+          );
+          return;
         }
+        Vue.createApp(AppRef).mount('#app');
+      }catch(e){
+        const stack = e?.stack ? '\\n\\n'+e.stack : '';
+        showOverlay(String(e) + stack, 'App');
       }
+    }
 
-      function start(){
-        const raw = document.getElementById('_uf_user_src').textContent || '';
-        // TS -> JS if needed
-        const compiled = /:\\s*[A-Za-z_$]/.test(raw) || /interface\\b|type\\b/.test(raw)
-          ? compileTS(raw) : raw;
-
-        try{
-          hideOverlay();
-          const run = new Function('Vue', compiled + '\\n;return (typeof App !== "undefined") ? App : undefined;');
-          const AppRef = run(Vue);
-          if (!AppRef) {
-             const BT = String.fromCharCode(96);
-            showOverlay(
-               'No default export found. In v1, use ' +
-               BT + 'export default { template: "...", ... }' + BT +
-               ' or defineComponent(...).',
-               'App.ts'
-            );
-    return;
+    start();
+  })();
+  </script>
+</body>
+</html>`;
 }
-Vue.createApp(AppRef).mount('#app');
-        }catch (e) {
-    const stack = e && e.stack ? '\\n\\n' + e.stack : '';
-    showOverlay(String(e) + stack, 'App.ts');
-}
-      }
 
-start();
-    }) ();
-</script>
-    </body>
-    </html>`;
+/** -----------------------------------------------------------------------
+ *  Parse SFC to extract <template> and <script> (supports <script setup>)
+ * --------------------------------------------------------------------- */
+function parseSfc(src: string): {
+  template: string;
+  script: string;
+  scriptExports: string;
+} {
+  // 1) <template> bloğunu yakala
+  const templateRE = /<template>([\s\S]*?)<\/template>/;
+  const tplMatch = src.match(templateRE);
+  const template = tplMatch?.[1]?.trim() ?? '';
+
+  // 2) <script ...> bloğunu yakala (setup veya normal fark etmez)
+  const scriptRE = /<script([^>]*)>([\s\S]*?)<\/script>/;
+  const scriptMatch = src.match(scriptRE);
+  const scriptAttrs = scriptMatch?.[1] ?? '';
+  const scriptRaw = scriptMatch?.[2]?.trim() ?? '';
+
+  const isSetup = /\bsetup\b/.test(scriptAttrs);
+
+  // Template'i backtick içine koymak için ` işaretini kaçışlayalım
+  const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
+
+  if (isSetup) {
+    // ---------- <script setup> yolu ----------
+    // vue importlarını ve css importlarını at
+    const body = scriptRaw
+      .replace(/^\s*import\s+[^;]*\s+from\s+['"]vue['"];?\s*$/mg, '')
+      .replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '')
+      .trim();
+
+    // top-level tanımları (count, isZero, inc, dec, reset vs.) topla
+    const bindings = new Set<string>();
+    body.replace(/\b(const|let|var|function)\s+([A-Za-z_$][\w$]*)/g, (_m, _k, name) => {
+      bindings.add(String(name));
+      return _m;
+    });
+
+    const returned = bindings.size > 0 ? Array.from(bindings).join(', ') : '';
+
+    const indentedBody = body
+      ? body.split('\n').map(line => '      ' + line).join('\n')
+      : '';
+
+    const script = `
+const { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
+
+const App = {
+  template: \`${escTemplate}\`,
+  setup() {
+${indentedBody}
+    return { ${returned} };
+  }
+};
+`.trim();
+
+    return { template, script, scriptExports: '' };
+  }
+
+  // ---------- Normal <script> yolu (options / composition) ----------
+  let script = scriptRaw;
+  let scriptExports = '';
+
+  const exportMatch = scriptRaw.match(/export\s+default\s+({[\s\S]*?})/);
+  if (exportMatch) {
+    scriptExports = exportMatch[1];
+    script = scriptRaw.replace(exportMatch[0], '').trim();
+  }
+
+  const fullScript = `
+${script}
+export default {
+  template: \`${escTemplate}\`,
+  ${scriptExports || ''}
+};
+`.trim();
+
+  return { template, script: fullScript, scriptExports };
 }
 
 /** Turn a module-style Vue component into a plain script with `App` in scope */
 function rewriteVueModuleToUMD(src: string): string {
-    let s = src;
+  let s = src;
 
-    // 1) strip style-only imports like CSS
-    s = s.replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '');
+  // 1) Remove pure CSS imports
+  s = s.replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '');
 
-    // 2) strip `import ... from 'vue'` – we use the global `Vue`
-    s = s.replace(/^\s*import\s+[^;]*\s+from\s+['"]vue['"];?\s*$/mg, '');
+  // 2) Detect and strip imports from 'vue'
+  const vueImportRE = /^\s*import\s+[^;]*\s+from\s+['"]vue['"];?\s*$/mg;
+  const hadVueImport = vueImportRE.test(s);
+  s = s.replace(vueImportRE, '');
 
-    // 3) normalize default export -> `const App = ...`
-    s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, 'const App = function ');
-    s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, 'const App = class ');
-    s = s.replace(/\bexport\s+default\s+/m, 'const App = ');
+  // 3) Rewrite export default → const App =
+  s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, 'const App = function ');
+  s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, 'const App = class ');
+  s = s.replace(/\bexport\s+default\s+/m, 'const App = ');
 
-    // 4) remove any remaining named export keywords
-    s = s.replace(/^\s*export\s+(?=(const|let|var|function|class)\b)/mg, '');
+  // 4) Remove named exports
+  s = s.replace(/^\s*export\s+(?=(const|let|var|function|class)\b)/mg, '');
 
-    // 5) common Vue usage niceties: if they used defineComponent without importing it
-    //    (since we stripped the import), patch `defineComponent(` -> `Vue.defineComponent(`
-    s = s.replace(/\bdefineComponent\s*\(/g, 'Vue.defineComponent(');
+  // 5) defineComponent( → Vue.defineComponent(
+  s = s.replace(/\bdefineComponent\s*\(/g, 'Vue.defineComponent(');
 
-    return s.trim();
+  // 6) If there *was* an import from 'vue', inject helpers from global Vue
+  if (hadVueImport) {
+    const helpers =
+      `const { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
+`;
+    s = helpers + s;
+  }
+
+  return s.trim();
 }

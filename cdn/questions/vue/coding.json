@@ -1,22 +1,75 @@
 [
     {
         "id": "vue-counter",
-        "title": "Build a Counter component",
-        "description": "Create a <Counter/> with + / - buttons and a value. Value must never drop below 0.",
+        "title": "Counter (Component with Guarded Decrement)",
         "type": "coding",
         "technology": "vue",
-        "difficulty": "easy",
+        "difficulty": "beginner",
+        "importance": 3,
         "tags": [
             "vue",
             "components",
-            "reactivity"
+            "reactivity",
+            "event-handlers",
+            "basics"
         ],
-        "importance": 2,
+        "description": {
+            "summary": "Build a simple Vue 3 counter component that displays a value and has '+' and '−' buttons. The count must never go below 0.",
+            "specs": {
+                "requirements": [
+                    "Render the counter UI as the main component.",
+                    "Display the current count value.",
+                    "Provide '+' and '−' buttons to increment and decrement.",
+                    "Prevent the count from ever going below 0.",
+                    "Include a 'Reset' button that sets the count back to 0."
+                ],
+                "expectedBehavior": [
+                    "Initial count starts at 0.",
+                    "Clicking '+' increases the count by 1.",
+                    "Clicking '−' decreases the count by 1, but never below 0.",
+                    "Clicking 'Reset' sets the count back to 0.",
+                    "The '−' button is disabled when the count is 0."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API with `ref` to store the count.",
+                    "Use a `computed` property to determine when the count is zero and disable the decrement button.",
+                    "Keep everything in a single `<App.vue>` component for this exercise."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Basic component structure",
+                    "Click event handlers",
+                    "Guarded state updates"
+                ]
+            }
+        },
+        "starterCodeHint": "Implement the counter logic inside `<script setup>`. Use `ref(0)` for the value and a `computed` property for the disabled state of the decrement button.",
+        "solutionBlock": {
+            "overview": "Use Vue 3's Composition API with `ref(0)` for the count and a `computed` property that returns `true` when the count is 0. The '+' button increments the ref, the '−' button decrements but is guarded so the value never becomes negative, and 'Reset' sets it back to 0.\n\n**Key ideas**\n- Store count in a single `ref`.\n- Derive disabled state from a `computed` value.\n- Guard the decrement so it never sets a negative value.",
+            "approaches": [
+                {
+                    "title": "Single component with guarded decrement",
+                    "prose": "Keep all logic inside `<script setup>` in `App.vue`. Use `const count = ref(0)` to create reactive state. Define a computed property `isZero` that checks `count.value === 0` and bind it to `:disabled` on the decrement button. Implement `inc`, `dec`, and `reset` as simple functions that mutate `count.value`, with `dec` checking that the value is greater than 0 before decrementing."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Updating `count` without guarding against negatives, allowing the value to go below 0.",
+                    "Forgetting to use `.value` when reading or writing refs inside `<script setup>`.",
+                    "Deriving `isZero` manually and forgetting to update it when count changes instead of using `computed`."
+                ],
+                "techniques": [
+                    "Using `ref` for local reactive state in Vue 3.",
+                    "Using `computed` to derive boolean UI state (disabled button).",
+                    "Keeping state and handlers co-located with the component template."
+                ]
+            }
+        },
         "sdk": {
             "asset": "assets/sb/vue-counter.v1.json",
-            "openFile": "/src/App.ts",
-            "storageKey": "v2:ui:vue:vue-counter"
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-counter"
         },
-        "stackblitzEmbedUrl": "https://stackblitz.com/edit/vue-ts?embed=1&file=src/App.ts"
+        "solutionAsset": "assets/sb/vue-counter-solution.v1.json"
     }
 ]

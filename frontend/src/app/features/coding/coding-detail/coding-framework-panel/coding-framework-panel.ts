@@ -356,14 +356,16 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
 
   langFromPath(p: string): 'typescript' | 'javascript' | 'html' | 'css' | 'json' | 'plaintext' {
     const lc = (p || '').toLowerCase();
+
     if (lc.endsWith('.ts') || lc.endsWith('.tsx')) return 'typescript';
     if (lc.endsWith('.js') || lc.endsWith('.jsx')) return 'javascript';
+    if (lc.endsWith('.vue')) return 'html';
     if (lc.endsWith('.html')) return 'html';
     if (lc.endsWith('.css') || lc.endsWith('.scss')) return 'css';
     if (lc.endsWith('.json')) return 'json';
+
     return 'plaintext';
   }
-
   onFrameworkCodeChange(code: string) {
     this.editorContent.set(code);
     const q = this.question;
@@ -482,19 +484,33 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
   private defaultEntry(): string {
     if (this.tech === 'angular') return 'src/app/app.component.ts';
     if (this.tech === 'react') return 'src/App.tsx';
+    if (this.tech === 'vue') return 'src/App.vue';
     return 'src/App.ts';
   }
 
   private pickFirstOpen(files: Record<string, string>): string {
     const dflt = this.defaultEntry();
     if (files[dflt]) return dflt;
+
+    if (this.tech === 'vue') {
+      if (files['src/App.vue']) return 'src/App.vue';
+      if (files['App.vue']) return 'App.vue';
+
+      const anyVue = Object.keys(files).find(p =>
+        p.toLowerCase().endsWith('.vue')
+      );
+      if (anyVue) return anyVue;
+    }
+
     const candidates = [
       'src/main.tsx', 'src/main.ts', 'src/index.tsx', 'src/index.ts',
       'src/App.tsx', 'src/App.ts', 'src/App.js', 'src/App.vue',
       'src/app/app.component.ts'
     ];
+
     const found = candidates.find(f => f in files);
     if (found) return found;
+
     const [first] = Object.keys(files);
     return (first || dflt).replace(/^\/+/, '');
   }

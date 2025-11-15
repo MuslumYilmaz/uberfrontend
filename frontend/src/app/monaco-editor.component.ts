@@ -199,6 +199,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       typescript: 'typescript',
       js: 'javascript',
       javascript: 'javascript',
+
+      vue: 'html',
+      'vue-html': 'html',
+      'vue-ts': 'typescript',
+
       jsonc: 'json',
       yml: 'yaml',
       sh: 'shell',
