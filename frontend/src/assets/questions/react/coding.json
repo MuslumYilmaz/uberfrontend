@@ -316,5 +316,79 @@
             "meta",
             "google"
         ]
+    },
+    {
+        "id": "react-tabs-switcher",
+        "title": "Tabs / Multi-View Switcher",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "react",
+            "state",
+            "conditional-rendering",
+            "components"
+        ],
+        "description": {
+            "summary": "Build a simple tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+            "specs": {
+                "requirements": [
+                    "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
+                    "Track which tab is currently active and visually highlight it.",
+                    "Render only the active tab's content at a time."
+                ],
+                "expectedBehavior": [
+                    "The initial active tab should be \"Overview\".",
+                    "Clicking a tab makes it the active tab.",
+                    "Only the active tab's panel is visible at any time.",
+                    "The active tab button has a distinct visual style (e.g. filled pill) compared to inactive ones."
+                ],
+                "implementationNotes": [
+                    "Use React state (useState) to store the currently active tab.",
+                    "Model the tab id as a union type like `'overview' | 'details' | 'settings'` for clarity in TypeScript.",
+                    "Use conditional rendering (e.g. `isActive('overview') && (...)`) to show/hide each panel.",
+                    "Apply conditional classes (e.g. `className={isActive('overview') ? 'tab active' : 'tab'}`) to style the active tab."
+                ],
+                "techFocus": [
+                    "React useState",
+                    "Basic state management for view selection",
+                    "Conditional rendering and className toggling"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "This exercise is about representing a small piece of UI state (which tab is active) and using that state to drive both styles and conditional rendering.\n\nKeep everything in a single React component that owns an `activeTab` state value. Tab buttons call a `selectTab(tab)` handler, and a helper like `isActive(tab)` is used in JSX for the active styles and for choosing which panel to render.\n\n**Test cases**\n- Initial render shows the Overview panel and its tab appears active.\n- Clicking Details switches the active tab and hides Overview content.\n- Clicking Settings switches again and only the Settings content is visible.\n- Clicking the already active tab keeps the current view and styles unchanged.",
+            "approaches": [
+                {
+                    "title": "Single component with `activeTab` state and helper function",
+                    "prose": "Use a functional component with one piece of state: `activeTab`. Model the tab ids as a TypeScript union type (e.g. `'overview' | 'details' | 'settings'`).\n\n1. Define a `type TabId = 'overview' | 'details' | 'settings';`.\n2. Initialize `const [activeTab, setActiveTab] = React.useState<TabId>('overview');`.\n3. Implement `const isActive = (tab: TabId) => activeTab === tab;`.\n4. Implement `const selectTab = (tab: TabId) => setActiveTab(tab);`.\n5. Use `className={isActive('overview') ? 'tab active' : 'tab'}` for buttons and `isActive('overview') && (...)` for the panels.\n\nThis mirrors a common pattern used in real-world tab components while staying small enough for beginners.",
+                    "codeJs": "import React from 'react';\nimport './App.css';\n\ntype TabId = 'overview' | 'details' | 'settings';\n\nexport default function App() {\n  const [activeTab, setActiveTab] = React.useState<TabId>('overview');\n\n  const isActive = (tab: TabId) => activeTab === tab;\n  const selectTab = (tab: TabId) => {\n    setActiveTab(tab);\n  };\n\n  return (\n    <main className=\"shell\">\n      <section className=\"card\">\n        <h1>Tabs / Multi-View Switcher</h1>\n        <p className=\"subtitle\">\n          Click the tabs to switch between different content panels.\n        </p>\n\n        <nav className=\"tabs\" aria-label=\"Example tabs\">\n          <button\n            className={isActive('overview') ? 'tab active' : 'tab'}\n            onClick={() => selectTab('overview')}\n          >\n            Overview\n          </button>\n          <button\n            className={isActive('details') ? 'tab active' : 'tab'}\n            onClick={() => selectTab('details')}\n          >\n            Details\n          </button>\n          <button\n            className={isActive('settings') ? 'tab active' : 'tab'}\n            onClick={() => selectTab('settings')}\n          >\n            Settings\n          </button>\n        </nav>\n\n        {isActive('overview') && (\n          <section className=\"panel\" aria-label=\"Overview content\">\n            <h2>Overview</h2>\n            <p>Show a short summary or welcome message in this panel.</p>\n          </section>\n        )}\n\n        {isActive('details') && (\n          <section className=\"panel\" aria-label=\"Details content\">\n            <h2>Details</h2>\n            <p>Render some more detailed information here.</p>\n          </section>\n        )}\n\n        {isActive('settings') && (\n          <section className=\"panel\" aria-label=\"Settings content\">\n            <h2>Settings</h2>\n            <p>Display simple settings-like text or placeholders in this panel.</p>\n          </section>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Using multiple booleans (e.g. `isOverview`, `isDetails`, `isSettings`) instead of a single `activeTab` value.",
+                    "Forgetting to visually differentiate the active tab from inactive ones.",
+                    "Rendering all panels at once instead of conditionally rendering the active one."
+                ],
+                "techniques": [
+                    "Modeling view state with a discriminated union/enum-like type.",
+                    "Using helper functions (`isActive`) to keep JSX clean.",
+                    "Driving both styles and rendering from a single source of truth (`activeTab`)."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-tabs.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-tabs-switcher"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-tabs-solution.v1.json",
+        "companies": [
+            "meta",
+            "google",
+            "uber"
+        ]
     }
 ]

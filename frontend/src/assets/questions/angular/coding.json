@@ -326,5 +326,80 @@
       "airbnb"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json"
+  },
+  {
+    "id": "angular-tabs-switcher",
+    "title": "Tabs / Multi-View Switcher",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "beginner",
+    "importance": 3,
+    "tags": [
+      "components",
+      "state",
+      "conditional-rendering",
+      "tabs"
+    ],
+    "description": {
+      "summary": "Build a simple tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
+          "Track which tab is currently active and visually highlight it.",
+          "Render only the active tab's content at a time."
+        ],
+        "expectedBehavior": [
+          "The initial active tab should be \"Overview\".",
+          "Clicking a tab makes it the active tab.",
+          "Only the active tab's panel is visible at any time.",
+          "The active tab button has a distinct visual style (e.g. underline or background)."
+        ],
+        "implementationNotes": [
+          "Store the currently active tab in a component property.",
+          "Use template bindings and event handlers (e.g. `(click)`) to switch tabs.",
+          "Use conditional rendering (e.g. `*ngIf`) to show/hide each panel.",
+          "You can model the active tab as a union type like `'overview' | 'details' | 'settings'` for extra type safety."
+        ],
+        "techFocus": [
+          "Basic state management in a component",
+          "Conditional rendering with `*ngIf`",
+          "Simple component composition and layout for tabs"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about modeling a small piece of UI state (which tab is active) and using that state to drive both styles and conditional rendering. Use a single standalone Angular component that owns an `activeTab` property. The tab buttons call a `selectTab(tab)` method, and helper logic like `isActive(tab)` feeds CSS classes and `*ngIf` checks for the content panels.\n\n**Test cases**\n- Initial render shows the Overview panel and its tab appears active.\n- Clicking Details switches the active tab and hides Overview content.\n- Clicking Settings switches again and only the Settings content is visible.\n- Re-clicking an already active tab keeps the same content and styles.",
+      "approaches": [
+        {
+          "title": "Single standalone component with `activeTab` state",
+          "prose": "Keep everything in a single `AppComponent` to emphasise basic state management and conditional rendering.\n\n1. Define a `TabId` union type: `'overview' | 'details' | 'settings'`.\n2. Add an `activeTab: TabId = 'overview';` property.\n3. Implement a `selectTab(tab: TabId)` method that simply assigns `this.activeTab = tab;`.\n4. Add a helper `isActive(tab: TabId)` that returns `this.activeTab === tab` and use it in `[class.active]` and `*ngIf` checks.\n5. Structure the template with a header row of buttons for the tabs and three conditional sections for the panels.\n\nThis mirrors real-world tab patterns but stays small enough for a beginner exercise.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype TabId = 'overview' | 'details' | 'settings';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"shell\">\n      <section class=\"card\">\n        <h1>Tabs / Multi-View Switcher</h1>\n\n        <nav class=\"tabs\">\n          <button\n            class=\"tab\"\n            [class.active]=\"isActive('overview')\"\n            (click)=\"selectTab('overview')\">Overview</button>\n          <button\n            class=\"tab\"\n            [class.active]=\"isActive('details')\"\n            (click)=\"selectTab('details')\">Details</button>\n          <button\n            class=\"tab\"\n            [class.active]=\"isActive('settings')\"\n            (click)=\"selectTab('settings')\">Settings</button>\n        </nav>\n\n        <section class=\"panel\" *ngIf=\"isActive('overview')\">\n          <h2>Overview</h2>\n          <p>Show a short summary or welcome message here.</p>\n        </section>\n\n        <section class=\"panel\" *ngIf=\"isActive('details')\">\n          <h2>Details</h2>\n          <p>Display more detailed information in this panel.</p>\n        </section>\n\n        <section class=\"panel\" *ngIf=\"isActive('settings')\">\n          <h2>Settings</h2>\n          <p>Render some simple settings-like content here.</p>\n        </section>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.shell{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:560px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 24px;box-shadow:0 18px 45px rgba(15,23,42,0.8);display:grid;gap:16px;}`,\n    `.card h1{margin:0 0 4px;font-size:20px;font-weight:700;}`,\n    `.tabs{display:flex;gap:8px;padding:4px;background:#020617;border-radius:999px;border:1px solid #1f2937;}`,\n    `.tab{flex:1;padding:8px 10px;border-radius:999px;border:none;background:transparent;color:#9ca3af;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s, color .15s;}`,\n    `.tab.active{background:#e5e7eb;color:#020617;}`,\n    `.panel{margin-top:4px;border-radius:12px;border:1px solid #111827;background:radial-gradient(circle at top left,#111827,#020617);padding:14px 16px;display:grid;gap:4px;}`,\n    `.panel h2{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.panel p{margin:0;font-size:13px;color:#d1d5db;line-height:1.5;}`\n  ]\n})\nexport class AppComponent {\n  activeTab: TabId = 'overview';\n\n  isActive(tab: TabId): boolean {\n    return this.activeTab === tab;\n  }\n\n  selectTab(tab: TabId): void {\n    this.activeTab = tab;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Hard-coding panel visibility without tying it to a single source of truth for the active tab.",
+          "Forgetting to visually differentiate the active tab from inactive ones.",
+          "Using separate booleans for each tab instead of a single `activeTab` value, which quickly becomes harder to manage."
+        ],
+        "techniques": [
+          "Modeling view state with a union type for clearer intent.",
+          "Using helper methods like `isActive` to keep the template clean.",
+          "Applying classes conditionally with `[class.active]` to style the active tab."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-tabs.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-tabs-starter"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "uber"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json"
   }
 ]

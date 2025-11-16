@@ -315,5 +315,76 @@
             "storageKey": "v1:ui:vue:vue-image-slider"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json"
+    },
+    {
+        "id": "vue-tabs-switcher",
+        "title": "Tabs / Multi-View Switcher",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "conditional-rendering",
+            "basics"
+        ],
+        "description": {
+            "summary": "Build a simple Vue 3 tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+            "specs": {
+                "requirements": [
+                    "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
+                    "Track which tab is currently active and visually highlight it.",
+                    "Render only the active tab's content at a time."
+                ],
+                "expectedBehavior": [
+                    "The initial active tab should be \"Overview\".",
+                    "Clicking a tab makes it the active tab.",
+                    "Only the active tab's panel is visible at any time.",
+                    "The active tab button has a distinct visual style (e.g., filled pill) compared to inactive ones."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API with `ref` to store the currently active tab.",
+                    "Model the tab id as a string union (e.g., `'overview' | 'details' | 'settings'`).",
+                    "Use a helper function like `isActive(tab)` to drive both active styles and conditional rendering.",
+                    "Keep everything in a single `<App.vue>` component for this exercise."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`)",
+                    "Basic component structure",
+                    "Click event handlers",
+                    "Conditional rendering based on reactive state"
+                ]
+            }
+        },
+        "starterCodeHint": "Implement the tab state and handlers inside `<script setup>`. Use `ref('overview')` for the active tab and a small helper like `isActive(tab)` to decide which tab is highlighted and which panel is shown.",
+        "solutionBlock": {
+            "overview": "Use Vue 3's Composition API with a single `ref` holding the active tab id. The tab buttons update that ref when clicked, and a helper like `isActive(tab)` is used in the template for both styling and conditional rendering.\n\n**Key ideas**\n- Store the active tab id in a single `ref`.\n- Drive the active pill style and visible panel from the same source of truth.\n- Keep all logic colocated with the component template using `<script setup>`.",
+            "approaches": [
+                {
+                    "title": "Single component with `activeTab` ref and helper function",
+                    "prose": "Keep all logic inside `<script setup>` in `App.vue`. Use `const activeTab = ref('overview')` to define the initial tab. Define a helper `const isActive = (tab: TabId) => activeTab.value === tab` and use it both for button classes and for `v-if` panels. Implement `selectTab(tab)` so it sets `activeTab.value = tab` when a tab button is clicked."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Using multiple booleans (`isOverview`, `isDetails`, `isSettings`) instead of a single tab id.",
+                    "Forgetting to visually differentiate the active tab from inactive ones.",
+                    "Rendering all panels at once instead of conditionally rendering only the active one."
+                ],
+                "techniques": [
+                    "Using `ref` for local reactive state in Vue 3.",
+                    "Using helper functions to keep the template clean.",
+                    "Driving both styles and rendering from one reactive value."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-tabs.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-tabs-switcher"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json"
     }
 ]
