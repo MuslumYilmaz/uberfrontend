@@ -154,5 +154,87 @@
             "google",
             "airbnb"
         ]
+    },
+    {
+        "id": "react-todo-list",
+        "title": "Todo List (Component with Local State)",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "react",
+            "state",
+            "lists",
+            "forms",
+            "event-handlers"
+        ],
+        "description": {
+            "summary": "Build a small Todo List using a single React component. Users can add tasks, mark them as done with a checkbox, remove individual tasks, and clear all completed tasks.",
+            "specs": {
+                "requirements": [
+                    "Render a Todo List UI as the main component.",
+                    "Provide a text input and an 'Add' button to create new tasks.",
+                    "Render a list of todos with a checkbox and label for each task.",
+                    "When a task is checked, its text should appear with a line-through style.",
+                    "Provide a 'Remove' button for each task.",
+                    "Provide a 'Clear completed' button that removes all completed tasks."
+                ],
+                "expectedBehavior": [
+                    "Typing into the input updates local component state.",
+                    "Clicking 'Add' with non-empty text adds a new todo and clears the input.",
+                    "Checking a todo toggles its completed state and updates the line-through style.",
+                    "Clicking 'Remove' deletes that todo only.",
+                    "Clicking 'Clear completed' removes all todos whose checkbox is checked.",
+                    "The empty state message is shown when there are no todos."
+                ],
+                "implementationNotes": [
+                    "Use `useState` to manage the input value and the array of todo items.",
+                    "Each todo item should at minimum have `id`, `text`, and `done` fields.",
+                    "Use array methods like `map` and `filter` to update the todos immutably.",
+                    "Use a derived boolean to decide when to show the empty state and footer."
+                ],
+                "techFocus": [
+                    "React `useState` for local state",
+                    "Controlled inputs",
+                    "Rendering lists with `map`",
+                    "Event handlers for click and change events",
+                    "Immutable updates for arrays of objects"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "Store the current input text and the list of todos in component state using `useState`. When the user clicks 'Add', trim the input, guard against empty strings, and append a new todo object to the array. Use `map` to toggle a todo's `done` flag, and `filter` to remove a specific todo or all completed todos.\n\n**Key ideas**\n- Represent each todo with an object containing `id`, `text`, and `done`.\n- Treat the input as a controlled component.\n- Use immutable array updates (`map`, `filter`) when changing state.\n- Derive UI state, such as whether there are any todos, from the current array.",
+            "approaches": [
+                {
+                    "title": "Single component with `useState` and immutable updates",
+                    "prose": "Keep everything in a single `App` component. Use `useState<string>` for the input and `useState<Todo[]>` for the list. Implement helpers `addTask`, `toggleTask`, `removeTask`, and `clearCompleted`. Each helper uses immutable array operations: `addTask` spreads the previous array with a new item, `toggleTask` uses `map` to flip `done` for the matching `id`, `removeTask` and `clearCompleted` use `filter` to drop items. The checkbox `checked` prop is bound to `todo.done`, and the text element gets a `done` class when `true`."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Mutating the array in place instead of returning a new array.",
+                    "Forgetting to clear the input after successfully adding a task.",
+                    "Using uncontrolled inputs, which makes it harder to reset and test.",
+                    "Forgetting to use a stable key when rendering the list."
+                ],
+                "techniques": [
+                    "Using `useState` with functional updates when state depends on the previous value.",
+                    "Using `map` / `filter` for immutable updates.",
+                    "Deriving booleans like `hasTodos` from existing state instead of storing them separately."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-todo-list.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-todo-list"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-todo-list-solution.v1.json",
+        "companies": [
+            "meta",
+            "google",
+            "uber"
+        ]
     }
 ]

@@ -156,5 +156,87 @@
             "airbnb"
         ],
         "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json"
+    },
+    {
+        "id": "vue-todo-list",
+        "title": "Todo List (Refs + List Rendering)",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "lists",
+            "state-management",
+            "event-handlers",
+            "forms"
+        ],
+        "description": {
+            "summary": "Build a small Todo List in Vue 3 using the Composition API and <script setup>. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks.",
+            "specs": {
+                "requirements": [
+                    "Render a Todo List as the main UI in App.vue.",
+                    "Use a text input and 'Add' button to create new todos.",
+                    "Display todos in a list using v-for.",
+                    "Each todo should have a checkbox to toggle completion and a 'Remove' button.",
+                    "Provide a 'Clear completed' button that removes all completed todos when clicked."
+                ],
+                "expectedBehavior": [
+                    "Clicking 'Add' with non-empty trimmed text adds a new todo to the list and clears the input.",
+                    "Checking a todo's checkbox toggles its completed state and visually marks it (line-through).",
+                    "Clicking 'Remove' deletes that specific todo.",
+                    "Clicking 'Clear completed' removes all todos where done === true.",
+                    "An empty state message is shown when there are no todos."
+                ],
+                "implementationNotes": [
+                    "Use `ref('')` for the controlled input value (newTask).",
+                    "Store the list of todos in a `ref<Todo[]>([])` where each todo has `id`, `text`, and `done`.",
+                    "Use `computed` for simple derived state like `hasTodos`.",
+                    "Implement helpers `addTask`, `toggleTask`, `removeTask`, and `clearCompleted` inside `<script setup>`.",
+                    "Keep everything in a single App.vue component."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API with refs and computed",
+                    "List rendering with v-for and keys",
+                    "Immutable style array updates (map/filter) for clarity",
+                    "Basic component-level state management"
+                ]
+            }
+        },
+        "starterCodeHint": "Work only inside `<script setup>` in App.vue. Use `const newTask = ref('')` and `const todos = ref([] as Todo[])`. Implement `addTask`, `toggleTask(id)`, `removeTask(id)`, and `clearCompleted()` and wire them to the template via @click / @change.",
+        "solutionBlock": {
+            "overview": "Use a single Vue 3 SFC with `<script setup>` to manage the todo list. Track the input value in `newTask` and store todos in a `ref` array with `{ id, text, done }`. A `computed` property `hasTodos` drives the empty state and footer visibility. Actions (`addTask`, `toggleTask`, `removeTask`, `clearCompleted`) update the `todos` array, and the template uses `v-for` to render items plus a checkbox and Remove button.\n\n**Key ideas**\n- Keep all state in refs inside `<script setup>`.\n- Use `v-for` + `:key` for list rendering.\n- Use immutable updates (`map` / `filter`) for clear toggling and removal.\n- Drive simple UI states (empty vs list, footer visibility) from computed values.",
+            "approaches": [
+                {
+                    "title": "Single component with ref-backed list and immutable updates",
+                    "prose": "Define `type Todo = { id: number; text: string; done: boolean }` and create `const newTask = ref('')` plus `const todos = ref([] as Todo[])`. `addTask` trims `newTask.value`, bails on empty, and appends a new todo with a unique `id` (e.g. `Date.now()`). `toggleTask(id)` replaces the array with `todos.value.map(todo => todo.id === id ? { ...todo, done: !todo.done } : todo)`. `removeTask(id)` and `clearCompleted()` use `filter` to drop items. A `hasTodos` computed returns `todos.value.length > 0` and controls whether you show the empty message or the list."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Mutating todos in place without updating the ref value in a way that keeps the code clear.",
+                    "Adding empty or whitespace-only tasks by forgetting to trim the input.",
+                    "Forgetting to use `:key` in `v-for`, which can lead to odd checkbox behaviour.",
+                    "Toggling completion without visually reflecting it (missing the `done` class binding)."
+                ],
+                "techniques": [
+                    "Using refs for both scalar and array state.",
+                    "Using computed for derived flags such as `hasTodos`.",
+                    "Updating arrays immutably to keep logic simple and predictable.",
+                    "Binding classes dynamically with `:class` for completed todos."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-todo-list.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-todo-list"
+        },
+        "companies": [
+            "google",
+            "meta",
+            "airbnb"
+        ],
+        "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json"
     }
 ]

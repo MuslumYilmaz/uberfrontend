@@ -159,5 +159,90 @@
       "airbnb"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json"
+  },
+  {
+    "id": "angular-todo-list-starter",
+    "title": "Todo List (Standalone Component with ngFor)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "lists",
+      "ngFor",
+      "forms"
+    ],
+    "description": {
+      "summary": "Build a small todo list using an Angular standalone component. Allow users to add tasks, mark them as completed, and remove them. Use `*ngFor` to render the list and simple component state to drive the UI.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Display a text input and an \"Add\" button for creating new todos.",
+          "Render the todo items in a list using `*ngFor`.",
+          "Each todo item should show a label and a checkbox to toggle completion.",
+          "Allow removing a single todo item from the list.",
+          "Optionally provide a \"Clear completed\" action to remove all completed todos."
+        ],
+        "expectedBehavior": [
+          "Typing a non-empty value and clicking \"Add\" appends a new todo to the list and clears the input.",
+          "Empty or whitespace-only values are ignored (no item is added).",
+          "Clicking a todo’s checkbox toggles its completed state.",
+          "Completed todos are visually distinguished (e.g. line-through).",
+          "Clicking a remove button deletes that specific todo.",
+          "If you implement \"Clear completed\", it removes only the completed todos."
+        ],
+        "implementationNotes": [
+          "Keep everything in `AppComponent` (`src/app/app.component.ts` and `app.component.html`). No extra services or components are required.",
+          "Use a simple array of objects (e.g. `{ id, text, done }`) to store todos.",
+          "Use `*ngFor` to loop over the todo array in the template.",
+          "Use `[(ngModel)]` for the input binding and checkbox bindings (remember to import `FormsModule`).",
+          "Use click handlers like `(click)=\"addTask()\"` and `(click)=\"removeTask(task)\"` to modify the array."
+        ],
+        "techFocus": [
+          "Standalone component setup with `standalone: true`",
+          "Managing in-memory state in a component",
+          "Rendering lists with `*ngFor`",
+          "Using `[(ngModel)]` for simple form input binding",
+          "Basic UX for add / toggle / remove actions"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise models a classic todo list with a single standalone component. You keep all state inside the component: a `newTask` string for the input and a `todos` array (e.g. `{ id, text, done }`). The template binds `newTask` with `[(ngModel)]`, renders `todos` with `*ngFor`, and wires up click handlers to add, toggle, and remove items.\n\nTypical flow:\n- User types into the input; `newTask` is updated via `[(ngModel)]`.\n- Clicking **Add** (or pressing Enter, if you implement it) calls `addTask()`, which trims the text, ignores empties, pushes a new todo into the array, and resets `newTask`.\n- Each todo row shows a checkbox bound to `todo.done` and maybe styled with a `.done` CSS class when complete.\n- Clicking the remove button calls `removeTask(todo)`, which filters that item out.\n- Optionally, a \"Clear completed\" button calls `clearCompleted()` to remove all completed todos.\n\n**Test cases**\n- With an empty input, clicking **Add** does nothing.\n- Typing \"Buy milk\" and clicking **Add** shows a single todo row with that text.\n- Toggling the checkbox marks the item as completed and applies the completed styling.\n- Clicking the remove button deletes that specific row.\n- After completing multiple todos, clicking \"Clear completed\" (if implemented) removes only the completed ones.",
+      "approaches": [
+        {
+          "title": "Standalone component with a local array of todos",
+          "prose": "Represent todos as `{ id, text, done }` objects stored in a `todos` array property. Use a simple incremental `nextId` counter for unique ids. The input is bound via `[(ngModel)]=\"newTask\"`. In `addTask()`, trim `newTask`, ignore empties, then push a new object. In the template, use `*ngFor=\"let todo of todos; trackBy: trackById\"` to render each row with a checkbox bound to `todo.done` and a remove button.\n\n`toggleTask(todo)` can simply flip `todo.done = !todo.done`, or you can rely entirely on `[(ngModel)]` on the checkbox and only use handlers for extra behavior. `removeTask(todo)` filters `todos` to drop the item by id. `clearCompleted()` sets `todos` to `todos.filter(t => !t.done)`. This keeps all list and input logic colocated in the root standalone component.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      { id: this.nextId++, text, done: false }\n    ];\n\n    this.newTask = '';\n  }\n\n  toggleTask(todo: Todo): void {\n    todo.done = !todo.done;\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n\n  trackById(_index: number, todo: Todo): number {\n    return todo.id;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing empty or whitespace-only todos to be added.",
+          "Mutating the `todos` array in a way that loses track of identity (e.g. reusing the same id for all items).",
+          "Forgetting to import `FormsModule`, which breaks `[(ngModel)]` bindings.",
+          "Handling toggle logic only in a click handler but not binding the checkbox correctly."
+        ],
+        "techniques": [
+          "Modeling UI items as simple objects inside a component.",
+          "Using `[(ngModel)]` for a controlled input and checkbox bindings.",
+          "Rendering lists with `*ngFor` and `trackBy` for better identity handling.",
+          "Using pure functions (`filter`, `map`) to derive new arrays when removing or clearing items."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-todo-list.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-todo-list-starter"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "airbnb"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json"
   }
 ]

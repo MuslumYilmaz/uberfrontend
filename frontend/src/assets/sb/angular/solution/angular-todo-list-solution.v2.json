@@ -1,0 +1,40 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Todo List (solution)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/forms": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-todo-list-solution\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Todo List (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      {\n        id: this.nextId++,\n        text,\n        done: false\n      }\n    ];\n\n    this.newTask = '';\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n\n  trackById(_index: number, todo: Todo): number {\n    return todo.id;\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:480px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Todo List (Solution)</h1>\n\n    <div class=\"panel\">\n      <div class=\"input-row\">\n        <input\n          type=\"text\"\n          placeholder=\"Add a new task...\"\n          [(ngModel)]=\"newTask\"\n        />\n        <button type=\"button\" class=\"primary\" (click)=\"addTask()\">\n          Add\n        </button>\n      </div>\n\n      <ul class=\"list\" *ngIf=\"hasTodos; else emptyState\">\n        <li\n          class=\"item\"\n          *ngFor=\"let todo of todos; trackBy: trackById\"\n        >\n          <label class=\"item-main\">\n            <input\n              type=\"checkbox\"\n              [(ngModel)]=\"todo.done\"\n            />\n            <span [class.done]=\"todo.done\">{{ todo.text }}</span>\n          </label>\n\n          <button type=\"button\" class=\"ghost\" (click)=\"removeTask(todo)\">\n            Remove\n          </button>\n        </li>\n      </ul>\n\n      <ng-template #emptyState>\n        <p class=\"empty\">No tasks yet. Add your first one above.</p>\n      </ng-template>\n\n      <div class=\"footer\" *ngIf=\"hasTodos\">\n        <button\n          type=\"button\"\n          class=\"ghost small\"\n          (click)=\"clearCompleted()\"\n        >\n          Clear completed\n        </button>\n      </div>\n    </div>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.input-row{display:flex;gap:8px;}\n.input-row input{flex:1;background:#020617;border-radius:8px;border:1px solid #1f2937;padding:8px 10px;color:#e5e7eb;font-size:14px;}\n.input-row input:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f1;}\n.primary{background:#4ade80;color:#022c22;border:none;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;}\n.primary[disabled]{opacity:.6;cursor:not-allowed;}\n.list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}\n.item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:8px;background:#020617;border:1px solid transparent;}\n.item-main{display:flex;align-items:center;gap:8px;font-size:14px;}\n.item-main input[type=checkbox]{accent-color:#22c55e;}\n.item-main span.done{text-decoration:line-through;color:#9ca3af;}\nbutton.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:999px;padding:6px 10px;font-size:12px;cursor:pointer;}\nbutton.ghost.small{padding:4px 10px;font-size:12px;}\n.empty{margin:4px 0 0;font-size:13px;color:#9ca3af;text-align:center;}\n.footer{display:flex;justify-content:flex-end;margin-top:4px;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}
