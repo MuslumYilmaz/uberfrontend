@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
@@ -17,6 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
+import { CodingListStateService } from '../../../core/services/coding-list-state';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -114,7 +115,7 @@ function inferCategory(q: any): CategoryKey {
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
 })
-export class CodingListComponent {
+export class CodingListComponent implements OnInit, OnDestroy {
   // ----- filter UI state -----
   searchTerm = '';
   sliderValue = 5;
@@ -416,8 +417,14 @@ export class CodingListComponent {
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService,
-    private router: Router
+    private router: Router,
+    private listState: CodingListStateService
   ) {
+    // Route data’dan source/kind’i hemen al ki ngOnInit’te kullanabilelim
+    const d = this.route.snapshot.data as any;
+    this.source = (d['source'] as ListSource) ?? this.source;
+    this.kind = (d['kind'] as Kind) ?? this.kind;
+
     // seed tech filter from ?tech= on global list
     this.route.queryParamMap
       .pipe(
@@ -441,14 +448,47 @@ export class CodingListComponent {
       )
       .subscribe();
 
-    document.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.sort-wrap')) this.closeSort();
-    }, { capture: true });
+    document.addEventListener(
+      'click',
+      (e) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.sort-wrap')) this.closeSort();
+      },
+      { capture: true }
+    );
 
-    this.companySlug$.subscribe(slug => {
+    this.companySlug$.subscribe((slug) => {
       this.currentCompanySlug = slug || null;
     });
+  }
+
+  ngOnInit(): void {
+    // Sadece global liste (/coding) için filtre state’i restore ediyoruz
+    if (this.source !== 'global-coding') return;
+
+    const saved = this.listState.globalCodingState;
+    if (!saved) return;
+
+    // Arama & slider
+    this.searchTerm = saved.searchTerm;
+    this.sliderValue = saved.sliderValue;
+    this.search$.next(saved.searchTerm);
+
+    // Diff & importance
+    this.diffs$.next([...saved.diffs]);
+    this.impTiers$.next([...saved.impTiers]);
+
+    // Tech / kind / category
+    this.selectedTech$.next(saved.selectedTech);
+    this.selectedKind$.next(saved.selectedKind);
+    this.selectedCategory$.next(saved.selectedCategory);
+
+    // Tags
+    this.selectedTags$.next([...saved.selectedTags]);
+
+    // Sort & tag match mode
+    this.sort$.next(saved.sort);
+    this.tagMatchMode = saved.tagMatchMode;
   }
 
   // ---------- helpers used by template ----------
@@ -708,5 +748,23 @@ export class CodingListComponent {
     const commands = this.linkTo(q);
     const state = this.stateForNav(list, q, this.currentCompanySlug);
     this.router.navigate(commands, { state });
+  }
+
+  ngOnDestroy(): void {
+    // Yine sadece global liste için kaydediyoruz
+    if (this.source !== 'global-coding') return;
+
+    this.listState.globalCodingState = {
+      searchTerm: this.searchTerm,
+      sliderValue: this.sliderValue,
+      diffs: this.diffs$.value,
+      impTiers: this.impTiers$.value,
+      selectedTech: this.selectedTech$.value,
+      selectedKind: this.selectedKind$.value,
+      selectedCategory: this.selectedCategory$.value,
+      selectedTags: this.selectedTags$.value,
+      sort: this.sort$.value,
+      tagMatchMode: this.tagMatchMode,
+    };
   }
 }

@@ -1,31 +1,5 @@
 [
   {
-    "id": "angular-form-validator",
-    "title": "Custom Form Validator",
-    "description": "Build an Angular reactive form with a custom validator that checks two fields match (e.g., password and confirm password).",
-    "type": "coding",
-    "technology": "angular",
-    "difficulty": "advanced",
-    "tags": [
-      "forms",
-      "validation",
-      "reactive-forms"
-    ],
-    "importance": 5,
-    "sdk": {
-      "asset": "assets/sb/angular-form-validator.v2.json",
-      "openFile": "/src/app/app.component.ts",
-      "storageKey": "v2:ui:angular:angular-form-validator"
-    },
-    "stackblitzEmbedUrl": "https://stackblitz.com/edit/angular-custom-validator?embed=1&file=src/app/app.component.ts",
-    "stackblitzSolutionUrl": "https://stackblitz.com/edit/angular-custom-validator-solution?embed=1&file=src/app/app.component.ts",
-    "companies": [
-      "google",
-      "microsoft",
-      "amazon"
-    ]
-  },
-  {
     "id": "angular-counter-starter",
     "title": "Counter (Standalone Component)",
     "type": "coding",
@@ -96,5 +70,94 @@
       "uber"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json"
+  },
+  {
+    "id": "angular-contact-form-starter",
+    "title": "Contact Form (Standalone Component + HTTP)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "forms",
+      "http",
+      "validation",
+      "user-input"
+    ],
+    "description": {
+      "summary": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
+      "specs": {
+        "requirements": [
+          "Work only inside the standalone root component in `src/app/app.component.ts` (template and styles are already provided).",
+          "Build/configure a reactive form with fields for name, email, and message.",
+          "Make all fields required; validate email with a basic email validator.",
+          "Disable the submit button while the form is invalid or while a request is in progress.",
+          "On valid submit, send a POST request with the form body to `https://jsonplaceholder.typicode.com/posts` using HttpClient.",
+          "If the request succeeds, set `successMessage` to `\"Your message has been sent. Thank you!\"`.",
+          "If the request fails, set `errorMessage` to `\"Something went wrong. Please try again.\"`.",
+          "Track an `isSubmitting` flag so the user cannot trigger multiple requests at the same time."
+        ],
+        "expectedBehavior": [
+          "Initially, the submit button is disabled until the form becomes valid (all required fields filled and email valid).",
+          "If the user attempts to submit invalid data, all controls are marked as touched and validation error messages are shown for the affected fields.",
+          "On a valid submit, a POST request is sent to `https://jsonplaceholder.typicode.com/posts` and the button is disabled while `isSubmitting` is true.",
+          "On success, `isSubmitting` becomes false, `successMessage` is set to `\"Your message has been sent. Thank you!\"`, and the form may optionally be reset.",
+          "On error, `isSubmitting` becomes false, `errorMessage` is set to `\"Something went wrong. Please try again.\"`, and the user can fix the issue and resubmit."
+        ],
+        "implementationNotes": [
+          "Configure the reactive form and all request/UX logic inside `AppComponent` in `app.component.ts`. You do not need to change the HTML or CSS files for this exercise.",
+          "Use `ReactiveFormsModule` and `FormBuilder` to define the form group for the contact form.",
+          "Use Angular's built-in validators such as `Validators.required` and `Validators.email` (and optionally `Validators.minLength` for the message).",
+          "Inject `HttpClient` (or use the `inject(HttpClient)` helper) and use `HttpClientModule` to send the POST request.",
+          "Clear previous `successMessage` / `errorMessage` at the start of `submit()` so only the latest result is shown.",
+          "Call `markAllAsTouched()` on the form before checking validity, so error messages appear when the user submits incomplete data.",
+          "Use an `isSubmitting` flag to guard against double submissions and to drive the disabled state of the submit button.",
+          "On success, you can reset the form to its initial state while keeping the success message visible."
+        ],
+        "techFocus": [
+          "Standalone component setup with reactive forms",
+          "Form validation and UX (disabled submit, inline errors, touched state)",
+          "Basic HttpClient usage with a fake POST endpoint and request lifecycle handling",
+          "Managing loading, success, and error states in a single component"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise combines a standalone component, reactive forms, and HttpClient. You only need to work in `src/app/app.component.ts`: the HTML and CSS are already wired up to bind to `contactForm`, `isSubmitting`, `successMessage`, and `errorMessage`.\n\nYou define a reactive form with `name`, `email`, and `message` controls, wire up validation, and then send a POST request to the fake endpoint `https://jsonplaceholder.typicode.com/posts` when the user submits. The component tracks an `isSubmitting` flag so you can disable the submit button while the request is in flight, plus `successMessage` and `errorMessage` strings for user feedback.\n\nOn a valid submit, you clear any previous messages, mark all controls as touched, bail out if the form is still invalid, set `isSubmitting` to `true`, and call `http.post(...)` with the form value. On success you show `\"Your message has been sent. Thank you!\"`, reset the form, and re-enable the button. On error you show `\"Something went wrong. Please try again.\"` and let the user resubmit.\n\n**Test cases**\n- With all fields empty, the submit button is disabled.\n- Typing an invalid email keeps the form invalid and disabled.\n- Tapping submit with invalid fields marks controls as touched and shows validation errors.\n- With valid inputs, clicking submit triggers a POST request to `https://jsonplaceholder.typicode.com/posts` and disables the button while `isSubmitting` is `true`.\n- On success, `\"Your message has been sent. Thank you!\"` is shown and the form can optionally reset.\n- On error, `\"Something went wrong. Please try again.\"` is shown and the user can resubmit.",
+      "approaches": [
+        {
+          "title": "Standalone reactive form with HttpClient, status flags, and a fake endpoint",
+          "prose": "Use a standalone `AppComponent` that imports `ReactiveFormsModule` and `HttpClientModule`. Inside `app.component.ts`, create a reactive form with `name`, `email`, and `message` controls, all required, and use `Validators.email` (and optionally `Validators.minLength`) for the email and message fields.\n\nUse Angular's function-based DI helpers (`inject(FormBuilder)` and `inject(HttpClient)`) instead of a constructor to avoid any metadata issues in this environment. The template is already set up to use `[formGroup]`, `formControlName`, and to bind the submit button disabled state to `contactForm.invalid || isSubmitting`. It also binds to `successMessage` and `errorMessage` paragraphs.\n\nIn `submit()`, implement the request lifecycle:\n1. Clear previous `successMessage` and `errorMessage`.\n2. Call `this.contactForm.markAllAsTouched()` so validation errors appear.\n3. If the form is invalid, return early.\n4. Set `isSubmitting = true` and send a POST request using `this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value)`.\n5. In the `next` handler, set `isSubmitting` back to `false`, set `successMessage = 'Your message has been sent. Thank you!'`, and reset the form.\n6. In the `error` handler, set `isSubmitting` back to `false` and `errorMessage = 'Something went wrong. Please try again.'`.\n\nAll logic stays inside `AppComponent`, which keeps this exercise focused on reactive forms + HttpClient without extra services or routing.",
+          "codeTs": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { HttpClient, HttpClientModule } from '@angular/common/http';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  // Function-based DI to match the SDK environment\n  private fb = inject(FormBuilder);\n  private http = inject(HttpClient);\n\n  // Reactive contact form with basic validation\n  contactForm = this.fb.group({\n    name: ['', [Validators.required]],\n    email: ['', [Validators.required, Validators.email]],\n    message: ['', [Validators.required, Validators.minLength(10)]],\n  });\n\n  isSubmitting = false;\n  successMessage = '';\n  errorMessage = '';\n\n  get f() {\n    return this.contactForm.controls;\n  }\n\n  submit(): void {\n    // Clear previous messages\n    this.successMessage = '';\n    this.errorMessage = '';\n\n    // Show validation errors if form is invalid\n    this.contactForm.markAllAsTouched();\n    if (this.contactForm.invalid) {\n      return;\n    }\n\n    this.isSubmitting = true;\n\n    // Fake JSON API endpoint for this exercise\n    this.http.post('https://jsonplaceholder.typicode.com/posts', this.contactForm.value).subscribe({\n      next: () => {\n        this.isSubmitting = false;\n        this.successMessage = 'Your message has been sent. Thank you!';\n        this.contactForm.reset();\n      },\n      error: () => {\n        this.isSubmitting = false;\n        this.errorMessage = 'Something went wrong. Please try again.';\n      },\n    });\n  }\n}\n\n// Also export a named AppComponent so the bootstrap import always works\nexport { AppComponent };\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting that you only need to modify `src/app/app.component.ts`; the HTML and CSS are already wired to the expected properties.",
+          "Not importing `ReactiveFormsModule` and `HttpClientModule` in the standalone component's `imports` array, which would break the form and HttpClient usage.",
+          "Allowing the user to submit when the form is invalid or while a previous request is still in flight (missing the `isSubmitting` guard).",
+          "Not calling `markAllAsTouched()` before checking validity, which can hide validation errors when the user hits submit on an untouched form.",
+          "Hard-coding different success or error messages than the ones specified in the exercise, which may cause tests to fail."
+        ],
+        "techniques": [
+          "Using reactive forms with `FormBuilder` and function-based DI via `inject()`.",
+          "Using Angular's built-in validators for required fields, email validation, and minimum length.",
+          "Managing loading, success, and error states with simple component properties and a single `submit()` method.",
+          "Disabling the submit button based on both form validity and an `isSubmitting` flag.",
+          "Using a fake HTTP endpoint (`https://jsonplaceholder.typicode.com/posts`) to simulate a real backend without extra setup."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-contact-form.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-contact-form-starter"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "airbnb"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json"
   }
 ]

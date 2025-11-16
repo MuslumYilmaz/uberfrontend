@@ -1,0 +1,41 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Contact Form",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "@angular/forms": "17.1.0",
+        "@angular/common/http": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-contact-form\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Contact Form</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, ReactiveFormsModule } from '@angular/forms';\nimport { HttpClient, HttpClientModule } from '@angular/common/http';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  // Use function-based DI to avoid constructor-metadata issues in this environment\n  private fb = inject(FormBuilder);\n  private http = inject(HttpClient);\n\n  // TODO: Add proper validators as described in the exercise\n  contactForm = this.fb.group({\n    name: [''],\n    email: [''],\n    message: [''],\n  });\n\n  // TODO: Use these flags/messages to manage request state and user feedback\n  isSubmitting = false;\n  successMessage = '';\n  errorMessage = '';\n\n  // Optional shortcut for template access (you can extend this as needed).\n  get f() {\n    return this.contactForm.controls;\n  }\n\n  submit(): void {\n    // TODO: Implement the full submit logic:\n    // - Clear previous messages\n    // - Mark all fields as touched\n    // - If invalid, stop and show validation errors\n    // - If valid, set isSubmitting = true and send a POST request\n    //   to the contact endpoint with this.contactForm.value\n    // - Handle success (show successMessage, maybe reset the form)\n    // - Handle error (show errorMessage) and always reset isSubmitting\n    console.log('submit() called with value:', this.contactForm.value);\n  }\n}\n\n// Also export a named AppComponent so the bootstrap import always works\nexport { AppComponent };\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main style=\"min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:480px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Contact Us</h1>\n\n    <form [formGroup]=\"contactForm\" (ngSubmit)=\"submit()\" class=\"panel\" novalidate>\n      <div class=\"field\">\n        <label for=\"name\">Name</label>\n        <input id=\"name\" type=\"text\" formControlName=\"name\" />\n        <!-- TODO: Show a required error message when name is invalid and touched -->\n      </div>\n\n      <div class=\"field\">\n        <label for=\"email\">Email</label>\n        <input id=\"email\" type=\"email\" formControlName=\"email\" />\n        <!-- TODO: Show required + invalid email messages -->\n      </div>\n\n      <div class=\"field\">\n        <label for=\"message\">Message</label>\n        <textarea id=\"message\" rows=\"4\" formControlName=\"message\"></textarea>\n        <!-- TODO: Show a required error message or minimum length info -->\n      </div>\n\n      <button type=\"submit\" class=\"primary\" [disabled]=\"contactForm.invalid || isSubmitting\">\n        {{ isSubmitting ? 'Sending…' : 'Send message' }}\n      </button>\n\n      <p *ngIf=\"successMessage\" class=\"success\">{{ successMessage }}</p>\n      <p *ngIf=\"errorMessage\" class=\"error\">{{ errorMessage }}</p>\n    </form>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".panel{background:#020617;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.field{display:grid;gap:4px;}\nlabel{font-size:13px;color:#9ca3af;}\ninput,textarea{background:#020617;border-radius:8px;border:1px solid #1f2937;padding:8px 10px;color:#e5e7eb;font-size:14px;}\ninput:focus,textarea:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f1;}\nbutton.primary{margin-top:4px;background:#4ade80;color:#022c22;border:none;border-radius:999px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}\nbutton.primary[disabled]{opacity:.6;cursor:not-allowed;}\n.success{margin:4px 0 0;font-size:13px;color:#22c55e;}\n.error{margin:4px 0 0;font-size:13px;color:#f97316;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}
