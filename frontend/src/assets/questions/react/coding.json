@@ -236,5 +236,85 @@
             "google",
             "uber"
         ]
+    },
+    {
+        "id": "react-image-slider",
+        "title": "Image Slider (Dots + Previous/Next)",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "react",
+            "state",
+            "event-handlers",
+            "components",
+            "ui"
+        ],
+        "description": {
+            "summary": "Build a simple React image slider with previous/next buttons and dot navigation. Show the current slide, its title, and the slide index (e.g. \"Slide 1 of 3\"). Disable navigation buttons when you reach the start or end.",
+            "specs": {
+                "requirements": [
+                    "Render an <App /> component as the main UI.",
+                    "Display the current slide image and its title.",
+                    "Show text like \"Slide X of N\" under the image.",
+                    "Provide \"Previous\" and \"Next\" buttons to move through slides.",
+                    "Render dot buttons for each slide and allow jumping directly to a slide.",
+                    "Disable \"Previous\" on the first slide and \"Next\" on the last slide."
+                ],
+                "expectedBehavior": [
+                    "Initial render shows the first slide (index 0).",
+                    "Clicking \"Next\" moves forward by one slide until the last slide.",
+                    "Clicking \"Previous\" moves backward by one slide until the first slide.",
+                    "Dots update to reflect the current slide and clicking a dot jumps directly to that slide.",
+                    "Buttons are disabled when their action would go out of range."
+                ],
+                "implementationNotes": [
+                    "Use React state (useState) to store the current slide index.",
+                    "Keep the slides in a static array rather than in state.",
+                    "Derive booleans like canGoPrev and canGoNext from the current index.",
+                    "Guard index changes so you never read outside the slides array.",
+                    "Use an aria-label on each dot like \"Go to slide 1\" for accessibility."
+                ],
+                "techFocus": [
+                    "React useState for simple UI state",
+                    "Derived values (canGoPrev / canGoNext) from state",
+                    "Event handlers for buttons and dot navigation",
+                    "Conditional disabled states and dynamic classNames"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "Use a static SLIDES array and a single piece of state, currentIndex, to track which slide is shown. Derive totalSlides, currentSlide, canGoPrev, and canGoNext from that index. The \"Previous\" and \"Next\" buttons update the index by -1 or +1 when allowed, and the dot buttons call a goTo(index) helper that guards against out-of-range values.\n\n**Key ideas**\n- State holds only the current index, not the entire slides array.\n- Navigation helpers (prev, next, goTo) all respect the valid index range.\n- Disabled states and active dot styling are derived from the same index.\n\n**Test cases**\n- Initial render shows slide 1 of N and the first dot is active.\n- Clicking \"Next\" repeatedly walks through the slides until the last one and then stops (button disabled).\n- Clicking \"Previous\" from the first slide does nothing (button disabled).\n- Clicking any dot jumps directly to that slide and updates the text and navigation buttons.",
+            "approaches": [
+                {
+                    "title": "Single component with index-based navigation",
+                    "prose": "Define a SLIDES array and store currentIndex in component state. Derive currentSlide from SLIDES[currentIndex], plus canGoPrev and canGoNext booleans from the index. Implement prev and next using setState callbacks that clamp the new index to the [0, totalSlides - 1] range. Implement goTo(index) to early-return if the index is out of range. Use these helpers in the button onClick handlers and bind an aria-label on each dot for better accessibility.",
+                    "codeJs": "import React from 'react';\nimport './App.css';\n\nconst SLIDES = [\n  {\n    id: 1,\n    title: 'Snowflakes glowing under city lights',\n    imageUrl: 'https://picsum.photos/seed/slide-1/800/400'\n  },\n  {\n    id: 2,\n    title: 'Forest trail in the morning',\n    imageUrl: 'https://images.pexels.com/photos/1563604/pexels-photo-1563604.jpeg'\n  },\n  {\n    id: 3,\n    title: 'City lights at night',\n    imageUrl: 'https://images.pexels.com/photos/220067/pexels-photo-220067.jpeg'\n  }\n];\n\nexport default function App() {\n  const [currentIndex, setCurrentIndex] = React.useState(0);\n\n  const totalSlides = SLIDES.length;\n  const currentSlide = SLIDES[currentIndex];\n\n  const canGoPrev = currentIndex > 0;\n  const canGoNext = currentIndex < totalSlides - 1;\n\n  const goTo = (index) => {\n    if (index < 0 || index >= totalSlides) return;\n    setCurrentIndex(index);\n  };\n\n  const prev = () => {\n    if (!canGoPrev) return;\n    setCurrentIndex((i) => i - 1);\n  };\n\n  const next = () => {\n    if (!canGoNext) return;\n    setCurrentIndex((i) => i + 1);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Image Slider</h1>\n\n        <figure className=\"frame\">\n          <img\n            className=\"image\"\n            src={currentSlide.imageUrl}\n            alt={currentSlide.title}\n          />\n          <figcaption className=\"caption\">{currentSlide.title}</figcaption>\n        </figure>\n\n        <div className=\"meta\">\n          Slide {currentIndex + 1} of {totalSlides}\n        </div>\n\n        <div className=\"actions\">\n          <button type=\"button\" onClick={prev} disabled={!canGoPrev}>\n            Previous\n          </button>\n          <button type=\"button\" onClick={next} disabled={!canGoNext}>\n            Next\n          </button>\n        </div>\n\n        <div className=\"dots\">\n          {SLIDES.map((slide, index) => (\n            <button\n              key={slide.id}\n              type=\"button\"\n              className={\n                'dot' + (index === currentIndex ? ' dot--active' : '')\n              }\n              onClick={() => goTo(index)}\n              aria-label={`Go to slide ${index + 1}`}\n            />\n          ))}\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Letting currentIndex go below 0 or beyond the last slide, which leads to undefined slides.",
+                    "Forgetting to disable navigation buttons at the edges, making it unclear why nothing happens.",
+                    "Recomputing derived values in multiple places instead of centralising them."
+                ],
+                "techniques": [
+                    "Keeping only the minimum necessary state (the index) and deriving everything else.",
+                    "Using functional setState forms to avoid stale closures when updating indices.",
+                    "Driving both UI and accessibility (aria-label, active dot class) from the same source of truth."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-image-slider.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v1:ui:react:react-image-slider"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-image-slider-solution.v1.json",
+        "companies": [
+            "meta",
+            "google"
+        ]
     }
 ]

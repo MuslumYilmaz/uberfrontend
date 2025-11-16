@@ -244,5 +244,87 @@
       "airbnb"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json"
+  },
+  {
+    "id": "angular-image-slider-starter",
+    "title": "Image Slider (Standalone Component)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "event-binding",
+      "ngFor",
+      "ui"
+    ],
+    "description": {
+      "summary": "Build an image slider in an Angular standalone component. Show one slide at a time with next/previous buttons and clickable dot indicators.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Keep an in-memory list of slides (each with at least a title and image URL).",
+          "Display the currently active slide (image and title).",
+          "Provide \"Previous\" and \"Next\" buttons to move between slides.",
+          "Disable the \"Previous\" button on the first slide and the \"Next\" button on the last slide.",
+          "Render dot indicators for each slide; clicking a dot should jump to that slide.",
+          "Display a small \"Slide X of N\" helper text."
+        ],
+        "expectedBehavior": [
+          "Initial view shows the first slide.",
+          "Clicking \"Next\" advances to the next slide until the last one; afterwards it stays on the last slide and \"Next\" becomes disabled.",
+          "Clicking \"Previous\" moves backwards until the first slide; on the first slide it stays there and \"Previous\" is disabled.",
+          "Clicking a dot activates the corresponding slide, updates the main image and title, and updates the \"Slide X of N\" text.",
+          "The active slide's dot is visually highlighted."
+        ],
+        "implementationNotes": [
+          "Store slides in a readonly array on the component (e.g. `slides = [...]`).",
+          "Track the active slide with a simple numeric index (e.g. `currentIndex = 0`).",
+          "Derive the current slide with a getter (e.g. `currentSlide`), and flags like `canGoPrev` / `canGoNext` from the index.",
+          "Use template bindings (`(click)`, `[disabled]`, `*ngFor`, `[class.active]`) to wire up the controls and indicators.",
+          "No need for routing, services, or external state management; keep everything in the root component."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "View model with derived state (current slide, canGoPrev/canGoNext)",
+          "Template control flow with *ngFor and event bindings",
+          "Basic UI state + styling for active / disabled controls"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Model the slider as a small view model on the component: a readonly `slides` array and a `currentIndex` number. Use getters to derive `currentSlide`, `totalSlides`, and convenience flags like `canGoPrev` and `canGoNext`. The template shows the active slide and wires buttons and dot indicators to simple methods that update `currentIndex`.\n\n**Test cases**\n- Initial render shows the first slide, with \"Previous\" disabled and the first dot highlighted.\n- Clicking \"Next\" repeatedly walks through the slides and disables itself on the last slide.\n- Clicking \"Previous\" from the middle moves backward one slide at a time.\n- Clicking a dot jumps directly to that slide and updates the heading, image, and helper text.\n- The slider never goes out of range (no index smaller than 0 or greater than `slides.length - 1`).",
+      "approaches": [
+        {
+          "title": "Standalone component with index-based navigation",
+          "prose": "Use a single standalone `AppComponent` that owns the slider state.\n\n1. Define a `Slide` interface (`id`, `title`, `imageUrl`, optional `description`). Keep a `readonly slides: Slide[]` array.\n2. Track the active slide with `currentIndex = 0`.\n3. Expose getters like `currentSlide`, `totalSlides`, `canGoPrev`, and `canGoNext`.\n4. Implement `goTo(index: number)`, `prev()`, and `next()` to clamp `currentIndex` inside `[0, totalSlides - 1]`.\n5. In the template, show the current slide image and title, wire buttons to `prev()` / `next()`, use `[disabled]` for edge cases, and render dot buttons with `*ngFor` and `[class.active]` to highlight the current slide.\n\nThis keeps the logic small and testable while exercising Angular's template bindings and derived state.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface Slide {\n  id: number;\n  title: string;\n  imageUrl: string;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Image Slider</h1>\n\n        <figure class=\"frame\" *ngIf=\"currentSlide as slide\">\n          <img class=\"image\" [src]=\"slide.imageUrl\" [alt]=\"slide.title\" />\n          <figcaption class=\"caption\">{{ slide.title }}</figcaption>\n        </figure>\n\n        <div class=\"meta\">\n          Slide {{ currentIndex + 1 }} of {{ totalSlides }}\n        </div>\n\n        <div class=\"actions\">\n          <button (click)=\"prev()\" [disabled]=\"!canGoPrev\">Previous</button>\n          <button (click)=\"next()\" [disabled]=\"!canGoNext\">Next</button>\n        </div>\n\n        <div class=\"dots\">\n          <button\n            *ngFor=\"let slide of slides; let i = index\"\n            type=\"button\"\n            class=\"dot\"\n            [class.active]=\"i === currentIndex\"\n            (click)=\"goTo(i)\"\n            aria-label=\"Go to slide {{ i + 1 }}\"\n          ></button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#e5e7eb;}`,\n    `.card{width:100%;max-width:520px;padding:16px 20px;background:#0b1020;border-radius:12px;border:1px solid #1f2937;display:grid;gap:12px;}`,\n    `.frame{margin:0;border-radius:12px;overflow:hidden;border:1px solid #1f2937;background:#020617;}`,\n    `.image{display:block;width:100%;height:240px;object-fit:cover;}`,\n    `.caption{padding:8px 12px;font-size:14px;color:#e5e7eb;background:rgba(15,23,42,.9);}`,\n    `.meta{font-size:12px;color:#9ca3af;text-align:center;}`,\n    `.actions{display:flex;gap:8px;justify-content:center;}`,\n    `button{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:#a3e635;color:#111;}`,\n    `button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.dots{display:flex;justify-content:center;gap:6px;margin-top:4px;}`,\n    `.dot{width:8px;height:8px;border-radius:999px;border:none;background:#374151;cursor:pointer;}`,\n    `.dot.active{background:#a3e635;}`\n  ]\n})\nexport class AppComponent {\n  readonly slides: Slide[] = [\n    {\n      id: 1,\n      title: 'Snowflakes glowing under city lights',\n      imageUrl: 'https://images.pexels.com/photos/46253/pexels-photo-46253.jpeg'\n    },\n    {\n      id: 2,\n      title: 'Forest trail in the morning',\n      imageUrl: 'https://images.pexels.com/photos/1563604/pexels-photo-1563604.jpeg'\n    },\n    {\n      id: 3,\n      title: 'City lights at night',\n      imageUrl: 'https://images.pexels.com/photos/220067/pexels-photo-220067.jpeg'\n    }\n  ];\n\n  currentIndex = 0;\n\n  get totalSlides(): number {\n    return this.slides.length;\n  }\n\n  get currentSlide(): Slide | null {\n    return this.slides[this.currentIndex] ?? null;\n  }\n\n  get canGoPrev(): boolean {\n    return this.currentIndex > 0;\n  }\n\n  get canGoNext(): boolean {\n    return this.currentIndex < this.totalSlides - 1;\n  }\n\n  goTo(index: number): void {\n    if (index < 0 || index >= this.totalSlides) return;\n    this.currentIndex = index;\n  }\n\n  prev(): void {\n    if (this.canGoPrev) {\n      this.currentIndex--;\n    }\n  }\n\n  next(): void {\n    if (this.canGoNext) {\n      this.currentIndex++;\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing `currentIndex` to go out of range (negative or >= slides.length).",
+          "Duplicating `slides[currentIndex]` access all over the template instead of using a getter.",
+          "Not disabling buttons at the edges, making the UX feel broken."
+        ],
+        "techniques": [
+          "Using a simple numeric index to represent view state.",
+          "Deriving convenience getters for current slide and navigation flags.",
+          "Using `[class.active]` and `[disabled]` to reflect state in the UI."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-image-slider.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-image-slider-starter"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "airbnb"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json"
   }
 ]

@@ -238,5 +238,82 @@
             "airbnb"
         ],
         "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json"
+    },
+    {
+        "id": "vue-image-slider",
+        "title": "Image Slider (Basic Navigation)",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "arrays",
+            "event-handlers"
+        ],
+        "description": {
+            "summary": "Build a simple Vue 3 image slider that shows one image at a time and lets the user move between slides with Previous/Next buttons and small dot indicators.",
+            "specs": {
+                "requirements": [
+                    "Render the image slider UI as the main component.",
+                    "Display exactly one slide at a time with an image and a caption.",
+                    "Show the current position as 'Slide X of Y'.",
+                    "Provide 'Previous' and 'Next' buttons to move between slides.",
+                    "Disable 'Previous' on the first slide and 'Next' on the last slide.",
+                    "Render dot indicators for each slide and allow clicking a dot to jump directly to that slide."
+                ],
+                "expectedBehavior": [
+                    "Initial slide is the first one in the list.",
+                    "Clicking 'Next' moves forward by one slide until the last slide.",
+                    "Clicking 'Previous' moves backward by one slide until the first slide.",
+                    "The 'Previous' button is disabled on the first slide.",
+                    "The 'Next' button is disabled on the last slide.",
+                    "Clicking a dot jumps to the corresponding slide and updates the active dot state."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API with `ref` to store the current index.",
+                    "Keep the slides in a constant array of objects with `id`, `title`, and `imageUrl`.",
+                    "Use `computed` properties for `totalSlides`, `currentSlide`, `canGoPrev`, and `canGoNext`.",
+                    "Implement small helper functions: `goTo(index)`, `prev()`, and `next()`.",
+                    "Make sure navigation is guarded (do not go before the first slide or after the last slide)."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Derived state for UI (current slide, canGoPrev/canGoNext)",
+                    "Event handlers for navigation",
+                    "Working with arrays of data in a component"
+                ]
+            }
+        },
+        "starterCodeHint": "Define a `slides` array in `<script setup>` and track the current slide index in a `ref(0)`. Use `computed` values for the current slide, total slide count, and whether previous/next are allowed. Implement `goTo`, `prev`, and `next` to update the index safely.",
+        "solutionBlock": {
+            "overview": "Model the image slider as an array of slide objects and a single reactive index stored in a `ref`. Use `computed` properties to derive the current slide, total slide count, and whether the user can go to the previous or next slide. Expose three handlers: `goTo(index)` for jumping to a specific slide (guarded by bounds), `prev()` for moving one step left when possible, and `next()` for moving one step right when possible.\n\n**Key ideas**\n- Store only the current index as reactive state; everything else is derived.\n- Use `computed` for `currentSlide`, `canGoPrev`, and `canGoNext` so the template stays simple.\n- Guard navigation so the index never goes out of range.",
+            "approaches": [
+                {
+                    "title": "Single component slider with derived navigation state",
+                    "prose": "Keep all slider logic inside `<script setup>` in `App.vue`. Use a constant `slides` array and a `ref(0)` for `currentIndex`. Derive `totalSlides`, `currentSlide`, `canGoPrev`, and `canGoNext` with `computed` so the template can be mostly declarative. Implement `goTo(index)` with a simple bounds check, and use it from the dot buttons. Implement `prev()` and `next()` to decrement/increment the index only when the corresponding `canGoPrev`/`canGoNext` flags are true. This keeps the component predictable and easy to test."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Letting the index go below 0 or above the last slide index.",
+                    "Accessing `slides[currentIndex]` without guarding, which can return `undefined` if the index is wrong.",
+                    "Duplicating logic in multiple places instead of using `computed` for derived values."
+                ],
+                "techniques": [
+                    "Using `ref` for reactive state in Vue 3.",
+                    "Using `computed` to derive booleans and current-entity data from primitive state.",
+                    "Driving both the main view and the small dot indicators from the same single source of truth."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-image-slider.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-image-slider"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json"
     }
 ]
