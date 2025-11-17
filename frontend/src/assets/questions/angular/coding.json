@@ -559,5 +559,89 @@
       "storageKey": "v2:ui:angular:angular-faq-accordion"
     },
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json"
+  },
+  {
+    "id": "angular-pagination-table",
+    "title": "Paginated Data Table",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "pagination",
+      "arrays",
+      "derived-state"
+    ],
+    "description": {
+      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a static list (20–30 items) of users in a table (id, name, email, role).",
+          "Show 5 rows per page.",
+          "Add \"Previous\" and \"Next\" buttons to change the current page.",
+          "Display the current page and total pages (e.g. \"Page 2 of 5\").",
+          "Disable the \"Previous\" button on the first page.",
+          "Disable the \"Next\" button on the last page."
+        ],
+        "expectedBehavior": [
+          "Initially, the table shows the first 5 users (page 1).",
+          "Clicking \"Next\" advances to the next 5 users, until the last page.",
+          "Clicking \"Previous\" goes back one page, until the first page.",
+          "On the first page, \"Previous\" is disabled and cannot change the page.",
+          "On the last page, \"Next\" is disabled and cannot change the page.",
+          "The label \"Page X of Y\" always reflects the state correctly (X is 1-based)."
+        ],
+        "implementationNotes": [
+          "Store the current page index in a component property (e.g. `currentPage = 0`).",
+          "Keep the full list in a single readonly array on the component.",
+          "Use a derived getter (e.g. `pagedUsers`) that slices the array based on `currentPage` and `pageSize`.",
+          "Use additional getters like `isFirstPage` and `isLastPage` to drive button disabled state."
+        ],
+        "techFocus": [
+          "Component-level state for pagination (`currentPage`).",
+          "Derived data using `slice(start, end)`.",
+          "Handling edge cases in UI state (first/last page).",
+          "Clean template bindings for lists (`*ngFor`) and button states (`[disabled]`)."
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render → shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled.",
+      "approaches": [
+        {
+          "title": "Standalone component with derived pagination slice",
+          "prose": "Use a single standalone `AppComponent` that holds the full users array and pagination state.\n\n1. Define a `User` type and a constant `USERS` array with ~20–30 users.\n2. In the component, expose `readonly users = USERS;`, a `pageSize = 5;` and `currentPage = 0;`.\n3. Add getters `totalPages`, `pagedUsers`, `isFirstPage`, and `isLastPage`.\n   - `totalPages` uses `Math.ceil(this.users.length / this.pageSize)`.\n   - `pagedUsers` computes `start = currentPage * pageSize` and `end = start + pageSize` and returns `this.users.slice(start, end)`.\n4. Implement `goToPrevious()` and `goToNext()` so they guard against going before page 0 or past the last page.\n5. In the template, render the table rows with `*ngFor=\"let user of pagedUsers\"` and bind the button `disabled` flags to `isFirstPage` / `isLastPage`.\n\nThis keeps the logic simple, shows a clear separation between state and derived data, and matches how you'd wire pagination in a real-world Angular component.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nconst USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users = USERS;\n  readonly pageSize = 5;\n  currentPage = 0; // 0-based\n\n  get totalPages(): number {\n    return Math.ceil(this.users.length / this.pageSize) || 1;\n  }\n\n  get pagedUsers(): User[] {\n    const start = this.currentPage * this.pageSize;\n    const end = start + this.pageSize;\n    return this.users.slice(start, end);\n  }\n\n  get isFirstPage(): boolean {\n    return this.currentPage === 0;\n  }\n\n  get isLastPage(): boolean {\n    return this.currentPage >= this.totalPages - 1;\n  }\n\n  goToPrevious(): void {\n    if (!this.isFirstPage) {\n      this.currentPage--;\n    }\n  }\n\n  goToNext(): void {\n    if (!this.isLastPage) {\n      this.currentPage++;\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Treating `currentPage` as 1-based while doing slice calculations, which makes `start` / `end` off by one.",
+          "Forgetting to guard the page change functions, causing `currentPage` to go negative or past the last page.",
+          "Computing the slice inline in the template instead of using a getter, which hurts readability and testability.",
+          "Not updating the disabled state of the buttons, so users can still click Previous on the first page or Next on the last page."
+        ],
+        "techniques": [
+          "Using a standalone Angular component (`standalone: true`) with `bootstrapApplication`.",
+          "Deriving UI data from minimal state (current page + array length).",
+          "Using getters for small bits of view logic (page slice, first/last flags).",
+          "Keeping the dataset static and focusing purely on pagination behavior."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-pagination-table.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-pagination-table"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "uber"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json"
   }
 ]

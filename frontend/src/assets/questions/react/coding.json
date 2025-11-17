@@ -552,5 +552,87 @@
             "google",
             "uber"
         ]
+    },
+    {
+        "id": "react-pagination-table",
+        "title": "Paginated Data Table",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "react",
+            "state",
+            "pagination",
+            "arrays",
+            "components"
+        ],
+        "description": {
+            "summary": "Build a simple paginated data table in React that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+            "specs": {
+                "requirements": [
+                    "Render a main <App /> component that shows a table of users.",
+                    "Use a static list (around 20 users) with id, name, email, and role.",
+                    "Show 5 rows per page.",
+                    "Add \"Previous\" and \"Next\" buttons to change the current page.",
+                    "Display the current page and total pages (for example \"Page 2 of 4\").",
+                    "Disable \"Previous\" on the first page and \"Next\" on the last page."
+                ],
+                "expectedBehavior": [
+                    "Initial render shows the first 5 users (page 1).",
+                    "Clicking \"Next\" advances by 5 users until the last page.",
+                    "Clicking \"Previous\" moves back by 5 users until the first page.",
+                    "On the first page, \"Previous\" is disabled and does nothing when clicked.",
+                    "On the last page, \"Next\" is disabled and does nothing when clicked.",
+                    "The label \"Page X of Y\" always matches the current page."
+                ],
+                "implementationNotes": [
+                    "Use React state (useState) to store the current page index.",
+                    "Keep the full users list in a separate module and import it into App.",
+                    "Use a constant page size (5) and derive slice start/end from currentPage.",
+                    "Compute booleans like isFirstPage and isLastPage to drive button disabled state."
+                ],
+                "techFocus": [
+                    "React useState for component state",
+                    "Derived data from minimal state (current page + list length)",
+                    "Array slicing with slice(start, end)",
+                    "Handling UI edge cases for first/last pages"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "This exercise revolves around a single piece of state: the current page index. The full users array stays static in a separate module. From that, you derive the slice of users to display, the total page count, and booleans for whether you're on the first or last page.\n\n**Core ideas**\n- Use `useState(0)` for a 0-based `currentPage`.\n- Keep a constant `PAGE_SIZE = 5`.\n- Compute `totalPages` with `Math.ceil(USERS.length / PAGE_SIZE)`.\n- Derive `pagedUsers` with `USERS.slice(start, end)`, where `start = currentPage * PAGE_SIZE`.\n- Use `isFirstPage` / `isLastPage` flags to drive button disabled state and guard navigation.\n\n**Test cases**\n- Initial render → first 5 users, label shows `Page 1 of N`, Previous is disabled.\n- Repeatedly clicking Next moves through the list and disables Next on the last page.\n- Repeatedly clicking Previous moves back and disables Previous on the first page.\n- The label always stays in sync with the current page index.",
+            "approaches": [
+                {
+                    "title": "Single React component with derived pagination slice",
+                    "prose": "Use a single <App /> component that imports a static users array. Store the current page in state with `useState(0)` and keep PAGE_SIZE as a constant.\n\n1. Import `USERS` and `User` from a separate `users.ts` module.\n2. In `App`, define `const [currentPage, setCurrentPage] = useState(0);` and `const PAGE_SIZE = 5;`.\n3. Derive `totalPages` via `Math.ceil(USERS.length / PAGE_SIZE)`.\n4. Compute `start` and `end` indices and slice `USERS` to get `pagedUsers`.\n5. Derive `isFirstPage` and `isLastPage` booleans.\n6. Implement `goPrevious` and `goNext` so they bail out when already on the first/last page.\n7. Render the table from `pagedUsers` and bind buttons to the navigation handlers.\n\nThis keeps App small and focused while demonstrating derived state and basic paginated UI.",
+                    "codeJs": "import React, { useState } from 'react';\nimport './App.css';\nimport { USERS, User } from './users';\n\nconst PAGE_SIZE = 5;\n\nexport default function App() {\n  const [currentPage, setCurrentPage] = useState(0);\n\n  const totalPages = Math.ceil(USERS.length / PAGE_SIZE) || 1;\n\n  const start = currentPage * PAGE_SIZE;\n  const end = start + PAGE_SIZE;\n  const pagedUsers: User[] = USERS.slice(start, end);\n\n  const isFirstPage = currentPage === 0;\n  const isLastPage = currentPage >= totalPages - 1;\n\n  const goPrevious = () => {\n    setCurrentPage((page) => (page > 0 ? page - 1 : page));\n  };\n\n  const goNext = () => {\n    setCurrentPage((page) => (page < totalPages - 1 ? page + 1 : page));\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <header className=\"header\">\n          <div>\n            <h1>Users (Pagination)</h1>\n            <p className=\"subtitle\">Simple paginated table (5 per page)</p>\n          </div>\n          <div className=\"meta\">Total users: {USERS.length}</div>\n        </header>\n\n        <div className=\"panel\">\n          <table className=\"table\" aria-label=\"Users table\">\n            <thead>\n              <tr>\n                <th>ID</th>\n                <th>Name</th>\n                <th>Email</th>\n                <th>Role</th>\n              </tr>\n            </thead>\n            <tbody>\n              {pagedUsers.map((user) => (\n                <tr key={user.id}>\n                  <td>{user.id}</td>\n                  <td>{user.name}</td>\n                  <td>{user.email}</td>\n                  <td>{user.role}</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n\n          <footer className=\"footer\">\n            <button\n              type=\"button\"\n              className=\"ghost\"\n              onClick={goPrevious}\n              disabled={isFirstPage}\n            >\n              Previous\n            </button>\n            <span className=\"page-info\">\n              Page {currentPage + 1} of {totalPages}\n            </span>\n            <button\n              type=\"button\"\n              onClick={goNext}\n              disabled={isLastPage}\n            >\n              Next\n            </button>\n          </footer>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Treating currentPage as 1-based while doing slice calculations and getting off-by-one errors.",
+                    "Letting currentPage go negative or larger than totalPages - 1 because navigation handlers are not guarded.",
+                    "Slicing directly in JSX instead of using a named variable, which makes the render harder to read.",
+                    "Forgetting to disable Previous/Next when on the first or last page."
+                ],
+                "techniques": [
+                    "Deriving data (page slices and flags) from minimal state.",
+                    "Using useState for simple numeric state.",
+                    "Separating static data into its own module for clarity."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-pagination-table.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-pagination-table"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-pagination-table-solution.v1.json",
+        "companies": [
+            "meta",
+            "google",
+            "uber"
+        ]
     }
 ]

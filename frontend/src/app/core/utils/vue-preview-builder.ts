@@ -187,14 +187,43 @@ function parseSfc(src: string): {
       .replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '')
       .trim();
 
-    // top-level tanımları (count, isZero, inc, dec, reset vs.) topla
+    // 1) Tüm tanımları (count, isZero, inc, dec, reset vs.) topla
     const bindings = new Set<string>();
     body.replace(/\b(const|let|var|function)\s+([A-Za-z_$][\w$]*)/g, (_m, _k, name) => {
       bindings.add(String(name));
       return _m;
     });
 
-    const returned = bindings.size > 0 ? Array.from(bindings).join(', ') : '';
+    // 2) Template içinde gerçekten kullanılan identifier'ları bul
+    const templateIds = new Set<string>();
+
+    // {{ ... }}, :prop="...", v-foo="...", @click="..." içindeki expression'lar
+    const exprRE = /{{([^}]*)}}|:(\w+)="([^"]+)"|v-[\w-]+="([^"]+)"|@[\w-]+="([^"]+)"/g;
+    const identRE = /[A-Za-z_$][\w$]*/g;
+    const reserved = new Set([
+      'true', 'false', 'null', 'undefined',
+      'if', 'for', 'in', 'of', 'let', 'const', 'var', 'return',
+      'Math', 'Date', 'Number', 'String', 'Boolean', 'Array', 'Object'
+    ]);
+
+    let m: RegExpExecArray | null;
+    while ((m = exprRE.exec(template)) !== null) {
+      const expr = m[1] || m[3] || m[4] || m[5] || '';
+      let idm: RegExpExecArray | null;
+      while ((idm = identRE.exec(expr)) !== null) {
+        const name = idm[0];
+        if (!reserved.has(name)) {
+          templateIds.add(name);
+        }
+      }
+    }
+
+    // 3) Sadece template'te kullanılan binding'leri expose et
+    const exportedNames = Array.from(bindings).filter(name =>
+      templateIds.has(name)
+    );
+
+    const returned = exportedNames.length ? exportedNames.join(', ') : '';
 
     const indentedBody = body
       ? body.split('\n').map(line => '      ' + line).join('\n')
@@ -214,6 +243,7 @@ ${indentedBody}
 
     return { template, script, scriptExports: '' };
   }
+
 
   // ---------- Normal <script> yolu (options / composition) ----------
   let script = scriptRaw;

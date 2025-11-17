@@ -543,5 +543,82 @@
             "storageKey": "v1:ui:vue:vue-accordion-faq"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json"
+    },
+    {
+        "id": "vue-pagination-table",
+        "title": "Paginated Data Table",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "pagination",
+            "arrays"
+        ],
+        "description": {
+            "summary": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+            "specs": {
+                "requirements": [
+                    "Render the table UI as the main <App.vue> component.",
+                    "Use a static list (around 20 users) with id, name, email, and role.",
+                    "Show 5 rows per page.",
+                    "Add \"Previous\" and \"Next\" buttons to change the current page.",
+                    "Display the current page and total pages (for example \"Page 2 of 4\").",
+                    "Disable \"Previous\" on the first page and \"Next\" on the last page."
+                ],
+                "expectedBehavior": [
+                    "Initial render shows the first 5 users (page 1).",
+                    "Clicking \"Next\" advances by 5 users until the last page.",
+                    "Clicking \"Previous\" moves back by 5 users until the first page.",
+                    "On the first page, \"Previous\" is disabled and does nothing when clicked.",
+                    "On the last page, \"Next\" is disabled and does nothing when clicked.",
+                    "The label \"Page X of Y\" always matches the current page."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API with `ref` and `computed` in `<script setup>`.",
+                    "Store the current page index in a `ref` (0-based).",
+                    "Keep a constant `PAGE_SIZE = 5` and derive start/end indices from the current page.",
+                    "Use a `computed` for the current slice of users and for the \"first/last page\" flags."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Derived state from minimal source of truth",
+                    "Array slicing with `slice(start, end)`",
+                    "Handling UI edge cases for first/last pages"
+                ]
+            }
+        },
+        "starterCodeHint": "Keep all logic inside `<script setup lang=\"ts\">`. Use `const currentPage = ref(0)` for page state, a constant `PAGE_SIZE = 5`, and `computed` properties to derive the current page slice, total pages, and button disabled state.",
+        "solutionBlock": {
+            "overview": "This exercise is about managing a single piece of state: the current page. The full users array stays static in the component. From that, you derive the paged slice, total page count, and booleans indicating when you are on the first or last page.\n\n**Core ideas**\n- `currentPage` is a `ref(0)` and represents a 0-based index.\n- `PAGE_SIZE` is a constant (5 rows per page).\n- `totalPages` is a `computed` that uses `Math.ceil(USERS.length / PAGE_SIZE)`.\n- A `computed` for `pagedUsers` uses `slice(start, end)` where `start = currentPage.value * PAGE_SIZE`.\n- `isFirstPage` and `isLastPage` are `computed` booleans used to disable navigation buttons and guard the handlers.\n\n**Test cases**\n- Initial render → first 5 users, label shows `Page 1 of N`, Previous disabled.\n- Clicking Next repeatedly walks through the list and disables Next on the last page.\n- Clicking Previous repeatedly walks back and disables Previous on the first page.\n- The page label always matches the current page index.",
+            "approaches": [
+                {
+                    "title": "Single component with derived pagination slice",
+                    "prose": "Keep everything in `App.vue` using `<script setup lang=\"ts\">`. Define the users array and `PAGE_SIZE` as constants. Store `currentPage` in a `ref(0)`. Then create `computed` properties for `totalPages`, `pagedUsers`, `isFirstPage`, and `isLastPage`. The `goPrevious` and `goNext` handlers simply adjust `currentPage.value` within bounds. The template renders the table rows from `pagedUsers` and binds disabled state and click handlers on the Previous / Next buttons."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Treating `currentPage` as 1-based while doing `slice` calculations, causing off-by-one bugs.",
+                    "Letting `currentPage` go below 0 or above `totalPages - 1` because handlers aren’t guarded.",
+                    "Deriving the slice inline in the template instead of a named `computed`, which makes the code harder to read.",
+                    "Forgetting to use `.value` when reading/writing `ref`s inside `<script setup>`."
+                ],
+                "techniques": [
+                    "Using `ref` and `computed` to derive view state from minimal data.",
+                    "Using array `slice(start, end)` for pagination.",
+                    "Co-locating state and logic with the template in a single file component."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-pagination-table.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-pagination-table"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json"
     }
 ]
