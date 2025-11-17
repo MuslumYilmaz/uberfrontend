@@ -386,5 +386,85 @@
             "storageKey": "v1:ui:vue:vue-tabs-switcher"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json"
+    },
+    {
+        "id": "vue-filterable-user-list",
+        "title": "Filterable / Searchable User List",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "lists",
+            "forms",
+            "filtering"
+        ],
+        "description": {
+            "summary": "Build a Vue 3 component that renders a user list with a search box, role filter, and \"only active\" checkbox.",
+            "specs": {
+                "requirements": [
+                    "Render a filter UI and a list of users as the main component.",
+                    "Use a fixed in-memory list of users (name, role, active flag).",
+                    "Provide a text input that filters by name (case-insensitive).",
+                    "Provide a role dropdown (All, Admin, Editor, Viewer) that filters by role.",
+                    "Provide a checkbox that, when checked, shows only active users.",
+                    "Render the filtered list below the controls."
+                ],
+                "expectedBehavior": [
+                    "Initially, all users are shown.",
+                    "Typing in the search box filters users whose name includes the search text (case-insensitive).",
+                    "Changing the role dropdown filters by that role (or shows all roles when \"All\" is selected).",
+                    "Checking the \"Only active users\" checkbox hides inactive users.",
+                    "When no users match the filters, an empty state message is shown instead of an empty list."
+                ],
+                "implementationNotes": [
+                    "Keep the user data in a fixed array inside the component (no fetch or API).",
+                    "Use Vue 3's Composition API (`ref`, `computed`) in `<script setup>` to store filter state and derive the filtered list.",
+                    "Treat the inputs as controlled with `v-model` bound to the reactive state.",
+                    "Derive a `filteredUsers` computed from the base list + current filters.",
+                    "You can mention memoization or performance considerations in discussion, but the plain computed is enough for this exercise."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Controlled inputs with `v-model`",
+                    "Derived state for filtered lists",
+                    "Rendering lists with `v-for` and keys"
+                ]
+            }
+        },
+        "starterCodeHint": "Define a constant USERS array with name, role, and active. Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`, and derive `filteredUsers` in a `computed` that applies all three filters.",
+        "solutionBlock": {
+            "overview": "The core of this exercise is combining three filters (search text, role selection, and an \"only active\" toggle) into a single derived list without mutating the original user data.\n\n**Key ideas**\n- Keep the base `USERS` list as a plain constant.\n- Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`.\n- Use a `computed` `filteredUsers` that applies all filters in sequence.\n- Render `filteredUsers` with `v-for`, and show an empty state when it is empty.\n\n**Test cases**\n- Default render shows all users.\n- Typing a partial name filters to matching users.\n- Changing the role filter to `Admin` shows only admins, `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- When filters exclude all users, a \"no users\" message is rendered.",
+            "approaches": [
+                {
+                    "title": "Single `<App.vue>` with `ref` state and computed `filteredUsers`",
+                    "prose": "Keep everything in `App.vue` using `<script setup>`. Declare a constant `USERS` array for the data. Use `ref('')` for the search term, `ref<'all' | 'admin' | 'editor' | 'viewer'>('all')` for the role filter, and `ref(false)` for the active-only toggle. Derive `filteredUsers` with a `computed` that normalizes the search term to lower-case, optionally filters on role when not `\"all\"`, and optionally filters out inactive users when `showOnlyActive` is true.\n\nUse `v-model` on the text input, select, and checkbox so the UI is fully controlled. In the template, `v-for` over `filteredUsers`, render name, a small badge for the role, and a status pill for active vs inactive. If `filteredUsers.length === 0`, render an `li` with an empty state message.",
+                    "proseCode": "The full solution is shown in the SDK solution JSON: it wires `ref` state with `v-model`, computes `filteredUsers`, and renders the list with matching styling."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Mutating the original `USERS` array instead of deriving a filtered list.",
+                    "Forgetting to normalize search term and name to the same case.",
+                    "Applying only one filter and ignoring role or `showOnlyActive`.",
+                    "Trying to update reactive refs without using `.value` inside `<script setup>`."
+                ],
+                "techniques": [
+                    "Using `ref` for local component state in Vue 3.",
+                    "Using `computed` for derived lists.",
+                    "`v-model` on text, select, and checkbox inputs.",
+                    "Using `v-for` with `:key` for stable list rendering."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-filterable-user-list.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-filterable-user-list"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json"
     }
 ]

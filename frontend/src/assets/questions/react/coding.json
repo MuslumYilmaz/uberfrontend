@@ -390,5 +390,87 @@
             "google",
             "uber"
         ]
+    },
+    {
+        "id": "react-filterable-user-list",
+        "title": "Filterable / Searchable User List",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "react",
+            "state",
+            "lists",
+            "filtering",
+            "forms"
+        ],
+        "description": {
+            "summary": "Build a React component that renders a user list with a search box, role filter, and \"only active\" checkbox.",
+            "specs": {
+                "requirements": [
+                    "Render a filter UI and a list of users as the main UI.",
+                    "Use a fixed in-memory list of users (name, role, active flag).",
+                    "Provide a text input that filters by name (case-insensitive).",
+                    "Provide a role dropdown (All, Admin, Editor, Viewer) that filters by role.",
+                    "Provide a checkbox that, when checked, shows only active users.",
+                    "Render the filtered list below the controls."
+                ],
+                "expectedBehavior": [
+                    "Initially, all users are shown.",
+                    "Typing in the search box filters users whose name includes the search text (case-insensitive).",
+                    "Changing the role dropdown filters by that role (or shows all roles when \"All\" is selected).",
+                    "Checking the \"Only active users\" checkbox hides inactive users.",
+                    "When no users match the filters, an empty state message is shown instead of an empty list."
+                ],
+                "implementationNotes": [
+                    "Keep the user data in a fixed array inside the component (no fetch or API).",
+                    "Store `searchTerm`, `selectedRole`, and `showOnlyActive` in React state using `useState`.",
+                    "Derive a `filteredUsers` array on each render based on current state.",
+                    "Controlled inputs: bind `value`/`checked` and `onChange` handlers.",
+                    "For interview discussion, you can mention `useMemo` for memoizing filtered results, but it isn't required to solve this exercise."
+                ],
+                "techFocus": [
+                    "React `useState` for multiple pieces of UI state",
+                    "Controlled inputs (text, select, checkbox)",
+                    "Derived state for filtered lists",
+                    "Rendering lists with `map` and keys"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "This exercise centers on managing three pieces of state (search text, selected role, and an \"only active\" toggle) and deriving a filtered list from them without mutating the original data.\n\n**Test cases**\n- Default render shows all users.\n- Typing part of a user's name filters down to matching users.\n- Changing the role filter to `Admin` shows only admins; switching back to `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- Combining search, role, and active filters behaves as expected.\n- When the filters exclude all users, an empty state text is rendered.",
+            "approaches": [
+                {
+                    "title": "Single component with `useState` and derived `filteredUsers`",
+                    "prose": "Keep everything inside a single `App` component. Define a static `USERS` array that never changes. Inside the component, use `useState` for `searchTerm`, `selectedRole`, and `showOnlyActive`. On each render, compute `filteredUsers` by chaining `Array.prototype.filter`:\n\n1. Normalize the search term to lower-case and match it against `user.name.toLowerCase()`.\n2. Apply the role filter only when the selected role is not `\"all\"`.\n3. If `showOnlyActive` is true, filter out inactive users.\n\nThe inputs (`<input>`, `<select>`, `<input type=\"checkbox\">`) are controlled components with `value` / `checked` driven by state and `onChange` handlers updating that state. Finally, render `filteredUsers` with `map`, show badges for role and status, and fall back to a \"No users match\" row when the list is empty.",
+                    "codeJs": "import React, { useState } from 'react';\n\nconst USERS = [\n  { id: 1, name: 'Alice Johnson', role: 'admin', active: true },\n  { id: 2, name: 'Bob Smith', role: 'editor', active: false },\n  { id: 3, name: 'Charlie Kim', role: 'viewer', active: true },\n  { id: 4, name: 'Dana Patel', role: 'editor', active: true },\n  { id: 5, name: 'Elliot Brown', role: 'viewer', active: false }\n];\n\nexport default function App() {\n  const [searchTerm, setSearchTerm] = useState('');\n  const [selectedRole, setSelectedRole] = useState('all');\n  const [showOnlyActive, setShowOnlyActive] = useState(false);\n\n  const filteredUsers = USERS.filter((user) => {\n    const term = searchTerm.trim().toLowerCase();\n\n    if (term && !user.name.toLowerCase().includes(term)) {\n      return false;\n    }\n\n    if (selectedRole !== 'all' && user.role !== selectedRole) {\n      return false;\n    }\n\n    if (showOnlyActive && !user.active) {\n      return false;\n    }\n\n    return true;\n  });\n\n  return (\n    <main className=\"shell\">\n      <section className=\"card\">\n        <h1>Filterable User List</h1>\n        <p className=\"subtitle\">\n          Search by name, filter by role, and show only active users.\n        </p>\n\n        <div className=\"controls\">\n          <div className=\"field\">\n            <label htmlFor=\"search\">Search</label>\n            <input\n              id=\"search\"\n              type=\"text\"\n              placeholder=\"Search by name...\"\n              value={searchTerm}\n              onChange={(e) => setSearchTerm(e.target.value)}\n            />\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"role\">Role</label>\n            <select\n              id=\"role\"\n              value={selectedRole}\n              onChange={(e) => setSelectedRole(e.target.value)}\n            >\n              <option value=\"all\">All roles</option>\n              <option value=\"admin\">Admin</option>\n              <option value=\"editor\">Editor</option>\n              <option value=\"viewer\">Viewer</option>\n            </select>\n          </div>\n\n          <label className=\"checkbox-field\">\n            <input\n              type=\"checkbox\"\n              checked={showOnlyActive}\n              onChange={(e) => setShowOnlyActive(e.target.checked)}\n            />\n            <span>Only active users</span>\n          </label>\n        </div>\n\n        <ul className=\"list\" aria-label=\"Filtered users\">\n          {filteredUsers.map((user) => (\n            <li key={user.id} className=\"row\">\n              <div className=\"primary\">{user.name}</div>\n              <div className=\"meta\">\n                <span className=\"pill\">{user.role}</span>\n                <span className={user.active ? 'status' : 'status inactive'}>\n                  {user.active ? 'Active' : 'Inactive'}\n                </span>\n              </div>\n            </li>\n          ))}\n\n          {filteredUsers.length === 0 && (\n            <li className=\"empty\">No users match your filters.</li>\n          )}\n        </ul>\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Mutating the original `USERS` array instead of deriving a new filtered array.",
+                    "Forgetting to make inputs controlled (no `value` / `checked` binding).",
+                    "Not normalizing the search term and name to the same case for comparison.",
+                    "Applying only one of the filters instead of combining search, role, and active state."
+                ],
+                "techniques": [
+                    "Using `useState` to manage multiple related UI filters.",
+                    "Deriving state with `Array.prototype.filter` on each render.",
+                    "Using controlled inputs for predictable form behavior.",
+                    "Discussing when `useMemo` might be used for optimization on larger lists."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-filterable-user-list.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-filterable-user-list"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-filterable-user-list-solution.v1.json",
+        "companies": [
+            "meta",
+            "google"
+        ]
     }
 ]

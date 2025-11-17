@@ -401,5 +401,88 @@
       "uber"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json"
+  },
+  {
+    "id": "angular-filterable-user-list",
+    "title": "Filterable / Searchable User List",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "lists",
+      "filtering",
+      "forms"
+    ],
+    "description": {
+      "summary": "Build an Angular standalone component that renders a list of users with a search box, role filter, and \"only active\" checkbox.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Define a fixed in-memory list of users (name, role, active flag).",
+          "Render a search input that filters by name (case-insensitive).",
+          "Render a role dropdown (e.g. All, Admin, Editor, Viewer) that filters by role.",
+          "Render a checkbox that, when checked, shows only active users.",
+          "Render the filtered list below the controls."
+        ],
+        "expectedBehavior": [
+          "Initially, all users are shown.",
+          "Typing in the search box filters users whose name includes the search text (case-insensitive).",
+          "Changing the role dropdown filters by that role (or shows all roles when \"All\" is selected).",
+          "Checking the \"Only active\" checkbox hides inactive users.",
+          "When no users match the filters, an empty state message is shown."
+        ],
+        "implementationNotes": [
+          "Keep a static `users` array in the component (no HTTP or services needed).",
+          "Store `searchTerm`, `selectedRole`, and `showOnlyActive` as component properties.",
+          "Expose a derived `filteredUsers` getter that applies all filters based on the current state.",
+          "Use template bindings like `[(ngModel)]` to keep inputs in sync with component state.",
+          "For a small list, client-side filtering on each render is fine; you can mention this trade-off in discussion."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Basic state management for multiple controls",
+          "Derived state from a static data source",
+          "Template-driven forms (`ngModel`) and list rendering with `*ngFor`"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about maintaining several pieces of UI state (search text, selected role, and an \"only active\" toggle) and deriving a filtered list from them. The original user list never changes; instead, a `filteredUsers` getter applies all filters on top of the static array.\n\n**Test cases**\n- With default state, all users are shown.\n- Typing part of a user's name (case-insensitive) narrows the list to matching users.\n- Selecting a role shows only users with that role, unless \"All\" is selected.\n- Checking \"Only active\" hides inactive users.\n- Combining search, role filter, and active filter works as expected.\n- When filters exclude everything, an empty state row appears.",
+      "approaches": [
+        {
+          "title": "Standalone component with derived `filteredUsers` getter",
+          "prose": "Use a single `AppComponent` that is declared as `standalone: true` and imports `CommonModule` and `FormsModule`. Define a static `users` array with a few objects like `{ id, name, role, active }` and keep your UI state in properties such as `searchTerm`, `selectedRole`, and `showOnlyActive`.\n\nImplement a `filteredUsers` getter that:\n1. Normalizes the search term to lower-case.\n2. Filters users whose names contain that term (if any is entered).\n3. Filters by `selectedRole` when a specific role is chosen.\n4. Removes inactive users when `showOnlyActive` is true.\n\nBind the inputs using `[(ngModel)]` so the component state updates as the user types or toggles controls. Use `*ngFor` to render the filtered list, and show a fallback row when `filteredUsers.length === 0`. For a minor performance touch, you can add a `trackByUserId` function to the `*ngFor`.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface User {\n  id: number;\n  name: string;\n  role: Role;\n  active: boolean;\n}\n\ntype Role = 'admin' | 'editor' | 'viewer';\n\ntype RoleFilter = 'all' | Role;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  searchTerm = '';\n  selectedRole: RoleFilter = 'all';\n  showOnlyActive = false;\n\n  readonly users: User[] = [\n    { id: 1, name: 'Alice Johnson', role: 'admin', active: true },\n    { id: 2, name: 'Bob Smith', role: 'editor', active: false },\n    { id: 3, name: 'Charlie Kim', role: 'viewer', active: true },\n    { id: 4, name: 'Dana Patel', role: 'editor', active: true },\n    { id: 5, name: 'Elliot Brown', role: 'viewer', active: false }\n  ];\n\n  get filteredUsers(): User[] {\n    const term = this.searchTerm.trim().toLowerCase();\n\n    return this.users.filter(user => {\n      if (term && !user.name.toLowerCase().includes(term)) {\n        return false;\n      }\n\n      if (this.selectedRole !== 'all' && user.role !== this.selectedRole) {\n        return false;\n      }\n\n      if (this.showOnlyActive && !user.active) {\n        return false;\n      }\n\n      return true;\n    });\n  }\n\n  trackByUserId(_: number, user: User): number {\n    return user.id;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating the original `users` array instead of deriving a filtered view.",
+          "Forgetting to normalize case when comparing the search term to names.",
+          "Applying only one of the filters instead of combining all three.",
+          "Doing heavy work directly in the template instead of in a getter or method."
+        ],
+        "techniques": [
+          "Using a standalone component with `CommonModule` and `FormsModule`.",
+          "Keeping original data immutable and deriving filtered views.",
+          "Using `[(ngModel)]` for simple controlled inputs in Angular.",
+          "Using `trackBy` with `*ngFor` for a minor performance improvement."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-filterable-user-list.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-filterable-user-list"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "uber"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json"
   }
 ]
