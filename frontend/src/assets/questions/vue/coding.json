@@ -466,5 +466,82 @@
             "storageKey": "v1:ui:vue:vue-filterable-user-list"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json"
+    },
+    {
+        "id": "vue-accordion-faq",
+        "title": "Accordion / FAQ Component",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "components",
+            "composition-api",
+            "props",
+            "state-management"
+        ],
+        "description": {
+            "summary": "Build a simple FAQ (accordion) UI in Vue 3 that renders 3–4 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+            "specs": {
+                "requirements": [
+                    "Use Vue 3 with a single <App.vue> root component as the main entry.",
+                    "Render a FAQ card with 3–4 FAQ items (question + answer).",
+                    "Clicking a question toggles its answer open/closed.",
+                    "In the default mode, only one FAQ item can be open at a time.",
+                    "Add a control (e.g. a checkbox) to switch to 'allow multiple open' mode.",
+                    "In 'allow multiple open' mode, more than one FAQ item can be open at the same time.",
+                    "Use a child <FaqItem> component for a single FAQ row."
+                ],
+                "expectedBehavior": [
+                    "Initially all FAQ items are closed.",
+                    "Clicking a closed question opens its answer.",
+                    "In single-open mode: opening one item closes any other open item.",
+                    "Switching to multi-open mode keeps currently open items and allows opening more.",
+                    "Clicking an open question closes it in both modes."
+                ],
+                "implementationNotes": [
+                    "Keep the FAQ data (question + answer) in the parent component using a simple array.",
+                    "Use Vue 3's `<script setup>` syntax and Composition API.",
+                    "Track open items in the parent via a `ref<number[]>` that stores open indexes.",
+                    "Create a child `<FaqItem>` component that takes `question`, `answer`, and `isOpen` as props and emits a `toggle` event when clicked.",
+                    "Use `v-for` to render the list of FAQ items."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Lifting state up to the parent",
+                    "Child communication via props and emits",
+                    "Single vs multi selection using an array of open indexes"
+                ]
+            }
+        },
+        "starterCodeHint": "Keep FAQ data in the parent and use a `ref<number[]>` to store open item indexes. Implement `isItemOpen(index)`, `onItemToggle(index)`, and `onToggleAllowMultiple()` inside `<script setup>` and pass `isOpen` / `@toggle` to a child `<FaqItem>` component.",
+        "solutionBlock": {
+            "overview": "The key to this exercise is to have the parent component fully control which FAQ items are open. The parent stores the FAQ data (question + answer) and an array of open indexes in a `ref<number[]>`. Each child `<FaqItem>` is stateless and only receives `isOpen` plus an `@toggle` callback.\n\nIn single-open mode, the `openIndexes` ref behaves like a radio group: it is either empty or contains a single index. In multi-open mode, it behaves like a set of indexes. Toggling between modes requires normalizing the `openIndexes` array when going back to single-open mode.\n\n**Key ideas**\n- Keep all UI state (which items are open, whether multiple are allowed) in the parent.\n- Represent open items as an array of indexes (`ref<number[]>`).\n- Use a child component that simply renders UI and emits `toggle` when clicked.\n- Derive `isItemOpen(index)` from the `openIndexes` array.",
+            "approaches": [
+                {
+                    "title": "Parent-controlled openIndexes with a child <FaqItem> component",
+                    "prose": "In `<App.vue>`, define:\n\n- A simple `faqItems` array of `{ question, answer }` objects.\n- `const allowMultiple = ref(false)` to track mode.\n- `const openIndexes = ref<number[]>([])` to store which items are open.\n\nImplement helpers:\n- `const isItemOpen = (index: number) => openIndexes.value.includes(index);`\n- `const onItemToggle = (index: number) => { ... }` that toggles the index depending on `allowMultiple.value`.\n\nIn multi-open mode, treat `openIndexes.value` as a set: remove the index if present, otherwise add it. In single-open mode, either set it to `[index]` or `[]`. Pass these down to `<FaqItem>` via props and `@toggle` to keep the child simple and reusable.\n\n`<FaqItem>` itself uses `defineProps` for `question`, `answer`, and `isOpen`, and `defineEmits` to emit a `toggle` event when its header button is clicked."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Letting each `<FaqItem>` manage its own open state, which makes it hard to enforce the 'only one open' rule.",
+                    "Using a single `ref<number | null>` for `openIndex` and then trying to hack multi-open behavior into it.",
+                    "Mutating the `openIndexes.value` array in place instead of assigning a new array (harder to reason about)."
+                ],
+                "techniques": [
+                    "Using `ref<number[]>` to represent a collection of selected items in Vue 3.",
+                    "Using `defineProps` / `defineEmits` in `<script setup>` for clean parent–child communication.",
+                    "Deriving `isItemOpen` from an index array to support both single and multi selection with the same state shape."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-accordion-faq.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-accordion-faq"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json"
     }
 ]

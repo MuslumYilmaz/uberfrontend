@@ -472,5 +472,85 @@
             "meta",
             "google"
         ]
+    },
+    {
+        "id": "react-accordion-faq",
+        "title": "Accordion / FAQ Component",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "react",
+            "state",
+            "components",
+            "props",
+            "lifting-state"
+        ],
+        "description": {
+            "summary": "Build a simple FAQ (accordion) UI in React that renders 3–4 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+            "specs": {
+                "requirements": [
+                    "Render a main <App /> component that shows a FAQ card with 3–4 FAQ items.",
+                    "Each FAQ item has a question (header) and an answer (body).",
+                    "Clicking a question toggles its answer open/closed.",
+                    "In the default mode, only one FAQ item can be open at a time.",
+                    "Add a control (e.g. a checkbox) to switch to 'allow multiple open' mode.",
+                    "In 'allow multiple open' mode, more than one FAQ item can be open at the same time."
+                ],
+                "expectedBehavior": [
+                    "Initially all FAQ items are closed.",
+                    "Clicking a closed question opens its answer.",
+                    "In single-open mode: opening one item closes any other open item.",
+                    "Switching to multi-open mode keeps currently open items and allows opening more.",
+                    "Clicking an open question closes its answer in both modes."
+                ],
+                "implementationNotes": [
+                    "Keep the FAQ data (question + answer) in the parent component.",
+                    "Create a child component (e.g. <FaqItem />) that receives `question`, `answer`, and `isOpen` as props and calls an `onToggle` callback when its header is clicked.",
+                    "Use `map` to render the list of FAQ items.",
+                    "Use React state to track which index(es) are open; do not let each item manage its own state."
+                ],
+                "techFocus": [
+                    "React function components and props",
+                    "Lifting state up to control child components",
+                    "State structures for single vs multi selection (array of open indexes)",
+                    "Conditional rendering and class toggling based on state"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "This exercise is about controlling which FAQ items are open from the parent component. The parent holds an array of FAQ items (question + answer) and state describing which indexes are currently open. A child <FaqItem /> component renders the UI for a single FAQ row and notifies the parent when clicked.\n\nIn single-open mode, the open state behaves like a radio group: the parent keeps at most one index in its `openIndexes` list. Clicking an item either makes it the only open item or closes all if it was already open. In multi-open mode, the parent treats `openIndexes` like a set: clicking an item adds or removes that index from the array.\n\n**Test cases**\n- On initial render, all answers are hidden.\n- Clicking the first question opens its answer and leaves others closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Toggling 'Allow multiple open' keeps already open items and allows opening additional ones.\n- Clicking an open question closes it in both modes.",
+            "approaches": [
+                {
+                    "title": "Parent-controlled openIndexes with a child <FaqItem /> component",
+                    "prose": "Use a top-level <App /> component that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` piece of state controlled by a checkbox.\n3. An array `openIndexes: number[]` held in state to track which items are currently open.\n\nExpose helper functions:\n- `isItemOpen(index)` → whether `openIndexes` includes the given index.\n- `onItemToggle(index)` → updates `openIndexes` differently depending on `allowMultiple`.\n\nIn multi-open mode, `onItemToggle` behaves like a set toggle: if the index is present, remove it; otherwise add it. In single-open mode, the logic becomes radio-like: the array is either `[index]` or empty. The child <FaqItem /> component remains stateless: it receives `isOpen` and calls `onToggle` when clicked. This shows clearly how to lift state and centralize control in one place.",
+                    "codeJs": "import React from 'react';\n\nconst faqItems = [\n  {\n    question: 'Lorem ipsum dolor sit amet?',\n    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n  },\n  {\n    question: 'Curabitur blandit tempus porttitor?',\n    answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n  },\n  {\n    question: 'Aenean lacinia bibendum nulla sed consectetur?',\n    answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n  },\n  {\n    question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n    answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n  }\n];\n\nfunction FaqItem({ question, answer, isOpen, onToggle }) {\n  const handleClick = () => {\n    onToggle();\n  };\n\n  return (\n    <article className={\"faq-item\" + (isOpen ? \" open\" : \"\") }>\n      <button\n        type=\"button\"\n        className=\"faq-header\"\n        onClick={handleClick}\n        aria-expanded={isOpen}\n      >\n        <span className=\"question\">{question}</span>\n        <span className=\"indicator\">{isOpen ? '-' : '+'}</span>\n      </button>\n      {isOpen && (\n        <div className=\"faq-body\">\n          <p>{answer}</p>\n        </div>\n      )}\n    </article>\n  );\n}\n\nexport default function App() {\n  const [allowMultiple, setAllowMultiple] = React.useState(false);\n  const [openIndexes, setOpenIndexes] = React.useState([]); // number[]\n\n  const isItemOpen = (index) => openIndexes.includes(index);\n\n  const onItemToggle = (index) => {\n    const currentlyOpen = isItemOpen(index);\n\n    if (allowMultiple) {\n      setOpenIndexes((prev) =>\n        currentlyOpen ? prev.filter((i) => i !== index) : [...prev, index]\n      );\n      return;\n    }\n\n    if (currentlyOpen) {\n      setOpenIndexes([]);\n    } else {\n      setOpenIndexes([index]);\n    }\n  };\n\n  const onToggleAllowMultiple = () => {\n    setAllowMultiple((prev) => {\n      const next = !prev;\n      if (!next && openIndexes.length > 1) {\n        // When going back to single-open, keep only the first open item\n        setOpenIndexes((current) => (current.length ? [current[0]] : []));\n      }\n      return next;\n    });\n  };\n\n  return (\n    <main className=\"app-root\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1>FAQ</h1>\n          <label className=\"mode-toggle\">\n            <input\n              type=\"checkbox\"\n              checked={allowMultiple}\n              onChange={onToggleAllowMultiple}\n            />\n            <span>Allow multiple open</span>\n          </label>\n        </header>\n\n        <div className=\"faq-list\">\n          {faqItems.map((item, index) => (\n            <FaqItem\n              key={item.question}\n              question={item.question}\n              answer={item.answer}\n              isOpen={isItemOpen(index)}\n              onToggle={() => onItemToggle(index)}\n            />\n          ))}\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Letting each <FaqItem /> manage its own internal open/closed state, which makes it hard to enforce 'only one open' behavior.",
+                    "Using a single `openIndex` number but then trying to support multi-open mode without changing the state shape.",
+                    "Mutating the `openIndexes` array directly instead of producing a new array when updating state."
+                ],
+                "techniques": [
+                    "Lifting UI state to the parent and passing down `isOpen`/`onToggle`.",
+                    "Representing UI selection as an array of indexes, which generalizes to both single and multi selection.",
+                    "Using functional `setState` updates (`setOpenIndexes(prev => ...)`) to avoid stale state bugs."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-accordion-faq.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-accordion-faq"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
+        "companies": [
+            "meta",
+            "google",
+            "uber"
+        ]
     }
 ]

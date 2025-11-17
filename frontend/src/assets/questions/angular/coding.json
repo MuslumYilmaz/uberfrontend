@@ -484,5 +484,80 @@
       "uber"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json"
+  },
+  {
+    "id": "angular-faq-accordion",
+    "title": "Accordion / FAQ Component",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "inputs",
+      "outputs",
+      "state",
+      "interactivity"
+    ],
+    "description": {
+      "summary": "Build a simple FAQ (accordion) component in Angular that renders 3–4 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "specs": {
+        "requirements": [
+          "Use a standalone root component and at least one child component for a single FAQ item.",
+          "Render a list of 3–4 FAQ items (question + answer) from an in-memory array.",
+          "Clicking on a question toggles its answer open/closed.",
+          "In the default mode, only one FAQ item can be open at a time.",
+          "Add a simple control (e.g. a toggle or checkbox) to switch to 'allow multiple open' mode.",
+          "In 'allow multiple open' mode, the user should be able to open more than one FAQ item at once."
+        ],
+        "expectedBehavior": [
+          "Initially all FAQ items are closed.",
+          "Clicking a closed question opens its answer.",
+          "In single-open mode: opening one item automatically closes any other open item.",
+          "Switching to multi-open mode keeps already open items and allows opening others.",
+          "Clicking an open question closes its answer in both modes."
+        ],
+        "implementationNotes": [
+          "Keep the data (questions/answers and open state) in the parent component.",
+          "Create a child component (e.g. `FaqItemComponent`) that receives `question`, `answer`, and `isOpen` as inputs and emits a `toggle` event when its header is clicked.",
+          "Use `*ngFor` in the parent template to render FAQ items.",
+          "You can use simple CSS transitions (e.g. `max-height` or `opacity`) for a smooth open/close animation, but this is optional."
+        ],
+        "techFocus": [
+          "Parent → child data flow with `@Input` and `@Output`",
+          "Controlled vs uncontrolled state (parent controlling which index is open)",
+          "Conditional rendering with `*ngIf` or `ngClass`",
+          "Basic UI state toggling and list rendering"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question → its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode → currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes.",
+      "approaches": [
+        {
+          "title": "Parent-controlled open indexes with a child FAQ item component",
+          "prose": "Use a standalone `AppComponent` as the parent that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` flag controlled by a checkbox or toggle in the UI.\n3. An array `openIndexes: number[]` that stores the indexes of currently open FAQ items.\n\nImplement two methods:\n- `isItemOpen(index: number): boolean` → returns whether the given index is currently open.\n- `onItemToggle(index: number)` → updates `openIndexes` based on `allowMultiple`.\n\nIn single-open mode, `onItemToggle` should behave like a radio group: either an item is the only open one or there are none. In multi-open mode, it behaves like a set: clicking an item toggles its presence in `openIndexes`. The child `FaqItemComponent` is kept dumb – it only receives data and emits a `toggle` event, leaving all state decisions to the parent.",
+          "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface FaqItem {\n  question: string;\n  answer: string;\n}\n\n@Component({\n  selector: 'app-faq-item',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <article class=\"faq-item\" [class.open]=\"isOpen\">\n      <button class=\"faq-header\" type=\"button\" (click)=\"toggle.emit()\" aria-expanded=\"{{ isOpen }}\">\n        <span class=\"question\">{{ question }}</span>\n        <span class=\"indicator\">{{ isOpen ? '-' : '+' }}</span>\n      </button>\n      <div class=\"faq-body\" *ngIf=\"isOpen\">\n        <p>{{ answer }}</p>\n      </div>\n    </article>\n  `,\n  styles: [\n    `.faq-item{border-radius:12px;background:#0b1020;border:1px solid #1f2937;overflow:hidden;}`,\n    `.faq-item + .faq-item{margin-top:8px;}`,\n    `.faq-header{width:100%;padding:12px 14px;background:transparent;border:none;display:flex;justify-content:space-between;align-items:center;color:#e5e7eb;cursor:pointer;font-size:14px;}`,\n    `.indicator{font-weight:700;}`,\n    `.faq-body{padding:0 14px 12px;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class FaqItemComponent {\n  @Input() question = '';\n  @Input() answer = '';\n  @Input() isOpen = false;\n  @Output() toggle = new EventEmitter<void>();\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FaqItemComponent],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <header class=\"header\">\n          <h1>FAQ</h1>\n          <label class=\"switch\">\n            <input type=\"checkbox\" [checked]=\"allowMultiple\" (change)=\"onToggleAllowMultiple()\" />\n            <span>Allow multiple open</span>\n          </label>\n        </header>\n\n        <div class=\"list\">\n          <app-faq-item\n            *ngFor=\"let item of faqItems; index as i\"\n            [question]=\"item.question\"\n            [answer]=\"item.answer\"\n            [isOpen]=\"isItemOpen(i)\"\n            (toggle)=\"onItemToggle(i)\">\n          </app-faq-item>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px;}`,\n    `.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}`,\n    `.header h1{font-size:20px;margin:0;}`,\n    `.switch{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  faqItems: FaqItem[] = [\n    {\n      question: 'Lorem ipsum dolor sit amet?',\n      answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n    },\n    {\n      question: 'Curabitur blandit tempus porttitor?',\n      answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n    },\n    {\n      question: 'Aenean lacinia bibendum nulla sed consectetur?',\n      answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n    },\n    {\n      question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n      answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n    }\n  ];\n\n  allowMultiple = false;\n  openIndexes: number[] = [];\n\n  isItemOpen(index: number): boolean {\n    return this.openIndexes.includes(index);\n  }\n\n  onItemToggle(index: number): void {\n    const currentlyOpen = this.isItemOpen(index);\n\n    if (this.allowMultiple) {\n      // Treat as a set\n      this.openIndexes = currentlyOpen\n        ? this.openIndexes.filter(i => i !== index)\n        : [...this.openIndexes, index];\n      return;\n    }\n\n    // Single-open mode\n    if (currentlyOpen) {\n      this.openIndexes = [];\n    } else {\n      this.openIndexes = [index];\n    }\n  }\n\n  onToggleAllowMultiple(): void {\n    this.allowMultiple = !this.allowMultiple;\n    if (!this.allowMultiple && this.openIndexes.length > 1) {\n      // Keep only the first open item in single-open mode\n      this.openIndexes = this.openIndexes.length ? [this.openIndexes[0]] : [];\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Letting each item manage its own open/closed state, which makes it hard to enforce 'only one open at a time'.",
+          "Using index-based state but forgetting to clear other indexes in single-open mode.",
+          "Directly mutating the `faqItems` array to store UI-only state instead of keeping a separate `openIndexes` representation."
+        ],
+        "techniques": [
+          "Keeping view data (question/answer) separate from UI state (open indexes).",
+          "Using a child component with `@Input`/`@Output` to keep the parent in full control of state.",
+          "Deriving `isItemOpen` from an array of indexes instead of storing booleans on each item."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-faq-accordion.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-faq-accordion"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json"
   }
 ]
