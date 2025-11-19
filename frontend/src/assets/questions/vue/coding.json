@@ -620,5 +620,90 @@
             "storageKey": "v1:ui:vue:vue-pagination-table"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json"
+    },
+    {
+        "id": "vue-theme-toggle",
+        "title": "Theme Toggle with Persisted Light/Dark Mode",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "composition-api",
+            "state-management",
+            "local-storage",
+            "theming"
+        ],
+        "description": {
+            "summary": "Add a global light/dark theme toggle in the top-right of the page using Vue 3. The selected theme should be stored in localStorage and restored when the page reloads.",
+            "specs": {
+                "requirements": [
+                    "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
+                    "Support two themes: \"light\" and \"dark\".",
+                    "Store the current theme in a single source of truth (e.g. a module-level ref / small theme composable).",
+                    "Persist the selected theme in localStorage under a stable key.",
+                    "On initial load, read the theme from localStorage and apply it before the user interacts.",
+                    "Apply the theme at the document level by setting `data-theme` on `<html>`, so that the existing CSS can react to it.",
+                    "You only need to edit `/src/App.vue` (the template and `<script setup>`). The CSS files are already wired to respond to `data-theme` and should be left as-is."
+                ],
+                "expectedBehavior": [
+                    "By default, the app starts in light mode if there is no previous theme stored.",
+                    "If the user toggles to dark mode, the page background, text, and card colors change.",
+                    "Reloading the page keeps the user’s last theme selection (light or dark).",
+                    "The toggle UI (label or icon) always reflects the actual current theme.",
+                    "Switching themes is instant and does not require a full reload."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3’s Composition API with a `ref<'light' | 'dark'>` to hold the current theme.",
+                    "Read from `window.localStorage` using a stable key (for example `uf-theme`) and validate the stored value.",
+                    "Apply the theme to `document.documentElement` via `setAttribute('data-theme', theme)` so the CSS can use `:root[data-theme='dark']` / `html[data-theme='dark'] ...` selectors.",
+                    "Encapsulate the side-effects (localStorage read/write + DOM attribute update) in a couple of helper functions instead of scattering them across the component.",
+                    "Avoid duplicating theme logic in multiple places; treat the theme ref as the single source of truth and derive `isDark` from it via `computed`."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Simple global-ish state via a module-level ref or mini composable",
+                    "Side-effects and initialization logic in `<script setup>`",
+                    "Using localStorage safely in a browser environment",
+                    "Simple theming by driving `data-theme` on `<html>` and letting existing CSS respond"
+                ]
+            }
+        },
+        "starterCodeHint": "Create a `Theme` type (`'light' | 'dark'`) and a `ref<Theme>('light')` that holds the current theme. On startup, read a stored value from `localStorage` (if running in the browser), validate it, and call a helper that sets `document.documentElement.dataset.theme`. Derive an `isDark` computed from the theme and wire the toggle button to a `toggleTheme()` function that flips between `'light'` and `'dark'` and persists the result.",
+        "solutionBlock": {
+            "overview": "This exercise is about lifting theme state into a small global-ish store in Vue (a module-level `ref` + helpers) and wiring it to both the UI and the DOM. You store the current theme (`'light'` or `'dark'`) in a reactive `ref`, read an initial value from `localStorage` when the module is evaluated, and apply that value to the `<html>` element via a `data-theme` attribute. The root `App.vue` template shows a toggle in the top-right corner and delegates all theme changes to `toggleTheme()`. The provided CSS (`styles.css` + `App.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `html[data-theme='dark'] .app-shell` rules, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+            "approaches": [
+                {
+                    "title": "Module-level theme store with `data-theme` on `<html>`",
+                    "prose": "Use a tiny theme store built directly in `<script setup>`.\n\n1. Define a `Theme` type alias (`'light' | 'dark'`) and a stable localStorage key.\n2. Create `const theme = ref<Theme>('light')` as the single source of truth.\n3. Add `applyTheme(theme)` that sets `document.documentElement.setAttribute('data-theme', theme)`.\n4. Run an `initTheme()` function at module evaluation time: it reads from localStorage, validates `'light'` / `'dark'`, falls back to `'light'`, assigns to `theme.value`, and calls `applyTheme`.\n5. Implement `setTheme(theme)` to update the ref, write to localStorage, and call `applyTheme`.\n6. Implement `toggleTheme()` to flip between `'light'` and `'dark'` using `setTheme`.\n7. Expose `const isDark = computed(() => theme.value === 'dark')` and an `onToggleClick()` handler that calls `toggleTheme()`.\n\nThe template stays very simple: it just binds the button to `onToggleClick` and shows `🌙 / ☀️` and `Dark / Light` labels based on `isDark`. All the persistence and DOM side-effects live in a few small helpers, keeping the component easy to reason about."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Reading from localStorage too late (e.g. only in a `mounted` hook) and causing a visible flash from light to dark.",
+                    "Forgetting to actually apply the theme to `<html>` and only updating a label in the UI.",
+                    "Using multiple sources of truth for the theme (for example, having separate `isDark` and `theme` refs that can drift apart).",
+                    "Not guarding access to `window` / `localStorage` when running in non-browser environments."
+                ],
+                "techniques": [
+                    "Using a module-level `ref` as a simple global store in Vue 3.",
+                    "Using `computed` to derive booleans (`isDark`) from core state.",
+                    "Encapsulating all side-effects (DOM + localStorage) in small helpers called from state-changing functions.",
+                    "Letting preconfigured CSS (`:root[data-theme='dark']` and `html[data-theme='dark'] .app-shell`) handle visual changes while the script only controls `data-theme`."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-theme-toggle.v2.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v2:ui:vue:vue-theme-toggle"
+        },
+        "companies": [
+            "google",
+            "meta",
+            "uber"
+        ],
+        "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json"
     }
 ]

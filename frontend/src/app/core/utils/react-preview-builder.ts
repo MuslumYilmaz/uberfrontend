@@ -1,39 +1,89 @@
-  /** Turn a module-style React file into plain script that runs with UMD globals */
-  function rewriteReactModuleToUMD(src: string): string {
-    let s = src;
+/** Turn a module-style React file into plain script that runs with UMD globals */
+// core/utils/react-preview-builder.ts
 
-    // 1) Remove React/ReactDOM (and client) imports – we load UMD versions in the page
-    s = s.replace(/^\s*import\s+[^;]*from\s+['"]react(?:-dom(?:\/client)?)?['"];?\s*$/mg, '');
+function rewriteReactModuleToUMD(src: string): string {
+  let s = src;
 
-    // 2) Remove side-effect CSS imports like `import './App.css'`
-    s = s.replace(/^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg, '');
+  // 1) React / ReactDOM importlarını sil
+  s = s.replace(
+    /^\s*import\s+[^;]*from\s+['"]react(?:-dom(?:\/client)?)?['"];?\s*$/mg,
+    ''
+  );
 
-    // 3) Normalize default exports to `App` in global scope
-    //    export default function App() {}    -> function App() {}
-    s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, 'function App');
-    //    export default class App {}        -> class App {}
-    s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, 'class App');
-    //    export default (...)               -> const App = (...)
-    s = s.replace(/\bexport\s+default\s+/m, 'const App = ');
+  // 2) CSS importlarını sil
+  s = s.replace(
+    /^\s*import\s+['"][^'"]+\.css['"];?\s*$/mg,
+    ''
+  );
 
-    // 4) Remove any remaining named `export` keywords (not needed in the preview)
-    s = s.replace(/^\s*export\s+(?=(const|let|var|function|class)\b)/mg, '');
+  // 3) Relatif importları (./theme, ../foo vs) sil
+  s = s.replace(
+    /^\s*import\s+[^;]*from\s+['"]\.{1,2}\/[^'"]+['"];?\s*$/mg,
+    ''
+  );
 
-    return s.trim();
-  }
+  // 4) TS tip exportlarını normal deklarasyona çevir
+  //    export type Theme = ...   ->  type Theme = ...
+  //    export interface Foo {...} -> interface Foo {...}
+  //    export enum Bar {...}      -> enum Bar {...}
+  s = s.replace(
+    /^\s*export\s+(type|interface|enum)\s+/mg,
+    '$1 '
+  );
+
+  // 5) default export'ları App'e çevir
+  s = s.replace(
+    /\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m,
+    'function App'
+  );
+  s = s.replace(
+    /\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m,
+    'class App'
+  );
+  s = s.replace(
+    /\bexport\s+default\s+/m,
+    'const App = '
+  );
+
+  // 6) Kalan named export keyword'lerini kaldır
+  //    export const x = ...  -> const x = ...
+  s = s.replace(
+    /^\s*export\s+(?=(const|let|var|function|class)\b)/mg,
+    ''
+  );
+
+  return s.trim();
+}
+
 
 export function makeReactPreviewHtml(files: Record<string, string>): string {
-    const user =
-        files['src/App.tsx'] ??
-        files['src/App.jsx'] ??
-        files['src/App.ts'] ??
-        files['src/App.js'] ??
-        `export default function App(){ return <div>Hello React</div> }`;
+  const appSrc =
+    files['src/App.tsx'] ??
+    files['src/App.jsx'] ??
+    files['src/App.ts'] ??
+    files['src/App.js'] ??
+    `export default function App(){ return <div>Hello React</div> }`;
 
-    const appModuleSrc = rewriteReactModuleToUMD(user);
-    const css = files['src/App.css'] ?? files['src/index.css'] ?? files['public/styles.css'] ?? '';
+  // Yeni: theme dosyasını da oku (varsa)
+  const themeSrc =
+    files['src/theme.tsx'] ??
+    files['src/theme.ts'] ??
+    files['src/theme.jsx'] ??
+    files['src/theme.js'] ??
+    '';
 
-    return `<!doctype html>
+  // theme'i App'in önüne ekle ki önce o tanımlansın
+  const combinedSrc = themeSrc ? `${themeSrc}\n\n${appSrc}` : appSrc;
+
+  const appModuleSrc = rewriteReactModuleToUMD(combinedSrc);
+
+  const css =
+    files['src/App.css'] ??
+    files['src/index.css'] ??
+    files['public/styles.css'] ??
+    '';
+
+  return `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8"/>
@@ -151,29 +201,65 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         }
 
         // 2) Execute compiled JS with React globals in scope
-        try{
-          hideOverlay();
-          const { useState, useEffect, useMemo, useRef, useReducer, useContext } = React;
-          const run = new Function(
-            'React','ReactDOM','useState','useEffect','useMemo','useRef','useReducer','useContext',
-            compiled + '\\n;return (typeof App !== "undefined") ? App : undefined;'
-          );
-          const AppRef = run(React, ReactDOM, useState, useEffect, useMemo, useRef, useReducer, useContext);
+      // 2) Execute compiled JS with React globals in scope
+      try {
+        hideOverlay();
 
-          const root = ReactDOM.createRoot(rootEl);
-          if (typeof AppRef === 'function') {
-            root.render(
-              React.createElement(UFErrorBoundary, null, React.createElement(AppRef))
-            );
-          } else {
-            root.render(React.createElement('div', null, 'No App component exported'));
-          }
-        }catch(e){
-          const stack = e && e.stack ? '\\n\\n' + e.stack : '';
-          const where = (e && e.fileName) ? (e.fileName + (e.lineNumber ? (':' + e.lineNumber + (e.columnNumber ? ':' + e.columnNumber : '')) : '')) : '';
-          showOverlay(String(e) + stack, where || 'App.tsx');
+        const {
+          useState,
+          useEffect,
+          useMemo,
+          useRef,
+          useReducer,
+          useContext,
+          createContext,
+          useCallback,
+        } = React;
+
+        const run = new Function(
+          'React',
+          'ReactDOM',
+          'useState',
+          'useEffect',
+          'useMemo',
+          'useRef',
+          'useReducer',
+          'useContext',
+          'createContext',
+          'useCallback',
+          // DİKKAT: burada ÇİFTE backslash var
+          compiled + '\\n;return (typeof App !== "undefined") ? App : undefined;'
+        );
+
+        const AppRef = run(
+          React,
+          ReactDOM,
+          useState,
+          useEffect,
+          useMemo,
+          useRef,
+          useReducer,
+          useContext,
+          createContext,
+          useCallback
+        );
+
+        const root = ReactDOM.createRoot(rootEl);
+        if (typeof AppRef === 'function') {
+          root.render(
+            React.createElement(UFErrorBoundary, null, React.createElement(AppRef))
+          );
+        } else {
+          root.render(React.createElement('div', null, 'No App component exported'));
         }
+      } catch (e) {
+        const stack = e && e.stack ? '\\n' + e.stack : '';
+        const where = (e && e.fileName)
+          ? (e.fileName + (e.lineNumber ? (':' + e.lineNumber + (e.columnNumber ? ':' + e.columnNumber : '')) : ''))
+          : '';
+        showOverlay(String(e) + stack, where || 'App.tsx');
       }
+    }
 
       compileAndRun();
     })();

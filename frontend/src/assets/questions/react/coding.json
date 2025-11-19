@@ -634,5 +634,88 @@
             "google",
             "uber"
         ]
+    },
+    {
+        "id": "react-theme-toggle",
+        "title": "Theme Toggle with Persisted Light/Dark Mode (React)",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "react",
+            "context",
+            "state",
+            "local-storage",
+            "theming",
+            "components"
+        ],
+        "description": {
+            "summary": "Add a global light/dark theme toggle in the top-right of the page using React Context. The selected theme should be stored in localStorage and restored when the page reloads.",
+            "specs": {
+                "requirements": [
+                    "Render a main page layout with a simple content card and a theme toggle control in the top-right corner (UI is already provided via CSS).",
+                    "Support two themes: \"light\" and \"dark\".",
+                    "Store the current theme in a React Context provider (global-ish state).",
+                    "Persist the selected theme in localStorage under a stable key.",
+                    "On initial load, read the theme from localStorage and apply it before the user interacts.",
+                    "Apply the theme at the document level by setting `data-theme` on `<html>`, so the existing CSS can react to it.",
+                    "You only need to edit React/TypeScript files: `/src/theme.tsx` and `/src/App.tsx`. The CSS in `/src/App.css` is already wired to respond to `data-theme` and should be left as-is."
+                ],
+                "expectedBehavior": [
+                    "By default, the app starts in light mode if there is no previous theme stored.",
+                    "If the user toggles to dark mode, the page background, text, and card colors change.",
+                    "Reloading the page keeps the user’s last theme selection (light or dark).",
+                    "The toggle UI (label and emoji) always reflects the actual current theme.",
+                    "Switching themes is instant and does not require a full reload."
+                ],
+                "implementationNotes": [
+                    "`/src/theme.tsx`: Create a `ThemeContext` with a `ThemeProvider` that holds the current theme in state, reads/writes localStorage, and updates `document.documentElement.dataset.theme` (or `setAttribute('data-theme', ...)`).",
+                    "`/src/App.tsx`: Wrap the page UI with `ThemeProvider`, use a custom hook like `useTheme()` to access `theme` and `toggleTheme()`, derive `isDark` from the current theme, and wire the toggle button click handler.",
+                    "`/src/App.css`: Already contains light defaults and `:root[data-theme='dark']` overrides for the page, card, and toggle colors. You don't need to modify it; just drive the `data-theme` attribute from your React logic.",
+                    "Keep the theme state in Context as the single source of truth and avoid duplicating theme flags in multiple components."
+                ],
+                "techFocus": [
+                    "React Context as global-ish state",
+                    "Combining `useState` and `useEffect` for side-effects",
+                    "Using localStorage safely in a browser environment",
+                    "Applying global theme via `data-theme` on `<html>` and letting CSS handle visuals"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "This exercise is about lifting theme state into a React Context and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") inside a `ThemeProvider`, read an initial value from localStorage when the provider initializes, and apply that value to the `<html>` element via a `data-theme` attribute. The `App` component is wrapped in this provider, uses a `useTheme()` hook to read `theme` and call `toggleTheme()`, and renders a toggle button in the top-right.\n\nThe provided CSS in `App.css` already listens to `data-theme` using `:root[data-theme='dark']` selectors to switch page, card, and toggle colors, so the React code is only responsible for state and side-effects.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the background becomes dark, and the toggle shows the moon icon and \"Dark\" label.\n- Reload the page after switching to dark mode → app initializes in dark mode, with `data-theme=\"dark\"` already applied.\n- Toggle back to light → theme changes immediately, `data-theme` updates, and localStorage is updated.",
+            "approaches": [
+                {
+                    "title": "ThemeProvider + `useTheme()` with `data-theme` on `<html>`",
+                    "prose": "Use React Context as the global source of truth for the theme.\n\n1. In `/src/theme.tsx`, define a `Theme` type (`'light' | 'dark'`), a storage key, and a `ThemeContext` that exposes `{ theme, setTheme, toggleTheme }`.\n2. Implement a `ThemeProvider` that:\n   - Uses `useState` with a lazy initializer to read the initial theme from localStorage (defaulting to `'light'`).\n   - Applies the chosen initial theme to `document.documentElement` via `setAttribute('data-theme', theme)`.\n   - Uses `useEffect` to write the theme back to localStorage and keep `data-theme` in sync whenever `theme` changes.\n3. Export a `useTheme()` hook that reads the context and throws if used outside the provider.\n4. In `/src/App.tsx`, wrap the page in `<ThemeProvider>...</ThemeProvider>` and create a `Page` component that calls `useTheme()`.\n5. Derive `isDark` from `theme === 'dark'` and wire the button’s `onClick` to `toggleTheme()`. Use `isDark` to switch between ☀️/🌙 and \"Light\"/\"Dark\".\n6. Leave `App.css` untouched; it relies on `:root[data-theme='dark']` to adjust `.main`, `.card`, and `.theme-toggle` colors.\n\nThis keeps theme logic in one place (Context), makes UI components thin, and demonstrates how React state, side-effects, and DOM-level theming work together.",
+                    "codeJs": "import React from 'react';\nimport './App.css';\nimport { ThemeProvider, useTheme } from './theme';\n\nfunction Page() {\n  const { theme, toggleTheme } = useTheme();\n  const isDark = theme === 'dark';\n\n  const handleToggleClick = () => {\n    toggleTheme();\n  };\n\n  return (\n    <main className=\"main\">\n      <header className=\"app-header\">\n        <h1 className=\"app-title\">Theme Toggle (React)</h1>\n        <button\n          type=\"button\"\n          className=\"theme-toggle\"\n          onClick={handleToggleClick}\n          aria-label=\"Toggle theme\"\n        >\n          <span className=\"icon\" aria-hidden=\"true\">{isDark ? '🌙' : '☀️'}</span>\n          <span className=\"label\">{isDark ? 'Dark' : 'Light'}</span>\n        </button>\n      </header>\n\n      <section className=\"content\">\n        <div className=\"card\">\n          <h2>Preview area</h2>\n          <p>\n            This card reacts to the current theme via CSS. Toggle between light and dark\n            and refresh the page to confirm your choice is persisted.\n          </p>\n        </div>\n      </section>\n    </main>\n  );\n}\n\nexport default function App() {\n  return (\n    <ThemeProvider>\n      <Page />\n    </ThemeProvider>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Reading from localStorage only in an effect but never applying the initial value to `<html>`, causing a flash of the wrong theme.",
+                    "Updating the toggle label/icon without actually updating `data-theme` on `<html>`.",
+                    "Keeping separate theme flags in multiple components instead of using Context as the single source of truth.",
+                    "Mutating the DOM directly in many components instead of centralizing side-effects inside the provider."
+                ],
+                "techniques": [
+                    "Using React Context as a simple app-wide state container.",
+                    "Lazy initialization of state from localStorage.",
+                    "Synchronizing React state with `document.documentElement` via `data-theme`.",
+                    "Letting CSS handle visuals through `:root[data-theme='dark']` selectors while React only controls the attribute."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-theme-toggle.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-theme-toggle"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-theme-toggle-solution.v1.json",
+        "companies": [
+            "meta",
+            "google"
+        ]
     }
 ]

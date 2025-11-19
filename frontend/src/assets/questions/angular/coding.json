@@ -643,5 +643,91 @@
       "uber"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json"
+  },
+  {
+    "id": "angular-theme-toggle",
+    "title": "Theme Toggle with Persisted Light/Dark Mode",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "services",
+      "dependency-injection",
+      "state",
+      "local-storage",
+      "theming"
+    ],
+    "description": {
+      "summary": "Add a global light/dark theme toggle in the top-right of the page. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "specs": {
+        "requirements": [
+          "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
+          "Support two themes: \"light\" and \"dark\".",
+          "Store the current theme in a dedicated Angular service (global-ish state).",
+          "Persist the selected theme in localStorage under a stable key.",
+          "On initial load, read the theme from localStorage and apply it before the user interacts.",
+          "Apply the theme at the document level by setting `data-theme` on `<html>`, so that the existing CSS can react to it.",
+          "You only need to edit TypeScript files: `/src/app/theme.service.ts` and `/src/app/app.component.ts`. All CSS files are already wired to respond to `data-theme` and should be left as-is."
+        ],
+        "expectedBehavior": [
+          "By default, the app starts in light mode if there is no previous theme stored.",
+          "If the user toggles to dark mode, the page background, text, and card colors change.",
+          "Reloading the page keeps the user’s last theme selection (light or dark).",
+          "The toggle UI (label or icon) always reflects the actual current theme.",
+          "Switching themes is instant and does not require a full reload."
+        ],
+        "implementationNotes": [
+          "`/src/app/theme.service.ts`: Use an Angular service (e.g. `ThemeService`) to hold global theme state, read/write localStorage, and update the `data-theme` attribute on `<html>`.",
+          "`/src/app/app.component.ts`: Inject the service, expose an `isDark` getter based on `themeService.currentTheme`, and wire the toggle button to `themeService.toggleTheme()`.",
+          "The CSS in `/src/app/app.component.css` and `/src/styles.css` is already configured: it uses `:root` / `:root[data-theme='dark']` and `:host-context([data-theme='dark'])` rules to switch page, card, and toggle colors when `data-theme` changes.",
+          "You do not need to modify any CSS for this exercise; just drive the theme state and `data-theme` from the service.",
+          "Avoid duplicating theme logic in multiple components; treat the service as the single source of truth."
+        ],
+        "techFocus": [
+          "Angular services and dependency injection",
+          "Global-ish state via a shared service",
+          "Side-effects and initialization logic (constructor / app bootstrap)",
+          "Using localStorage safely in a browser environment",
+          "Simple theming by driving `data-theme` on `<html>` and letting existing CSS respond"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+      "approaches": [
+        {
+          "title": "Global ThemeService with `data-theme` on `<html>`",
+          "prose": "Use a dedicated `ThemeService` as the global source of truth for the theme.\n\n1. Define a `Theme` type alias (`'light' | 'dark'`) and a stable localStorage key.\n2. In the service constructor, read from localStorage; if a value exists, use it; otherwise default to `'light'`. After deciding the initial theme, immediately apply it to `document.documentElement` (e.g. via `setAttribute('data-theme', theme)`).\n3. Expose a `currentTheme` property, a `setTheme(theme)` method, and a `toggleTheme()` helper.\n   - `setTheme(theme)` updates `currentTheme`, writes it to localStorage, and updates the `<html>` `data-theme`.\n   - `toggleTheme()` flips between `'light'` and `'dark'` using `setTheme`.\n4. In `AppComponent`, inject `ThemeService` and expose a getter `isDark` that checks `themeService.currentTheme === 'dark'`.\n5. Bind the toggle button to `onToggleClick()` which calls `themeService.toggleTheme()`. Use `isDark` to set the button label/icon (e.g. show the moon when in dark mode).\n6. The existing CSS in `styles.css` and `app.component.css` uses `:root[data-theme='dark']` and `:host-context([data-theme='dark'])` to change background, text, and card colors based on `data-theme`, so no CSS changes are required.\n\nThis implementation keeps theme state in one place, uses DI for access, and demonstrates a clean separation between state (service), UI (component), and styling (preconfigured CSS that reacts to `data-theme`).",
+          "codeTs": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ThemeService } from './theme.service';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly themeService = inject(ThemeService);\n\n  get isDark(): boolean {\n    return this.themeService.currentTheme === 'dark';\n  }\n\n  onToggleClick(): void {\n    this.themeService.toggleTheme();\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Reading from localStorage too late (e.g. after the first render), causing a visible flash from light to dark.",
+          "Forgetting to actually apply the theme to the document (only changing the label but not colors).",
+          "Using multiple sources of truth for the theme (e.g. duplicating theme state in both component and service).",
+          "Trying to change the CSS instead of driving the existing `data-theme`-based styles from the service."
+        ],
+        "techniques": [
+          "Using an Angular service as a global singleton to hold app-wide state.",
+          "Injecting `DOCUMENT` from `@angular/common` to manipulate the root element safely.",
+          "Encapsulating side-effects (localStorage reads/writes, DOM attribute updates) inside the service instead of scattering them across components.",
+          "Letting preconfigured CSS (`:root[data-theme='dark']` and `:host-context([data-theme='dark'])`) handle visual changes while the service only controls `data-theme`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-theme-toggle.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-theme-toggle"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "uber"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json"
   }
 ]
