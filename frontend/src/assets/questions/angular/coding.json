@@ -729,5 +729,93 @@
       "uber"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json"
+  },
+  {
+    "id": "angular-multi-step-form-starter",
+    "title": "Multi-step Signup Form (Reactive Forms)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "forms",
+      "reactive-forms",
+      "validation",
+      "components",
+      "state"
+    ],
+    "description": {
+      "summary": "Build a 3-step signup flow using Angular reactive forms: basic info, address info, and a summary + submit step. Each step should only allow moving forward when its fields are valid.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Use Angular reactive forms (`FormGroup`, `FormBuilder`, `Validators`) with nested form groups.",
+          "Step 1 (Basic info): capture `name` and `email` fields.",
+          "Step 2 (Address info): capture `street`, `city`, `country`, and optionally `postalCode`.",
+          "Step 3 (Summary): display a read-only summary of all collected values and provide a `Submit` button.",
+          "The `Next` button should be disabled unless the current step's group is valid.",
+          "Preserve entered values when navigating back and forth between steps.",
+          "(Optional) Add a `Back` button to move to the previous step."
+        ],
+        "expectedBehavior": [
+          "The flow starts on Step 1 (Basic info).",
+          "On Step 1, `Next` is disabled until both `name` and `email` are valid (required + valid email).",
+          "On Step 2, `Next` is disabled until required address fields are valid.",
+          "Clicking `Next` on a valid step moves to the next step.",
+          "Clicking `Back` moves to the previous step without losing already entered values.",
+          "On Step 3, the user sees a summary of all fields and a `Submit` button.",
+          "Clicking `Submit` validates the entire form and (for this exercise) logs or otherwise handles the collected data."
+        ],
+        "implementationNotes": [
+          "Use a single top-level `FormGroup` with nested groups like `basic` and `address` to keep form state centralized.",
+          "Track the current step with a simple number index (e.g. `currentStep = 0 | 1 | 2`).",
+          "Expose convenience getters like `basicGroup` and `addressGroup` for cleaner template bindings.",
+          "Use `markAllAsTouched()` before moving forward or submitting, so validation errors show up immediately.",
+          "Derive boolean helpers like `isFirstStep`, `isLastStep`, and `canGoNext` in the component instead of scattering conditions in the template."
+        ],
+        "techFocus": [
+          "Angular reactive forms",
+          "Grouping related controls with nested `FormGroup`s",
+          "Form validation and disabled states",
+          "Managing multi-step UI state in a single component",
+          "Basic UI architecture for a wizard-like flow"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about centralizing form state with Angular reactive forms and wiring a simple stepper on top of it. A good solution uses a single top-level `FormGroup` with nested groups for each step (`basic`, `address`) and a `currentStep` number to control which UI section is visible.\n\nThe core idea is:\n- Model all fields in one `FormGroup` to avoid juggling separate pieces of state.\n- Use per-step validation by checking only the current group's validity when deciding if the user can go to the next step.\n- Derive booleans for `canGoNext`, `isFirstStep`, and `isLastStep` instead of hard-coding conditions in the template.\n\n**Test cases**\n- Initial load → Step 1 is shown, `Next` is disabled.\n- Fill valid `name` and `email`, click `Next` → moves to Step 2.\n- On Step 2 with invalid address fields → `Next` stays disabled and/or shows validation errors when attempted.\n- After filling valid address, click `Next` → Step 3 shows a summary of all values.\n- Click `Back` from Step 3 → Step 2 is shown with previously entered data intact.\n- Click `Submit` on Step 3 with valid data → form is processed (e.g. logged) and no validation errors are shown.",
+      "approaches": [
+        {
+          "title": "Single reactive FormGroup with nested groups and step index",
+          "prose": "Use one top-level reactive `FormGroup` that contains nested groups for each logical step, plus a simple `currentStep` number to control the view.\n\n1. Inject `FormBuilder` and create the form in the constructor or as a class property. For example:\n   - `basic` group with `name` and `email` (required + email validator).\n   - `address` group with `street`, `city`, `country`, and optional `postalCode`.\n2. Keep `currentStep` as a number (0, 1, 2) and derive helpers like `isFirstStep`, `isLastStep`, and `canGoNext`.\n3. When the user clicks `Next`, call `markAllAsTouched()` on the current group's controls. Only move to the next step if that group is valid.\n4. Implement `Back` by simply decrementing `currentStep` when possible.\n5. For `Submit`, mark the whole form as touched, check `form.valid`, and then log or otherwise handle the data.\n\nThis approach keeps all state and rules in one place, and the template becomes mostly a projection of the current step with bindings to the appropriate nested group.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\" [formGroup]=\"form\">\n        <header class=\"header\">\n          <h1>Multi-step Signup</h1>\n          <p class=\"subtitle\">Step {{ currentStep + 1 }} of 3</p>\n        </header>\n\n        <section class=\"steps\" [ngSwitch]=\"currentStep\">\n          <!-- Step 1: Basic info -->\n          <div *ngSwitchCase=\"0\" formGroupName=\"basic\" class=\"step\">\n            <h2 class=\"step-title\">Basic info</h2>\n            <label class=\"field\">\n              <span>Name</span>\n              <input type=\"text\" formControlName=\"name\" placeholder=\"Jane Doe\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('name')?.touched && basicGroup.get('name')?.invalid\">\n                Name is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Email</span>\n              <input type=\"email\" formControlName=\"email\" placeholder=\"jane@example.com\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('email')?.touched && basicGroup.get('email')?.invalid\">\n                Please enter a valid email.\n              </small>\n            </label>\n          </div>\n\n          <!-- Step 2: Address info -->\n          <div *ngSwitchCase=\"1\" formGroupName=\"address\" class=\"step\">\n            <h2 class=\"step-title\">Address</h2>\n            <label class=\"field\">\n              <span>Street</span>\n              <input type=\"text\" formControlName=\"street\" placeholder=\"123 Main St\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('street')?.touched && addressGroup.get('street')?.invalid\">\n                Street is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>City</span>\n              <input type=\"text\" formControlName=\"city\" placeholder=\"Istanbul\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('city')?.touched && addressGroup.get('city')?.invalid\">\n                City is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Country</span>\n              <input type=\"text\" formControlName=\"country\" placeholder=\"Türkiye\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('country')?.touched && addressGroup.get('country')?.invalid\">\n                Country is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Postal code (optional)</span>\n              <input type=\"text\" formControlName=\"postalCode\" placeholder=\"34000\" />\n            </label>\n          </div>\n\n          <!-- Step 3: Summary -->\n          <div *ngSwitchCase=\"2\" class=\"step\">\n            <h2 class=\"step-title\">Summary</h2>\n            <div class=\"summary\">\n              <h3>Basic info</h3>\n              <p><strong>Name:</strong> {{ basicGroup.get('name')?.value }}</p>\n              <p><strong>Email:</strong> {{ basicGroup.get('email')?.value }}</p>\n\n              <h3>Address</h3>\n              <p><strong>Street:</strong> {{ addressGroup.get('street')?.value }}</p>\n              <p><strong>City:</strong> {{ addressGroup.get('city')?.value }}</p>\n              <p><strong>Country:</strong> {{ addressGroup.get('country')?.value }}</p>\n              <p><strong>Postal code:</strong> {{ addressGroup.get('postalCode')?.value || '—' }}</p>\n            </div>\n          </div>\n        </section>\n\n        <footer class=\"actions\">\n          <button type=\"button\" class=\"ghost\" (click)=\"prev()\" [disabled]=\"isFirstStep\">\n            Back\n          </button>\n\n          <button\n            *ngIf=\"!isLastStep\"\n            type=\"button\"\n            (click)=\"next()\"\n            [disabled]=\"!canGoNext\"\n          >\n            Next\n          </button>\n\n          <button\n            *ngIf=\"isLastStep\"\n            type=\"button\"\n            class=\"primary\"\n            (click)=\"submit()\"\n          >\n            Submit\n          </button>\n        </footer>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 16px;display:grid;gap:16px;}`,\n    `.header h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}`,\n    `.steps{min-height:260px;}`,\n    `.step{display:grid;gap:12px;}`,\n    `.step-title{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.field{display:grid;gap:4px;font-size:13px;}`,\n    `.field span{color:#e5e7eb;}`,\n    `.field input{border-radius:10px;border:1px solid #374151;background:#020617;padding:8px 10px;color:#e5e7eb;font-size:14px;}`,\n    `.field input:focus{outline:none;border-color:#a3e635;}`,\n    `.error{font-size:11px;color:#f97316;}`,\n    `.summary{display:grid;gap:4px;font-size:14px;}`,\n    `.summary h3{margin:8px 0 2px;font-size:14px;font-weight:600;color:#e5e7eb;}`,\n    `.actions{display:flex;justify-content:space-between;gap:8px;margin-top:4px;}`,\n    `.actions button{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;}`,\n    `.actions button.primary{background:#a3e635;color:#020617;border-color:#a3e635;}`,\n    `.actions button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.actions button.ghost{background:transparent;}`\n  ]\n})\nexport class AppComponent {\n  readonly lastStepIndex = 2;\n  currentStep = 0;\n\n  constructor(private fb: FormBuilder) {}\n\n  form: FormGroup = this.fb.group({\n    basic: this.fb.group({\n      name: ['', Validators.required],\n      email: ['', [Validators.required, Validators.email]]\n    }),\n    address: this.fb.group({\n      street: ['', Validators.required],\n      city: ['', Validators.required],\n      country: ['', Validators.required],\n      postalCode: ['']\n    })\n  });\n\n  get basicGroup(): FormGroup {\n    return this.form.get('basic') as FormGroup;\n  }\n\n  get addressGroup(): FormGroup {\n    return this.form.get('address') as FormGroup;\n  }\n\n  get isFirstStep(): boolean {\n    return this.currentStep === 0;\n  }\n\n  get isLastStep(): boolean {\n    return this.currentStep === this.lastStepIndex;\n  }\n\n  get canGoNext(): boolean {\n    if (this.currentStep === 0) {\n      return this.basicGroup.valid;\n    }\n    if (this.currentStep === 1) {\n      return this.addressGroup.valid;\n    }\n    return false;\n  }\n\n  private currentGroup(): FormGroup {\n    if (this.currentStep === 0) return this.basicGroup;\n    if (this.currentStep === 1) return this.addressGroup;\n    return this.form;\n  }\n\n  next(): void {\n    const group = this.currentGroup();\n    group.markAllAsTouched();\n    if (group.invalid) {\n      return;\n    }\n    if (!this.isLastStep) {\n      this.currentStep++;\n    }\n  }\n\n  prev(): void {\n    if (!this.isFirstStep) {\n      this.currentStep--;\n    }\n  }\n\n  submit(): void {\n    this.form.markAllAsTouched();\n    if (this.form.invalid) {\n      return;\n    }\n    console.log('Signup submitted', this.form.value);\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Managing each step as a completely separate form, which makes it harder to submit a single payload at the end.",
+          "Allowing `Next` to move forward even when the current step is invalid, causing confusing validation behavior on later steps.",
+          "Not marking controls as touched before checking validity, so users never see why they cannot proceed.",
+          "Mutating `currentStep` from the template instead of keeping navigation logic in clear methods."
+        ],
+        "techniques": [
+          "Grouping related fields under nested `FormGroup`s (`basic`, `address`) for cleaner validation and payload structure.",
+          "Using helper getters (`basicGroup`, `addressGroup`, `canGoNext`, `isFirstStep`, `isLastStep`) to keep templates declarative.",
+          "Calling `markAllAsTouched()` before moving forward or submitting to surface validation errors.",
+          "Using `ngSwitch` in the template to keep each step's markup focused and easy to read."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-multi-step-form.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-multi-step-form-starter"
+    },
+    "companies": [
+      "google",
+      "meta",
+      "uber"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json"
   }
 ]

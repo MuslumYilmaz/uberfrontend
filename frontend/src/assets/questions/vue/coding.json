@@ -705,5 +705,92 @@
             "uber"
         ],
         "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json"
+    },
+    {
+        "id": "vue-multi-step-form",
+        "title": "Multi-step Signup Form (3-step Wizard)",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "forms",
+            "validation",
+            "wizard",
+            "state-management",
+            "composition-api"
+        ],
+        "description": {
+            "summary": "Build a 3-step signup flow in Vue 3 that collects basic info, address info, and shows a summary with a final submit action. Each step should be validated before the user can proceed.",
+            "specs": {
+                "requirements": [
+                    "Render a 3-step signup form as a small wizard-style UI.",
+                    "Step 1: Basic info (name, email).",
+                    "Step 2: Address info (street, city, country, optional postal code).",
+                    "Step 3: Summary + Submit (show all collected data and allow submission).",
+                    "Provide a \"Next\" button to advance to the next step.",
+                    "\"Next\" must only be enabled when the current step is valid.",
+                    "Provide an optional \"Back\" button to navigate to the previous step (except on the first step).",
+                    "On the summary step, show a read-only overview of all data entered so far.",
+                    "On the last step, show a \"Submit\" button that submits the aggregated data."
+                ],
+                "expectedBehavior": [
+                    "Initial render shows Step 1 (Basic info) with empty fields.",
+                    "Typing in inputs updates the internal form state in real time.",
+                    "If required fields on the current step are invalid or empty, the \"Next\" button is disabled (or clicking it shows validation errors and does not advance).",
+                    "When the current step is valid, the \"Next\" button becomes enabled and moves to the next step when clicked.",
+                    "The \"Back\" button moves to the previous step and preserves already-entered values.",
+                    "The summary step reflects the latest values from the previous steps.",
+                    "Clicking \"Submit\" on the summary step validates all data and then performs a final action (e.g. logs the payload to the console)."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API in `<script setup>`.",
+                    "Store the entire form data (basic + address) in a single `reactive` object or equivalent structure.",
+                    "Use one `ref` for the current step index (e.g. `currentStep = ref(0)`).",
+                    "Use `computed` properties to derive booleans like `isFirstStep`, `isLastStep`, `canGoNext`, and `canSubmit` based on current step and validation rules.",
+                    "Implement simple per-step validation functions or computed objects (e.g. `basicErrors`, `addressErrors`) and drive both error messages and disabled states from them.",
+                    "Use `v-model` bindings for input elements so the form state stays in sync with user input.",
+                    "Use conditional rendering (`v-if` / `v-else-if` / `v-else`) to show the relevant step content based on `currentStep`."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `reactive`, `computed`)",
+                    "Multi-step form / wizard patterns",
+                    "Form validation + disabled states",
+                    "Centralized form state management",
+                    "Conditional rendering and navigation between steps"
+                ]
+            }
+        },
+        "starterCodeHint": "Use `<script setup>` with a `ref` for `currentStep` and a `reactive` object for the combined form state (basic + address). Derive `isFirstStep`, `isLastStep`, and `canGoNext` as `computed` properties based on simple validation rules. Drive `Next` button disabled state and error messages from these computed values.",
+        "solutionBlock": {
+            "overview": "Implement a 3-step signup wizard using Vue 3's Composition API. Keep all form state in a single `reactive` object with nested `basic` and `address` sections, and track the current step with a `ref`. Use `computed` properties to derive validation flags and control when the user can move forward or submit the form.\n\n**Key ideas**\n- Centralize all form fields inside one `reactive` object so you can easily show a summary view.\n- Track the current step with `currentStep = ref(0)` and use conditional rendering in the template to show the correct step content.\n- Implement per-step validation (e.g. `basicErrors`, `addressErrors`) as `computed` objects that inspect the reactive form fields.\n- Derive `canGoNext` and `canSubmit` from these validation results so buttons stay disabled until the current step is valid.\n- Preserve form values when navigating between steps, and have the summary step render directly from the same reactive data.",
+            "approaches": [
+                {
+                    "title": "Single `<App.vue>` wizard with reactive form state and computed validation",
+                    "prose": "Keep everything inside `App.vue` using `<script setup>`. Define a `reactive` `form` object to hold `basic` (name, email) and `address` (street, city, country, postalCode) data. Use a `ref` for `currentStep` and drive the view with `v-if`/`v-else-if` blocks for each step. For validation, create `computed` objects like `basicErrors` and `addressErrors` that return booleans based on whether fields are empty or invalid. Then derive `isBasicValid`, `isAddressValid`, `canGoNext`, and `canSubmit` as additional `computed` values. The `next()` handler should check `canGoNext` before incrementing `currentStep`, while `prev()` decrements it when possible. The summary step simply displays the same reactive `form` data, and the `submit()` handler validates everything one last time before logging or sending the payload."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Scattering form state across multiple refs instead of keeping it in a single structured `reactive` object, which makes the summary and submit step harder to implement.",
+                    "Implementing validation only in the click handlers and not deriving it from `computed` properties, which can lead to duplicated logic and inconsistent UI states.",
+                    "Allowing navigation to the next step even when required fields are empty, or forgetting to disable the \"Next\" button until the step is valid.",
+                    "Resetting or recreating the form object when changing steps, which causes entered values to be lost."
+                ],
+                "techniques": [
+                    "Using `reactive` for grouped form data (with nested objects) so all steps share the same source of truth.",
+                    "Using `computed` properties to derive validation flags and navigation booleans (`canGoNext`, `canSubmit`, `isFirstStep`, `isLastStep`).",
+                    "Driving button disabled states and inline error messages entirely from validation `computed`s.",
+                    "Using `v-model` for input fields so changes automatically update the underlying reactive form object."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-multi-step-form.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-multi-step-form"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json"
     }
 ]

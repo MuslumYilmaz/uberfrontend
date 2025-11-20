@@ -717,5 +717,93 @@
             "meta",
             "google"
         ]
+    },
+    {
+        "id": "react-multi-step-signup",
+        "title": "Multi-step Signup Form",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "react",
+            "forms",
+            "state",
+            "validation",
+            "multi-step",
+            "controlled-inputs"
+        ],
+        "description": {
+            "summary": "Build a 3-step signup flow in React that collects basic info, address info, and then shows a read-only summary before submitting. Each step should only advance when its inputs are valid.",
+            "specs": {
+                "requirements": [
+                    "Render a multi-step signup UI as the main component.",
+                    "Step 1 (Basic info): collect name and email.",
+                    "Step 2 (Address info): collect street, city, country, and an optional postal code.",
+                    "Step 3 (Summary): display a read-only summary of all collected fields and a final Submit button.",
+                    "Use controlled inputs for all fields (values come from component state).",
+                    "Expose \"Back\" and \"Next\" buttons to move between steps (Back is disabled on the first step).",
+                    "\"Next\" must be disabled when the current step is invalid.",
+                    "Only allow Submit when all required fields across all steps are valid."
+                ],
+                "expectedBehavior": [
+                    "Initial render shows Step 1 and indicates the overall step (e.g. \"Step 1 of 3\").",
+                    "Typing into inputs updates React state immediately (controlled inputs).",
+                    "Clicking \"Next\" on Step 1 moves to Step 2 only when name and email are both non-empty (and email is valid if you choose to validate format).",
+                    "Clicking \"Next\" on Step 2 moves to Step 3 only when street, city, and country are non-empty.",
+                    "\"Back\" moves to the previous step without losing already-entered values.",
+                    "Step 3 shows a summary of all values and a \"Submit\" button.",
+                    "Clicking \"Submit\" validates all steps and then logs (or sends) the aggregated data."
+                ],
+                "implementationNotes": [
+                    "Use React state (e.g. useState) to hold both the current step index and the form data object.",
+                    "Model the form data as a nested object, e.g. { basic: { name, email }, address: { street, city, country, postalCode } }.",
+                    "Derive simple boolean flags like isFirstStep, isLastStep, and canGoNext from the current step and validation logic.",
+                    "Keep all logic in a single component for the exercise, or optionally extract step subcomponents that receive props/callbacks.",
+                    "Validation can be as simple as \"non-empty strings for required fields\"; the important part is wiring it into button disabled states and step navigation."
+                ],
+                "techFocus": [
+                    "Controlled inputs and form state in React",
+                    "Deriving validation and disabled states from data",
+                    "Multi-step flow state (current step, next/prev)",
+                    "Basic component-level architecture and data modelling"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "Use React state to store both the current step index and the full form data object. Each input is controlled (its value comes from state, and onChange writes back into that state). A small validation function per step determines whether the current step is valid. The \"Next\" button is disabled when invalid and, when clicked, either shows errors or advances to the next step. The \"Back\" button decrements the step index but leaves all previously entered values intact. On the last step, render a summary and wire a \"Submit\" handler that validates everything and then logs (or posts) the final payload.\n\n**Key ideas**\n- Keep all form data in a single React state object.\n- Use derived flags like `isFirstStep`, `isLastStep`, and `canGoNext` instead of ad-hoc booleans.\n- Derive simple validation from the current state and use it to drive \"Next\"/\"Submit\" disabled states.\n\n**Test cases**\n- Step 1: \"Next\" is disabled until both name and email are non-empty.\n- Step 2: \"Next\" is disabled until street, city, and country are non-empty.\n- Step 3: shows the correct summary of all fields.\n- Clicking \"Back\" preserves previously entered values.\n- Clicking \"Submit\" with invalid data forces the user back to the invalid step and shows errors.",
+            "approaches": [
+                {
+                    "title": "Single top-level component with nested state object per step",
+                    "prose": "Use a single `<App />` component that holds both the step index and a nested form state object. Model the state as `{ basic: { name, email }, address: { street, city, country, postalCode } }`. Each input is controlled, reading from that object and updating with a helper like `updateBasic('name', value)`. Write small helpers `isBasicValid` and `isAddressValid` and derive `canGoNext` from them based on `currentStep`. Clicking \"Next\" runs validation and advances only when valid. Clicking \"Back\" just decrements the step index. The final step renders a summary and a `submit()` function validates everything and logs the data.",
+                    "codeJs": "import React, { useState } from 'react';\n\nfunction App() {\n  const [currentStep, setCurrentStep] = useState(0); // 0, 1, 2\n  const [form, setForm] = useState({\n    basic: { name: '', email: '' },\n    address: { street: '', city: '', country: '', postalCode: '' }\n  });\n  const [showErrors, setShowErrors] = useState(false);\n\n  const { basic, address } = form;\n\n  const basicErrors = {\n    name: basic.name.trim().length === 0,\n    email: basic.email.trim().length === 0\n  };\n  const isBasicValid = !basicErrors.name && !basicErrors.email;\n\n  const addressErrors = {\n    street: address.street.trim().length === 0,\n    city: address.city.trim().length === 0,\n    country: address.country.trim().length === 0\n  };\n  const isAddressValid = !addressErrors.street && !addressErrors.city && !addressErrors.country;\n\n  const isFirstStep = currentStep === 0;\n  const isLastStep = currentStep === 2;\n\n  const canGoNext = currentStep === 0\n    ? isBasicValid\n    : currentStep === 1\n      ? isAddressValid\n      : false;\n\n  function updateBasic(key, value) {\n    setForm(prev => ({\n      ...prev,\n      basic: { ...prev.basic, [key]: value }\n    }));\n  }\n\n  function updateAddress(key, value) {\n    setForm(prev => ({\n      ...prev,\n      address: { ...prev.address, [key]: value }\n    }));\n  }\n\n  function next() {\n    if (!canGoNext) {\n      setShowErrors(true);\n      return;\n    }\n    setShowErrors(false);\n    setCurrentStep(step => (step < 2 ? step + 1 : step));\n  }\n\n  function prev() {\n    setShowErrors(false);\n    setCurrentStep(step => (step > 0 ? step - 1 : step));\n  }\n\n  function submit() {\n    const isValid = isBasicValid && isAddressValid;\n    if (!isValid) {\n      setShowErrors(true);\n      if (!isBasicValid) setCurrentStep(0);\n      else if (!isAddressValid) setCurrentStep(1);\n      return;\n    }\n    console.log('Signup submitted', form);\n  }\n\n  // ...render steps and buttons using currentStep, showErrors, errors, next/prev/submit\n  return <main>{/* UI omitted for brevity */}</main>;\n}\n\nexport default App;\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Duplicating state per step instead of keeping a single form object.",
+                    "Allowing the user to go \"Next\" even when required fields are empty.",
+                    "Resetting or losing previously entered values when navigating back and forth.",
+                    "Writing complex if/else chains inside the JSX instead of using small derived helpers like `isFirstStep`, `isLastStep`, and `canGoNext`."
+                ],
+                "techniques": [
+                    "Using a nested object in React state to represent form data across steps.",
+                    "Deriving validation booleans from current state and using them for `disabled` and navigation logic.",
+                    "Using small helper functions to update nested state in an immutable way.",
+                    "Separating state/validation from rendering by computing flags before the JSX."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-multi-step-form.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-multi-step-signup"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-multi-step-form-solution.v1.json",
+        "companies": [
+            "meta",
+            "google",
+            "airbnb"
+        ]
     }
 ]
