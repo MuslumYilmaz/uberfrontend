@@ -894,5 +894,94 @@
             "shopify",
             "amazon"
         ]
+    },
+    {
+        "id": "react-debounced-search",
+        "title": "Debounced Search with Fake API",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "advanced",
+        "importance": 4,
+        "tags": [
+            "react",
+            "state",
+            "effects",
+            "async",
+            "debounce",
+            "api-calls"
+        ],
+        "description": {
+            "summary": "Build a debounced search box that calls a fake API 500ms after the user stops typing, and shows loading, results, empty, and error states.",
+            "specs": {
+                "requirements": [
+                    "Render a search input as the main UI.",
+                    "Hold the current query, loading flag, error message, and results list in React state.",
+                    "Trigger the search 500ms after the user stops typing (debounced).",
+                    "Call a provided fake API function that returns a filtered list of users.",
+                    "Show a loading message while the debounced request is in-flight.",
+                    "Show a friendly error message when the fake API rejects.",
+                    "Show result rows with user name and email on success.",
+                    "Show an empty state when there are no results for a non-empty query."
+                ],
+                "expectedBehavior": [
+                    "Typing in the input updates the query immediately.",
+                    "No API calls happen while the user is still typing quickly.",
+                    "500ms after the user stops typing, a search request is fired.",
+                    "While the debounced request is running, a loading state is visible.",
+                    "If the query is cleared, results are cleared and no request is fired.",
+                    "If the query is \"error\", the fake API rejects and an error message is displayed.",
+                    "On success, the list shows matching users by name or email.",
+                    "When there are no matches, an explicit 'no results' message is shown."
+                ],
+                "implementationNotes": [
+                    "Use React state (useState) to store query, results, loading, and error.",
+                    "Use useEffect with a 500ms setTimeout for the debounced behavior.",
+                    "Clean up the timeout and in-flight request in the effect cleanup to avoid race conditions.",
+                    "Guard against stale responses by using a flag in the effect cleanup or by tracking a request id."
+                ],
+                "techFocus": [
+                    "React useState",
+                    "React useEffect",
+                    "Effect cleanup and race conditions",
+                    "Debounced async calls",
+                    "Error and loading state management"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "Use a controlled input for the query and keep `results`, `isLoading`, and `error` in state. In a `useEffect` that depends on `query`, start a 500ms timeout. Inside the timeout callback, call `fakeApiSearch(query)` and update state on success or failure. Clear results and flags immediately when the query becomes empty.\n\nTo avoid race conditions, clear the timeout and mark the effect as stale in the cleanup function so older requests can't overwrite newer state.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown.",
+            "approaches": [
+                {
+                    "title": "Single component with useEffect debounce",
+                    "prose": "Keep all state and logic in the `App` component. Use `useState` for `query`, `results`, `isLoading`, and `error`. In a `useEffect` that depends on `query`, handle three cases:\n\n1. If `query.trim()` is empty, clear results and reset flags, then return early.\n2. Otherwise, set `isLoading` to `true`, clear any previous error, and start a `setTimeout` with 500ms delay.\n3. In the timeout callback, call `fakeApiSearch(query)` which returns a Promise. On success, update `results` and set `isLoading` to `false`. On failure, set `error`, clear `results`, and set `isLoading` to `false`.\n\nUse a cleanup function to clear the pending timeout and mark the effect as stale so that earlier requests cannot update state after a later keystroke.",
+                    "codeJs": "import React from 'react';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nexport default function App() {\n  const [query, setQuery] = React.useState('');\n  const [results, setResults] = React.useState([]);\n  const [isLoading, setIsLoading] = React.useState(false);\n  const [error, setError] = React.useState(null);\n\n  React.useEffect(() => {\n    let isCurrent = true;\n\n    const trimmed = query.trim();\n    if (!trimmed) {\n      setResults([]);\n      setIsLoading(false);\n      setError(null);\n      return;\n    }\n\n    setIsLoading(true);\n    setError(null);\n\n    const timeoutId = window.setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          if (!isCurrent) return;\n          setResults(data);\n          setIsLoading(false);\n        })\n        .catch((err) => {\n          if (!isCurrent) return;\n          setResults([]);\n          setIsLoading(false);\n          setError(err instanceof Error ? err.message : 'Something went wrong.');\n        });\n    }, 500);\n\n    return () => {\n      isCurrent = false;\n      window.clearTimeout(timeoutId);\n    };\n  }, [query]);\n\n  const handleChange = (event) => {\n    setQuery(event.target.value);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Debounced Search</h1>\n          <p className=\"subtitle\">\n            Type to search a fake user directory. Search runs 500ms after you stop typing.\n          </p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"search-input\">Search</label>\n          <input\n            id=\"search-input\"\n            className=\"input\"\n            type=\"text\"\n            value={query}\n            onChange={handleChange}\n            placeholder=\"Start typing a name or email...\"\n            autoComplete=\"off\"\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {isLoading && <span className=\"status status--loading\">Searching…</span>}\n          {!isLoading && !error && query && (\n            <span className=\"status\">Showing {results.length} result(s) for \"{query}\"</span>\n          )}\n          {!isLoading && !error && !query && (\n            <span className=\"status status--muted\">Start typing to search.</span>\n          )}\n          {error && <span className=\"status status--error\">{error}</span>}\n        </div>\n\n        {results.length > 0 && (\n          <ul className=\"results\">\n            {results.map((r) => (\n              <li key={r.id} className=\"result-row\">\n                <div className=\"result-name\">{r.name}</div>\n                <div className=\"result-email\">{r.email}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n\n        {!results.length && !isLoading && query && !error && (\n          <p className=\"empty\">No results found for \"{query}\".</p>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Forgetting to clean up the timeout or to guard against stale responses, which can cause earlier queries to override newer results.",
+                    "Triggering the search on every keystroke without a debounce, which spams the fake API.",
+                    "Not handling the empty-query case, leading to confusing loading states and unnecessary calls.",
+                    "Failing to reset error state when the user types a new query."
+                ],
+                "techniques": [
+                    "Using useEffect with a timeout and cleanup for debouncing.",
+                    "Managing async state (loading, error, results) in React.",
+                    "Guarding against race conditions in effects with a boolean flag.",
+                    "Deriving UI states (status text, empty messages) from a small set of state variables."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-debounced-search.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-debounced-search"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
+        "companies": [
+            "meta",
+            "google",
+            "airbnb"
+        ]
     }
 ]

@@ -908,5 +908,97 @@
       "stripe"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json"
+  },
+  {
+    "id": "angular-debounced-search",
+    "title": "Debounced Search with Fake API",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "tags": [
+      "angular",
+      "rxjs",
+      "http",
+      "debounce",
+      "switchmap",
+      "error-handling",
+      "async",
+      "forms"
+    ],
+    "description": {
+      "summary": "Build a debounced search box in Angular that calls a fake API 500ms after the user stops typing. Show loading and error states while results are being fetched.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a search input where the user can type a query.",
+          "Do NOT call the fake API on every keystroke; debounce input so the search runs 500ms after the user stops typing.",
+          "Perform a fake async search call (e.g. in-memory array) that returns results based on the query text.",
+          "Show a loading state while the debounced search request is in flight.",
+          "Show an error state when the fake API fails.",
+          "Show a list of matching results when the request succeeds.",
+          "When the query is cleared, cancel the pending search and clear the results."
+        ],
+        "expectedBehavior": [
+          "Typing quickly in the input does not trigger multiple API calls; only the final value after the user pauses for 500ms is searched.",
+          "While a search is running, a small loading label (e.g. \"Searching…\") is visible.",
+          "If the fake API throws an error, an error message is displayed and loading is cleared.",
+          "On success, results are rendered as a list. Updating the query triggers a new debounced search.",
+          "Clearing the query clears both the loading state and the results list.",
+          "Subscriptions are cleaned up when the component is destroyed (no memory leaks)."
+        ],
+        "implementationNotes": [
+          "Use RxJS to handle debouncing and cancellation.",
+          "A common pattern is a `Subject<string>` for search terms, piped through `debounceTime(500)` and `distinctUntilChanged()`.",
+          "Use `switchMap` so that if the user types again while a previous request is in flight, the previous request is cancelled.",
+          "Use `tap` to toggle `isLoading` and reset error state before each search.",
+          "Use `catchError` to handle errors from the fake API and surface them as UI state.",
+          "You can simulate a fake API with an in-memory array and `of(...).pipe(delay(...))`. You may also deliberately throw for specific queries (e.g. \"error\") to test the error state."
+        ],
+        "techFocus": [
+          "Angular standalone component setup",
+          "RxJS streams for UI events",
+          "debounceTime + distinctUntilChanged",
+          "switchMap for cancellable async work",
+          "Async loading & error state management",
+          "Subscription cleanup with `takeUntil` or `OnDestroy`"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Use a standalone Angular component with a `Subject<string>` for search terms. Pipe it through `debounceTime(500)` and `distinctUntilChanged()` to avoid spamming the fake API, then `switchMap` into a fake search function that returns an observable.\n\nToggle `isLoading` and `error` inside `tap` and `catchError`, and write the results plus loading state into simple component fields for the template. Use `takeUntil` in the pipe and a `destroy$` subject in `ngOnDestroy` to clean up subscriptions.\n\n**Key ideas**\n- Represent user input as a stream (`Subject<string>`).\n- Use `debounceTime` + `distinctUntilChanged` + `switchMap` to control when and how the fake API runs.\n- Keep `results`, `isLoading`, and `error` as simple component state derived from the RxJS pipeline.",
+      "approaches": [
+        {
+          "title": "Subject-based stream with debounce + switchMap",
+          "prose": "Create a `searchTerm$ = new Subject<string>()` and emit the raw input value from an `onQueryChange` handler. In `setupSearchStream`, pipe that subject through `debounceTime(500)` and `distinctUntilChanged()` so rapid typing collapses into a single value. Use `tap` before `switchMap` to set `isLoading` and clear `error`, and again after empty inputs to clear results without hitting the API.\n\nInside `switchMap`, call a `fakeApiSearch(term)` that returns an observable created from an in-memory dataset with `of(filtered).pipe(delay(...))`. Use `catchError` to set `error` and recover with an empty array. Finally, subscribe to the pipeline and write the results into `this.results`, clearing `isLoading` when the observable completes."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Calling the fake API directly from the input handler without debounce, which causes unnecessary requests.",
+          "Using `mergeMap` instead of `switchMap`, so old requests can overwrite newer results.",
+          "Forgetting to clear `isLoading` on error, leaving the UI stuck in a loading state.",
+          "Not handling the empty-query case (should clear results and avoid calling the API).",
+          "Leaking subscriptions by never unsubscribing when the component is destroyed."
+        ],
+        "techniques": [
+          "Subject + RxJS operators for debounced UI events.",
+          "Cancellable async work with `switchMap`.",
+          "Error handling with `catchError` and safe fallbacks.",
+          "Component-level subscription cleanup with `takeUntil` + `ngOnDestroy`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-debounced-search.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v1:ui:angular:angular-debounced-search"
+    },
+    "companies": [
+      "meta",
+      "google",
+      "uber"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json"
   }
 ]

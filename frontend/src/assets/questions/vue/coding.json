@@ -875,5 +875,89 @@
             "storageKey": "v1:ui:vue:vue-shopping-cart"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json"
+    },
+    {
+        "id": "vue-debounced-search",
+        "title": "Debounced Search with Fake API",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "advanced",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "composition-api",
+            "watch",
+            "async",
+            "debounce",
+            "api-calls"
+        ],
+        "description": {
+            "summary": "Build a debounced search box in Vue 3 that calls a fake API 500ms after the user stops typing and shows loading, results, empty, and error states.",
+            "specs": {
+                "requirements": [
+                    "Render a search input as the main UI.",
+                    "Hold the current query, loading flag, error message, and results list using Vue's Composition API.",
+                    "Trigger the search 500ms after the user stops typing (debounced).",
+                    "Call a provided fake API function that returns a filtered list of users.",
+                    "Show a loading message while the debounced request is in-flight.",
+                    "Show a friendly error message when the fake API rejects.",
+                    "Show result rows with user name and email on success.",
+                    "Show an empty state when there are no results for a non-empty query."
+                ],
+                "expectedBehavior": [
+                    "Typing in the input updates the query immediately.",
+                    "No API calls happen while the user is still typing quickly.",
+                    "500ms after the user stops typing, a search request is fired.",
+                    "While the debounced request is running, a loading state is visible.",
+                    "If the query is cleared, results are cleared and no request is fired.",
+                    "If the query is \"error\", the fake API rejects and an error message is displayed.",
+                    "On success, the list shows matching users by name or email.",
+                    "When there are no matches, an explicit 'no results' message is shown."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API (`ref`) to store `query`, `results`, `isLoading`, and `error`.",
+                    "Use `watch(query, ...)` with `setTimeout` and the `onInvalidate` cleanup callback to implement debouncing and cancel stale requests.",
+                    "Guard the empty-query case by clearing results and skipping the API call.",
+                    "Handle both success and error paths to keep loading and error state in sync."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `watch`)",
+                    "Effect-style logic with `watch` and cleanup",
+                    "Debounced async calls",
+                    "Error and loading state management"
+                ]
+            }
+        },
+        "starterCodeHint": "Use `ref('')` for `query`, `ref([])` for `results`, and a `watch(query, ...)` that starts a 500ms `setTimeout` and clears it in `onInvalidate`. Inside the timeout, call `fakeApiSearch(trimmedQuery)` and update loading, error, and results accordingly.",
+        "solutionBlock": {
+            "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown.",
+            "approaches": [
+                {
+                    "title": "Single component with `watch` and debounced API call",
+                    "prose": "Use Composition API state (`ref`) inside `<script setup>`. Implement a `watch(query, ...)` that debounces the search.\n\n1. Declare `query`, `results`, `isLoading`, and `error` as refs.\n2. Inside `watch(query, (value, _old, onInvalidate) => { ... })`:\n   - Clear any previous timeout.\n   - If `value.trim()` is empty: reset results, `isLoading`, and `error`, then return.\n   - Otherwise, set `isLoading` and clear `error`, then start a 500ms timeout.\n   - In the timeout, call `fakeApiSearch(trimmed)` and update `results` / `error` / `isLoading`.\n3. Use `onInvalidate` to clear the timeout so that intermediate keystrokes don't leak timeouts and stale responses.\n\nThis mirrors how you might use `useEffect` + cleanup in React, but using Vue's `watch` API.",
+                    "codeJs": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching…</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { ref, watch } from 'vue';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref([]);\nconst isLoading = ref(false);\nconst error = ref(null);\n\nlet timeoutId;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId != null) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    timeoutId = setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      if (timeoutId != null) {\n        clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event) => {\n  query.value = event.target.value;\n};\n</script>\n\n<style scoped>\n/* same UI styles as React / Angular debounced search */\n</style>\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Forgetting to clear the timeout in `onInvalidate`, causing multiple stale requests.",
+                    "Calling the API even when the query is empty, which creates confusing loading states.",
+                    "Not resetting `error` when a new search starts, leaving old error messages visible.",
+                    "Letting older responses overwrite newer ones if you don't cancel the timeout or ignore stale results."
+                ],
+                "techniques": [
+                    "Using `watch` for effect-style logic in Vue 3.",
+                    "Combining `setTimeout` with `onInvalidate` for debouncing.",
+                    "Managing loading, error, and results state together for a consistent UX.",
+                    "Deriving UI states (status text, empty message) from a small, well-structured state shape."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-debounced-search.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v2:ui:vue:vue-debounced-search"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json"
     }
 ]
