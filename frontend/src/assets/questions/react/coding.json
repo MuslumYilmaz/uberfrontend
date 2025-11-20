@@ -805,5 +805,94 @@
             "google",
             "airbnb"
         ]
+    },
+    {
+        "id": "react-shopping-cart",
+        "title": "Shopping Cart Mini",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "advanced",
+        "importance": 4,
+        "tags": [
+            "react",
+            "state",
+            "arrays",
+            "derived-state",
+            "immutability",
+            "ecommerce"
+        ],
+        "description": {
+            "summary": "Build a small shopping cart UI in React. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price.",
+            "specs": {
+                "requirements": [
+                    "Render a list of products with name, price, and an \"Add to cart\" button for each.",
+                    "Maintain a `cartItems` collection where each item has `id`, `name`, `price`, and `quantity`.",
+                    "In the cart, show each item's name, unit price, quantity, and line total (`price * quantity`).",
+                    "Provide controls to increase and decrease quantity for each cart item.",
+                    "Allow removing an item from the cart entirely.",
+                    "Display derived values: total item count and total cart price.",
+                    "Visually stack the cart card *under* the products card (single-column layout)."
+                ],
+                "expectedBehavior": [
+                    "Clicking \"Add to cart\" for a product that is not yet in the cart adds it with quantity `1`.",
+                    "Clicking \"Add to cart\" again for the same product increases its quantity by `1`.",
+                    "Clicking the \"+\" button in the cart increases that item's quantity by `1`.",
+                    "Clicking the \"−\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart (or left out entirely).",
+                    "Clicking \"Remove\" immediately removes that item from the cart.",
+                    "Total item count and total price update correctly whenever the cart changes."
+                ],
+                "implementationNotes": [
+                    "Use React state (`useState`) to hold `cartItems` as an array.",
+                    "Treat `cartItems` as immutable: use `map`, `filter`, and array spreads (`[...]`) instead of mutating in place.",
+                    "Derive `totalQty` and `totalPrice` from `cartItems` using `Array.prototype.reduce`.",
+                    "Prefer functional `setState` updates (`setCartItems(prev => ...)`) when the next value depends on the previous one.",
+                    "Keep everything in a single `<App />` component for this exercise; no context or external state library is required.",
+                    "Match the given UI: products in a card on top, cart in a card below, consistent spacing and typography."
+                ],
+                "techFocus": [
+                    "React `useState` for array-based state",
+                    "Immutable updates (`map`, `filter`, spreads)",
+                    "Derived state (total quantity, total price)",
+                    "Controlled click handlers for add / increase / decrease / remove",
+                    "Simple list rendering with `key` props"
+                ]
+            }
+        },
+        "starterCodeHint": "Use a `cartItems` state array and treat it immutably. When adding or updating, always create a new array instead of mutating the existing one. Derive `totalQty` and `totalPrice` from `cartItems` using `reduce`.",
+        "solutionBlock": {
+            "overview": "The core of this exercise is managing nested, array-based state immutably and deriving totals from it. Keep `cartItems` as a single array in `App` state, where each item contains `id`, `name`, `price`, and `quantity`. When the user adds a product, either append a new cart item with `quantity: 1` or map over existing items and increase the quantity for the matching id. All updates should use immutable patterns: `map`, `filter`, and array spreads.\n\n`totalQty` and `totalPrice` are derived values, calculated with `reduce` so they always reflect the current cart. The UI is a single column: a \"Products\" card on top and a \"Cart\" card below, each using simple lists and buttons for cart actions.\n\n**Key ideas**\n- Store the cart as an array of items with quantities.\n- Use immutable updates instead of mutating arrays in place.\n- Derive totals from state instead of storing them separately.\n- Keep layout simple but polished: products card first, cart card below.",
+            "approaches": [
+                {
+                    "title": "Single component with immutable cart array",
+                    "prose": "Implement everything inside a single `App` component. Declare `const [cartItems, setCartItems] = useState<CartItem[]>([])`. To add a product, call `setCartItems(prev => { ... })`, find an existing item, and either append a new one or return a `map`ped array with an updated `quantity`. For `increaseQty` and `decreaseQty`, update the matching item by id. When decreasing below 1, filter the item out. Compute `totalQty` and `totalPrice` using `reduce` so they are always derived from the current cart.\n\nThis approach keeps state centralized, shows clear immutable patterns, and makes derived values straightforward. It's a good litmus test for React developers' comfort with array updates and derived state.",
+                    "codeJs": "// Sketch of the core logic (simplified)\nfunction App() {\n  const [cartItems, setCartItems] = React.useState([]);\n\n  const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);\n  const totalPrice = cartItems.reduce(\n    (sum, item) => sum + item.price * item.quantity,\n    0\n  );\n\n  function addToCart(product) {\n    setCartItems(prev => {\n      const existing = prev.find(i => i.id === product.id);\n      if (!existing) {\n        return [...prev, { ...product, quantity: 1 }];\n      }\n      return prev.map(i =>\n        i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i\n      );\n    });\n  }\n\n  function increaseQty(item) {\n    setCartItems(prev =>\n      prev.map(i =>\n        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i\n      )\n    );\n  }\n\n  function decreaseQty(item) {\n    setCartItems(prev => {\n      const current = prev.find(i => i.id === item.id);\n      if (!current) return prev;\n      if (current.quantity <= 1) {\n        return prev.filter(i => i.id !== item.id);\n      }\n      return prev.map(i =>\n        i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i\n      );\n    });\n  }\n\n  function removeItem(item) {\n    setCartItems(prev => prev.filter(i => i.id !== item.id));\n  }\n\n  // ...render products card on top, cart card below...\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Mutating `cartItems` directly (e.g. `cartItems.push(...)` or `item.quantity++`), which can lead to stale renders or hidden bugs.",
+                    "Storing `totalQty` and `totalPrice` separately and forgetting to keep them in sync with `cartItems`.",
+                    "Keying list items by array index instead of stable `id`, causing weird UI behavior when items are added or removed.",
+                    "Letting quantities drop to 0 but still keeping the row in the cart."
+                ],
+                "techniques": [
+                    "Immutable React state updates using `map`, `filter`, and spreads.",
+                    "Derived state with `reduce` instead of extra state variables.",
+                    "Single-responsibility handlers: `addToCart`, `increaseQty`, `decreaseQty`, `removeItem`.",
+                    "Aligning React JSX structure and CSS classes with an existing Angular/Vue design for consistent cross-framework UI."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-shopping-cart.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-shopping-cart"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-shopping-cart-solution.v1.json",
+        "companies": [
+            "meta",
+            "shopify",
+            "amazon"
+        ]
     }
 ]

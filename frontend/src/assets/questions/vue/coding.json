@@ -792,5 +792,88 @@
             "storageKey": "v1:ui:vue:vue-multi-step-form"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json"
+    },
+    {
+        "id": "vue-shopping-cart",
+        "title": "Shopping Cart Mini",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "advanced",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "arrays",
+            "derived-state",
+            "immutability",
+            "ecommerce"
+        ],
+        "description": {
+            "summary": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price.",
+            "specs": {
+                "requirements": [
+                    "Render a list of products with name, price, and an \"Add to cart\" button for each.",
+                    "Maintain a `cartItems` collection where each item has `id`, `name`, `price`, and `quantity`.",
+                    "In the cart, show each item's name, unit price, quantity, and line total (`price * quantity`).",
+                    "Provide controls to increase and decrease quantity for each cart item.",
+                    "Allow removing an item from the cart entirely.",
+                    "Display derived values: total item count and total cart price.",
+                    "Visually stack the cart card under the products card (single-column layout)."
+                ],
+                "expectedBehavior": [
+                    "Clicking \"Add to cart\" for a product that is not yet in the cart adds it with quantity `1`.",
+                    "Clicking \"Add to cart\" again for the same product increases its quantity by `1`.",
+                    "Clicking the \"+\" button in the cart increases that item's quantity by `1`.",
+                    "Clicking the \"−\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart.",
+                    "Clicking \"Remove\" immediately removes that item from the cart.",
+                    "Total item count and total price update correctly whenever the cart changes."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API with `ref` to hold `cartItems` as an array.",
+                    "Treat `cartItems` as immutable for updates: create new arrays with `map`, `filter`, and spreads instead of mutating in place.",
+                    "Derive `totalQty` and `totalPrice` from `cartItems` using `computed` + `Array.prototype.reduce`.",
+                    "Keep everything in a single `<App.vue>` component for this exercise; no Vuex or global store is required.",
+                    "Match the given UI: products card on top, cart card below, same styling as Angular/React versions."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Array-based state and immutable-style updates",
+                    "Derived state (total quantity, total price)",
+                    "List rendering with `v-for` and `:key`",
+                    "Click handlers for add / increase / decrease / remove"
+                ]
+            }
+        },
+        "starterCodeHint": "Store products in a constant array and `cartItems` in a `ref<CartItem[]>([])`. Use `computed` for `totalQty` and `totalPrice`, and update `cartItems.value` immutably with `map`, `filter`, and `[...prev, newItem]` when handling cart actions.",
+        "solutionBlock": {
+            "overview": "This exercise focuses on nested, array-based cart state and derived values in Vue 3. Keep `cartItems` in a single `ref` and update it immutably when adding, increasing, decreasing, or removing items. `totalQty` and `totalPrice` are derived via `computed` + `reduce`, so they always stay in sync with the cart.\n\nThe UI is a single column: a \"Products\" card on top and a \"Cart\" card below, with identical layout across Angular, React, and Vue.\n\n**Key ideas**\n- Use `ref` for the cart array and `computed` for totals.\n- Update cart items immutably with `map`/`filter`/spreads.\n- Derive totals instead of storing them separately.\n- Keep all logic inside a single `<App.vue>` using `<script setup>`.",
+            "approaches": [
+                {
+                    "title": "Single component with immutable cart array (Composition API)",
+                    "prose": "Define `PRODUCTS` as a constant array and keep `const cartItems = ref<CartItem[]>([])`. Use `const totalQty = computed(() => ...)` and `const totalPrice = computed(() => ...)` to derive totals from `cartItems.value`. For `addToCart`, `increaseQty`, `decreaseQty`, and `removeItem`, always create a new array rather than mutating the existing one. This keeps updates predictable and mirrors immutable patterns used in React while still playing nicely with Vue's reactivity."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Mutating `cartItems.value` in place (e.g. pushing or incrementing `item.quantity` directly) instead of replacing it with a new array.",
+                    "Computing `totalQty` and `totalPrice` in methods instead of `computed` properties, leading to duplicated logic.",
+                    "Using the loop index as `:key` instead of a stable `id`, which can cause odd re-render behavior.",
+                    "Letting items stay in the cart with `quantity` 0 instead of removing them."
+                ],
+                "techniques": [
+                    "Composition API with `<script setup>`.",
+                    "Immutable-style array updates with `map` and `filter` in Vue.",
+                    "Derived state with `computed` and `reduce`.",
+                    "Consistent UI parity across Angular, React, and Vue implementations."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-shopping-cart.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-shopping-cart"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json"
     }
 ]
