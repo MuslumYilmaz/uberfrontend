@@ -462,9 +462,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       // Give HTML/CSS more room for the editor by default
       // aside (description) width = horizontalRatio * 100%
       const initialAside =
-        this.isWebTech() ? 0.28 :               // HTML/CSS: ~28% aside, 72% editors
+        this.isWebTech() ? 0.35 :               // HTML/CSS: ~35% aside, 65% editors
           this.tech === 'javascript' ? 0.5 :     // JS: a bit wider spec area
-            0.30;                                   // Frameworks: compact aside
+            0.37;                                   // Frameworks: compact aside
       this.horizontalRatio.set(initialAside);
       this.lastAsideRatio = initialAside;       // keep for restore after collapse
 

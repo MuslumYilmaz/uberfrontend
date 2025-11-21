@@ -1,0 +1,60 @@
+{
+    "key": "I",
+    "title": "Interfaces & APIs",
+    "blocks": [
+        {
+            "type": "table",
+            "title": "Key Error Scenarios",
+            "columns": [
+                "Case",
+                "Status",
+                "Behavior"
+            ],
+            "rows": [
+                [
+                    "Unknown token",
+                    "404",
+                    "Basit bir 'Link not found' sayfası"
+                ],
+                [
+                    "Expired link",
+                    "410",
+                    "Link süresi doldu, redirect yapılmaz"
+                ],
+                [
+                    "Rate limited",
+                    "429",
+                    "Retry-After header ile birlikte"
+                ],
+                [
+                    "Malicious URL",
+                    "451",
+                    "Uyarı sayfası, redirect engellenir"
+                ]
+            ]
+        },
+        {
+            "type": "text",
+            "text": "Redirect should be a bare GET /:token that returns 302 by default (or 301 if permanent requested at creation). API is versioned under /api/v1."
+        },
+        {
+            "type": "code",
+            "language": "http",
+            "code": "POST /api/v1/shorten HTTP/1.1\nContent-Type: application/json\n\n{\n  \"url\": \"https://example.com/products/123?ref=campaign\",\n  \"customAlias\": \"sale-123\",\n  \"expiresInDays\": 30\n}\n"
+        },
+        {
+            "type": "code",
+            "language": "json",
+            "code": "{\n  \"shortUrl\": \"https://uf.to/sale-123\",\n  \"token\": \"sale-123\",\n  \"expiresAt\": \"2026-01-01T00:00:00Z\"\n}"
+        },
+        {
+            "type": "code",
+            "language": "http",
+            "code": "GET /sale-123 HTTP/1.1\n→ 302 Location: https://example.com/products/123?ref=campaign\nCache-Control: public, max-age=300\n"
+        },
+        {
+            "type": "text",
+            "text": "Rate limits: 60 req/min per IP for POST /shorten (burst=20). Custom alias conflicts return 409. Admin can DELETE /api/v1/links/:token to revoke."
+        }
+    ]
+}

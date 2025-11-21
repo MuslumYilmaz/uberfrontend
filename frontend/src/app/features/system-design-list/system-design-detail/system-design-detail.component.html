@@ -62,6 +62,50 @@
                                     </picture>
                                     <figcaption *ngIf="b.caption">{{ b.caption }}</figcaption>
                                 </figure>
+
+                                <!-- CHECKLIST -->
+                                <div *ngIf="b.type === 'checklist'" class="sd-checklist">
+                                    <div class="sd-checklist-title" *ngIf="b.title">
+                                        {{ b.title }}
+                                    </div>
+                                    <ul class="sd-checklist-list">
+                                        <li *ngFor="let item of b.items">
+                                            <span class="sd-checklist-bullet"></span>
+                                            <span class="sd-checklist-text">{{ item }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- CALLOUT -->
+                                <div *ngIf="b.type === 'callout'" class="sd-callout"
+                                    [class.sd-callout-info]="!b.variant || b.variant === 'info'"
+                                    [class.sd-callout-success]="b.variant === 'success'"
+                                    [class.sd-callout-warning]="b.variant === 'warning'"
+                                    [class.sd-callout-danger]="b.variant === 'danger'">
+                                    <div class="sd-callout-title" *ngIf="b.title">
+                                        {{ b.title }}
+                                    </div>
+                                    <div class="sd-callout-text">
+                                        {{ b.text }}
+                                    </div>
+                                </div>
+
+                                <!-- TABLE -->
+                                <div *ngIf="b.type === 'table'" class="sd-table">
+                                    <div class="sd-table-title" *ngIf="b.title">{{ b.title }}</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th *ngFor="let col of b.columns">{{ col }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngFor="let row of b.rows">
+                                                <td *ngFor="let cell of row">{{ cell }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </ng-container>
                         </ng-container>
 

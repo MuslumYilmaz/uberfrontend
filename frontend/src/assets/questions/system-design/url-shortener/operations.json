@@ -1,0 +1,24 @@
+{
+    "key": "O",
+    "title": "Operations & Trade-offs",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Cache strategy: cache positive and negative lookups with short TTL to protect DB from miss-storms. Evict on revoke.\nConsistency: write path checks collisions (unique token). In DynamoDB, use conditional put; in SQL, handle duplicate key retry.\nBackups: PITR on primary data; tokens are small—backups cheap.\nAnalytics: async fire-and-forget to Kafka; never block redirect path.\nAbuse: shadow-ban suspected domains; async malware scan; flag and quarantine.\nDisaster recovery: multi-region active-active for read path; writes geo-partitioned with async replication."
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Common Pitfalls",
+            "text": "- Analytics’i redirect path içinde senkron tutmak → latency’yi uçurur.\n- Cache miss fırtınasını düşünmemek ve DB’yi boğmak.\n- Token çakışmalarını düzgün ele almamak → veri bozulması.\n- Tek region DB ile global trafik almaya çalışmak."
+        },
+        {
+            "type": "image",
+            "src": "https://placehold.co/1000x420/111318/ffffff?text=Ops%2FTrade-offs+Overview",
+            "alt": "Operations and trade-offs overview diagram",
+            "caption": "Hot path stays lean; heavy work is async.",
+            "width": 1000,
+            "height": 420
+        }
+    ]
+}

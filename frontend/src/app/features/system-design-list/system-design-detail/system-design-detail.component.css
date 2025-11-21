@@ -63,6 +63,132 @@
 }
 .sd-code-fill{ display:block; width:100%; }
 
+.sd-checklist {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background: #10141b;
+}
+
+.sd-checklist-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f3f5f7;
+  margin-bottom: 8px;
+}
+
+.sd-checklist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.sd-checklist-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sd-checklist-bullet {
+  margin-top: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 2px solid #4ade80; 
+  flex-shrink: 0;
+}
+
+.sd-checklist-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e6eaee;
+  white-space: pre-wrap;
+}
+
+.sd-callout {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #10141b;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e6eaee;
+  position: relative;
+  padding-left: 14px;
+}
+
+.sd-callout::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 999px;
+  background: #4b5563; /* default */
+}
+
+.sd-callout-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.sd-callout-text {
+  white-space: pre-wrap;
+}
+
+/* Variants */
+.sd-callout-info::before    { background:#38bdf8; }
+.sd-callout-success::before { background:#22c55e; }
+.sd-callout-warning::before { background:#fbbf24; }
+.sd-callout-danger::before  { background:#f97373; }
+
+.sd-table {
+  margin: 14px 0;
+  padding: 10px 12px;
+  background: #10141b;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+}
+
+.sd-table-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e6eaee;
+  margin-bottom: 8px;
+}
+
+.sd-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sd-table th {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #cfd6dd;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  background: #151a22;
+}
+
+.sd-table td {
+  padding: 6px 8px;
+  font-size: 13px;
+  color: #e6eaee;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  white-space: pre-wrap;
+}
+
+.sd-table tr:last-child td {
+  border-bottom: none;
+}
+
 /* Skeleton shown ONLY while Monaco is not mounted */
 .code-sentinel{
   width: 100%;

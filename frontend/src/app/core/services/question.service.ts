@@ -128,23 +128,24 @@ export class QuestionService {
     );
   }
 
-  /** System design list (simple cache). */
+  /** System design list (now using index.json). */
   loadSystemDesign(): Observable<any[]> {
     const key = `${this.cachePrefix}system-design`;
     const cachedRaw = this.safeGet(key);
+
     if (cachedRaw) {
       const parsed = this.safeParse(cachedRaw);
       if (Array.isArray(parsed)) return of(parsed as any[]);
     }
 
-    // Burada da offline LS-only davranışı istemiyorsan
-    // cdnEnabled check'i kaldırıp sadece CDN seçimini yapalım.
     const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
     const useCdn = this.cdnEnabled;
+
     const cdnUrl = useCdn && cdnBase
-      ? `${cdnBase}/questions/system-design/system-design.json`
+      ? `${cdnBase}/questions/system-design/index.json`
       : null;
-    const assetsUrl = 'assets/questions/system-design/system-design.json';
+
+    const assetsUrl = `assets/questions/system-design/index.json`;
 
     const source$ = cdnUrl
       ? this.http.get<any[]>(cdnUrl).pipe(
@@ -155,6 +156,79 @@ export class QuestionService {
     return source$.pipe(
       catchError(() => of([] as any[])),
       tap((qs) => this.safeSet(key, JSON.stringify(qs)))
+    );
+  }
+
+  /** Load a single system-design question (meta + section blocks). */
+  loadSystemDesignQuestion(id: string): Observable<any | null> {
+    const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
+    const useCdn = this.cdnEnabled;
+
+    const metaCdnUrl = useCdn && cdnBase
+      ? `${cdnBase}/questions/system-design/${id}/meta.json`
+      : null;
+
+    const metaAssetsUrl = `assets/questions/system-design/${id}/meta.json`;
+
+    const meta$ = metaCdnUrl
+      ? this.http.get<any>(metaCdnUrl).pipe(
+        catchError(() => this.http.get<any>(metaAssetsUrl))
+      )
+      : this.http.get<any>(metaAssetsUrl);
+
+    return meta$.pipe(
+      switchMap((meta) => {
+        // Eski radio-based formatı da idare edelim (ileride backward compat için iyi)
+        const sections = Array.isArray(meta.sections) ? meta.sections : [];
+        if (!sections.length) {
+          // meta zaten radio içeriyorsa dokunma
+          if (Array.isArray(meta.radio)) {
+            return of(meta);
+          }
+          return of(meta);
+        }
+
+        const baseCdnFolder = metaCdnUrl
+          ? metaCdnUrl.replace(/\/meta\.json$/, '')
+          : null;
+        const baseAssetsFolder = metaAssetsUrl.replace(/\/meta\.json$/, '');
+
+        const sectionRequests = sections.map((s: any) => {
+          const file = s.file;
+          const secCdnUrl = baseCdnFolder && useCdn
+            ? `${baseCdnFolder}/${file}`
+            : null;
+          const secAssetsUrl = `${baseAssetsFolder}/${file}`;
+
+          const src$ = secCdnUrl
+            ? this.http.get<any>(secCdnUrl).pipe(
+              catchError(() => this.http.get<any>(secAssetsUrl))
+            )
+            : this.http.get<any>(secAssetsUrl);
+
+          return src$.pipe(
+            catchError(() => of(null)),
+            map((sec) => ({
+              key: s.key,
+              title: s.title,
+              // section json -> { key, title, blocks: Block[] } bekliyoruz
+              blocks: (sec && (sec as any).blocks) || []
+            }))
+          );
+        });
+
+        if (!sectionRequests.length) {
+          return of(meta);
+        }
+
+        return forkJoin(sectionRequests).pipe(
+          map((radioSections) => ({
+            ...meta,
+            radio: radioSections
+          }))
+        );
+      }),
+      catchError(() => of(null))
     );
   }
 

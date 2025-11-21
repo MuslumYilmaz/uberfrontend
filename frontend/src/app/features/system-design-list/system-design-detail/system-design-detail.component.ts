@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ChipModule } from 'primeng/chip';
-import { Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -23,12 +22,46 @@ type Block =
     srcWebp?: string;
     srcAvif?: string;
     priority?: boolean;
+  }
+  | {
+    type: 'checklist';
+    title?: string;
+    items: string[];
+  }
+  | {
+    type: 'callout';
+    title?: string;
+    text: string;
+    variant?: 'info' | 'success' | 'warning' | 'danger';
+  }
+  | {
+    type: 'table';
+    title?: string;
+    columns: string[];
+    rows: string[][];
   };
 
-type RadioSection = { key: string; title: string; content?: string; blocks?: Block[]; };
-type SDQuestion = Question & {
+type RadioSection = {
+  key: string;
+  title: string;
+  content?: string;
+  blocks?: Block[];
+};
+
+type SDQuestion = {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  type?: string;
+
   radio?: RadioSection[];
-  reflect?: string; assumptions?: string; diagram?: string; interface?: string; operations?: string;
+
+  reflect?: string;
+  assumptions?: string;
+  diagram?: string;
+  interface?: string;
+  operations?: string;
 };
 
 @Component({
@@ -179,32 +212,60 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
    */
   private setCurrentById(id: string, allowPending: boolean) {
     if (!this.all.length) {
-      // list not ready yet; ignore unless we allow pending (route change before data)
+      // Liste henüz gelmediyse ve beklemeye izin yoksa çık
       if (!allowPending) return;
     }
+
     const pos = this.all.findIndex(x => x.id === id);
 
     if (pos >= 0) {
       this.idx = pos;
-      const item = this.all[pos];
-      this.q.set(item);
-      // remember “continue” target
-      try {
-        localStorage.setItem('uf:lastVisited', JSON.stringify({
-          to: ['/system-design', item.id],
-          label: item.title ?? 'System design'
-        }));
-      } catch { }
+      const meta = this.all[pos]; // index.json’dan gelen meta (id, title, description, tags...)
 
-      // reset lazy-mounted editors when switching questions
+      // Her soru değişiminde lazy code mount'ları ve activeKey'i resetle
       this.mountedCodes.set(new Set());
-      // default active: first section
-      this.activeKey.set(this.sections()[0]?.key ?? null);
-      setTimeout(() => this.updateActiveFromPositions(), 0);
+      this.activeKey.set(null);
+
+      // Detay json'ı çek (meta + radio blokları)
+      this.qs.loadSystemDesignQuestion(id).subscribe(detail => {
+        if (!detail) {
+          this.navTo404();
+          return;
+        }
+
+        const merged: SDQuestion = {
+          // Önce index meta:
+          id: meta.id,
+          title: meta.title,
+          description: meta.description,
+          tags: meta.tags ?? [],
+          type: meta.type,
+
+          // Sonra detail meta (meta.json içindeki ekstra alanlar / radio, sections, vs.):
+          ...(detail as Partial<SDQuestion>)
+        };
+
+        this.q.set(merged);
+
+        // “continue where you left off” için
+        try {
+          localStorage.setItem('uf:lastVisited', JSON.stringify({
+            to: ['/system-design', merged.id],
+            label: merged.title ?? 'System design'
+          }));
+        } catch { }
+
+        // default aktif section: ilk section
+        const secs = this.sections();
+        this.activeKey.set(secs[0]?.key ?? null);
+
+        setTimeout(() => this.updateActiveFromPositions(), 0);
+      });
+
       return;
     }
 
-    // If we have data and still couldn't find it → 404
+    // Bütün liste geldiyse ve id hâlâ yoksa 404'e
     if (this.all.length) this.navTo404();
   }
 

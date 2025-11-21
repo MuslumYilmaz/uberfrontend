@@ -1,0 +1,41 @@
+{
+    "id": "url-shortener",
+    "title": "URL Shortener (TinyURL/Bitly)",
+    "description": "Design a URL shortener that converts long URLs into short tokens and redirects users to the original URL. Focus on high availability, low latency redirects, and simple analytics.\n\nFunctional requirements:\n- POST an original URL → get a short URL\n- Redirect short URL → 302/301 to original\n- Optional: custom alias, expiry, basic click analytics\n\nNon-functional:\n- p95 redirect latency < 50ms from edge\n- Availability 99.99%\n- Global traffic; reads » writes (≈ 100:1)\n\nData constraints:\n- ~200M active links, ~2B clicks/day at scale\n- Token length 6–8 (62-char alphabet)\n",
+    "tags": [
+        "api",
+        "cache",
+        "database",
+        "hashing",
+        "rate-limits",
+        "ttl",
+        "cdn"
+    ],
+    "sections": [
+        {
+            "key": "R",
+            "title": "Reflect & Requirements",
+            "file": "reflect.json"
+        },
+        {
+            "key": "A",
+            "title": "Assumptions & Constraints",
+            "file": "assumptions.json"
+        },
+        {
+            "key": "D",
+            "title": "Diagram / Architecture",
+            "file": "diagram.json"
+        },
+        {
+            "key": "I",
+            "title": "Interfaces & APIs",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Operations & Trade-offs",
+            "file": "operations.json"
+        }
+    ]
+}

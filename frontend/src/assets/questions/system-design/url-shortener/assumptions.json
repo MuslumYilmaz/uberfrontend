@@ -1,0 +1,10 @@
+{
+    "key": "A",
+    "title": "Assumptions & Constraints!",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Traffic:\n- Writes: 20k QPS peak (campaign spikes), Reads: 2M QPS peak (global)\n- Token length 7 (62^7 ≈ 3.5e12 space)\n- Hot cache for redirects with TTL≈24h; origin DB as source of truth.\nSecurity/abuse:\n- Per-IP and per-account rate limits\n- Malware/blacklist checks async (quarantine on signal)\n- No PII stored with links by default"
+        }
+    ]
+}
