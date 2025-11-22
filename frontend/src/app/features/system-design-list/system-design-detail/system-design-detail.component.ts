@@ -39,6 +39,36 @@ type Block =
     title?: string;
     columns: string[];
     rows: string[][];
+  }
+  // NEW: simple visual separator
+  | {
+    type: 'divider';
+  }
+  // NEW: multi-column layout (each column contains its own blocks)
+  | {
+    type: 'columns';
+    columns: {
+      width?: '1/2' | '1/3' | '2/3';
+      blocks: Block[];
+    }[];
+  }
+  // NEW: small metric cards (latency, availability, etc.)
+  | {
+    type: 'stats';
+    items: {
+      label: string;
+      value: string;
+      helperText?: string;
+    }[];
+  }
+  // NEW: step flow (Create → Share → Redirect)
+  | {
+    type: 'steps';
+    title?: string;
+    steps: {
+      title: string;
+      text?: string;
+    }[];
   };
 
 type RadioSection = {
@@ -112,8 +142,9 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private io?: IntersectionObserver;
   private mountedCodes = signal<Set<string>>(new Set());
   isCodeMounted = (id: string) => this.mountedCodes().has(id);
-  codeKey(sectionKey: string, idx: number) { return `${sectionKey}#${idx}`; }
-
+  codeKey(sectionKey: string, idx: string | number) {
+    return `${sectionKey}#${idx}`;
+  }
   /** Center column for potential responsive image sizing */
   @ViewChild('centerEl', { read: ElementRef }) centerEl!: ElementRef<HTMLElement>;
 

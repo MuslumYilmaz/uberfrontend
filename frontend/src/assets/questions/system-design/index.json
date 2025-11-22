@@ -1,16 +1,15 @@
 [
     {
-        "id": "url-shortener",
-        "title": "URL Shortener (TinyURL/Bitly)",
-        "description": "Design a URL shortener that converts long URLs into short tokens and redirects users to the original URL. Focus on high availability, low latency redirects, and simple analytics.\n\nFunctional requirements:\n- POST an original URL → get a short URL\n- Redirect short URL → 302/301 to original\n- Optional: custom alias, expiry, basic click analytics\n\nNon-functional:\n- p95 redirect latency < 50ms from edge\n- Availability 99.99%\n- Global traffic; reads » writes (≈ 100:1)\n\nData constraints:\n- ~200M active links, ~2B clicks/day at scale\n- Token length 6–8 (62-char alphabet)\n",
+        "id": "infinite-scroll-list",
+        "title": "Infinite Scroll List (Frontend Only)",
+        "description": "Design the frontend for an infinite scroll list that loads more items as the user scrolls down. Assume a simple paginated API exists. Focus on IntersectionObserver usage, skeleton loading, virtualization, and robust error / retry states.\n\nThe goal is to reason about scroll performance, memory usage, and when to introduce list virtualization.",
         "tags": [
-            "api",
-            "cache",
-            "database",
-            "hashing",
-            "rate-limits",
-            "ttl",
-            "cdn"
+            "frontend-only",
+            "infinite-scroll",
+            "intersection-observer",
+            "virtualization",
+            "performance",
+            "ux"
         ],
         "type": "system-design"
     }

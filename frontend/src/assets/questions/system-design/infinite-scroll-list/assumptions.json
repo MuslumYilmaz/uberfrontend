@@ -1,0 +1,150 @@
+{
+    "key": "A",
+    "title": "Assumptions & Constraints (Frontend)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here we define assumptions only from the frontend point of view. We assume there is a stable backend API for creating short URLs and fetching link data. Our job is to design a fast, simple, accessible web UI on top of that API."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Product / UX assumptions",
+                            "items": [
+                                "Users can create short links either as guests or logged-in users.",
+                                "Core screens: Create Link (form), My Links list, Link Details / basic analytics.",
+                                "We only support a simple custom alias field and optional expiry date selector.",
+                                "Admin-only features (hard delete, force-disable) can be separate screens or hidden behind feature flags.",
+                                "We do not build a full BI dashboard — only lightweight charts/tables for basic stats."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Platform & device assumptions",
+                            "items": [
+                                "Primary target: modern evergreen browsers (Chrome, Edge, Firefox, Safari).",
+                                "We do not support IE or very old mobile browsers.",
+                                "UI must be responsive: desktop-first design that also works well on phone-sized viewports.",
+                                "No native mobile app; this is a single-page web app (SPA) or MPA with a shared design system.",
+                                "Accessibility: keyboard navigation, proper labels, focus states, and readable contrast."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Initial JS budget",
+                    "value": "≤ 150 KB",
+                    "helperText": "After gzip/brotli on first load"
+                },
+                {
+                    "label": "Time to usable UI",
+                    "value": "< 2 s",
+                    "helperText": "On a decent network (e.g. 4G / home Wi-Fi)"
+                },
+                {
+                    "label": "API round-trip budget",
+                    "value": "< 300 ms",
+                    "helperText": "For create + basic list fetch in normal conditions"
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "API / data shape assumptions (from FE view)",
+                            "items": [
+                                "Backend exposes simple REST or JSON APIs (e.g. POST /links, GET /links, GET /links/:id).",
+                                "Each link has: id/token, originalUrl, shortUrl, createdAt, expiresAt, isActive, clickCount.",
+                                "Analytics endpoints are paginated; frontend will not receive millions of rows at once.",
+                                "Rate limits are enforced on the server, but frontend must handle 429 gracefully (e.g. friendly message and retry hint).",
+                                "Auth (if any) is cookie or token-based; frontend just attaches the token and handles 401/403 states."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "State management & caching constraints",
+                            "items": [
+                                "Frontend keeps a local cache of recently created links so the user sees instant feedback after creation (optimistic update).",
+                                "Large tables (My Links) are fetched page-by-page or with infinite scroll, not all at once.",
+                                "We rely on client-side caching library (e.g. React Query / SWR / NgRx Query) or a simple custom cache; no complex offline mode.",
+                                "Hard refresh should always be safe: all critical data is refetched from the API.",
+                                "We avoid storing sensitive data (tokens, access keys) in localStorage except for non-sensitive session info."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Error, loading & empty-state assumptions",
+                            "items": [
+                                "All API calls show clear loading states (spinner or skeleton) and never leave the user guessing.",
+                                "Form validation errors (invalid URL, alias already taken) are shown inline, near the field.",
+                                "Network errors show a generic, friendly message with a retry button.",
+                                "Empty states are explicit: \"You have no links yet\" instead of a blank page.",
+                                "Errors are logged to an error tracking tool (e.g. Sentry) from the frontend."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Security & UX guardrails (frontend only)",
+                            "items": [
+                                "We always treat user-entered URLs as plain text; we never render them as HTML to avoid XSS.",
+                                "All external links use rel=\"noopener noreferrer\" and open in a new tab only when it makes sense.",
+                                "We show a small warning badge for suspicious or HTTP-only (non-HTTPS) destinations if backend flags them.",
+                                "We never expose internal admin flags or internal IDs directly in the UI.",
+                                "We protect critical actions with confirmation (e.g. disabling a popular link)."
+                            ]
+                        },
+                        {
+                            "type": "callout",
+                            "variant": "danger",
+                            "title": "Common frontend pitfall",
+                            "text": "Pushing heavy analytics scripts or visualizations into the main \"Create\" page can slow down the core flow. Keep the link creation path light and defer heavy charts to secondary views."
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

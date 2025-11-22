@@ -16,26 +16,29 @@ import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
-import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
+import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
-type Kind = 'coding' | 'trivia' | 'debug' | 'all';
 
+// 🔻 debug’i Kind’ten çıkardık
+type Kind = 'coding' | 'trivia' | 'all';
+
+// 🔻 Row.__kind artık sadece coding | trivia
 type Row = Question & {
   tech?: Tech;
-  __kind: 'coding' | 'trivia' | 'debug';
+  __kind: 'coding' | 'trivia';
   companies?: string[];
   __sd?: boolean;
 };
 
-
-type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia' | 'debug'; id: string };
+// 🔻 PracticeItem.kind de aynı şekilde
+type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number };
 
 // ---------- Formats categories ----------
-type CategoryKey = 'ui' | 'js-fn' | 'algo' | 'system';
+type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
 type ViewMode = 'tech' | 'formats';
 
 type ImportanceTier = 'low' | 'medium' | 'high';
@@ -53,7 +56,6 @@ function tierFromImportance(n: number | undefined): ImportanceTier {
   if (v >= 2) return 'medium';    // 2–3 → Medium
   return 'low';                   // 0–1 → Low
 }
-
 
 const ALGO_TAGS = new Set([
   'recursion', 'two-pointers', 'binary-search', 'heap', 'graph', 'bfs', 'dfs',
@@ -76,23 +78,20 @@ const SYSTEM_TITLE_HINTS = [
 ];
 
 function inferCategory(q: any): CategoryKey {
+  if (q.__sd) return 'system';
+
   const tech = (q.technology || '').toLowerCase();
   const type = (q.type || '').toLowerCase();
 
-  if (tech === 'system' || tech === 'system-design' || type === 'system') return 'system';
-  if (['angular', 'react', 'vue', 'html', 'css'].includes(tech)) return 'ui';
+  // HTML & CSS sorularını ayrı kategoriye al
+  if (tech === 'html' || tech === 'css') return 'html-css';
+
+  if (['angular', 'react', 'vue'].includes(tech)) return 'ui';
   if (q.sdk) return 'ui';
 
   const tags: string[] = (q.tags || []).map((t: string) => (t || '').toLowerCase());
+
   if (tags.some(t => ALGO_TAGS.has(t))) return 'algo';
-  if (tags.some(t => SYSTEM_TAGS.has(t))) return 'system';
-
-  const title = String(q.title || '').toLowerCase();
-  const desc = typeof q.description === 'string'
-    ? q.description.toLowerCase()
-    : (q.description?.summary || q.description?.text || '').toLowerCase();
-
-  if (SYSTEM_TITLE_HINTS.some(h => title.includes(h) || desc.includes(h))) return 'system';
 
   return 'js-fn';
 }
@@ -145,12 +144,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'created-asc', label: 'Created: Oldest to Newest' },
   ];
 
-
   // ----- context from routing -----
   tech!: Tech; // used on per-tech pages
   source: ListSource = 'tech';
   kind: Kind = 'coding';
-
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -187,7 +184,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       // For the GLOBAL list, ignore route data and default to "all"
       if (this.source === 'global-coding') {
         const qpKind = this.route.snapshot.queryParamMap.get('kind') as Kind | null;
-        const allowed = new Set<Kind>(['all', 'coding', 'trivia', 'debug']);
+        const allowed = new Set<Kind>(['all', 'coding', 'trivia']); // 🔻 debug çıkarıldı
         this.selectedKind$.next(allowed.has(qpKind || '' as Kind) ? (qpKind as Kind) : 'all');
       }
     }),
@@ -221,7 +218,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                   );
                 }
 
-                // single kind (existing behavior)
+                // single kind
                 const base$ = this.qs.loadAllQuestions(k as any).pipe(
                   map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
                   startWith<Row[]>([])
@@ -229,7 +226,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
                 if (this.viewMode === 'formats') {
                   return combineLatest<[Row[], Row[]]>([
-                    base$,                          // ← Fix 2: use base$ (not base_)
+                    base$,
                     this.loadSystemDesignRows$()
                   ]).pipe(map(([a, sys]) => [...a, ...sys]));
                 }
@@ -237,6 +234,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
               })
             );
           }
+
           // --------- PER-TECH (/:tech/...) ----------
           if (this.source === 'tech') {
             return this.route.parent!.paramMap.pipe(
@@ -249,15 +247,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 this.tech = t as Tech;
 
                 if (this.kind === 'all') {
+                  // 🔻 debug listelemesi kaldırıldı
                   return forkJoin([
                     this.qs.loadQuestions(this.tech, 'coding')
                       .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'coding' })))),
                     this.qs.loadQuestions(this.tech, 'trivia')
-                      .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' })))),
-                    this.qs.loadQuestions(this.tech, 'debug')
-                      .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'debug' }))))
+                      .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' }))))
                   ]).pipe(
-                    map(([a, b, c]) => [...a, ...b, ...c]),
+                    map(([a, b]) => [...a, ...b]),
                     startWith<Row[]>([])
                   );
                 }
@@ -327,32 +324,31 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.selectedTech$,
     this.selectedCategory$,
     this.selectedTags$,
-    this.sort$,                          // ← include sort key
+    this.sort$,
   ]).pipe(
     map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey]) => {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
       const filtered = (questions ?? []).filter(q =>
-        // title
         (q.title?.toLowerCase()?.includes(t) ?? false) &&
 
-        // difficulty
         (diffs.length === 0 || diffs.includes(q.difficulty)) &&
 
-        // importance
         (tiers.length === 0 || tiers.includes(tierFromImportance(q.importance))) &&
 
-        // company
         (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
 
-        // tech (global tech view only)
         (this.source !== 'global-coding' || isFormats || !selectedTech || q.tech === selectedTech) &&
 
-        // category (formats only)
-        (this.source !== 'global-coding' || !isFormats || !selectedCategory || inferCategory(q) === selectedCategory) &&
+        (this.source !== 'global-coding' || !isFormats || !selectedCategory ||
+          (
+            selectedCategory === 'system'
+              ? (q as any).__sd === true
+              : inferCategory(q) === selectedCategory
+          )
+        ) &&
 
-        // tags
         (selTags.length === 0
           ? true
           : (this.tagMatchMode === 'all'
@@ -362,7 +358,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
         )
       );
 
-      // Apply chosen sort
       const cmp = this.makeComparator(sortKey as SortKey);
       return filtered.slice().sort(cmp);
     })
@@ -370,13 +365,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   // True when /coding?view=forms and the "System design" pill is selected
   isSystemCategoryActive$ = combineLatest([
-    this.viewMode$,              // 'tech' | 'formats'
-    this.selectedCategory$       // 'ui' | 'js-fn' | 'algo' | 'system' | null
+    this.viewMode$,
+    this.selectedCategory$
   ]).pipe(
     map(([vm, cat]) => vm === 'formats' && cat === 'system'),
     startWith(false)
   );
-
 
   difficultyOptions = [
     { label: 'Beginner', value: 'easy' as Difficulty },
@@ -396,16 +390,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
   categoryTabs: Array<{ key: CategoryKey; label: string }> = [
     { key: 'ui', label: 'User interface' },
     { key: 'js-fn', label: 'JavaScript functions' },
+    { key: 'html-css', label: 'HTML & CSS' },
     { key: 'algo', label: 'Algorithmic coding' },
     { key: 'system', label: 'System design' },
   ];
 
   filteredCount$ = this.filtered$.pipe(map(list => list.length), startWith(0));
 
+  // 🔻 kindTabs artık sadece coding + trivia
   kindTabs: Array<{ key: Exclude<Kind, 'all'>; label: string }> = [
     { key: 'coding', label: 'Coding' },
-    { key: 'trivia', label: 'Quiz' },
-    { key: 'debug', label: 'Debug' }
+    { key: 'trivia', label: 'Quiz' }
   ];
 
   // --- UI handlers for sorting ---
@@ -413,14 +408,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
   closeSort() { this.sortOpen = false; }
   setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
 
-
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService,
     private router: Router,
     private listState: CodingListStateService
   ) {
-    // Route data’dan source/kind’i hemen al ki ngOnInit’te kullanabilelim
     const d = this.route.snapshot.data as any;
     this.source = (d['source'] as ListSource) ?? this.source;
     this.kind = (d['kind'] as Kind) ?? this.kind;
@@ -441,7 +434,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
         map(qp => qp.get('kind') as Kind | null),
         tap(k => {
           if (this.source === 'global-coding') {
-            const allowed = new Set<Kind>(['all', 'coding', 'trivia', 'debug']);
+            const allowed = new Set<Kind>(['all', 'coding', 'trivia']); // 🔻 debug çıkarıldı
             this.selectedKind$.next(allowed.has(k || '' as Kind) ? (k as Kind) : 'all');
           }
         })
@@ -463,30 +456,24 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Sadece global liste (/coding) için filtre state’i restore ediyoruz
     if (this.source !== 'global-coding') return;
 
     const saved = this.listState.globalCodingState;
     if (!saved) return;
 
-    // Arama & slider
     this.searchTerm = saved.searchTerm;
     this.sliderValue = saved.sliderValue;
     this.search$.next(saved.searchTerm);
 
-    // Diff & importance
     this.diffs$.next([...saved.diffs]);
     this.impTiers$.next([...saved.impTiers]);
 
-    // Tech / kind / category
     this.selectedTech$.next(saved.selectedTech);
     this.selectedKind$.next(saved.selectedKind);
     this.selectedCategory$.next(saved.selectedCategory);
 
-    // Tags
     this.selectedTags$.next([...saved.selectedTags]);
 
-    // Sort & tag match mode
     this.sort$.next(saved.sort);
     this.tagMatchMode = saved.tagMatchMode;
   }
@@ -509,7 +496,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     const tech = (q as any).tech ?? this.tech ?? 'javascript';
     if (q.__kind === 'trivia') return ['/', tech, 'trivia', q.id];
-    if (q.__kind === 'debug') return ['/', tech, 'debug', q.id];
+    // 🔻 debug branch kaldırıldı
     return ['/', tech, 'coding', q.id];
   }
 
@@ -538,8 +525,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       const k = this.selectedKind$.value;
       const kindLabel =
         k === 'all' ? '' :
-          k === 'trivia' ? 'Quiz' :
-            k === 'debug' ? 'Debug' : 'Coding';
+          k === 'trivia' ? 'Quiz' : 'Coding';
 
       if (this.isFormatsMode()) {
         const cat = this.selectedCategory$.value;
@@ -547,19 +533,19 @@ export class CodingListComponent implements OnInit, OnDestroy {
           !cat ? '' :
             cat === 'ui' ? ' — User interface' :
               cat === 'js-fn' ? ' — JavaScript functions' :
-                cat === 'algo' ? ' — Algorithmic coding' :
-                  ' — System design';
+                cat === 'html-css' ? ' — HTML & CSS' :
+                  cat === 'algo' ? ' — Algorithmic coding' :
+                    ' — System design';
         return `All ${kindLabel || 'Questions'}${catLabel}`;
       }
       return `All ${kindLabel || 'Questions'}`;
     }
-    // (per-tech unchanged)
+
     const t = this.tech ?? 'javascript';
     const what =
       this.kind === 'coding' ? 'Coding Challenges'
         : this.kind === 'trivia' ? 'Trivia Questions'
-          : this.kind === 'debug' ? 'Debug Tasks'
-            : 'All Questions';
+          : 'All Questions';
     return `${this.capitalize(t)} ${what}`;
   }
 
@@ -601,12 +587,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const next = curr === key ? null : key;
     this.selectedCategory$.next(next);
 
-    // OPTIONAL: if System design is active, pin kind to coding so the kind
-    // pills (hidden) won’t load other lists in the background.
     if (next === 'system') this.selectedKind$.next('coding');
   }
 
-  // ---------- System-Design loader (used when view=forms) ----------
   private loadSystemDesignRows$() {
     const anyQs = this.qs as any;
     const fn =
@@ -618,6 +601,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       return of<Row[]>([]);
     }
     return (fn.call(anyQs) as any).pipe(
+      tap(res => console.log(res)),
       map((items: any[]) =>
         (items || []).map<Row>(it => ({
           id: it.id,
@@ -638,14 +622,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
       ),
       startWith<Row[]>([])
     );
-
   }
 
   private isFormatsMode(): boolean {
     return this.source === 'global-coding' && this.viewMode === 'formats';
   }
 
-  /** True when we're on /coding?view=formats and System design tab is selected */
   isSystemCategoryActive(): boolean {
     return this.isFormatsMode() && this.selectedCategory$.value === 'system';
   }
@@ -664,10 +646,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
   onImpChange(tier: ImportanceTier, ev: Event) {
     const checked = (ev.target as HTMLInputElement | null)?.checked ?? false;
     const curr = new Set(this.impTiers$.value);
-    checked ? curr.add(tier) : curr.delete(tier);   // ← no re-adding if empty
+    checked ? curr.add(tier) : curr.delete(tier);
     this.impTiers$.next(Array.from(curr));
   }
-
 
   impLabel(q: Row): ImportanceTier {
     return tierFromImportance(q.importance);
@@ -691,21 +672,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
   }
 
-  // SORTING
-
-  // --- Utility: order + safe fields ---
   private difficultyRank(d: Difficulty | string | undefined): number {
     const map: Record<string, number> = { easy: 0, intermediate: 1, hard: 2 };
     return map[String(d || '').toLowerCase()] ?? 1;
   }
   private createdTs(q: any): number {
-    // tries a few common fields safely
     const raw = q.createdAt || q.created || q.date || q.addedAt || q.added;
     const t = raw ? new Date(raw).getTime() : NaN;
     return Number.isFinite(t) ? t : 0;
   }
 
-  // --- Comparator factory ---
   private makeComparator(key: SortKey) {
     const titleAsc = (a: any, b: any) => (a.title || '').localeCompare(b.title || '');
     const titleDesc = (a: any, b: any) => titleAsc(b, a);
@@ -728,7 +704,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
         return (a: any, b: any) => this.createdTs(b) - this.createdTs(a) || titleAsc(a, b);
       case 'default':
       default:
-        // Your current default: importance ↓ then title A–Z
         return (a: any, b: any) => {
           const ia = imp(a), ib = imp(b);
           if (ia !== ib) return ib - ia;
@@ -751,7 +726,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Yine sadece global liste için kaydediyoruz
     if (this.source !== 'global-coding') return;
 
     this.listState.globalCodingState = {

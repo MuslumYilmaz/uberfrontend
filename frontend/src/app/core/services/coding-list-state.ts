@@ -3,9 +3,9 @@ import { Difficulty } from '../models/question.model';
 import { Tech } from '../models/user.model';
 
 export type ListSource = 'tech' | 'company' | 'global-coding';
-export type Kind = 'coding' | 'trivia' | 'debug' | 'all';
+export type Kind = 'coding' | 'trivia' | 'all';
 
-export type CategoryKey = 'ui' | 'js-fn' | 'algo' | 'system';
+export type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
 export type ViewMode = 'tech' | 'formats';
 
 export type ImportanceTier = 'low' | 'medium' | 'high';

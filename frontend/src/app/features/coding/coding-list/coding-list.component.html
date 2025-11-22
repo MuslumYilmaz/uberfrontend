@@ -60,10 +60,6 @@
           <button type="button" class="kind-pill"
             [ngClass]="(selectedKind$ | async) === 'trivia' ? 'kind-pill--active' : 'kind-pill--idle'"
             (click)="selectKind('trivia')">Quiz</button>
-
-          <button type="button" class="kind-pill"
-            [ngClass]="(selectedKind$ | async) === 'debug' ? 'kind-pill--active' : 'kind-pill--idle'"
-            (click)="selectKind('debug')">Debug</button>
         </ng-container>
       </ng-container>
 

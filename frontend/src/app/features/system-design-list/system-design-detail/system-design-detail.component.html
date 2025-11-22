@@ -32,80 +32,9 @@
                     <div class="sd-blocks">
                         <ng-container *ngIf="s.blocks?.length; else legacyText">
                             <ng-container *ngFor="let b of s.blocks; let bi = index">
-                                <!-- TEXT -->
-                                <div *ngIf="b.type === 'text'" class="sd-text">{{ b.text }}</div>
-
-                                <!-- CODE (Monaco, lazy via IntersectionObserver) -->
-                                <div *ngIf="b.type === 'code'" class="sd-code"
-                                    [style.minHeight.px]="!isCodeMounted(codeKey(s.key, bi)) ? (b.height || 160) : (b.height || null)">
-                                    <!-- Show skeleton OR editor (never both) -->
-                                    <div *ngIf="!isCodeMounted(codeKey(s.key, bi)); else showCode" #codeSentinel
-                                        class="code-sentinel" [attr.data-code-id]="codeKey(s.key, bi)"></div>
-
-                                    <ng-template #showCode>
-                                        <app-monaco-editor class="sd-code-fill" [code]="b.code"
-                                            [language]="b.language || 'typescript'" [readOnly]="true"
-                                            [interactive]="false" [autoHeight]="!b.height" [options]="codeViewerOptions"
-                                            [style.height.px]="b.height || null"></app-monaco-editor>
-                                    </ng-template>
-                                </div>
-
-                                <!-- IMAGE -->
-                                <figure *ngIf="b.type === 'image'" class="sd-figure">
-                                    <picture>
-                                        <source *ngIf="b.srcAvif" [attr.srcset]="asset(b.srcAvif)" type="image/avif" />
-                                        <source *ngIf="b.srcWebp" [attr.srcset]="asset(b.srcWebp)" type="image/webp" />
-                                        <img [src]="asset(b.src)" [alt]="b.alt || ''" [attr.width]="b.width || null"
-                                            [attr.height]="b.height || null"
-                                            [attr.loading]="b.priority ? 'eager' : 'lazy'"
-                                            [attr.decoding]="b.priority ? 'sync' : 'async'" />
-                                    </picture>
-                                    <figcaption *ngIf="b.caption">{{ b.caption }}</figcaption>
-                                </figure>
-
-                                <!-- CHECKLIST -->
-                                <div *ngIf="b.type === 'checklist'" class="sd-checklist">
-                                    <div class="sd-checklist-title" *ngIf="b.title">
-                                        {{ b.title }}
-                                    </div>
-                                    <ul class="sd-checklist-list">
-                                        <li *ngFor="let item of b.items">
-                                            <span class="sd-checklist-bullet"></span>
-                                            <span class="sd-checklist-text">{{ item }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <!-- CALLOUT -->
-                                <div *ngIf="b.type === 'callout'" class="sd-callout"
-                                    [class.sd-callout-info]="!b.variant || b.variant === 'info'"
-                                    [class.sd-callout-success]="b.variant === 'success'"
-                                    [class.sd-callout-warning]="b.variant === 'warning'"
-                                    [class.sd-callout-danger]="b.variant === 'danger'">
-                                    <div class="sd-callout-title" *ngIf="b.title">
-                                        {{ b.title }}
-                                    </div>
-                                    <div class="sd-callout-text">
-                                        {{ b.text }}
-                                    </div>
-                                </div>
-
-                                <!-- TABLE -->
-                                <div *ngIf="b.type === 'table'" class="sd-table">
-                                    <div class="sd-table-title" *ngIf="b.title">{{ b.title }}</div>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th *ngFor="let col of b.columns">{{ col }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr *ngFor="let row of b.rows">
-                                                <td *ngFor="let cell of row">{{ cell }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <ng-container
+                                    *ngTemplateOutlet="renderBlock; context: { $implicit: b, sectionKey: s.key, index: bi }">
+                                </ng-container>
                             </ng-container>
                         </ng-container>
 
@@ -113,6 +42,125 @@
                             <div class="sd-text">{{ s.content }}</div>
                         </ng-template>
                     </div>
+
+                    <ng-template #renderBlock let-b let-sectionKey="sectionKey" let-idx="index">
+                        <!-- TEXT -->
+                        <div *ngIf="b.type === 'text'" class="sd-text">{{ b.text }}</div>
+
+                        <!-- DIVIDER -->
+                        <div *ngIf="b.type === 'divider'" class="sd-divider"></div>
+
+                        <!-- CODE (Monaco, lazy) -->
+                        <div *ngIf="b.type === 'code'" class="sd-code"
+                            [style.minHeight.px]="!isCodeMounted(codeKey(sectionKey, idx)) ? (b.height || 160) : (b.height || null)">
+                            <div *ngIf="!isCodeMounted(codeKey(sectionKey, idx)); else showCode" #codeSentinel
+                                class="code-sentinel" [attr.data-code-id]="codeKey(sectionKey, idx)">
+                            </div>
+
+                            <ng-template #showCode>
+                                <app-monaco-editor class="sd-code-fill" [code]="b.code"
+                                    [language]="b.language || 'typescript'" [readOnly]="true" [interactive]="false"
+                                    [autoHeight]="!b.height" [options]="codeViewerOptions"
+                                    [style.height.px]="b.height || null">
+                                </app-monaco-editor>
+                            </ng-template>
+                        </div>
+
+                        <!-- IMAGE -->
+                        <figure *ngIf="b.type === 'image'" class="sd-figure">
+                            <picture>
+                                <source *ngIf="b.srcAvif" [attr.srcset]="asset(b.srcAvif)" type="image/avif" />
+                                <source *ngIf="b.srcWebp" [attr.srcset]="asset(b.srcWebp)" type="image/webp" />
+                                <img [src]="asset(b.src)" [alt]="b.alt || ''" [attr.width]="b.width || null"
+                                    [attr.height]="b.height || null" [attr.loading]="b.priority ? 'eager' : 'lazy'"
+                                    [attr.decoding]="b.priority ? 'sync' : 'async'" />
+                            </picture>
+                            <figcaption *ngIf="b.caption">{{ b.caption }}</figcaption>
+                        </figure>
+
+                        <!-- CHECKLIST -->
+                        <div *ngIf="b.type === 'checklist'" class="sd-checklist">
+                            <div class="sd-checklist-title" *ngIf="b.title">
+                                {{ b.title }}
+                            </div>
+                            <ul class="sd-checklist-list">
+                                <li *ngFor="let item of b.items">
+                                    <span class="sd-checklist-bullet"></span>
+                                    <span class="sd-checklist-text">{{ item }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- CALLOUT -->
+                        <div *ngIf="b.type === 'callout'" class="sd-callout"
+                            [class.sd-callout-info]="!b.variant || b.variant === 'info'"
+                            [class.sd-callout-success]="b.variant === 'success'"
+                            [class.sd-callout-warning]="b.variant === 'warning'"
+                            [class.sd-callout-danger]="b.variant === 'danger'">
+                            <div class="sd-callout-title" *ngIf="b.title">
+                                {{ b.title }}
+                            </div>
+                            <div class="sd-callout-text">
+                                {{ b.text }}
+                            </div>
+                        </div>
+
+                        <!-- TABLE -->
+                        <div *ngIf="b.type === 'table'" class="sd-table">
+                            <div class="sd-table-title" *ngIf="b.title">{{ b.title }}</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th *ngFor="let col of b.columns">{{ col }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let row of b.rows">
+                                        <td *ngFor="let cell of row">{{ cell }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- COLUMNS -->
+                        <div *ngIf="b.type === 'columns'" class="sd-columns">
+                            <div class="sd-column" *ngFor="let col of b.columns; let ci = index"
+                                [class.w-1-3]="col.width === '1/3'" [class.w-2-3]="col.width === '2/3'">
+                                <ng-container *ngFor="let inner of col.blocks; let ii = index">
+                                    <ng-container
+                                        *ngTemplateOutlet="renderBlock; context: { $implicit: inner, sectionKey: sectionKey, index: idx + '-' + ci + '-' + ii }">
+                                    </ng-container>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- STATS -->
+                        <div *ngIf="b.type === 'stats'" class="sd-stats">
+                            <div class="sd-stat" *ngFor="let item of b.items">
+                                <div class="sd-stat-label">{{ item.label }}</div>
+                                <div class="sd-stat-value">{{ item.value }}</div>
+                                <div class="sd-stat-helper" *ngIf="item.helperText">{{ item.helperText }}</div>
+                            </div>
+                        </div>
+
+                        <!-- STEPS -->
+                        <div *ngIf="b.type === 'steps'" class="sd-steps">
+                            <div class="sd-steps-title" *ngIf="b.title">{{ b.title }}</div>
+                            <div class="sd-steps-row">
+                                <ng-container *ngFor="let step of b.steps; let si = index">
+                                    <div class="sd-step">
+                                        <div class="sd-step-circle">{{ si + 1 }}</div>
+                                        <div class="sd-step-body">
+                                            <div class="sd-step-title">{{ step.title }}</div>
+                                            <div class="sd-step-text" *ngIf="step.text">{{ step.text }}</div>
+                                        </div>
+                                        <div class="sd-step-arrow" *ngIf="si < b.steps.length - 1">→</div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </ng-template>
+
                 </section>
             </ng-container>
         </main>

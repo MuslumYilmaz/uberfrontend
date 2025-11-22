@@ -214,6 +214,152 @@
 }
 .sd-figure figcaption{ font-size:12px; margin-top:6px; }
 
+/* Divider */
+.sd-divider {
+  margin: 16px 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.16);
+}
+
+/* Columns */
+.sd-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 12px 0 16px;
+}
+
+.sd-column {
+  flex: 1 1 0;
+  min-width: 220px;
+}
+
+.sd-column.w-1-3 {
+  flex-basis: 33.3333%;
+}
+
+.sd-column.w-2-3 {
+  flex-basis: 66.6666%;
+}
+
+/* Stats */
+.sd-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 12px 0 18px;
+}
+
+.sd-stat {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #10141b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sd-stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.sd-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.sd-stat-helper {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+/* Steps */
+.sd-steps {
+  margin: 14px 0 18px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #0f1116;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sd-steps-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.sd-steps-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.sd-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-right: 16px;
+  position: relative;
+  flex: 1 1 0;            /* NEW: make all steps equal-width */
+}
+
+.sd-step-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.sd-step-body {
+  max-width: none;
+}
+
+.sd-step-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f9fafb;
+  margin-bottom: 2px;
+}
+
+.sd-step-text {
+  font-size: 12px;
+  color: #d1d5db;
+}
+
+.sd-step-arrow {
+  align-self: center;
+  font-size: 16px;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .sd-steps-row {
+    flex-direction: column;
+  }
+
+  .sd-step {
+    padding-right: 0;
+  }
+
+  .sd-step-arrow {
+    display: none;
+  }
+}
+
 /* ---------- RIGHT: FIXED TOC ---------- */
 .right{
   position: fixed;
