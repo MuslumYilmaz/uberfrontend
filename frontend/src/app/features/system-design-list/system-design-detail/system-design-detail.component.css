@@ -3,8 +3,8 @@
 /* layout variables */
 .sdl-root{
   --gap: 16px;
-  --left-w: 320px;
-  --right-w: 260px;
+  --left-w: 280px;
+  --right-w: 220px;
   --top-off: calc(var(--app-safe-top, 64px) + 12px);
   --foot-h: 56px;
 }
@@ -56,10 +56,9 @@
   position: relative;
   border-radius:10px;
   border:1px solid rgba(255,255,255,.10);
-  overflow:hidden;
-  margin:10px 0;
+  height: max-content;      /* 👈 sınır koyduk */
+  overflow: auto;         /* 👈 scroll buradan */ 
   background:#0c0f14;
-  min-height: 0; /* no enforced min-height after mount */
 }
 .sd-code-fill{ display:block; width:100%; }
 
@@ -297,6 +296,25 @@
   flex-wrap: wrap;
   gap: 10px;
   align-items: stretch;
+}
+
+/* 3'ten fazla item olduğunda (class.vertical eklendiğinde) dikey layout */
+.sd-steps-row.vertical {
+  flex-direction: column;
+}
+
+.sd-steps-row.vertical .sd-step {
+  flex: 1 1 auto;   /* artık eşit genişlik zorlamaya gerek yok */
+  margin-bottom: 14px; /* yeni: daha rahat nefes alıyor */
+  padding-right: 0; /* sağ padding'i kaldırmak isteyebilirsin */
+}
+
+.sd-steps-row.vertical .sd-step-arrow {
+  display: none;    /* istersen okları gizle; tercih meselesi */
+}
+
+.sd-steps-row.vertical .sd-step:last-child {
+  margin-bottom: 0;
 }
 
 .sd-step {

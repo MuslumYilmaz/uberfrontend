@@ -1,15 +1,24 @@
 [
     {
         "id": "infinite-scroll-list",
-        "title": "Infinite Scroll List (Frontend Only)",
-        "description": "Design the frontend for an infinite scroll list that loads more items as the user scrolls down. Assume a simple paginated API exists. Focus on IntersectionObserver usage, skeleton loading, virtualization, and robust error / retry states.\n\nThe goal is to reason about scroll performance, memory usage, and when to introduce list virtualization.",
+        "title": "Infinite Scroll List",
+        "description": "Design an infinite scroll list that progressively loads more items from a paginated API as the user scrolls down. Focus on achieving smooth scrolling, clear loading/error states, and keeping DOM size reasonable as the list grows.\n\nKey considerations include: when to load more data, how to detect scroll boundaries efficiently, how to show skeleton placeholders without causing layout jumps, and when it becomes necessary to introduce list virtualization.",
         "tags": [
-            "frontend-only",
             "infinite-scroll",
-            "intersection-observer",
             "virtualization",
             "performance",
             "ux"
+        ],
+        "type": "system-design"
+    },
+    {
+        "id": "notification-toast-system",
+        "title": "Notification Toast System",
+        "description": "Design a global toast/alert system that can be triggered from anywhere in the app (e.g. `toast.success()`, `toast.error()`). Focus on global state, rendering through a portal, stacking multiple toasts, auto-dismiss timers, and accessible behavior.\n\nKey considerations include: how to expose a simple global API, how to manage timers and cleanup safely, how to handle z-index and stacking order, and how to support responsive placements (top-right, bottom-left, mobile full-width) with good ARIA roles and focus handling.",
+        "tags": [
+            "toast",
+            "notifications",
+            "global-state"
         ],
         "type": "system-design"
     }

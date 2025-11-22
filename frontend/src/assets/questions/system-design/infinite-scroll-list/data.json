@@ -1,0 +1,162 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can describe the shape of the data your components work with. You should show that you understand: what an item looks like, how pagination is represented, and which UI states must be part of the model (loading, error, end-of-list, filters, etc.)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll keep the data model simple: one type for each list item, one for pagination/meta info, and one for the list’s UI state. The page can also have filters that affect which items we load.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You keep entities small and focused.\n- You treat loading/error/end-of-list as first-class data.\n- You don’t mix view-only details (like DOM nodes) into the data model.\n- You can explain where each piece of data lives and who owns it."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name the main types out loud. Keep them simple. Show that you’re modeling the data your components actually need, not designing a full backend schema."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "ListItem",
+                    "id, title, description, thumbnailUrl, createdAt",
+                    "\"Each row in the list is a `ListItem`: it has an `id` plus whatever fields the UI needs like title, description and maybe an image.\""
+                ],
+                [
+                    "PaginationMeta",
+                    "currentPage, pageSize, hasMore, totalCount?",
+                    "\"`PaginationMeta` tracks where we are: current page, page size, whether there are more items, maybe a total count if the API provides it.\""
+                ],
+                [
+                    "ListUiState",
+                    "items[], status, errorMessage, isInitialLoad, isLoadingMore",
+                    "\"`ListUiState` includes the array of items plus UI flags: `status` (idle/loading/success/error), optional `errorMessage`, and booleans like `isInitialLoad` vs `isLoadingMore`.\""
+                ],
+                [
+                    "Filters (optional)",
+                    "searchQuery, sortBy, selectedTag, etc.",
+                    "\"If the list is filterable, I’d keep a small `Filters` object with things like search query, sort option or selected tag and pass it into the fetch calls.\""
+                ],
+                [
+                    "Cursor (optional alternative)",
+                    "cursorToken, hasMore",
+                    "\"If the API is cursor-based, instead of `currentPage` I’d keep a `cursorToken` from the last response and a `hasMore` flag.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly name",
+                            "items": [
+                                "A clear type for each list item.",
+                                "A structure that tracks pagination (page or cursor).",
+                                "Flags for `isInitialLoad` and `isLoadingMore`.",
+                                "`hasMore` to know when to stop fetching.",
+                                "An error field for showing inline error messages."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid",
+                            "items": [
+                                "Designing a huge database schema instead of a UI-oriented model.",
+                                "Storing raw DOM elements in state.",
+                                "Hiding loading/error logic in local variables instead of the model.",
+                                "Relying only on implicit states (e.g. `items.length === 0` means loading).",
+                                "Using many separate booleans that are hard to reason about."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How data changes over time",
+            "steps": [
+                {
+                    "title": "1. Initial load",
+                    "text": "`ListUiState` starts with `items = []`, `status = 'loading'`, `isInitialLoad = true`."
+                },
+                {
+                    "title": "2. First response",
+                    "text": "Items are filled, `PaginationMeta` is updated, `status = 'success'`, `isInitialLoad = false`."
+                },
+                {
+                    "title": "3. Load more",
+                    "text": "When sentinel fires, `isLoadingMore = true`; on success, new items are appended and `hasMore` is updated."
+                },
+                {
+                    "title": "4. Error or end of list",
+                    "text": "On error, `status = 'error'` and `errorMessage` is set. When `hasMore` is false, the model represents that we reached the end."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Must-have entities",
+                    "value": "Item + Pagination + UI state",
+                    "helperText": "These three cover 90% of the interview discussion."
+                },
+                {
+                    "label": "Key idea",
+                    "value": "Model UI states",
+                    "helperText": "Loading, error, and end-of-list are part of the data model."
+                },
+                {
+                    "label": "Good signal",
+                    "value": "Small, composable types",
+                    "helperText": "If you can explain each type in one sentence, you’re on the right track."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong frontend data model is not just about the items. It also captures pagination and UI states explicitly, so the rendering logic stays simple and easy to reason about."
+        }
+    ]
+}

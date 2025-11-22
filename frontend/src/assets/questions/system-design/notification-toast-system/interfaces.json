@@ -1,0 +1,171 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can design a clean, easy-to-use API for the toast system. You should show that you know how to separate the public surface (what other engineers call) from the internal implementation (store, provider, timers, etc.)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about APIs:**\n\"From the outside, I want a tiny API: `toast.success(message, options?)`, `toast.error(...)`, etc. Under the hood, these helpers just push a `Toast` object into a global store. The UI pieces (`ToastProvider`, `ToastContainer`) subscribe to that store and render toasts via a portal.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- The public API is **simple and ergonomic**.\n- You define clear contracts for **inputs and outputs**.\n- You don’t leak implementation details (DOM, timers) into the public interface.\n- You expose good extension points (options, callbacks) without overcomplicating it."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Speak in terms of function signatures and props, not only vague descriptions. You don’t need perfect TypeScript, but you should be able to say: \"`toast.success(message, options?)` calls into a `ToastStore` with `{ message, variant: 'success', ...options }`.\""
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type ToastVariant = 'success' | 'error' | 'warning' | 'info';\n\ntype ToastPlacement =\n  | 'top-right'\n  | 'top-left'\n  | 'top-center'\n  | 'bottom-right'\n  | 'bottom-left'\n  | 'bottom-center';\n\ninterface ToastOptions {\n  title?: string;\n  description?: string;\n  placement?: ToastPlacement;\n  autoDismiss?: boolean;      // default true\n  durationMs?: number;        // default from config, e.g. 4000\n  ariaRole?: 'status' | 'alert';\n  actionLabel?: string;       // e.g. \"Undo\"\n  onActionClick?: () => void; // called when action is clicked\n}\n\ninterface ToastApi {\n  success(message: string, options?: ToastOptions): string; // returns toast id\n  error(message: string, options?: ToastOptions): string;\n  warning(message: string, options?: ToastOptions): string;\n  info(message: string, options?: ToastOptions): string;\n  dismiss(id: string): void;\n  dismissAll(): void;\n}\n\ninterface ToastProviderProps {\n  children: React.ReactNode;\n  placement?: ToastPlacement; // default placement\n  durationMs?: number;        // default duration\n  maxVisible?: number;        // default max visible toasts\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface",
+                "Shape (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "ToastOptions",
+                    "{ title?, description?, placement?, autoDismiss?, durationMs?, ariaRole?, actionLabel?, onActionClick? }",
+                    "\"`ToastOptions` lets callers override defaults per toast: placement, duration, ARIA role, and optionally provide an action like 'Undo'.\""
+                ],
+                [
+                    "ToastApi",
+                    "success(message, options?), error(...), warning(...), info(...), dismiss(id), dismissAll()",
+                    "\"The public `toast` API has four helpers for variants plus `dismiss(id)` and `dismissAll()`. Each call returns the toast id so it can be manually dismissed if needed.\""
+                ],
+                [
+                    "ToastProviderProps",
+                    "{ placement?, durationMs?, maxVisible?, children }",
+                    "\"`ToastProvider` wraps the app and configures global defaults like placement, default duration, and how many toasts can be visible at once.\""
+                ],
+                [
+                    "Internal store methods",
+                    "add(toastPartial), remove(id), clear(), subscribe(listener)",
+                    "\"Internally the store exposes methods like `add`, `remove`, `clear`, and `subscribe`. The `toast` API calls `add`, and the provider subscribes to render changes.\""
+                ],
+                [
+                    "ToastContainer props (internal)",
+                    "{ toasts, placement }",
+                    "\"`ToastContainer` is given `toasts` plus a `placement` and is responsible for stacking them and positioning them correctly in the viewport.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly expose",
+                            "items": [
+                                "Simple helper functions: `toast.success`, `toast.error`, `toast.warning`, `toast.info`.",
+                                "An optional options object (`ToastOptions`) for per-toast overrides.",
+                                "A way to **dismiss** a specific toast (`dismiss(id)`) and **all** toasts (`dismissAll()`).",
+                                "Provider-level props for global defaults (placement, duration, maxVisible).",
+                                "A clear contract that `toast.*()` can be called from anywhere that has access to the API (not tied to one component)."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid in the public API",
+                            "items": [
+                                "Exposing low-level details like `setTimeout` handles or DOM nodes.",
+                                "Requiring callers to pass full `Toast` objects instead of a simple message + options.",
+                                "Needing the caller to manually manage IDs or stacking order.",
+                                "Having separate, unrelated APIs for each variant with different shapes.",
+                                "Needing UI components to know about the internal store implementation."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Call flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Caller triggers a toast",
+                    "text": "A component or service calls `toast.success('Profile saved', { durationMs: 5000 })`."
+                },
+                {
+                    "title": "2. API builds a toast",
+                    "text": "The `toast` helper creates a `Toast` object with a new `id`, `variant = 'success'`, `message`, and merged options (placement, duration, etc.)."
+                },
+                {
+                    "title": "3. Store update",
+                    "text": "The helper calls into the toast store’s `add()` method. The store updates its `toasts` array and notifies subscribers."
+                },
+                {
+                    "title": "4. Provider re-renders",
+                    "text": "The ToastProvider, subscribed to the store, receives the new `toasts` list and re-renders the ToastContainer via a portal."
+                },
+                {
+                    "title": "5. Dismissal",
+                    "text": "When the toast auto-dismisses or the user closes it, the ToastItem calls `dismiss(id)` (which calls store `remove(id)`), and the provider re-renders without that toast."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "API surface",
+                    "value": "Tiny & focused",
+                    "helperText": "Most apps only need `toast.*()` helpers and one provider."
+                },
+                {
+                    "label": "Data flow",
+                    "value": "Down via props, up via actions",
+                    "helperText": "Callers send events in; the provider reads state and renders UI."
+                },
+                {
+                    "label": "Strong signal",
+                    "value": "Clear contracts",
+                    "helperText": "You can explain what each function takes and returns in one sentence."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good toast API feels effortless to use: one import, one provider, and a few tiny helpers. If another engineer can start using your system just by seeing `toast.success(message, options?)`, you’ve designed the interface well."
+        }
+    ]
+}

@@ -1,0 +1,159 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can describe the data your toast system works with: how a single toast is represented, how the global toast list is stored, and which UI states (timers, variants, placement, accessibility) you treat as first-class data instead of hidden logic."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll keep a simple model: a `Toast` type for each notification, a `ToastState` for the global list, and a `ToastConfig` for defaults like placement and duration. Each toast knows its id, type, message, lifetime, and placement.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You define a clear shape for a toast, not just \"some object\".\n- You explicitly model things like type, placement and duration.\n- You keep the global list and configuration small and predictable.\n- You avoid mixing DOM or timer handles directly into the data model."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name your main types out loud and keep them UI-focused: \"Toast\", \"ToastState\", maybe a \"ToastConfig\". Show that you’re modeling what the UI actually needs to render and manage toasts, not designing a backend schema."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type ToastVariant = 'success' | 'error' | 'warning' | 'info';\n\ntype ToastPlacement =\n  | 'top-right'\n  | 'top-left'\n  | 'top-center'\n  | 'bottom-right'\n  | 'bottom-left'\n  | 'bottom-center';\n\ninterface Toast {\n  id: string;                     // unique per toast\n  variant: ToastVariant;          // success / error / warning / info\n  title?: string;                 // optional title\n  message: string;                // main text\n  description?: string;           // longer text if needed\n  placement?: ToastPlacement;     // overrides global default\n  autoDismiss: boolean;           // whether it auto-closes\n  durationMs: number;             // how long before dismiss\n  createdAt: number;              // Date.now()\n  ariaRole?: 'status' | 'alert';  // for screen readers\n  actionLabel?: string;           // e.g. \"Undo\"\n  actionId?: string;              // identifier for callbacks\n}\n\ninterface ToastState {\n  toasts: Toast[];                // currently visible toasts\n  defaultPlacement: ToastPlacement;\n  defaultDurationMs: number;\n  maxVisible: number;             // e.g. show up to 3–5 at once\n}"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "Toast",
+                    "id, variant, message, title?, description?, placement?, autoDismiss, durationMs, createdAt, ariaRole?, actionLabel?, actionId?",
+                    "\"Each toast is a small object with an `id`, a `variant` like success/error, the message text, optional title/description, placement, auto-dismiss settings, and ARIA role. If it has an action like 'Undo', I also store `actionLabel` and an `actionId`.\""
+                ],
+                [
+                    "ToastState",
+                    "toasts[], defaultPlacement, defaultDurationMs, maxVisible",
+                    "\"`ToastState` is the global slice: an array of active toasts plus config like default placement, default duration and how many toasts can be visible at once.\""
+                ],
+                [
+                    "ToastConfig (optional)",
+                    "placement, durationMs, ariaRole, maxVisible",
+                    "\"When calling `toast.success(message, options?)`, I’d accept an options object that partially overrides defaults: placement, duration, ARIA role or max visible per call if needed.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly include in the model",
+                            "items": [
+                                "A **unique id** per toast so you can remove it reliably.",
+                                "A **variant** field for visual style and icon (success/error/etc.).",
+                                "A clear **message** and optional **title/description**.",
+                                "A **placement** field (or global default) to control where it appears.",
+                                "An **autoDismiss** flag and **durationMs** for timers.",
+                                "An **ARIA role** (`status`/`alert`) for screen reader behavior.",
+                                "Optional **action** fields for interactive toasts (label/id)."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid putting into the data model",
+                            "items": [
+                                "Raw DOM nodes or refs inside the toast object.",
+                                "Actual timer/timeout handles in the model (keep them alongside the component logic or in a separate map).",
+                                "Random UI-only flags that can be derived (e.g. computing \"isOld\" from `createdAt` instead of storing another boolean).",
+                                "Mixing unrelated global UI state (like modals) into `ToastState`.",
+                                "Overcomplicating the schema for a simple notification use case."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How toast data typically changes over time",
+            "steps": [
+                {
+                    "title": "1. Add toast",
+                    "text": "User action triggers `toast.success(\"Saved\")`. Under the hood, a new `Toast` object is created with a unique `id`, `variant = 'success'`, `message`, `createdAt`, and duration/placement from defaults or options. It is appended to `ToastState.toasts`."
+                },
+                {
+                    "title": "2. Start lifetime",
+                    "text": "When the ToastItem mounts, it starts an auto-dismiss timer if `autoDismiss` is true. The visual component reads everything it needs from the `Toast` object."
+                },
+                {
+                    "title": "3. Manual or auto dismiss",
+                    "text": "If the user clicks the close button or the timer fires, the system dispatches a `removeToast(id)` action that filters the `Toast` out of `ToastState.toasts`."
+                },
+                {
+                    "title": "4. Optional action",
+                    "text": "If the toast has an action (e.g. \"Undo\"), clicking it can fire a callback identified by `actionId`, and then dismiss the toast by removing it from state."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Must-have entities",
+                    "value": "Toast + ToastState",
+                    "helperText": "If you clearly define these two, the rest of the design becomes much easier to explain."
+                },
+                {
+                    "label": "Key idea",
+                    "value": "Model behavior as data",
+                    "helperText": "Variant, placement, auto-dismiss and ARIA role all live on the toast, not as scattered magic logic."
+                },
+                {
+                    "label": "Good signal",
+                    "value": "Small, readable types",
+                    "helperText": "If another engineer can understand your model from a short interface snippet, you’re on the right track."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A solid toast data model treats each toast as a small, self-contained piece of state with clear fields for type, placement, lifetime, and accessibility. This keeps the rendering logic simple and makes the global store easy to reason about."
+        }
+    ]
+}

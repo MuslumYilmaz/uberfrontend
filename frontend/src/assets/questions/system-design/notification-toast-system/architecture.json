@@ -1,0 +1,168 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can turn \"toast.success()\" into a clear architecture: where the global state lives, how to render toasts on top of everything, and how different parts of the app talk to the toast system without prop-drilling."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"At a high level, I’d have a global toast store, a ToastProvider at the top of the app that renders a ToastContainer via a portal, and a simple `toast` API that any code can call to add/remove toasts. The provider listens to the store and displays a stack of toasts in the chosen corner.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You separate responsibilities instead of building a giant \"ToastGod\" component.\n- You clearly describe where **global state** lives.\n- You mention a **portal** or equivalent technique to render above the main layout.\n- You think about **z-index layering** and stacking.\n- You keep the public API small and easy to use (`toast.success(...)`)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe 3–4 boxes: `toast` API → global store → ToastProvider → ToastContainer/ToastItem. Keep it simple and show that each part has a focused job. You want the interviewer to think: \"I could plug this into my app easily.\""
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "Toast API (`toast` helper)",
+                    "Public functions like `toast.success()`, `toast.error()` that push toasts into global state.",
+                    "\"Anywhere in the app can call `toast.success(message)`; under the hood it just dispatches an 'add toast' action to a global store.\""
+                ],
+                [
+                    "Global toast store / context",
+                    "Keeps an array of active toasts and handles add/remove/clear actions.",
+                    "\"The toast store holds an array of toast objects and exposes methods to add and remove them. It’s the single source of truth for visible toasts.\""
+                ],
+                [
+                    "ToastProvider",
+                    "Top-level component that subscribes to the store and renders the ToastContainer via a portal.",
+                    "\"At the root of the app I’d wrap everything in a `ToastProvider` that listens to the toast state and renders the container in a fixed overlay.\""
+                ],
+                [
+                    "ToastContainer",
+                    "Positions and stacks toasts for a given placement (top-right, bottom-left, etc.).",
+                    "\"`ToastContainer` receives the list of toasts and a placement like 'top-right', and is responsible for stacking them and applying the right positioning/z-index.\""
+                ],
+                [
+                    "ToastItem",
+                    "Renders a single toast: icon, message, optional actions, close button, ARIA/focus behavior.",
+                    "\"Each `ToastItem` knows how to show the type (success/error), run its timer, and handle close clicks, including ARIA roles and focus if there’s a button.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "There is **one global toast layer** mounted near the root of the app.",
+                                "Toasts are **stored in a global store/context**, not per-page state.",
+                                "The `toast` API is just a thin wrapper over that store (no UI logic inside helpers).",
+                                "The ToastProvider uses a **portal** (or similar) to render a fixed-position container above the main app.",
+                                "ToastContainer handles **placement** and **stacking order** (newest on top or bottom).",
+                                "ToastItem owns its own timer start/cleanup and notifies the store when it should be removed."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags you should avoid",
+                            "items": [
+                                "Spreading toast state across many unrelated components.",
+                                "Requiring every page to include its own toast container.",
+                                "Triggering DOM queries (`document.querySelector`) all over instead of a clean portal.",
+                                "Letting timers live outside React/state, making cleanup hard.",
+                                "Hard-coding placements and not leaving room for a simple config.",
+                                "No clear z-index strategy (toasts randomly appear behind headers or modals)."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. App initialization",
+                    "text": "The root renders `<ToastProvider>` once, which mounts a ToastContainer in a fixed overlay using a portal."
+                },
+                {
+                    "title": "2. Triggering a toast",
+                    "text": "Any component or service calls `toast.success(message)`. The helper dispatches an `addToast` action with a new toast object (id, type, message, options)."
+                },
+                {
+                    "title": "3. Rendering & stacking",
+                    "text": "The ToastProvider subscribes to the toast store, receives the updated list, and ToastContainer renders a stack of ToastItem components in the correct corner."
+                },
+                {
+                    "title": "4. Auto-dismiss & manual close",
+                    "text": "Each ToastItem starts a timer on mount (unless disabled). When time is up or the user clicks close, it dispatches `removeToast(id)` to the store and cleans up its timer."
+                },
+                {
+                    "title": "5. Unmount / navigation",
+                    "text": "If the ToastProvider unmounts (e.g. full app teardown), it clears remaining toasts and timers to avoid leaks."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State ownership",
+                    "value": "Global store",
+                    "helperText": "All toasts live in one place and are easy to observe."
+                },
+                {
+                    "label": "Rendering strategy",
+                    "value": "Portal overlay",
+                    "helperText": "Toasts render above the main layout without breaking it."
+                },
+                {
+                    "label": "Developer experience",
+                    "value": "`toast.*()` API",
+                    "helperText": "Callers don’t care about implementation details, only about a simple function."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good toast architecture gives you one global place for state and rendering, plus a tiny, ergonomic API for the rest of the app. If you can explain that clearly with 3–4 boxes, you’re already giving a strong senior signal."
+        }
+    ]
+}

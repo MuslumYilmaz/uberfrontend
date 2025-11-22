@@ -146,7 +146,7 @@
                         <!-- STEPS -->
                         <div *ngIf="b.type === 'steps'" class="sd-steps">
                             <div class="sd-steps-title" *ngIf="b.title">{{ b.title }}</div>
-                            <div class="sd-steps-row">
+                            <div class="sd-steps-row" [class.vertical]="b.steps?.length > 3">
                                 <ng-container *ngFor="let step of b.steps; let si = index">
                                     <div class="sd-step">
                                         <div class="sd-step-circle">{{ si + 1 }}</div>
@@ -160,7 +160,6 @@
                             </div>
                         </div>
                     </ng-template>
-
                 </section>
             </ng-container>
         </main>
