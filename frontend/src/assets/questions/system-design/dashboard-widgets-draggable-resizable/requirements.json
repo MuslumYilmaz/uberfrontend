@@ -1,0 +1,168 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to frame the problem of a customizable dashboard clearly: what a draggable, resizable widget grid must do, how it should feel, and which constraints matter most (snap-to-grid rules, performance, persistence). You should sound like someone who has actually built layout editors, not sadece \"drag & drop biliyorum\" diyen biri."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you’re solving:**\nA grid-based dashboard where each widget is a box that the user can:\n- Add/remove.\n- Drag to a different position.\n- Resize within min/max constraints.\n\nThe layout should snap to a grid, avoid overlapping widgets, feel smooth while dragging/resizing, and reload with the same configuration thanks to a saved snapshot (e.g. localStorage)."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer looks for:**\n- You don’t rush into low-level drag events; you first define layout rules.\n- You recognize that the **layout engine** is the core: grid, collisions, snapping.\n- You care about **60 FPS** interaction and avoid unnecessary re-renders.\n- You think about **persistence**: saving/restoring the layout snapshot.\n- You mention edge cases: overlapping widgets, screen resize, many widgets."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Slow down and frame it like this: \"We need a grid layout where each widget has an `(x, y, w, h)` cell-based position. Dragging and resizing should update those numbers in real time, with collisions resolved by the layout engine, and the final layout saved as a snapshot.\" Then move to clarifying questions."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "User flow you should describe",
+            "steps": [
+                {
+                    "title": "1. First load",
+                    "text": "Load default layout or restore last saved layout from localStorage. Render widgets in a grid."
+                },
+                {
+                    "title": "2. Start drag",
+                    "text": "User grabs a widget header. The widget enters a dragging state; a ghost/preview follows the pointer while neighbours rearrange or show drop targets."
+                },
+                {
+                    "title": "3. Drag over grid",
+                    "text": "As the user moves, the widget’s `(x, y)` updates in grid units. The layout engine prevents illegal overlaps and snaps positions to cells."
+                },
+                {
+                    "title": "4. Resize widget",
+                    "text": "User drags a resize handle. Width/height snap to grid columns/rows, respecting min/max size and available space."
+                },
+                {
+                    "title": "5. Save snapshot",
+                    "text": "On drag/resize end, the dashboard commits the new layout and persists a compact snapshot to localStorage so the user sees the same arrangement next time."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions you should ask",
+                            "items": [
+                                "Is the dashboard based on a **fixed grid** (e.g. 12 columns) or fully free-form?",
+                                "Can widgets **overlap**, or must the layout engine always resolve collisions?",
+                                "Do we support **different widget types** (charts, tables, text) or treat them all the same for layout?",
+                                "Do we need **responsive behavior** (different layouts for desktop vs tablet/mobile)?",
+                                "Should changes be saved **continuously** or only when the user clicks a \"Save\" button?",
+                                "Is there a limit to the **number of widgets** on a dashboard?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly confirm",
+                            "items": [
+                                "Target is **smooth drag & resize at ~60 FPS** on modern machines.",
+                                "Layout is expressed in **grid units**, not absolute pixels, for easier snapping.",
+                                "The layout snapshot will at least include widget **id, x, y, w, h** (and maybe type/config).",
+                                "On reload, the dashboard should **reconstruct** the layout purely from the snapshot.",
+                                "Dragging/resizing should not trigger expensive **re-renders of all widgets** every frame.",
+                                "The system should behave predictably when widgets hit **screen edges or each other**."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Key dimensions to talk about early",
+            "columns": [
+                "Dimension",
+                "Question",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "Grid",
+                    "How many columns? Fixed row height?",
+                    "Defines snapping rules and how `(x, y, w, h)` map to pixels."
+                ],
+                [
+                    "Drag model",
+                    "Are we using pointer events, mouse/touch events, or a library?",
+                    "Impacts cross-device support and how low-level you go in the solution."
+                ],
+                [
+                    "Collision rules",
+                    "When two widgets want the same cell, who moves and how?",
+                    "Determines how complex the layout engine needs to be."
+                ],
+                [
+                    "Persistence",
+                    "Where and when do we save the layout snapshot?",
+                    "Affects UX (auto-save vs explicit save) and snapshot format."
+                ],
+                [
+                    "Scale",
+                    "Typical number of widgets per dashboard?",
+                    "Guides how aggressive you need to be with performance optimizations."
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Grid model",
+                    "value": "12 columns (example)",
+                    "helperText": "Common baseline; easy to explain and reason about."
+                },
+                {
+                    "label": "Target frame rate",
+                    "value": "≈ 60 FPS",
+                    "helperText": "Dragging/resizing should feel smooth, not janky."
+                },
+                {
+                    "label": "Snapshot shape",
+                    "value": "id, x, y, w, h",
+                    "helperText": "Minimal data needed to restore the layout."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "This problem is not just \"use drag and drop\". It’s about defining a grid-based layout model, keeping interactions smooth at 60 FPS, and persisting a compact layout snapshot. If you highlight those three themes in requirements, sen zaten doğru seviyeden konuşuyorsun."
+        }
+    ]
+}

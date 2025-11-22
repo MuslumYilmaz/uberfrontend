@@ -1,0 +1,168 @@
+{
+    "key": "O",
+    "title": "Optimizations & Deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this last step, the interviewer wants to see if you understand the real-world failure modes of real-time search: too many calls, flickering UIs, stale results, weird behavior for fast typers, and cache that grows forever or serves stale data. You should talk about performance, robustness, and how you’d tune the experience over time."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First I’d get a working version: debounced calls, simple cache, requestId check. Then I’d observe: how often do we call the search function, how big does the cache get, how does it feel for fast typers? Based on that, I’d tune debounce, cache TTL, and pseudo-cancel behavior to keep the UI snappy but safe.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You don’t start with micro-optimizations; you start with correctness.\n- You can explain **debounce vs throttle tuning** with trade-offs.\n- You have a basic **cache invalidation** story (TTL or size-based).\n- You handle **slow vs fast typing** without flicker or stale data.\n- You understand how to **simulate cancellation** in the UI layer.\n- You think about UX states: empty, loading, no results, error."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Pick realistic scenarios: someone hammering the keyboard, a user quickly deleting and retyping, a flaky search function that sometimes errors. Explain how your design behaves and what you’d tweak (debounce, cache, error handling) to keep the experience stable."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Baseline hygiene you should mention",
+                            "items": [
+                                "Use **debounce** for search (e.g. 300–500ms), not raw `onChange` requests.",
+                                "Normalize queries (trim + lowercase) before caching or calling search.",
+                                "Do not search for very short queries (configurable `minQueryLength`).",
+                                "Always use a **requestId / activeRequestId** check before applying results.",
+                                "Reset results or show a dedicated state when the query becomes empty.",
+                                "Show small, inline error states with a **Retry** action instead of blocking the whole UI."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Deep-dive topics you can bring up",
+                            "items": [
+                                "Tuning debounce delay based on typical latency and user behavior.",
+                                "Choosing **cache TTL** (time-based) vs **LRU-style** (size-based) eviction.",
+                                "Distinguishing **\"no results\"** from **\"failed request\"** in the UI and state.",
+                                "Avoiding visual flicker (e.g. not showing a spinner for ultra-fast responses).",
+                                "Supporting keyboard navigation and ARIA roles in result lists (accessibility).",
+                                "Handling multiple search inputs on the same page (separate vs shared cache)."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Deep-dive angles and how to explain them",
+            "columns": [
+                "Topic",
+                "Angle",
+                "How you talk about it"
+            ],
+            "rows": [
+                [
+                    "Debounce tuning",
+                    "Responsiveness vs load",
+                    "\"I’d start with ~300–400ms debounce. If the search function is slow or expensive, I might increase it. If it’s super fast, I could go lower. The idea is to call search only when the user pauses, but not make the UI feel laggy.\""
+                ],
+                [
+                    "Pseudo-cancel (ignoring stale responses)",
+                    "Out-of-order responses",
+                    "\"Every search call carries a `requestId`. I update the UI only if `requestId === activeRequestId`. If the user typed further while the request was in flight, that response is stale and safely ignored instead of overwriting newer results.\""
+                ],
+                [
+                    "Cache invalidation",
+                    "TTL and size limits",
+                    "\"Each cache entry stores `fetchedAt`. I treat it as fresh for, say, 30–60 seconds. After that, I either re-fetch or evict it. For heavy usage, I’d also cap cache size and evict the least recently used queries to avoid unbounded growth.\""
+                ],
+                [
+                    "Slow vs fast typing",
+                    "UX consistency",
+                    "\"For slow typers, each pause triggers a search and they see progressive updates. For fast typers, debounce ensures we mostly search for the final query, avoiding a burst of unnecessary calls. The UI always reflects the latest `query` string.\""
+                ],
+                [
+                    "Empty / error states",
+                    "Clarity for the user",
+                    "\"Empty query shows a neutral state or suggestions, not stale results. An error sets `status = 'error'` and shows a small message with a Retry button that calls the same query again, without wiping what the user typed.\""
+                ]
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Optimization path you should describe",
+            "steps": [
+                {
+                    "title": "1. Ship a correct baseline",
+                    "text": "Implement debounced search, basic cache, and requestId-based stale-response protection. Make sure all states (idle, loading, success, error, empty) are handled correctly."
+                },
+                {
+                    "title": "2. Observe behavior",
+                    "text": "Log how often `searchFn` is called, how often cache hits occur, and how often errors happen. Check if users experience noticeable lag or flickering loaders."
+                },
+                {
+                    "title": "3. Tune debounce & cache",
+                    "text": "Adjust `debounceMs`, `cacheTtlMs`, and `minQueryLength`. If you see too many calls, increase debounce or min length; if the UI feels laggy, reduce debounce slightly."
+                },
+                {
+                    "title": "4. Harden the cache",
+                    "text": "Add TTL-based expiry and optional size limits. Handle corrupt entries defensively: if something fails to parse or looks wrong, drop it and re-fetch instead of crashing the UI."
+                },
+                {
+                    "title": "5. Polish UX & accessibility",
+                    "text": "Ensure loading indicators are subtle, error messages are clear, \"no results\" is differentiated from empty input, and the results list is keyboard- and screen-reader-friendly."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Key performance lever",
+                    "value": "Debounce delay",
+                    "helperText": "Controls request volume vs perceived responsiveness."
+                },
+                {
+                    "label": "Key safety lever",
+                    "value": "Request id check",
+                    "helperText": "Prevents stale responses from overwriting newer queries."
+                },
+                {
+                    "label": "Key robustness lever",
+                    "value": "Cache TTL + size",
+                    "helperText": "Keeps cached data fresh and prevents unbounded growth."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A great real-time search isn’t just \"it updates as you type\". It calls search at the right times, reuses results intelligently, survives flaky responses, and keeps the UI in sync with the latest query—especially when users type fast and networks are slow."
+        }
+    ]
+}

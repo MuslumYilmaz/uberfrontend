@@ -1,0 +1,132 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to clarify what a 4-step autosaving form must do. You must show that you understand step transitions, validation strategies, and autosave behavior before jumping into architecture. They want to see that you’ve built real-world forms and know the hidden pitfalls."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you’re solving:**\nA 4-step form where the user fills out data step by step, sees validation feedback, moves forward/back, and the app quietly autosaves progress to localStorage. If the browser closes or refreshes, the user should be able to resume exactly where they left off."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Understanding form architecture (flat vs nested state).\n- Autosave handling (throttle/debounce decisions).\n- Inline validation vs submit-time validation.\n- Detecting and handling dirty states.\n- Draft restore and large JSON serialization.\n- Smooth UX for step transitions and progress bar updates.\n- Realistic edge-case thinking (schema changes, partial drafts, invalid saved data)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Do not start coding in your head. First show that you understand the problem thoroughly: \"We have 4 steps, each with its own validation and fields. The user can navigate back and forth, and the system must autosave a normalized JSON model to localStorage without performance issues.\""
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. Load the form",
+                    "text": "If there is a saved draft, ask the user whether they want to continue. If yes, restore step index + all field values. Otherwise start from step 1 with clean form state."
+                },
+                {
+                    "title": "2. Fill fields",
+                    "text": "As the user types, the form updates local state. On blur/change, inline validation may show errors immediately."
+                },
+                {
+                    "title": "3. Autosave",
+                    "text": "While editing, a throttled/debounced autosave writes the current JSON + step index to localStorage. Autosave should not block typing or freeze the UI."
+                },
+                {
+                    "title": "4. Step transition",
+                    "text": "When the user clicks Next/Back, the form validates required fields and navigates to the next step. The progress bar updates accordingly."
+                },
+                {
+                    "title": "5. Submission",
+                    "text": "On submit, run final validation for all steps. If valid, clear the draft and send data to the backend."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "Do we run validation on every field change, on blur, or only on step submission?",
+                                "Should every step be independently valid before moving forward?",
+                                "Should autosave run on every keystroke or only after debounced delay?",
+                                "Do we need versioning for saved drafts, in case the form schema changes?",
+                                "What is the maximum size of the form JSON (performance concerns)?",
+                                "Do users need a \"Discard draft\" button to start fresh?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "LocalStorage write frequency must be controlled (throttle or debounce).",
+                                "Navigation between steps should not cause re-renders that reset inputs.",
+                                "The form must be resilient to page reloads and tab closures.",
+                                "Autosave must be silent and unobtrusive.",
+                                "Draft restore must be predictable and validate restored data.",
+                                "The entire form state should serialize cleanly into a compact JSON object."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Autosave frequency",
+                    "value": "≈ 500–1500ms",
+                    "helperText": "Fast enough to feel safe, slow enough not to spam localStorage."
+                },
+                {
+                    "label": "Form complexity",
+                    "value": "4 logical groups",
+                    "helperText": "Each step cleanly owns its fields and validation rules."
+                },
+                {
+                    "label": "Draft contents",
+                    "value": "JSON + step index",
+                    "helperText": "Minimal but complete model to restore progress."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "The difficulty here is not the UI—it’s managing form state in a clean, scalable way. Show that you understand autosave timing, dirty-state tracking, and restoring large JSON safely. This instantly signals senior-level experience with complex forms."
+        }
+    ]
+}

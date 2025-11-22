@@ -1,0 +1,183 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see how you structure a real-time search feature: where state lives, how debouncing is wired, how caching is modeled, and how you prevent stale responses from corrupting the UI. You should show a clear separation between input handling, search orchestration, and cache management."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"At a high level, I’d have a `SearchBox` component for the input, a `useSearch` (or similar) hook that manages debouncing, loading state and caching, and a simple cache structure keyed by normalized query. Each debounced search checks the cache first, then calls an async search function if needed, and only applies results that belong to the latest query.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- One clear place that owns **search state** (query, loading, error, results).\n- A **debounce layer** between raw input and async search.\n- A **cache** for query → results with a basic invalidation story.\n- A strategy to **ignore stale responses** from older requests.\n- Clean mapping from state to UI states: empty, loading, results, no results, error."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Draw 3–4 logical boxes: `SearchInput` → `useSearch` / search controller → `cache` + `asyncSearch()` → `ResultsList`. Describe how data flows forward (query changes → debounced search) and back (results or errors → UI state). Keep it implementation-agnostic but precise about responsibilities."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "SearchInput component",
+                    "Renders the text input, updates query state on every keystroke.",
+                    "\"`SearchInput` is responsible for capturing user typing and updating a `query` string immediately so typing always feels instant.\""
+                ],
+                [
+                    "Search controller / hook (`useSearch`)",
+                    "Owns debounced query, loading flag, error, results and cache access.",
+                    "\"A `useSearch(query)` hook manages debouncing, calls the async search function when needed, checks the cache, and exposes `{ results, loading, error }` back to the UI.\""
+                ],
+                [
+                    "Cache module",
+                    "Stores normalizedQuery → results (+ metadata), handles expiry.",
+                    "\"The cache is a simple map from normalized query to results and maybe a timestamp, so repeated queries can render instantly without calling search again.\""
+                ],
+                [
+                    "Async search function (abstract)",
+                    "Represents the backend call; returns a Promise of results.",
+                    "\"I treat the search function as an injected async function `searchApi(query)`. The architecture around it doesn’t depend on network details.\""
+                ],
+                [
+                    "Results / states view",
+                    "Maps search state into UI: loading, results, no results, error.",
+                    "\"A Results area reads `{ loading, results, error, query }` and shows skeletons or spinners, empty state, or error message based on that state.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "text",
+            "text": "**State + request-tracking at a glance**\nYou should be able to describe a minimal but complete state shape that supports debounce, caching and pseudo-cancel:"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type Query = string;\n\ntype SearchStatus = 'idle' | 'loading' | 'success' | 'error';\n\ninterface SearchState {\n  query: string;                 // current input value\n  debouncedQuery: string;        // value we actually search for\n  status: SearchStatus;\n  results: unknown[];            // or a typed array\n  error: string | null;\n  lastRequestId: number;         // monotonically increasing\n  activeRequestId: number | null;// id of the latest in-flight request\n}\n\ninterface SearchCacheEntry {\n  results: unknown[];\n  fetchedAt: number;             // timestamp for expiry\n}\n\ntype SearchCache = Record<Query, SearchCacheEntry>;"
+        },
+        {
+            "type": "text",
+            "text": "The key idea: each outgoing search call knows its `requestId`. When a response returns, it only updates state if `requestId === activeRequestId`. That’s how you simulate cancellation on the frontend."
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "Typing updates `query` instantly; debouncing happens in a **separate effect or handler**.",
+                                "When the debounce fires, we **normalize** the query (trim + lowercase) and check the **cache** first.",
+                                "If cached and fresh, we **skip the async call** and use the cached results.",
+                                "If not cached, we increment `lastRequestId`, set `activeRequestId` and mark `status = 'loading'`.",
+                                "On response, we only apply results if the response’s id matches `activeRequestId`.",
+                                "We store results in the cache along with a timestamp for basic expiry."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture pitfalls you should avoid",
+                            "items": [
+                                "Calling the async search function **directly on every keystroke** without debounce.",
+                                "Letting older responses overwrite newer ones because there is **no request tracking**.",
+                                "Using the raw query string without normalization as a cache key (\"Foo\" vs \"foo \").",
+                                "Mixing cache access logic directly into the input component instead of a controller/hook.",
+                                "Having no clear states for **empty query vs no results vs error**."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. User types",
+                    "text": "Every keypress updates `query` state immediately. The UI always reflects the latest characters the user entered."
+                },
+                {
+                    "title": "2. Debounced trigger",
+                    "text": "A debounced effect or handler watches `query`. After a short pause (e.g. 300–500ms) with no changes, it sets `debouncedQuery` and kicks off the search flow."
+                },
+                {
+                    "title": "3. Cache check",
+                    "text": "Before calling the async search, the controller normalizes `debouncedQuery` and checks the cache. If there is a fresh entry, it sets `results` from the cache and `status = 'success'` without going to the network."
+                },
+                {
+                    "title": "4. Async search + pseudo-cancel",
+                    "text": "If there is no fresh cache entry, it increments `lastRequestId`, sets `activeRequestId`, marks `status = 'loading'`, and calls the async search. When the Promise resolves, it compares the response id with `activeRequestId`. If they don’t match, the response is ignored."
+                },
+                {
+                    "title": "5. Update state & cache",
+                    "text": "On a valid response, it updates `results`, sets `status = 'success'`, clears `error`, and stores the results in the cache with `fetchedAt`. On failure, it sets `status = 'error'` and a user-friendly error message."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State ownership",
+                    "value": "Search hook / controller",
+                    "helperText": "One place manages query, status, results, cache and request ids."
+                },
+                {
+                    "label": "Key pattern",
+                    "value": "Debounce + cache + requestId",
+                    "helperText": "The trio that makes real-time search feel fast and safe."
+                },
+                {
+                    "label": "UX goal",
+                    "value": "Always reflect latest query",
+                    "helperText": "Results on screen must match what’s in the input, no matter the timing."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "At architecture level, this problem is about centralizing search state, adding a debounce layer, and protecting the UI from stale responses using a simple request-id trick. If you can explain that clearly with a few boxes and states, you’re giving a strong system-design signal."
+        }
+    ]
+}

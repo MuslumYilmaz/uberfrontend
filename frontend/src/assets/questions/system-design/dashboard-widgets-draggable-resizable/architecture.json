@@ -1,0 +1,183 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can turn “draggable, resizable dashboard” into a clear architecture: a grid layout engine, a drag/resize controller, lightweight widget components, and a persistence layer. You should show that you separate the **layout math** from the **rendering** and keep interactions smooth at 60 FPS."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I’d model the dashboard as a grid (e.g. 12 columns) and keep a layout array where each widget has `(id, x, y, w, h)`. A layout engine is responsible for snapping, collision resolution and constraints. A drag/resize layer converts pointer movement into grid deltas. The dashboard component renders widgets based on the layout and saves snapshots to localStorage when interactions end.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A **single layout model** that drives rendering.\n- A dedicated **layout engine** for snapping and collisions.\n- A **drag/resize controller** that talks in grid units, not random pixels.\n- Clear mapping from layout state → DOM/CSS.\n- A **snapshot persistence** story (save on drag/resize end).\n- Awareness of **performance**: minimising re-renders and heavy work inside move events."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe 4 boxes: `Dashboard` container → `LayoutEngine` → `Drag/ResizeController` → `Widget` components + `Persistence`. Emphasize that the layout engine owns `(x, y, w, h)`; widgets are mostly dumb and just render according to those numbers."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "Dashboard container",
+                    "Owns the layout array, grid config, and persistence. Renders widgets with their positions and sizes.",
+                    "\"The Dashboard component keeps an array of widgets with `(id, x, y, w, h)` and passes those into a grid renderer. It also wires drag/resize events and triggers snapshot saves.\""
+                ],
+                [
+                    "Layout engine",
+                    "Converts pixel moves into grid coordinates, snaps positions, resolves collisions and enforces bounds.",
+                    "\"A layout engine handles all the math: snapping to columns/rows, making sure widgets don’t overlap, and clamping them inside the grid when you drag or resize.\""
+                ],
+                [
+                    "Drag/resize controller",
+                    "Listens to pointer events, calculates deltas, and calls layout engine with candidate positions/sizes.",
+                    "\"The drag/resize controller listens to pointer/mouse/touch events, computes how many grid cells you moved or stretched, and asks the layout engine to update `(x, y, w, h)`.\""
+                ],
+                [
+                    "Widget components",
+                    "Render the widget content (charts, cards, tables) inside positioned containers.",
+                    "\"Widgets themselves don’t know about drag/drop math. They get their size/position from props and focus on rendering their content.\""
+                ],
+                [
+                    "Persistence layer",
+                    "Serializes layout snapshots to localStorage (or API) and restores them on load.",
+                    "\"On drag/resize end, the dashboard serializes the layout to JSON and stores it in localStorage so the same layout comes back on next visit.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "text",
+            "text": "**Layout model at a glance**\nYou should state a minimal layout representation that all other pieces use:"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "interface GridConfig {\n  cols: number;        // e.g. 12\n  rowHeight: number;   // px per row\n  margin: number;      // gap between widgets (px)\n}\n\ninterface WidgetLayout {\n  id: string;\n  x: number;           // column index (0..cols-1)\n  y: number;           // row index (0..n)\n  w: number;           // width in columns\n  h: number;           // height in rows\n  minW?: number;\n  maxW?: number;\n  minH?: number;\n  maxH?: number;\n}\n\ninterface DashboardState {\n  layout: WidgetLayout[];\n  grid: GridConfig;\n}\n"
+        },
+        {
+            "type": "text",
+            "text": "This makes it easy to reason about every operation (drag, resize, save) as updates to `(x, y, w, h)` on a `WidgetLayout` object."
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "The grid is defined in **columns/rows**, not absolute pixels.",
+                                "Every widget has a stable **id** and a layout `(x, y, w, h)`.",
+                                "Dragging updates a **temporary layout** while moving, then commits on drop.",
+                                "Resizing changes `w`/`h` in grid units, respecting min/max constraints.",
+                                "The layout engine detects **collisions** and reflows neighbours if needed.",
+                                "Snapshot save happens on **drag/resize end**, not every frame."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture pitfalls to avoid",
+                            "items": [
+                                "Storing positions as raw pixels instead of grid units (harder to adapt/rescale).",
+                                "Letting each widget manage its own position state with no central layout.",
+                                "Running heavy collision logic or full re-renders on every pointer move.",
+                                "Not separating **drag math** from widget content (harder to test/reuse).",
+                                "Saving to localStorage on every move event (jank + SSD abuse)."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Initialize dashboard",
+                    "text": "On load, the dashboard reads a saved snapshot (if any) from localStorage. If found, it hydrates `layout` with the list of `WidgetLayout`s; otherwise it uses a default layout."
+                },
+                {
+                    "title": "2. Start drag",
+                    "text": "When the user begins dragging a widget, the controller records the starting `(x, y)` and pointer position and marks that widget as `active`."
+                },
+                {
+                    "title": "3. Move over grid",
+                    "text": "On pointer move, the controller calculates how many columns/rows the pointer has moved, asks the layout engine for a new `(x, y)` (with collisions resolved), and updates the **in-memory layout**. Rendering uses cheap transforms (e.g. translate3d) to keep it smooth."
+                },
+                {
+                    "title": "4. Resize",
+                    "text": "On resize handle drag, the controller adjusts `w`/`h` in grid units, clamps to min/max, and calls the layout engine to ensure it doesn’t overlap or escape the grid."
+                },
+                {
+                    "title": "5. Commit & save",
+                    "text": "When drag/resize ends, the layout engine finalizes positions; the dashboard then serializes the `layout` array and stores it as a snapshot in localStorage."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Core model",
+                    "value": "Grid + layout[]",
+                    "helperText": "Everything derives from `(x, y, w, h)` per widget."
+                },
+                {
+                    "label": "Interaction layer",
+                    "value": "Drag/resize controller",
+                    "helperText": "Converts pointer moves into grid deltas."
+                },
+                {
+                    "label": "Performance target",
+                    "value": "Smooth at 60 FPS",
+                    "helperText": "Do minimal work in move events; defer heavier logic."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "At architecture level, this problem is about owning a clean grid-based layout model, using a layout engine for snapping + collisions, and keeping drag/resize logic lightweight so the UI stays smooth while still saving layouts reliably."
+        }
+    ]
+}

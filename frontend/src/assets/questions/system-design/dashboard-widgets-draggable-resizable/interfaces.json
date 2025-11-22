@@ -1,0 +1,176 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see how other engineers would actually use your dashboard layout system. You should present a small, clear API: a `<DashboardLayout />` component and/or a `useDashboardLayout` hook that hide drag/resize math, but expose layout snapshots and events cleanly."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"From the outside, I want something like `<DashboardLayout layout={initialLayout} onLayoutChange={...}>`. The component manages drag & resize internally and just sends me updated `(x, y, w, h)` when the user drops a widget. Optionally there’s a hook `useDashboardLayout` that returns layout state plus helpers like `addWidget`, `removeWidget`, `resetLayout`.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A **minimal, ergonomic surface** that’s easy to reuse.\n- Props for **initial layout, grid config, persistence hooks**.\n- Callbacks for **layout updates** (per drag end) rather than every frame.\n- No leaking of internal details like pixel math or low-level pointer events.\n- A clear separation between **widget content** and **layout container**."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Speak as if you’re designing a small library. Describe the component’s props and the hook’s return value. Make it obvious that a teammate could plug in their own widgets without touching drag/resize logic."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "interface GridConfig {\n  cols: number;        // e.g. 12\n  rowHeight: number;   // px per row\n  margin: number;      // px gap\n}\n\ninterface WidgetLayout {\n  id: string;\n  type: string;        // 'chart' | 'table' | ...\n  x: number;\n  y: number;\n  w: number;\n  h: number;\n  minW?: number;\n  maxW?: number;\n  minH?: number;\n  maxH?: number;\n  config?: Record<string, unknown>;\n}\n\ninterface DashboardLayoutProps {\n  grid: GridConfig;\n  initialLayout: WidgetLayout[];\n  storageKey?: string;                 // optional localStorage key\n  onLayoutChange?: (layout: WidgetLayout[]) => void; // fires on drag/resize end\n  renderWidget: (widget: WidgetLayout) => React.ReactNode; // or framework equivalent\n}\n\n// Optional hook-style API\ninterface UseDashboardLayoutResult {\n  layout: WidgetLayout[];\n  grid: GridConfig;\n  startDrag: (id: string) => void;\n  startResize: (id: string) => void;\n  endInteraction: () => void;          // commit & maybe persist\n  addWidget: (widget: WidgetLayout) => void;\n  removeWidget: (id: string) => void;\n  resetLayout: () => void;             // back to defaults\n}\n\nfunction useDashboardLayout(\n  grid: GridConfig,\n  initialLayout: WidgetLayout[],\n  options?: { storageKey?: string; onLayoutChange?: (l: WidgetLayout[]) => void }\n): UseDashboardLayoutResult {\n  // implementation hidden\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / prop",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "DashboardLayoutProps.grid",
+                    "{ cols, rowHeight, margin }",
+                    "\"`grid` sets the layout rules: number of columns, row height and margin. Every pixel position is derived from this so the dashboard can be responsive.\""
+                ],
+                [
+                    "DashboardLayoutProps.initialLayout",
+                    "WidgetLayout[]",
+                    "\"`initialLayout` is the starting list of widgets with `(x, y, w, h)`. The component manages changes internally and emits updated layouts via `onLayoutChange`.\""
+                ],
+                [
+                    "DashboardLayoutProps.renderWidget",
+                    "(widget) => ReactNode",
+                    "\"`renderWidget` lets consumers decide what each widget looks like. My layout system only cares about size and position, not widget content.\""
+                ],
+                [
+                    "DashboardLayoutProps.storageKey",
+                    "string | undefined",
+                    "\"If `storageKey` is provided, the component automatically persists layout snapshots to localStorage under that key and restores them on mount.\""
+                ],
+                [
+                    "onLayoutChange(layout)",
+                    "(layout: WidgetLayout[]) => void",
+                    "\"`onLayoutChange` fires on drag/resize end with the new layout. The parent can use this to sync with a backend or show a 'Layout saved' toast.\""
+                ],
+                [
+                    "useDashboardLayout result",
+                    "{ layout, addWidget, removeWidget, resetLayout, ... }",
+                    "\"`useDashboardLayout` exposes the current layout array and helper methods to add/remove widgets or reset to defaults. The view layer just maps `layout` to positioned components.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly expose",
+                            "items": [
+                                "A way to pass **initial layout + grid config**.",
+                                "A **render function** or slot for widget content.",
+                                "A callback like `onLayoutChange` that fires on **interaction end**, not every frame.",
+                                "Optional **storageKey** to turn on built-in localStorage persistence.",
+                                "Helpers to **add / remove / reset** widgets (via hook or methods)."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid exposing",
+                            "items": [
+                                "Low-level pointer/mouse events to consumers.",
+                                "Raw pixel coordinates instead of `(x, y, w, h)` in grid units.",
+                                "Internal collision details or layout-engine internals.",
+                                "Per-frame callbacks that force the parent to manage re-renders.",
+                                "Flags like `isDraggingInternal` that don’t map to clear UX decisions."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Setup",
+                    "text": "The page defines `grid` and an `initialLayout` array, then renders `<DashboardLayout grid={grid} initialLayout={initialLayout} storageKey=\"user-dashboard\" renderWidget={renderWidget} />`."
+                },
+                {
+                    "title": "2. Render widgets",
+                    "text": "For each `WidgetLayout` item, `DashboardLayout` calls `renderWidget(widget)` and positions the result according to `(x, y, w, h)`."
+                },
+                {
+                    "title": "3. Drag/resize interactions",
+                    "text": "While the user drags or resizes, the component updates internal layout state and uses transforms for smooth motion. It does not spam `onLayoutChange` yet."
+                },
+                {
+                    "title": "4. Commit & notify",
+                    "text": "On drag/resize end, it finalizes the layout, optionally writes a snapshot to localStorage (using `storageKey`), and fires `onLayoutChange(newLayout)`."
+                },
+                {
+                    "title": "5. Reload",
+                    "text": "On next visit, the component checks `storageKey`, hydrates layout from the stored snapshot if it exists, and falls back to `initialLayout` otherwise."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Public surface",
+                    "value": "Component + hook",
+                    "helperText": "One component to use, one hook for advanced control."
+                },
+                {
+                    "label": "Data contract",
+                    "value": "WidgetLayout[]",
+                    "helperText": "All layout changes flow through the same shape."
+                },
+                {
+                    "label": "Strong signal",
+                    "value": "No implementation leaks",
+                    "helperText": "Consumers never see drag math or collision logic."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good dashboard layout API makes complex behavior—drag, resize, collision resolution, persistence—look like a simple `layout[]` and a couple of callbacks. If a teammate can build their own dashboard just by using your props and hook, you’ve nailed the interface."
+        }
+    ]
+}

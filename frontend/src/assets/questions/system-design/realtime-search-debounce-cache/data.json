@@ -1,0 +1,162 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can design a clean, explicit data model for real-time search: what you store for the current query, for the debounced query, for the cache, and for tracking which request is \"current\" so you can safely ignore stale responses."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll keep one `SearchState` object for the live query, debounced query, status, results and error, plus a `SearchCache` map from normalized query to cached results with timestamps. I’ll also track a `requestId` so I can ignore late responses that don’t match the latest search.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You have a **single source of truth** for search UI state.\n- You distinguish between **raw input (`query`)** and **searched value (`debouncedQuery`)**.\n- You model **cache entries** and **expiry** explicitly.\n- You track some form of **request id** for pseudo-cancellation.\n- You treat \"no results\" and \"error\" as separate states in data, not guesses in the UI."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name 2–3 small types: `SearchState`, `SearchCacheEntry`, `SearchCache`. Show how each field connects directly to a UI or behavior requirement: debouncing, caching, request ordering, and empty/error states."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type SearchStatus = 'idle' | 'loading' | 'success' | 'error';\n\n// Core UI state for the search experience\ninterface SearchState {\n  query: string;                 // what the user is currently typing\n  debouncedQuery: string;        // what we actually searched for last\n  status: SearchStatus;          // idle/loading/success/error\n  results: unknown[];            // typed results in real code\n  error: string | null;          // last error message, if any\n\n  // Request tracking for pseudo-cancel\n  lastRequestId: number;         // monotonically increasing counter\n  activeRequestId: number | null;// id of the latest in-flight request\n}\n\n// One cache entry for a given query\ninterface SearchCacheEntry {\n  query: string;                 // normalized query key\n  results: unknown[];\n  fetchedAt: number;             // timestamp (ms) for expiry checks\n}\n\n// Simple in-memory cache: normalizedQuery -> entry\ntype SearchCache = Record<string, SearchCacheEntry>;\n"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "SearchState",
+                    "query, debouncedQuery, status, results, error, lastRequestId, activeRequestId",
+                    "\"`SearchState` holds everything the UI needs: what the user is typing, what we last searched for, whether we’re loading, current results or error, and a couple of request ids so we can ignore stale responses.\""
+                ],
+                [
+                    "SearchCacheEntry",
+                    "query, results, fetchedAt",
+                    "\"Each `SearchCacheEntry` stores a normalized query, its results and when they were fetched. That lets me serve repeat queries instantly and decide when an entry is too old.\""
+                ],
+                [
+                    "SearchCache",
+                    "Map from normalized query → SearchCacheEntry",
+                    "\"`SearchCache` is just a map from a lowercased, trimmed query string to its cached entry. The controller consults this before firing a new search.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly include",
+                            "items": [
+                                "A **`query`** field for the live input value.",
+                                "A **`debouncedQuery`** field for the value that actually triggered the last search.",
+                                "A **`status`** enum (`idle`, `loading`, `success`, `error`).",
+                                "A **`results`** array and an **`error`** string.",
+                                "A **cache map** from normalized query to `{ results, fetchedAt }`.",
+                                "A **request id** mechanism (`lastRequestId`, `activeRequestId`) to ignore stale responses."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Data-model mistakes to avoid",
+                            "items": [
+                                "Only storing `results` without keeping track of which **query** produced them.",
+                                "Not distinguishing between **empty results** and **error** in the data.",
+                                "Relying on implicit order of Promises instead of an explicit `requestId`.",
+                                "Using raw `query` (with spaces / case differences) as the cache key without normalization.",
+                                "Embedding the whole cache inside each component instance when a shared controller would do."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How the data typically evolves over time",
+            "steps": [
+                {
+                    "title": "1. Initial state",
+                    "text": "`query = ''`, `debouncedQuery = ''`, `status = 'idle'`, `results = []`, `error = null`, `lastRequestId = 0`, `activeRequestId = null`, `cache = {}`."
+                },
+                {
+                    "title": "2. User types",
+                    "text": "Every keystroke updates `query`. The debounce timer later copies `query` into `debouncedQuery` and triggers a search flow for that value."
+                },
+                {
+                    "title": "3. Cache check & request tracking",
+                    "text": "For `debouncedQuery`, the controller normalizes it and checks `cache`. If there’s no fresh entry, it sets `status = 'loading'`, increments `lastRequestId`, sets `activeRequestId` and calls the async search."
+                },
+                {
+                    "title": "4. Response handling",
+                    "text": "When a response resolves, it comes with the `requestId` that was active when it started. If `requestId !== activeRequestId`, the response is ignored. If it matches, we set `results`, `status = 'success'`, `error = null`, and write a new `SearchCacheEntry` into `cache`."
+                },
+                {
+                    "title": "5. Subsequent queries",
+                    "text": "When the user repeats a previous query, the controller hits `cache` first and can fill `results` immediately, skipping the async call if the entry is still considered fresh."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Core model",
+                    "value": "SearchState + SearchCache",
+                    "helperText": "Together they describe what the user sees and what we can reuse."
+                },
+                {
+                    "label": "Key safety field",
+                    "value": "activeRequestId",
+                    "helperText": "Prevents stale responses from overriding the latest query."
+                },
+                {
+                    "label": "Cache key rule",
+                    "value": "normalized query",
+                    "helperText": "Trimmed + lowercased to avoid duplicate entries for the same text."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "If your data model is clear—live vs debounced query, explicit status, cache with timestamps, and a request id—then debouncing, caching and pseudo-cancel all become straightforward to implement. That’s exactly what the interviewer wants to see."
+        }
+    ]
+}

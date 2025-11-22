@@ -21,5 +21,38 @@
             "global-state"
         ],
         "type": "system-design"
+    },
+    {
+        "id": "multi-step-form-autosave",
+        "title": "Multi-step Form with Autosave",
+        "description": "Design a 4-step form with validation, step transitions, a progress bar, and automatic autosave to localStorage. Users should be able to refresh or leave the page and continue where they left off. Key considerations include form architecture, throttled/debounced autosave, inline vs submit validation, dirty-state tracking, and restoring from saved drafts.",
+        "tags": [
+            "forms",
+            "autosave",
+            "validation"
+        ],
+        "type": "system-design"
+    },
+    {
+        "id": "realtime-search-debounce-cache",
+        "title": "Real-time Search with Debounce & Caching",
+        "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query → results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
+        "tags": [
+            "search",
+            "debounce",
+            "caching"
+        ],
+        "type": "system-design"
+    },
+    {
+        "id": "dashboard-widgets-draggable-resizable",
+        "title": "Dashboard with Draggable & Resizable Widgets",
+        "description": "Design a customizable dashboard made of widgets that the user can rearrange and resize. Widgets live on a grid layout, can be dragged to change position, and resized via handles. The dashboard layout is persisted (e.g. localStorage snapshot) so the user sees the same configuration on reload.\n\nKey considerations include: drag & drop architecture for widgets, grid-based layout with snapping and collision handling, resize handles with min/max constraints, re-render optimizations so drag/resize feel smooth (60 FPS target), and saving/restoring layout snapshots for each user.",
+        "tags": [
+            "dashboard",
+            "drag-drop",
+            "performance"
+        ],
+        "type": "system-design"
     }
 ]

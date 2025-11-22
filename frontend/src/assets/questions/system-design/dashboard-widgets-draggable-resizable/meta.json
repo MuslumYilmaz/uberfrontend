@@ -1,0 +1,38 @@
+{
+    "id": "dashboard-widgets-draggable-resizable",
+    "title": "Drag & Resize Dashboard",
+    "description": "Design a customizable dashboard made of widgets that the user can rearrange and resize. Widgets live on a grid layout, can be dragged to reorder/change position, and resized via handles. The dashboard layout is persisted (e.g. localStorage snapshot) so the user sees the same configuration on reload.\n\nKey considerations:\n- Drag & drop architecture for widgets (pointer / mouse / touch support).\n- Grid-based layout for positioning (rows/columns, collision handling, snap-to-grid behavior).\n- Resize handles per widget (update width/height while respecting min/max constraints).\n- Re-render optimization so dragging/resizing feels smooth (60 FPS target) even with many widgets.\n- Saving and restoring layout snapshots (positions, sizes, widget types) from localStorage.\n\nYou should be prepared to talk about: how the layout engine works (grid model, collision resolution, snapping rules), how to keep the drag/resizing interaction smooth (requestAnimationFrame, lightweight DOM updates, minimizing React/Angular re-renders), and how to avoid performance issues on large dashboards (many widgets) while still persisting configuration reliably.",
+    "tags": [
+        "dashboard",
+        "drag-drop",
+        "performance"
+    ],
+    "type": "system-design",
+    "sections": [
+        {
+            "key": "R",
+            "title": "Requirements exploration",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}

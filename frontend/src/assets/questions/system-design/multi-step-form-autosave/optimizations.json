@@ -1,0 +1,166 @@
+{
+    "key": "O",
+    "title": "Optimizations & Deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this last step, the interviewer wants to see if you understand where a multi-step autosaving form can go wrong in the real world: too many writes to localStorage, broken drafts after schema changes, validation that lags, or confusing \"dirty\" behavior. You should talk about performance, robustness, and how you’d evolve the form as it grows."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First I’d build a correct, readable implementation: central form state, debounced autosave, clear validation. Then I’d look at usage: how often does autosave run, how big is the JSON, what happens when we change fields? Based on that, I’d tune autosave intervals, handle schema versions, and improve dirty-state detection so we don’t write unnecessarily.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You don’t over-engineer; you start from a simple baseline and then optimize.\n- You know the main bottlenecks: localStorage write frequency, large JSON, expensive validation.\n- You understand draft versioning and migration, not just \"stringify and hope\".\n- You can explain trade-offs clearly: frequency vs safety, inline vs submit validation, flat vs nested structure as the form grows."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Pick 2–3 realistic pain points: frequent edits (lots of autosaves), big form JSON, changing requirements. Walk through how you’d detect the problem (metrics/logging) and what small design changes you’d make to keep the form fast and reliable."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Baseline hygiene you should mention",
+                            "items": [
+                                "Use **debounce** (or throttle) for autosave, not `setItem` on every keystroke.",
+                                "Avoid running **full-form validation** on every single change; use step/field-level validation most of the time.",
+                                "Serialize only the **form model + step index** into the draft, not transient UI state.",
+                                "Guard `JSON.parse` with try/catch so a corrupt draft doesn’t break the page.",
+                                "Clear the draft on successful submit to avoid restoring stale data later."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Deep-dive topics you can bring up",
+                            "items": [
+                                "Versioning: what happens when you add/remove fields or steps?",
+                                "Dirty detection: how do you avoid writing the exact same snapshot again and again?",
+                                "Validation cost: can you validate just the current step instead of everything?",
+                                "LocalStorage limits: what if the JSON grows larger over time?",
+                                "Offline and multiple tabs: how do you behave when two tabs edit the same form?"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Deep-dive angles and how to explain them",
+            "columns": [
+                "Topic",
+                "Angle",
+                "How you talk about it"
+            ],
+            "rows": [
+                [
+                    "Autosave debounce tuning",
+                    "Safety vs performance",
+                    "\"I’d start with something like a 1s debounce: fast enough that users rarely lose work, slow enough not to spam localStorage. If profiling or logs show heavy write volume, I’d increase it or only autosave when the user pauses typing or changes steps.\""
+                ],
+                [
+                    "Dirty-state detection",
+                    "Avoid unnecessary writes",
+                    "\"Instead of always marking dirty on every keystroke, I’d compare the current form to the last saved snapshot at a coarse level (e.g. a hash or last-changed timestamp per step) so we skip autosave when nothing has actually changed.\""
+                ],
+                [
+                    "Schema changes & versioning",
+                    "Long-lived drafts",
+                    "\"The draft contains a `version`. When the app loads, if the version is older, I can migrate it: add new fields with defaults, drop removed fields, or in the worst case discard the draft with a clear message. That prevents runtime errors from unexpected shapes.\""
+                ],
+                [
+                    "Large form JSON",
+                    "Managing size & cost",
+                    "\"If the form becomes very large, I’d ensure we only store the fields we truly need for draft restore. If we’re hitting size limits, we can compress some structures or split very heavy sub-sections into their own drafts keyed by id.\""
+                ],
+                [
+                    "Validation strategy",
+                    "UX vs correctness",
+                    "\"Inline validation should be lightweight—field-level checks on blur/change. Full, cross-step validation only runs on Next or Submit so we don’t block typing with heavy rules. This keeps the form snappy while still catching global issues.\""
+                ]
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Optimization path you should describe",
+            "steps": [
+                {
+                    "title": "1. Ship a correct baseline",
+                    "text": "Central form model, step-aware validation, debounced autosave, clean draft restore/discard flow. No premature micro-optimizations."
+                },
+                {
+                    "title": "2. Observe real usage",
+                    "text": "Track how often autosave runs, average draft size, and how often drafts are actually restored. Watch for errors parsing drafts in the wild."
+                },
+                {
+                    "title": "3. Reduce noise and cost",
+                    "text": "Adjust debounce interval, avoid saving when nothing changed, and consider only saving on certain events (e.g. leaving a step) for very large forms."
+                },
+                {
+                    "title": "4. Harden drafts",
+                    "text": "Add versioning, migration paths, and better error handling so drafts from older releases don’t break newer forms."
+                },
+                {
+                    "title": "5. Polish UX",
+                    "text": "Surface subtle feedback like \"Saving… / Saved\" indicators, show last saved time, and ensure validation messages are clear and step-specific."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Autosave strategy",
+                    "value": "Debounced snapshot",
+                    "helperText": "Write only when the user pauses, not on every keystroke."
+                },
+                {
+                    "label": "Key risk",
+                    "value": "Stale or broken drafts",
+                    "helperText": "Solved by versioning + safe parsing + clear fallbacks."
+                },
+                {
+                    "label": "Strong senior signal",
+                    "value": "Data-driven tuning",
+                    "helperText": "You talk about measuring autosave behavior and adjusting, not guessing."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Great candidates don’t just say \"I’ll use localStorage\". They explain how often they save, how they detect real changes, how they migrate drafts when the schema evolves, and how they keep validation fast and focused as the form grows."
+        }
+    ]
+}

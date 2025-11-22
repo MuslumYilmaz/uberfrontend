@@ -1,0 +1,172 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see the public API of your search module: how components, hooks, or utilities are used from the outside. You should show that other engineers can use your real-time search without knowing anything about debouncing, caching, or request ids."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I’d expose a simple `useSearch` hook (or controller) that takes an async search function and options like debounce delay and cache TTL, and returns `{ query, setQuery, results, loading, error, clear }`. The hook hides debouncing, caching and stale-response handling; the UI just binds the input and renders results based on state.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A **small, ergonomic surface**: a couple of props/methods, not a maze.\n- Clear inputs: query string, async search function, config options.\n- Clear outputs: query, results, loading, error, maybe some helpers.\n- No leaking of internal details like timers, request ids or raw cache map.\n- A story for empty/no-results/error states in the API shape."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Think like a library author: \"What minimal API would I want to consume?\" Describe function signatures and return values. You don’t need perfect TypeScript, but you should be able to say: \"`useSearch` accepts an async search function and returns query + state + setters.\""
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type SearchStatus = 'idle' | 'loading' | 'success' | 'error';\n\ninterface UseSearchOptions {\n  debounceMs?: number;        // e.g. 300–500ms\n  cacheTtlMs?: number;        // how long cache entries stay fresh\n  minQueryLength?: number;    // avoid searching for 1-char queries\n}\n\n// Async function provided by the caller (e.g. wraps fetch/Axios/etc.)\ntype SearchFn<T> = (query: string) => Promise<T[]>;\n\ninterface UseSearchResult<T> {\n  query: string;              // current input value\n  setQuery: (value: string) => void;\n\n  status: SearchStatus;\n  results: T[];\n  error: string | null;\n\n  hasSearched: boolean;       // false until first non-empty search\n  clear: () => void;          // clears query + results\n  retry: () => void;          // re-run search for current query\n}\n\nfunction useSearch<T>(\n  searchFn: SearchFn<T>,\n  options?: UseSearchOptions\n): UseSearchResult<T> {\n  // implementation hidden; debouncing, caching and requestId tracking live here\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / prop",
+                "Shape (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "SearchFn",
+                    "(query: string) => Promise<Result[]>",
+                    "\"The caller passes an async `searchFn(query)` that returns a Promise of results. My hook doesn’t care how it’s implemented; it just treats it as a black box.\""
+                ],
+                [
+                    "UseSearchOptions.debounceMs",
+                    "number (e.g. 300–500)",
+                    "\"`debounceMs` controls how long we wait after the last keystroke before calling `searchFn`. This lets consumers tune responsiveness vs request volume.\""
+                ],
+                [
+                    "UseSearchOptions.cacheTtlMs",
+                    "number (ms)",
+                    "\"`cacheTtlMs` defines how long cached results are considered fresh. If a query is repeated within that window, we serve cached results instantly.\""
+                ],
+                [
+                    "UseSearchResult",
+                    "{ query, setQuery, status, results, error, hasSearched, clear, retry }",
+                    "\"The hook returns the current `query`, a `setQuery` setter for the input, status flags, results, an error string, and small helpers like `clear` and `retry`. The UI can build all states from this.\""
+                ],
+                [
+                    "Status enum",
+                    "'idle' | 'loading' | 'success' | 'error'",
+                    "\"`status` drives the UI: when it's `loading`, we show skeleton/spinner; `success` shows results (or 'no results' if empty); `error` shows an inline error with a Retry button.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly expose",
+                            "items": [
+                                "A way to **update the query** (`setQuery`) while keeping typing instant.",
+                                "A **status** field and **error** string to distinguish loading/success/error.",
+                                "A **results** array that always reflects the latest valid query.",
+                                "A `clear()` helper to reset query + results in one call.",
+                                "A `retry()` helper to re-run the last debounced search after an error.",
+                                "Config for **debounceMs**, **cacheTtlMs**, and **minQueryLength**."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid exposing",
+                            "items": [
+                                "Timer handles or raw `setTimeout` references.",
+                                "Internal **request ids** or the full internal cache map.",
+                                "Low-level flags like `isDebouncing` that don’t map directly to UX decisions.",
+                                "APIs that require the caller to manage their own request ordering.",
+                                "APIs that change shape depending on which state you’re in."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical call flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Setup",
+                    "text": "The component calls `const search = useSearch(searchFn, { debounceMs: 400, cacheTtlMs: 30000 });` and binds `value={search.query}` + `onChange={e => search.setQuery(e.target.value)}` to the input."
+                },
+                {
+                    "title": "2. Typing",
+                    "text": "As the user types, `setQuery` updates `query` immediately. The hook debounces updates internally and decides when to run `searchFn`."
+                },
+                {
+                    "title": "3. Cache + async search",
+                    "text": "When the debounce fires, the hook checks its internal cache. If there’s a fresh entry, it sets `results` and `status = 'success'` immediately. Otherwise, it sets `status = 'loading'` and calls `searchFn` with a tracked request id."
+                },
+                {
+                    "title": "4. Response / error",
+                    "text": "On success, the hook updates `results`, sets `status = 'success'`, clears `error`, and writes to cache. On failure, it sets `status = 'error'`, populates `error`, and exposes `retry()` so the UI can render a Retry button."
+                },
+                {
+                    "title": "5. Clear",
+                    "text": "If the user clicks a clear icon, the component calls `search.clear()`, which wipes `query`, `results`, `error`, and sets `status = 'idle'` without touching the cache."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "API style",
+                    "value": "Hook + options",
+                    "helperText": "One call wires in debouncing, caching, and state."
+                },
+                {
+                    "label": "UI contract",
+                    "value": "Query + state",
+                    "helperText": "Components only need `query`, setters, and status flags."
+                },
+                {
+                    "label": "Strong signal",
+                    "value": "No implementation leaks",
+                    "helperText": "Callers never see timers, request ids, or cache internals."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good search API makes complex behavior (debounce, caching, stale-response handling) invisible to consumers. If another engineer can build a polished search box using just your hook’s signature and state fields, you’ve designed the interface well."
+        }
+    ]
+}
