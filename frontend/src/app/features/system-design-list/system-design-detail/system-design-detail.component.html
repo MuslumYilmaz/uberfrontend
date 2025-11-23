@@ -182,5 +182,7 @@
         </nav>
     </div>
 
-    <app-footer></app-footer>
+    <app-footer mode="practice" [progressText]="progressText" [prevDisabled]="!hasPrev" [nextDisabled]="!hasNext"
+        (prev)="onPrev()" (next)="onNext()">
+    </app-footer>
 </div>

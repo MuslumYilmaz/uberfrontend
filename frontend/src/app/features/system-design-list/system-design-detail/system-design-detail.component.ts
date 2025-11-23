@@ -423,4 +423,33 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   anchorId(key: string) { return `sec-${key}`; }
+
+  get hasPrev(): boolean {
+    return this.idx > 0;
+  }
+
+  get hasNext(): boolean {
+    return this.idx < this.all.length - 1;
+  }
+
+  get progressText(): string {
+    return this.all.length ? ` ${this.idx + 1} / ${this.all.length}` : '';
+  }
+
+  private navToIndex(index: number) {
+    const target = this.all[index];
+    if (!target) return;
+    // this triggers route change -> paramMap subscription -> setCurrentById
+    this.router.navigate(['/system-design', target.id]);
+  }
+
+  onPrev() {
+    if (!this.hasPrev) return;
+    this.navToIndex(this.idx - 1);
+  }
+
+  onNext() {
+    if (!this.hasNext) return;
+    this.navToIndex(this.idx + 1);
+  }
 }
