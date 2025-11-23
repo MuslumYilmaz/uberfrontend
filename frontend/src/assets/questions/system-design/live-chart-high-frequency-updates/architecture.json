@@ -1,0 +1,182 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see how you structure a live chart: where data enters, where it’s buffered, how often you render, and what actually draws the pixels. You should clearly separate **data flow**, **state store**, **render loop**, and **chart renderer** (library or custom)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I’d have a small data stream feeding a bounded buffer of points, a chart store that owns the current window, and a `requestAnimationFrame`-driven renderer that draws from that buffer using a Canvas-based chart (library or custom). Data arrival (every ~500ms) and rendering (every frame) are decoupled.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A clean pipeline: **source → buffer → render loop → chart**.\n- A **bounded window** of data, not infinite growth.\n- Clear choice of **rendering primitive** (chart lib vs custom Canvas/WebGL).\n- Use of **requestAnimationFrame** to control painting.\n- Awareness of where **OffscreenCanvas / Web Workers** could plug in later."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Draw 3–4 boxes: `DataSource` (WebSocket/polling) → `LiveStore` (bounded buffer) → `RenderLoop (rAF)` → `ChartView` (Canvas/ECharts/etc.). Describe how data moves forward and how the view reads from the store to render."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "Data source",
+                    "Produces new samples every ~500ms (or faster in bursts).",
+                    "\"A data source (WebSocket, SSE or polling) pushes `(timestamp, value)` samples into the frontend stream.\""
+                ],
+                [
+                    "Live store / buffer",
+                    "Owns a bounded sliding window of recent points.",
+                    "\"A small store keeps only the last X seconds or last N points. Every new sample is appended; old samples are evicted so memory stays bounded.\""
+                ],
+                [
+                    "Render loop (rAF)",
+                    "Decides when to redraw the chart; coalesces multiple updates.",
+                    "\"A `requestAnimationFrame` loop checks if new data arrived since the last paint and, if so, triggers a redraw. We never render more often than the display refreshes.\""
+                ],
+                [
+                    "Chart renderer",
+                    "Actually draws the line(s) using Canvas/WebGL or a library.",
+                    "\"The renderer reads the current buffer and draws: either via a Canvas-based library (ECharts/Chart.js) or via a custom Canvas/WebGL implementation for maximum control.\""
+                ],
+                [
+                    "Optional worker/offscreen layer",
+                    "Offloads heavy work from the main thread (later optimization).",
+                    "\"If the stream is heavy, we can move data processing or even rendering to a Web Worker with OffscreenCanvas, so the main thread stays responsive.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "text",
+            "text": "**State & components at a glance**\nYou should be able to describe a minimal architecture with a store and a chart view:"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "interface SamplePoint {\n  t: number;   // timestamp (ms)\n  v: number;   // value\n}\n\ninterface LiveChartState {\n  points: SamplePoint[];   // bounded window (e.g. last 60s)\n  maxPoints: number;       // safety cap\n  hasNewData: boolean;     // set when new data arrives\n}\n\n// Rough idea of the architecture\nclass LiveChartStore {\n  state: LiveChartState;\n\n  push(sample: SamplePoint) {\n    this.state.points.push(sample);\n    if (this.state.points.length > this.state.maxPoints) {\n      this.state.points.shift(); // drop oldest\n    }\n    this.state.hasNewData = true;\n  }\n}\n\nfunction startRenderLoop(store: LiveChartStore, render: (points: SamplePoint[]) => void) {\n  function frame() {\n    if (store.state.hasNewData) {\n      render(store.state.points);\n      store.state.hasNewData = false;\n    }\n    requestAnimationFrame(frame);\n  }\n  requestAnimationFrame(frame);\n}\n"
+        },
+        {
+            "type": "text",
+            "text": "The important part: data can arrive more often or less often than frames, but the render loop always draws from the **latest** buffer when needed."
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "Data arrival and rendering are **decoupled** (source vs rAF).",
+                                "The store keeps a **sliding window** of points, not infinite history.",
+                                "Each new sample updates the store and marks the chart as **dirty**.",
+                                "The render loop uses the **latest** buffer, not one update per sample.",
+                                "You’d likely choose **Canvas** (or a Canvas-based library) over SVG for frequent updates with many points."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture pitfalls to avoid",
+                            "items": [
+                                "Redrawing synchronously inside every data tick (e.g. every WebSocket message).",
+                                "Letting the points array grow **unbounded** over time.",
+                                "Creating new chart instances on each update instead of updating one instance.",
+                                "Running heavy aggregation/downsampling logic inside the render loop.",
+                                "Tying the chart directly to the data source instead of an intermediate store."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Initialize chart",
+                    "text": "Create the chart instance (library or custom Canvas), configure axes and styles, and initialize an empty `LiveChartStore` with a max window size."
+                },
+                {
+                    "title": "2. Start data stream",
+                    "text": "Subscribe to a WebSocket/SSE/polling source. Every time a sample arrives, normalize it into `SamplePoint` and call `store.push(point)`."
+                },
+                {
+                    "title": "3. Start render loop",
+                    "text": "Kick off a `requestAnimationFrame` loop. On each frame, if `hasNewData` is true, update the chart with the store’s current `points` (incremental update or fast redraw)."
+                },
+                {
+                    "title": "4. Incremental vs full updates",
+                    "text": "If the charting API allows, append the new point and remove the oldest point from the series (incremental). Otherwise, re-set the series data from the current `points` buffer and let the renderer redraw the line."
+                },
+                {
+                    "title": "5. Long-running behavior",
+                    "text": "As time passes, the store keeps the buffer bounded; old data is dropped or aggregated. If CPU usage becomes high, you can later move expensive math to a Worker or adjust how many points you draw."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Core pipeline",
+                    "value": "Source → Store → rAF → Chart",
+                    "helperText": "Each stage has a clear job."
+                },
+                {
+                    "label": "Memory rule",
+                    "value": "Sliding window",
+                    "helperText": "Always cap the number of points in memory."
+                },
+                {
+                    "label": "Rendering primitive",
+                    "value": "Canvas / WebGL",
+                    "helperText": "Better suited than SVG for frequent updates and many points."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "At architecture level, this problem is about a **bounded data store** plus a **controlled render loop**. If you can explain source → store → rAF → chart clearly, and justify a Canvas-based renderer, you’re speaking at exactly the level the interviewer wants."
+        }
+    ]
+}

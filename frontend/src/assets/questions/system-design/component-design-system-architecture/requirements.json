@@ -1,0 +1,169 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to frame the problem like a design-system architect: what this system is for, who uses it, which components and platforms it must support, and which constraints (theming, accessibility, performance, versioning) matter most. You are not listing random UI components; you are defining a product that many teams will depend on for years."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you’re solving:**\nA reusable, versioned component library (buttons, inputs, tabs, banners, dialogs, etc.) that:\n- Is **token-driven** (colors, spacing, typography, radii, shadows, motion).\n- Supports **light/dark**, **high contrast**, and **RTL**.\n- Exposes **accessible, consistent APIs** (props/events/slots).\n- Can be consumed by multiple products without breaking them every release.\n- Stays **tree-shakable** and friendly to bundle size."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Do you think in **tokens first**, then components, then pages?\n- Can you reason about **CSS architecture** (CSS vars, utilities, BEM, Tailwind-style tokens) at scale?\n- Do you design **accessibility-first APIs** (focus, keyboard, ARIA) instead of bolting it on?\n- Do you understand **versioning & breaking changes** for a shared library?\n- Can you keep it **performant and tree-shakable** as it grows?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Talk like you’re scoping a real design system with a design lead and multiple product teams. Start from goals (consistency, accessibility, theming, performance), then ask targeted questions about platforms, theming needs, and how the system will be distributed and versioned."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "Conversation flow you should aim for",
+            "steps": [
+                {
+                    "title": "1. Understand product & platforms",
+                    "text": "Clarify which apps will use this system (marketing site, dashboard, mobile web, internal tools) and which frontend stacks are in play (React/Angular/Web Components/etc.)."
+                },
+                {
+                    "title": "2. Clarify theming & branding needs",
+                    "text": "Ask how many brands/themes exist (default, partner, white-label), and whether you need light/dark, high contrast, and RTL from day one or as an extension."
+                },
+                {
+                    "title": "3. Define first-wave component scope",
+                    "text": "Agree on a v1 set: buttons, inputs, select, textarea, checkbox/radio, tabs, banners/alerts, dialog/modal, tooltip, maybe layout primitives (stack, grid)."
+                },
+                {
+                    "title": "4. Set non-functional expectations",
+                    "text": "Discuss accessibility bar (WCAG level), performance/bundle constraints, browser support, and requirements around tree-shaking and code splitting."
+                },
+                {
+                    "title": "5. Align on distribution & versioning",
+                    "text": "Clarify how teams will consume it (npm package, mono-repo), what the release model is (semver), and how you’ll handle breaking changes and migrations."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions you should ask",
+                            "items": [
+                                "Which **frameworks/runtimes** must the system support? (React only? Also Angular/Vue? Plain Web Components?)",
+                                "Is this for **one product** or a **suite** of products/brands?",
+                                "Do we have an existing **brand guideline** or token set (colors, spacing, typography), or are we defining them from scratch?",
+                                "Do we need **dark mode**, **high-contrast mode**, and **RTL** support from day one?",
+                                "What is the expected **accessibility level** (e.g. WCAG 2.1 AA, keyboard-only users, screen readers)?",
+                                "How do teams ship today: monorepo, multiple repos, internal npm registry?",
+                                "Are there strict **bundle size budgets** or performance SLOs we must design for?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "Component APIs should feel **consistent** (naming, events, slots/children).",
+                                "The system must be **token-driven**, not hard-coded hex values and magic numbers.",
+                                "Accessibility should be **built-in** (focus trapping, ARIA, keyboard behavior), not optional.",
+                                "The library must be **tree-shakable** and avoid large global side effects.",
+                                "We need a clear **versioning and deprecation policy** (semver, migration guides).",
+                                "Documentation, usage examples, and maybe **Storybook-style playgrounds** are expected."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Key design axes you should surface early",
+            "columns": [
+                "Axis",
+                "Options / Questions",
+                "How you talk about it"
+            ],
+            "rows": [
+                [
+                    "Platform strategy",
+                    "React-only vs framework-agnostic (Web Components) vs multiple bindings",
+                    "\"I’d like to know if this is a React-focused system or a platform-agnostic one. For multi-framework support, I might choose Web Components or a core + bindings approach.\""
+                ],
+                [
+                    "Token model",
+                    "Raw tokens vs semantic tokens",
+                    "\"We should distinguish raw tokens (e.g. `blue-500`) from semantic tokens (e.g. `color-bg-primary`) so themes like dark/high-contrast can swap meanings without changing component code.\""
+                ],
+                [
+                    "CSS architecture",
+                    "CSS vars, utility classes, BEM, Tailwind-style tokens",
+                    "\"I’d lean on CSS custom properties for tokens, plus either a small utility layer or BEM-ish class structure, so theming and overrides stay manageable at scale.\""
+                ],
+                [
+                    "Accessibility baseline",
+                    "Keyboard, screen readers, ARIA",
+                    "\"Every interactive component (button, dialog, tabs) should ship with correct roles, ARIA attributes, and keyboard behavior by default, so teams can’t accidentally ship inaccessible patterns.\""
+                ],
+                [
+                    "Release & versioning model",
+                    "Semver, deprecation, migration",
+                    "\"I’d like to agree on semantic versioning and a clear policy: breaking changes only in major versions, with deprecation warnings and migration notes for consuming teams.\""
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Initial component set",
+                    "value": "8–12 core components",
+                    "helperText": "Buttons, inputs, selects, tabs, alerts, dialog, etc."
+                },
+                {
+                    "label": "Token layers",
+                    "value": "Raw + semantic",
+                    "helperText": "Enable theming without touching component internals."
+                },
+                {
+                    "label": "Supported modes",
+                    "value": "Light, dark, HC, RTL",
+                    "helperText": "Designed into tokens/layout from the beginning."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "You’re not just listing \"we need a button\". You’re defining a long-lived product: token-driven, accessible by default, themable (dark/HC/RTL), versioned with semver, and structured so teams can adopt it incrementally without exploding bundle size."
+        }
+    ]
+}

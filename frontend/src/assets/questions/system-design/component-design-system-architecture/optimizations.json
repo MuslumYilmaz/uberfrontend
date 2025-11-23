@@ -1,0 +1,168 @@
+{
+    "key": "O",
+    "title": "Optimizations & Deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you understand **how a design system behaves over years**: bundle size, tree-shaking, dark mode/RTL costs, CSS architecture debt, and how you safely evolve APIs across many teams. You should talk about performance (runtime + bundle size) and long-term maintainability (versioning, deprecations, tooling), not just “we have a button library”."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First I’d ship a clean, token-first v1: CSS-vars-based theming, accessible components, and side-effect-free modules. Then I’d watch bundle size, runtime theming overhead, and usage patterns. Based on that, I’d tune our packaging (per-component entry points), enforce token usage, and introduce tooling (lint rules, codemods) so the system scales safely across many teams.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You care about **bundle size** and **tree-shaking**, not just API shape.\n- You understand **CSS vars vs runtime JS theming** trade-offs.\n- You think about **dark mode / high contrast / RTL** costs at scale.\n- You have a plan for **breaking changes** (semver, deprecation, codemods).\n- You use **tooling** (lint, tests, visual regression) to keep quality over time."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Pick 2–3 realistic long-term pain points: bundle bloat, token creep, inconsistent props, or breaking changes. Explain what you’d measure, how you’d refactor the design system’s packages, and how you’d support teams during migrations."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Performance & bundle-size hygiene to mention",
+                            "items": [
+                                "Export components from **per-component modules** (e.g. `@acme/ds/button`) with **no top-level side effects**.",
+                                "Keep styles **co-located** with components but compiled to **static CSS** using CSS variables, not runtime JS style generation for every render.",
+                                "Use **CSS custom properties** for theming so light/dark/high contrast switches are mostly DOM/class changes, not full re-renders.",
+                                "Provide a main barrel (`@acme/ds`) for DX, but recommend **deep imports** in performance-sensitive apps.",
+                                "Split heavy or rarely used components (date pickers, complex tables) behind **dynamic imports/code splitting**.",
+                                "Ensure icons are **individually importable** (per-icon modules) instead of shipping one giant sprite by default."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Maintainability & evolution topics to mention",
+                            "items": [
+                                "Adopt **semantic versioning**: breaking changes only in major versions, with clear migration notes.",
+                                "Mark deprecated props/tokens in types/docs and provide **codemods** where possible.",
+                                "Keep a **changelog** and usage guidelines per component, linked to a design spec.",
+                                "Introduce **lint rules** (ESLint/TS) that enforce token usage and forbid raw colors/spacings.",
+                                "Use **visual regression tests** (per component) to catch unintended UI changes across releases.",
+                                "Add **design system health checks**: track which tokens/components are used and where."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Deep-dive angles and how to explain them",
+            "columns": [
+                "Topic",
+                "Angle",
+                "How you talk about it"
+            ],
+            "rows": [
+                [
+                    "Token-driven theming cost",
+                    "CSS vars vs JS theming",
+                    "\"I’d lean on CSS variables so theme switches (light/dark/HC) are just class/data-attribute changes that update vars, not a full re-render driven by JS. That keeps runtime overhead low and works well with SSR.\""
+                ],
+                [
+                    "Tree-shaking & package layout",
+                    "Side-effect-free modules",
+                    "\"Each component lives in its own module with no side effects, and we avoid a global stylesheet import that touches everything. That way, importing `Button` doesn’t pull all tabs, dialogs, and charts into the bundle.\""
+                ],
+                [
+                    "Dark mode + HC + RTL",
+                    "Cheap, global toggles",
+                    "\"Instead of separate component variants for dark/HC/RTL, I’d use semantic tokens and logical CSS properties. Switching `data-theme` or `dir` at the root updates the look without changing component code.\""
+                ],
+                [
+                    "Versioning & breaking changes",
+                    "Safe evolution over years",
+                    "\"We’d follow semver and treat the design system as a product: deprecate props/tokens first, add warnings in docs and types, then remove them in the next major version with codemods and migration guides.\""
+                ],
+                [
+                    "Bundle-size monitoring",
+                    "Prevent quiet regressions",
+                    "\"We can add bundle-size checks in CI for `@acme/ds` and example apps. If a change increases size beyond a threshold, we investigate whether a new dependency or cross-import is preventing tree-shaking.\""
+                ]
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Optimization path you should describe",
+            "steps": [
+                {
+                    "title": "1. Ship a clean v1",
+                    "text": "Deliver a token-first, CSS-vars-based system with accessible components and side-effect-free modules. Don’t prematurely micro-optimize, but keep the structure tree-shakable."
+                },
+                {
+                    "title": "2. Measure usage & size",
+                    "text": "Use bundle analyzers and telemetry to see which components and tokens are used most, and how much weight the design system adds to main bundles."
+                },
+                {
+                    "title": "3. Refine packaging",
+                    "text": "If bundle size is high, refactor exports to favor deep imports, split out heavy components, and ensure that shared utilities don’t accidentally pull in the whole library."
+                },
+                {
+                    "title": "4. Add tooling & guardrails",
+                    "text": "Introduce lint rules, TS types, and maybe codemods that enforce token usage, consistent props, and safe upgrades. Add visual regression tests around key components."
+                },
+                {
+                    "title": "5. Manage evolution",
+                    "text": "Treat major releases like product launches: deprecation periods, migration guides, and automated checks. This keeps the design system evolving without constantly breaking consuming teams."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Key performance lever",
+                    "value": "Per-component, side-effect-free modules",
+                    "helperText": "Lets bundlers tree-shake unused components."
+                },
+                {
+                    "label": "Key theming lever",
+                    "value": "CSS vars + semantic tokens",
+                    "helperText": "Cheap light/dark/HC/RTL without extra JS."
+                },
+                {
+                    "label": "Key longevity lever",
+                    "value": "Semver + deprecation + tooling",
+                    "helperText": "Lets the system evolve without chaos."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong design-system answer is not just “we have tokens and components”. It shows how you keep the library **lean**, **themed**, and **accessible**, and how you evolve it safely with semver, guardrails, and tooling as dozens of teams rely on it."
+        }
+    ]
+}

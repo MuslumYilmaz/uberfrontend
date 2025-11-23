@@ -1,0 +1,173 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see if you can describe the live chart purely as data: samples in, bounded buffers, maybe a queue for pending updates, and some config describing the time window. You should show that everything is driven by a small set of data structures, not hidden inside random chart-library calls."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll model each sample as `{ t, v }` (timestamp and value), keep a bounded array of points as a sliding window, and track a few flags like `hasNewData`. Optional queues or ring buffers help handle bursts. Configuration like window length and max points is explicit, so memory is always under control.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A clear **SamplePoint** shape (timestamp + value, maybe metadata).\n- A **bounded buffer** for the live window (array, ring buffer, deque).\n- Config for **time window** (ms) and **maxPoints** per series.\n- Separation between **persistent config** vs **ephemeral runtime state**.\n- A place to reason about **queueing vs dropping** on bursts."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name 3–4 types: `SamplePoint`, `LiveChartConfig`, `LiveChartState`. Tie each field back to behavior: windowing, memory caps, queueing strategy, and knowing whether there’s new data to render."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type SeriesId = string;\n\ninterface SamplePoint {\n  t: number;    // timestamp in ms (Date.now())\n  v: number;    // value\n}\n\ninterface LiveChartConfig {\n  windowMs: number;      // how much history to keep in time (e.g. 60_000 for 60s)\n  maxPoints: number;     // hard cap per series (e.g. 1_000)\n  maxPendingFrames: number; // how many unrendered batches we keep before dropping\n}\n\ninterface SeriesState {\n  id: SeriesId;\n  points: SamplePoint[];   // sliding window buffer, sorted by t\n}\n\ninterface LiveChartState {\n  config: LiveChartConfig;\n  series: Record<SeriesId, SeriesState>;\n  lastRenderedAt: number | null;   // timestamp of last paint\n  hasNewData: boolean;             // set when any series got new points\n  pendingBatches: number;          // count of unseen updates (for queue/drop logic)\n}\n\n// Optional: a small enum to describe how we handle overload\ntype OverloadStrategy = 'drop-oldest' | 'drop-newest' | 'downsample';\n"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define out loud",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "SamplePoint",
+                    "t, v",
+                    "\"Each data point is a `{ t, v }` pair: `t` is the timestamp in ms, `v` is the numeric value. All rendering and windowing logic uses this structure.\""
+                ],
+                [
+                    "LiveChartConfig",
+                    "windowMs, maxPoints, maxPendingFrames",
+                    "\"`LiveChartConfig` defines how big our in-memory history can be, and how much backlog we tolerate. `windowMs` caps the visible time window; `maxPoints` caps point count; `maxPendingFrames` controls whether we queue or drop under load.\""
+                ],
+                [
+                    "SeriesState",
+                    "id, points[]",
+                    "\"`SeriesState` tracks one line on the chart: it has an id and a sorted `points[]` array that holds only the points within the current window and under `maxPoints`.\""
+                ],
+                [
+                    "LiveChartState",
+                    "config, series, lastRenderedAt, hasNewData, pendingBatches",
+                    "\"`LiveChartState` is the central store: it knows the config, the current data for each series, when we last rendered, whether there’s new data, and how many update batches are waiting to be rendered.\""
+                ],
+                [
+                    "OverloadStrategy",
+                    "'drop-oldest' | 'drop-newest' | 'downsample'",
+                    "\"If data comes in faster than we can render, `OverloadStrategy` tells us how to behave: we can drop oldest points, drop the newest batch, or aggregate/downsample before inserting.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly include",
+                            "items": [
+                                "A **time-based window** (`windowMs`) so you don’t hold hours of data in memory by accident.",
+                                "A **maxPoints** cap per series, to keep draw calls cheap and arrays small.",
+                                "Per-series `points[]` that are **sorted by time** for easier rendering and trimming.",
+                                "A flag like `hasNewData` so the render loop can avoid unnecessary work.",
+                                "A counter like `pendingBatches` to reason about **queue vs drop** behavior under bursts.",
+                                "A config or strategy for how to handle **overload** (drop or downsample)."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Data-model mistakes to avoid",
+                            "items": [
+                                "Letting `points[]` grow indefinitely with no cap.",
+                                "Mixing **chart instance** or library objects into your state (keep it serializable).",
+                                "Storing duplicate data (same sample in multiple arrays) without a reason.",
+                                "Relying purely on index-based trimming without aligning to timestamps (time window).",
+                                "Not distinguishing between **config** and **runtime state** (e.g. hardcoding window size).",
+                                "No way to measure backlog, so you don’t know when to drop vs queue."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How the data evolves over time",
+            "steps": [
+                {
+                    "title": "1. Initialization",
+                    "text": "On mount, you create `LiveChartState` with an empty `series` map, set `windowMs` (e.g. last 60s), `maxPoints` (e.g. 1k per series), and `pendingBatches = 0`."
+                },
+                {
+                    "title": "2. New sample arrives",
+                    "text": "The data source produces `{ t, v }` for a series id. You normalize it into `SamplePoint` and push it into the corresponding `SeriesState.points` array."
+                },
+                {
+                    "title": "3. Trim & cap",
+                    "text": "After inserting, you drop any points older than `now - windowMs`, and if `points.length > maxPoints`, you trim the oldest points until the cap is respected."
+                },
+                {
+                    "title": "4. Mark as dirty",
+                    "text": "You set `hasNewData = true` and increment `pendingBatches`. If `pendingBatches` goes beyond `maxPendingFrames`, you apply your `OverloadStrategy` (e.g. merge batches, drop some, or downsample)."
+                },
+                {
+                    "title": "5. Render & reset flags",
+                    "text": "When the render loop runs and successfully draws the chart, you set `hasNewData = false`, decrement/reset `pendingBatches`, and update `lastRenderedAt`."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Core primitive",
+                    "value": "SamplePoint { t, v }",
+                    "helperText": "Everything else is just managing arrays of these."
+                },
+                {
+                    "label": "Memory guardrail",
+                    "value": "windowMs + maxPoints",
+                    "helperText": "Together they cap time span and number of points."
+                },
+                {
+                    "label": "Burst control",
+                    "value": "pendingBatches",
+                    "helperText": "Lets you decide when to queue vs drop frames."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "If you can describe the live chart as `SamplePoint` arrays inside a bounded `LiveChartState` with clear windowing and overload rules, you show that you’re designing a streaming system as data first, not as a tangle of chart-library calls."
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "id": "image-upload-preview",
+    "title": "Image Upload & Preview",
+    "description": "Design an Image Upload & Preview component that allows users to select an image, instantly preview it, validate its size and type, and simulate an upload process.\n\nFunctional requirements:\n- Let the user choose an image via file input (or optional drag-and-drop)\n- Immediately show a thumbnail preview using URL.createObjectURL\n- Validate file type (JPEG/PNG) before previewing\n- Validate max file size (e.g. 2 MB)\n- Display clear error feedback if validation fails\n- Show a loading/skeleton state while simulating an upload (1–2 seconds)\n- Allow replacing or removing the selected image\n- Ensure preview maintains aspect ratio and doesn’t stretch\n\nNon-functional:\n- Must work smoothly on mobile (touch-friendly)\n- Accessible: keyboard navigable, ARIA roles for errors, focus handling\n- State transitions should feel natural (initial → preview → uploading → uploaded)\n- Avoid memory leaks caused by stale object URLs\n- Drag-and-drop UX should not break default file input accessibility\n\nData constraints:\n- Only single-image upload is supported\n- Max file size: ~2 MB\n- Allowed MIME types: image/jpeg, image/png\n- Upload is simulated; no real backend integration\n",
+    "tags": [
+        "images",
+        "upload",
+        "validation"
+    ],
+    "sections": [
+        {
+            "key": "R",
+            "title": "Requirements exploration",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}

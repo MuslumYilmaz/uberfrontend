@@ -1,0 +1,171 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see how a product team would actually use your Image Upload & Preview component. You should define a small, predictable API: props to configure rules and labels, events to notify the parent about changes, and accessible markup that doesn’t require consumers to manually wire low-level ARIA attributes."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame the API:**\n\"From the outside, I’d expose a single component like `<ImageUploadPreview />` with a few props for validation rules (max size, allowed types), labels/strings, and callbacks for when the value changes. Consumers don’t touch `URL.createObjectURL` or the internal state machine – they just react to `onChange` / `onUploadComplete` and read a clean value object.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A simple, **high-level API** that hides file handling complexity.\n- Configurable **limits and labels** via props instead of hard-coded values.\n- Clear **events** for change, success, and optional error reporting.\n- Accessible by default: labels, `aria-*`, error messages handled internally.\n- Easy to extend to drag-and-drop or multiple files without breaking the contract."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe the API from the parent’s point of view: what props they pass, what callbacks they get, and what value shape they receive. Make it obvious that the parent doesn’t need to think about object URLs, input events, or validation order."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// Public props & events (framework-agnostic shape)\n\nexport interface UploadedImageValue {\n  file: File | null;           // the selected file (null if none)\n  previewUrl: string | null;   // stable URL while component is mounted\n  status: 'idle' | 'uploading' | 'uploaded' | 'error';\n  error?: string | null;       // optional, for status === 'error'\n}\n\nexport interface ImageUploadPreviewProps {\n  value?: UploadedImageValue;          // optional controlled mode\n  defaultValue?: UploadedImageValue;   // uncontrolled initial value\n\n  maxSizeBytes?: number;               // default ~2MB\n  allowedMimeTypes?: string[];         // default ['image/jpeg', 'image/png']\n  fakeUploadMs?: number;               // default 1500–2000\n\n  label?: string;                      // main label / button text\n  description?: string;                // helper text below control\n  errorMessageOverride?: string;       // optional custom error message\n\n  // accessibility\n  inputId?: string;                    // for external <label for=\"...\">\n  'aria-describedby'?: string;        // hook into form-level hint/error\n\n  // events\n  onChange?: (value: UploadedImageValue) => void;         // fires on select/remove\n  onUploadStart?: (file: File) => void;                   // when fake upload begins\n  onUploadComplete?: (value: UploadedImageValue) => void; // after fake upload success\n  onUploadError?: (error: string) => void;                // validation/upload error hook\n\n  // optional UX flags\n  enableDropzone?: boolean;            // show drag-and-drop area\n  disabled?: boolean;                  // disable all interactions\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core API surfaces you should define",
+            "columns": [
+                "Surface",
+                "Example shape",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "Configuration props",
+                    "`maxSizeBytes`, `allowedMimeTypes`, `fakeUploadMs`",
+                    "\"These props control validation and upload simulation. Teams can adapt the component to different contexts (avatars vs banners) without touching internal logic.\""
+                ],
+                [
+                    "Value & change",
+                    "`value`, `defaultValue`, `onChange`",
+                    "\"The component can work uncontrolled (internal state) or controlled (parent holds state). `onChange` always emits a full `UploadedImageValue` object representing the current state.\""
+                ],
+                [
+                    "Status callbacks",
+                    "`onUploadStart`, `onUploadComplete`, `onUploadError`",
+                    "\"These callbacks let the parent trigger analytics, enable/disable submit buttons, or show global notifications when an image is ready or fails.\""
+                ],
+                [
+                    "Accessibility hooks",
+                    "`inputId`, `aria-describedby`",
+                    "\"These hooks let the component integrate into bigger forms: external labels, shared helper text, or error messages from a form library.\""
+                ],
+                [
+                    "UX options",
+                    "`enableDropzone`, `disabled`",
+                    "\"Optional flags for nicer UX (drag-and-drop) and form states (disabling input during overall form submission).\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "How the component behaves (from the outside)",
+                            "items": [
+                                "When the user selects a file, the component validates it; if valid, it updates its internal value and calls `onChange` with the new `UploadedImageValue`.",
+                                "While the fake upload is running, `status` is `'uploading'`; the parent can react to this (e.g. disable a submit button).",
+                                "Once upload completes, `status` is `'uploaded'` and `onUploadComplete` is called.",
+                                "If validation fails, `status` is `'error'`, `error` contains a message, and `onUploadError` is called.",
+                                "\"Remove\" sets `file` and `previewUrl` back to `null` and emits an updated `UploadedImageValue` with `status: 'idle'`."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Accessibility behavior you should mention",
+                            "items": [
+                                "The control has a visible label (from `label` or external `<label for>`).",
+                                "Errors are rendered in an element with `role=\"alert\"` or wired via `aria-describedby` so screen readers announce them.",
+                                "\"Choose image\", \"Replace\", and \"Remove\" buttons are all keyboard-focusable and operable with Enter/Space.",
+                                "The preview image has an appropriate `alt` (e.g. \"Selected image preview\") or a prop to customize it.",
+                                "Focus order stays logical when the component appears in a form: label → main control → additional actions → error text."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical usage from a parent component",
+            "steps": [
+                {
+                    "title": "1. Configure rules",
+                    "text": "Parent passes size/type limits and label text: `<ImageUploadPreview maxSizeBytes={2 * 1024 * 1024} allowedMimeTypes={[\"image/jpeg\", \"image/png\"]} label=\"Upload avatar\" />`."
+                },
+                {
+                    "title": "2. Listen for changes",
+                    "text": "Parent subscribes to `onChange` and stores `UploadedImageValue` in its own form state, or lets the component stay uncontrolled for simple cases."
+                },
+                {
+                    "title": "3. React to upload lifecycle",
+                    "text": "Parent optionally uses `onUploadStart` / `onUploadComplete` to show toasts, log analytics, or enable a \"Save\" button once image is ready."
+                },
+                {
+                    "title": "4. Integrate with form & a11y",
+                    "text": "Parent wires `inputId` and `aria-describedby` to integrate with larger form labels and helper/error text without breaking accessibility."
+                },
+                {
+                    "title": "5. Reset or re-use",
+                    "text": "On form reset, parent either clears its controlled `value` or relies on the component’s own \"Remove\" action to reset to the initial state."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main prop groups",
+                    "value": "3",
+                    "helperText": "Config (rules), value (controlled/uncontrolled), events."
+                },
+                {
+                    "label": "Core event",
+                    "value": "onChange",
+                    "helperText": "Always emits a full `UploadedImageValue`."
+                },
+                {
+                    "label": "Optional events",
+                    "value": "onUploadStart / onUploadComplete / onUploadError",
+                    "helperText": "Used when parent cares about lifecycle details."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "From a consumer’s perspective, the API should feel small and boring: set rules via props, listen to a couple of callbacks, and treat the value as `{ file, previewUrl, status, error }`. All the tricky parts – file input quirks, object URLs, validation order, ARIA wiring – stay inside the component."
+        }
+    ]
+}

@@ -1,0 +1,180 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see if you can design a **layered design system**, not just a folder full of components. You should describe clear layers (tokens → primitives → components → patterns), how they’re packaged, how theming works, and how you keep everything tree-shakable and maintainable across many apps."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I’d build a layered design system: design tokens at the bottom (colors, spacing, typography) exposed as CSS variables and TypeScript constants, then primitive layout/typography components, then accessible UI components (Button, Input, Tabs, Dialog, Banner), and optionally higher-level patterns. Everything lives in small, side-effect-free packages so apps can tree-shake and only import what they use.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A clear **tokens → primitives → components → patterns** story.\n- **Token-driven theming** using CSS variables and semantic tokens.\n- A consistent **CSS strategy** (utilities/BEM/CSS vars/Tailwind-like tokens) that scales.\n- A library structure that’s **tree-shakable** and friendly to code splitting.\n- A plan for **versioning, theming, and accessibility** that survives years of changes."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Talk in layers. Start from tokens, then explain how components consume those tokens, then explain how apps consume components. Explicitly mention packaging (e.g. `@acme/ds-tokens`, `@acme/ds-core`, `@acme/ds-react`) and how you keep each package side-effect free so bundlers can tree-shake."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core layers you should mention",
+            "columns": [
+                "Layer",
+                "What it contains",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "Foundations / Tokens",
+                    "Color, spacing, typography, radii, shadows, motion, z-index",
+                    "\"A token layer defines raw and semantic tokens, exposed as CSS variables and TS constants. Themes (light, dark, high contrast) are just different token sets, not different components.\""
+                ],
+                [
+                    "Primitives",
+                    "Box, Stack, Flex, Text, Heading, Surface",
+                    "\"Primitive building blocks wrap basic layout/typography patterns and apply tokens. They’re low-level but give a consistent layout grammar (spacing, typography) across the product.\""
+                ],
+                [
+                    "Components",
+                    "Button, Input, Select, Tabs, Banner, Dialog, Tooltip, etc.",
+                    "\"Accessible, token-aware components that use primitives under the hood. They expose consistent props/events/slots and handle keyboard & ARIA correctly by default.\""
+                ],
+                [
+                    "Patterns / Composites",
+                    "Form layouts, page shells, notification toasters, nav bars",
+                    "\"Optional higher-level compositions built from the core components. These are opinionated UX patterns but still rely on the same tokens and primitives.\""
+                ],
+                [
+                    "Docs & Playground",
+                    "Storybook-style docs, usage guidelines, a11y notes",
+                    "\"A documentation layer where designers and engineers see examples, props, theming stories, and accessibility guidance in one place.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "text",
+            "text": "**Example monorepo / package structure**\nYou don’t need this exact structure in code, but you should be able to describe something like:"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// packages/\n//   design-tokens/          → raw + semantic tokens (JSON, TS, CSS vars)\n//   design-tokens-react/    → helpers/hooks for React theming (optional)\n//   ds-core/                → primitives (Box, Stack, Text, theme provider)\n//   ds-components/          → Button, Input, Tabs, Dialog, Banner, ...\n//   ds-icons/               → icon set (tree-shakable exports)\n//   ds-docs/                → docs site / Storybook\n\n// Example token export (raw + semantic)\nexport const color = {\n  // raw\n  blue500: '#2563eb',\n  gray900: '#0f172a',\n  // semantic\n  bgPrimary: 'var(--ds-bg-primary)',\n  textPrimary: 'var(--ds-text-primary)'\n};\n\n// Example component barrel (tree-shakable)\nexport { Button } from './button/Button';\nexport { TextField } from './text-field/TextField';\nexport { Tabs } from './tabs/Tabs';\n// no side effects: importing one doesn’t pull in everything\n"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture points you should explicitly say",
+                            "items": [
+                                "Tokens live in a **separate, framework-agnostic package** (JSON + CSS vars + TS constants).",
+                                "Components consume tokens via **CSS variables** and/or theme context, not hard-coded hex values.",
+                                "Each component is exported from its **own file** with **no side effects**, so bundlers can tree-shake.",
+                                "There is a **ThemeProvider** or root theming mechanism (e.g. `data-theme`, CSS vars) to switch light/dark/high contrast.",
+                                "RTL is handled by **logical properties** and/or direction-aware tokens, not by duplicating components.",
+                                "Versioning follows **semver**; breaking changes are isolated and announced with migration guidance."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Anti-patterns you should avoid & call out",
+                            "items": [
+                                "A giant **\"kitchen sink\"** bundle where importing `Button` also imports the entire system.",
+                                "Hard-coding colors/spacings in each component instead of using tokens.",
+                                "Deep component inheritance hierarchies that make overrides fragile.",
+                                "Global CSS rules that leak into consumers and break tree-shaking.",
+                                "Inconsistent prop names/behaviors between components (e.g. `onClick` vs `onPress`, `disabled` vs `isDisabled`).",
+                                "Coupling the design system tightly to a single app’s routing or state management."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Tokens first",
+                    "text": "Define raw and semantic tokens for color, spacing, typography, radii, shadows, motion. Expose them as CSS vars and TS objects, and define themes (light/dark/HC/RTL) as sets of token values."
+                },
+                {
+                    "title": "2. Build primitives on tokens",
+                    "text": "Create layout and typography primitives (Box, Stack, Text, Surface) that only use tokens. These primitives become the foundation for all components."
+                },
+                {
+                    "title": "3. Build accessible components",
+                    "text": "Implement Button, Input, Tabs, Dialogs, etc. using primitives and tokens. Bake in a11y behavior (roles, ARIA, keyboard) and ensure consistent props/events/slots across the set."
+                },
+                {
+                    "title": "4. Package for consumption",
+                    "text": "Ship small, side-effect-free ES modules per component. Provide a main entry (`@acme/ds`) and deep imports (`@acme/ds/button`) so teams and bundlers can pick what they need. Support code splitting for heavy components (e.g. date pickers)."
+                },
+                {
+                    "title": "5. Theming & evolution",
+                    "text": "Apps wrap their root in a theme provider or apply a theme class/data attribute. As you add tokens or update themes, component code stays stable. Breaking changes go through semver, with docs and migration notes."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Core layering",
+                    "value": "Tokens → Primitives → Components",
+                    "helperText": "Each layer only depends downward, never sideways."
+                },
+                {
+                    "label": "Package strategy",
+                    "value": "Multi-package, side-effect free",
+                    "helperText": "Enables tree-shaking and granular imports."
+                },
+                {
+                    "label": "Theming model",
+                    "value": "CSS vars + semantic tokens",
+                    "helperText": "Allows light/dark/HC/RTL without changing components."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good design-system architecture is layered and token-first. If you can clearly explain tokens, primitives, components, and how they’re packaged for tree-shaking and theming, you’re talking at the level of a design-system architect, not just a component author."
+        }
+    ]
+}

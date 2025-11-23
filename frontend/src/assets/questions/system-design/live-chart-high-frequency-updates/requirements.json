@@ -1,0 +1,168 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to frame the problem of a high-frequency live chart clearly: how often data arrives, how often you actually render, how long you keep data in memory, and what \"smooth enough\" means. You should sound like someone who has built streaming charts before, not just someone who knows what `setInterval` is."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you’re solving:**\nA live line chart that receives new data roughly every **500ms** (e.g. metrics, telemetry, stock prices) and updates on screen without stuttering or leaking memory.\n\nYour job:\n- Decide how data flows into the chart and is stored in memory.\n- Decide how often you **render** vs how often you **receive** data.\n- Keep the chart smooth over time (minutes/hours), not only for the first 10 seconds.\n- Make it clear when you’d use a library vs custom canvas/WebGL."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Incremental updates vs full redraw: **append + shift** vs recompute whole series.\n- Understanding of **rendering primitives**: SVG vs Canvas vs WebGL; ECharts/Chart.js vs custom.\n- Whether you know when to use **`requestAnimationFrame`** instead of a raw timer.\n- Awareness of **memory growth** (unbounded arrays) and how to cap it.\n- How you handle **bursts**: queue vs drop vs aggregate.\n- When tools like **OffscreenCanvas/Web Workers** become relevant."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Start by restating the core idea in your own words: \"We’re streaming points every ~500ms and drawing a sliding window chart on the frontend. I need to keep a bounded buffer of points, update the chart incrementally, and render via `requestAnimationFrame` so the UI stays smooth and doesn’t leak memory over time.\" Then move into clarifying questions."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Data arrives",
+                    "text": "Every ~500ms, a new sample (timestamp + value) is pushed from some data source (WebSocket, SSE, polling, etc.) into your frontend stream."
+                },
+                {
+                    "title": "2. Update in-memory buffer",
+                    "text": "You append the new point into a **bounded buffer** (e.g. last 60s or last N points) and drop/shift old points so the array doesn’t grow forever."
+                },
+                {
+                    "title": "3. Schedule a render",
+                    "text": "Instead of redrawing immediately on every data tick, you mark the chart as \"dirty\" and let a `requestAnimationFrame` loop decide when to repaint (at most once per frame)."
+                },
+                {
+                    "title": "4. Render efficiently",
+                    "text": "On each frame, if there is new data, you perform an **incremental update** (e.g. draw the new segment and shift the viewport) or a fast redraw using Canvas/WebGL, depending on your approach."
+                },
+                {
+                    "title": "5. Run over time",
+                    "text": "As the chart runs for minutes or hours, memory remains bounded, the frame rate stays acceptable, and you can still zoom/pan or inspect data without the page freezing."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions you should ask",
+                            "items": [
+                                "How long of a **history window** do we need to show (last 30s, 5min, 1h)?",
+                                "What is the **maximum update rate** (500ms always, or bursts faster than that)?",
+                                "Do we ever need to **pause**, **zoom**, or **scroll back** in time, or is it just a live strip chart?",
+                                "How many **series** do we need to render at once (1 line vs 10+ lines)?",
+                                "What are the **target devices**? Desktop only, or also low-end mobiles?",
+                                "Is using a **third-party chart lib** acceptable, or are we expected to implement custom Canvas/WebGL?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "The chart should feel **smooth**, not jumpy, over long periods (minutes+).",
+                                "Memory usage must stay **bounded** (no unbounded growth of points).",
+                                "We can tolerate **dropping some frames** during bursts as long as the user sees the latest state.",
+                                "The main thread must not be **blocked** by heavy chart calculations.",
+                                "On low FPS devices, the chart should degrade gracefully (e.g. fewer drawn points).",
+                                "The design should make it possible to test and debug data vs rendering separately."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Key design axes you should surface early",
+            "columns": [
+                "Axis",
+                "Options",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "Rendering primitive",
+                    "SVG vs Canvas vs WebGL / chart library",
+                    "\"For a chart updating every 500ms with many points, I’d lean towards Canvas or a performant charting library built on Canvas/WebGL, because SVG can become heavy when the number of DOM nodes grows.\""
+                ],
+                [
+                    "Update strategy",
+                    "Incremental vs full redraw",
+                    "\"If the library supports incremental updates (append & shift), I’d use that. Otherwise, I’d keep a bounded buffer and do a fast full redraw on Canvas each frame; drawing a few thousand points per frame is usually fine.\""
+                ],
+                [
+                    "Render loop control",
+                    "Timer vs requestAnimationFrame",
+                    "\"I’d decouple data arrival (500ms tick) from rendering with a small store and a `requestAnimationFrame` loop so we never render more often than the screen refreshes.\""
+                ],
+                [
+                    "Data retention",
+                    "Sliding window vs full history",
+                    "\"To avoid memory issues, I’d keep only a sliding window of recent data in memory (e.g. last N points or last X seconds) and either aggregate older data or drop it entirely.\""
+                ],
+                [
+                    "Off-main-thread work",
+                    "Main thread vs Web Worker + OffscreenCanvas",
+                    "\"If the dataset or drawing logic becomes heavy, I’d consider moving computations or even rendering to a Web Worker with OffscreenCanvas to keep the main thread responsive.\""
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Update cadence",
+                    "value": "~500 ms",
+                    "helperText": "Data tick frequency; rendering may be decoupled from this."
+                },
+                {
+                    "label": "Memory rule",
+                    "value": "Bounded buffer",
+                    "helperText": "Keep only the last N points / last X seconds."
+                },
+                {
+                    "label": "Render control",
+                    "value": "requestAnimationFrame",
+                    "helperText": "Never paint more often than the display refreshes."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong answer doesn’t just say \"I’ll update the chart every 500ms\". You explain how you buffer data, cap memory, choose a rendering path (library vs Canvas/WebGL), and use `requestAnimationFrame` so the chart stays smooth and stable over time, even with bursts and large datasets."
+        }
+    ]
+}

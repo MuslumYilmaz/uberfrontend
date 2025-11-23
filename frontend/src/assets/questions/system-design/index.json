@@ -54,5 +54,38 @@
             "performance"
         ],
         "type": "system-design"
+    },
+    {
+        "id": "live-chart-high-frequency-updates",
+        "title": "Live Chart Rendering (High Frequency Updates)",
+        "description": "Design a live line chart that updates roughly every 500ms (e.g. streaming metrics, stock prices, telemetry). Focus purely on the frontend side: how to feed data into the chart, render updates efficiently, and keep the UI smooth over time.\n\nKey considerations include: choosing between incremental updates (append/shift points) vs full redraw per tick, understanding the trade-offs between using a charting library (ECharts, Chart.js, etc.) and custom canvas/WebGL rendering, and designing a requestAnimationFrame-driven render loop so the chart stays smooth without over-drawing.\n\nYou should be prepared to talk about: memory management as data grows (sliding window, bounded buffers), how to handle bursts of updates (queueing vs dropping frames), when to use OffscreenCanvas or Web Workers to offload work from the main thread, and strategies like downsampling/aggregation for very large datasets so the chart stays responsive even after running for a long time.",
+        "tags": [
+            "charts",
+            "real-time",
+            "performance"
+        ],
+        "type": "system-design"
+    },
+    {
+        "id": "component-design-system-architecture",
+        "title": "Component-driven Design System Architecture",
+        "description": "Design a component-based design system for a mid-to-large scale product: buttons, inputs, tabs, banners, dialogs, and more. Focus on how the system is structured, how teams consume it, and how it evolves safely over time.\n\nKey considerations include: token-driven theming (semantic tokens, color scales, dark/high-contrast variants), CSS architecture decisions (CSS variables, utility classes, BEM, or Tailwind-style tokens), accessibility-first component APIs (keyboard behavior, ARIA attributes, focus management), and support for dark mode, high contrast, and RTL from day one.\n\nYou should be prepared to talk about: consistent component APIs (props, events, slots), how to ensure long-term maintainability, versioning and breaking-change strategy, tree-shaking-friendly structure, and bundle-size optimizations like dynamic imports and granular code splitting.",
+        "tags": [
+            "design-system",
+            "theming",
+            "performance"
+        ],
+        "type": "system-design"
+    },
+    {
+        "id": "image-upload-preview",
+        "title": "Image Upload & Preview Component",
+        "description": "Design a component that lets users upload an image, instantly preview it, validate its size and type, and simulate a short upload process. Focus purely on the frontend side: handling file inputs, using URL.createObjectURL for previewing, validation flows, accessible error messaging, mobile-friendly layout, drag-and-drop (optional), and smooth state transitions.\n\nKey considerations include: file type + max-size validation, immediate preview, upload skeleton/loading state, allowing users to replace/remove the image, managing object URLs safely, and addressing accessibility concerns like keyboard navigation and ARIA error roles.",
+        "tags": [
+            "images",
+            "upload",
+            "validation"
+        ],
+        "type": "system-design"
     }
 ]
