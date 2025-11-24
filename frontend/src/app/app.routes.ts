@@ -53,34 +53,34 @@ export const routes: Routes = [
   },
 
   // Courses
-  {
-    path: 'courses',
-    loadComponent: () =>
-      import('./features/courses/course-list/course-list.component').then(
-        (m) => m.CourseListComponent,
-      ),
-  },
-  {
-    path: 'courses/:courseId',
-    loadComponent: () =>
-      import('./features/courses/course-detail/course-detail.component').then(
-        (m) => m.CourseDetailComponent,
-      ),
-  },
-  {
-    path: 'courses/:courseId/:topicId/:lessonId',
-    loadComponent: () =>
-      import('./features/courses/course-player/course-player.component').then(
-        (m) => m.CoursePlayerComponent,
-      ),
-  },
-  // anything else under /courses after the specific ones → 404
-  {
-    path: 'courses/**',
-    loadComponent: () =>
-      import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    data: { title: 'Page not found' },
-  },
+  // {
+  //   path: 'courses',
+  //   loadComponent: () =>
+  //     import('./features/courses/course-list/course-list.component').then(
+  //       (m) => m.CourseListComponent,
+  //     ),
+  // },
+  // {
+  //   path: 'courses/:courseId',
+  //   loadComponent: () =>
+  //     import('./features/courses/course-detail/course-detail.component').then(
+  //       (m) => m.CourseDetailComponent,
+  //     ),
+  // },
+  // {
+  //   path: 'courses/:courseId/:topicId/:lessonId',
+  //   loadComponent: () =>
+  //     import('./features/courses/course-player/course-player.component').then(
+  //       (m) => m.CoursePlayerComponent,
+  //     ),
+  // },
+  // // anything else under /courses after the specific ones → 404
+  // {
+  //   path: 'courses/**',
+  //   loadComponent: () =>
+  //     import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
+  //   data: { title: 'Page not found' },
+  // },
 
   // Companies
   {

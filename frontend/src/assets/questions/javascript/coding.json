@@ -1977,6 +1977,9 @@
     "id": "js-array-prototype-map",
     "title": "Implement Array.prototype.map",
     "type": "coding",
+    "companies": [
+      "amazon"
+    ],
     "technology": "javascript",
     "importance": 4,
     "difficulty": "easy",
@@ -2076,6 +2079,9 @@
     "title": "Implement Array.prototype.reduce",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "amazon"
+    ],
     "importance": 4,
     "difficulty": "medium",
     "tags": [
@@ -2180,6 +2186,9 @@
     "title": "Implement Array.prototype.filter",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "amazon"
+    ],
     "importance": 4,
     "difficulty": "easy",
     "tags": [
@@ -2362,6 +2371,101 @@
     },
     "tests": "import arrayForEach from './file';\n\ndescribe('arrayForEach', () => {\n  test('iterates in order', () => {\n    const seen = [];\n    arrayForEach([3, 1, 2], (v) => seen.push(v));\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  test('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function (v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  test('skips holes (edge)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const seen = [];\n    arrayForEach(a, (v, i) => seen.push([v, i]));\n    expect(seen).toEqual([[1, 0], [3, 2]]);\n  });\n});\n",
     "testsTs": "import arrayForEach from './file';\n\ndescribe('arrayForEach (TypeScript)', () => {\n  it('iterates in order', () => {\n    const a = [3, 1, 2];\n    const seen: number[] = [];\n    arrayForEach(a, (v) => { seen.push(v as number); });\n    expect(seen).toEqual([3, 1, 2]);\n  });\n\n  it('binds thisArg', () => {\n    const ctx = { out: '' };\n    arrayForEach(['a', 'b'], function (v) { this.out += v; }, ctx);\n    expect(ctx.out).toBe('ab');\n  });\n\n  it('skips holes (edge)', () => {\n    // eslint-disable-next-line no-sparse-arrays\n    const a = [1, , 3];\n    const result: Array<[number, number]> = [];\n    arrayForEach(a, (v, i) => { if (v !== undefined) result.push([v as number, i]); });\n    expect(result).toEqual([[1, 0], [3, 2]]);\n  });\n});\n"
+  },
+  {
+    "id": "js-array-sort",
+    "title": "Sort Numbers with Array.prototype.sort",
+    "type": "coding",
+    "technology": "javascript",
+    "companies": [
+      "amazon"
+    ],
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "Array",
+      "sorting"
+    ],
+    "description": {
+      "summary": "Implement a function `sortNumbers(arr, ascending = true)` that returns a **new array** of numbers sorted numerically in ascending or descending order. The original array must not be mutated, and you should use `Array.prototype.sort()` correctly with a compare function.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "number[]",
+          "desc": "An array of numbers to sort."
+        },
+        {
+          "name": "ascending",
+          "type": "boolean",
+          "desc": "If `true` (default), sort in ascending order; if `false`, sort in descending order."
+        }
+      ],
+      "returns": {
+        "type": "number[]",
+        "desc": "A new array containing the sorted numbers."
+      },
+      "examples": [
+        "// Basic ascending sort\nsortNumbers([3, 1, 10]) // => [1, 3, 10]",
+        "// Descending sort\nsortNumbers([3, 1, 10], false) // => [10, 3, 1]",
+        "// Handles negative numbers\nsortNumbers([-2, 5, 0, -10]) // => [-10, -2, 0, 5]",
+        "// Original array is not mutated\nconst nums = [5, 2, 11]\nconst sorted = sortNumbers(nums)\n// nums is still [5, 2, 11]"
+      ]
+    },
+    "starterCode": "export default function sortNumbers(arr, ascending = true) {\n  // TODO:\n  // 1. Do NOT mutate the original array.\n  // 2. Use Array.prototype.sort() with a numeric compare function.\n  // 3. Respect the `ascending` flag.\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function sortNumbers(arr: number[], ascending = true): number[] {\n  // TODO:\n  // 1. Do NOT mutate the original array.\n  // 2. Use Array.prototype.sort() with a numeric compare function.\n  // 3. Respect the `ascending` flag.\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: sort an array of numbers **numerically**, not lexicographically, using `Array.prototype.sort()` — and return a **new** sorted array without mutating the original.\n\nThis tests understanding of:\n- How `.sort()` works by default (string/lexicographic behavior).\n- Writing a numeric compare function (`(a, b) => a - b`).\n- Avoiding mutation by cloning the input first.",
+      "approaches": [
+        {
+          "title": "Approach 1: Clone + numeric compare function (canonical)",
+          "prose": "Idea: make a shallow copy of the array, then call `.sort()` with a compare function that works on numbers.\n\n### 🧠 Step-by-step reasoning\n1. Clone the input: `const copy = [...arr]` (or `arr.slice()`). This prevents mutating the original.\n2. Decide the sort direction based on `ascending`:\n   - Ascending: `(a, b) => a - b`\n   - Descending: `(a, b) => b - a`\n3. Call `copy.sort(compareFn)` and return `copy`.\n\n**Why use it:**\n- Explicit numeric comparison avoids the default lexicographic behavior like `[10, 2].sort() // ['10', '2']`.\n- Clear control over ascending/descending.\n- No surprises from in-place mutation of the original array.",
+          "codeJs": "export default function sortNumbers(arr, ascending = true) {\n  // Clone to avoid mutating the original\n  const copy = [...arr];\n\n  copy.sort((a, b) => {\n    if (ascending) {\n      return a - b; // negative if a < b, positive if a > b\n    }\n    return b - a;   // flipped for descending\n  });\n\n  return copy;\n}\n",
+          "codeTs": "export default function sortNumbers(arr: number[], ascending = true): number[] {\n  // Clone to avoid mutating the original\n  const copy = [...arr];\n\n  copy.sort((a, b) => {\n    if (ascending) {\n      return a - b; // negative if a < b, positive if a > b\n    }\n    return b - a;   // flipped for descending\n  });\n\n  return copy;\n}\n"
+        },
+        {
+          "title": "Approach 2: Always sort ascending, then reverse if needed",
+          "prose": "Idea: keep the compare function simple by always sorting ascending, then reverse the array when `ascending` is `false`.\n\n### Steps\n1. Clone the input: `const copy = [...arr]`.\n2. Sort numerically ascending with `copy.sort((a, b) => a - b)`.\n3. If `ascending` is `false`, call `copy.reverse()`.\n4. Return `copy`.\n\n**Why use it:**\n- Keeps the compare function minimal.\n- Makes the sort order logic easy to read (especially for beginners).",
+          "codeJs": "export default function sortNumbers(arr, ascending = true) {\n  const copy = [...arr];\n  copy.sort((a, b) => a - b); // numeric ascending\n  if (!ascending) {\n    copy.reverse();\n  }\n  return copy;\n}\n",
+          "codeTs": "export default function sortNumbers(arr: number[], ascending = true): number[] {\n  const copy = [...arr];\n  copy.sort((a, b) => a - b); // numeric ascending\n  if (!ascending) {\n    copy.reverse();\n  }\n  return copy;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Default `.sort()` casts values to strings and sorts lexicographically: `[10, 2].sort()` → `[10, 2]`, not `[2, 10]`.",
+          "`.sort()` **mutates** the array it’s called on — always clone when you must not change the input.",
+          "Compare functions must return a negative value if `a` comes before `b`, positive if `a` comes after `b`, and `0` if their relative order doesn’t matter.",
+          "If `arr` contains non-numbers (`NaN`, strings, etc.), numeric comparison can produce surprising results. In this kata we assume valid numbers."
+        ],
+        "edgeCases": [
+          "Empty array → returns `[]`.",
+          "Single-element array → unchanged.",
+          "Already sorted array → returns a sorted copy; original is still intact.",
+          "All equal numbers → order is effectively unchanged."
+        ],
+        "techniques": [
+          "Using spread syntax (`[...]`) or `.slice()` to clone arrays.",
+          "Writing numeric compare functions for `.sort()`.",
+          "Controlling sort direction with a flag.",
+          "Understanding mutation vs. immutability when working with arrays."
+        ]
+      },
+      "followUpQuestions": [
+        "js-unique-array",
+        "js-flatten-once"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Array.prototype.sort()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort"
+        },
+        {
+          "title": "MDN – Array.prototype.reverse()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse"
+        }
+      ]
+    },
+    "tests": "import sortNumbers from './sortNumbers';\n\ndescribe('sortNumbers', () => {\n  test('sorts numbers ascending by default', () => {\n    expect(sortNumbers([3, 1, 10])).toEqual([1, 3, 10]);\n    expect(sortNumbers([-2, 5, 0, -10])).toEqual([-10, -2, 0, 5]);\n  });\n\n  test('sorts numbers descending when ascending is false', () => {\n    expect(sortNumbers([3, 1, 10], false)).toEqual([10, 3, 1]);\n    expect(sortNumbers([-2, 5, 0, -10], false)).toEqual([5, 0, -2, -10]);\n  });\n\n  test('does not mutate the original array', () => {\n    const nums = [5, 2, 11];\n    const copy = [...nums];\n    const sorted = sortNumbers(nums);\n\n    expect(sorted).toEqual([2, 5, 11]);\n    expect(nums).toEqual(copy); // original remains unchanged\n  });\n\n  test('handles empty and single-element arrays', () => {\n    expect(sortNumbers([])).toEqual([]);\n    expect(sortNumbers([42])).toEqual([42]);\n  });\n});\n",
+    "testsTs": "import sortNumbers from './sortNumbers';\n\ndescribe('sortNumbers (TypeScript)', () => {\n  it('sorts numbers ascending by default', () => {\n    expect(sortNumbers([3, 1, 10])).toEqual([1, 3, 10]);\n    expect(sortNumbers([-2, 5, 0, -10])).toEqual([-10, -2, 0, 5]);\n  });\n\n  it('sorts numbers descending when ascending is false', () => {\n    expect(sortNumbers([3, 1, 10], false)).toEqual([10, 3, 1]);\n    expect(sortNumbers([-2, 5, 0, -10], false)).toEqual([5, 0, -2, -10]);\n  });\n\n  it('does not mutate the original array', () => {\n    const nums = [5, 2, 11];\n    const copy = [...nums];\n    const sorted = sortNumbers(nums);\n\n    expect(sorted).toEqual([2, 5, 11]);\n    expect(nums).toEqual(copy);\n  });\n\n  it('handles empty and single-element arrays', () => {\n    expect(sortNumbers([])).toEqual([]);\n    expect(sortNumbers([42])).toEqual([42]);\n  });\n});\n"
   },
   {
     "id": "js-create-counter",
@@ -2596,5 +2700,5 @@
     },
     "tests": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles negative and positive mix', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with zero values (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(0), Promise.resolve(0));\n    expect(result).toBe(0);\n  });\n});\n",
     "testsTs": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises (TypeScript)', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles mix of negative and positive', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with immediately resolved promises (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(3), Promise.resolve(4));\n    expect(result).toBe(7);\n  });\n});\n"
-  }
+    }
 ]

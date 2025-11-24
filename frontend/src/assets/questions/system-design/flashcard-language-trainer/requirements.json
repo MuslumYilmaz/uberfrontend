@@ -1,0 +1,138 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this first step, the interviewer wants to see if you really understand what a flashcard language app must do for learners, before diving into APIs and animations. Restate the goal, surface the core learning and UX challenges, and ask a few sharp clarifying questions."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you're solving:**\nA web app where users study a foreign language using flash cards. The front shows a word or phrase in the user's language; on hover/tap it flips to show the foreign-language version (plus optional hints). The experience should feel fast, focused, and good for repeated daily use."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer looks for:**\n- You think about learning flow, not just card flip animation.\n- You clarify how decks, cards, and user progress are structured.\n- You consider mobile vs desktop interactions (hover vs tap).\n- You care about accessibility, not only fancy CSS transitions.\n- You think early about performance: batching, caching, offline use."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Slow down and frame the problem in terms of learning: \"We want short, focused study sessions where cards flip instantly, progress is tracked, and the app works well on mobile and desktop. Let me clarify a few things about decks, progress, and interactions first.\" This signals that you think like a product-minded engineer, not just a CSS person."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "The user flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Choose language and deck",
+                    "text": "User signs in (optional), picks source/target languages and a specific deck (e.g. \"Spanish A1 – Food\")."
+                },
+                {
+                    "title": "2. Load a study session",
+                    "text": "App fetches a batch of cards for this deck, shows the first card front (user's language) with instant feel (skeletons / cached data if needed)."
+                },
+                {
+                    "title": "3. Flip the card",
+                    "text": "On hover (desktop) or tap/click (all devices), the card flips smoothly to show the foreign-language word, plus optional hint/example."
+                },
+                {
+                    "title": "4. Mark recall",
+                    "text": "User marks \"I knew this\" / \"I didn’t know this\" or similar. The app records this and immediately moves to the next card."
+                },
+                {
+                    "title": "5. Persist progress",
+                    "text": "Progress is sent to the backend (or queued offline) so that future sessions can prioritize harder cards."
+                },
+                {
+                    "title": "6. Session summary",
+                    "text": "User sees a short summary (cards reviewed, accuracy, streak) and can continue or switch decks."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "Do we support authenticated users with persistent progress, or anonymous sessions too?",
+                                "Is there a spaced-repetition model (e.g. Leitner / SM-2), or just simple counts and accuracy?",
+                                "How many decks and cards per deck should we expect (hundreds, thousands, more)?",
+                                "Do we need offline or spotty-network support for study sessions?",
+                                "Do cards only contain single words, or can they have phrases, audio, images, and example sentences?",
+                                "Are we targeting mobile web heavily? Is this PWA-like usage (add to home screen)?",
+                                "Is RTL support (e.g. Arabic, Hebrew) in scope from day one?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "What you should explicitly confirm",
+                            "items": [
+                                "Card flips must feel instant, even on slow networks.",
+                                "The same deck should be consistent across devices for a logged-in user.",
+                                "The UI must work with keyboard only (no hover-only interactions).",
+                                "Animations should be smooth but not block accessibility.",
+                                "We can batch progress updates instead of sending every action individually.",
+                                "We can store some data on the client (localStorage/IndexedDB) for faster reloads.",
+                                "The system can preload the next card(s) to avoid visible loading."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Key UX goal",
+                    "value": "Frictionless study sessions",
+                    "helperText": "Users should be able to flip through many cards quickly with minimal waiting or distractions."
+                },
+                {
+                    "label": "Key performance idea",
+                    "value": "Batch & cache cards",
+                    "helperText": "Fetch cards in batches and cache them so the next flip is always instant, even with flaky networks."
+                },
+                {
+                    "label": "Key FE decision",
+                    "value": "Where to run SRS logic?",
+                    "helperText": "Decide whether spaced-repetition scheduling lives on the client, server, or a hybrid model."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Critical trade-offs you should highlight",
+            "text": "Running more logic on the client makes offline sessions fast but risks sync issues. Putting everything on the server keeps consistency but increases latency. Good candidates explain this tension and propose batching, optimistic updates, and safe fallback strategies."
+        }
+    ]
+}

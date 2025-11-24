@@ -321,9 +321,7 @@
       "storageKey": "v2:ui:angular:angular-image-slider-starter"
     },
     "companies": [
-      "google",
-      "meta",
-      "airbnb"
+      "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json"
   },
@@ -396,9 +394,7 @@
       "storageKey": "v2:ui:angular:angular-tabs-starter"
     },
     "companies": [
-      "google",
-      "meta",
-      "uber"
+      "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json"
   },
@@ -902,11 +898,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-shopping-cart"
     },
-    "companies": [
-      "amazon",
-      "shopify",
-      "stripe"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json"
   },
   {
@@ -1000,5 +992,83 @@
       "uber"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json"
+  },
+  {
+    "id": "angular-star-rating",
+    "title": "Star Rating Widget",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "beginner",
+    "importance": 3,
+    "tags": [
+      "components",
+      "inputs-outputs",
+      "event-binding",
+      "template-syntax",
+      "accessibility"
+    ],
+    "description": {
+      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes.",
+      "specs": {
+        "requirements": [
+          "Create a standalone `StarRatingComponent` that renders a row of stars.",
+          "Support a configurable maximum number of stars via an `@Input()` (e.g. default to 5).",
+          "Expose the current rating as an `@Input()` so the parent can control the value.",
+          "Emit an event when the user selects a rating so the parent can react (e.g. two-way binding).",
+          "Use the widget from a simple `AppComponent` and show the current rating below it."
+        ],
+        "expectedBehavior": [
+          "Stars render from 1 up to the configured `max` (e.g. 5).",
+          "Clicking a star sets the rating to that star index (e.g. clicking the 4th star sets rating to 4).",
+          "All stars with index less than or equal to the rating appear visually \"filled\".",
+          "The parent component sees the updated rating value (e.g. via `[(rating)]` or an output event)."
+        ],
+        "implementationNotes": [
+          "Use `*ngFor` in the star-rating template to loop over an array of star indices.",
+          "Use `@Input()` for `max` and `rating`, and an `@Output()` `EventEmitter<number>` for rating changes.",
+          "Use class binding (e.g. `[class.filled]=\"star <= rating\"`) to style selected stars.",
+          "Prefer a small derived getter (e.g. `stars`) that returns an array like `[1, 2, 3, 4, 5]` for the template.",
+          "Add basic ARIA attributes (e.g. `role=\"radiogroup\"`, `aria-label`) for accessibility."
+        ],
+        "techFocus": [
+          "Standalone child components",
+          "Inputs & outputs (parent–child communication)",
+          "Template loops and class binding",
+          "Simple, accessible UI widgets"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise builds a small but reusable UI widget: a star rating control. The key is to keep the rendering logic in the star-rating component and let the parent own the current rating value. The widget exposes `@Input()`s for `max` and `rating`, and an `@Output()` `ratingChange` emitter so the parent can use Angular's two-way binding convention `[(rating)]`.\n\n**Test cases**\n- Initial state: rating is `0` → no stars are filled.\n- Click the 3rd star → rating becomes `3` and three stars appear filled.\n- Click the 5th star → rating becomes `5` and five stars appear filled.\n- Updating the rating from the parent (e.g. `currentRating = 2`) updates the visual state of the widget.\n- When `max` is changed (e.g. to 10), the component renders that many stars.",
+      "approaches": [
+        {
+          "title": "Standalone child component with Input/Output and ngFor",
+          "prose": "Encapsulate the star UI into a dedicated `StarRatingComponent` and let a simple `AppComponent` host it.\n\n1. In `StarRatingComponent`, define `@Input() max = 5`, `@Input() rating = 0`, and `@Output() ratingChange = new EventEmitter<number>()`.\n2. Expose a `stars` getter that returns an array `[1, 2, ..., max]` for the template.\n3. Use `*ngFor` to render one button per star. Bind `[class.filled]` when `star <= rating`.\n4. When a star is clicked, update `rating` and emit `ratingChange.emit(newValue)`.\n5. In `AppComponent`, hold a `currentRating` property and bind the widget using `[(rating)]=\"currentRating\"` to wire up two-way binding.\n\nThis approach keeps the widget focused on presentation and simple state, while the parent component controls the rating value and can display or persist it as needed.",
+          "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-star-rating',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      <button\n        *ngFor=\"let star of stars\"\n        type=\"button\"\n        class=\"star\"\n        [class.filled]=\"star <= rating\"\n        (click)=\"onRate(star)\"\n        [attr.aria-label]=\"star + ' out of ' + max\"\n        [attr.aria-pressed]=\"star <= rating\"\n      >\n        ★\n      </button>\n    </div>\n  `,\n  styles: [\n    `:host{display:inline-flex;}`,\n    `.stars{display:inline-flex;gap:4px;}`,\n    `.star{background:transparent;border:none;font-size:28px;cursor:pointer;padding:4px;line-height:1;color:#4b5563;transition:transform .1s ease,color .1s ease;}`,\n    `.star.filled{color:#facc15;}`,\n    `.star:focus-visible{outline:2px solid #facc15;outline-offset:2px;}`,\n    `.star:hover{transform:scale(1.1);}`\n  ]\n})\nexport class StarRatingComponent {\n  @Input() max = 5;\n  @Input() rating = 0;\n  @Output() ratingChange = new EventEmitter<number>();\n\n  get stars(): number[] {\n    return Array.from({ length: this.max }, (_, i) => i + 1);\n  }\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max) {\n      return;\n    }\n    this.rating = value;\n    this.ratingChange.emit(this.rating);\n  }\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, StarRatingComponent],\n  template: `\n    <main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n      <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n        <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Star Rating Widget</h1>\n        <div class=\"panel\">\n          <app-star-rating [(rating)]=\"currentRating\"></app-star-rating>\n          <p class=\"hint\">Current rating: {{ currentRating }} / 5</p>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}`,\n    `.hint{margin:0;font-size:14px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  currentRating = 0;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Hardcoding five stars directly in the template instead of using a loop, which makes `max` difficult to change.",
+          "Forgetting to emit `ratingChange`, so the parent never sees the updated rating.",
+          "Mutating parent state directly in the child instead of using an `@Output()`.",
+          "Not visually differentiating filled vs empty stars, making the rating unclear."
+        ],
+        "techniques": [
+          "Using Angular's two-way binding convention with `@Input() rating` and `@Output() ratingChange`.",
+          "Using a derived getter (`stars`) to keep template logic simple.",
+          "Building a focused, reusable standalone component that can be dropped into other views."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-star-rating.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-star-rating"
+    },
+    "companies": [
+      "amazon"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json"
   }
 ]

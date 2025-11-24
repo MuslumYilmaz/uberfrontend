@@ -313,8 +313,7 @@
         },
         "solutionAsset": "assets/sb/react/solution/react-image-slider-solution.v1.json",
         "companies": [
-            "meta",
-            "google"
+            "amazon"
         ]
     },
     {
@@ -386,9 +385,7 @@
         },
         "solutionAsset": "assets/sb/react/solution/react-tabs-solution.v1.json",
         "companies": [
-            "meta",
-            "google",
-            "uber"
+            "amazon"
         ]
     },
     {
@@ -889,11 +886,7 @@
             "storageKey": "v2:ui:react:react-shopping-cart"
         },
         "solutionAsset": "assets/sb/react/solution/react-shopping-cart-solution.v1.json",
-        "companies": [
-            "meta",
-            "shopify",
-            "amazon"
-        ]
+        "companies": []
     },
     {
         "id": "react-debounced-search",
@@ -982,6 +975,83 @@
             "meta",
             "google",
             "airbnb"
+        ]
+    },
+    {
+        "id": "react-star-rating",
+        "title": "Star Rating Widget",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "react",
+            "state",
+            "props",
+            "event-handlers",
+            "components"
+        ],
+        "description": {
+            "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
+            "specs": {
+                "requirements": [
+                    "Render a <StarRating /> component as part of the main UI.",
+                    "Display a row of stars (e.g. 5 by default).",
+                    "Allow the parent to control the current rating via props.",
+                    "Notify the parent when the user selects a new rating (e.g. via an onChange callback).",
+                    "Display the current rating value below the stars."
+                ],
+                "expectedBehavior": [
+                    "Stars render from 1 up to the configured max (default 5).",
+                    "Clicking the 3rd star sets the rating to 3 (and fills 3 stars).",
+                    "Clicking the 5th star sets the rating to 5 (and fills 5 stars).",
+                    "Updating the rating in the parent reflects in the <StarRating /> UI."
+                ],
+                "implementationNotes": [
+                    "Keep <StarRating /> as a controlled component: it receives `rating` and `onChange` props.",
+                    "Expose an optional `max` prop to configure the number of stars (default 5).",
+                    "Use an array like `[1, 2, 3, 4, 5]` to render stars via `map`.",
+                    "Use a CSS class (e.g. `.filled`) to visually differentiate selected stars.",
+                    "Render a simple text line like \"Current rating: X / 5\" below the widget."
+                ],
+                "techFocus": [
+                    "React component props",
+                    "Controlled components",
+                    "Event handlers and state lifting",
+                    "Basic UI composition"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "Split the UI into two components: a top-level <App /> that holds the current rating in state, and a reusable <StarRating /> that renders stars and calls `onChange` when a star is clicked.\n\n<StarRating /> is a controlled component: it receives `rating` and `onChange` props, plus an optional `max` prop which defaults to 5. It builds an array `[1..max]` to render stars with `map`. Each star is a button that calls `onChange(starIndex)` when clicked.\n\n<App /> uses `useState(0)` to hold `currentRating` and passes `rating={currentRating}` and `onChange={setCurrentRating}` down to <StarRating />.\n\n**Test cases**\n- Initial render shows 5 outlined stars and \"Current rating: 0 / 5\".\n- Clicking the 3rd star fills 3 stars and sets the text to \"Current rating: 3 / 5\".\n- Clicking the 5th star fills all 5.\n- Changing `max` (e.g. to 10) renders that many stars.",
+            "approaches": [
+                {
+                    "title": "Controlled <StarRating /> component with lifted state",
+                    "prose": "Keep the rating state in the parent component and let <StarRating /> be a controlled widget. <StarRating /> knows how to render stars and which ones are filled, but the parent decides what the current rating is.\n\n1. In <App />, store `currentRating` with `useState(0)`.\n2. Render `<StarRating rating={currentRating} onChange={setCurrentRating} />`.\n3. In <StarRating />, accept `rating`, `max = 5`, and `onChange` props.\n4. Build a stars array with `Array.from({ length: max }, (_, i) => i + 1)`.\n5. For each star, render a button. Use `star <= rating` to decide if it should have the `filled` class.\n6. On click, call `onChange(star)`.\n\nThis keeps behavior predictable, easy to test, and reusable across different parents.",
+                    "codeJs": "import React from 'react';\n\nfunction StarRating({ max = 5, rating, onChange }) {\n  const stars = React.useMemo(\n    () => Array.from({ length: max }, (_, i) => i + 1),\n    [max]\n  );\n\n  return (\n    <div className=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      {stars.map((star) => (\n        <button\n          key={star}\n          type=\"button\"\n          className={\"star\" + (star <= rating ? \" filled\" : \"\")}\n          onClick={() => onChange(star)}\n          aria-label={`${star} out of ${max}`}\n          aria-pressed={star <= rating}\n        >\n          ★\n        </button>\n      ))}\n    </div>\n  );\n}\n\nexport default function App() {\n  const [currentRating, setCurrentRating] = React.useState(0);\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Star Rating Widget</h1>\n        <div className=\"panel\">\n          <StarRating rating={currentRating} onChange={setCurrentRating} />\n          <p className=\"hint\">Current rating: {currentRating} / 5</p>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Storing rating state inside <StarRating /> only, making it harder for parents to react to changes.",
+                    "Hardcoding five stars in JSX instead of generating from an array, which makes `max` unconfigurable.",
+                    "Not visually distinguishing filled vs empty stars."
+                ],
+                "techniques": [
+                    "Lifting state up into the parent component.",
+                    "Using a controlled component pattern for form-like widgets.",
+                    "Using array mapping to render repeated UI from data."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-star-rating.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-star-rating"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-star-rating-solution.v1.json",
+        "companies": [
+            "amazon"
         ]
     }
 ]

@@ -145,11 +145,7 @@
     ],
     "importance": 5,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
+      "amazon"
     ],
     "answer": {
       "blocks": [
@@ -219,11 +215,7 @@
     ],
     "importance": 5,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
+      "amazon"
     ],
     "answer": {
       "blocks": [
@@ -332,7 +324,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -438,7 +429,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -533,7 +523,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -679,7 +668,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -772,7 +760,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -876,7 +863,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -968,7 +954,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -1091,7 +1076,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -1173,7 +1157,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -1281,7 +1264,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -1394,7 +1376,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -1496,7 +1477,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -1598,7 +1578,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -1716,7 +1695,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -1837,7 +1815,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft"
     ],
     "answer": {
@@ -1914,7 +1891,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -1988,7 +1964,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "uber"
     ],
@@ -2067,7 +2042,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -2155,7 +2129,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -2262,7 +2235,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -2370,7 +2342,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -2466,7 +2437,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -2567,7 +2537,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],
@@ -2751,7 +2720,6 @@
     "companies": [
       "google",
       "meta",
-      "amazon",
       "microsoft",
       "netflix"
     ],

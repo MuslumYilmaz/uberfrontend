@@ -87,5 +87,22 @@
             "validation"
         ],
         "type": "system-design"
+    },
+    {
+        "id": "flashcard-language-trainer",
+        "title": "Flashcard-based Language Learning App",
+        "companies": ["amazon"],
+        "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server–client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
+        "tags": [
+            "flashcards",
+            "language-learning",
+            "frontend-backend",
+            "animations",
+            "performance",
+            "ux",
+            "accessibility",
+            "offline-first"
+        ],
+        "type": "system-design"
     }
 ]

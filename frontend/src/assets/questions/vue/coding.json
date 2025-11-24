@@ -244,6 +244,7 @@
         "title": "Image Slider (Basic Navigation)",
         "type": "coding",
         "technology": "vue",
+        "companies": ["amazon"],
         "difficulty": "beginner",
         "importance": 3,
         "tags": [
@@ -321,6 +322,7 @@
         "title": "Tabs / Multi-View Switcher",
         "type": "coding",
         "technology": "vue",
+        "companies": ["amazon"],
         "difficulty": "beginner",
         "importance": 3,
         "tags": [
@@ -959,5 +961,80 @@
             "storageKey": "v2:ui:vue:vue-debounced-search"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json"
+    },
+    {
+        "id": "vue-star-rating",
+        "title": "Star Rating Widget",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "event-handlers",
+            "basics"
+        ],
+        "description": {
+            "summary": "Implement a reusable Vue 3 star-rating widget that renders a row of clickable stars, allows the user to select a rating, and displays the current rating value.",
+            "specs": {
+                "requirements": [
+                    "Render the star rating UI as the main component.",
+                    "Display a row of stars (e.g. 5 by default).",
+                    "Allow the user to select a rating by clicking a star.",
+                    "Visually fill all stars up to the selected rating.",
+                    "Display the current rating value below the stars (e.g. \"Current rating: 3 / 5\")."
+                ],
+                "expectedBehavior": [
+                    "Stars render from 1 up to the configured max (default 5).",
+                    "Clicking the 3rd star sets the rating to 3 and fills 3 stars.",
+                    "Clicking the 5th star sets the rating to 5 and fills 5 stars.",
+                    "Initial rating starts at 0 (no filled stars)."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's `<script setup>` syntax in `App.vue`.",
+                    "Store the current rating in a `ref` (e.g. `const rating = ref(0)`).",
+                    "Optionally store `max` in a `ref` and derive a stars list with `computed` or an inline array.",
+                    "Use class binding (e.g. `:class=\"{ filled: star <= rating }\"`) to style selected stars.",
+                    "Render a small text block under the stars to show the numeric rating."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Basic component structure with `<script setup>`",
+                    "Click event handlers",
+                    "Deriving UI from reactive state"
+                ]
+            }
+        },
+        "starterCodeHint": "Inside `<script setup>`, use a `ref(0)` for the current rating and a `computed` list of stars. Implement a `handleRate` function that updates the rating when a star is clicked.",
+        "solutionBlock": {
+            "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars.",
+            "approaches": [
+                {
+                    "title": "Single component with reactive rating and computed stars",
+                    "prose": "Keep the star-rating logic in a single `App.vue` component. Use `const rating = ref(0)` to hold the value, and `const max = ref(5)` for the number of stars. A `computed` property `stars` returns an array `[1, 2, ..., max]` used in a `v-for` loop. Each star is a button that calls `handleRate(star)` on click. `handleRate` updates `rating.value` to the clicked index. The template binds a `filled` class when `star <= rating` and shows the numeric rating in a `<p>` below the stars."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Hardcoding stars in the template instead of generating them from data, which makes `max` harder to change.",
+                    "Forgetting to use `.value` when updating refs in `<script setup>`.",
+                    "Not visually differentiating selected vs unselected stars, making the rating unclear."
+                ],
+                "techniques": [
+                    "Using `ref` for reactive primitives.",
+                    "Using `computed` to derive arrays for `v-for`.",
+                    "Using class binding for visual state (`filled` vs default)."
+                ]
+            }
+        },
+        "companies": ["amazon"],
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-star-rating.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-star-rating"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json"
     }
 ]

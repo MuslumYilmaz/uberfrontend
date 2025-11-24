@@ -1,0 +1,43 @@
+{
+    "id": "flashcard-language-trainer",
+    "title": "Flashcard-based App",
+    "description": "Design a web app that uses flash cards to help people learn a foreign language. Each card shows a word or phrase in the user's language on the front. When the user hovers, taps, or clicks, the card flips to show the foreign-language equivalent, along with optional hints or example sentences.\n\nFunctional requirements:\n- Allow users to browse and select decks (e.g. \"Spanish A1 – Food\", \"German Verbs\", \"French Phrases\")\n- Fetch and render a sequence of cards for the current deck\n- Support flipping cards via hover (desktop) and tap/click (desktop and mobile)\n- Let users mark cards as \"I knew this\" / \"I didn't know this\" to track recall\n- Persist per-user progress and difficulty (e.g. how often each card should reappear)\n- Handle authentication so users can continue their progress across devices\n- Provide basic stats such as cards reviewed today, accuracy, and streaks\n\nNon-functional:\n- Very low perceived latency when moving between cards (preloading, caching)\n- Smooth, GPU-accelerated flip animations that stay close to 60 FPS\n- Responsive layout that works well on phones, tablets, and desktops\n- Accessible to keyboard users and screen readers (no hover-only behavior)\n- Resilient to flaky networks (retry, optimistic updates, offline-friendly study sessions)\n\nData & domain constraints:\n- Cards belong to decks; each card includes source language text, target language text, optional hints, and metadata (part of speech, difficulty, tags)\n- Per-user state includes progress per deck, spaced-repetition metadata, and preferences (theme, flip behavior, daily goal)\n- Content may be localized and should support multiple writing systems (Latin, Cyrillic, CJK, RTL scripts)\n\nAPI & server–client communication:\n- REST or GraphQL APIs for decks, cards, and user progress (list decks, fetch study batch, update progress)\n- Endpoints optimized for study sessions (e.g. a \"next batch\" endpoint that applies spaced-repetition logic server-side)\n- Authenticated requests for user-specific data using stateless tokens (e.g. JWT) or secure session cookies\n- Optional real-time channel (WebSocket or SSE) for live sync of progress across multiple tabs/devices\n\nPerformance & UX considerations:\n- Client-side caching of decks and cards (e.g. IndexedDB + HTTP caching) so revisiting a deck feels instant\n- Preloading the next few cards while the user is viewing the current one\n- Avoiding unnecessary re-renders when flipping or navigating between cards\n- Using CSS transforms and will-change to keep flip animations smooth\n- Incremental loading of large decks and strategies for updating content without disrupting ongoing sessions\n",
+    "tags": [
+        "flashcards",
+        "language-learning",
+        "frontend-backend",
+        "animations",
+        "performance",
+        "ux",
+        "accessibility",
+        "offline-first",
+        "api-design"
+    ],
+    "sections": [
+        {
+            "key": "R",
+            "title": "Requirements exploration",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}

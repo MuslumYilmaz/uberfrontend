@@ -1,0 +1,48 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Star Rating",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-star-rating\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Star Rating</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { StarRatingComponent } from './star-rating.component';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, StarRatingComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  currentRating = 0;\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Star Rating Widget</h1>\n\n    <div class=\"panel\">\n      <app-star-rating [(rating)]=\"currentRating\"></app-star-rating>\n      <p class=\"hint\">Current rating: {{ currentRating }} / 5</p>\n    </div>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.hint{margin:0;font-size:14px;color:#9ca3af;}\n"
+        },
+        "/src/app/star-rating.component.ts": {
+            "code": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-star-rating',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './star-rating.component.html',\n  styleUrls: ['./star-rating.component.css']\n})\nexport class StarRatingComponent {\n  @Input() max = 5;\n  @Input() rating = 0;\n  @Output() ratingChange = new EventEmitter();\n\n  // Pre-implemented so the UI shows visible stars (important for user understanding)\n  get stars(): number[] {\n    return Array.from({ length: this.max }, (_, i) => i + 1);\n  }\n\n  // TODO: Implement star click handler\n  onRate(value: number): void {\n    // Example:\n    // this.rating = value;\n    // this.ratingChange.emit(this.rating);\n  }\n}\n"
+        },
+        "/src/app/star-rating.component.html": {
+            "code": "<div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n  <button\n    *ngFor=\"let star of stars\"\n    type=\"button\"\n    class=\"star\"\n    [class.filled]=\"star <= rating\"\n    (click)=\"onRate(star)\"\n    [attr.aria-label]=\"star + ' out of ' + max\"\n  >\n    ★\n  </button>\n</div>\n"
+        },
+        "/src/app/star-rating.component.css": {
+            "code": ":host{display:inline-flex;}\n.stars{display:inline-flex;gap:4px;}\n.star{background:transparent;border:none;font-size:28px;cursor:pointer;padding:4px;line-height:1;color:#4b5563;transition:transform .1s ease,color .1s ease;}\n.star.filled{color:#facc15;}\n.star:focus-visible{outline:2px solid #facc15;outline-offset:2px;}\n.star:hover{transform:scale(1.1);}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

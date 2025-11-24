@@ -156,10 +156,16 @@ export class HeaderComponent implements OnInit {
   section = signal<'coding' | 'trivia' | 'debug' | null>(null);
 
   // prepare groups
-  groups: PrepareGroup[] = PREPARE_GROUPS;
+  groups: PrepareGroup[] = PREPARE_GROUPS.filter(g => g.key !== 'courses');
   activeGroupKey = signal<PrepareGroup['key']>('practice');
-  activeGroup = computed(() => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]);
-  activeItems = computed(() => this.activeGroup().items);
+  activeGroup = computed(
+    () => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]
+  );
+
+  // also make sure items inside other groups that might target "courses" are hidden:
+  activeItems = computed(() =>
+    this.activeGroup().items.filter(it => it.target?.name !== 'courses')
+  );
 
   // menus
   megaOpen = signal(false);
@@ -226,12 +232,22 @@ export class HeaderComponent implements OnInit {
   }
 
   private pickDefaultGroup() {
-    if (this.mode() === 'tech-list' || this.mode() === 'tech-detail') { this.activeGroupKey.set('practice'); return; }
-    if (this.mode() === 'sd-list' || this.mode() === 'sd-detail') { this.activeGroupKey.set('system'); return; }
-    if (this.router.url.startsWith('/companies')) { this.activeGroupKey.set('companies'); return; }
-    if (this.router.url.startsWith('/courses')) { this.activeGroupKey.set('courses'); return; }
+    if (this.mode() === 'tech-list' || this.mode() === 'tech-detail') {
+      this.activeGroupKey.set('practice');
+      return;
+    }
+    if (this.mode() === 'sd-list' || this.mode() === 'sd-detail') {
+      this.activeGroupKey.set('system');
+      return;
+    }
+    if (this.router.url.startsWith('/companies')) {
+      this.activeGroupKey.set('companies');
+      return;
+    }
+
     this.activeGroupKey.set('foundations');
   }
+
 
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }

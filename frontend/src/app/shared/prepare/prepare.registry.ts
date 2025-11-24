@@ -107,14 +107,6 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 intent: 'route',
                 target: { name: 'system', params: { section: 'practice' } } // maps to /system-design
             },
-            {
-                key: 'sd-challenges',
-                title: 'System Design Challenges',
-                subtitle: 'Time-boxed interview-style prompts',
-                pi: 'pi pi-bolt',
-                intent: 'route',
-                target: { name: 'system', params: { section: 'challenges' } } // /system-design for now
-            },
         ]
     },
     {
@@ -145,28 +137,6 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 pi: 'pi-briefcase',
                 intent: 'route',
                 target: { name: 'companies', params: { company: 'uber' } },
-            },
-        ],
-    },
-    {
-        key: 'courses',
-        title: 'Courses',
-        items: [
-            {
-                key: 'courses-home',
-                title: 'Courses',
-                subtitle: 'Structured lessons with progress tracking',
-                pi: 'pi-bookmark',
-                intent: 'route',
-                target: { name: 'courses' },
-            },
-            {
-                key: 'continue-course',
-                title: 'Continue learning',
-                subtitle: 'Jump back into your last course',
-                pi: 'pi-play-circle',
-                intent: 'placeholder',
-                disabled: true, // becomes dynamic later
             },
         ],
     },
