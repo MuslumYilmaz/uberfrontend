@@ -24,10 +24,15 @@
     <!-- Local tabs for this company -->
     <div class="mt-4 flex">
         <a [routerLink]="['all']" class="tabx" routerLinkActive="active"
-            [routerLinkActiveOptions]="{exact:true}">All</a>
+            [routerLinkActiveOptions]="{ exact: true }">All</a>
+
         <a [routerLink]="['coding']" class="tabx" routerLinkActive="active">Coding</a>
+
         <a [routerLink]="['trivia']" class="tabx" routerLinkActive="active">Trivia</a>
+
+        <a [routerLink]="['system']" class="tabx" routerLinkActive="active">System Design</a>
     </div>
+
 </div>
 
 <!-- The list itself -->

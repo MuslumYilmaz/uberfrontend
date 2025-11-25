@@ -131,6 +131,14 @@ export const routes: Routes = [
             data: { source: 'company', kind: 'trivia' },
           },
           {
+            path: 'system',
+            loadComponent: () =>
+              import('./features/coding/coding-list/coding-list.component').then(
+                (m) => m.CodingListComponent,
+              ),
+            data: { source: 'company', kind: 'system-design' },
+          },
+          {
             path: '**',
             loadComponent: () =>
               import('./shared/components/not-found/not-found.component').then(

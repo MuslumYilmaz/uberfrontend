@@ -10,7 +10,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
-import { BehaviorSubject, combineLatest, forkJoin, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
@@ -176,7 +176,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   ).pipe(startWith(''));
 
   // ---------- base load ----------
-  rawQuestions$ = this.route.data.pipe(
+  rawQuestions$: Observable<any> = this.route.data.pipe(
     tap(d => {
       this.source = (d['source'] as ListSource) ?? 'tech';
       this.kind = (d['kind'] as Kind) ?? 'coding';
@@ -269,23 +269,55 @@ export class CodingListComponent implements OnInit, OnDestroy {
           }
 
           // --------- COMPANY ----------
-          if (this.kind === 'all') {
-            return forkJoin([
-              this.qs.loadAllQuestions('coding')
-                .pipe(map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech })))),
-              this.qs.loadAllQuestions('trivia')
-                .pipe(map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))))
-            ]).pipe(
-              map(([a, b]) => [...a, ...b]),
-              startWith<Row[]>([])
-            );
-          } else {
-            const k: Exclude<Kind, 'all'> = this.kind as Exclude<Kind, 'all'>;
-            return this.qs.loadAllQuestions(k as any).pipe(
-              map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
-              startWith<Row[]>([])
-            );
+          if (this.source === 'company') {
+
+            // 1) ALL company questions (coding + trivia + system)
+            if (this.kind === 'all') {
+              return forkJoin<[Row[], Row[], Row[]]>([
+                this.qs.loadAllQuestions('coding').pipe(
+                  map(list =>
+                    list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
+                  )
+                ),
+                this.qs.loadAllQuestions('trivia').pipe(
+                  map(list =>
+                    list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
+                  )
+                ),
+                this.loadSystemDesignRows$()
+              ]).pipe(
+                map(([coding, trivia, system]) => [...coding, ...trivia, ...system]),
+                startWith<Row[]>([])
+              );
+            }
+
+            // 2) CODING
+            if (this.kind === 'coding') {
+              return this.qs.loadAllQuestions('coding').pipe(
+                map(list =>
+                  list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
+                ),
+                startWith<Row[]>([])
+              );
+            }
+
+            // 3) TRIVIA
+            if (this.kind === 'trivia') {
+              return this.qs.loadAllQuestions('trivia').pipe(
+                map(list =>
+                  list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
+                ),
+                startWith<Row[]>([])
+              );
+            }
+
+            if (this.kind === 'system-design') {
+              return this.loadSystemDesignRows$().pipe(
+                startWith<Row[]>([])
+              );
+            }
           }
+          return of<Row[]>([]);
         })
       )
     )
@@ -330,7 +362,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
-      const filtered = (questions ?? []).filter(q =>
+      const filtered = (questions ?? []).filter((q:any) =>
         (q.title?.toLowerCase()?.includes(t) ?? false) &&
 
         (diffs.length === 0 || diffs.includes(q.difficulty)) &&

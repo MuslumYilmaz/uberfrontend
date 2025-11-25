@@ -19,13 +19,18 @@ export class CompanyDetailComponent {
   counts$ = combineLatest([
     this.slug,
     this.qs.loadAllQuestions('coding'),
-    this.qs.loadAllQuestions('trivia')
+    this.qs.loadAllQuestions('trivia'),
+    this.qs.loadSystemDesign()
   ]).pipe(
-    map(([slug, coding, trivia]: any[]) => {
-      const all = [...coding, ...trivia].filter(q => (q.companies ?? []).includes(slug)).length;
-      const c = coding.filter((q: any) => (q.companies ?? []).includes(slug)).length;
-      const t = trivia.filter((q: any) => (q.companies ?? []).includes(slug)).length;
-      return { all, coding: c, trivia: t };
+    map(([slug, coding, trivia, system]) => {
+      const filterCompany = (q: any) => (q.companies ?? []).includes(slug);
+
+      return {
+        all: [...coding, ...trivia, ...system].filter(filterCompany).length,
+        coding: coding.filter(filterCompany).length,
+        trivia: trivia.filter(filterCompany).length,
+        system: system.filter(filterCompany).length
+      };
     })
   );
 
