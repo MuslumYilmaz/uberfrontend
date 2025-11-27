@@ -858,6 +858,10 @@
     "type": "coding",
     "importance": 5,
     "technology": "javascript",
+    "companies": [
+      "google",
+      "netflix"
+    ],
     "difficulty": "medium",
     "tags": [
       "async",
@@ -952,6 +956,10 @@
     "type": "coding",
     "importance": 5,
     "technology": "javascript",
+    "companies": [
+      "google",
+      "netflix"
+    ],
     "difficulty": "medium",
     "tags": [
       "async",
@@ -1040,6 +1048,9 @@
     "type": "coding",
     "importance": 5,
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "difficulty": "hard",
     "tags": [
       "object",
@@ -1124,6 +1135,9 @@
     "title": "Deep Equal",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "difficulty": "hard",
     "importance": 5,
     "tags": [
@@ -1309,6 +1323,9 @@
     "title": "Curry Function",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "importance": 5,
     "difficulty": "hard",
     "tags": [
@@ -1391,6 +1408,9 @@
     "title": "Memoization",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "importance": 5,
     "difficulty": "medium",
     "tags": [
@@ -1473,6 +1493,9 @@
     "title": "Compose Function",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "difficulty": "medium",
     "importance": 4,
     "tags": [
@@ -1978,7 +2001,8 @@
     "title": "Implement Array.prototype.map",
     "type": "coding",
     "companies": [
-      "amazon"
+      "amazon",
+      "apple"
     ],
     "technology": "javascript",
     "importance": 4,
@@ -2080,7 +2104,8 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "amazon"
+      "amazon",
+      "apple"
     ],
     "importance": 4,
     "difficulty": "medium",
@@ -2187,7 +2212,8 @@
     "type": "coding",
     "technology": "javascript",
     "companies": [
-      "amazon"
+      "amazon",
+      "apple"
     ],
     "importance": 4,
     "difficulty": "easy",
@@ -2626,6 +2652,9 @@
     "title": "Add Two Promises",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "importance": 4,
     "difficulty": "easy",
     "tags": [
@@ -2700,5 +2729,5 @@
     },
     "tests": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles negative and positive mix', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with zero values (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(0), Promise.resolve(0));\n    expect(result).toBe(0);\n  });\n});\n",
     "testsTs": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises (TypeScript)', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles mix of negative and positive', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with immediately resolved promises (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(3), Promise.resolve(4));\n    expect(result).toBe(7);\n  });\n});\n"
-    }
+  }
 ]

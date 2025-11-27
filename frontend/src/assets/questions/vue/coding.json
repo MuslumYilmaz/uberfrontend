@@ -150,11 +150,7 @@
             "openFile": "/src/App.vue",
             "storageKey": "v1:ui:vue:vue-contact-form-starter"
         },
-        "companies": [
-            "google",
-            "meta",
-            "airbnb"
-        ],
+        "companies": [],
         "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json"
     },
     {
@@ -232,11 +228,7 @@
             "openFile": "/src/App.vue",
             "storageKey": "v1:ui:vue:vue-todo-list"
         },
-        "companies": [
-            "google",
-            "meta",
-            "airbnb"
-        ],
+        "companies": [],
         "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json"
     },
     {
@@ -244,7 +236,10 @@
         "title": "Image Slider (Basic Navigation)",
         "type": "coding",
         "technology": "vue",
-        "companies": ["amazon"],
+        "companies": [
+            "amazon",
+            "google"
+        ],
         "difficulty": "beginner",
         "importance": 3,
         "tags": [
@@ -322,7 +317,9 @@
         "title": "Tabs / Multi-View Switcher",
         "type": "coding",
         "technology": "vue",
-        "companies": ["amazon"],
+        "companies": [
+            "amazon"
+        ],
         "difficulty": "beginner",
         "importance": 3,
         "tags": [
@@ -701,11 +698,7 @@
             "openFile": "/src/App.vue",
             "storageKey": "v2:ui:vue:vue-theme-toggle"
         },
-        "companies": [
-            "google",
-            "meta",
-            "uber"
-        ],
+        "companies": [],
         "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json"
     },
     {
@@ -1029,12 +1022,165 @@
                 ]
             }
         },
-        "companies": ["amazon"],
+        "companies": [
+            "amazon"
+        ],
         "sdk": {
             "asset": "assets/sb/vue/question/vue-star-rating.v1.json",
             "openFile": "/src/App.vue",
             "storageKey": "v1:ui:vue:vue-star-rating"
         },
         "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json"
+    },
+    {
+        "id": "vue-dynamic-table",
+        "title": "Dynamic Table (Rows × Columns)",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "lists",
+            "dynamic-ui",
+            "basics"
+        ],
+        "description": {
+            "summary": "Given user input for the number of rows and columns, build a Vue 3 component that renders an HTML table grid accordingly.",
+            "specs": {
+                "requirements": [
+                    "Render the dynamic table UI as the main component.",
+                    "Provide two numeric inputs: one for the number of rows and one for the number of columns.",
+                    "Provide a button (e.g. \"Generate table\") that rebuilds the table when clicked.",
+                    "Render an HTML table whose number of rows and columns matches the current input values.",
+                    "Each cell should display something simple and visible, such as its row/column indices (e.g. R1C1)."
+                ],
+                "expectedBehavior": [
+                    "Initially, it is fine to show an empty state or no table. After clicking the generate button, a table appears.",
+                    "Changing the row or column values and clicking the button updates the table dimensions.",
+                    "If the user enters non-positive values (0 or negative), the implementation may render no rows/columns or clamp the value to a minimum of 1, as long as the behavior is consistent."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API inside `<script setup>`.",
+                    "Use `ref` to store the numeric inputs and the `rows`/`cols` arrays that drive rendering.",
+                    "Implement a helper (e.g. `normalizeCount`) to clamp user input to a safe range (such as 0–20).",
+                    "Use `Array.from` or a similar approach to build arrays for `v-for` loops.",
+                    "Use a `computed` value for simple derived state like `hasGrid` (whether there is anything to render)."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `computed`)",
+                    "Two-way binding with `v-model.number`",
+                    "Dynamic UI generation with `v-for`",
+                    "Basic input normalization and guarded rendering"
+                ]
+            }
+        },
+        "starterCodeHint": "Implement the logic inside `<script setup>`. Use `ref(3)` and `ref(4)` for the initial row/column inputs, keep `rows` and `cols` in refs that you rebuild in an `updateTable()` function, and drive the table with nested `v-for` loops over those arrays.",
+        "solutionBlock": {
+            "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0–20) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts.",
+            "approaches": [
+                {
+                    "title": "Single component with reactive inputs and `v-for`-driven grid",
+                    "prose": "Keep everything inside `<script setup>` in `App.vue`. Use `const rowInput = ref(3)` and `const colInput = ref(4)` for the initial inputs, and `rows` / `cols` as `ref<number[]>([])` to drive the table. Implement `normalizeCount` to clamp and sanitize user-provided numbers, then in `updateTable()` call it for both dimensions and build `rows.value` and `cols.value` with `Array.from({ length: n }, (_, i) => i)`. In the template, bind the inputs with `v-model.number` and use nested `v-for` loops over `rows` and `cols` to render `<tr>` and `<td>`, printing labels like `R{{ r + 1 }}C{{ c + 1 }}` inside each cell.",
+                    "notes": {}
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Trying to iterate directly over a number in `v-for` instead of over an array.",
+                    "Not normalizing the input and letting negative, NaN, or very large values break the UI.",
+                    "Forgetting to use `.value` when reading and writing refs inside `<script setup>`."
+                ],
+                "techniques": [
+                    "Using `ref` for local state and rebuilding arrays reactively.",
+                    "Using `computed` to derive `hasGrid` so the empty state is handled cleanly.",
+                    "Using `Array.from({ length: n })` as a simple way to create ranges for `v-for`."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-dynamic-table.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-dynamic-table"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-dynamic-table-solution.v1.json"
+    },
+    {
+        "id": "vue-nested-checkboxes",
+        "title": "Nested Checkbox Tree (Parent–Child Sync)",
+        "type": "coding",
+        "technology": "vue",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "vue",
+            "components",
+            "reactivity",
+            "event-handlers",
+            "basics",
+            "dom"
+        ],
+        "description": {
+            "summary": "Build a small Vue 3 UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate).",
+            "specs": {
+                "requirements": [
+                    "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
+                    "Checking the parent selects all children.",
+                    "Unchecking the parent clears all children.",
+                    "When children are toggled individually:",
+                    "- If all are checked → parent is checked.",
+                    "- If none are checked → parent is unchecked.",
+                    "- If some are checked → parent is indeterminate.",
+                    "Keep everything in a single <App.vue> component."
+                ],
+                "expectedBehavior": [
+                    "Each child checkbox toggles independently.",
+                    "The parent reflects the aggregate state of the children.",
+                    "The parent’s visual state shows indeterminate when selection is mixed.",
+                    "No external component libraries are required."
+                ],
+                "implementationNotes": [
+                    "Use Vue 3's Composition API in <script setup> with `ref` to store the children list.",
+                    "Derive the parent’s checked/indeterminate state from the children and apply `indeterminate` via a template ref.",
+                    "Use standard `@change` handlers to wire parent and child events."
+                ],
+                "techFocus": [
+                    "Vue 3 Composition API (`ref`, `watch`)",
+                    "Derived state from a list of items",
+                    "Click/event handlers",
+                    "Working with DOM-only properties via `ref` (indeterminate)"
+                ]
+            }
+        },
+        "starterCodeHint": "Keep the children as an array of `{ id, label, checked }` in a `ref`. Use a template `ref` on the parent `<input>` so you can assign `el.indeterminate = true` when some but not all children are checked.",
+        "solutionBlock": {
+            "overview": "The core idea is to store the children as a reactive array and derive the parent state from it. The parent checkbox never has its own independent state; instead, a watcher looks at how many children are checked and sets `checked` and `indeterminate` on the DOM node via a template ref. Toggling the parent sets all children to the same value; toggling a child flips just that one and lets the watcher recompute the parent.",
+            "approaches": [
+                {
+                    "title": "Children in a `ref` + parent derived in a watcher",
+                    "prose": "Inside `<script setup>`, store the children in `const children = ref([...])`. Attach `ref=\"parentRef\"` to the parent checkbox and use `watch(children, ..., { deep: true, immediate: true })` to update `parentRef.value.checked` and `parentRef.value.indeterminate` whenever the list changes. The parent handler maps all children to the new checked value; the child handler toggles one element by id and reuses the same watcher logic."
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Trying to bind `indeterminate` as a normal prop (e.g. `:indeterminate=\"...\"`) instead of assigning it on the DOM element via `ref`.",
+                    "Giving the parent its own `ref`-based boolean state instead of deriving from children, which risks desync.",
+                    "Forgetting to use `{ deep: true }` in the watcher, so changes inside the array objects are not observed."
+                ],
+                "techniques": [
+                    "Using `ref` for local reactive arrays.",
+                    "Using `watch` with `{ deep: true, immediate: true }` to derive and keep DOM state in sync.",
+                    "Keeping all state and handlers colocated in `<App.vue>` for a focused exercise."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/vue/question/vue-nested-checkboxes.v1.json",
+            "openFile": "/src/App.vue",
+            "storageKey": "v1:ui:vue:vue-nested-checkboxes"
+        },
+        "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json"
     }
 ]

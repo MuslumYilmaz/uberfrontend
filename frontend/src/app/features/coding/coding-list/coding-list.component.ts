@@ -362,7 +362,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
-      const filtered = (questions ?? []).filter((q:any) =>
+      const filtered = (questions ?? []).filter((q: any) =>
         (q.title?.toLowerCase()?.includes(t) ?? false) &&
 
         (diffs.length === 0 || diffs.includes(q.difficulty)) &&
@@ -584,6 +584,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private capitalize(s: string | null | undefined) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 
   techName(q: Row) {
+    // System design questions: show a custom label
+    if (q.__sd) {
+      return 'System design';
+    }
+
     const tech = (q.tech ?? 'javascript') as Tech;
     switch (tech) {
       case 'angular': return 'Angular';

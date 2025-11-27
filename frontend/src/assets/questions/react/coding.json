@@ -64,10 +64,7 @@
             "storageKey": "v2:ui:react:react-counter"
         },
         "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
-        "companies": [
-            "meta",
-            "google"
-        ]
+        "companies": []
     },
     {
         "id": "react-contact-form-starter",
@@ -150,9 +147,7 @@
         },
         "solutionAsset": "assets/sb/react/solution/react-contact-form-solution.v1.json",
         "companies": [
-            "meta",
-            "google",
-            "airbnb"
+            "netflix"
         ]
     },
     {
@@ -231,11 +226,7 @@
             "storageKey": "v2:ui:react:react-todo-list"
         },
         "solutionAsset": "assets/sb/react/solution/react-todo-list-solution.v1.json",
-        "companies": [
-            "meta",
-            "google",
-            "uber"
-        ]
+        "companies": []
     },
     {
         "id": "react-image-slider",
@@ -313,7 +304,8 @@
         },
         "solutionAsset": "assets/sb/react/solution/react-image-slider-solution.v1.json",
         "companies": [
-            "amazon"
+            "amazon",
+            "google"
         ]
     },
     {
@@ -465,10 +457,7 @@
             "storageKey": "v2:ui:react:react-filterable-user-list"
         },
         "solutionAsset": "assets/sb/react/solution/react-filterable-user-list-solution.v1.json",
-        "companies": [
-            "meta",
-            "google"
-        ]
+        "companies": []
     },
     {
         "id": "react-accordion-faq",
@@ -544,11 +533,7 @@
             "storageKey": "v2:ui:react:react-accordion-faq"
         },
         "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
-        "companies": [
-            "meta",
-            "google",
-            "uber"
-        ]
+        "companies": []
     },
     {
         "id": "react-pagination-table",
@@ -626,11 +611,7 @@
             "storageKey": "v2:ui:react:react-pagination-table"
         },
         "solutionAsset": "assets/sb/react/solution/react-pagination-table-solution.v1.json",
-        "companies": [
-            "meta",
-            "google",
-            "uber"
-        ]
+        "companies": []
     },
     {
         "id": "react-theme-toggle",
@@ -710,10 +691,7 @@
             "storageKey": "v2:ui:react:react-theme-toggle"
         },
         "solutionAsset": "assets/sb/react/solution/react-theme-toggle-solution.v1.json",
-        "companies": [
-            "meta",
-            "google"
-        ]
+        "companies": []
     },
     {
         "id": "react-multi-step-signup",
@@ -797,11 +775,7 @@
             "storageKey": "v2:ui:react:react-multi-step-signup"
         },
         "solutionAsset": "assets/sb/react/solution/react-multi-step-form-solution.v1.json",
-        "companies": [
-            "meta",
-            "google",
-            "airbnb"
-        ]
+        "companies": []
     },
     {
         "id": "react-shopping-cart",
@@ -971,11 +945,7 @@
             "storageKey": "v2:ui:react:react-debounced-search"
         },
         "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
-        "companies": [
-            "meta",
-            "google",
-            "airbnb"
-        ]
+        "companies": []
     },
     {
         "id": "react-star-rating",
@@ -1053,5 +1023,155 @@
         "companies": [
             "amazon"
         ]
+    },
+    {
+        "id": "react-dynamic-table",
+        "title": "Dynamic Table (Rows × Columns)",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "beginner",
+        "importance": 3,
+        "tags": [
+            "react",
+            "state",
+            "event-handlers",
+            "components",
+            "lists",
+            "dynamic-ui"
+        ],
+        "description": {
+            "summary": "Given user input for the number of rows and columns, render a table grid dynamically using a React component.",
+            "specs": {
+                "requirements": [
+                    "Render a main <App /> UI that contains the dynamic table controls.",
+                    "Provide two numeric inputs: one for the number of rows and one for the number of columns.",
+                    "Provide a button (e.g. \"Generate table\") that rebuilds the table when clicked.",
+                    "Render an HTML table whose number of rows and columns matches the current inputs.",
+                    "Each cell should show something simple and visible, e.g. its row/column indices like R1C1."
+                ],
+                "expectedBehavior": [
+                    "Initially, showing an empty state or no table is fine. After the first generate action, a table appears.",
+                    "Changing the row or column input and clicking the button updates the table dimensions.",
+                    "If the user enters non-positive values (0 or negative), the implementation may either render no rows/columns or clamp to a minimum of 1, as long as behavior is consistent."
+                ],
+                "implementationNotes": [
+                    "Use React state (useState) to store the current numeric inputs (rows, columns) and the arrays driving the table.",
+                    "Keep separate state for the raw inputs and the derived arrays you map over (e.g. rows and cols).",
+                    "Normalize counts (e.g. clamp to >= 0 and a reasonable max) before generating the arrays.",
+                    "Use nested array mapping to generate table rows and cells."
+                ],
+                "techFocus": [
+                    "React useState for component state",
+                    "Handling controlled inputs and change events",
+                    "Dynamic rendering using array map",
+                    "Simple input normalization for UI safety"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "Use React state to hold four values: rowInput, colInput, rows, and cols. The numeric inputs store raw values (rowInput, colInput). When the user clicks a \"Generate\" button, you normalize these values, then rebuild rows and cols arrays using something like Array.from({ length: n }). The component renders an HTML table using nested map calls over rows and cols, printing a label such as R1C1 in each cell.\n\n**Test cases**\n- With rowInput = 2 and colInput = 3, after clicking \"Generate\", the table has 2 <tr> rows and each row has 3 <td> cells.\n- Updating rowInput to 4 and clicking again updates the table to 4 rows.\n- Updating colInput to 1 and clicking again updates the table to 1 column per row.\n- When rows or columns are set to 0 (or negative), the implementation either renders no table or clamps to 0/1 consistently.",
+            "approaches": [
+                {
+                    "title": "Single component with derived row/column arrays",
+                    "prose": "Implement everything inside a single App component. Keep raw values in rowInput and colInput, and use rows and cols arrays to drive the rendered table via nested map.\n\n1. Keep rowInput and colInput as controlled inputs with onChange handlers.\n2. Implement normalizeCount to clamp and sanitize user-provided values.\n3. Implement updateTable so it calls normalizeCount for rows and columns and then builds arrays using Array.from.\n4. Render a \"Generate table\" button that calls updateTable.\n5. Render an HTML table with nested map calls, labeling each cell with its 1-based row and column index.\n\nThis keeps state colocated and demonstrates how to generate UI dynamically from user input.",
+                    "codeJs": "import React from 'react';\n\nexport default function App() {\n  const [rowInput, setRowInput] = React.useState(3);\n  const [colInput, setColInput] = React.useState(4);\n  const [rows, setRows] = React.useState<number[]>([]);\n  const [cols, setCols] = React.useState<number[]>([]);\n\n  const normalizeCount = (raw: number) => {\n    if (!Number.isFinite(raw)) return 0;\n    const n = Math.floor(raw);\n    const clamped = Math.max(0, Math.min(n, 20));\n    return clamped;\n  };\n\n  const updateTable = () => {\n    const r = normalizeCount(rowInput);\n    const c = normalizeCount(colInput);\n    setRows(Array.from({ length: r }, (_, i) => i));\n    setCols(Array.from({ length: c }, (_, i) => i));\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Dynamic Table</h1>\n        <p className=\"hint\">Enter rows & columns, then generate a table grid.</p>\n\n        <div className=\"controls\">\n          <label>\n            <span>Rows</span>\n            <input\n              type=\"number\"\n              min={0}\n              value={rowInput}\n              onChange={(e) => setRowInput(Number(e.target.value))}\n            />\n          </label>\n          <label>\n            <span>Columns</span>\n            <input\n              type=\"number\"\n              min={0}\n              value={colInput}\n              onChange={(e) => setColInput(Number(e.target.value))}\n            />\n          </label>\n          <button onClick={updateTable}>Generate table</button>\n        </div>\n\n        {rows.length > 0 && cols.length > 0 ? (\n          <div className=\"preview\" aria-label=\"dynamic table\">\n            <table className=\"grid\">\n              <tbody>\n                {rows.map((_, rowIndex) => (\n                  <tr key={rowIndex}>\n                    {cols.map((__, colIndex) => (\n                      <td key={colIndex}>R{rowIndex + 1}C{colIndex + 1}</td>\n                    ))}\n                  </tr>\n                ))}\n              </tbody>\n            </table>\n          </div>\n        ) : (\n          <p className=\"empty\">Set rows & columns, then generate the table.</p>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Trying to map directly over a number instead of an array (e.g. Array.from missing).",
+                    "Not normalizing input so negative or NaN values break the UI.",
+                    "Leaving inputs uncontrolled or forgetting to wire onChange."
+                ],
+                "techniques": [
+                    "Using useState for both raw inputs and derived arrays.",
+                    "Using Array.from({ length: n }) to create simple iterable ranges.",
+                    "Using nested map to build grid-like UIs."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-dynamic-table.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-dynamic-table"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-dynamic-table-solution.v1.json",
+        "companies": []
+    },
+    {
+        "id": "react-nested-checkboxes",
+        "title": "Nested Checkbox Tree (Parent–Child Sync)",
+        "type": "coding",
+        "technology": "react",
+        "difficulty": "intermediate",
+        "importance": 4,
+        "tags": [
+            "react",
+            "state",
+            "event-handlers",
+            "components",
+            "dom"
+        ],
+        "description": {
+            "summary": "Build a small React UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate).",
+            "specs": {
+                "requirements": [
+                    "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
+                    "Checking the parent selects all children.",
+                    "Unchecking the parent clears all children.",
+                    "When children are toggled individually:",
+                    "- If all are checked → parent is checked.",
+                    "- If none are checked → parent is unchecked.",
+                    "- If some are checked → parent is indeterminate.",
+                    "Keep everything in a single <App /> component."
+                ],
+                "expectedBehavior": [
+                    "Each child checkbox toggles independently.",
+                    "The parent reflects the aggregate state of the children.",
+                    "The parent’s visual state shows indeterminate when selection is mixed.",
+                    "No external component libraries are required."
+                ],
+                "implementationNotes": [
+                    "Use React state (useState) to store an array of child items (e.g. { label, checked }).",
+                    "Use a ref (useRef) on the parent checkbox to assign the DOM-only `indeterminate` property.",
+                    "Derive the parent state (checked / unchecked / indeterminate) from the current children array."
+                ],
+                "techFocus": [
+                    "React useState for list state",
+                    "Event handlers for checkboxes",
+                    "Managing derived state (parent from children)",
+                    "Working with DOM-only properties via useRef"
+                ]
+            }
+        },
+        "solutionBlock": {
+            "overview": "This exercise is about synchronizing state between a parent checkbox and several children. Store the children as an array of objects in state. The parent checkbox does not have its own state; instead, its checked and indeterminate status are derived from how many children are selected. Because `indeterminate` is not a normal React prop, you use a ref to the DOM <input> and assign it manually.",
+            "approaches": [
+                {
+                    "title": "Children in state + derived parent via ref",
+                    "prose": "Keep the list of children in a single `useState` array of `{ label, checked }`. On parent toggle, map all children to the new checked value. On child toggle, flip only that element. After each change, compute how many children are checked and use a helper to update the parent checkbox via a ref: checked when all are selected, unchecked when none are selected, and indeterminate when the selection is mixed.",
+                    "codeJs": "import React, { useState, useRef } from 'react';\n\nfunction App() {\n  const [children, setChildren] = useState([\n    { label: 'Child 1', checked: false },\n    { label: 'Child 2', checked: false },\n    { label: 'Child 3', checked: false }\n  ]);\n\n  const parentRef = useRef(null);\n\n  const syncParent = (nodes) => {\n    const total = nodes.length;\n    const checkedCount = nodes.filter((n) => n.checked).length;\n    const parent = parentRef.current;\n    if (!parent) return;\n\n    if (checkedCount === total) {\n      parent.checked = true;\n      parent.indeterminate = false;\n    } else if (checkedCount === 0) {\n      parent.checked = false;\n      parent.indeterminate = false;\n    } else {\n      parent.checked = false;\n      parent.indeterminate = true;\n    }\n  };\n\n  const toggleParent = (event) => {\n    const checked = event.target.checked;\n    setChildren((prev) => {\n      const next = prev.map((child) => ({ ...child, checked }));\n      syncParent(next);\n      return next;\n    });\n  };\n\n  const toggleChild = (index) => {\n    setChildren((prev) => {\n      const next = prev.map((child, i) =>\n        i === index ? { ...child, checked: !child.checked } : child\n      );\n      syncParent(next);\n      return next;\n    });\n  };\n\n  return (\n    <main style={{ minHeight: '100vh', background: '#0a0a0a', color: '#e5e7eb', display: 'grid', placeItems: 'center', padding: 24 }}>\n      <section style={{ width: '100%', maxWidth: 420, display: 'grid', gap: 16 }}>\n        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>Nested Checkboxes</h1>\n\n        <div style={{ background: '#0b1020', border: '1px solid #1f2937', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>\n          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 16, fontWeight: 600 }}>\n            <input ref={parentRef} type=\"checkbox\" onChange={toggleParent} />\n            <span>Parent</span>\n          </label>\n\n          <div style={{ display: 'grid', gap: 6, marginLeft: 24 }}>\n            {children.map((child, index) => (\n              <label key={child.label} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>\n                <input\n                  type=\"checkbox\"\n                  checked={child.checked}\n                  onChange={() => toggleChild(index)}\n                />\n                <span>{child.label}</span>\n              </label>\n            ))}\n          </div>\n        </div>\n      </section>\n    </main>\n  );\n}\n\nexport default App;\n"
+                }
+            ],
+            "notes": {
+                "pitfalls": [
+                    "Trying to control `indeterminate` via JSX (e.g. `<input indeterminate={...} />`) — it must be set on the DOM node via a ref.",
+                    "Giving the parent its own independent `useState` instead of deriving it from the children.",
+                    "Forgetting to recompute and apply parent state after each child toggle."
+                ],
+                "techniques": [
+                    "Using `useState` with arrays of objects.",
+                    "Using `useRef` to reach DOM-only properties like `indeterminate`.",
+                    "Deriving UI state from existing state instead of duplicating it."
+                ]
+            }
+        },
+        "sdk": {
+            "asset": "assets/sb/react/question/react-nested-checkboxes.v1.json",
+            "openFile": "/src/App.tsx",
+            "storageKey": "v2:ui:react:react-nested-checkboxes"
+        },
+        "solutionAsset": "assets/sb/react/solution/react-nested-checkboxes-solution.v1.json",
+        "companies": []
     }
 ]

@@ -1492,6 +1492,7 @@
         "id": "react-prevent-unnecessary-rerenders",
         "title": "How can you prevent unnecessary re-renders in React?",
         "technology": "react",
+        "companies": ["netflix"],
         "difficulty": "advanced",
         "importance": 5,
         "description": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to minimize them — including memoization, pure components, stable references, and smart state management.",

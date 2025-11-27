@@ -64,11 +64,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-counter-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json"
   },
   {
@@ -153,11 +149,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-contact-form-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "airbnb"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json"
   },
   {
@@ -238,11 +230,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-todo-list-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "airbnb"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json"
   },
   {
@@ -321,7 +309,8 @@
       "storageKey": "v2:ui:angular:angular-image-slider-starter"
     },
     "companies": [
-      "amazon"
+      "amazon",
+      "google"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json"
   },
@@ -474,11 +463,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-filterable-user-list"
     },
-    "companies": [
-      "google",
-      "meta",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json"
   },
   {
@@ -633,11 +618,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-pagination-table"
     },
-    "companies": [
-      "google",
-      "meta",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json"
   },
   {
@@ -719,11 +700,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-theme-toggle"
     },
-    "companies": [
-      "google",
-      "meta",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json"
   },
   {
@@ -807,11 +784,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-multi-step-form-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json"
   },
   {
@@ -986,11 +959,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v1:ui:angular:angular-debounced-search"
     },
-    "companies": [
-      "meta",
-      "google",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json"
   },
   {
@@ -1070,5 +1039,158 @@
       "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json"
+  },
+  {
+    "id": "angular-dynamic-table-starter",
+    "title": "Dynamic Table (Rows × Columns)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "beginner",
+    "importance": 3,
+    "tags": [
+      "components",
+      "template-syntax",
+      "forms",
+      "structural-directives",
+      "*ngFor",
+      "dynamic-ui"
+    ],
+    "description": {
+      "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and `*ngFor` loops to generate the table structure.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Provide two numeric inputs: one for the number of rows and one for the number of columns.",
+          "Provide a button (e.g. \"Generate table\" or \"Update\") that rebuilds the table when clicked.",
+          "Render an HTML table whose number of rows and columns matches the user-input values.",
+          "Each cell should render something simple and visible (e.g. its row/column index like `R1C1`)."
+        ],
+        "expectedBehavior": [
+          "Initially, no table or an empty grid is fine, as long as it appears correctly after the first generate action.",
+          "Changing the row or column input and clicking the button updates the table dimensions.",
+          "If the user enters non-positive values (0 or negative), the implementation may treat them as 0 and render no rows/columns, or clamp them to a minimum of 1 (either behavior is acceptable as long as it is consistent)."
+        ],
+        "implementationNotes": [
+          "Use regular class properties (e.g. `rowInput`, `colInput`) to store the current input values.",
+          "Use additional arrays (e.g. `rows: number[]` and `cols: number[]`) for driving `*ngFor` loops.",
+          "Handle the \"Generate\" button by rebuilding these arrays based on the current inputs.",
+          "Import and use `FormsModule` to enable `[(ngModel)]` two-way binding for the inputs.",
+          "Use nested `*ngFor` loops in the template to generate table rows and cells."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Template-driven two-way binding with `[(ngModel)]`",
+          "Dynamic UI generation with `*ngFor`",
+          "Basic input normalization and state management"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise focuses on dynamic UI generation in Angular. You keep two pieces of input state (`rowInput` and `colInput`) and two arrays (`rows` and `cols`) that drive `*ngFor` loops. When the user clicks a button, you normalize the input values (e.g. clamp at 0 or a sensible maximum) and rebuild `rows` and `cols` accordingly. The table is rendered via nested `*ngFor` loops over these arrays, and each cell prints something simple like its row/column indices.\n\n**Test cases**\n- With `rowInput = 2` and `colInput = 3`, after clicking the generate button, the table has 2 `<tr>` elements and each row has 3 `<td>` elements.\n- Updating `rowInput` to `4` and clicking generate again updates the table to 4 rows.\n- Updating `colInput` to `1` and clicking generate again updates the table to 1 column per row.\n- When rows or columns are set to 0 (or a negative value), the implementation either renders no rows/columns or clamps to at least 1 consistently.",
+      "approaches": [
+        {
+          "title": "Standalone component with inputs and `*ngFor`-driven grid",
+          "prose": "Use a single standalone `AppComponent` that holds four key properties: `rowInput`, `colInput`, `rows`, and `cols`.\n\n1. Store the current numeric input values in `rowInput` and `colInput`.\n2. Store arrays used for iteration, e.g. `rows: number[] = []` and `cols: number[] = []`.\n3. Implement a method `updateTable()` that:\n   - Normalizes `rowInput` and `colInput` to non-negative integers (and optionally clamps a maximum).\n   - Rebuilds `rows` and `cols` using `Array.from` and the normalized counts.\n4. Bind the inputs with `[(ngModel)]` and trigger `updateTable()` on a button click.\n5. In the template, use nested `*ngFor` loops to generate table rows and cells, and print a simple label like `R{{ rowIndex + 1 }}C{{ colIndex + 1 }}` inside each `<td>`.\n\nThis keeps the implementation small while clearly demonstrating dynamic UI generation based on user input, two-way binding, and structural directives.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Dynamic Table</h1>\n        <p class=\"hint\">Enter rows & columns, then generate a table grid.</p>\n\n        <div class=\"controls\">\n          <label>\n            <span>Rows</span>\n            <input type=\"number\" min=\"0\" [(ngModel)]=\"rowInput\" />\n          </label>\n          <label>\n            <span>Columns</span>\n            <input type=\"number\" min=\"0\" [(ngModel)]=\"colInput\" />\n          </label>\n          <button (click)=\"updateTable()\">Generate table</button>\n        </div>\n\n        <div class=\"preview\" *ngIf=\"rows.length && cols.length; else emptyState\">\n          <table class=\"grid\" aria-label=\"dynamic table\">\n            <tbody>\n              <tr *ngFor=\"let _ of rows; let rowIndex = index\">\n                <td *ngFor=\"let __ of cols; let colIndex = index\">\n                  R{{ rowIndex + 1 }}C{{ colIndex + 1 }}\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n\n        <ng-template #emptyState>\n          <p class=\"empty\">Set rows & columns, then generate the table.</p>\n        </ng-template>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:640px;padding:20px 24px;background:#020617;border-radius:16px;border:1px solid #1f2937;display:grid;gap:16px;}`,\n    `h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.hint{margin:0;font-size:13px;color:#9ca3af;}`,\n    `.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}`,\n    `label{display:flex;flex-direction:column;gap:4px;font-size:13px;}`,\n    `input{background:#020617;border:1px solid #374151;border-radius:10px;padding:6px 10px;color:#e5e7eb;min-width:80px;}`,\n    `button{background:#a3e635;color:#0b1020;border:none;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;}`,\n    `button:hover{filter:brightness(1.05);}`,\n    `.preview{overflow:auto;border-radius:12px;border:1px solid #1f2937;padding:12px;background:#020617;}`,\n    `.grid{width:100%;border-collapse:collapse;}`,\n    `td{border:1px solid #1f2937;padding:6px 10px;font-size:13px;text-align:center;}`,\n    `.empty{margin:0;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  rowInput = 3;\n  colInput = 4;\n\n  rows: number[] = [];\n  cols: number[] = [];\n\n  constructor() {\n    this.updateTable();\n  }\n\n  private normalizeCount(raw: number): number {\n    if (!Number.isFinite(raw)) return 0;\n    const n = Math.floor(raw);\n    const clamped = Math.max(0, Math.min(n, 20));\n    return clamped;\n  }\n\n  updateTable(): void {\n    const rows = this.normalizeCount(this.rowInput);\n    const cols = this.normalizeCount(this.colInput);\n\n    this.rows = Array.from({ length: rows }, (_, i) => i);\n    this.cols = Array.from({ length: cols }, (_, i) => i);\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Rendering the table directly from `rowInput`/`colInput` without normalizing them (e.g. allowing negative or non-integer values to break the UI).",
+          "Trying to use `*ngFor` over a number directly instead of an iterable array.",
+          "Forgetting to import `FormsModule`, which will cause `[(ngModel)]` to fail."
+        ],
+        "techniques": [
+          "Using `Array.from({ length: n })` to create arrays for iteration.",
+          "Separating form state (`rowInput`, `colInput`) from derived view state (`rows`, `cols`).",
+          "Using nested `*ngFor` loops for grid-like UIs."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-dynamic-table.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-dynamic-table-starter"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json"
+  },
+  {
+    "id": "angular-nested-checkboxes",
+    "title": "Nested Checkbox Tree (Standalone Component)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "dom",
+      "forms",
+      "event-binding",
+      "state",
+      "ui-logic"
+    ],
+    "description": {
+      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states.",
+      "specs": {
+        "requirements": [
+          "Render one parent checkbox and several child checkboxes.",
+          "Checking the parent selects all children.",
+          "Unchecking the parent clears all children.",
+          "When children are toggled manually:",
+          "- If all are checked → parent becomes checked.",
+          "- If none are checked → parent becomes unchecked.",
+          "- If some are checked → parent becomes indeterminate.",
+          "Use a standalone Angular component.",
+          "Use simple arrays or booleans for state (no signals needed)."
+        ],
+        "expectedBehavior": [
+          "Parent reflects the state of the children.",
+          "Children reflect parent state when it changes.",
+          "Parent enters the indeterminate state when child selection is mixed.",
+          "No external libraries or advanced patterns required."
+        ],
+        "implementationNotes": [
+          "Use a boolean array like `[false, false, false]` to track child states.",
+          "Bind the parent checkbox’s `indeterminate` property via `@ViewChild` or a template reference.",
+          "Use `(change)` event bindings for checkbox toggles.",
+          "Derive parent state after each child change."
+        ],
+        "techFocus": [
+          "Standalone components",
+          "DOM event handling",
+          "State derivation",
+          "Working with `indeterminate` on native checkboxes"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This component manages a parent checkbox and multiple child checkboxes. The parent controls all children: checking it selects all children, and unchecking clears them. Children control the parent: if all are selected, the parent is checked; if none are selected, the parent is unchecked; if some are selected, the parent enters the `indeterminate` state.\n\nThis requires:\n- A simple array of booleans for child states.\n- A derived function that recalculates the parent state on every change.\n- Binding `indeterminate` using a template reference (`#parentBox`).",
+      "approaches": [
+        {
+          "title": "Boolean array with derived parent state",
+          "prose": "Use an array like `children = [false, false, false]`. The parent is derived based on the number of checked children. When clicking the parent checkbox, the entire array is updated. When children are toggled individually, run a helper that updates the parent checkbox's `checked` and `indeterminate` state. Angular does not have a native `indeterminate` input property — you must assign it manually on the element.",
+          "codeTs": "import { Component, ViewChild, ElementRef } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Child checkbox states\n  children = [false, false, false];\n\n  @ViewChild('parentBox', { static: true }) parentBox!: ElementRef<HTMLInputElement>;\n\n  // --- Parent toggle ---\n  toggleParent(event: Event): void {\n    const checked = (event.target as HTMLInputElement).checked;\n    this.children = this.children.map(() => checked);\n    this.updateParentState();\n  }\n\n  // --- Child toggle ---\n  toggleChild(index: number): void {\n    this.children[index] = !this.children[index];\n    this.updateParentState();\n  }\n\n  // --- Derive parent state ---\n  private updateParentState(): void {\n    const total = this.children.length;\n    const checkedCount = this.children.filter(x => x).length;\n\n    const parent = this.parentBox.nativeElement;\n\n    if (checkedCount === total) {\n      parent.checked = true;\n      parent.indeterminate = false;\n    } else if (checkedCount === 0) {\n      parent.checked = false;\n      parent.indeterminate = false;\n    } else {\n      parent.checked = false;\n      parent.indeterminate = true;\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Trying to bind `[indeterminate]` in Angular — it does NOT work because it's not a real DOM property.",
+          "Mutating the parent checkbox without using `@ViewChild` — required for indeterminate logic.",
+          "Forgetting to recalc parent state after each child toggle."
+        ],
+        "techniques": [
+          "Direct DOM access for `indeterminate`.",
+          "Boolean array state management.",
+          "Derived UI logic (checked / unchecked / indeterminate)."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-nested-checkboxes.v1.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v1:ui:angular:angular-nested-checkboxes"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json"
   }
 ]

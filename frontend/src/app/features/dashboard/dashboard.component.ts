@@ -89,12 +89,12 @@ export class DashboardComponent {
 
   /** ===== Company guides ===== */
   companyGuides: Card[] = [
-    { title: 'OpenAI', subtitle: '15 questions', icon: 'building', route: ['/companies', 'openai'] },
     { title: 'Google', subtitle: '34 questions', icon: 'building', route: ['/companies', 'google'] },
     { title: 'Amazon', subtitle: '61 questions', icon: 'building', route: ['/companies', 'amazon'] },
-    { title: 'TikTok', subtitle: '35 questions', icon: 'building', route: ['/companies', 'tiktok'] },
+    { title: 'Netflix', subtitle: '35 questions', icon: 'building', route: ['/companies', 'netflix'] },
     { title: 'ByteDance', subtitle: '27 questions', icon: 'building', route: ['/companies', 'bytedance'] },
     { title: 'Apple', subtitle: '13 questions', icon: 'building', route: ['/companies', 'apple'] },
+    { title: 'OpenAI', subtitle: '15 questions', icon: 'building', route: ['/companies', 'openai'] },
   ];
 
   /** ===== Focus areas ===== */

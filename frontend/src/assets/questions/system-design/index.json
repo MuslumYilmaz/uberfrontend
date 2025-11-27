@@ -2,6 +2,9 @@
     {
         "id": "infinite-scroll-list",
         "title": "Infinite Scroll List",
+        "companies": [
+            "google"
+        ],
         "description": "Design an infinite scroll list that progressively loads more items from a paginated API as the user scrolls down. Focus on achieving smooth scrolling, clear loading/error states, and keeping DOM size reasonable as the list grows.\n\nKey considerations include: when to load more data, how to detect scroll boundaries efficiently, how to show skeleton placeholders without causing layout jumps, and when it becomes necessary to introduce list virtualization.",
         "tags": [
             "infinite-scroll",
@@ -14,6 +17,10 @@
     {
         "id": "notification-toast-system",
         "title": "Notification Toast System",
+        "companies": [
+            "google",
+            "netflix"
+        ],
         "description": "Design a global toast/alert system that can be triggered from anywhere in the app (e.g. `toast.success()`, `toast.error()`). Focus on global state, rendering through a portal, stacking multiple toasts, auto-dismiss timers, and accessible behavior.\n\nKey considerations include: how to expose a simple global API, how to manage timers and cleanup safely, how to handle z-index and stacking order, and how to support responsive placements (top-right, bottom-left, mobile full-width) with good ARIA roles and focus handling.",
         "tags": [
             "toast",
@@ -47,6 +54,9 @@
     {
         "id": "dashboard-widgets-draggable-resizable",
         "title": "Dashboard with Draggable & Resizable Widgets",
+        "companies": [
+            "google"
+        ],
         "description": "Design a customizable dashboard made of widgets that the user can rearrange and resize. Widgets live on a grid layout, can be dragged to change position, and resized via handles. The dashboard layout is persisted (e.g. localStorage snapshot) so the user sees the same configuration on reload.\n\nKey considerations include: drag & drop architecture for widgets, grid-based layout with snapping and collision handling, resize handles with min/max constraints, re-render optimizations so drag/resize feel smooth (60 FPS target), and saving/restoring layout snapshots for each user.",
         "tags": [
             "dashboard",
@@ -91,17 +101,14 @@
     {
         "id": "flashcard-language-trainer",
         "title": "Flashcard-based Language Learning App",
-        "companies": ["amazon"],
+        "companies": [
+            "amazon"
+        ],
         "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server–client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
         "tags": [
             "flashcards",
             "language-learning",
-            "frontend-backend",
-            "animations",
-            "performance",
-            "ux",
-            "accessibility",
-            "offline-first"
+            "accessibility"
         ],
         "type": "system-design"
     }

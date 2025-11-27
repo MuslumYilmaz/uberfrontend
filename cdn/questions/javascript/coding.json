@@ -261,6 +261,9 @@
     "type": "coding",
     "importance": 3,
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "difficulty": "easy",
     "tags": [
       "Array"
@@ -1222,6 +1225,9 @@
     "title": "Flatten with Depth",
     "type": "coding",
     "technology": "javascript",
+    "companies": [
+      "google"
+    ],
     "difficulty": "medium",
     "importance": 4,
     "tags": [

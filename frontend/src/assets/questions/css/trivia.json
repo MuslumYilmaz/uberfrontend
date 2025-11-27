@@ -1273,7 +1273,10 @@
         "id": "css-box-model",
         "title": "What is the box model in CSS?",
         "technology": "css",
-        "companies": ["amazon"],
+        "companies": [
+            "amazon",
+            "google"
+        ],
         "difficulty": "intermediate",
         "importance": 5,
         "description": "The CSS box model is the foundation of web layout design. Every element in a webpage is represented as a rectangular box composed of four layers: content, padding, border, and margin. Understanding this model is essential for controlling spacing, alignment, and element sizing accurately.",
@@ -1429,7 +1432,10 @@
         "id": "css-position-relative-absolute-fixed",
         "title": "What is the difference between position: relative, absolute, and fixed?",
         "technology": "css",
-        "companies": ["amazon"],
+        "companies": [
+            "amazon",
+            "google"
+        ],
         "difficulty": "intermediate",
         "importance": 5,
         "description": "The position property determines how an element is placed in the document flow. The relative, absolute, and fixed values define how the element’s coordinates are calculated and how it interacts with its surroundings.",
@@ -1798,6 +1804,9 @@
         "id": "css-specificity-hierarchy",
         "title": "How do CSS selectors with higher specificity override others?",
         "technology": "css",
+        "companies": [
+            "google"
+        ],
         "difficulty": "intermediate",
         "importance": 5,
         "description": "Specificity determines which CSS rule takes precedence when multiple rules target the same element. Each selector type contributes a different weight, and higher specificity overrides lower ones regardless of source order (except when !important is used).",
@@ -2300,6 +2309,9 @@
         "id": "css-grid-vs-flexbox",
         "title": "What is the difference between Grid and Flexbox, and when should each be used?",
         "technology": "css",
+        "companies": [
+            "google"
+        ],
         "difficulty": "intermediate",
         "importance": 5,
         "description": "CSS Grid and Flexbox are both powerful layout systems designed to help developers create complex, responsive layouts with ease. While Flexbox excels in one-dimensional layouts (either rows or columns), Grid is built for two-dimensional layouts (rows and columns simultaneously). Understanding when to use each is key to writing efficient, scalable, and maintainable CSS.",
@@ -2400,8 +2412,8 @@
                 }
             ]
         }
-        },
-        {
+    },
+    {
         "id": "css-hardware-acceleration",
         "title": "How do hardware acceleration and compositing affect CSS animation performance?",
         "technology": "css",

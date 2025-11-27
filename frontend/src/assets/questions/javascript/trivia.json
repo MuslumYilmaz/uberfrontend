@@ -12,13 +12,7 @@
       "microtasks"
     ],
     "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -145,7 +139,10 @@
     ],
     "importance": 5,
     "companies": [
-      "amazon"
+      "amazon",
+      "google",
+      "netflix",
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -215,7 +212,8 @@
     ],
     "importance": 5,
     "companies": [
-      "amazon"
+      "amazon",
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -321,12 +319,7 @@
       "variables"
     ],
     "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -428,9 +421,7 @@
     "importance": 4,
     "companies": [
       "google",
-      "meta",
-      "microsoft",
-      "netflix"
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -520,12 +511,7 @@
       "concurrency"
     ],
     "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -665,12 +651,7 @@
       "bubbling"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -758,10 +739,7 @@
     ],
     "importance": 3,
     "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -861,10 +839,7 @@
     ],
     "importance": 5,
     "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -952,10 +927,7 @@
     ],
     "importance": 2,
     "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -1073,12 +1045,7 @@
       "closures"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1155,10 +1122,7 @@
     ],
     "importance": 3,
     "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -1261,12 +1225,7 @@
       "call-apply-bind"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1373,12 +1332,7 @@
       "array-methods"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1474,12 +1428,7 @@
       "web-apis"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1577,9 +1526,8 @@
     "importance": 5,
     "companies": [
       "google",
-      "meta",
-      "microsoft",
-      "netflix"
+      "netflix",
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -1692,12 +1640,7 @@
       "objects"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1812,11 +1755,7 @@
       "type-coercion"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1889,10 +1828,7 @@
     ],
     "importance": 3,
     "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -1961,12 +1897,7 @@
       "higher-order-functions"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2039,12 +1970,7 @@
       "syntax"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2126,12 +2052,7 @@
       "objects"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2232,12 +2153,7 @@
       "best-practices"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2339,12 +2255,7 @@
       "async"
     ],
     "importance": 1,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2434,12 +2345,7 @@
       "syntax"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2534,12 +2440,7 @@
       "es6"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2717,12 +2618,7 @@
       "cache"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {

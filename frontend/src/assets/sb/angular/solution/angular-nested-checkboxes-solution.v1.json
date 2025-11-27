@@ -1,0 +1,40 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Nested Checkboxes (solution: parent–child sync + indeterminate)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/forms": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-nested-checkboxes-solution\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Nested Checkboxes (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component, ViewChild, ElementRef } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface ChildNode {\n  label: string;\n  checked: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  children: ChildNode[] = [\n    { label: 'Child 1', checked: false },\n    { label: 'Child 2', checked: false },\n    { label: 'Child 3', checked: false }\n  ];\n\n  @ViewChild('parentBox', { static: true }) parentBox;\n\n  toggleParent(event: Event): void {\n    const checked = (event.target as HTMLInputElement).checked;\n    this.children = this.children.map(child => ({ ...child, checked }));\n    this.updateParentState();\n  }\n\n  toggleChild(): void {\n    this.updateParentState();\n  }\n\n  private updateParentState(): void {\n    const total = this.children.length;\n    const checkedCount = this.children.filter(c => c.checked).length;\n\n    const parent = this.parentBox.nativeElement;\n\n    if (checkedCount === total) {\n      parent.checked = true;\n      parent.indeterminate = false;\n    } else if (checkedCount === 0) {\n      parent.checked = false;\n      parent.indeterminate = false;\n    } else {\n      parent.checked = false;\n      parent.indeterminate = true;\n    }\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Nested Checkboxes (Solution)</h1>\n\n    <div class=\"panel\">\n      <label class=\"parent\">\n        <input #parentBox type=\"checkbox\" (change)=\"toggleParent($event)\" />\n        <span>Parent</span>\n      </label>\n\n      <div class=\"children\">\n        <label *ngFor=\"let child of children; let i = index\" class=\"child\">\n          <input\n            type=\"checkbox\"\n            [(ngModel)]=\"child.checked\"\n            (change)=\"toggleChild()\"\n          />\n          <span>{{ child.label }}</span>\n        </label>\n      </div>\n    </div>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.parent{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;}\n.children{display:grid;gap:6px;margin-left:24px;}\n.child{display:flex;align-items:center;gap:8px;font-size:14px;}\ninput[type=checkbox]{width:16px;height:16px;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin:0; height:100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}
