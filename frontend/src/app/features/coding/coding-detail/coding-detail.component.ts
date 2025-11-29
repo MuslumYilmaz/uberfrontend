@@ -181,7 +181,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Course breadcrumb + nav
   courseNav = signal<CourseNavState>(null);
   returnLabel = signal<string | null>(null);
-  private returnTo: any[] | null = null;
+  private returnTo: any[] | null = null;      // old array-based navigation
+  private returnToUrl: string | null = null;  // 🔹 new: full URL for global/company lists
+
 
   copiedIdx: number | null = null;
   private copyTimer?: any;
@@ -414,14 +416,24 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.courseNav.set(s?.courseNav ?? null);
     this.practice = (s?.session ?? null) as PracticeSession;
 
+    // 🔹 always capture URL-based return target if provided
+    this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
+
     if (s?.courseNav?.breadcrumb) {
+      // Course context (keeps existing behaviour)
       this.returnTo = s.courseNav.breadcrumb.to;
       this.returnLabel.set(s.courseNav.breadcrumb.label ?? 'Back to course');
     } else if (s?.returnTo) {
+      // Old array-based navigation (still supported)
       this.returnTo = s.returnTo as any[];
       this.returnLabel.set(s.returnLabel ?? 'Back');
+    } else if (this.returnToUrl) {
+      // 🔹 New: URL-only navigation (e.g. /coding?view=formats, /companies/google/all)
+      this.returnTo = null;
+      this.returnLabel.set(s?.returnLabel ?? null);
     } else {
       this.returnTo = null;
+      this.returnToUrl = null;
       this.returnLabel.set(null);
     }
 
@@ -474,18 +486,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loadQuestion(id);
       });
     });
-
-    this.router.events
-      .pipe(
-        filter(
-          (e): e is NavigationStart =>
-            e instanceof NavigationStart && e.navigationTrigger === 'popstate'
-        ),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.router.navigateByUrl('/coding', { replaceUrl: true });
-      });
 
     document.body.style.overflow = 'hidden';
   }
@@ -752,13 +752,20 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   backToReturn() {
     if (this.courseNav()?.breadcrumb?.to) {
+      // Course context
       this.router.navigate(this.courseNav()!.breadcrumb!.to);
     } else if (this.returnTo) {
+      // Old array-based navigation
       this.router.navigate(this.returnTo);
+    } else if (this.returnToUrl) {
+      // 🔹 New: go back to the exact URL we came from
+      this.router.navigateByUrl(this.returnToUrl);
     } else if (window.history.length > 1) {
+      // Fallback: normal browser history
       window.history.back();
     } else {
-      this.router.navigate(['/courses']);
+      // Final fallback (rare)
+      this.router.navigate(['/coding']);
     }
   }
 

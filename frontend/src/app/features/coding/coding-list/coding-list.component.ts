@@ -14,7 +14,7 @@ import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
-import { Difficulty, Question, Technology } from '../../../core/models/question.model';
+import { Difficulty, Question, QuestionKind, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
@@ -24,19 +24,16 @@ import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
 
-// 🔻 debug’i Kind’ten çıkardık
-type Kind = 'coding' | 'trivia' | 'all';
+type Kind = QuestionKind | 'all';
 
-// 🔻 Row.__kind artık sadece coding | trivia
 type Row = Question & {
   tech?: Tech;
-  __kind: 'coding' | 'trivia';
+  __kind: QuestionKind;
   companies?: string[];
   __sd?: boolean;
 };
 
-// 🔻 PracticeItem.kind de aynı şekilde
-type PracticeItem = { tech: Tech; kind: 'coding' | 'trivia'; id: string };
+type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number };
 
 // ---------- Formats categories ----------
@@ -188,8 +185,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
       // For the GLOBAL list, ignore route data and default to "all"
       if (this.source === 'global-coding') {
         const qpKind = this.route.snapshot.queryParamMap.get('kind') as Kind | null;
-        const allowed = new Set<Kind>(['all', 'coding', 'trivia']); // 🔻 debug çıkarıldı
-        this.selectedKind$.next(allowed.has(qpKind || '' as Kind) ? (qpKind as Kind) : 'all');
+        const allowed = new Set<Kind>(['all', 'coding', 'trivia']);
+        this.selectedKind$.next(allowed.has((qpKind || '') as Kind) ? (qpKind as Kind) : 'all');
       }
     }),
     switchMap(() =>
@@ -251,7 +248,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 this.tech = t as Tech;
 
                 if (this.kind === 'all') {
-                  // 🔻 debug listelemesi kaldırıldı
                   return forkJoin([
                     this.qs.loadQuestions(this.tech, 'coding')
                       .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'coding' })))),
@@ -263,7 +259,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                   );
                 }
 
-                const k = this.kind as Exclude<Kind, 'all'>;
+                const k = this.kind as QuestionKind;
                 return this.qs.loadQuestions(this.tech, k).pipe(
                   map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))),
                   startWith<Row[]>([])
@@ -433,8 +429,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   filteredCount$ = this.filtered$.pipe(map(list => list.length), startWith(0));
 
-  // 🔻 kindTabs artık sadece coding + trivia
-  kindTabs: Array<{ key: Exclude<Kind, 'all'>; label: string }> = [
+  kindTabs: Array<{ key: QuestionKind; label: string }> = [
     { key: 'coding', label: 'Coding' },
     { key: 'trivia', label: 'Quiz' }
   ];
@@ -543,9 +538,27 @@ export class CodingListComponent implements OnInit, OnDestroy {
       id: r.id
     }));
     const index = Math.max(0, list.findIndex(r => r.id === current.id));
-    const ret = this.detailStateForCompany(companySlug);
     const session: PracticeSession = { items, index };
-    return { ...(ret || {}), session };
+
+    // 👇 this is the important part: remember the *exact* list URL
+    const returnToUrl = this.router.url;
+
+    // Optional: nice label for the breadcrumb / back button
+    const returnLabel =
+      this.source === 'company'
+        ? this.companyLabel(companySlug || undefined)
+        : this.source === 'global-coding'
+          ? (this.isFormatsMode() ? 'All formats' : 'All questions')
+          : `${this.capitalize(this.tech ?? 'javascript')} ${this.kind === 'trivia' ? 'Quiz' :
+            this.kind === 'coding' ? 'Coding' :
+              'Questions'
+          }`;
+
+    return {
+      session,
+      returnToUrl,
+      returnLabel,
+    };
   }
 
   detailStateForCompany(companySlug: string | null): { [k: string]: any } | undefined {

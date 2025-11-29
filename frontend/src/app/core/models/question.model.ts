@@ -2,6 +2,8 @@ export type QuestionType = 'trivia' | 'coding' | 'system-design';
 export type Technology = 'javascript' | 'angular';
 export type Difficulty = 'easy' | 'intermediate' | 'hard';
 
+export type QuestionKind = 'trivia' | 'coding';
+
 export type StructuredDescription = {
   summary?: string;           // replaces plain text
   arguments?: StructuredArgument[];
