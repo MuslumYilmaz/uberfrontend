@@ -18,6 +18,8 @@ import { Difficulty, Question, Technology } from '../../../core/models/question.
 import { Tech } from '../../../core/models/user.model';
 import { CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
+import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
+import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -109,7 +111,9 @@ function inferCategory(q: any): CategoryKey {
     InputTextModule,
     ChipModule,
     FormsModule,
-    TooltipModule
+    TooltipModule,
+    CodingTechKindTabsComponent,
+    CodingFilterPanelComponent
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
@@ -777,5 +781,20 @@ export class CodingListComponent implements OnInit, OnDestroy {
       sort: this.sort$.value,
       tagMatchMode: this.tagMatchMode,
     };
+  }
+
+  onSearchTermChange(term: string) {
+    this.searchTerm = term;
+    this.search$.next(term);
+  }
+
+  onDifficultyToggleFromChild(evt: { difficulty: Difficulty; checked: boolean }) {
+    this.toggleDiff(evt.difficulty, evt.checked);
+  }
+
+  onImportanceToggleFromChild(evt: { tier: ImportanceTier; checked: boolean }) {
+    const curr = new Set(this.impTiers$.value);
+    evt.checked ? curr.add(evt.tier) : curr.delete(evt.tier);
+    this.impTiers$.next(Array.from(curr));
   }
 }
