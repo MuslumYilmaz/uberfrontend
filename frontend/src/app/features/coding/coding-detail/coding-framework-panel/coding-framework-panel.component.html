@@ -56,26 +56,12 @@
     </div>
 
     <!-- 2-col layout: editor + preview -->
-    <div class="flex-1 grid grid-cols-2 gap-px min-h-0">
+    <div class="flex-1 flex min-h-0 framework-layout">
         <!-- LEFT: Editor -->
-        <div class="min-w-0 min-h-0 flex flex-col">
+        <div class="min-w-0 min-h-0 flex flex-col" [style.flex]="frameworkEditorFlex()">
+            <!-- editor header, tabs vs. -->
             <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
-                <div class="flex items-center gap-2 min-w-0">
-                    <button class="icon-btn" [class.active]="showFileDrawer()" (click)="toggleFiles()"
-                        aria-label="Toggle files" title="Files">
-                        <i class="pi pi-bars"></i>
-                    </button>
-                    <div class="text-xs opacity-80 truncate" [title]="currentPath()">
-                        {{ currentFileLabel() }}
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button class="text-xs px-2 py-1 border border-white/10 rounded"
-                        (click)="rebuildFrameworkPreview()">
-                        Rebuild preview
-                    </button>
-                </div>
+                ...
             </div>
 
             <section class="min-w-0 min-h-0 flex-1 flex">
@@ -83,12 +69,16 @@
                     [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
                     (codeChange)="onFrameworkCodeChange($event)">
                 </app-monaco-editor>
-
             </section>
         </div>
 
+        <!-- VERTICAL SPLITTER (same idea as coding-detail) -->
+        <div class="splitter" [class.dragging]="isDraggingFrameworkCols()"
+            (pointerdown)="startFrameworkColsDrag($event)">
+        </div>
+
         <!-- RIGHT: Preview iframe -->
-        <div class="relative min-w-0 min-h-0">
+        <div class="relative flex-1 min-w-0 min-h-0">
             <div *ngIf="showingFrameworkSolutionPreview()"
                 class="absolute top-2 right-3 z-20 bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
                 <span class="font-medium">Showing solution preview</span>
@@ -106,4 +96,5 @@
             </iframe>
         </div>
     </div>
+
 </div>

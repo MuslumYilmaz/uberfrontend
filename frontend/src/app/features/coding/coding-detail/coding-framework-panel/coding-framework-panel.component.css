@@ -136,3 +136,59 @@
   height: 100% !important;
   max-height: 100% !important;
 }
+
+.splitter {
+  position: relative;
+  flex: 0 0 15px;        /* sabit genişlik */
+  width: 6px;
+  cursor: col-resize;
+  background: transparent;
+}
+
+/* Başta gizli */
+.splitter::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.35);   /* nötr gri ray */
+  opacity: 0;                               /* 🔹 gizli */
+  transition: background 0.15s ease,
+              box-shadow 0.15s ease,
+              opacity 0.15s ease;
+}
+
+/* Başta tamamen görünmez */
+.splitter::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  border-radius: 999px;
+  background: rgba(148,163,184,0.35);
+  opacity: 0; /* görünmez */
+  transition: opacity .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+/* Drag sırasında da görünür */
+.splitter.dragging::before {
+  opacity: 1;
+  background: rgba(59,130,246,0.9);
+  box-shadow: 0 0 0 1px rgba(59,130,246,0.4);
+}
+
+
+/* Hover / drag state – parlak mavi */
+.splitter:hover::before,
+.splitter.dragging::before {
+  opacity: 1;
+  background: rgba(59, 130, 246, 0.9);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+}

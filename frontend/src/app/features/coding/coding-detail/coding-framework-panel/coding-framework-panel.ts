@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   Input,
@@ -35,7 +36,7 @@ type TreeNode =
   templateUrl: './coding-framework-panel.component.html',
   styleUrls: ['./coding-framework-panel.component.css'],
 })
-export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestroy {
+export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input({ required: true }) question!: Question;
   @Input({ required: true }) tech!: Tech; // 'angular' | 'react' | 'vue'
   @Input() editorOptions: any;
@@ -93,6 +94,18 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
     return i >= 0 ? p.slice(i + 1) : p;
   });
 
+  // editor | preview oranı (0–1)
+  frameworkColsRatio = signal(0.55); // editor ~%55
+  frameworkEditorFlex = computed(
+    () => `0 0 ${this.frameworkColsRatio() * 100}%`
+  );
+
+  isDraggingFrameworkCols = signal(false);
+
+  private draggingFrameworkCols = false;
+  private startXFrameworkCols = 0;
+  private startFrameworkColsRatio = 0;
+
   constructor(
     private codeStore: CodeStorageService,
     private http: HttpClient,
@@ -105,6 +118,14 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
     if (this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
     }
+  }
+
+  ngAfterViewInit() {
+    // description splitter’da yaptığın gibi global dinleyici
+    this.zone.runOutsideAngular(() => {
+      window.addEventListener('pointermove', this.onPointerMoveFrameworkCols);
+      window.addEventListener('pointerup', this.onPointerUpFrameworkCols);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -130,6 +151,9 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
         frameEl.src = 'about:blank';
       }
     } catch { }
+
+    window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
+    window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
   }
 
   // ---------- public API (called by parent) ----------
@@ -582,4 +606,45 @@ export class CodingFrameworkPanelComponent implements OnInit, OnChanges, OnDestr
     }
     this.openDirs.set(opened);
   }
+
+  // --- VERTICAL SPLITTER (editor | preview) ---
+
+  startFrameworkColsDrag = (ev: PointerEvent) => {
+    ev.preventDefault();
+    this.draggingFrameworkCols = true;
+    this.isDraggingFrameworkCols.set(true);
+    this.startXFrameworkCols = ev.clientX;
+    this.startFrameworkColsRatio = this.frameworkColsRatio();
+
+    (ev.target as HTMLElement).setPointerCapture(ev.pointerId);
+    const stop = () => {
+      this.draggingFrameworkCols = false;
+      this.isDraggingFrameworkCols.set(false);
+      document.removeEventListener('pointerup', stop);
+    };
+    document.addEventListener('pointerup', stop);
+  };
+
+  private onPointerMoveFrameworkCols = (ev: PointerEvent) => {
+    if (!this.draggingFrameworkCols) return;
+
+    const totalWidth = window.innerWidth;
+    const delta = ev.clientX - this.startXFrameworkCols;
+
+    let next = this.startFrameworkColsRatio + delta / totalWidth;
+
+    // description splitter’daki mantığa benzer clamp
+    const min = 0.25; // editor min %25
+    const max = 0.8;  // editor max %80
+    if (next < min) next = min;
+    if (next > max) next = max;
+
+    this.zone.run(() => this.frameworkColsRatio.set(next));
+  };
+
+  private onPointerUpFrameworkCols = () => {
+    if (!this.draggingFrameworkCols) return;
+    this.draggingFrameworkCols = false;
+    this.isDraggingFrameworkCols.set(false);
+  };
 }
