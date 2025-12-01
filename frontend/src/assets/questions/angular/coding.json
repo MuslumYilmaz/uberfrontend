@@ -4,7 +4,7 @@
     "title": "Counter (Standalone Component)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "importance": 3,
     "tags": [
       "components",
@@ -319,7 +319,7 @@
     "title": "Tabs / Multi-View Switcher",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "importance": 3,
     "tags": [
       "components",
@@ -792,7 +792,7 @@
     "title": "Shopping Cart Mini (Standalone Component)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 4,
     "tags": [
       "components",
@@ -879,7 +879,7 @@
     "title": "Debounced Search with Fake API",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "advanced",
+    "difficulty": "hard",
     "importance": 5,
     "tags": [
       "angular",
@@ -967,7 +967,7 @@
     "title": "Star Rating Widget",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "importance": 3,
     "tags": [
       "components",
@@ -1045,7 +1045,7 @@
     "title": "Dynamic Table (Rows × Columns)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "importance": 3,
     "tags": [
       "components",

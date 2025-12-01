@@ -2417,7 +2417,7 @@
         "id": "css-hardware-acceleration",
         "title": "How do hardware acceleration and compositing affect CSS animation performance?",
         "technology": "css",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "Hardware acceleration and compositing layers are critical for smooth, performant animations in CSS. Understanding how the browser's rendering pipeline works — including layout, paint, and composite steps — helps developers optimize animations and avoid costly reflows.",
         "answer": {

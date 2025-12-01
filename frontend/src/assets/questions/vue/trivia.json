@@ -48,7 +48,7 @@
         "id": "vue-vs-react",
         "title": "What is the difference between Vue.js and React?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Vue.js and React are both popular JavaScript frameworks for building user interfaces, but they differ in design philosophy, syntax, reactivity handling, and learning curve. Vue is more opinionated and template-based, while React emphasizes JavaScript-driven, declarative UI creation using JSX.",
         "answer": {
@@ -657,7 +657,7 @@
         "id": "vue-computed-properties",
         "title": "What are computed properties in Vue?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Computed properties in Vue are special properties that automatically update when their dependent data changes. They are primarily used to calculate derived state efficiently, caching results until their dependencies change.",
         "answer": {
@@ -1026,7 +1026,7 @@
         "id": "vue-computed-vs-watchers",
         "title": "What is the difference between computed properties and watchers in Vue?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Computed properties and watchers in Vue both respond to changes in reactive data, but they serve different purposes. Computed properties are used to derive and cache data, while watchers are used to perform side effects or execute logic when data changes.",
         "answer": {
@@ -1111,7 +1111,7 @@
         "id": "vue-lifecycle-hooks",
         "title": "What are lifecycle hooks in Vue and when are they used?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources.",
         "answer": {
@@ -1216,7 +1216,7 @@
         "id": "vue-directives",
         "title": "What are Vue directives and how do they work?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Vue directives are special HTML attributes prefixed with 'v-' that allow you to bind data, react to events, or manipulate the DOM dynamically. They are the foundation of Vue’s declarative rendering system.",
         "answer": {
@@ -1477,7 +1477,7 @@
         "id": "vue-child-to-parent",
         "title": "How does Vue handle component communication (child to parent)?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "In Vue, child components communicate with parent components using custom events. The child emits an event with optional data using $emit(), and the parent listens for that event using v-on or the @ shorthand.",
         "answer": {
@@ -1549,7 +1549,7 @@
         "id": "vue-mixins",
         "title": "What are mixins in Vue and why are they useful?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Mixins in Vue are reusable pieces of logic that can be shared across multiple components. They help eliminate code duplication by allowing components to inherit shared data, methods, and lifecycle hooks.",
         "answer": {
@@ -1616,7 +1616,7 @@
         "id": "vue-sfc-vs-global-components",
         "title": "What is the difference between single-file components and global components?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Single-File Components (SFCs) and global components differ in scope and structure. SFCs define components in .vue files with encapsulated templates, scripts, and styles, while global components are registered once and accessible throughout the application.",
         "answer": {
@@ -1716,7 +1716,7 @@
         "id": "vue-conditional-list-rendering",
         "title": "How does Vue handle conditional rendering and list rendering efficiently?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Vue handles conditional and list rendering efficiently through its virtual DOM diffing system. Directives like v-if, v-show, and v-for control what is rendered while Vue updates only the necessary parts of the DOM when data changes.",
         "answer": {
@@ -1796,7 +1796,7 @@
         "id": "vue-router-navigation",
         "title": "What is the Vue Router and how is it used for navigation?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Vue Router is the official routing library for Vue.js. It allows developers to create single-page applications (SPAs) with dynamic navigation and component-based routing without reloading the page.",
         "answer": {
@@ -2018,7 +2018,7 @@
         "id": "vue-composition-api",
         "title": "What are Vue Composition APIs (setup(), ref, reactive) and why were they introduced?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "The Vue Composition API provides a flexible and scalable way to organize component logic using functions like setup(), ref(), and reactive(). It was introduced in Vue 3 to improve reusability, maintainability, and TypeScript support compared to the Options API.",
         "answer": {
@@ -2095,7 +2095,7 @@
         "id": "vuex-state-management",
         "title": "What is the purpose of Vuex, and how does it help manage state in large applications?",
         "technology": "vue",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Vuex is a state management library for Vue.js applications. It provides a centralized store for all components, ensuring predictable state mutations and simplifying data flow across large-scale apps.",
         "answer": {

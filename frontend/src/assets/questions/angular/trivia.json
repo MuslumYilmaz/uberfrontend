@@ -99,7 +99,7 @@
         "id": "angular-vs-angularjs",
         "title": "What is the difference between Angular and AngularJS?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Angular (also known as Angular 2+) is a complete rewrite of AngularJS (Angular 1.x). While AngularJS is based on JavaScript and the Model-View-Controller (MVC) pattern, Angular is built using TypeScript and follows a component-based architecture with enhanced performance, modularity, and maintainability.",
         "answer": {
@@ -362,7 +362,7 @@
         "id": "angular-module-definition",
         "title": "What is a module in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "A module in Angular (represented by a class decorated with @NgModule) is a container that organizes related components, directives, pipes, and services into cohesive blocks of functionality. Modules help structure large applications into manageable sections and enable features like lazy loading.",
         "answer": {
@@ -438,7 +438,7 @@
         "id": "angular-appmodule-role",
         "title": "What is the role of AppModule in an Angular application?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "The AppModule is the root module of every Angular application. It acts as the main entry point that Angular uses to bootstrap and launch the application. It declares all the root-level components, imports other feature modules, and provides configuration for services used throughout the app.",
         "answer": {
@@ -564,7 +564,7 @@
         "id": "angular-data-binding",
         "title": "What is data binding in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Data binding in Angular is a powerful mechanism that connects a component’s TypeScript logic with its HTML template, allowing dynamic synchronization of data between the model and the view. It ensures that changes in the data automatically reflect in the UI and vice versa, depending on the binding type used.",
         "answer": {
@@ -636,7 +636,7 @@
         "id": "angular-interpolation-vs-property-binding",
         "title": "What is the difference between interpolation and property binding?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Both interpolation and property binding in Angular are used to display dynamic data in templates, but they differ in syntax and use cases. Interpolation binds data as text within HTML, while property binding binds data directly to DOM element properties or attributes.",
         "answer": {
@@ -718,7 +718,7 @@
         "id": "angular-event-binding",
         "title": "What is event binding in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Event binding in Angular allows components to respond to user interactions such as clicks, keystrokes, or form submissions by executing methods defined in the component class. It establishes a one-way data flow from the view to the component.",
         "answer": {
@@ -773,7 +773,7 @@
         "id": "angular-directives",
         "title": "What are directives in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Directives in Angular are special classes that add behavior, logic, or structure to elements in the DOM. They allow developers to manipulate the DOM efficiently by extending the functionality of HTML elements and attributes. Angular includes built-in directives like *ngIf, *ngFor, and [ngClass], and also allows developers to create custom directives.",
         "answer": {
@@ -845,7 +845,7 @@
         "id": "angular-structural-vs-attribute-directives",
         "title": "What is the difference between structural and attribute directives?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Structural directives modify the structure of the DOM by adding or removing elements dynamically, while attribute directives change the appearance or behavior of existing elements without altering the DOM structure.",
         "answer": {
@@ -1153,7 +1153,7 @@
         "id": "angular-services",
         "title": "What are services in Angular and why are they used?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Services in Angular are classes that handle reusable logic, such as fetching data, managing state, or communicating with APIs. They are used to promote code reusability, maintainability, and separation of concerns by keeping business logic separate from components.",
         "answer": {
@@ -1207,7 +1207,7 @@
         "id": "angular-dependency-injection",
         "title": "What is dependency injection in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Dependency Injection (DI) in Angular is a design pattern that provides components or services with their required dependencies rather than having them create those dependencies themselves. It makes code modular, testable, and easier to maintain.",
         "answer": {
@@ -1262,7 +1262,7 @@
         "id": "angular-ngoninit-vs-constructor",
         "title": "What is the difference between ngOnInit() and the constructor in a component?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "The constructor in an Angular component is a TypeScript feature used to initialize class members and inject dependencies, while ngOnInit() is an Angular lifecycle hook that is called after the component is initialized. ngOnInit() is ideal for performing initialization logic that requires access to component inputs or Angular bindings.",
         "answer": {
@@ -1344,7 +1344,7 @@
         "id": "angular-pipes",
         "title": "What are Angular pipes and how are they used?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Angular pipes are features that transform data in templates. They are used to format data such as dates, numbers, currencies, and text. Pipes can be built-in or custom and are used with the pipe (|) operator in templates.",
         "answer": {
@@ -1412,7 +1412,7 @@
         "id": "angular-two-way-data-binding",
         "title": "What is two-way data binding and how is it achieved in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Two-way data binding in Angular creates a connection between the component’s data and the template’s input fields, ensuring that any change in one immediately reflects in the other. It is primarily achieved using the ngModel directive from the FormsModule.",
         "answer": {
@@ -1471,7 +1471,7 @@
         "id": "angular-lifecycle-hooks",
         "title": "What are lifecycle hooks in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Lifecycle hooks in Angular are special methods that allow developers to tap into key moments of a component’s or directive’s lifecycle, such as creation, updates, and destruction. They help manage initialization, change detection, and cleanup processes.",
         "answer": {
@@ -1567,7 +1567,7 @@
         "id": "angular-input-output",
         "title": "What is the purpose of the @Input() and @Output() decorators?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "@Input() and @Output() are Angular decorators used for communication between parent and child components. @Input() allows a parent component to pass data to a child component, while @Output() enables the child to emit events back to the parent using an EventEmitter.",
         "answer": {
@@ -1653,7 +1653,7 @@
         "id": "angular-observables-rxjs",
         "title": "What are observables in Angular, and how do they relate to RxJS?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Observables are a core part of Angular’s reactive programming model, used to handle asynchronous data streams. They are provided by the RxJS library and allow developers to react to changes in data over time, such as user input, HTTP responses, or real-time updates.",
         "answer": {
@@ -1725,7 +1725,7 @@
         "id": "angular-routing",
         "title": "What is Angular routing and how do you define routes?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Angular routing is a feature that allows navigation between different views or components in a single-page application (SPA). Routes are defined using the RouterModule and configured with path-component mappings in a routing module.",
         "answer": {
@@ -1798,7 +1798,7 @@
         "id": "angular-lazy-loading",
         "title": "What is lazy loading in Angular?",
         "technology": "angular",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 5,
         "description": "Lazy loading in Angular is a technique that loads feature modules only when they are needed, rather than at application startup. It improves performance by reducing the initial bundle size and speeding up the first load.",
         "answer": {

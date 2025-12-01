@@ -4,7 +4,7 @@
         "title": "Counter (Component with Guarded Decrement)",
         "type": "coding",
         "technology": "vue",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "vue",
@@ -240,7 +240,7 @@
             "amazon",
             "google"
         ],
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "vue",
@@ -320,7 +320,7 @@
         "companies": [
             "amazon"
         ],
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "vue",
@@ -793,7 +793,7 @@
         "title": "Shopping Cart Mini",
         "type": "coding",
         "technology": "vue",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 4,
         "tags": [
             "vue",
@@ -876,7 +876,7 @@
         "title": "Debounced Search with Fake API",
         "type": "coding",
         "technology": "vue",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 4,
         "tags": [
             "vue",
@@ -960,7 +960,7 @@
         "title": "Star Rating Widget",
         "type": "coding",
         "technology": "vue",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "vue",
@@ -1037,7 +1037,7 @@
         "title": "Dynamic Table (Rows × Columns)",
         "type": "coding",
         "technology": "vue",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "vue",

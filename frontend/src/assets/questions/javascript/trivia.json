@@ -410,7 +410,7 @@
     "description": "All variable declarations are hoisted, but only `var` is initialized with `undefined`. Variables declared with `let` and `const` exist in the temporal dead zone until execution reaches their declaration, making them inaccessible beforehand.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "hoisting",
       "variables",
@@ -643,7 +643,7 @@
     "description": "Event delegation is a technique where a single event listener on a parent element handles events for multiple child elements by using event bubbling and checking the event target.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "event-delegation",
       "dom",

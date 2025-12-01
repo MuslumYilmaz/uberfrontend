@@ -1363,9 +1363,9 @@
         "id": "react-higher-order-components",
         "title": "What are higher-order components (HOCs)?",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
-        "description": "Higher-Order Components (HOCs) are advanced React patterns that allow you to reuse component logic by wrapping one component inside another. An HOC takes a component as input and returns an enhanced version of that component with additional functionality or data.",
+        "description": "Higher-Order Components (HOCs) are hard React patterns that allow you to reuse component logic by wrapping one component inside another. An HOC takes a component as input and returns an enhanced version of that component with additional functionality or data.",
         "answer": {
             "blocks": [
                 {
@@ -1422,7 +1422,7 @@
         "id": "react-usememo-vs-usecallback",
         "title": "What is the difference between useMemo() and useCallback()?",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "Both useMemo() and useCallback() are React hooks used for performance optimization. useMemo() memoizes computed values, while useCallback() memoizes functions — preventing unnecessary re-creations during re-renders.",
         "answer": {
@@ -1493,7 +1493,7 @@
         "title": "How can you prevent unnecessary re-renders in React?",
         "technology": "react",
         "companies": ["netflix"],
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to minimize them — including memoization, pure components, stable references, and smart state management.",
         "answer": {
@@ -1639,7 +1639,7 @@
         "id": "react-reconciliation",
         "title": "What is React reconciliation and how does it work?",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "Reconciliation is the process React uses to compare the current Virtual DOM with the previous one and determine the minimal set of changes needed to update the real DOM. It ensures React applications stay fast and efficient even when rendering complex UI trees.",
         "answer": {
@@ -1711,7 +1711,7 @@
         "id": "react-diffing-algorithm",
         "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "React’s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process nearly O(n) instead of O(n³).",
         "answer": {
@@ -1783,7 +1783,7 @@
         "id": "react-render-props-vs-hocs",
         "title": "What are render props and how do they differ from HOCs?",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "Render props and higher-order components (HOCs) are both React patterns used for code reuse. Render props use a function passed as a prop to control what to render, while HOCs wrap components to inject additional logic or data.",
         "answer": {
@@ -1857,7 +1857,7 @@
         "id": "react-portals",
         "title": "What are React portals and when would you use them?",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "React Portals allow components to render children into a DOM node that exists outside the main React component hierarchy, without losing context. They are commonly used for modals, tooltips, popovers, and overlays.",
         "answer": {
@@ -1925,7 +1925,7 @@
         "id": "react-concurrent-rendering",
         "title": "How does React’s concurrent rendering improve performance?",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 5,
         "description": "Concurrent rendering is a feature introduced in React 18 that allows React to prepare multiple versions of the UI simultaneously, improving responsiveness and user experience. It makes rendering interruptible, enabling React to prioritize urgent updates and avoid UI blocking during heavy computations.",
         "answer": {

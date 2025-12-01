@@ -4,7 +4,7 @@
         "title": "Counter (Component with Guarded Decrement)",
         "type": "coding",
         "technology": "react",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "react",
@@ -155,7 +155,7 @@
         "title": "Todo List (Component with Local State)",
         "type": "coding",
         "technology": "react",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "react",
@@ -233,7 +233,7 @@
         "title": "Image Slider (Dots + Previous/Next)",
         "type": "coding",
         "technology": "react",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "react",
@@ -313,7 +313,7 @@
         "title": "Tabs / Multi-View Switcher",
         "type": "coding",
         "technology": "react",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "react",
@@ -782,7 +782,7 @@
         "title": "Shopping Cart Mini",
         "type": "coding",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 4,
         "tags": [
             "react",
@@ -867,7 +867,7 @@
         "title": "Debounced Search with Fake API",
         "type": "coding",
         "technology": "react",
-        "difficulty": "advanced",
+        "difficulty": "hard",
         "importance": 4,
         "tags": [
             "react",
@@ -952,7 +952,7 @@
         "title": "Star Rating Widget",
         "type": "coding",
         "technology": "react",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "react",
@@ -1029,7 +1029,7 @@
         "title": "Dynamic Table (Rows × Columns)",
         "type": "coding",
         "technology": "react",
-        "difficulty": "beginner",
+        "difficulty": "easy",
         "importance": 3,
         "tags": [
             "react",

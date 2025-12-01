@@ -862,7 +862,7 @@
       "google",
       "netflix"
     ],
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "async",
       "timing",
@@ -960,7 +960,7 @@
       "google",
       "netflix"
     ],
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "async",
       "timing",
@@ -1236,7 +1236,7 @@
     "title": "Flatten with Depth",
     "type": "coding",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 4,
     "tags": [
       "array",
@@ -1412,7 +1412,7 @@
       "google"
     ],
     "importance": 5,
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "function",
       "performance",
@@ -1496,7 +1496,7 @@
     "companies": [
       "google"
     ],
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 4,
     "tags": [
       "function",
@@ -1544,7 +1544,7 @@
     "title": "Group By",
     "type": "coding",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 4,
     "tags": [
       "array",
@@ -1640,7 +1640,7 @@
     "title": "Event Emitter (Mini Implementation)",
     "type": "coding",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "importance": 4,
     "tags": [
       "OOP",
@@ -2108,7 +2108,7 @@
       "apple"
     ],
     "importance": 4,
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "Arrays",
       "Callbacks",

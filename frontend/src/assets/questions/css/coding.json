@@ -331,7 +331,7 @@
         "title": "Flexbox: Responsive Navbar",
         "type": "coding",
         "technology": "css",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 3,
         "tags": [
             "css",
@@ -413,7 +413,7 @@
         "title": "Grid: Card Gallery (2→4 Columns)",
         "type": "coding",
         "technology": "css",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 3,
         "tags": [
             "css",
@@ -494,7 +494,7 @@
         "title": "Fluid Type & Spacing with clamp()",
         "type": "coding",
         "technology": "css",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 3,
         "tags": [
             "css",
@@ -575,7 +575,7 @@
         "title": "Forms & Pseudo-classes: Focus, Invalid, Required, Helper Text",
         "type": "coding",
         "technology": "css",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 3,
         "tags": [
             "css",
@@ -638,7 +638,7 @@
         "title": "Transitions & Transforms: Lift on Hover",
         "type": "coding",
         "technology": "css",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 3,
         "tags": [
             "css",
@@ -729,7 +729,7 @@
         "title": "Theming with CSS Variables (incl. Dark Mode)",
         "type": "coding",
         "technology": "css",
-        "difficulty": "medium",
+        "difficulty": "intermediate",
         "importance": 4,
         "tags": [
             "css",
