@@ -7,10 +7,10 @@ import {
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { filter, Subject } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
@@ -708,13 +708,24 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // ---------- navigation helpers ----------
   private navToPracticeIndex(newIndex: number) {
     if (!this.practice) return;
-    const it = this.practice.items[newIndex];
+
+    const max = this.practice.items.length - 1;
+    const clamped = Math.max(0, Math.min(max, newIndex));
+
+    // 🔹 Local state'i güncelle ki progressText değişsin
+    this.practice = {
+      ...this.practice,
+      index: clamped,
+    };
+
+    const it = this.practice.items[clamped];
+
     this.router.navigate(['/', it.tech, it.kind, it.id], {
       state: {
-        session: { items: this.practice.items, index: newIndex },
+        session: this.practice,
         returnTo: this.returnTo ?? undefined,
-        returnLabel: this.returnLabel() ?? undefined
-      }
+        returnLabel: this.returnLabel() ?? undefined,
+      },
     });
   }
 

@@ -18,9 +18,9 @@ import { Difficulty, Question, QuestionKind, Technology } from '../../../core/mo
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
+import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
-import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -115,7 +115,7 @@ function inferCategory(q: any): CategoryKey {
     CodingTechKindTabsComponent,
     CodingFilterPanelComponent,
     OfflineBannerComponent
-],
+  ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
 })
@@ -138,7 +138,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
   sort$ = new BehaviorSubject<SortKey>('default');
   sortOpen = false;
   sortOptions: Array<{ key: SortKey; label: string; hint?: string }> = [
-    { key: 'default', label: 'Default', hint: 'Importance ↓, Title A–Z' },
+    {
+      key: 'default',
+      label: 'Difficulty: Easy to Hard',
+      hint: 'Easy → Hard, then Importance High → Low'
+    },
     { key: 'title-asc', label: 'Title: A to Z' },
     { key: 'title-desc', label: 'Title: Z to A' },
     { key: 'difficulty-asc', label: 'Difficulty: Easy to Hard' },
@@ -405,7 +409,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   difficultyOptions = [
     { label: 'Beginner', value: 'easy' as Difficulty },
     { label: 'Intermediate', value: 'intermediate' as Difficulty },
-    { label: 'Advanced', value: 'hard' as Difficulty }
+    { label: 'Hard', value: 'hard' as Difficulty }
   ];
 
   techTabs = [
@@ -443,8 +447,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
     private router: Router,
     private listState: CodingListStateService
   ) {
-    console.log('[CodingListComponent] using state instance', this.listState.instanceId);
-
     const d = this.route.snapshot.data as any;
     this.source = (d['source'] as ListSource) ?? this.source;
     this.kind = (d['kind'] as Kind) ?? this.kind;
@@ -748,7 +750,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   toggleCategory(key: CategoryKey) {
-    console.log(key);
     const curr = this.selectedCategory$.value;
     const next = curr === key ? null : key;
     this.selectedCategory$.next(next);
@@ -780,7 +781,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
       return of<Row[]>([]);
     }
     return (fn.call(anyQs) as any).pipe(
-      tap(res => console.log(res)),
       map((items: any[]) =>
         (items || []).map<Row>(it => ({
           id: it.id,
@@ -874,9 +874,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
       case 'title-asc': return titleAsc;
       case 'title-desc': return titleDesc;
       case 'difficulty-asc':
-        return (a: any, b: any) => this.difficultyRank(a.difficulty) - this.difficultyRank(b.difficulty) || titleAsc(a, b);
+        return (a: any, b: any) =>
+          this.difficultyRank(a.difficulty) - this.difficultyRank(b.difficulty) || titleAsc(a, b);
       case 'difficulty-desc':
-        return (a: any, b: any) => this.difficultyRank(b.difficulty) - this.difficultyRank(a.difficulty) || titleAsc(a, b);
+        return (a: any, b: any) =>
+          this.difficultyRank(b.difficulty) - this.difficultyRank(a.difficulty) || titleAsc(a, b);
       case 'importance-asc':
         return (a: any, b: any) => imp(a) - imp(b) || titleAsc(a, b);
       case 'importance-desc':
@@ -888,8 +890,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
       case 'default':
       default:
         return (a: any, b: any) => {
-          const ia = imp(a), ib = imp(b);
+          // 1) Difficulty: Easy → Hard
+          const da = this.difficultyRank(a.difficulty);
+          const db = this.difficultyRank(b.difficulty);
+          if (da !== db) return da - db;
+
+          // 2) Importance: High → Low
+          const ia = imp(a);
+          const ib = imp(b);
           if (ia !== ib) return ib - ia;
+
+          // 3) Son çare: Title A–Z
           return titleAsc(a, b);
         };
     }
@@ -1015,8 +1026,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
       tagMatchMode: this.tagMatchMode,
     };
 
-    console.log('[STATE] saveFiltersTo', view, snapshot);
-
     this.listState.globalCodingState = {
       ...this.listState.globalCodingState,
       [view]: snapshot,
@@ -1027,7 +1036,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source !== 'global-coding') return;
 
     const saved = this.listState.globalCodingState[view];
-    console.log('[STATE] restoreFiltersFrom', view, saved);
 
     if (!saved) {
       // temiz başlangıç
