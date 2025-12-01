@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { OfflineBannerComponent } from "../../../../shared/components/offline-banner/offline-banner";
 import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry';
 
 @Component({
   standalone: true,
   selector: 'uf-system-design-index',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, OfflineBannerComponent],
   styles: [`
     :host { display:block; }
     .wrap { max-width: 980px; margin: 0 auto; padding: 18px 0 48px; }
@@ -60,6 +61,7 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
           <div class="arrow" aria-hidden="true">→</div>
         </a>
       </div>
+      <app-offline-banner></app-offline-banner>
     </div>
   `
 })

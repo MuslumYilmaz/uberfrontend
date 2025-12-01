@@ -21,7 +21,7 @@
       (clearAllTags)="clearAllTags()" (tagMatchModeToggle)="toggleTagMatchMode()" (sortToggle)="toggleSort()"
       (sortClose)="closeSort()" (sortChange)="setSort($event)">
     </app-coding-filter-panel>
-    
+
     <!-- Data -->
     <div class="list">
       <ng-container *ngIf="filtered$ | async as questions; else loading">
@@ -95,4 +95,6 @@
         </div>
       </ng-template>
     </div>
+
+    <app-offline-banner></app-offline-banner>
   </div>

@@ -20,6 +20,7 @@ import { CodingListFilterState, CodingListStateService } from '../../../core/ser
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
+import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -112,8 +113,9 @@ function inferCategory(q: any): CategoryKey {
     FormsModule,
     TooltipModule,
     CodingTechKindTabsComponent,
-    CodingFilterPanelComponent
-  ],
+    CodingFilterPanelComponent,
+    OfflineBannerComponent
+],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
 })

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { GuideEntry, SYSTEM, SYSTEM_GROUPS } from '../../../shared/guides/guide.registry';
+import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 
 type GuideArticleInputs = {
     prev?: any[] | null;
@@ -16,8 +17,10 @@ type GuideArticleInputs = {
 
 @Component({
     standalone: true,
-    imports: [CommonModule, RouterModule],
-    template: `<ng-container #vc></ng-container>`
+    imports: [CommonModule, RouterModule, OfflineBannerComponent],
+    template: `
+        <ng-container #vc></ng-container>
+        <app-offline-banner></app-offline-banner>`
 })
 export class SystemDesignHostComponent implements OnDestroy {
     @ViewChild('vc', { read: ViewContainerRef, static: true }) vc!: ViewContainerRef;
