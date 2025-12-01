@@ -10,13 +10,13 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
-import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
 import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
-import { CodingListStateService } from '../../../core/services/coding-list-state';
+import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
@@ -75,6 +75,8 @@ const SYSTEM_TITLE_HINTS = [
   'rate limit', 'url shortener', 'news feed', 'timeline', 'chat system',
   'search', 'recommendation', 'notifications', 'tinyurl', 'bitly'
 ];
+
+const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
 
 function inferCategory(q: any): CategoryKey {
   if (q.__sd) return 'system';
@@ -150,15 +152,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
   source: ListSource = 'tech';
   kind: Kind = 'coding';
 
+  private destroy$ = new Subject<void>();
+  private currentViewKey: ViewMode = 'tech'; // aktif bucket
+  private viewModeInitialized = false;
+  private viewModeSub?: Subscription;
+
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
-    tap(vm => {
-      this.viewMode = vm;
-      if (vm === 'formats') this.selectedTech$.next(null);
-      else this.selectedCategory$.next(null);
-    }),
-    startWith('tech' as ViewMode)
+    tap(vm => this.onViewModeChange(vm))
   );
+
   viewMode: ViewMode = 'tech'; // default
 
   ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -181,13 +184,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
     tap(d => {
       this.source = (d['source'] as ListSource) ?? 'tech';
       this.kind = (d['kind'] as Kind) ?? 'coding';
-
-      // For the GLOBAL list, ignore route data and default to "all"
-      if (this.source === 'global-coding') {
-        const qpKind = this.route.snapshot.queryParamMap.get('kind') as Kind | null;
-        const allowed = new Set<Kind>(['all', 'coding', 'trivia']);
-        this.selectedKind$.next(allowed.has((qpKind || '') as Kind) ? (qpKind as Kind) : 'all');
-      }
     }),
     switchMap(() =>
       combineLatest([
@@ -445,29 +441,43 @@ export class CodingListComponent implements OnInit, OnDestroy {
     private router: Router,
     private listState: CodingListStateService
   ) {
+    console.log('[CodingListComponent] using state instance', this.listState.instanceId);
+
     const d = this.route.snapshot.data as any;
     this.source = (d['source'] as ListSource) ?? this.source;
     this.kind = (d['kind'] as Kind) ?? this.kind;
 
-    // seed tech filter from ?tech= on global list
+    // seed tech filter from ?tech= on global list (only once)
     this.route.queryParamMap
       .pipe(
-        map(qp => (qp.get('tech') || '').toLowerCase()),
-        tap(t => {
+        take(1),
+        tap(qp => {
+          if (this.source !== 'global-coding') return;
+
+          const t = (qp.get('tech') || '').toLowerCase();
           const allowed: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
           this.selectedTech$.next(allowed.includes(t as Tech) ? (t as Tech) : null);
         })
       )
       .subscribe();
 
+    // seed kind from ?kind= on global list (only once)
+    // seed kind from ?kind= on global list (only once, ONLY tech view)
     this.route.queryParamMap
       .pipe(
-        map(qp => qp.get('kind') as Kind | null),
-        tap(k => {
-          if (this.source === 'global-coding') {
-            const allowed = new Set<Kind>(['all', 'coding', 'trivia']); // 🔻 debug çıkarıldı
-            this.selectedKind$.next(allowed.has(k || '' as Kind) ? (k as Kind) : 'all');
+        take(1),
+        tap(qp => {
+          if (this.source !== 'global-coding') return;
+
+          const view = qp.get('view');
+          if (view === 'formats') {
+            // formats view kind'i sadece state’ten gelir, URL’den asla seed etme
+            return;
           }
+
+          const k = qp.get('kind') as Kind | null;
+          const allowed = new Set<Kind>(['all', 'coding', 'trivia']);
+          this.selectedKind$.next(allowed.has((k || '') as Kind) ? (k as Kind) : 'all');
         })
       )
       .subscribe();
@@ -484,29 +494,106 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.companySlug$.subscribe((slug) => {
       this.currentCompanySlug = slug || null;
     });
+
+    // seed category filter from ?category= on global formats list
+    this.route.queryParamMap
+      .pipe(
+        tap(qp => {
+          if (this.source !== 'global-coding') return;
+
+          const view = qp.get('view');
+          if (view !== 'formats') return;
+
+          const raw = (qp.get('category') || '') as CategoryKey;
+          const cat = ALLOWED_CATEGORIES.includes(raw) ? raw : null;
+          this.selectedCategory$.next(cat);
+        })
+      )
+      .subscribe();
+
+    this.viewModeSub = this.viewMode$.subscribe();
   }
 
   ngOnInit(): void {
     if (this.source !== 'global-coding') return;
 
-    const saved = this.listState.globalCodingState;
-    if (!saved) return;
+    const qp = this.route.snapshot.queryParamMap;
+    const viewKey: ViewMode =
+      qp.get('view') === 'formats' ? 'formats' : 'tech';
 
-    this.searchTerm = saved.searchTerm;
-    this.sliderValue = saved.sliderValue;
-    this.search$.next(saved.searchTerm);
+    // ---------- FORMATS VIEW (/coding?view=formats) ----------
+    if (viewKey === 'formats') {
+      // önce state'ten oku
+      this.restoreFiltersFrom('formats');
 
-    this.diffs$.next([...saved.diffs]);
-    this.impTiers$.next([...saved.impTiers]);
+      const kFromUrl = qp.get('kind') as Kind | null;
+      const allowedKinds = new Set<Kind>(['all', 'coding', 'trivia']);
+      if (kFromUrl && allowedKinds.has(kFromUrl as Kind)) {
+        this.selectedKind$.next(kFromUrl as Kind);
+      }
 
-    this.selectedTech$.next(saved.selectedTech);
-    this.selectedKind$.next(saved.selectedKind);
-    this.selectedCategory$.next(saved.selectedCategory);
+      const qFromUrl = qp.get('q');
+      if (qFromUrl !== null) {
+        this.searchTerm = qFromUrl;
+        this.search$.next(qFromUrl);
+      }
 
-    this.selectedTags$.next([...saved.selectedTags]);
+      return;
+    }
 
-    this.sort$.next(saved.sort);
-    this.tagMatchMode = saved.tagMatchMode;
+    // ---------- TECH VIEW (/coding) ----------
+    const allSaved = this.listState.globalCodingState;
+    const saved = allSaved[viewKey];
+
+    // Search term + slider
+    const qFromUrl = qp.get('q');
+    if (qFromUrl !== null) {
+      this.searchTerm = qFromUrl;
+      this.search$.next(qFromUrl);
+      if (saved) {
+        this.sliderValue = saved.sliderValue;
+      }
+    } else if (saved) {
+      this.searchTerm = saved.searchTerm;
+      this.sliderValue = saved.sliderValue;
+      this.search$.next(saved.searchTerm);
+    }
+
+    // Difficulty filters
+    const diffFromUrl = qp.get('diff');
+    if (diffFromUrl !== null) {
+      const allowed: Difficulty[] = ['easy', 'intermediate', 'hard'];
+      const parts = diffFromUrl
+        .split(',')
+        .map(x => x.trim() as Difficulty)
+        .filter(x => allowed.includes(x));
+      this.diffs$.next(parts);
+    } else if (saved) {
+      this.diffs$.next([...saved.diffs]);
+    }
+
+    // Importance filters
+    const impFromUrl = qp.get('imp');
+    if (impFromUrl !== null) {
+      const allowed: ImportanceTier[] = ['low', 'medium', 'high'];
+      const parts = impFromUrl
+        .split(',')
+        .map(x => x.trim() as ImportanceTier)
+        .filter(x => allowed.includes(x));
+      this.impTiers$.next(parts);
+    } else if (saved) {
+      this.impTiers$.next([...saved.impTiers]);
+    }
+
+    if (saved) {
+      this.selectedTags$.next([...saved.selectedTags]);
+      this.sort$.next(saved.sort);
+      this.tagMatchMode = saved.tagMatchMode;
+
+      this.selectedTech$.next(saved.selectedTech);
+      this.selectedKind$.next(saved.selectedKind);
+      this.selectedCategory$.next(saved.selectedCategory);
+    }
   }
 
   // ---------- helpers used by template ----------
@@ -630,18 +717,54 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // GLOBAL filters
   toggleTech(key: Tech) {
     const curr = this.selectedTech$.value;
-    this.selectedTech$.next(curr === key ? null : key);
+    const next = curr === key ? null : key;
+
+    this.selectedTech$.next(next);
+
+    // Formats view'de URL'yi kirletme, sadece state kalsın
+    if (this.source === 'global-coding' && !this.isFormatsMode()) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { tech: next ?? null },
+        queryParamsHandling: 'merge',
+      });
+    }
   }
+
   selectKind(k: Kind) {
-    if (this.source === 'global-coding') this.selectedKind$.next(k);
+    if (this.source === 'global-coding') {
+      this.selectedKind$.next(k);
+
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { kind: k === 'all' ? null : k },
+        queryParamsHandling: 'merge',
+      });
+    } else {
+      this.kind = k as any;
+    }
   }
 
   toggleCategory(key: CategoryKey) {
+    console.log(key);
     const curr = this.selectedCategory$.value;
     const next = curr === key ? null : key;
     this.selectedCategory$.next(next);
 
-    if (next === 'system') this.selectedKind$.next('coding');
+    if (this.source === 'global-coding') {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          view: 'formats',
+          category: next ?? null
+        },
+        queryParamsHandling: 'merge',
+      });
+    }
+
+    if (next === 'system') {
+      this.selectedKind$.next('coding');
+    }
   }
 
   private loadSystemDesignRows$() {
@@ -694,14 +817,18 @@ export class CodingListComponent implements OnInit, OnDestroy {
   toggleDiff(d: Difficulty, checked: boolean) {
     const curr = new Set(this.diffs$.value);
     checked ? curr.add(d) : curr.delete(d);
-    this.diffs$.next(Array.from(curr));
+    const next = Array.from(curr);
+    this.diffs$.next(next);
+    this.syncDiffsToQuery(next);
   }
 
   onImpChange(tier: ImportanceTier, ev: Event) {
     const checked = (ev.target as HTMLInputElement | null)?.checked ?? false;
     const curr = new Set(this.impTiers$.value);
     checked ? curr.add(tier) : curr.delete(tier);
-    this.impTiers$.next(Array.from(curr));
+    const next = Array.from(curr);
+    this.impTiers$.next(next);
+    this.syncImpToQuery(next);
   }
 
   impLabel(q: Row): ImportanceTier {
@@ -774,15 +901,106 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   go(q: Row, list: Row[]) {
+    if (this.source === 'global-coding') {
+      const viewKey = this.getActiveViewKey();  // 🔸 artık state'e göre
+      this.saveFiltersTo(viewKey);
+    }
+
     const commands = this.linkTo(q);
     const state = this.stateForNav(list, q, this.currentCompanySlug);
     this.router.navigate(commands, { state });
   }
 
   ngOnDestroy(): void {
+
+    this.viewModeSub?.unsubscribe();
+  }
+
+  private getViewKeyFromRoute(): ViewMode {
+    const qp = this.route.snapshot.queryParamMap;
+    const view = qp.get('view');
+    return view === 'formats' ? 'formats' : 'tech';
+  }
+
+  onSearchTermChange(term: string) {
+    this.searchTerm = term;
+    this.search$.next(term);
+
+    // Hem tech hem formats için q'yu URL'ye yaz
+    if (this.source === 'global-coding') {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { q: term || null },
+        queryParamsHandling: 'merge',
+      });
+    }
+  }
+
+  onDifficultyToggleFromChild(evt: { difficulty: Difficulty; checked: boolean }) {
+    this.toggleDiff(evt.difficulty, evt.checked);
+  }
+
+  onImportanceToggleFromChild(evt: { tier: ImportanceTier; checked: boolean }) {
+    const curr = new Set(this.impTiers$.value);
+    evt.checked ? curr.add(evt.tier) : curr.delete(evt.tier);
+    const next = Array.from(curr);
+    this.impTiers$.next(next);
+    this.syncImpToQuery(next);
+  }
+
+  private syncDiffsToQuery(next: Difficulty[]) {
+    if (this.source !== 'global-coding' || this.isFormatsMode()) return;
+    const value = next.length ? next.join(',') : null;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { diff: value },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private syncImpToQuery(next: ImportanceTier[]) {
+    if (this.source !== 'global-coding' || this.isFormatsMode()) return;
+    const value = next.length ? next.join(',') : null;
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { imp: value },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  private onViewModeChange(next: ViewMode) {
+    const prev = this.currentViewKey;
+
+    if (!this.viewModeInitialized) {
+      this.currentViewKey = next;
+      this.viewMode = next;
+      this.viewModeInitialized = true;
+      return;
+    }
+
+    if (prev === next) {
+      this.viewMode = next;
+      return;
+    }
+
+    this.currentViewKey = next;
+
+    if (this.source === 'global-coding') {
+      this.saveFiltersTo(prev);
+      this.restoreFiltersFrom(next);
+    }
+
+    this.viewMode = next;
+
+    if (next === 'tech') {
+      this.selectedCategory$.next(null);
+    }
+  }
+
+  private saveFiltersTo(view: ViewMode) {
     if (this.source !== 'global-coding') return;
 
-    this.listState.globalCodingState = {
+    const snapshot: CodingListFilterState = {
       searchTerm: this.searchTerm,
       sliderValue: this.sliderValue,
       diffs: this.diffs$.value,
@@ -794,20 +1012,75 @@ export class CodingListComponent implements OnInit, OnDestroy {
       sort: this.sort$.value,
       tagMatchMode: this.tagMatchMode,
     };
+
+    console.log('[STATE] saveFiltersTo', view, snapshot);
+
+    this.listState.globalCodingState = {
+      ...this.listState.globalCodingState,
+      [view]: snapshot,
+    };
   }
 
-  onSearchTermChange(term: string) {
-    this.searchTerm = term;
-    this.search$.next(term);
+  private restoreFiltersFrom(view: ViewMode) {
+    if (this.source !== 'global-coding') return;
+
+    const saved = this.listState.globalCodingState[view];
+    console.log('[STATE] restoreFiltersFrom', view, saved);
+
+    if (!saved) {
+      // temiz başlangıç
+      this.searchTerm = '';
+      this.sliderValue = 5;
+      this.search$.next('');
+      this.diffs$.next([]);
+      this.impTiers$.next([]);
+      this.selectedTags$.next([]);
+      this.sort$.next('default');
+      this.tagMatchMode = 'all';
+
+      if (view === 'formats') {
+        // formats için: URL'deki category param'ını oku
+        const qp = this.route.snapshot.queryParamMap;
+        const raw = (qp.get('category') || '') as CategoryKey;
+        const cat = ALLOWED_CATEGORIES.includes(raw) ? raw : null;
+
+        this.selectedCategory$.next(cat);
+        this.selectedKind$.next('all');
+      } else {
+        // tech view için her şeyi sıfırla
+        this.selectedTech$.next(null);
+        this.selectedCategory$.next(null);
+        this.selectedKind$.next('all');
+      }
+      return;
+    }
+
+    this.searchTerm = saved.searchTerm;
+    this.sliderValue = saved.sliderValue;
+    this.search$.next(saved.searchTerm);
+
+    this.diffs$.next([...saved.diffs]);
+    this.impTiers$.next([...saved.impTiers]);
+    this.selectedTags$.next([...saved.selectedTags]);
+    this.sort$.next(saved.sort);
+    this.tagMatchMode = saved.tagMatchMode;
+
+    if (view === 'formats') {
+      // formats'ta selectedTech global kalsın, sadece formats'a ait olanları yükle
+      this.selectedKind$.next(saved.selectedKind);
+      this.selectedCategory$.next(saved.selectedCategory);
+    } else {
+      // tech view'de hepsini yükle
+      this.selectedTech$.next(saved.selectedTech);
+      this.selectedKind$.next(saved.selectedKind);
+      this.selectedCategory$.next(saved.selectedCategory);
+    }
   }
 
-  onDifficultyToggleFromChild(evt: { difficulty: Difficulty; checked: boolean }) {
-    this.toggleDiff(evt.difficulty, evt.checked);
-  }
-
-  onImportanceToggleFromChild(evt: { tier: ImportanceTier; checked: boolean }) {
-    const curr = new Set(this.impTiers$.value);
-    evt.checked ? curr.add(evt.tier) : curr.delete(evt.tier);
-    this.impTiers$.next(Array.from(curr));
+  private getActiveViewKey(): ViewMode {
+    const qp = this.route.snapshot.queryParamMap;
+    const view = qp.get('view');
+    // URL'de view=formats varsa her zaman formats kabul et
+    return view === 'formats' ? 'formats' : 'tech';
   }
 }

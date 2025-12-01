@@ -30,15 +30,33 @@ export interface CodingListFilterState {
   tagMatchMode: 'all' | 'any';
 }
 
+export interface GlobalCodingViewState {
+  tech: CodingListFilterState | null;
+  formats: CodingListFilterState | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CodingListStateService {
-  private _globalCodingState: CodingListFilterState | null = null;
+  // 1) 🔹 Instance sayacı (debug için)
+  private static _counter = 0;
+  readonly instanceId = ++CodingListStateService._counter;
 
-  get globalCodingState(): CodingListFilterState | null {
+  // 2) 🔹 Asıl state aynen kalsın
+  private _globalCodingState: GlobalCodingViewState = {
+    tech: null,
+    formats: null,
+  };
+
+  // 3) 🔹 Debug log
+  constructor() {
+    console.log('[CodingListStateService] new instance', this.instanceId);
+  }
+
+  get globalCodingState(): GlobalCodingViewState {
     return this._globalCodingState;
   }
 
-  set globalCodingState(val: CodingListFilterState | null) {
+  set globalCodingState(val: GlobalCodingViewState) {
     this._globalCodingState = val;
   }
 }
