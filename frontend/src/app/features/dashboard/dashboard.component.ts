@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Params, RouterModule } from '@angular/router';
+import { forkJoin, map, Observable, shareReplay } from 'rxjs';
+import { MixedQuestion, QuestionService } from '../../core/services/question.service';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
@@ -15,6 +17,8 @@ type Card = {
   badge?: string | null;
   metaLeft?: string;
   metaRight?: string;
+  companyKey?: string;
+  techKey?: 'javascript' | 'react' | 'angular' | 'vue' | 'css' | 'html';
 };
 
 @Component({
@@ -26,6 +30,8 @@ type Card = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
+  constructor(private questions: QuestionService) { }
+
   private readonly ICON_MAP: Record<IconKey, string> = {
     book: 'book',
     grid: 'th-large',
@@ -41,6 +47,41 @@ export class DashboardComponent {
     const name = key ? (this.ICON_MAP[key] ?? 'question') : 'window';
     return ['pi', `pi-${name}`];
   }
+
+  // ---- STATS: company + framework counts ----
+  stats$: Observable<{
+    companyCounts: Record<string, number>;
+    techCounts: Record<string, number>;
+  }> = forkJoin({
+    coding: this.questions.loadAllQuestions('coding'),
+    trivia: this.questions.loadAllQuestions('trivia'),
+  }).pipe(
+    map(({ coding, trivia }) => {
+      const all: MixedQuestion[] = [...coding, ...trivia];
+
+      const companyCounts: Record<string, number> = {};
+      const techCounts: Record<string, number> = {};
+
+      for (const q of all) {
+        // tech count
+        const tech = q.tech;
+        techCounts[tech] = (techCounts[tech] ?? 0) + 1;
+
+        // company count – burada hangi property’yi kullandığına göre ayarla
+        const companies: string[] =
+          (q as any).companies ??
+          (q as any).companyTags ??
+          [];
+
+        for (const c of companies) {
+          companyCounts[c] = (companyCounts[c] ?? 0) + 1;
+        }
+      }
+
+      return { companyCounts, techCounts };
+    }),
+    shareReplay(1)
+  );
 
   /** ===== Recommended preparation ===== */
   recommended: Card[] = [
@@ -82,12 +123,12 @@ export class DashboardComponent {
 
   /** ===== Company guides ===== */
   companyGuides: Card[] = [
-    { title: 'Google', subtitle: '34 questions', icon: 'building', route: ['/companies', 'google'] },
-    { title: 'Amazon', subtitle: '61 questions', icon: 'building', route: ['/companies', 'amazon'] },
-    { title: 'Netflix', subtitle: '35 questions', icon: 'building', route: ['/companies', 'netflix'] },
-    { title: 'ByteDance', subtitle: '27 questions', icon: 'building', route: ['/companies', 'bytedance'] },
-    { title: 'Apple', subtitle: '13 questions', icon: 'building', route: ['/companies', 'apple'] },
-    { title: 'OpenAI', subtitle: '15 questions', icon: 'building', route: ['/companies', 'openai'] },
+    { title: 'Google', icon: 'building', route: ['/companies', 'google'], companyKey: 'google' },
+    { title: 'Amazon', icon: 'building', route: ['/companies', 'amazon'], companyKey: 'amazon' },
+    { title: 'Netflix', icon: 'building', route: ['/companies', 'netflix'], companyKey: 'netflix' },
+    { title: 'ByteDance', icon: 'building', route: ['/companies', 'bytedance'], companyKey: 'bytedance' },
+    { title: 'Apple', icon: 'building', route: ['/companies', 'apple'], companyKey: 'apple' },
+    { title: 'OpenAI', icon: 'building', route: ['/companies', 'openai'], companyKey: 'openai' },
   ];
 
   /** ===== Focus areas ===== */
@@ -116,13 +157,29 @@ export class DashboardComponent {
 
   /** ===== Framework tiles → /coding?tech=<key> ===== */
   frameworks: Card[] = [
-    { title: 'JavaScript', subtitle: '0/483 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'javascript' } },
-    { title: 'React', subtitle: '0/91 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'react' } },
-    { title: 'Angular', subtitle: '0/32 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'angular' } },
-    { title: 'Vue', subtitle: '0/31 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'vue' } },
-    { title: 'CSS', subtitle: '0/74 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'css' } },
-    { title: 'HTML', subtitle: '0/90 questions', icon: 'grid', route: ['/coding'], queryParams: { tech: 'html' } },
+    { title: 'JavaScript', icon: 'grid', route: ['/coding'], queryParams: { tech: 'javascript' }, techKey: 'javascript' },
+    { title: 'React', icon: 'grid', route: ['/coding'], queryParams: { tech: 'react' }, techKey: 'react' },
+    { title: 'Angular', icon: 'grid', route: ['/coding'], queryParams: { tech: 'angular' }, techKey: 'angular' },
+    { title: 'Vue', icon: 'grid', route: ['/coding'], queryParams: { tech: 'vue' }, techKey: 'vue' },
+    { title: 'CSS', icon: 'grid', route: ['/coding'], queryParams: { tech: 'css' }, techKey: 'css' },
+    { title: 'HTML', icon: 'grid', route: ['/coding'], queryParams: { tech: 'html' }, techKey: 'html' },
   ];
 
   trackByTitle = (_: number, it: Card) => it.title;
+
+  getCompanySubtitle(card: Card, counts: Record<string, number> | null | undefined): string {
+    if (!card.companyKey || !counts) {
+      return card.subtitle ?? '';
+    }
+    const count = counts[card.companyKey] ?? 0;
+    return `${count} questions`;
+  }
+
+  getFrameworkSubtitle(card: Card, counts: Record<string, number> | null | undefined): string {
+    if (!card.techKey || !counts) {
+      return card.subtitle ?? '';
+    }
+    const count = counts[card.techKey] ?? 0;
+    return `${count} questions`;
+  }
 }
