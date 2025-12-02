@@ -42,14 +42,6 @@ export class DashboardComponent {
     return ['pi', `pi-${name}`];
   }
 
-  /** ===== Continue learning (safe route) ===== */
-  continueCard: Card = {
-    title: 'Front End Interview Playbook',
-    subtitle: 'Pick up where you left off',
-    icon: 'book',
-    route: ['/guides', 'playbook'],
-  };
-
   /** ===== Recommended preparation ===== */
   recommended: Card[] = [
     {

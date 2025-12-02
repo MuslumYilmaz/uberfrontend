@@ -99,19 +99,6 @@ type Mode =
           </div>
 
           <div class="ufh-pane">
-            <a *ngIf="continueLink() as cont"
-               class="ufh-card ufh-card-continue"
-               [routerLink]="cont.to"
-               (click)="closeAll()">
-              <div class="ufh-card-icon"><i class="pi pi-play-circle"></i></div>
-              <div class="ufh-card-body">
-                <div class="ufh-card-title">Continue</div>
-                <div class="ufh-card-sub">{{ cont.label }}</div>
-                <div class="ufh-skel"></div>
-              </div>
-              <div aria-hidden="true">→</div>
-            </a>
-
             <ng-container *ngFor="let item of activeItems(); trackBy: trackByItemKey">
               <div *ngIf="item.disabled || item.intent!=='route' || !item.target; else enabledRow"
                    class="ufh-card ufh-card-disabled"
@@ -282,16 +269,6 @@ export class HeaderComponent implements OnInit {
         return null;
     }
   }
-
-  continueLink = computed(() => {
-    try {
-      const raw = localStorage.getItem('uf:lastVisited');
-      if (!raw) return null;
-      const obj = JSON.parse(raw) as { to: any[]; label?: string };
-      if (!Array.isArray(obj.to)) return null;
-      return { to: obj.to, label: obj.label ?? 'Pick up where you left off' };
-    } catch { return null; }
-  });
 
   private updateSafeTop() {
     const base = 56;

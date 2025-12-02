@@ -15,26 +15,6 @@
 .block-sub { color: #9aa3ad; font-size: 13.5px; margin: 0 0 12px; }
 .hr { height: 1px; background: rgba(255,255,255,.08); margin: 20px 0 0; }
 
-/* Continue card */
-.resume-card {
-  display: flex; align-items: center; justify-content: space-between;
-  background: #131419; color: #dfe3e7; text-decoration: none;
-  border: 1px solid rgba(255,255,255,.08); border-radius: 12px;
-  padding: 14px 16px; transition: border-color .15s ease, box-shadow .15s ease;
-}
-.resume-card:hover { border-color: rgba(255,255,255,.16); box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-.resume-left { display: flex; align-items: center; gap: 12px; }
-.pct {
-  width: 42px; height: 42px; display: grid; place-items: center; border-radius: 999px;
-  background: #0e1116; border: 1px solid rgba(255,255,255,.08); color: #b7bec7; font-weight: 700;
-}
-.resume-title { font-weight: 700; color: #fff; }
-.resume-sub { color: #9aa3ad; font-size: 13px; }
-.resume-cta {
-  padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.04); color: #e7eaee; font-weight: 600;
-}
-
 /* Lists / rows */
 .list { display: grid; gap: 10px; }
 .grid { display: grid; gap: 12px; }

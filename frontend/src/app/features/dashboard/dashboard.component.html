@@ -5,23 +5,6 @@
             <h1>Prepare</h1>
         </header>
 
-        <!-- Continue learning -->
-        <section class="block" *ngIf="continueCard as c">
-            <a class="resume-card" [routerLink]="c.route">
-                <div class="resume-left">
-                    <div class="pct">
-                        <i [ngClass]="piIcon(c.icon)"></i>
-                    </div>
-                    <div>
-                        <div class="resume-title">{{ c.title }}</div>
-                        <div class="resume-sub">{{ c.subtitle }}</div>
-                    </div>
-                </div>
-                <span class="resume-cta">Open →</span>
-            </a>
-            <div class="hr"></div>
-        </section>
-
         <!-- Recommended -->
         <section class="block">
             <div class="block-title">Recommended preparation</div>

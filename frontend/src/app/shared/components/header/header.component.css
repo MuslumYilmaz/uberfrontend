@@ -135,7 +135,6 @@
 }
 .ufh-card:hover{ background: rgba(255,255,255,0.05); }
 .ufh-card-disabled{ opacity:.6; cursor:default; }
-.ufh-card-continue{ border-color: rgba(255,255,255,0.14); }
 .ufh-card-icon{ width:40px; height:40px; display:grid; place-items:center; background: rgba(255,255,255,0.06); border-radius:10px; }
 .ufh-card-body{ min-width:0; }
 .ufh-card-title{ font-weight:600; display:flex; align-items:center; gap:8px; }
