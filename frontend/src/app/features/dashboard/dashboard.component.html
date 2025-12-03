@@ -98,17 +98,25 @@
         <!-- Question formats -->
         <section class="block">
             <div class="block-title">Question formats</div>
-            <div class="grid grid-2">
-                <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row" [routerLink]="card.route"
-                    [queryParams]="card.queryParams">
-                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                    <div class="row-body">
-                        <div class="row-title">{{ card.title }}</div>
-                        <div class="row-sub">{{ card.subtitle }}</div>
-                    </div>
-                    <div class="row-arrow">→</div>
-                </a>
-            </div>
+
+            <ng-container *ngIf="stats$ | async as stats">
+                <div class="grid grid-2">
+                    <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                        [queryParams]="card.queryParams">
+                        <div class="row-icon">
+                            <i [ngClass]="piIcon(card.icon)"></i>
+                        </div>
+                        <div class="row-body">
+                            <div class="row-title">{{ card.title }}</div>
+                            <div class="row-sub">
+                                {{ getFormatSubtitle(card, stats) }}
+                            </div>
+                        </div>
+                        <div class="row-arrow">→</div>
+                    </a>
+                </div>
+            </ng-container>
+
             <div class="hr"></div>
         </section>
 

@@ -6,6 +6,16 @@ import { MixedQuestion, QuestionService } from '../../core/services/question.ser
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
+type FormatCounts = Record<CategoryKeyInternal, number>;
+
+type Stats = {
+  companyCounts: Record<string, number>;
+  techCounts: Record<string, number>;
+  formatCounts: FormatCounts;
+  triviaTotal: number;
+  systemDesignTotal: number;
+};
+type CategoryKeyInternal = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
 
 type Card = {
   title: string;
@@ -19,6 +29,8 @@ type Card = {
   metaRight?: string;
   companyKey?: string;
   techKey?: 'javascript' | 'react' | 'angular' | 'vue' | 'css' | 'html';
+  formatKey?: CategoryKeyInternal;
+  kindKey?: 'coding' | 'trivia' | 'system-design' | 'behavioral';
 };
 
 @Component({
@@ -43,31 +55,55 @@ export class DashboardComponent {
     clock: 'clock',
   };
 
+  private readonly ALGO_TAGS = new Set<string>([
+    'recursion', 'two-pointers', 'binary-search', 'heap', 'graph', 'bfs', 'dfs',
+    'topological', 'trie', 'dynamic-programming', 'dp', 'sorting', 'greedy', 'backtracking'
+  ]);
+
+  private inferFormatCategory(q: MixedQuestion): CategoryKeyInternal {
+    const tech = String((q as any).technology || q.tech || '').toLowerCase();
+
+    if (tech === 'html' || tech === 'css') return 'html-css';
+    if (['angular', 'react', 'vue'].includes(tech) || (q as any).sdk) return 'ui';
+
+    const tags: string[] = ((q as any).tags || []).map((t: any) => String(t || '').toLowerCase());
+    if (tags.some(t => this.ALGO_TAGS.has(t))) return 'algo';
+
+    return 'js-fn';
+  }
+
   piIcon(key?: IconKey) {
     const name = key ? (this.ICON_MAP[key] ?? 'question') : 'window';
     return ['pi', `pi-${name}`];
   }
 
-  // ---- STATS: company + framework counts ----
-  stats$: Observable<{
-    companyCounts: Record<string, number>;
-    techCounts: Record<string, number>;
-  }> = forkJoin({
+  // ---- STATS: company + framework + formats counts ----
+  stats$: Observable<Stats> = forkJoin({
     coding: this.questions.loadAllQuestions('coding'),
     trivia: this.questions.loadAllQuestions('trivia'),
+    system: this.questions.loadSystemDesign(),
   }).pipe(
-    map(({ coding, trivia }) => {
-      const all: MixedQuestion[] = [...coding, ...trivia];
-
+    map(({ coding, trivia, system }) => {
       const companyCounts: Record<string, number> = {};
       const techCounts: Record<string, number> = {};
+      const formatCounts: FormatCounts = {
+        ui: 0,
+        'js-fn': 0,
+        'html-css': 0,
+        algo: 0,
+        system: 0,
+      };
 
-      for (const q of all) {
-        // tech count
-        const tech = q.tech;
-        techCounts[tech] = (techCounts[tech] ?? 0) + 1;
+      // ✅ CODING → formats + techCounts + companyCounts
+      for (const q of coding) {
+        const tech = (q as any).tech ?? (q as any).technology;
+        if (tech) {
+          techCounts[tech] = (techCounts[tech] ?? 0) + 1;
+        }
 
-        // company count – burada hangi property’yi kullandığına göre ayarla
+        const cat = this.inferFormatCategory(q);
+        formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
+
         const companies: string[] =
           (q as any).companies ??
           (q as any).companyTags ??
@@ -78,7 +114,34 @@ export class DashboardComponent {
         }
       }
 
-      return { companyCounts, techCounts };
+      // ✅ TRIVIA → formats + techCounts (şimdi buraya da ekledik) + companyCounts
+      for (const q of trivia) {
+        // frameworks için tech count
+        const tech = (q as any).tech ?? (q as any).technology;
+        if (tech) {
+          techCounts[tech] = (techCounts[tech] ?? 0) + 1;
+        }
+
+        // formats için trivia’yı da say
+        const cat = this.inferFormatCategory(q as MixedQuestion);
+        formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
+
+        const companies: string[] =
+          (q as any).companies ??
+          (q as any).companyTags ??
+          [];
+
+        for (const c of companies) {
+          companyCounts[c] = (companyCounts[c] ?? 0) + 1;
+        }
+      }
+
+      const systemDesignTotal = Array.isArray(system) ? system.length : 0;
+      formatCounts.system = systemDesignTotal;
+
+      const triviaTotal = trivia.length;
+
+      return { companyCounts, techCounts, formatCounts, triviaTotal, systemDesignTotal };
     }),
     shareReplay(1)
   );
@@ -147,12 +210,61 @@ export class DashboardComponent {
 
   /** ===== Practice: formats ===== */
   questionFormats: Card[] = [
-    { title: 'User Interface Coding', subtitle: '0/59 questions', icon: 'list', route: ['/coding'] },
-    { title: 'JavaScript Functions', subtitle: '0/140 questions', icon: 'list', route: ['/coding'], queryParams: { tech: 'javascript' } },
-    { title: 'Front End System Design', subtitle: '0/19 questions', icon: 'list', route: ['/system-design'] },
-    { title: 'Quiz', subtitle: '0/283 questions', icon: 'list', route: ['/coding'] },
-    { title: 'Data Structures & Algorithms Coding', subtitle: '0/92 questions', icon: 'list', route: ['/coding'] },
-    { title: 'Behavioral', subtitle: '0/8 articles', icon: 'list', route: ['/guides', 'behavioral'] },
+    {
+      title: 'User Interface Coding',
+      subtitle: '0 questions',
+      icon: 'list',
+      route: ['/coding'],
+      // 🔽 kind çıkarıldı
+      queryParams: { view: 'formats', category: 'ui' },
+      formatKey: 'ui',
+      kindKey: 'coding'
+    },
+    {
+      title: 'JavaScript Functions',
+      subtitle: '0 questions',
+      icon: 'list',
+      route: ['/coding'],
+      // 🔽 kind çıkarıldı
+      queryParams: { view: 'formats', category: 'js-fn' },
+      formatKey: 'js-fn',
+      kindKey: 'coding'
+    },
+    {
+      title: 'Front End System Design',
+      subtitle: '0 questions',
+      icon: 'list',
+      route: ['/coding'],
+      // burada kind=coding bırakabilirsin, system design özel case
+      queryParams: { view: 'formats', category: 'system', kind: 'coding' },
+      formatKey: 'system',
+      kindKey: 'system-design'
+    },
+    {
+      title: 'Trivia',
+      subtitle: '0 questions',
+      icon: 'list',
+      route: ['/coding'],
+      queryParams: { kind: 'trivia' },
+      kindKey: 'trivia'
+    },
+    {
+      title: 'Data Structures & Algorithms Coding',
+      subtitle: '0 questions',
+      icon: 'list',
+      route: ['/coding'],
+      // 🔽 kind çıkarıldı
+      queryParams: { view: 'formats', category: 'algo' },
+      formatKey: 'algo',
+      kindKey: 'coding'
+    },
+    {
+      title: 'Behavioral Interviews',
+      subtitle: '0/8 articles',
+      icon: 'list',
+      route: ['/guides', 'behavioral'],
+      kindKey: 'behavioral'
+    },
   ];
 
   /** ===== Framework tiles → /coding?tech=<key> ===== */
@@ -181,5 +293,33 @@ export class DashboardComponent {
     }
     const count = counts[card.techKey] ?? 0;
     return `${count} questions`;
+  }
+
+  getFormatSubtitle(card: Card, stats: Stats | null | undefined): string {
+    if (!stats) {
+      return card.subtitle ?? '';
+    }
+
+    if (card.kindKey === 'behavioral') {
+      return card.subtitle ?? '';
+    }
+
+    if (card.kindKey === 'trivia') {
+      const total = stats.triviaTotal ?? 0;
+      // or '0/X quizzes' if you prefer
+      return `0/${total} questions`;
+    }
+
+    if (card.kindKey === 'system-design') {
+      const total = stats.systemDesignTotal ?? 0;
+      return `0/${total} questions`;
+    }
+
+    if (card.formatKey) {
+      const total = stats.formatCounts[card.formatKey] ?? 0;
+      return `0/${total} questions`;
+    }
+
+    return card.subtitle ?? '';
   }
 }
