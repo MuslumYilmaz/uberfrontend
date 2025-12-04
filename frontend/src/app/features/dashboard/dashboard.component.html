@@ -81,17 +81,25 @@
         <!-- Focus areas -->
         <section class="block">
             <div class="block-title">Focus areas</div>
-            <div class="grid grid-2">
-                <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row" [routerLink]="card.route"
-                    [queryParams]="card.queryParams">
-                    <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                    <div class="row-body">
-                        <div class="row-title">{{ card.title }}</div>
-                        <div class="row-sub">{{ card.subtitle }}</div>
-                    </div>
-                    <div class="row-arrow">→</div>
-                </a>
-            </div>
+
+            <ng-container *ngIf="stats$ | async as stats">
+                <div class="grid grid-2">
+                    <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                        [queryParams]="card.queryParams">
+                        <div class="row-icon">
+                            <i [ngClass]="piIcon(card.icon)"></i>
+                        </div>
+                        <div class="row-body">
+                            <div class="row-title">{{ card.title }}</div>
+                            <div class="row-sub">
+                                {{ getFocusSubtitle(card, stats.focusCounts) }}
+                            </div>
+                        </div>
+                        <div class="row-arrow">→</div>
+                    </a>
+                </div>
+            </ng-container>
+
             <div class="hr"></div>
         </section>
 

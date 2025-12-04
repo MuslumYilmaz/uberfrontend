@@ -50,6 +50,31 @@ type SortKey =
   | 'importance-desc' | 'importance-asc'
   | 'created-desc' | 'created-asc';
 
+type FocusSlug =
+  | 'accessibility'
+  | 'async'
+  | 'design-system'
+  | 'dom'
+  | 'forms'
+  | 'polyfills'
+  | 'lodash'
+  | 'react-hooks'
+  | 'state-management'
+  | 'promise';   // ✅ yeni
+
+const FOCUS_SEED_TAGS: Record<FocusSlug, string[]> = {
+  accessibility: ['accessibility', 'a11y'],
+  async: ['async', 'promise', 'async-await'],
+  promise: ['promise', 'async-await'],               // ✅ yeni bucket
+  'design-system': ['design-system', 'design-system-components', 'component-library'],
+  dom: ['dom', 'dom-manipulation', 'events'],
+  forms: ['forms', 'reactive-forms', 'template-forms'],
+  polyfills: ['polyfill', 'polyfills'],
+  lodash: ['lodash'],
+  'react-hooks': ['hooks', 'react-hooks'],
+  'state-management': ['state-management', 'redux', 'context', 'zustand', 'mobx'],
+};
+
 function tierFromImportance(n: number | undefined): ImportanceTier {
   const v = n ?? 0;
   if (v >= 4) return 'high';      // 4–5 → High
@@ -597,6 +622,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedTech$.next(saved.selectedTech);
       this.selectedKind$.next(saved.selectedKind);
       this.selectedCategory$.next(saved.selectedCategory);
+    }
+
+    const focus = qp.get('focus') as FocusSlug | null;
+    if (focus && FOCUS_SEED_TAGS[focus]) {
+      this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
+
+      this.tagMatchMode = 'any';
     }
   }
 

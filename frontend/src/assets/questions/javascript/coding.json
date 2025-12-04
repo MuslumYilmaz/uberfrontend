@@ -100,7 +100,7 @@
     "importance": 4,
     "difficulty": "easy",
     "tags": [
-      "String"
+      "string"
     ],
     "description": {
       "summary": "Implement a function `reverseString(str)` that returns the reversed version of the input string without using built-in methods like `.reverse()`.",
@@ -181,7 +181,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "String"
+      "string"
     ],
     "description": {
       "summary": "Implement a function `countVowels(str)` that returns how many vowels (`a, e, i, o, u`) exist in a given string, regardless of case.",
@@ -263,7 +263,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "Array"
+      "array"
     ],
     "description": {
       "summary": "Implement a function `flattenOnce(arr)` that flattens a nested array by **one level only**. Elements that are not arrays should remain unchanged.",
@@ -344,7 +344,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "Array"
+      "array"
     ],
     "description": {
       "summary": "Implement a function `unique(arr)` that returns a new array with duplicate values removed. The **original order** of elements must be preserved.",
@@ -431,7 +431,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "String"
+      "string"
     ],
     "description": {
       "summary": "Implement a function `maxChar(str)` that returns the character that appears most frequently in a string.",
@@ -510,7 +510,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "String"
+      "string"
     ],
     "description": {
       "summary": "Implement a function `capitalizeWords(sentence)` that returns the same string but with the first letter of each word capitalized.",
@@ -594,7 +594,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "Array"
+      "array"
     ],
     "description": {
       "summary": "Implement a function `sum(arr)` that returns the total of all numeric elements in the array, ignoring non-numeric values.",
@@ -683,7 +683,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "Array"
+      "array"
     ],
     "description": {
       "summary": "Implement a function `compact(arr)` that removes all falsy values (`false`, `0`, `''`, `null`, `undefined`, `NaN`) from an array.",
@@ -764,7 +764,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "Array"
+      "array"
     ],
     "description": {
       "summary": "Implement a function `arraysEqual(a, b)` that returns `true` if both arrays contain the same elements in the same order.",
@@ -1715,10 +1715,10 @@
     "difficulty": "hard",
     "importance": 5,
     "tags": [
-      "Async",
-      "Concurrency",
-      "Promises",
-      "Control Flow"
+      "async",
+      "concurrency",
+      "promise",
+      "control Flow"
     ],
     "teaches": [
       "Concurrency control with a worker pool",
@@ -1818,11 +1818,11 @@
     "importance": 5,
     "difficulty": "hard",
     "tags": [
-      "Async",
-      "AbortController",
-      "Cancellation",
-      "Promises",
-      "Utilities"
+      "async",
+      "abortController",
+      "cancellation",
+      "promise",
+      "utilities"
     ],
     "description": {
       "summary": "Provide utilities to combine timeouts with AbortController, and to compose multiple signals (abort if any fires). All helpers are exposed via a single default export function whose properties are the helpers.",
@@ -1911,12 +1911,11 @@
     "importance": 5,
     "difficulty": "hard",
     "tags": [
-      "Streams",
-      "Web Streams API",
-      "TextDecoder",
-      "Backpressure",
-      "Parsing",
-      "NDJSON"
+      "streams",
+      "textDecoder",
+      "backpressure",
+      "parsing",
+      "ndjson"
     ],
     "description": {
       "summary": "Implement a **streaming** parser for NDJSON (newline-delimited JSON). Read from a `ReadableStream<Uint8Array>`, decode incrementally, split on newlines, parse each line into an object, and recover from malformed lines via a callback without stopping the stream.",
@@ -2008,10 +2007,10 @@
     "importance": 4,
     "difficulty": "easy",
     "tags": [
-      "Arrays",
-      "Callbacks",
-      "Iteration",
-      "Polyfills"
+      "arrays",
+      "callbacks",
+      "iteration",
+      "polyfills"
     ],
     "teaches": [
       "How built-in array iteration works under the hood",
@@ -2110,11 +2109,11 @@
     "importance": 4,
     "difficulty": "intermediate",
     "tags": [
-      "Arrays",
-      "Callbacks",
-      "Iteration",
-      "Polyfills",
-      "Accumulators"
+      "arrays",
+      "callbacks",
+      "iteration",
+      "polyfills",
+      "accumulators"
     ],
     "teaches": [
       "How array reduction works under the hood",
@@ -2409,7 +2408,7 @@
     "importance": 3,
     "difficulty": "easy",
     "tags": [
-      "Array",
+      "array",
       "sorting"
     ],
     "description": {
@@ -2658,7 +2657,7 @@
     "importance": 4,
     "difficulty": "easy",
     "tags": [
-      "promises",
+      "promise",
       "async",
       "functions",
       "basics"
