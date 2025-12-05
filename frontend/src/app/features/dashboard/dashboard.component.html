@@ -1,6 +1,5 @@
 <div class="dash">
     <div class="container">
-
         <header class="page-header">
             <h1>Prepare</h1>
         </header>
@@ -13,7 +12,6 @@
                     <!-- Enabled -->
                     <a *ngIf="card.route && !card.disabled; else recDisabled" class="row" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
-
                         <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">
                             <div class="row-title">{{ card.title }}</div>
@@ -41,11 +39,12 @@
             <div class="hr"></div>
         </section>
 
-        <!-- Study plans -->
+        <!-- Learning tracks -->
         <section class="block">
-            <div class="block-title">Study plans</div>
+            <div class="block-title">Learning tracks</div>
             <div class="grid grid-2">
-                <a *ngFor="let card of studyPlans; trackBy: trackByTitle" class="row" [routerLink]="card.route">
+                <a *ngFor="let card of tracks; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    [queryParams]="card.queryParams">
                     <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
                         <div class="row-title">{{ card.title }}</div>

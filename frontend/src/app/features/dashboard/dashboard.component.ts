@@ -72,8 +72,20 @@ export class DashboardComponent {
   };
 
   private readonly ALGO_TAGS = new Set<string>([
-    'recursion', 'two-pointers', 'binary-search', 'heap', 'graph', 'bfs', 'dfs',
-    'topological', 'trie', 'dynamic-programming', 'dp', 'sorting', 'greedy', 'backtracking'
+    'recursion',
+    'two-pointers',
+    'binary-search',
+    'heap',
+    'graph',
+    'bfs',
+    'dfs',
+    'topological',
+    'trie',
+    'dynamic-programming',
+    'dp',
+    'sorting',
+    'greedy',
+    'backtracking',
   ]);
 
   private inferFormatCategory(q: MixedQuestion): CategoryKeyInternal {
@@ -82,14 +94,16 @@ export class DashboardComponent {
     if (tech === 'html' || tech === 'css') return 'html-css';
     if (['angular', 'react', 'vue'].includes(tech) || (q as any).sdk) return 'ui';
 
-    const tags: string[] = ((q as any).tags || []).map((t: any) => String(t || '').toLowerCase());
+    const tags: string[] = ((q as any).tags || []).map((t: any) =>
+      String(t || '').toLowerCase()
+    );
     if (tags.some(t => this.ALGO_TAGS.has(t))) return 'algo';
 
     return 'js-fn';
   }
 
   piIcon(key?: IconKey) {
-    const name = key ? (this.ICON_MAP[key] ?? 'question') : 'window';
+    const name = key ? this.ICON_MAP[key] ?? 'question' : 'window';
     return ['pi', `pi-${name}`];
   }
 
@@ -123,14 +137,13 @@ export class DashboardComponent {
         'state-management': 0,
       };
 
-      // Helper to bump focus buckets for a question
       const bumpFocus = (q: MixedQuestion) => {
         for (const key of this.focusBucketsForQuestion(q)) {
           focusCounts[key] = (focusCounts[key] ?? 0) + 1;
         }
       };
 
-      // ✅ CODING → techCounts + formatCounts + companyCounts + focusCounts
+      // CODING
       for (const q of coding) {
         const tech = (q as any).tech ?? (q as any).technology;
         if (tech) {
@@ -141,9 +154,7 @@ export class DashboardComponent {
         formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
 
         const companies: string[] =
-          (q as any).companies ??
-          (q as any).companyTags ??
-          [];
+          (q as any).companies ?? (q as any).companyTags ?? [];
 
         for (const c of companies) {
           companyCounts[c] = (companyCounts[c] ?? 0) + 1;
@@ -152,7 +163,7 @@ export class DashboardComponent {
         bumpFocus(q);
       }
 
-      // ✅ TRIVIA → formatCounts + companyCounts + focusCounts (techCounts eklendi zaten önceki fixte)
+      // TRIVIA
       for (const q of trivia) {
         const tech = (q as any).tech ?? (q as any).technology;
         if (tech) {
@@ -163,9 +174,7 @@ export class DashboardComponent {
         formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
 
         const companies: string[] =
-          (q as any).companies ??
-          (q as any).companyTags ??
-          [];
+          (q as any).companies ?? (q as any).companyTags ?? [];
 
         for (const c of companies) {
           companyCounts[c] = (companyCounts[c] ?? 0) + 1;
@@ -179,7 +188,14 @@ export class DashboardComponent {
 
       const triviaTotal = trivia.length;
 
-      return { companyCounts, techCounts, formatCounts, triviaTotal, systemDesignTotal, focusCounts };
+      return {
+        companyCounts,
+        techCounts,
+        formatCounts,
+        triviaTotal,
+        systemDesignTotal,
+        focusCounts,
+      };
     }),
     shareReplay(1)
   );
@@ -206,7 +222,6 @@ export class DashboardComponent {
       icon: 'grid',
       route: ['/guides', 'system-design'],
     },
-    // ✅ NEW: Behavioral Guide
     {
       title: 'Behavioral Interview Guide',
       subtitle: 'STAR method, stories, and high-signal answers.',
@@ -215,11 +230,36 @@ export class DashboardComponent {
     },
   ];
 
-  /** ===== Study plans (route to guide for now) ===== */
-  studyPlans: Card[] = [
-    { title: '1 Week', subtitle: '51 questions · 2 hours daily', icon: 'bolt', route: ['/guides', 'playbook'] },
-    { title: '1 Month', subtitle: '107 questions · 6 hours weekly', icon: 'clock', route: ['/guides', 'playbook'] },
-    { title: '3 Months', subtitle: '280 questions · 3 hours weekly', icon: 'star', route: ['/guides', 'playbook'] },
+  /** ===== Learning tracks (new) ===== */
+  tracks: Card[] = [
+    {
+      title: 'FAANG Track',
+      subtitle: 'Intense prep: core JS, UI, and system design for Big Tech interviews.',
+      icon: 'bolt',
+      route: ['/guides', 'playbook'],
+      queryParams: { track: 'faang' },
+    },
+    {
+      title: 'Senior Engineer Track',
+      subtitle: 'Architecture, performance, and deep system design for senior roles.',
+      icon: 'star',
+      route: ['/guides', 'playbook'],
+      queryParams: { track: 'senior' },
+    },
+    {
+      title: 'Crash Track (7 days)',
+      subtitle: 'Short deadline? Focused 7-day curriculum on the highest-signal topics.',
+      icon: 'clock',
+      route: ['/guides', 'playbook'],
+      queryParams: { track: 'crash-7d' },
+    },
+    {
+      title: 'Foundations Track (30 days)',
+      subtitle: 'Rebuild your fundamentals step by step before going deeper.',
+      icon: 'book',
+      route: ['/guides', 'playbook'],
+      queryParams: { track: 'foundations-30d' },
+    },
   ];
 
   /** ===== Company guides ===== */
@@ -239,7 +279,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { focus: 'accessibility' },
+      queryParams: { focus: 'accessibility', reset: 1 },   // 👈
       focusKey: 'accessibility',
     },
     {
@@ -247,7 +287,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { focus: 'async' },
+      queryParams: { focus: 'async', reset: 1 },           // 👈
       focusKey: 'async',
     },
     {
@@ -255,7 +295,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { focus: 'dom' },
+      queryParams: { focus: 'dom', reset: 1 },             // 👈
       focusKey: 'dom',
     },
     {
@@ -263,7 +303,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { focus: 'forms' },
+      queryParams: { focus: 'forms', reset: 1 },           // 👈
       focusKey: 'forms',
     },
     {
@@ -271,7 +311,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { tech: 'javascript', focus: 'promise' },
+      queryParams: { tech: 'javascript', focus: 'promise', reset: 1 }, // 👈
       focusKey: 'promise',
     },
     {
@@ -279,7 +319,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { tech: 'javascript', focus: 'polyfills' },
+      queryParams: { tech: 'javascript', focus: 'polyfills', reset: 1 }, // 👈
       focusKey: 'polyfills',
     },
     {
@@ -287,7 +327,7 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'grid',
       route: ['/coding'],
-      queryParams: { tech: 'react', focus: 'state-management' },
+      queryParams: { tech: 'react', focus: 'state-management', reset: 1 }, // 👈
       focusKey: 'state-management',
     },
   ];
@@ -300,66 +340,99 @@ export class DashboardComponent {
       subtitle: '0 questions',
       icon: 'list',
       route: ['/coding'],
-      // 🔽 kind çıkarıldı
-      queryParams: { view: 'formats', category: 'ui' },
+      queryParams: { view: 'formats', category: 'ui', reset: 1 },       // 👈
       formatKey: 'ui',
-      kindKey: 'coding'
+      kindKey: 'coding',
     },
     {
       title: 'JavaScript / Typescript',
       subtitle: '0 questions',
       icon: 'list',
       route: ['/coding'],
-      // 🔽 kind çıkarıldı
-      queryParams: { view: 'formats', category: 'js-fn' },
+      queryParams: { view: 'formats', category: 'js-fn', reset: 1 },    // 👈
       formatKey: 'js-fn',
-      kindKey: 'coding'
+      kindKey: 'coding',
     },
     {
       title: 'Front End System Design',
       subtitle: '0 questions',
       icon: 'list',
       route: ['/coding'],
-      // burada kind=coding bırakabilirsin, system design özel case
-      queryParams: { view: 'formats', category: 'system', kind: 'coding' },
+      queryParams: { view: 'formats', category: 'system', kind: 'coding', reset: 1 }, // 👈
       formatKey: 'system',
-      kindKey: 'system-design'
+      kindKey: 'system-design',
     },
     {
       title: 'Trivia',
       subtitle: '0 questions',
       icon: 'list',
       route: ['/coding'],
-      queryParams: { kind: 'trivia' },
-      kindKey: 'trivia'
+      queryParams: { kind: 'trivia', reset: 1 },       // 👈
+      kindKey: 'trivia',
     },
     {
       title: 'Data Structures & Algorithms',
       subtitle: '0 questions',
       icon: 'list',
       route: ['/coding'],
-      // 🔽 kind çıkarıldı
-      queryParams: { view: 'formats', category: 'algo' },
+      queryParams: { view: 'formats', category: 'algo', reset: 1 },     // 👈
       formatKey: 'algo',
-      kindKey: 'coding'
+      kindKey: 'coding',
     },
     {
       title: 'Behavioral Interviews',
       subtitle: '0/8 articles',
       icon: 'list',
       route: ['/guides', 'behavioral'],
-      kindKey: 'behavioral'
+      kindKey: 'behavioral',
     },
   ];
 
+
   /** ===== Framework tiles → /coding?tech=<key> ===== */
   frameworks: Card[] = [
-    { title: 'JavaScript', icon: 'grid', route: ['/coding'], queryParams: { tech: 'javascript' }, techKey: 'javascript' },
-    { title: 'React', icon: 'grid', route: ['/coding'], queryParams: { tech: 'react' }, techKey: 'react' },
-    { title: 'Angular', icon: 'grid', route: ['/coding'], queryParams: { tech: 'angular' }, techKey: 'angular' },
-    { title: 'Vue', icon: 'grid', route: ['/coding'], queryParams: { tech: 'vue' }, techKey: 'vue' },
-    { title: 'CSS', icon: 'grid', route: ['/coding'], queryParams: { tech: 'css' }, techKey: 'css' },
-    { title: 'HTML', icon: 'grid', route: ['/coding'], queryParams: { tech: 'html' }, techKey: 'html' },
+    {
+      title: 'JavaScript',
+      icon: 'grid',
+      route: ['/coding'],
+      queryParams: { tech: 'javascript', reset: 1 },   // 👈
+      techKey: 'javascript',
+    },
+    {
+      title: 'React',
+      icon: 'grid',
+      route: ['/coding'],
+      queryParams: { tech: 'react', reset: 1 },        // 👈
+      techKey: 'react',
+    },
+    {
+      title: 'Angular',
+      icon: 'grid',
+      route: ['/coding'],
+      queryParams: { tech: 'angular', reset: 1 },      // 👈
+      techKey: 'angular',
+    },
+    {
+      title: 'Vue',
+      icon: 'grid',
+      route: ['/coding'],
+      queryParams: { tech: 'vue', reset: 1 },          // 👈
+      techKey: 'vue',
+    },
+    {
+      title: 'CSS',
+      icon: 'grid',
+      route: ['/coding'],
+      queryParams: { tech: 'css', reset: 1 },          // 👈
+      techKey: 'css',
+    },
+    {
+      title: 'HTML',
+      icon: 'grid',
+      route: ['/coding'],
+      queryParams: { tech: 'html', reset: 1 },         // 👈
+      techKey: 'html',
+    },
   ];
 
   trackByTitle = (_: number, it: Card) => it.title;
@@ -391,7 +464,6 @@ export class DashboardComponent {
 
     if (card.kindKey === 'trivia') {
       const total = stats.triviaTotal ?? 0;
-      // or '0/X quizzes' if you prefer
       return `0/${total} questions`;
     }
 
@@ -411,49 +483,48 @@ export class DashboardComponent {
   private focusBucketsForQuestion(q: MixedQuestion): FocusKey[] {
     const keys: FocusKey[] = [];
 
-    const tech = String((q as any).tech ?? (q as any).technology ?? '').toLowerCase();
+    const tech = String(
+      (q as any).tech ?? (q as any).technology ?? ''
+    ).toLowerCase();
     const title = String((q as any).title ?? '').toLowerCase();
-    const tags: string[] = ((q as any).tags ?? []).map((t: any) => String(t || '').toLowerCase());
+    const tags: string[] = ((q as any).tags ?? []).map((t: any) =>
+      String(t || '').toLowerCase()
+    );
 
     const hasTag = (...candidates: string[]) =>
       tags.some(t => candidates.includes(t));
 
-    // Accessibility
     if (hasTag('accessibility', 'a11y')) {
       keys.push('accessibility');
     }
 
-    // Async operations
     if (hasTag('async', 'promise', 'async-await', 'concurrency', 'xhr', 'fetch')) {
       keys.push('async');
     }
 
-    // Design system components
     if (hasTag('design-system', 'design-system-components', 'component-library')) {
       keys.push('design-system');
     }
 
-    // DOM manipulation
     if (hasTag('dom', 'dom-manipulation', 'events')) {
       keys.push('dom');
     }
 
-    // Angular forms
-    if (tech === 'angular' && (hasTag('forms', 'reactive-forms', 'template-forms') || title.includes('form'))) {
+    if (
+      tech === 'angular' &&
+      (hasTag('forms', 'reactive-forms', 'template-forms') || title.includes('form'))
+    ) {
       keys.push('forms');
     }
 
-    // JS polyfills
     if (hasTag('polyfill', 'polyfills')) {
       keys.push('polyfills');
     }
 
-    // Lodash
     if (hasTag('lodash') || title.includes('lodash')) {
       keys.push('lodash');
     }
 
-    // React hooks
     if (tech === 'react' && (hasTag('hooks', 'react-hooks') || title.includes('hook'))) {
       keys.push('react-hooks');
     }
@@ -462,7 +533,6 @@ export class DashboardComponent {
       keys.push('promise');
     }
 
-    // State management
     if (hasTag('state-management', 'redux', 'context', 'zustand', 'mobx')) {
       keys.push('state-management');
     }

@@ -550,15 +550,51 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const viewKey: ViewMode =
       qp.get('view') === 'formats' ? 'formats' : 'tech';
 
+    const shouldReset = qp.get('reset') === '1';   // 👈
+
+    if (shouldReset) {
+      // Persisted state'i tamamen temizle (tech/formats view switch'te geri gelmesin)
+      (this.listState as any).globalCodingState = {};
+
+      // Runtime filtreleri sıfırla
+      this.searchTerm = '';
+      this.sliderValue = 5;
+      this.search$.next('');
+      this.diffs$.next([]);
+      this.impTiers$.next([]);
+      this.selectedTags$.next([]);
+      this.sort$.next('default');
+      this.tagMatchMode = 'all';
+      this.selectedTech$.next(null);
+      this.selectedKind$.next('all');
+      this.selectedCategory$.next(null);
+    }
+
+    const techFromUrl = (qp.get('tech') || '').toLowerCase() as Tech;
+    const kindFromUrl = qp.get('kind') as Kind | null;
+    const categoryRaw = qp.get('category') as CategoryKey | null;
+    const categoryFromUrl =
+      categoryRaw && ALLOWED_CATEGORIES.includes(categoryRaw)
+        ? (categoryRaw as CategoryKey)
+        : null;
+
     // ---------- FORMATS VIEW (/coding?view=formats) ----------
     if (viewKey === 'formats') {
-      // önce state'ten oku
-      this.restoreFiltersFrom('formats');
+      if (!shouldReset) {
+        // sadece reset yoksa saved state'i restore et
+        this.restoreFiltersFrom('formats');
+      }
 
-      const kFromUrl = qp.get('kind') as Kind | null;
+      if (categoryFromUrl) {
+        this.selectedCategory$.next(categoryFromUrl);
+      }
+
       const allowedKinds = new Set<Kind>(['all', 'coding', 'trivia']);
-      if (kFromUrl && allowedKinds.has(kFromUrl as Kind)) {
-        this.selectedKind$.next(kFromUrl as Kind);
+      if (kindFromUrl && allowedKinds.has(kindFromUrl as Kind)) {
+        this.selectedKind$.next(kindFromUrl as Kind);
+      } else if (shouldReset) {
+        // reset geldiyse formats için default 'all'
+        this.selectedKind$.next('all');
       }
 
       const qFromUrl = qp.get('q');
@@ -567,12 +603,18 @@ export class CodingListComponent implements OnInit, OnDestroy {
         this.search$.next(qFromUrl);
       }
 
+      const focus = qp.get('focus') as FocusSlug | null;
+      if (focus && FOCUS_SEED_TAGS[focus]) {
+        this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
+        this.tagMatchMode = 'any';
+      }
+
       return;
     }
 
     // ---------- TECH VIEW (/coding) ----------
-    const allSaved = this.listState.globalCodingState;
-    const saved = allSaved[viewKey];
+    const allSaved = shouldReset ? {} as any : this.listState.globalCodingState;  // 👈
+    const saved = allSaved[viewKey];                                             // 👈
 
     // Search term + slider
     const qFromUrl = qp.get('q');
@@ -614,7 +656,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.impTiers$.next([...saved.impTiers]);
     }
 
-    if (saved) {
+    if (saved && !shouldReset) {
       this.selectedTags$.next([...saved.selectedTags]);
       this.sort$.next(saved.sort);
       this.tagMatchMode = saved.tagMatchMode;
@@ -624,10 +666,22 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedCategory$.next(saved.selectedCategory);
     }
 
+    // ---- URL değerleri saved'in ÜSTÜNE yazıyor (veya reset modunda default'u override ediyor) ----
+    const allowedTech: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
+    if (allowedTech.includes(techFromUrl)) {
+      this.selectedTech$.next(techFromUrl);
+    }
+
+    const allowedKinds = new Set<Kind>(['all', 'coding', 'trivia']);
+    if (kindFromUrl && allowedKinds.has(kindFromUrl as Kind)) {
+      this.selectedKind$.next(kindFromUrl as Kind);
+    } else if (shouldReset) {
+      this.selectedKind$.next('all');
+    }
+
     const focus = qp.get('focus') as FocusSlug | null;
     if (focus && FOCUS_SEED_TAGS[focus]) {
       this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
-
       this.tagMatchMode = 'any';
     }
   }
@@ -957,6 +1011,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Global /coding listesi için, çıkarken son filtre durumunu kaydet
+    if (this.source === 'global-coding') {
+      const viewKey = this.getActiveViewKey(); // 'tech' veya 'formats'
+      this.saveFiltersTo(viewKey);
+    }
 
     this.viewModeSub?.unsubscribe();
   }
