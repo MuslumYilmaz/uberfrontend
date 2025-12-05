@@ -10,6 +10,10 @@ import { RouterModule } from '@angular/router';
   template: `
     <article class="doc" aria-labelledby="doc-title">
       <header class="doc-header">
+        <div class="doc-meta">
+          <span class="pill">Legal</span>
+          <span class="pill pill-green">Privacy</span>
+        </div>
         <h1 id="doc-title">Privacy Notice</h1>
         <p class="muted">Effective Date: {{ effectiveDate }}</p>
       </header>
@@ -239,14 +243,19 @@ import { RouterModule } from '@angular/router';
     </article>
   `,
   styles: [`
+    :host { display: block; background: radial-gradient(circle at 16% 20%, rgba(34,197,94,0.08), transparent 40%), #050a12; }
     /* Layout */
     .doc {
       max-width: 920px;
       margin: 24px auto 48px;
-      padding: 0 16px;
+      padding: 18px 16px 20px;
       color: #e6e9ef;
       font-size: 15px;
       line-height: 1.65;
+      background: linear-gradient(145deg, rgba(16, 24, 40, 0.95), rgba(9, 12, 23, 0.95));
+      border: 1px solid #1f2634;
+      border-radius: 18px;
+      box-shadow: 0 16px 60px rgba(0,0,0,0.45);
     }
 
     .doc-header h1 {
@@ -254,6 +263,29 @@ import { RouterModule } from '@angular/router';
       margin: 0 0 4px;
       font-weight: 800;
       letter-spacing: 0.2px;
+    }
+    .doc-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(148, 163, 184, 0.18);
+      color: #e6e9ef;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .pill-green {
+      background: rgba(34, 197, 94, 0.16);
+      border-color: rgba(34, 197, 94, 0.45);
+      color: #bbf7d0;
     }
     .muted { color: #9aa3ad; margin: 0 0 18px; font-size: 13px; }
 
@@ -264,11 +296,12 @@ import { RouterModule } from '@angular/router';
 
     /* TOC */
     .toc {
-      background: #0f131a;
+      background: #0b111b;
       border: 1px solid #242b38;
       border-radius: 12px;
       padding: 12px 14px;
       margin: 12px 0 18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
     }
     .toc-title {
       font-size: 14px;
