@@ -2728,5 +2728,92 @@
     },
     "tests": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles negative and positive mix', async () => {\n    const p1 = new Promise(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with zero values (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(0), Promise.resolve(0));\n    expect(result).toBe(0);\n  });\n});\n",
     "testsTs": "import addTwoPromises from './file';\n\ndescribe('addTwoPromises (TypeScript)', () => {\n  test('resolves with sum of positive numbers', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(2), 20));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(5), 60));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(7);\n  });\n\n  test('handles mix of negative and positive', async () => {\n    const p1 = new Promise<number>(resolve => setTimeout(() => resolve(10), 50));\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(-12), 30));\n    const result = await addTwoPromises(p1, p2);\n    expect(result).toBe(-2);\n  });\n\n  test('works with immediately resolved promises (edge)', async () => {\n    const result = await addTwoPromises(Promise.resolve(3), Promise.resolve(4));\n    expect(result).toBe(7);\n  });\n});\n"
+  },
+  {
+    "id": "js-promise-all",
+    "title": "Implement Promise.all",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 5,
+    "difficulty": "medium",
+    "tags": [
+      "promise",
+      "async",
+      "concurrency"
+    ],
+    "description": {
+      "summary": "Implement a function `promiseAll(promises)` that behaves like `Promise.all`. It should take an array of values or promises and return a single promise that resolves to an array of results, preserving order, or rejects as soon as one promise rejects.",
+      "arguments": [
+        {
+          "name": "promises",
+          "type": "Array<any | Promise<any>>",
+          "desc": "An array of values and/or promises to be resolved."
+        }
+      ],
+      "returns": {
+        "type": "Promise<any[]>",
+        "desc": "A promise that resolves to an array of resolved values in the same order as the input, or rejects with the first rejection reason."
+      },
+      "examples": [
+        "// All fulfilled\npromiseAll([Promise.resolve(1), Promise.resolve(2), 3])\n  .then(result => {\n    // result => [1, 2, 3]\n  });",
+        "// One rejects\npromiseAll([\n  Promise.resolve('ok'),\n  Promise.reject(new Error('fail'))\n])\n  .then(() => {\n    // not called\n  })\n  .catch(err => {\n    // err.message === 'fail'\n  });",
+        "// Empty array resolves immediately\npromiseAll([])\n  .then(result => {\n    // result => []\n  });"
+      ]
+    },
+    "starterCode": "export default function promiseAll(promises) {\n  // TODO: Return a Promise that resolves when all inputs resolve, or rejects on the first error\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function promiseAll<T>(promises: Array<T | Promise<T>>): Promise<T[]> {\n  // TODO: Return a Promise that resolves when all inputs resolve, or rejects on the first error\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: reimplement the core behavior of `Promise.all`.\n\n- Accept an array of values/promises.\n- Resolve with an array of results in the **same order**.\n- Reject **immediately** when any input rejects (fail-fast).\n- If the array is empty, resolve to `[]` right away.\n\nThis tests understanding of promises, async coordination, and ordering.",
+      "approaches": [
+        {
+          "title": "Approach 1: Manual aggregation with counter (parallel, spec-like)",
+          "prose": "Idea: create a wrapper promise that subscribes to all input values (wrapped via `Promise.resolve`). Track how many results are still pending, and resolve when all have completed.\n\nHow it works\n1. Validate the argument is an array; if not, reject with `TypeError`.\n2. If input length is 0, resolve `[]` immediately.\n3. Initialize `results = new Array(len)` and `remaining = len`.\n4. For each element `p` at index `i`:\n   - Wrap with `Promise.resolve(p)` so non-promises work.\n   - On `then(value)`, store `results[i] = value`, decrement `remaining`.\n   - When `remaining` hits `0`, resolve with `results`.\n   - On `catch(error)`, reject the outer promise once (fail-fast).\n\nWhy use it: matches how `Promise.all` behaves (parallel waiting, order preserved, fail-fast) and is a very common interview solution.",
+          "codeJs": "export default function promiseAll(promises) {\n  return new Promise((resolve, reject) => {\n    if (!Array.isArray(promises)) {\n      return reject(new TypeError('Argument must be an array'));\n    }\n\n    const length = promises.length;\n    const results = new Array(length);\n    let remaining = length;\n\n    if (length === 0) {\n      resolve([]);\n      return;\n    }\n\n    promises.forEach((p, index) => {\n      Promise.resolve(p)\n        .then(value => {\n          results[index] = value;\n          remaining -= 1;\n          if (remaining === 0) {\n            resolve(results);\n          }\n        })\n        .catch(reject);\n    });\n  });\n}\n",
+          "codeTs": "export default function promiseAll<T>(promises: Array<T | Promise<T>>): Promise<T[]> {\n  return new Promise<T[]>((resolve, reject) => {\n    if (!Array.isArray(promises)) {\n      return reject(new TypeError('Argument must be an array'));\n    }\n\n    const length = promises.length;\n    const results: T[] = new Array(length);\n    let remaining = length;\n\n    if (length === 0) {\n      resolve([]);\n      return;\n    }\n\n    promises.forEach((p, index) => {\n      Promise.resolve(p)\n        .then(value => {\n          results[index] = value as T;\n          remaining -= 1;\n          if (remaining === 0) {\n            resolve(results);\n          }\n        })\n        .catch(reject);\n    });\n  });\n}\n"
+        },
+        {
+          "title": "Approach 2: Sequential `async/await` (simpler but not parallel)",
+          "prose": "Idea: as a teaching alternative, resolve each item **one by one** in an `async` function using `await`. This is easier to read but does **not** preserve the parallel behavior of `Promise.all`.\n\nHow it works\n1. Loop over indices `i` from 0 to `promises.length - 1`.\n2. For each element `p`, do `results[i] = await Promise.resolve(p)`.\n3. If any await throws, the whole `promiseAll` rejects (like built-in).\n\nWhy use it: good to reason about success/failure flow with `try/catch`, but real `Promise.all` runs all promises in parallel, while this one runs them serially.",
+          "codeJs": "export default async function promiseAllSequential(promises) {\n  if (!Array.isArray(promises)) {\n    throw new TypeError('Argument must be an array');\n  }\n  const results = [];\n  for (let i = 0; i < promises.length; i++) {\n    results[i] = await Promise.resolve(promises[i]);\n  }\n  return results;\n}\n",
+          "codeTs": "export default async function promiseAllSequential<T>(promises: Array<T | Promise<T>>): Promise<T[]> {\n  if (!Array.isArray(promises)) {\n    throw new TypeError('Argument must be an array');\n  }\n  const results: T[] = [];\n  for (let i = 0; i < promises.length; i++) {\n    results[i] = await Promise.resolve(promises[i]);\n  }\n  return results;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to handle the **empty array** case (the returned promise should resolve immediately with `[]`).",
+          "Not preserving **input order** in the results; you must write into `results[index]`, not just `results.push`.",
+          "Calling `resolve` or `reject` multiple times — only the first call has effect, but your logic should naturally avoid extra calls.",
+          "Not wrapping values with `Promise.resolve`, which breaks support for non-promise values."
+        ],
+        "edgeCases": [
+          "Empty array → resolves immediately with `[]`.",
+          "Array with only non-promise values → resolves immediately with those values.",
+          "First element rejects after some others resolve → final result must still be a rejection.",
+          "Non-array input → typically throws or rejects with `TypeError` (this implementation rejects)."
+        ],
+        "techniques": [
+          "Using a **wrapper promise** to aggregate multiple async operations.",
+          "Using a **counter** (`remaining`) to know when all async tasks have finished.",
+          "Using `Promise.resolve` to normalize values and promises.",
+          "Fail-fast error propagation via `catch(reject)`."
+        ]
+      },
+      "followUpQuestions": [
+        "js-compact",
+        "js-unique-array"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Promise.all()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all"
+        },
+        {
+          "title": "MDN – Using Promises",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises"
+        }
+      ]
+    },
+    "tests": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll', () => {\n  test('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3; // non-promise value\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  test('resolves immediately for empty array', async () => {\n    await expect(promiseAll([])).resolves.toEqual([]);\n  });\n\n  test('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  test('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null)).rejects.toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import promiseAll from './promiseAll';\n\ndescribe('promiseAll (TypeScript)', () => {\n  it('resolves array of values in order when all succeed', async () => {\n    const p1 = Promise.resolve(1);\n    const p2 = new Promise<number>(resolve => setTimeout(() => resolve(2), 5));\n    const p3 = 3;\n\n    await expect(promiseAll([p1, p2, p3])).resolves.toEqual([1, 2, 3]);\n  });\n\n  it('resolves immediately for empty array', async () => {\n    await expect(promiseAll<number>([])).resolves.toEqual([]);\n  });\n\n  it('rejects when any promise rejects', async () => {\n    const error = new Error('fail');\n    const p1 = Promise.resolve('ok');\n    const p2 = Promise.reject(error);\n\n    await expect(promiseAll([p1, p2])).rejects.toThrow('fail');\n  });\n\n  it('rejects with TypeError when input is not an array', async () => {\n    // @ts-expect-error runtime guard only\n    await expect(promiseAll(null as any)).rejects.toThrow(TypeError);\n  });\n});\n"
   }
 ]

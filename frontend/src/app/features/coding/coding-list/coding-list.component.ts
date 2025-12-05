@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
@@ -11,7 +11,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
-import { map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology } from '../../../core/models/question.model';
@@ -103,6 +103,7 @@ const SYSTEM_TITLE_HINTS = [
 ];
 
 const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
+const DEBUG_FILTER_STATE = true;
 
 function inferCategory(q: any): CategoryKey {
   if (q.__sd) return 'system';
@@ -145,6 +146,9 @@ function inferCategory(q: any): CategoryKey {
   styleUrls: ['./coding-list.component.scss']
 })
 export class CodingListComponent implements OnInit, OnDestroy {
+  private static _instanceCounter = 0;
+  readonly instanceId = ++CodingListComponent._instanceCounter;
+
   // ----- filter UI state -----
   searchTerm = '';
   sliderValue = 5;
@@ -187,6 +191,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private currentViewKey: ViewMode = 'tech'; // aktif bucket
   private viewModeInitialized = false;
   private viewModeSub?: Subscription;
+  private navSub?: Subscription;
+  private hydrated = false;
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -472,9 +478,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
     private router: Router,
     private listState: CodingListStateService
   ) {
+    this.debug('ctor', {
+      instance: this.instanceId,
+      source: this.source,
+      kind: this.kind,
+      qp: this.route.snapshot.queryParams
+    });
+
     const d = this.route.snapshot.data as any;
     this.source = (d['source'] as ListSource) ?? this.source;
     this.kind = (d['kind'] as Kind) ?? this.kind;
+    this.debug('ctor after data', { source: this.source, kind: this.kind, data: d });
 
     // seed tech filter from ?tech= on global list (only once)
     this.route.queryParamMap
@@ -486,6 +500,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
           const t = (qp.get('tech') || '').toLowerCase();
           const allowed: Tech[] = ['javascript', 'angular', 'react', 'vue', 'html', 'css'];
           this.selectedTech$.next(allowed.includes(t as Tech) ? (t as Tech) : null);
+          this.debug('seed tech from qp', { t, allowed: allowed.includes(t as Tech) });
         })
       )
       .subscribe();
@@ -507,6 +522,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
           const k = qp.get('kind') as Kind | null;
           const allowed = new Set<Kind>(['all', 'coding', 'trivia']);
           this.selectedKind$.next(allowed.has((k || '') as Kind) ? (k as Kind) : 'all');
+          this.debug('seed kind from qp', { k, applied: this.selectedKind$.value });
         })
       )
       .subscribe();
@@ -536,14 +552,45 @@ export class CodingListComponent implements OnInit, OnDestroy {
           const raw = (qp.get('category') || '') as CategoryKey;
           const cat = ALLOWED_CATEGORIES.includes(raw) ? raw : null;
           this.selectedCategory$.next(cat);
+          this.debug('seed category from qp', { raw, cat });
         })
       )
       .subscribe();
 
     this.viewModeSub = this.viewMode$.subscribe();
+
+    // Ensure current view key mirrors the initial URL before async viewMode$ emits
+    this.currentViewKey = this.getViewKeyFromRoute();
+    this.debug('init view key', { currentViewKey: this.currentViewKey });
+
+    // Track when we leave /coding to avoid wiping state on route change to detail
+    this.navSub = this.router.events
+      .pipe(
+        takeUntil(this.destroy$),
+        tap((e) => {
+          if (!(e instanceof NavigationStart)) return;
+          const viewKey = this.getViewKeyFromRoute();
+          this.currentViewKey = viewKey;
+
+          // We only care about departures from /coding to other pages (e.g., detail)
+          const staysOnCoding = e.url.startsWith('/coding');
+          if (!staysOnCoding && this.source === 'global-coding') {
+            this.saveFiltersTo(viewKey);
+          }
+          this.debug('NavigationStart', { to: e.url, staysOnCoding, viewKey, source: this.source });
+        })
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
+    this.debug('ngOnInit entry', {
+      source: this.source,
+      kind: this.kind,
+      qp: this.route.snapshot.queryParams,
+      globalState: this.source === 'global-coding' ? this.listState.globalCodingState : null
+    });
+
     if (this.source !== 'global-coding') return;
 
     const qp = this.route.snapshot.queryParamMap;
@@ -609,12 +656,26 @@ export class CodingListComponent implements OnInit, OnDestroy {
         this.tagMatchMode = 'any';
       }
 
+      this.hydrated = true;
+      this.debug('ngOnInit hydrated', {
+        viewKey,
+        filters: {
+          searchTerm: this.searchTerm,
+          selectedKind: this.selectedKind$.value,
+          selectedTech: this.selectedTech$.value,
+          selectedCategory: this.selectedCategory$.value,
+          diffs: this.diffs$.value,
+          imps: this.impTiers$.value
+        }
+      });
+
       return;
     }
 
     // ---------- TECH VIEW (/coding) ----------
-    const allSaved = shouldReset ? {} as any : this.listState.globalCodingState;  // 👈
-    const saved = allSaved[viewKey];                                             // 👈
+    const allSaved = shouldReset ? {} as any : this.listState.globalCodingState;
+    const saved = allSaved[viewKey];
+    const restoredFromState = !!saved && !shouldReset;
 
     // Search term + slider
     const qFromUrl = qp.get('q');
@@ -684,6 +745,41 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
       this.tagMatchMode = 'any';
     }
+
+    this.hydrated = true;
+    this.debug('ngOnInit hydrated', {
+      viewKey,
+      filters: {
+        searchTerm: this.searchTerm,
+        selectedKind: this.selectedKind$.value,
+        selectedTech: this.selectedTech$.value,
+        selectedCategory: this.selectedCategory$.value,
+        diffs: this.diffs$.value,
+        imps: this.impTiers$.value
+      }
+    });
+
+    // URL'de tech/kind yok ama state'ten restore ettiysek, bir kez URL'ye sync et
+    if (this.source === 'global-coding' && viewKey === 'tech' && restoredFromState) {
+      const qpTech = qp.get('tech');
+      const qpKind = qp.get('kind');
+
+      const tech = this.selectedTech$.value;
+      const kind = this.selectedKind$.value;
+
+      // Hiçbiri yoksa URL'yi filtrelere göre güncelle
+      if (!qpTech && !qpKind && (tech || (kind && kind !== 'all'))) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {
+            tech: tech ?? null,
+            kind: kind && kind !== 'all' ? kind : null,
+          },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }
+    }
   }
 
   // ---------- helpers used by template ----------
@@ -712,23 +808,40 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const items: PracticeItem[] = list.map((r) => ({
       tech: (r.tech ?? this.tech ?? 'javascript') as Tech,
       kind: r.__kind,
-      id: r.id
+      id: r.id,
     }));
-    const index = Math.max(0, list.findIndex(r => r.id === current.id));
+    const index = Math.max(0, list.findIndex((r) => r.id === current.id));
     const session: PracticeSession = { items, index };
 
-    // 👇 this is the important part: remember the *exact* list URL
-    const returnToUrl = this.router.url;
+    let returnToUrl = this.router.url;
 
-    // Optional: nice label for the breadcrumb / back button
+    // 🔹 Global /coding listesi: encode current filters into return URL
+    if (this.source === 'global-coding') {
+      const viewKey = this.getActiveViewKey();
+      returnToUrl = this.buildReturnUrl(viewKey);
+
+      // Drop reset=1 if present
+      try {
+        const url = new URL(returnToUrl, window.location.origin);
+        url.searchParams.delete('reset');
+        returnToUrl = url.pathname + url.search;
+      } catch {
+        // ignore
+      }
+    }
+
     const returnLabel =
       this.source === 'company'
         ? this.companyLabel(companySlug || undefined)
         : this.source === 'global-coding'
-          ? (this.isFormatsMode() ? 'All formats' : 'All questions')
-          : `${this.capitalize(this.tech ?? 'javascript')} ${this.kind === 'trivia' ? 'Quiz' :
-            this.kind === 'coding' ? 'Coding' :
-              'Questions'
+          ? this.isFormatsMode()
+            ? 'All formats'
+            : 'All questions'
+          : `${this.capitalize(this.tech ?? 'javascript')} ${this.kind === 'trivia'
+            ? 'Quiz'
+            : this.kind === 'coding'
+              ? 'Coding'
+              : 'Questions'
           }`;
 
     return {
@@ -810,6 +923,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const next = curr === key ? null : key;
 
     this.selectedTech$.next(next);
+    this.debug('toggleTech', { key, next });
 
     // Formats view'de URL'yi kirletme, sadece state kalsın
     if (this.source === 'global-coding' && !this.isFormatsMode()) {
@@ -822,6 +936,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   selectKind(k: Kind) {
+    this.debug('selectKind', { k, source: this.source, view: this.currentViewKey });
     if (this.source === 'global-coding') {
       this.selectedKind$.next(k);
 
@@ -839,6 +954,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const curr = this.selectedCategory$.value;
     const next = curr === key ? null : key;
     this.selectedCategory$.next(next);
+    this.debug('toggleCategory', { key, next });
 
     if (this.source === 'global-coding') {
       this.router.navigate([], {
@@ -1000,6 +1116,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   go(q: Row, list: Row[]) {
+    this.debug('go -> detail', {
+      viewKey: this.getActiveViewKey(),
+      currentViewKey: this.currentViewKey,
+      selectedKind: this.selectedKind$.value,
+      selectedTech: this.selectedTech$.value,
+      selectedCategory: this.selectedCategory$.value,
+      searchTerm: this.searchTerm,
+    });
+
     if (this.source === 'global-coding') {
       const viewKey = this.getActiveViewKey();  // 🔸 artık state'e göre
       this.saveFiltersTo(viewKey);
@@ -1011,13 +1136,18 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
     // Global /coding listesi için, çıkarken son filtre durumunu kaydet
-    if (this.source === 'global-coding') {
+    if (this.source === 'global-coding' && this.hydrated) {
       const viewKey = this.getActiveViewKey(); // 'tech' veya 'formats'
       this.saveFiltersTo(viewKey);
+      this.debug('ngOnDestroy save', { viewKey });
     }
 
     this.viewModeSub?.unsubscribe();
+    this.navSub?.unsubscribe();
   }
 
   private getViewKeyFromRoute(): ViewMode {
@@ -1079,11 +1209,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.currentViewKey = next;
       this.viewMode = next;
       this.viewModeInitialized = true;
+      this.debug('viewMode init', { next });
       return;
     }
 
     if (prev === next) {
       this.viewMode = next;
+      this.debug('viewMode same', { prev, next });
       return;
     }
 
@@ -1099,10 +1231,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (next === 'tech') {
       this.selectedCategory$.next(null);
     }
+
+    this.debug('viewMode change', { prev, next, savedPrev: prev, restoredNext: next, currentViewKey: this.currentViewKey });
   }
 
   private saveFiltersTo(view: ViewMode) {
     if (this.source !== 'global-coding') return;
+    if (!this.hydrated) {
+      this.debug('saveFiltersTo skipped (not hydrated)', { view });
+      return;
+    }
 
     const snapshot: CodingListFilterState = {
       searchTerm: this.searchTerm,
@@ -1121,12 +1259,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
       ...this.listState.globalCodingState,
       [view]: snapshot,
     };
+
+    this.debug('saveFiltersTo', { view, snapshot });
   }
 
   private restoreFiltersFrom(view: ViewMode) {
     if (this.source !== 'global-coding') return;
 
     const saved = this.listState.globalCodingState[view];
+    this.debug('restoreFiltersFrom: start', { view, hasSaved: !!saved, saved });
 
     if (!saved) {
       // temiz başlangıç
@@ -1176,12 +1317,46 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedKind$.next(saved.selectedKind);
       this.selectedCategory$.next(saved.selectedCategory);
     }
+
+    this.debug('restoreFiltersFrom: applied', { view, searchTerm: this.searchTerm, selectedKind: this.selectedKind$.value, selectedTech: this.selectedTech$.value, selectedCategory: this.selectedCategory$.value });
   }
 
   private getActiveViewKey(): ViewMode {
-    const qp = this.route.snapshot.queryParamMap;
-    const view = qp.get('view');
-    // URL'de view=formats varsa her zaman formats kabul et
-    return view === 'formats' ? 'formats' : 'tech';
+    // Derive from the current URL so we save/restore under the correct bucket
+    return this.getViewKeyFromRoute();
+  }
+
+  private buildReturnUrl(view: ViewMode): string {
+    const queryParams: Record<string, any> = {};
+
+    if (view === 'formats') {
+      queryParams['view'] = 'formats';
+      const cat = this.selectedCategory$.value;
+      if (cat) queryParams['category'] = cat;
+    } else {
+      const tech = this.selectedTech$.value;
+      if (tech) queryParams['tech'] = tech;
+    }
+
+    const kind = this.selectedKind$.value;
+    if (kind && kind !== 'all') queryParams['kind'] = kind;
+
+    const q = (this.searchTerm || '').trim();
+    if (q) queryParams['q'] = q;
+
+    const diffs = this.diffs$.value;
+    if (diffs.length) queryParams['diff'] = diffs.join(',');
+
+    const imps = this.impTiers$.value;
+    if (imps.length) queryParams['imp'] = imps.join(',');
+
+    const tree = this.router.createUrlTree(['/coding'], { queryParams });
+    return this.router.serializeUrl(tree);
+  }
+
+  private debug(msg: string, data?: any) {
+    if (!DEBUG_FILTER_STATE) return;
+    // Keep noise low: stringify shallow objects only
+    console.log(`[coding-list][${this.instanceId}] ${msg}`, data ?? '');
   }
 }
