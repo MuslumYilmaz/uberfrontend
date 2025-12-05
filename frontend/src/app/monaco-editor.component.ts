@@ -52,17 +52,27 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private resizeObs?: ResizeObserver;
   private static seq = 0;
   private get _modelId(): string {
-    // modelKey verilmişse aynen kullan (src/App.tsx vs)
-    if (this.modelKey) return this.modelKey;
+    const lang = this.normalizeLanguage(this.language);
+    const baseExt =
+      lang === 'typescript'
+        ? 'ts'
+        : lang === 'javascript'
+          ? 'js'
+          : lang === 'json'
+            ? 'json'
+            : lang === 'html'
+              ? 'html'
+              : lang === 'css'
+                ? 'css'
+                : 'txt';
+
+    // If a modelKey is provided, ensure it has a file extension for TS/JS workers
+    if (this.modelKey) {
+      const hasExt = /\.[a-z0-9]+$/i.test(this.modelKey);
+      return hasExt ? this.modelKey : `${this.modelKey}.${baseExt}`;
+    }
 
     // fallback: uf-1.ts / uf-2.js vs.
-    const baseExt =
-      this.normalizeLanguage(this.language) === 'typescript'
-        ? 'ts'
-        : this.normalizeLanguage(this.language) === 'javascript'
-          ? 'js'
-          : 'txt';
-
     return `uf-${++MonacoEditorComponent.seq}.${baseExt}`;
   }
 
