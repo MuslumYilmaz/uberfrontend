@@ -171,29 +171,23 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const q = this.question as Question; if (!q) return;
     this._hydrating = true;
 
-    // 1) Decide preferred language early (before Monaco renders)
-    const last = await this.codeStore.getLastLang(q.id);           // NEW
-    const meta = await this.codeStore.getJsMetaAsync(q.id).catch(() => null as any); // NEW
-    let preferred: JsLang | null = null;
+    const { js: sJs, ts: sTs } = this.startersForBoth(q);
 
-    if (last === 'js' || last === 'ts') {
-      preferred = last;
-    } else if (meta) {
-      const jsHas = !!meta?.js?.hasCode, tsHas = !!meta?.ts?.hasCode;
-      if (jsHas && tsHas) {
-        const j = meta?.js?.updatedAt ?? 0, t = meta?.ts?.updatedAt ?? 0;
-        preferred = (j >= t) ? 'js' : 'ts';
-      } else if (jsHas) preferred = 'js';
-      else if (tsHas) preferred = 'ts';
-    }
-    if (!preferred) preferred = 'js';
+    // Seed baselines so "dirty" comparisons work reliably
+    await Promise.all([
+      this.codeStore.setJsBaselineAsync(q.id, 'js', sJs),
+      this.codeStore.setJsBaselineAsync(q.id, 'ts', sTs),
+    ]);
+
+    // Decide preferred language: default to JS unless TS is dirty (user-edited)
+    const tsState = await this.codeStore.getJsLangStateAsync(q.id, 'ts').catch(() => null as any);
+    const preferred: JsLang = tsState?.dirty ? 'ts' : 'js';
 
     this.jsLang.set(preferred);
     this.langChange.emit(preferred);
     await this.codeStore.setLastLangAsync(q.id, preferred);        // keep sticky
 
     // 2) Ensure per-lang slots exist (post-migration safety)
-    const { js: sJs, ts: sTs } = this.startersForBoth(q);
     const jsSlot = await this.codeStore.getJsForLangAsync(q.id, 'js');
     if (!(typeof jsSlot === 'string' && jsSlot.trim())) {
       await this.codeStore.saveJsAsync(q.id, sJs, 'js', { force: true });
@@ -223,14 +217,15 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   // REPLACE your current setLanguage with this one
   async setLanguage(lang: string) {
     const next: JsLang = (lang === 'ts') ? 'ts' : 'js';
-    if (next === this.jsLang()) return;
+    const currentLang = this.jsLang();
+    if (next === currentLang) return;
 
     const q = this.question;
     if (!q) return;
 
     // 1) Persist current code for the current lang (unless we're hydrating)
     if (!this._hydrating) {
-      await this.codeStore.saveJsAsync(q.id, this.editorContent(), this.jsLang());
+      await this.codeStore.saveJsAsync(q.id, this.editorContent(), currentLang);
     }
 
     // Snapshot UI flags so we don't lose the banner states
@@ -238,9 +233,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     const bannerWasDismissed = this.restoreDismissed();
 
     this._hydrating = true;
-    this.jsLang.set(next);
-    this.langChange.emit(next);
-    await this.codeStore.setLastLangAsync(q.id, next);
 
     // 2) Pull any existing code for the target language
     const { js: starterJs, ts: starterTs } = this.startersForBoth(q as Question);
@@ -255,12 +247,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       if (next === 'js') {
         // We’re switching TS -> JS: derive JS from current TS editor
         const tsNow = this.editorContent();
-        // If current lang was already JS (edge case), just use it; else transpile/strip
-        nextCode = (this.jsLang() === 'js') ? tsNow : await this.ensureJs(tsNow, `${q.id}.ts`);
+        const cameFromTs = currentLang === 'ts';
+        nextCode = cameFromTs ? await this.ensureJs(tsNow, `${q.id}.ts`) : tsNow;
         if (!nextCode?.trim()) nextCode = starterJs;
       } else {
         // Switching JS -> TS: simplest & safest default is to copy JS verbatim
-        // (or pick starterTs if you want a typed scaffold)
         const jsNow = this.editorContent();
         nextCode = jsNow?.trim() ? jsNow : starterTs;
       }
@@ -269,9 +260,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       await this.codeStore.saveJsAsync(q.id, nextCode, next, { force: true });
     }
 
-    // 4) Hydrate editor + tests for the new lang
+    const nextTests = this.pickTests(q as any, next);
+
+    // 4) Hydrate editor + tests for the new lang in one sync batch to avoid transient squiggles
     this.editorContent.set(nextCode);
-    this.testCode.set(this.pickTests(q as any, next));
+    this.testCode.set(nextTests);
 
     // Restore banners as they were
     this.restoredFromStorage.set(bannerWasRestored);
@@ -283,6 +276,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.hasRunTests.set(false);
     this.testResults.set([]);
     this.consoleEntries.set([]);
+
+    // Only now flip the language so Monaco sees consistent (lang, code) at once
+    this.jsLang.set(next);
+    this.langChange.emit(next);
+    await this.codeStore.setLastLangAsync(q.id, next);
 
     // End hydration
     this.endHydrationSoon();

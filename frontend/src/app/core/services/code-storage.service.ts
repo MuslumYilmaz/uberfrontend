@@ -579,6 +579,20 @@ export class CodeStorageService {
     };
   }
 
+  /** Return per-lang code/baseline + a "dirty" flag (code differs from baseline) */
+  async getJsLangStateAsync(
+    qidRaw: string | number,
+    lang: JsLang
+  ): Promise<{ code: string; baseline: string; dirty: boolean; hasUserCode: boolean }> {
+    const b = await this.getBundleAsync(qidRaw);
+    const code = (b?.[lang]?.code ?? '') as string;
+    const baseline = (b?.[lang]?.baseline ?? '') as string;
+    const codeTrim = code.trim();
+    const baseTrim = baseline.trim();
+    const dirty = !!codeTrim && codeTrim !== baseTrim;
+    return { code, baseline, dirty, hasUserCode: !!codeTrim };
+  }
+
   async setLastLangAsync(qidRaw: string | number, lang: JsLang): Promise<void> {
     const qid = String(qidRaw);
     const now = new Date().toISOString();

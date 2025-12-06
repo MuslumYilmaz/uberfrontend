@@ -290,7 +290,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             'file:///node_modules/@types/__uf_any__/index.d.ts'
           );
 
-          ts.typescriptDefaults.setCompilerOptions({
+          const sharedCompilerOptions = {
             allowJs: true,
             target: monaco.languages.typescript.ScriptTarget.ES2020,
             module: monaco.languages.typescript.ModuleKind.ESNext,
@@ -299,12 +299,113 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             esModuleInterop: true,
             skipLibCheck: true,
             strict: false,
+            experimentalDecorators: true,     // Angular uses legacy decorators
+            useDefineForClassFields: false,   // align with Angular field semantics
+            allowImportingTsExtensions: true,
             baseUrl: 'file:///',
+          };
+
+          ts.typescriptDefaults.setCompilerOptions(sharedCompilerOptions);
+          ts.javascriptDefaults?.setCompilerOptions?.({
+            ...sharedCompilerOptions,
+            allowJs: true,
           });
 
-          ts.typescriptDefaults.setDiagnosticsOptions({
-            diagnosticCodesToIgnore: [2307, 2792],
-          });
+          const sharedDiagnostics = { diagnosticCodesToIgnore: [2307, 2792] };
+          ts.typescriptDefaults.setDiagnosticsOptions(sharedDiagnostics);
+          ts.javascriptDefaults?.setDiagnosticsOptions?.(sharedDiagnostics);
+
+          const mAny = monaco as any;
+          if (!mAny.__ufAngularCoreLib) {
+            const angularCoreLib = [
+              "declare module '@angular/core' {",
+              "  export interface OnInit { ngOnInit(): void; }",
+              "  export interface OnDestroy { ngOnDestroy(): void; }",
+              "  export interface DoCheck { ngDoCheck(): void; }",
+              "  export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }",
+              "  export interface AfterContentInit { ngAfterContentInit(): void; }",
+              "  export interface AfterContentChecked { ngAfterContentChecked(): void; }",
+              "  export interface AfterViewInit { ngAfterViewInit(): void; }",
+              "  export interface AfterViewChecked { ngAfterViewChecked(): void; }",
+              "  export interface SimpleChange { previousValue: any; currentValue: any; firstChange: boolean; isFirstChange(): boolean; }",
+              "  export type SimpleChanges = { [propName: string]: SimpleChange };",
+              "  export interface PipeTransform { transform(value: any, ...args: any[]): any; }",
+              "  export interface ErrorHandler { handleError(error: any): void; }",
+              "  export interface Type<T> extends Function { new (...args: any[]): T; }",
+              "  export class EventEmitter<T = any> { constructor(isAsync?: boolean); emit(value?: T): void; subscribe(next?: (value: T) => void): { unsubscribe(): void }; }",
+              "  export interface InjectionToken<T> { _desc: string; }",
+              "  export function Injectable(opts?: any): ClassDecorator;",
+              "  export function Component(opts: any): ClassDecorator;",
+              "  export function Directive(opts: any): ClassDecorator;",
+              "  export function Pipe(opts: any): ClassDecorator;",
+              "  export function NgModule(opts: any): ClassDecorator;",
+              "  export function Input(bindingPropertyName?: string): any;",
+              "  export function Output(bindingPropertyName?: string): any;",
+              "  export function HostListener(eventName: string, args?: string[]): any;",
+              "  export function HostBinding(hostPropertyName?: string): any;",
+              "  export function Optional(): any;",
+              "  export function Inject(token: any): any;",
+              "  export function SkipSelf(): any;",
+              "  export function Self(): any;",
+              "  export function Host(): any;",
+              "  export function forwardRef(fn: () => any): any;",
+              "}",
+            ].join('\\n');
+
+            ts.typescriptDefaults.addExtraLib(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
+            mAny.__ufAngularCoreLib = true;
+          }
+
+          if (!mAny.__ufReactLib) {
+            const reactLib = [
+              "declare namespace JSX {",
+              "  interface IntrinsicElements { [elemName: string]: any; }",
+              "}",
+              "declare module 'react' {",
+              "  export type FC<P = {}> = (props: P & { children?: any }) => any;",
+              "  export function useState<T = any>(initial: T): [T, (v: T) => void];",
+              "  export function useEffect(fn: () => void | (() => void), deps?: any[]): void;",
+              "  export function useRef<T = any>(v?: T): { current: T };",
+              "  export function createElement(...args: any[]): any;",
+              "  const React: { createElement: typeof createElement; Fragment: any; };",
+              "  export default React;",
+              "}",
+            ].join('\\n');
+            ts.typescriptDefaults.addExtraLib(reactLib, 'file:///node_modules/@types/react/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(reactLib, 'file:///node_modules/@types/react/index.d.ts');
+            mAny.__ufReactLib = true;
+          }
+
+          if (!mAny.__ufTestLib) {
+            const testLib = [
+              "declare function describe(name: string, fn: () => void): void;",
+              "declare function it(name: string, fn: () => void): void;",
+              "declare function test(name: string, fn: () => void): void;",
+              "declare function expect(actual: any): any;",
+              "declare const beforeEach: (fn: () => void) => void;",
+              "declare const afterEach: (fn: () => void) => void;",
+              "declare const beforeAll: (fn: () => void) => void;",
+              "declare const afterAll: (fn: () => void) => void;",
+            ].join('\\n');
+            ts.typescriptDefaults.addExtraLib(testLib, 'file:///node_modules/@types/uf-test/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(testLib, 'file:///node_modules/@types/uf-test/index.d.ts');
+            mAny.__ufTestLib = true;
+          }
+
+          if (!mAny.__ufNodeShimLib) {
+            const nodeShim = [
+              "declare var require: any;",
+              "declare var module: any;",
+              "declare var exports: any;",
+              "declare var process: { env: Record<string, string | undefined> };",
+              "declare var __dirname: string;",
+              "declare var __filename: string;",
+            ].join('\\n');
+            ts.typescriptDefaults.addExtraLib(nodeShim, 'file:///node_modules/@types/uf-node-shim/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(nodeShim, 'file:///node_modules/@types/uf-node-shim/index.d.ts');
+            mAny.__ufNodeShimLib = true;
+          }
 
           resolve();
         });
