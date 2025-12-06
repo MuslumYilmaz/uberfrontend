@@ -61,7 +61,24 @@
         <div class="min-w-0 min-h-0 flex flex-col" [style.flex]="frameworkEditorFlex()">
             <!-- editor header, tabs vs. -->
             <div class="flex items-center justify-between border-b border-white/10 px-2 py-1">
-                ...
+                <div class="flex items-center gap-3 min-w-0">
+                    <button type="button" class="icon-btn" title="File tree" (click)="toggleFiles()">
+                        <i class="pi pi-bars"></i>
+                    </button>
+                    <div class="min-w-0 leading-tight">
+                        <div class="text-xs text-white truncate" [title]="currentPath() || 'Select a file'">
+                            {{ currentFileLabel() }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span *ngIf="viewingSolution()" class="text-[11px] text-yellow-300">Solution loaded</span>
+                    <button type="button" class="text-xs px-3 py-1.5 rounded border border-white/20 hover:bg-white/5"
+                        (click)="rebuildFrameworkPreview()">
+                        Rebuild preview
+                    </button>
+                </div>
             </div>
 
             <section class="min-w-0 min-h-0 flex-1 flex">
