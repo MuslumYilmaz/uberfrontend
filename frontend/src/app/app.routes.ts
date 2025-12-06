@@ -26,6 +26,20 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+    data: {
+      seo: {
+        title: 'Front-end interview prep',
+        description:
+          'Practice front-end coding, trivia, and system design interview questions with curated guides and company-specific tracks.',
+        keywords: [
+          'front end interview questions',
+          'javascript interview',
+          'react interview',
+          'system design for frontend',
+          'ui coding challenges',
+        ],
+      },
+    },
   },
 
   // Auth
@@ -36,11 +50,25 @@ export const routes: Routes = [
         path: 'login',
         loadComponent: () =>
           import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+        data: {
+          seo: {
+            title: 'Log in',
+            description: 'Log in to UberFrontend to sync your interview prep.',
+            robots: 'noindex,nofollow',
+          },
+        },
       },
       {
         path: 'signup',
         loadComponent: () =>
           import('./features/auth/signup/signup.component').then((m) => m.SignupComponent),
+        data: {
+          seo: {
+            title: 'Sign up',
+            description: 'Create your UberFrontend account to unlock the full interview-prep library.',
+            robots: 'noindex,nofollow',
+          },
+        },
       },
       {
         path: 'callback',
@@ -48,6 +76,13 @@ export const routes: Routes = [
           import('./features/auth/oauth-callback/oauth-callback.component').then(
             (m) => m.OAuthCallbackComponent,
           ),
+        data: {
+          seo: {
+            title: 'Completing login',
+            description: 'Finalizing your sign-in. You will be redirected shortly.',
+            robots: 'noindex,nofollow',
+          },
+        },
       },
     ],
   },
@@ -89,6 +124,12 @@ export const routes: Routes = [
       import('./features/company/company-layout/company-layout.component').then(
         (m) => m.CompanyLayoutComponent,
       ),
+    data: {
+      seo: {
+        title: 'Company interview prep',
+        description: 'Company-specific front-end interview guides, drills, and question banks.',
+      },
+    },
     children: [
       {
         path: '',
@@ -97,6 +138,12 @@ export const routes: Routes = [
           import('./features/company/company-index/company-index.component').then(
             (m) => m.CompanyIndexComponent,
           ),
+        data: {
+          seo: {
+            title: 'Company interview guides',
+            description: 'Pick a company to see tailored front-end interview questions and tips.',
+          },
+        },
       },
       {
         path: ':slug',
@@ -104,6 +151,12 @@ export const routes: Routes = [
           import('./features/company/company-detail/company-detail.component').then(
             (m) => m.CompanyDetailComponent,
           ),
+        data: {
+          seo: {
+            title: 'Company front-end interview questions',
+            description: 'Focused coding, trivia, and system design practice for a specific company.',
+          },
+        },
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'all' },
           {
@@ -112,7 +165,14 @@ export const routes: Routes = [
               import('./features/coding/coding-list/coding-list.component').then(
                 (m) => m.CodingListComponent,
               ),
-            data: { source: 'company', kind: 'all' },
+            data: {
+              source: 'company',
+              kind: 'all',
+              seo: {
+                title: 'Company interview questions',
+                description: 'Browse all front-end interview questions for this company.',
+              },
+            },
           },
           {
             path: 'coding',
@@ -120,7 +180,14 @@ export const routes: Routes = [
               import('./features/coding/coding-list/coding-list.component').then(
                 (m) => m.CodingListComponent,
               ),
-            data: { source: 'company', kind: 'coding' },
+            data: {
+              source: 'company',
+              kind: 'coding',
+              seo: {
+                title: 'Company coding interview questions',
+                description: 'Solve coding and debugging questions used in this company’s interviews.',
+              },
+            },
           },
           {
             path: 'trivia',
@@ -128,7 +195,14 @@ export const routes: Routes = [
               import('./features/coding/coding-list/coding-list.component').then(
                 (m) => m.CodingListComponent,
               ),
-            data: { source: 'company', kind: 'trivia' },
+            data: {
+              source: 'company',
+              kind: 'trivia',
+              seo: {
+                title: 'Company trivia questions',
+                description: 'Quick front-end trivia to mirror this company’s interview screens.',
+              },
+            },
           },
           {
             path: 'system',
@@ -136,7 +210,14 @@ export const routes: Routes = [
               import('./features/coding/coding-list/coding-list.component').then(
                 (m) => m.CodingListComponent,
               ),
-            data: { source: 'company', kind: 'system-design' },
+            data: {
+              source: 'company',
+              kind: 'system-design',
+              seo: {
+                title: 'Company system design prompts',
+                description: 'Front-end system design prompts tailored to this company.',
+              },
+            },
           },
           {
             path: '**',
@@ -155,6 +236,12 @@ export const routes: Routes = [
     path: 'pricing',
     loadComponent: () =>
       import('./features/pricing/pricing.component').then((m) => m.PricingComponent),
+    data: {
+      seo: {
+        title: 'Pricing',
+        description: 'Compare UberFrontend plans and unlock the full set of interview questions and guides.',
+      },
+    },
   },
 
   // System design (practice/problems area, not the guide)
@@ -162,6 +249,13 @@ export const routes: Routes = [
     path: 'system-design',
     loadComponent: () =>
       import('./features/tech-layout/tech-layout.component').then((m) => m.TechLayoutComponent),
+    data: {
+      seo: {
+        title: 'Front-end system design practice',
+        description: 'System design prompts, walkthroughs, and solutions for front-end interviews.',
+        keywords: ['frontend system design', 'ui architecture interview', 'system design practice'],
+      },
+    },
     children: [
       {
         path: '',
@@ -169,6 +263,12 @@ export const routes: Routes = [
           import('./features/system-design-list/system-design-list.component').then(
             (m) => m.SystemDesignListComponent,
           ),
+        data: {
+          seo: {
+            title: 'Front-end system design questions',
+            description: 'Practice system design scenarios focused on front-end architecture and UX.',
+          },
+        },
       },
       {
         path: ':id',
@@ -176,6 +276,12 @@ export const routes: Routes = [
           import('./features/system-design-list/system-design-detail/system-design-detail.component').then(
             (m) => m.SystemDesignDetailComponent,
           ),
+        data: {
+          seo: {
+            title: 'System design scenario',
+            description: 'Dive into a front-end system design scenario with structured guidance.',
+          },
+        },
       },
       {
         path: '**',
@@ -191,6 +297,12 @@ export const routes: Routes = [
   // Guides
   {
     path: 'guides',
+    data: {
+      seo: {
+        title: 'Front-end interview guides',
+        description: 'Playbooks for coding, system design, and behavioral front-end interviews.',
+      },
+    },
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'playbook' },
 
@@ -200,6 +312,12 @@ export const routes: Routes = [
           import('./features/guides/playbook/playbook-index/playbook-index.component').then(
             (m) => m.PlaybookIndexComponent,
           ),
+        data: {
+          seo: {
+            title: 'Front-end interview playbook',
+            description: 'Step-by-step plan to prepare for front-end interviews with checklists and tracks.',
+          },
+        },
       },
       {
         path: 'playbook/:slug',
@@ -207,6 +325,12 @@ export const routes: Routes = [
           import('./features/guides/playbook/playbook-host.component').then(
             (m) => m.PlaybookHostComponent,
           ),
+        data: {
+          seo: {
+            title: 'Front-end interview guide',
+            description: 'In-depth guidance for key front-end interview topics.',
+          },
+        },
       },
       {
         path: 'system-design',
@@ -214,6 +338,12 @@ export const routes: Routes = [
           import('./features/guides/system-design/system-design-index/system-design-index.component').then(
             (m) => m.SystemDesignIndexComponent,
           ),
+        data: {
+          seo: {
+            title: 'Front-end system design guide',
+            description: 'Principles, patterns, and examples for front-end system design interviews.',
+          },
+        },
       },
       {
         path: 'system-design/:slug',
@@ -221,6 +351,12 @@ export const routes: Routes = [
           import('./features/guides/system-design/system-design-host.component').then(
             (m) => m.SystemDesignHostComponent,
           ),
+        data: {
+          seo: {
+            title: 'System design deep dive',
+            description: 'Detailed walkthroughs for individual front-end system design topics.',
+          },
+        },
       },
 
       {
@@ -229,6 +365,12 @@ export const routes: Routes = [
           import('./features/guides/behavioral/behavioral-index/behavioral-index.component').then(
             (m) => m.BehavioralIndexComponent,
           ),
+        data: {
+          seo: {
+            title: 'Behavioral interview guide',
+            description: 'Story frameworks and examples to answer behavioral front-end interview questions.',
+          },
+        },
       },
       {
         path: 'behavioral/:slug',
@@ -236,6 +378,12 @@ export const routes: Routes = [
           import('./features/guides/behavioral/behavioral-host.component').then(
             (m) => m.BehavioralHostComponent,
           ),
+        data: {
+          seo: {
+            title: 'Behavioral interview topic',
+            description: 'Prep for a specific behavioral interview topic with examples and prompts.',
+          },
+        },
       },
 
       {
@@ -256,31 +404,72 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/auth/profile/profile.component').then((m) => m.ProfileComponent),
+    data: {
+      seo: {
+        title: 'Profile',
+        description: 'Manage your UberFrontend profile and preferences.',
+        robots: 'noindex,nofollow',
+      },
+    },
   },
 
   // NEW: Legal
   {
     path: 'legal',
+    data: {
+      seo: {
+        title: 'Legal',
+        description: 'UberFrontend legal policies and compliance documents.',
+        robots: 'index,follow',
+      },
+    },
     children: [
       {
         path: '',
         loadComponent: () =>
           import('./features/legal/legal-index/legal-index.component').then((m) => m.LegalIndexComponent),
+        data: {
+          seo: {
+            title: 'Legal overview',
+            description: 'Browse UberFrontend terms, privacy, and cookie policies.',
+          },
+        },
       },
       {
         path: 'terms',
         loadComponent: () =>
           import('./features/legal/terms/terms.component').then((m) => m.TermsComponent),
+        data: {
+          seo: {
+            title: 'Terms of Service',
+            description: 'UberFrontend terms of service and user responsibilities.',
+            robots: 'index,follow',
+          },
+        },
       },
       {
         path: 'privacy',
         loadComponent: () =>
           import('./features/legal/privacy/privacy.component').then((m) => m.PrivacyComponent),
+        data: {
+          seo: {
+            title: 'Privacy Policy',
+            description: 'How UberFrontend collects, uses, and protects your data.',
+            robots: 'index,follow',
+          },
+        },
       },
       {
         path: 'cookies',
         loadComponent: () =>
           import('./features/legal/cookies/cookies.component').then((m) => m.CookiesComponent),
+        data: {
+          seo: {
+            title: 'Cookie Policy',
+            description: 'Learn how UberFrontend uses cookies and how to control them.',
+            robots: 'index,follow',
+          },
+        },
       },
       {
         path: '**',
@@ -298,7 +487,14 @@ export const routes: Routes = [
     path: '404',
     loadComponent: () =>
       import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    data: { title: 'Page not found' },
+    data: {
+      title: 'Page not found',
+      seo: {
+        title: 'Page not found',
+        description: 'The page you are looking for could not be found.',
+        robots: 'noindex,nofollow',
+      },
+    },
   },
 
   // NEW: Global Coding page — lists all coding questions; pills filter client-side
@@ -308,7 +504,14 @@ export const routes: Routes = [
       import('./features/coding/coding-list/coding-list.component').then(
         (m) => m.CodingListComponent,
       ),
-    data: { source: 'global-coding', kind: 'coding' },
+    data: {
+      source: 'global-coding',
+      kind: 'coding',
+      seo: {
+        title: 'Front-end coding interview questions',
+        description: 'Solve curated front-end coding interview questions with filters for tech, difficulty, and tags.',
+      },
+    },
   },
 
   // Tech sections — JavaScript / Angular / HTML / CSS
@@ -316,6 +519,12 @@ export const routes: Routes = [
     matcher: techMatcher,
     loadComponent: () =>
       import('./features/tech-layout/tech-layout.component').then((m) => m.TechLayoutComponent),
+    data: {
+      seo: {
+        title: 'Front-end practice',
+        description: 'Framework-specific front-end interview practice for JavaScript, React, Angular, Vue, HTML, and CSS.',
+      },
+    },
     children: [
       // Visiting /:tech goes to the single global list
       { path: '', pathMatch: 'full', redirectTo: '/coding' },
@@ -326,6 +535,12 @@ export const routes: Routes = [
           import('./features/coding/coding-detail/coding-detail.component').then(
             (m) => m.CodingDetailComponent,
           ),
+        data: {
+          seo: {
+            title: 'Coding interview question',
+            description: 'Front-end coding challenge with starter code, tests, and solutions.',
+          },
+        },
       },
       {
         path: 'trivia/:id',
@@ -333,6 +548,12 @@ export const routes: Routes = [
           import('./features/trivia/trivia-detail/trivia-detail.component').then(
             (m) => m.TriviaDetailComponent,
           ),
+        data: {
+          seo: {
+            title: 'Front-end trivia question',
+            description: 'Quick front-end trivia with concise explanations.',
+          },
+        },
       },
       {
         path: 'debug/:id',
@@ -340,7 +561,13 @@ export const routes: Routes = [
           import('./features/coding/coding-detail/coding-detail.component').then(
             (m) => m.CodingDetailComponent,
           ),
-        data: { kind: 'debug' },
+        data: {
+          kind: 'debug',
+          seo: {
+            title: 'Debugging interview question',
+            description: 'Debug front-end code with failing tests to mirror real interview tasks.',
+          },
+        },
       },
 
       {
@@ -349,7 +576,14 @@ export const routes: Routes = [
           import('./shared/components/not-found/not-found.component').then(
             (m) => m.NotFoundComponent,
           ),
-        data: { title: 'Page not found' },
+        data: {
+          title: 'Page not found',
+          seo: {
+            title: 'Page not found',
+            description: 'The page you are looking for could not be found.',
+            robots: 'noindex,nofollow',
+          },
+        },
       },
     ],
   },
@@ -359,7 +593,14 @@ export const routes: Routes = [
     path: '**',
     loadComponent: () =>
       import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
-    data: { title: 'Page not found' },
+    data: {
+      title: 'Page not found',
+      seo: {
+        title: 'Page not found',
+        description: 'The page you are looking for could not be found.',
+        robots: 'noindex,nofollow',
+      },
+    },
   },
 ];
 

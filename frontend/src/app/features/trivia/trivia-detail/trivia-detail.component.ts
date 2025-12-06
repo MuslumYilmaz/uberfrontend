@@ -13,6 +13,7 @@ import { Question } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { SeoService } from '../../../core/services/seo.service';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -139,7 +140,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public router: Router,
     private qs: QuestionService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private seo: SeoService
   ) { }
 
   ngOnInit() {
@@ -206,9 +208,43 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   private selectQuestion(id: string) {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
+    this.updateSeo(found);
   }
 
   isActive(q: Question) { return this.question()?.id === q.id; }
+
+  private questionDescription(q: Question): string {
+    const raw = this.descText(q.description || '');
+    const plain = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (plain) return plain;
+    return `Front-end trivia question for ${this.tech}.`;
+  }
+
+  private questionKeywords(q: Question): string[] {
+    const tags = Array.isArray(q.tags) ? q.tags : [];
+    const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
+    const base = ['front end trivia', `${this.tech} interview trivia`];
+
+    return Array.from(
+      new Set([...base, ...tags, ...companies].map(k => String(k || '').trim()).filter(Boolean))
+    );
+  }
+
+  private updateSeo(q: Question | null): void {
+    if (!q) {
+      this.seo.updateTags({
+        title: 'Front-end trivia question',
+        description: 'Quick front-end trivia with concise explanations.',
+      });
+      return;
+    }
+
+    this.seo.updateTags({
+      title: q.title,
+      description: this.questionDescription(q),
+      keywords: this.questionKeywords(q),
+    });
+  }
 
   onSelect(q: Question) {
     this.ensurePracticeBuilt(q.id);

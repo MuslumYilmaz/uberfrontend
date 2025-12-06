@@ -30,6 +30,7 @@ import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
+import { SeoService } from '../../../core/services/seo.service';
 
 type CourseNavState =
   | {
@@ -376,6 +377,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     public codeStore: CodeStorageService,
     private daily: DailyService,
     private activity: ActivityService,
+    private seo: SeoService,
     private http: HttpClient
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
@@ -546,6 +548,41 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private clearSolvedFlag(q: Question) {
     try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
+
+  private questionDescription(q: Question): string {
+    const raw = typeof q.description === 'string'
+      ? q.description
+      : (q.description as StructuredDescription)?.summary ?? '';
+
+    const plain = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (plain) return plain;
+
+    const tech = (q as any).tech ?? (q as any).technology ?? this.tech;
+    return `Front-end ${this.kind} question for ${tech}.`;
+  }
+
+  private questionKeywords(q: Question): string[] {
+    const tags = Array.isArray(q.tags) ? q.tags : [];
+    const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
+    const base = [
+      'front end interview',
+      `${this.tech} interview question`,
+      `${this.kind} interview challenge`,
+    ];
+
+    return Array.from(
+      new Set([...base, ...tags, ...companies].map(k => String(k || '').trim()).filter(Boolean))
+    );
+  }
+
+  private updateSeoForQuestion(q: Question): void {
+    this.seo.updateTags({
+      title: q.title,
+      description: this.questionDescription(q),
+      keywords: this.questionKeywords(q),
+    });
+  }
+
   // ---------- Load question ----------
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex(q => q.id === id);
@@ -557,6 +594,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
     this.question.set(q);
+    this.updateSeoForQuestion(q);
 
     // reset solution files for new question before loading
     this.solutionFilesMap.set({});

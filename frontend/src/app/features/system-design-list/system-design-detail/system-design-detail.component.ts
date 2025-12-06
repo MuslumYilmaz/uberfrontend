@@ -8,6 +8,7 @@ import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { SeoService } from '../../../core/services/seo.service';
 
 type Block =
   | { type: 'text'; text: string }
@@ -105,6 +106,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private qs = inject(QuestionService);
+  private seo = inject(SeoService);
 
   q: WritableSignal<SDQuestion | null> = signal(null);
   all: SDQuestion[] = [];
@@ -277,6 +279,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
         };
 
         this.q.set(merged);
+        this.updateSeo(merged);
 
         // “continue where you left off” için
         try {
@@ -306,6 +309,27 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
     // replaceUrl so Back returns to the last valid page instead of the bad URL
     this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
+  }
+
+  private sdDescription(q: SDQuestion): string {
+    const plain = (q.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return plain || `Front-end system design scenario: ${q.title}`;
+  }
+
+  private sdKeywords(q: SDQuestion): string[] {
+    const tags = Array.isArray(q.tags) ? q.tags : [];
+    const base = ['front end system design', 'ui architecture interview'];
+    return Array.from(
+      new Set([...base, ...tags].map(k => String(k || '').trim()).filter(Boolean))
+    );
+  }
+
+  private updateSeo(question: SDQuestion): void {
+    this.seo.updateTags({
+      title: question.title,
+      description: this.sdDescription(question),
+      keywords: this.sdKeywords(question),
+    });
   }
 
   /** Height to keep clear for the fixed header + breathing room */
