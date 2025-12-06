@@ -151,7 +151,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
 
             <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white"
                     referrerpolicy="no-referrer"
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-top-navigation-by-user-activation">
+                    sandbox="allow-scripts">
             </iframe>
 
             <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">

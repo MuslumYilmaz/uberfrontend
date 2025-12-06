@@ -25,7 +25,13 @@ type DoneMsg = {
 let ACTIVE_NONCE = '';
 let doneSent = false;
 const logs: LogEntry[] = [];
+let logLimitHit = false;
 const now = () => Date.now();
+
+// ---------- limits ----------
+const MAX_CODE_BYTES = 200 * 1024;     // 200 KB per payload
+const MAX_LOGS = 200;
+const MAX_LOG_CHARS = 2000;
 
 // ---------- utilities ----------
 const safeStringify = (v: unknown) => {
@@ -44,8 +50,17 @@ const safeStringify = (v: unknown) => {
         try { return String(v); } catch { return '[Unserializable]'; }
     }
 };
-const push = (level: LogLevel, ...args: unknown[]) =>
-    logs.push({ level, message: args.map(safeStringify).join(' '), timestamp: now() });
+const clamp = (s: string) => s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
+const push = (level: LogLevel, ...args: unknown[]) => {
+    if (logs.length >= MAX_LOGS) {
+        if (!logLimitHit) {
+            logs.push({ level: 'warn', message: `Log limit reached (${MAX_LOGS})`, timestamp: now() });
+            logLimitHit = true;
+        }
+        return;
+    }
+    logs.push({ level, message: clamp(args.map(safeStringify).join(' ')), timestamp: now() });
+};
 
 const cleanErrorMessage = (e: any) =>
     e?.message ? String(e.message) : String(e);
@@ -151,6 +166,19 @@ const sendDone = (payload: Omit<DoneMsg, 'type' | 'nonce'>) => {
     try { self.close(); } catch { }
 };
 
+const codeGuard = (label: string, code: string): string | null => {
+    if (code.length > MAX_CODE_BYTES) {
+        return `${label} exceeds limit (${(MAX_CODE_BYTES / 1024).toFixed(0)}KB)`;
+    }
+    // rudimentary guard against remote imports inside user-provided code
+    const remoteImport = /import\s+(?:[^'"]+from\s*)?['"]((?:https?:)?\/\/|data:|file:|chrome:|blob:)[^'"]*['"]/i;
+    const dynamicRemote = /import\s*\(\s*['"]((?:https?:)?\/\/|data:|file:|chrome:|blob:)[^'"]*['"]\s*\)/i;
+    if (remoteImport.test(code) || dynamicRemote.test(code)) {
+        return `${label} imports from a remote/forbidden URL`;
+    }
+    return null;
+};
+
 // Execute string as module (no importScripts of user code)
 const runAsModule = async (code: string) => {
     const url = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
@@ -173,6 +201,17 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     (self as any).describe = describe;
     (self as any).test = test;
     (self as any).expect = expect;
+
+    // hard reset per-run log cap
+    logLimitHit = false;
+
+    // Guard against oversized or dangerous inputs
+    const guardUser = codeGuard('User code', userCode);
+    const guardTests = codeGuard('Tests', testCode);
+    if (guardUser || guardTests) {
+        sendDone({ entries: logs, results: [], error: guardUser || guardTests || 'Invalid input' });
+        return;
+    }
 
     let timedOut = false;
     const killer = setTimeout(() => {
