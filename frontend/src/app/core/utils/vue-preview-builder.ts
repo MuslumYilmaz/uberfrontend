@@ -38,6 +38,7 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; frame-ancestors 'none'; base-uri 'none'; form-action 'none';">
   <title>Vue Preview</title>
   <style>
     html,body,#app{height:100%}
@@ -69,6 +70,9 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
 
   <script>
   (function(){
+    // Strip common network APIs in the sandboxed preview (keep navigator for libs)
+    ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
+
     const overlay = document.getElementById('_uf_overlay');
     const overlayMsg = document.getElementById('_uf_overlay_msg');
     const overlayMeta = document.getElementById('_uf_overlay_meta');

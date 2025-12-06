@@ -47,11 +47,6 @@ export class CodingListStateService {
     formats: null,
   };
 
-  // 3) 🔹 Debug log
-  constructor() {
-    console.log('[CodingListStateService] new instance', this.instanceId);
-  }
-
   get globalCodingState(): GlobalCodingViewState {
     return this._globalCodingState;
   }

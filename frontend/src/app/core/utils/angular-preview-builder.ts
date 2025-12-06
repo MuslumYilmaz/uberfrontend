@@ -195,6 +195,7 @@ function compileTS(src, filename){
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Angular Preview</title>
   <style>
     html,body,#root{height:100%}
@@ -219,6 +220,9 @@ function compileTS(src, filename){
     const overlayMeta = document.getElementById('_uf_overlay_meta');
     const showOverlay = (msg, meta='') => { try { overlayMsg.textContent = String(msg||'Unknown error'); overlayMeta.textContent = meta; overlay.style.display='block'; } catch {} };
     const hideOverlay = () => { try { overlay.style.display='none'; overlayMsg.textContent=''; overlayMeta.textContent=''; } catch {} };
+
+    // Strip common network APIs inside the sandboxed preview (keep navigator for libs)
+    ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
 
     window.addEventListener('error', (e) => {
       const basic = String(e && (e.message || e.error) || 'Error');

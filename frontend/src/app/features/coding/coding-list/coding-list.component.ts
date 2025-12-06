@@ -1354,9 +1354,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return this.router.serializeUrl(tree);
   }
 
-  private debug(msg: string, data?: any) {
-    if (!DEBUG_FILTER_STATE) return;
-    // Keep noise low: stringify shallow objects only
-    console.log(`[coding-list][${this.instanceId}] ${msg}`, data ?? '');
+  private debug(_msg: string, _data?: any) {
+    // debug logging disabled
   }
 }

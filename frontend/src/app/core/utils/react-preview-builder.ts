@@ -88,6 +88,7 @@ export function makeReactPreviewHtml(files: Record<string, string>): string {
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Preview</title>
   <style>
     html,body,#root{height:100%}
@@ -117,6 +118,9 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
 
   <script>
     (function(){
+      // Strip common network APIs in the sandboxed preview (keep navigator for libs)
+      ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
+
       const rootEl = document.getElementById('root');
       const overlay = document.getElementById('_uf_overlay');
       const overlayMsg = document.getElementById('_uf_overlay_msg');
@@ -163,6 +167,15 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
         render(){ return this.state.error ? null : this.props.children; }
       }
 
+      function stripTypesLite(src){
+        return String(src||'')
+          .replace(/:\\s*[^=;,)]+(?=[=;,)])/g, '')
+          .replace(/\\s+as\\s+[A-Za-z_$][\\w$.<>,\\s]*/g, '')
+          .replace(/\\binterface\\b[\\s\\S]*?\\{[\\s\\S]*?\\}\\s*/g, '')
+          .replace(/\\btype\\s+[A-Za-z_$][\\w$]*\\s*=\\s*[\\s\\S]*?;/g, '')
+          .replace(/\\benum\\s+[A-Za-z_$][\\w$]*\\s*\\{[\\s\\S]*?\\}\\s*/g, '');
+      }
+
       function formatBabelError(err){
         try{
           // Babel compile errors often have loc + codeFrame
@@ -181,6 +194,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
 
         // 1) Compile TS/TSX -> JS with inline sourcemap + stable filename
         try{
+          if (!self.Babel || !Babel.transform) throw new Error('Babel missing');
           const res = Babel.transform(src, {
             filename: 'App.tsx',
             sourceType: 'script',
@@ -195,9 +209,14 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
           });
           compiled = (res && res.code) ? (res.code + '\\n//# sourceURL=App.tsx') : '';
         }catch(e){
-          const { msg, meta } = formatBabelError(e);
-          showOverlay(msg, meta);
-          return;
+          try{
+            const fallback = stripTypesLite(src);
+            compiled = fallback + '\\n//# sourceURL=App.tsx';
+          }catch(inner){
+            const { msg, meta } = formatBabelError(e);
+            showOverlay(msg, meta);
+            return;
+          }
         }
 
         // 2) Execute compiled JS with React globals in scope
