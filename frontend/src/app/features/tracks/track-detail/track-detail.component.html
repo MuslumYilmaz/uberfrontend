@@ -29,14 +29,65 @@
         </div>
       </div>
 
-      <ng-container *ngIf="featured$ | async as featured">
-        <div class="cta-row cta-spaced">
-          <button class="btn primary" (click)="startPractice(featured)" [disabled]="!hasPractice(featured)">
-            Start practicing
-          </button>
-          <a class="btn ghost subtle" [routerLink]="['/coding']" [queryParams]="t.browseParams">
-            Open question bank
-          </a>
+      <ng-container *ngIf="filtered$ | async as featured">
+        <div class="filters">
+          <div class="filter-row tabs-row-inline">
+            <div class="tab-group">
+              <div class="tab-label">Type</div>
+              <div class="tab-row">
+                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'all'" (click)="onKindChange('all')">All</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'coding'" (click)="onKindChange('coding')">Coding</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'trivia'" (click)="onKindChange('trivia')">Trivia</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'system-design'" (click)="onKindChange('system-design')">System design</button>
+              </div>
+            </div>
+
+            <div class="tab-group">
+              <div class="tab-label">Tech</div>
+              <div class="tab-row">
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'all'" (click)="onTechChange('all')">All tech</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'javascript'" (click)="onTechChange('javascript')">JavaScript</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'react'" (click)="onTechChange('react')">React</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'angular'" (click)="onTechChange('angular')">Angular</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'vue'" (click)="onTechChange('vue')">Vue</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'html'" (click)="onTechChange('html')">HTML</button>
+                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'css'" (click)="onTechChange('css')">CSS</button>
+              </div>
+            </div>
+          </div>
+          <div class="filter-row tabs-row-inline">
+            <div class="filter-input-wrap">
+              <div class="tab-label">Search</div>
+              <input #searchBox class="filter-input" type="search" placeholder="Search questions" [value]="searchTerm" (input)="onSearch(searchBox.value)" />
+            </div>
+            <div class="tab-group">
+              <div class="tab-label">Difficulty</div>
+              <div class="tab-row pill-box">
+                <label class="check-chip" [class.active]="diffFilter$.value.has('easy')">
+                  <input type="checkbox" [checked]="diffFilter$.value.has('easy')" (change)="onDiffToggle('easy')" />
+                  <span>Easy</span>
+                </label>
+                <label class="check-chip" [class.active]="diffFilter$.value.has('intermediate')">
+                  <input type="checkbox" [checked]="diffFilter$.value.has('intermediate')" (change)="onDiffToggle('intermediate')" />
+                  <span>Intermediate</span>
+                </label>
+                <label class="check-chip" [class.active]="diffFilter$.value.has('hard')">
+                  <input type="checkbox" [checked]="diffFilter$.value.has('hard')" (change)="onDiffToggle('hard')" />
+                  <span>Hard</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="sort-group">
+              <div class="tab-label">Sort</div>
+              <select class="sort-select" [ngModel]="sort$.value" (ngModelChange)="onSortChange($event)">
+                <option value="diff-asc">Easiest first</option>
+                <option value="diff-desc">Hardest first</option>
+                <option value="importance-desc">Highest importance</option>
+                <option value="title-asc">Title A-Z</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <section class="list">

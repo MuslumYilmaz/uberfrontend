@@ -4,6 +4,7 @@ import { Params, RouterModule } from '@angular/router';
 import { forkJoin, map, Observable, shareReplay } from 'rxjs';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
+import { TRACKS } from '../tracks/track.data';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
 
@@ -231,32 +232,14 @@ export class DashboardComponent {
   ];
 
   /** ===== Learning tracks (new) ===== */
-  tracks: Card[] = [
-    {
-      title: 'FAANG Track',
-      subtitle: 'Intense prep: core JS, UI, and system design for Big Tech interviews.',
-      icon: 'bolt',
-      route: ['/tracks', 'faang'],
-    },
-    {
-      title: 'Senior Engineer Track',
-      subtitle: 'Architecture, performance, and deep system design for senior roles.',
-      icon: 'star',
-      route: ['/tracks', 'senior'],
-    },
-    {
-      title: 'Crash Track (7 days)',
-      subtitle: 'Short deadline? Focused 7-day curriculum on the highest-signal topics.',
-      icon: 'clock',
-      route: ['/tracks', 'crash-7d'],
-    },
-    {
-      title: 'Foundations Track (30 days)',
-      subtitle: 'Rebuild your fundamentals step by step before going deeper.',
-      icon: 'book',
-      route: ['/tracks', 'foundations-30d'],
-    },
-  ];
+  tracks: Card[] = TRACKS
+    .filter((t) => !t.hidden)
+    .map((t) => ({
+      title: t.title,
+      subtitle: t.subtitle,
+      icon: t.slug === 'crash-7d' ? 'clock' : 'book',
+      route: ['/tracks', t.slug],
+    }));
 
   /** ===== Company guides ===== */
   companyGuides: Card[] = [

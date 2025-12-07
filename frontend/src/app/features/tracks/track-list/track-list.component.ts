@@ -11,5 +11,5 @@ import { TRACKS } from '../track.data';
   styleUrls: ['./track-list.component.css'],
 })
 export class TrackListComponent {
-  tracks = TRACKS;
+  tracks = TRACKS.filter((t) => !t.hidden);
 }

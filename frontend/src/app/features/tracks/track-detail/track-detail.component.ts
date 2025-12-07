@@ -1,19 +1,20 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { forkJoin, map, Observable, of, shareReplay } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, shareReplay } from 'rxjs';
 import { Question, QuestionKind } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { SeoService } from '../../../core/services/seo.service';
 import {
   FRAMEWORK_FAMILY_BY_ID,
-  FrameworkVariant,
   frameworkLabel,
+  FrameworkVariant,
 } from '../../../shared/framework-families';
 import {
-  TrackConfig,
   TRACK_LOOKUP,
+  TrackConfig,
   TrackQuestionKind,
   TrackQuestionRef,
 } from '../track.data';
@@ -34,19 +35,28 @@ type TrackItem = {
 @Component({
   selector: 'app-track-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './track-detail.component.html',
   styleUrls: ['./track-detail.component.css'],
 })
 export class TrackDetailComponent implements OnInit {
   track: TrackConfig | null = null;
   featured$?: Observable<TrackItem[]>;
+  filtered$?: Observable<TrackItem[]>;
+
+  kindFilter$ = new BehaviorSubject<TrackQuestionKind | 'all'>('all');
+  techFilter$ = new BehaviorSubject<Tech | 'all'>('all');
+  search$ = new BehaviorSubject<string>('');
+  searchTerm = '';
+  diffFilter$ = new BehaviorSubject<Set<'easy' | 'intermediate' | 'hard'>>(new Set());
+  sort$ = new BehaviorSubject<'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc'>('diff-asc');
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private qs: QuestionService,
     private seo: SeoService,
+    private location: Location,
   ) { }
 
   ngOnInit(): void {
@@ -58,8 +68,58 @@ export class TrackDetailComponent implements OnInit {
       return;
     }
 
+    const qp = this.route.snapshot.queryParamMap;
+    const qInit = qp.get('q') || '';
+    const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
+    const techInit = (qp.get('tech') as Tech | 'all') || 'all';
+    const diffInit = qp.get('diff') ?? null;
+    const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
+
+    const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
+    const allowedTechs = new Set<Tech | 'all'>(['all', 'javascript', 'react', 'angular', 'vue', 'html', 'css']);
+    const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
+
+    this.searchTerm = qInit;
+    this.search$.next(qInit);
+    this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
+    this.techFilter$.next(allowedTechs.has(techInit) ? techInit : 'all');
+    const parsedDiffs = (diffInit || '')
+      .split(',')
+      .map((d) => d.trim())
+      .filter((d) => !!d)
+      .map((d) => this.normalizeDifficulty(d)) as Array<'easy' | 'intermediate' | 'hard'>;
+    if (parsedDiffs.length) {
+      this.diffFilter$.next(new Set(parsedDiffs));
+    }
+    this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
+
     this.track = track;
     this.featured$ = this.loadFeatured(track).pipe(shareReplay(1));
+    this.filtered$ = combineLatest([
+      this.featured$,
+      this.kindFilter$,
+      this.techFilter$,
+      this.search$,
+      this.diffFilter$,
+      this.sort$
+    ]).pipe(
+      map(([items, kind, tech, term, diffs, sortKey]) => {
+        const t = term.trim().toLowerCase();
+        const activeDiffs = diffs?.size
+          ? diffs
+          : new Set<'easy' | 'intermediate' | 'hard'>(['easy', 'intermediate', 'hard']);
+
+        const filtered = (items || []).filter((it) => {
+          const kindOk = kind === 'all' ? true : it.kind === kind;
+          const techOk = tech === 'all' ? true : it.tech === tech;
+          const normDiff = this.normalizeDifficulty(it.difficulty);
+          const diffOk = activeDiffs.has(normDiff);
+          const termOk = !t || it.title.toLowerCase().includes(t) || (it.description || '').toLowerCase().includes(t);
+          return kindOk && techOk && diffOk && termOk;
+        });
+        return filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
+      })
+    );
 
     this.seo.updateTags({
       title: `${track.title} track`,
@@ -67,6 +127,70 @@ export class TrackDetailComponent implements OnInit {
       keywords: [track.title, 'front end interview track', 'coding practice', 'system design'],
       canonical: undefined,
     });
+  }
+
+  onSearch(term: string) {
+    this.searchTerm = term ?? '';
+    this.search$.next(this.searchTerm);
+    this.syncQueryParams();
+  }
+
+  onKindChange(val: TrackQuestionKind | 'all') {
+    const allowed = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
+    const next = allowed.has(val) ? val : 'all';
+    this.kindFilter$.next(next);
+    this.syncQueryParams();
+  }
+
+  onTechChange(val: Tech | 'all') {
+    const allowed = new Set<Tech | 'all'>(['all', 'javascript', 'react', 'angular', 'vue', 'html', 'css']);
+    const next = allowed.has(val) ? val : 'all';
+    this.techFilter$.next(next);
+    this.syncQueryParams();
+  }
+
+  onDiffToggle(level: 'easy' | 'intermediate' | 'hard') {
+    const current = new Set(this.diffFilter$.value);
+    if (current.has(level)) {
+      current.delete(level);
+    } else {
+      current.add(level);
+    }
+    this.diffFilter$.next(current);
+    this.syncQueryParams();
+  }
+
+  onSortChange(val: 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc') {
+    const allowed = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
+    const next = allowed.has(val) ? val : 'diff-asc';
+    this.sort$.next(next);
+    this.syncQueryParams();
+  }
+
+  private syncQueryParams() {
+    const q = this.searchTerm.trim();
+    const kind = this.kindFilter$.value;
+    const tech = this.techFilter$.value;
+    const diff = Array.from(this.diffFilter$.value);
+    const sort = this.sort$.value;
+
+    const tree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: {
+        q: q || null,
+        kind: kind === 'all' ? null : kind,
+        tech: tech === 'all' ? null : tech,
+        // hiç seçili yoksa param yok
+        diff: diff.length === 0
+          ? null
+          : diff.length === 3
+            ? null
+            : diff.join(','),
+        sort: sort === 'diff-asc' ? null : sort,
+      },
+      queryParamsHandling: 'merge',
+    });
+    this.location.replaceState(this.router.serializeUrl(tree));
   }
 
   startPractice(items: TrackItem[]): void {
@@ -191,6 +315,38 @@ export class TrackDetailComponent implements OnInit {
     if (tech === 'javascript') return 'JavaScript';
     if (tech === 'react' || tech === 'angular' || tech === 'vue') return 'User interface';
     return 'User interface';
+  }
+
+  private diffRank(d?: string): number {
+    const v = (d || '').toLowerCase();
+    if (v === 'easy') return 0;
+    if (v === 'medium' || v === 'intermediate') return 1;
+    if (v === 'hard') return 2;
+    return 1;
+  }
+
+  private normalizeDifficulty(d?: string | null): 'easy' | 'intermediate' | 'hard' {
+    const v = (d || '').toLowerCase();
+    if (v === 'easy') return 'easy';
+    if (v === 'hard') return 'hard';
+    return 'intermediate';
+  }
+
+  private sortItems(
+    a: TrackItem,
+    b: TrackItem,
+    sortKey: 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc',
+  ) {
+    if (sortKey === 'diff-desc') {
+      return this.diffRank(b.difficulty) - this.diffRank(a.difficulty) || (b.importance ?? 0) - (a.importance ?? 0);
+    }
+    if (sortKey === 'importance-desc') {
+      return (b.importance ?? 0) - (a.importance ?? 0) || this.diffRank(a.difficulty) - this.diffRank(b.difficulty);
+    }
+    if (sortKey === 'title-asc') {
+      return a.title.localeCompare(b.title);
+    }
+    return this.diffRank(a.difficulty) - this.diffRank(b.difficulty) || (b.importance ?? 0) - (a.importance ?? 0);
   }
 
   private loadFeatured(track: TrackConfig): Observable<TrackItem[]> {
