@@ -11,11 +11,12 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
-import { map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
+import { FRAMEWORK_FAMILIES, FRAMEWORK_FAMILY_BY_ID, FrameworkVariant, frameworkLabel } from '../../../shared/framework-families';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
@@ -36,7 +37,6 @@ type Row = Question & {
 
 type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number };
-
 // ---------- Formats categories ----------
 type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
 type ViewMode = 'tech' | 'formats';
@@ -229,7 +229,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       ]).pipe(
         map(([qView, sView]) => (qView || sView || 'tech') as ViewMode),
         tap(v => this.viewMode = v),
-        take(1),
+        distinctUntilChanged(),
         switchMap(() => {
           // --------- GLOBAL (/coding or /coding?view=formats) ----------
           if (this.source === 'global-coding') {
@@ -423,8 +423,19 @@ export class CodingListComponent implements OnInit, OnDestroy {
         )
       );
 
+      // Ensure system design items are always retained when that category is selected
+      if (isFormats && selectedCategory === 'system') {
+        const sys = filtered.filter((q: any) => (q as any).__sd === true);
+        if (sys.length === 0) {
+          // fallback: ignore filters except category to avoid accidental empty state
+          return (questions ?? []).filter((q: any) => (q as any).__sd === true);
+        }
+        return sys;
+      }
+
       const cmp = this.makeComparator(sortKey as SortKey);
-      return filtered.slice().sort(cmp);
+      const deduped = this.dedupeFrameworkRows(filtered);
+      return deduped.slice().sort(cmp);
     })
   );
 
@@ -1133,6 +1144,69 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const commands = this.linkTo(q);
     const state = this.stateForNav(list, q, this.currentCompanySlug);
     this.router.navigate(commands, { state });
+  }
+
+  private dedupeFrameworkRows(list: Row[]): Row[] {
+    if (this.source !== 'global-coding') return list;
+
+    const nonFam: Row[] = [];
+    const buckets = new Map<string, Row[]>();
+
+    for (const row of list) {
+      const fam = FRAMEWORK_FAMILY_BY_ID.get(row.id);
+      if (!fam) {
+        nonFam.push(row);
+        continue;
+      }
+      const arr = buckets.get(fam.key) ?? [];
+      arr.push(row);
+      buckets.set(fam.key, arr);
+    }
+
+    const choose = (rows: Row[]): Row => {
+      const preferred = this.selectedTech$.value;
+      if (preferred) {
+        const hit = rows.find(r => r.tech === preferred);
+        if (hit) return hit;
+      }
+
+      const fallbackOrder: Tech[] = ['react', 'angular', 'vue', 'javascript', 'html', 'css'];
+      for (const t of fallbackOrder) {
+        const hit = rows.find(r => r.tech === t);
+        if (hit) return hit;
+      }
+      return rows[0];
+    };
+
+    const collapsed: Row[] = [];
+    for (const rows of buckets.values()) {
+      collapsed.push(choose(rows));
+    }
+
+    return [...nonFam, ...collapsed];
+  }
+
+  frameworkOptions(q: Row): FrameworkVariant[] {
+    if (q.__kind !== 'coding') return [];
+    const fam = FRAMEWORK_FAMILY_BY_ID.get(q.id);
+    return fam ? fam.members : [];
+  }
+
+  frameworkLabel(tech: Tech): string {
+    return frameworkLabel(tech);
+  }
+
+  goToFramework(ev: Event, opt: FrameworkVariant) {
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    const path = ['/', opt.tech, opt.kind === 'trivia' ? 'trivia' : 'coding', opt.id];
+    this.router.navigate(path, {
+      state: {
+        returnToUrl: this.router.url,
+        returnLabel: 'Back to questions',
+      },
+    });
   }
 
   ngOnDestroy(): void {

@@ -244,6 +244,47 @@ export const routes: Routes = [
     },
   },
 
+  // Tracks (curated question sets)
+  {
+    path: 'tracks',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/tracks/track-list/track-list.component').then(
+            (m) => m.TrackListComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Interview prep tracks',
+            description: 'Pick a curated set of questions for FAANG, senior roles, crash prep, or fundamentals.',
+          },
+        },
+      },
+      {
+        path: ':slug',
+        loadComponent: () =>
+          import('./features/tracks/track-detail/track-detail.component').then(
+            (m) => m.TrackDetailComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Interview prep track',
+            description: 'Curated front-end interview questions aligned to a specific goal.',
+          },
+        },
+      },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/components/not-found/not-found.component').then(
+            (m) => m.NotFoundComponent,
+          ),
+        data: { title: 'Page not found' },
+      },
+    ],
+  },
+
   // System design (practice/problems area, not the guide)
   {
     path: 'system-design',

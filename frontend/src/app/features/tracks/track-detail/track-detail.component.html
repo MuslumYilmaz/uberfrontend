@@ -1,0 +1,107 @@
+<ng-container *ngIf="track as t; else missing">
+  <div class="track">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a routerLink="/tracks">Tracks</a>
+        <span>/</span>
+        <span class="crumb-current">{{ t.title }}</span>
+      </nav>
+
+      <div class="hero-card">
+        <h1>{{ t.title }}</h1>
+        <p class="subtitle">{{ t.subtitle }}</p>
+
+        <div class="pill-row below-title">
+          <span class="pill primary chip-pace">{{ t.durationLabel }}</span>
+          <span class="pill soft">{{ t.featured.length }} questions</span>
+        </div>
+
+        <div class="focus bullets">
+          <span class="chip bullet" *ngFor="let item of t.focus">{{ item }}</span>
+        </div>
+
+        <div class="hero-meta">
+          <div class="meta-title">What’s inside</div>
+          <div class="meta-body">
+            <div>All frameworks + HTML/CSS/JS</div>
+            <div>System design prompts included</div>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="featured$ | async as featured">
+        <div class="cta-row cta-spaced">
+          <button class="btn primary" (click)="startPractice(featured)" [disabled]="!hasPractice(featured)">
+            Start practicing
+          </button>
+          <a class="btn ghost subtle" [routerLink]="['/coding']" [queryParams]="t.browseParams">
+            Open question bank
+          </a>
+        </div>
+
+        <section class="list">
+          <div class="list-head">
+            <div class="list-title">
+              <span class="list-kicker">Featured questions</span>
+              <span class="count">{{ featured.length }}</span>
+            </div>
+            <div class="note">Pace yourself — no daily check-ins.</div>
+          </div>
+
+          <div class="question" *ngFor="let item of featured">
+            <div class="q-header">
+              <div class="labels">
+                <span class="pill tiny category-pill">
+                  <span class="pill-icon">{{ categoryIcon(item) }}</span>
+                  {{ categoryLabel(item) }}
+                </span>
+                <span class="pill tiny alt">
+                  {{ item.kind === 'system-design' ? 'System design' : (item.kind | titlecase) }}
+                </span>
+                <span class="pill tiny diff" [ngClass]="diffClass(item.difficulty)">
+                  {{ displayDifficulty(item.difficulty) }}
+                </span>
+              </div>
+              <a class="link" [routerLink]="linkFor(item)" [state]="navState(featured, item)">Open →</a>
+            </div>
+
+            <div class="q-title">{{ item.title }}</div>
+            <div class="q-desc" *ngIf="item.description">{{ preview(item.description) }}</div>
+
+            <div class="fw-switcher" *ngIf="frameworkOptions(item).length > 1">
+              <div class="fw-label-row">
+                <span class="fw-label">Framework versions</span>
+                <span class="fw-hint">Open in your stack</span>
+              </div>
+              <div class="fw-chip-row">
+                <button
+                  type="button"
+                  class="fw-chip"
+                  *ngFor="let opt of frameworkOptions(item)"
+                  [class.active]="opt.id === item.id"
+                  (click)="goToFramework($event, opt)">
+                  <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
+                  <span class="fw-cta">Open</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="tags" *ngIf="item.tags?.length">
+              <span class="tag" *ngFor="let tag of item.tags">{{ tag }}</span>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #missing>
+  <div class="track">
+    <div class="container">
+      <a class="back" routerLink="/tracks">← All tracks</a>
+      <h1>Track not found</h1>
+      <p class="subtitle">Pick a track from the list to see its question set.</p>
+    </div>
+  </div>
+</ng-template>

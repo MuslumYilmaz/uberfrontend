@@ -1,0 +1,51 @@
+<div class="tracks">
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Tracks</p>
+        <h1>Curated interview tracks</h1>
+        <p class="lede">
+          Choose the set that matches your timeline. No calendars—just the right mix of questions and a fast path into practice.
+        </p>
+        <div class="badges">
+          <span class="badge">UI + System Design</span>
+          <span class="badge">React / Angular / Vue</span>
+          <span class="badge">HTML • CSS • JS</span>
+        </div>
+      </div>
+      <div class="hero-callout">
+        <div class="hero-num">{{ tracks.length }}</div>
+        <div class="hero-text">Tracks to jump-start prep</div>
+        <div class="hero-note">Pick one, then dive into the questions.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <a class="card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug]" [attr.data-slot]="i">
+        <div class="card-top">
+          <span class="pill">{{ track.durationLabel }}</span>
+          <span class="pill muted">{{ track.featured.length }} questions</span>
+        </div>
+        <div class="card-title">{{ track.title }}</div>
+        <div class="card-sub">{{ track.subtitle }}</div>
+
+        <div class="focus">
+          <span *ngFor="let item of track.focus" class="chip">{{ item }}</span>
+        </div>
+
+        <div class="fw-note">
+          Covers UI frameworks (React, Angular, Vue) plus HTML/CSS and JS where relevant.
+        </div>
+
+        <div class="meta-row">
+          <span class="meta">Framework-ready</span>
+          <span class="meta">System design included</span>
+        </div>
+
+        <div class="card-footer">View track →</div>
+      </a>
+    </div>
+  </div>
+</div>

@@ -120,6 +120,76 @@ h1 { color: var(--ink); }
 /* ensure hover element sits above the full-row anchor */
 .desc-tip-target { position: relative; z-index: 20; cursor: pointer; }
 
+.framework-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.fw-label {
+  font-size: 12px;
+  color: var(--ink-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fw-label-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fw-hint {
+  font-size: 12px;
+  color: var(--ink-dim);
+}
+
+.fw-chip {
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--ink-sub);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fw-chip:hover {
+  background: var(--chip-hover);
+  border-color: var(--accent);
+}
+
+.fw-chip.active {
+  background: var(--chip-active);
+  border-color: var(--accent-strong);
+  color: #fff;
+}
+
+.fw-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fw-chip-label {
+  font-weight: 600;
+}
+
+.fw-cta {
+  font-size: 11px;
+  color: var(--ink-dim);
+}
+
+.fw-chip:hover .fw-cta {
+  color: #fff;
+}
+
 /* ---------- PrimeNG tooltip restyle ---------- */
 /* Scope to our specific tooltip via tooltipStyleClass="desc-tip" */
 :host ::ng-deep .p-tooltip.desc-tip {

@@ -36,9 +36,6 @@
 
           <div class="col-span-5">
             <div class="text-lg font-semibold text-white">{{ q.title }}</div>
-            <!-- keep your overlay link as-is -->
-            <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-              class="absolute inset-0 z-10"></a>
 
             <!-- description line -->
             <div class="text-xs text-gray-400 mt-0.5 desc-tip-target" [pTooltip]="descriptionText(q)"
@@ -46,6 +43,25 @@
               [hideDelay]="0" [autoHide]="true" [life]="0" [escape]="false" [tooltipDisabled]="!descriptionText(q)"
               (click)="go(q, questions)" tabindex="0" (keydown.enter)="go(q, questions)">
               {{ preview(descriptionText(q), 120) }}
+            </div>
+
+            <div class="framework-switcher relative z-20" *ngIf="frameworkOptions(q).length > 1">
+              <div class="fw-label-row">
+                <span class="fw-label">Framework versions</span>
+                <span class="fw-hint">Open this challenge in your stack</span>
+              </div>
+              <div class="fw-chip-row">
+                <button
+                  *ngFor="let opt of frameworkOptions(q)"
+                  type="button"
+                  class="fw-chip"
+                  [class.active]="opt.id === q.id"
+                  [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
+                  (click)="goToFramework($event, opt)">
+                  <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
+                  <span class="fw-cta">Open</span>
+                </button>
+              </div>
             </div>
           </div>
 

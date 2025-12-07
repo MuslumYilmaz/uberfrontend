@@ -236,29 +236,25 @@ export class DashboardComponent {
       title: 'FAANG Track',
       subtitle: 'Intense prep: core JS, UI, and system design for Big Tech interviews.',
       icon: 'bolt',
-      route: ['/guides', 'playbook'],
-      queryParams: { track: 'faang' },
+      route: ['/tracks', 'faang'],
     },
     {
       title: 'Senior Engineer Track',
       subtitle: 'Architecture, performance, and deep system design for senior roles.',
       icon: 'star',
-      route: ['/guides', 'playbook'],
-      queryParams: { track: 'senior' },
+      route: ['/tracks', 'senior'],
     },
     {
       title: 'Crash Track (7 days)',
       subtitle: 'Short deadline? Focused 7-day curriculum on the highest-signal topics.',
       icon: 'clock',
-      route: ['/guides', 'playbook'],
-      queryParams: { track: 'crash-7d' },
+      route: ['/tracks', 'crash-7d'],
     },
     {
       title: 'Foundations Track (30 days)',
       subtitle: 'Rebuild your fundamentals step by step before going deeper.',
       icon: 'book',
-      route: ['/guides', 'playbook'],
-      queryParams: { track: 'foundations-30d' },
+      route: ['/tracks', 'foundations-30d'],
     },
   ];
 
