@@ -24,8 +24,8 @@
 }
 
 .diff-group {
-  display:flex; align-items:center; gap:8px;
-  padding: 4px 8px;
+  display:flex; align-items:center; gap:8px; flex-wrap: wrap;
+  padding: 6px 10px;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -35,39 +35,13 @@
   margin-right: 6px; font-size: 12px; color: var(--ink-dim); letter-spacing: .2px; white-space: nowrap;
 }
 
-/* Give idle option a transparent border so checked state doesn't grow */
-.diff-option {
-  display:inline-flex; align-items:center; gap:6px;
-  padding: 6px 10px; border-radius:9999px;
-  color: var(--ink-sub); cursor:pointer; user-select:none;
-  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
-  border: 1px solid transparent;                 /* prevents size jump */
-  font-size: 12px; line-height: 1;               /* locked type */
-}
-.diff-option:hover { background: var(--chip-hover); }
-
-/* custom checkbox */
-.diff-option input[type='checkbox']{
-  appearance:none; width:14px; height:14px; border-radius:4px;
-  border:1px solid var(--border-strong); background:#0e0e0f; cursor:pointer; margin:0;
-  transition:all .15s ease; position:relative;
-}
-.diff-option input[type='checkbox']:hover { border-color: var(--border); background:#121214; }
-.diff-option input[type='checkbox']:checked {
-  border-color: var(--accent-strong); background: #1b1b1d;
-}
-.diff-option input[type='checkbox']:checked::after{
-  content:'✓'; position:absolute; top:50%; left:50%; transform:translate(-50%,-55%);
-  font-size:11px; color:#f1f5f9;
-}
-
-.diff-option--checked {
-  border-color: var(--accent-strong);
-  background: var(--chip-active);
-  color: #ffffff;
-  box-shadow:
-    0 0 0 2px var(--ring-soft) inset,
-    0 0 0 1.5px var(--ring);
+.filter-chip {
+  --uf-chip-bg: var(--chip-bg);
+  --uf-chip-hover: var(--chip-hover);
+  --uf-chip-active: var(--chip-active);
+  --uf-chip-border: var(--border);
+  --uf-chip-selected-bg: var(--chip-active);
+  --uf-chip-selected-border: var(--accent-strong);
 }
 
 .tag-filter { margin-top: 6px; margin-bottom: 10px; }
@@ -82,18 +56,13 @@
 .tag-filter__meta { display:inline-flex; align-items:center; gap:8px; }
 .tag-filter__count { font-size:12px; color: var(--ink-dim); }
 
-/* AND/OR button */
 .tag-filter__mode {
-  padding:2px 10px; font-size:12px; border-radius:9999px;
-  background: var(--chip-bg); border: 1px solid var(--border);
-  color: var(--ink-sub); cursor:pointer; transition: all .15s ease;
-}
-.tag-filter__mode:hover { background: var(--chip-hover); }
-.tag-filter__mode:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--ring),
-    0 0 0 4px rgba(0,0,0,.25);
+  --uf-chip-bg: var(--chip-bg);
+  --uf-chip-hover: var(--chip-hover);
+  --uf-chip-border: var(--border);
+  --uf-chip-selected-bg: var(--chip-active);
+  --uf-chip-selected-border: var(--accent-strong);
+  font-weight: 600;
 }
 
 /* tag chips in the scrolling row */
@@ -102,24 +71,14 @@
   padding:8px 2px 2px; margin-top:-4px; margin-bottom:10px;
 }
 .tag-scroll-chip {
-  flex:0 0 auto; padding:4px 10px; border-radius:9999px; font-size:12px; line-height: 1;
-  background: var(--chip-bg); border:1px solid var(--border); color: var(--ink-sub);
-  cursor:pointer; white-space:nowrap; transition: all .15s ease;
-}
-.tag-scroll-chip:hover { background: var(--chip-hover); }
-.tag-scroll-chip.active {
-  background: var(--chip-active);
-  border-color: var(--accent-strong);
-  color:#fff;
-  box-shadow:
-    0 0 0 2px var(--ring-soft) inset,
-    0 0 0 1.5px var(--ring);
-}
-.tag-scroll-chip:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--ring),
-    0 0 0 4px rgba(0,0,0,.25);
+  flex:0 0 auto;
+  --uf-chip-bg: var(--chip-bg);
+  --uf-chip-hover: var(--chip-hover);
+  --uf-chip-border: var(--border);
+  --uf-chip-selected-bg: var(--chip-active);
+  --uf-chip-selected-border: var(--accent-strong);
+  --uf-chip-ring: var(--ring);
+  font-weight: 600;
 }
 
 /* clear button */

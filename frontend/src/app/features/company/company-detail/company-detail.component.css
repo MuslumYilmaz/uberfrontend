@@ -1,7 +1,35 @@
-/* src/app/features/company/company-detail/company-detail.component.scss */
-:host{display:block;}
-.tabx{ padding:.4rem .8rem; border:1px solid rgba(255,255,255,.1); color:#cbd5e1; border-right:none; }
-.tabx:first-child{ border-radius:.5rem 0 0 .5rem; }
-.tabx:last-child{ border-right:1px solid rgba(255,255,255,.1); border-radius:0 .5rem .5rem 0; }
-.tabx:hover{ background:rgba(255,255,255,.06); color:#fff; }
-.tabx.active{ background:rgba(255,255,255,.14); color:#fff; }
+:host {
+  display: block;
+}
+
+.company-tabs {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.company-tabs uf-chip {
+  --uf-chip-bg: rgba(255, 255, 255, 0.04);
+  --uf-chip-hover: rgba(255, 255, 255, 0.08);
+  --uf-chip-border: rgba(255, 255, 255, 0.12);
+  --uf-chip-selected-bg: #1f2937;
+  --uf-chip-selected-border: rgba(255, 255, 255, 0.32);
+  --uf-chip-ink: #e7eaee;
+  --uf-chip-ink-strong: #ffffff;
+  font-weight: 700;
+}
+
+:host ::ng-deep uf-chip .uf-chip {
+  color: #e7eaee !important;
+  font-size: 14px;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+:host ::ng-deep uf-chip .uf-chip * {
+  color: inherit !important;
+}
+
+.company-chip {
+  --uf-chip-ink: #e7eaee;
+  --uf-chip-ink-strong: #ffffff;
+}

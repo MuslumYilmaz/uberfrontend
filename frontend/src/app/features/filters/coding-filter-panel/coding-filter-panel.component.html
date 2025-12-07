@@ -15,23 +15,23 @@
         <fieldset class="diff-group">
             <legend class="diff-legend">Difficulty</legend>
 
-            <label class="diff-option" [class.diff-option--checked]="isDiffChecked('easy')">
-                <input type="checkbox" [checked]="isDiffChecked('easy')"
-                    (change)="onDifficultyInputChange('easy', $event)" />
-                <span>Beginner</span>
-            </label>
+            <uf-chip size="sm" class="filter-chip"
+                     [selected]="isDiffChecked('easy')"
+                     (selectedChange)="difficultyChange.emit({ difficulty: 'easy', checked: $event })">
+                Beginner
+            </uf-chip>
 
-            <label class="diff-option" [class.diff-option--checked]="isDiffChecked('intermediate')">
-                <input type="checkbox" [checked]="isDiffChecked('intermediate')"
-                    (change)="onDifficultyInputChange('intermediate', $event)" />
-                <span>Intermediate</span>
-            </label>
+            <uf-chip size="sm" class="filter-chip"
+                     [selected]="isDiffChecked('intermediate')"
+                     (selectedChange)="difficultyChange.emit({ difficulty: 'intermediate', checked: $event })">
+                Intermediate
+            </uf-chip>
 
-            <label class="diff-option" [class.diff-option--checked]="isDiffChecked('hard')">
-                <input type="checkbox" [checked]="isDiffChecked('hard')"
-                    (change)="onDifficultyInputChange('hard', $event)" />
-                <span>Hard</span>
-            </label>
+            <uf-chip size="sm" class="filter-chip"
+                     [selected]="isDiffChecked('hard')"
+                     (selectedChange)="difficultyChange.emit({ difficulty: 'hard', checked: $event })">
+                Hard
+            </uf-chip>
         </fieldset>
     </div>
 
@@ -40,23 +40,23 @@
         <fieldset class="diff-group">
             <legend class="diff-legend">Importance</legend>
 
-            <label class="diff-option" [class.diff-option--checked]="isImpChecked('low')">
-                <input type="checkbox" [checked]="isImpChecked('low')"
-                    (change)="onImportanceInputChange('low', $event)" />
-                <span>Low</span>
-            </label>
+            <uf-chip size="sm" class="filter-chip"
+                     [selected]="isImpChecked('low')"
+                     (selectedChange)="importanceChange.emit({ tier: 'low', checked: $event })">
+                Low
+            </uf-chip>
 
-            <label class="diff-option" [class.diff-option--checked]="isImpChecked('medium')">
-                <input type="checkbox" [checked]="isImpChecked('medium')"
-                    (change)="onImportanceInputChange('medium', $event)" />
-                <span>Medium</span>
-            </label>
+            <uf-chip size="sm" class="filter-chip"
+                     [selected]="isImpChecked('medium')"
+                     (selectedChange)="importanceChange.emit({ tier: 'medium', checked: $event })">
+                Medium
+            </uf-chip>
 
-            <label class="diff-option" [class.diff-option--checked]="isImpChecked('high')">
-                <input type="checkbox" [checked]="isImpChecked('high')"
-                    (change)="onImportanceInputChange('high', $event)" />
-                <span>High</span>
-            </label>
+            <uf-chip size="sm" class="filter-chip"
+                     [selected]="isImpChecked('high')"
+                     (selectedChange)="importanceChange.emit({ tier: 'high', checked: $event })">
+                High
+            </uf-chip>
         </fieldset>
     </div>
 </div>
@@ -73,9 +73,11 @@
             <div class="tag-filter__meta" *ngIf="selectedTags as sel">
                 <span class="tag-filter__count" *ngIf="sel.length">{{ sel.length }} selected</span>
 
-                <button type="button" class="tag-filter__mode" (click)="tagMatchModeToggle.emit()">
+                <uf-chip class="tag-filter__mode" size="sm"
+                         [selected]="tagMatchMode === 'any'"
+                         (selectedChange)="tagMatchModeToggle.emit()">
                     {{ tagMatchMode === 'all' ? 'Match all' : 'Match any' }}
-                </button>
+                </uf-chip>
 
                 <button *ngIf="sel.length" class="tag-clear" (click)="clearAllTags.emit()">Clear</button>
             </div>
@@ -102,9 +104,12 @@
     </div>
 
     <div class="tag-scrollbar" role="listbox" aria-label="Filter by tags">
-        <button *ngFor="let tag of popularTags" class="tag-scroll-chip" [class.active]="isTagSelected(tag)"
-            (click)="tagToggled.emit(tag)">
+        <uf-chip *ngFor="let tag of popularTags"
+                 class="tag-scroll-chip"
+                 size="sm"
+                 [selected]="isTagSelected(tag)"
+                 (selectedChange)="tagToggled.emit(tag)">
             {{ tag }}
-        </button>
+        </uf-chip>
     </div>
 </div>

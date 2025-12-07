@@ -8,97 +8,37 @@ h1 {
   color: var(--ink);
 }
 
-/* KIND / TECH PILLS + ROW */
+.chip-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: max-content;
+}
+
 .tabs-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .tabs-left {
   display: inline-flex;
-  gap: 6px;
-  padding: 4px;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px;
   border: 1px solid var(--border);
   background: var(--chip-bg);
   border-radius: 9999px;
 }
 
-.kind-pill,
-.tab-pill {
-  position: relative;
+.tabs-right {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 9999px;
-  font-size: 14px;
-  line-height: 1;
-  font-weight: 500;
-  color: var(--ink-sub);
-  border: 1px solid var(--border);
-  background: var(--chip-bg);
-  text-decoration: none;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.06s ease,
-    box-shadow 0.15s ease;
-}
-
-/* hover / active */
-.kind-pill--idle:hover,
-.tab-pill--idle:hover {
-  background: var(--chip-hover);
-  color: #fff;
-}
-
-.kind-pill:active,
-.tab-pill:active {
-  transform: scale(0.98);
-}
-
-/* dot için padding */
-.kind-pill,
-.tab-pill {
-  padding-left: 20px;
-}
-
-.kind-pill--active,
-.tab-pill--active {
-  background: var(--chip-active);
-  border-color: var(--accent-strong);
-  color: #fff;
-  box-shadow:
-    0 0 0 2px var(--ring-soft) inset,
-    0 0 0 1.5px var(--ring);
-}
-
-/* focus */
-.kind-pill:focus-visible,
-.tab-pill:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--ring),
-    0 0 0 4px rgba(0, 0, 0, 0.25);
-}
-
-/* active dot */
-.kind-pill--active::before,
-.tab-pill--active::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  transform: translateY(-50%);
-  background: #fff;
-  opacity: 0.9;
 }
 
 /* badge */
@@ -113,20 +53,15 @@ h1 {
   border: 1px solid var(--border);
 }
 
-/* count chip */
 .count-chip {
-  white-space: nowrap;
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 9999px;
-  font-size: 13px;
-  line-height: 1;
-  color: var(--ink-sub);
-  background: var(--chip-bg);
-  border: 1px solid var(--border);
+  --uf-chip-bg: var(--chip-bg);
+  --uf-chip-border: var(--border);
+  --uf-chip-ink: var(--ink-sub);
+  font-weight: 600;
 }
 
-.count-chip.active {
-  border-color: var(--accent-strong);
-  box-shadow: 0 0 0 1.5px var(--ring);
+@media (max-width: 640px) {
+  .chip-row {
+    min-width: auto;
+  }
 }

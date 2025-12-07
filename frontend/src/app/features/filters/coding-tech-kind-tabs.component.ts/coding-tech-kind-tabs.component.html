@@ -1,78 +1,82 @@
 <div class="mb-4 overflow-x-auto" *ngIf="source!=='company'">
-    <h1 class="text-4xl font-extrabold text-white mb-6">
-        {{ heading() }}
-    </h1>
+  <h1 class="text-4xl font-extrabold text-white mb-6">
+    {{ heading() }}
+  </h1>
 
-    <nav class="flex items-center gap-2 min-w-max">
-        <!-- GLOBAL (/coding): choose by viewMode -->
-        <ng-container *ngIf="source==='global-coding'">
-            <!-- Formats mode: CATEGORY pills -->
-            <ng-container *ngIf="viewMode === 'formats'; else globalTechPills">
-                <button *ngFor="let c of categoryTabs" type="button" class="tab-pill"
-                    [ngClass]="selectedCategory === c.key ? 'tab-pill--active' : 'tab-pill--idle'"
-                    (click)="categoryToggled.emit(c.key)">
-                    <span class="whitespace-nowrap">{{ c.label }}</span>
-                </button>
-            </ng-container>
+  <nav class="chip-row">
+    <!-- GLOBAL (/coding): choose by viewMode -->
+    <ng-container *ngIf="source==='global-coding'">
+      <!-- Formats mode: CATEGORY pills -->
+      <ng-container *ngIf="viewMode === 'formats'; else globalTechPills">
+        <uf-chip *ngFor="let c of categoryTabs"
+                 size="md"
+                 [selected]="selectedCategory === c.key"
+                 (selectedChange)="categoryToggled.emit(c.key)">
+          <span class="whitespace-nowrap">{{ c.label }}</span>
+        </uf-chip>
+      </ng-container>
 
-            <!-- Tech mode: TECH filter pills -->
-            <ng-template #globalTechPills>
-                <button *ngFor="let t of techTabs" type="button" class="tab-pill"
-                    [ngClass]="selectedTech === t.key ? 'tab-pill--active' : 'tab-pill--idle'"
-                    (click)="techSelected.emit(t.key)">
-                    <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
-                    <span class="whitespace-nowrap">{{ t.label }}</span>
-                </button>
-            </ng-template>
-        </ng-container>
+      <!-- Tech mode: TECH filter pills -->
+      <ng-template #globalTechPills>
+        <uf-chip *ngFor="let t of techTabs"
+                 size="md"
+                 [selected]="selectedTech === t.key"
+                 (selectedChange)="techSelected.emit(t.key)">
+          <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+          <span class="whitespace-nowrap">{{ t.label }}</span>
+        </uf-chip>
+      </ng-template>
+    </ng-container>
 
-        <!-- Per-tech routes: navigation pills -->
-        <ng-container *ngIf="source!=='global-coding'">
-            <a *ngFor="let t of techTabs" [routerLink]="['/', t.key, kind]" class="tab-pill"
-                [ngClass]="t.key === tech ? 'tab-pill--active' : 'tab-pill--idle'">
-                <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
-                <span class="whitespace-nowrap">{{ t.label }}</span>
-            </a>
-        </ng-container>
-    </nav>
+    <!-- Per-tech routes: navigation pills -->
+    <ng-container *ngIf="source!=='global-coding'">
+      <uf-chip *ngFor="let t of techTabs"
+               size="md"
+               [routerLink]="['/', t.key, kind]"
+               [toggle]="false"
+               [selected]="t.key === tech">
+        <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+        <span class="whitespace-nowrap">{{ t.label }}</span>
+      </uf-chip>
+    </ng-container>
+  </nav>
 </div>
 
 <!-- Section tabs + right-side count -->
 <div *ngIf="source!=='company'" class="tabs-row">
-    <div class="tabs-left">
-        <!-- GLOBAL (/coding): render kind pills unless System design is active -->
-        <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
-            <ng-container *ngIf="!isSystemCategoryActive">
-                <button type="button" class="kind-pill"
-                    [ngClass]="selectedKind === 'all' ? 'kind-pill--active' : 'kind-pill--idle'"
-                    (click)="kindSelected.emit('all')">
-                    All
-                </button>
+  <div class="tabs-left">
+    <!-- GLOBAL (/coding): render kind pills unless System design is active -->
+    <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
+      <ng-container *ngIf="!isSystemCategoryActive">
+        <uf-chip size="sm" [selected]="selectedKind === 'all'" (selectedChange)="kindSelected.emit('all')">
+          All
+        </uf-chip>
 
-                <button type="button" class="kind-pill"
-                    [ngClass]="selectedKind === 'coding' ? 'kind-pill--active' : 'kind-pill--idle'"
-                    (click)="kindSelected.emit('coding')">
-                    Coding
-                </button>
+        <uf-chip size="sm" [selected]="selectedKind === 'coding'" (selectedChange)="kindSelected.emit('coding')">
+          Coding
+        </uf-chip>
 
-                <button type="button" class="kind-pill"
-                    [ngClass]="selectedKind === 'trivia' ? 'kind-pill--active' : 'kind-pill--idle'"
-                    (click)="kindSelected.emit('trivia')">
-                    Quiz
-                </button>
-            </ng-container>
-        </ng-container>
+        <uf-chip size="sm" [selected]="selectedKind === 'trivia'" (selectedChange)="kindSelected.emit('trivia')">
+          Quiz
+        </uf-chip>
+      </ng-container>
+    </ng-container>
 
-        <!-- PER-TECH pages: show nav links -->
-        <ng-template #perTechKindLinks>
-            <a *ngFor="let k of kindTabs" [routerLink]="['/', tech || 'javascript', k.key]" class="kind-pill"
-                [ngClass]="k.key === kind ? 'kind-pill--active' : 'kind-pill--idle'">
-                {{ k.label }}
-            </a>
-        </ng-template>
-    </div>
+    <!-- PER-TECH pages: show nav links -->
+    <ng-template #perTechKindLinks>
+      <uf-chip *ngFor="let k of kindTabs"
+               size="sm"
+               [routerLink]="['/', tech || 'javascript', k.key]"
+               [toggle]="false"
+               [selected]="k.key === kind">
+        {{ k.label }}
+      </uf-chip>
+    </ng-template>
+  </div>
 
-    <div class="tabs-right">
-        <span class="count-chip">{{ filteredCount }} questions</span>
-    </div>
+  <div class="tabs-right">
+    <uf-chip class="count-chip" size="sm" [toggle]="false">
+      {{ filteredCount }} questions
+    </uf-chip>
+  </div>
 </div>

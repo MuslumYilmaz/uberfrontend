@@ -18,6 +18,8 @@ import {
   TrackQuestionKind,
   TrackQuestionRef,
 } from '../track.data';
+import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
+import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 
 type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
 type TrackItem = {
@@ -31,11 +33,20 @@ type TrackItem = {
   tags?: string[];
   category?: string;
 };
+type ImportanceTier = 'low' | 'medium' | 'high';
+type SortKey =
+  | 'default'
+  | 'title-asc' | 'title-desc'
+  | 'difficulty-asc' | 'difficulty-desc'
+  | 'importance-desc' | 'importance-asc'
+  | 'created-desc' | 'created-asc'
+  | 'diff-asc' | 'diff-desc';
+type NarrowSortKey = 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | 'title-desc';
 
 @Component({
   selector: 'app-track-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, UfChipComponent, CodingFilterPanelComponent],
   templateUrl: './track-detail.component.html',
   styleUrls: ['./track-detail.component.css'],
 })
@@ -49,7 +60,18 @@ export class TrackDetailComponent implements OnInit {
   search$ = new BehaviorSubject<string>('');
   searchTerm = '';
   diffFilter$ = new BehaviorSubject<Set<'easy' | 'intermediate' | 'hard'>>(new Set());
-  sort$ = new BehaviorSubject<'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc'>('diff-asc');
+  impFilter$ = new BehaviorSubject<Set<ImportanceTier>>(new Set());
+  sort$ = new BehaviorSubject<NarrowSortKey>('diff-asc');
+  sortOpen = false;
+  sortOptions: Array<{ key: NarrowSortKey; label: string; hint?: string }> = [
+    { key: 'diff-asc', label: 'Easiest first' },
+    { key: 'diff-desc', label: 'Hardest first' },
+    { key: 'importance-desc', label: 'Highest importance' },
+    { key: 'title-asc', label: 'Title A-Z' },
+  ];
+  popularTags: string[] = [];
+  selectedTags: string[] = [];
+  tagMatchMode: 'all' | 'any' = 'all';
 
   constructor(
     private route: ActivatedRoute,
@@ -73,6 +95,7 @@ export class TrackDetailComponent implements OnInit {
     const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
     const techInit = (qp.get('tech') as Tech | 'all') || 'all';
     const diffInit = qp.get('diff') ?? null;
+    const impInit = qp.get('imp') ?? null;
     const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
 
     const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
@@ -91,6 +114,13 @@ export class TrackDetailComponent implements OnInit {
     if (parsedDiffs.length) {
       this.diffFilter$.next(new Set(parsedDiffs));
     }
+    const parsedImps = (impInit || '')
+      .split(',')
+      .map((d) => d.trim().toLowerCase())
+      .filter((d) => d === 'low' || d === 'medium' || d === 'high') as ImportanceTier[];
+    if (parsedImps.length) {
+      this.impFilter$.next(new Set(parsedImps));
+    }
     this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
 
     this.track = track;
@@ -101,21 +131,27 @@ export class TrackDetailComponent implements OnInit {
       this.techFilter$,
       this.search$,
       this.diffFilter$,
+      this.impFilter$,
       this.sort$
     ]).pipe(
-      map(([items, kind, tech, term, diffs, sortKey]) => {
+      map(([items, kind, tech, term, diffs, imps, sortKey]) => {
         const t = term.trim().toLowerCase();
         const activeDiffs = diffs?.size
           ? diffs
           : new Set<'easy' | 'intermediate' | 'hard'>(['easy', 'intermediate', 'hard']);
+        const activeImps = imps?.size
+          ? imps
+          : new Set<ImportanceTier>(['low', 'medium', 'high']);
 
         const filtered = (items || []).filter((it) => {
           const kindOk = kind === 'all' ? true : it.kind === kind;
           const techOk = tech === 'all' ? true : it.tech === tech;
           const normDiff = this.normalizeDifficulty(it.difficulty);
+          const impTier = this.tierFromImportance(it.importance);
           const diffOk = activeDiffs.has(normDiff);
+          const impOk = activeImps.has(impTier);
           const termOk = !t || it.title.toLowerCase().includes(t) || (it.description || '').toLowerCase().includes(t);
-          return kindOk && techOk && diffOk && termOk;
+          return kindOk && techOk && diffOk && impOk && termOk;
         });
         return filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
       })
@@ -160,11 +196,51 @@ export class TrackDetailComponent implements OnInit {
     this.syncQueryParams();
   }
 
-  onSortChange(val: 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc') {
-    const allowed = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
-    const next = allowed.has(val) ? val : 'diff-asc';
+  onDifficultyChange(val: { difficulty: 'easy' | 'intermediate' | 'hard'; checked: boolean }) {
+    const next = new Set(this.diffFilter$.value);
+    if (val.checked) {
+      next.add(val.difficulty);
+    } else {
+      next.delete(val.difficulty);
+    }
+    this.diffFilter$.next(next);
+    this.syncQueryParams();
+  }
+
+  onImportanceChange(val: { tier: ImportanceTier; checked: boolean }) {
+    const next = new Set(this.impFilter$.value);
+    if (val.checked) {
+      next.add(val.tier);
+    } else {
+      next.delete(val.tier);
+    }
+    this.impFilter$.next(next);
+    this.syncQueryParams();
+  }
+
+  onSortChange(val: SortKey) {
+    const next = this.clampSortKey(val);
     this.sort$.next(next);
     this.syncQueryParams();
+  }
+
+  toggleSort() { this.sortOpen = !this.sortOpen; }
+  closeSort() { this.sortOpen = false; }
+  setSort(val: SortKey) {
+    this.onSortChange(val);
+    this.sortOpen = false;
+  }
+
+  onTagToggled(_tag: string) { /* tags not used in tracks */ }
+  onClearTags() { this.selectedTags = []; }
+  onTagMatchToggle() { this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all'; }
+
+  get difficultySelection(): Array<'easy' | 'intermediate' | 'hard'> {
+    return Array.from(this.diffFilter$.value);
+  }
+
+  get importanceSelection(): ImportanceTier[] {
+    return Array.from(this.impFilter$.value);
   }
 
   private syncQueryParams() {
@@ -172,6 +248,7 @@ export class TrackDetailComponent implements OnInit {
     const kind = this.kindFilter$.value;
     const tech = this.techFilter$.value;
     const diff = Array.from(this.diffFilter$.value);
+    const imp = Array.from(this.impFilter$.value);
     const sort = this.sort$.value;
 
     const tree = this.router.createUrlTree([], {
@@ -186,6 +263,11 @@ export class TrackDetailComponent implements OnInit {
           : diff.length === 3
             ? null
             : diff.join(','),
+        imp: imp.length === 0
+          ? null
+          : imp.length === 3
+            ? null
+            : imp.join(','),
         sort: sort === 'diff-asc' ? null : sort,
       },
       queryParamsHandling: 'merge',
@@ -325,6 +407,13 @@ export class TrackDetailComponent implements OnInit {
     return 1;
   }
 
+  private tierFromImportance(n?: number | null): ImportanceTier {
+    const v = n ?? 0;
+    if (v >= 4) return 'high';
+    if (v >= 2) return 'medium';
+    return 'low';
+  }
+
   private normalizeDifficulty(d?: string | null): 'easy' | 'intermediate' | 'hard' {
     const v = (d || '').toLowerCase();
     if (v === 'easy') return 'easy';
@@ -335,7 +424,7 @@ export class TrackDetailComponent implements OnInit {
   private sortItems(
     a: TrackItem,
     b: TrackItem,
-    sortKey: 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc',
+    sortKey: NarrowSortKey,
   ) {
     if (sortKey === 'diff-desc') {
       return this.diffRank(b.difficulty) - this.diffRank(a.difficulty) || (b.importance ?? 0) - (a.importance ?? 0);
@@ -346,7 +435,24 @@ export class TrackDetailComponent implements OnInit {
     if (sortKey === 'title-asc') {
       return a.title.localeCompare(b.title);
     }
+    if (sortKey === 'title-desc') {
+      return b.title.localeCompare(a.title);
+    }
     return this.diffRank(a.difficulty) - this.diffRank(b.difficulty) || (b.importance ?? 0) - (a.importance ?? 0);
+  }
+
+  private normalizeSortKey(val: SortKey): SortKey {
+    if (val === 'difficulty-asc') return 'diff-asc';
+    if (val === 'difficulty-desc') return 'diff-desc';
+    return val;
+  }
+
+  private clampSortKey(val: SortKey): NarrowSortKey {
+    const normalized = this.normalizeSortKey(val);
+    if (normalized === 'diff-asc' || normalized === 'diff-desc' || normalized === 'importance-desc' || normalized === 'title-asc' || normalized === 'title-desc') {
+      return normalized;
+    }
+    return 'diff-asc';
   }
 
   private loadFeatured(track: TrackConfig): Observable<TrackItem[]> {

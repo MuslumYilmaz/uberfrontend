@@ -22,15 +22,47 @@
     </div>
 
     <!-- Local tabs for this company -->
-    <div class="mt-4 flex">
-        <a [routerLink]="['all']" class="tabx" routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }">All</a>
+    <div class="mt-4 flex company-tabs">
+        <uf-chip class="company-chip"
+                 label="All"
+                 [routerLink]="['all']"
+                 [toggle]="false"
+                 size="md"
+                 routerLinkActive="active"
+                 #allTab="routerLinkActive"
+                 [routerLinkActiveOptions]="{ exact: true }"
+                 [selected]="allTab.isActive">
+        </uf-chip>
 
-        <a [routerLink]="['coding']" class="tabx" routerLinkActive="active">Coding</a>
+        <uf-chip class="company-chip"
+                 label="Coding"
+                 [routerLink]="['coding']"
+                 [toggle]="false"
+                 size="md"
+                 routerLinkActive="active"
+                 #codingTab="routerLinkActive"
+                 [selected]="codingTab.isActive">
+        </uf-chip>
 
-        <a [routerLink]="['trivia']" class="tabx" routerLinkActive="active">Trivia</a>
+        <uf-chip class="company-chip"
+                 label="Trivia"
+                 [routerLink]="['trivia']"
+                 [toggle]="false"
+                 size="md"
+                 routerLinkActive="active"
+                 #triviaTab="routerLinkActive"
+                 [selected]="triviaTab.isActive">
+        </uf-chip>
 
-        <a [routerLink]="['system']" class="tabx" routerLinkActive="active">System Design</a>
+        <uf-chip class="company-chip"
+                 label="System Design"
+                 [routerLink]="['system']"
+                 [toggle]="false"
+                 size="md"
+                 routerLinkActive="active"
+                 #systemTab="routerLinkActive"
+                 [selected]="systemTab.isActive">
+        </uf-chip>
     </div>
 
 </div>

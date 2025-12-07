@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
-import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -22,6 +21,7 @@ import { MixedQuestion, QuestionService } from '../../../core/services/question.
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
+import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -48,7 +48,9 @@ type SortKey =
   | 'title-asc' | 'title-desc'
   | 'difficulty-asc' | 'difficulty-desc'
   | 'importance-desc' | 'importance-asc'
-  | 'created-desc' | 'created-asc';
+  | 'created-desc' | 'created-asc'
+  // for compatibility with shared filter panel in other contexts
+  | 'diff-asc' | 'diff-desc';
 
 type FocusSlug =
   | 'accessibility'
@@ -135,12 +137,12 @@ function inferCategory(q: any): CategoryKey {
     SliderModule,
     ProgressSpinnerModule,
     InputTextModule,
-    ChipModule,
     FormsModule,
     TooltipModule,
     CodingTechKindTabsComponent,
     CodingFilterPanelComponent,
-    OfflineBannerComponent
+    OfflineBannerComponent,
+    UfChipComponent
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']

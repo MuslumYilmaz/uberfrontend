@@ -35,59 +35,80 @@
             <div class="tab-group">
               <div class="tab-label">Type</div>
               <div class="tab-row">
-                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'all'" (click)="onKindChange('all')">All</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'coding'" (click)="onKindChange('coding')">Coding</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'trivia'" (click)="onKindChange('trivia')">Trivia</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="kindFilter$.value === 'system-design'" (click)="onKindChange('system-design')">System design</button>
+                <uf-chip size="md" class="filter-chip" label="All"
+                         [selected]="kindFilter$.value === 'all'"
+                         (selectedChange)="onKindChange('all')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="Coding"
+                         [selected]="kindFilter$.value === 'coding'"
+                         (selectedChange)="onKindChange('coding')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="Trivia"
+                         [selected]="kindFilter$.value === 'trivia'"
+                         (selectedChange)="onKindChange('trivia')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="System design"
+                         [selected]="kindFilter$.value === 'system-design'"
+                         (selectedChange)="onKindChange('system-design')">
+                </uf-chip>
               </div>
             </div>
 
             <div class="tab-group">
               <div class="tab-label">Tech</div>
               <div class="tab-row">
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'all'" (click)="onTechChange('all')">All tech</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'javascript'" (click)="onTechChange('javascript')">JavaScript</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'react'" (click)="onTechChange('react')">React</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'angular'" (click)="onTechChange('angular')">Angular</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'vue'" (click)="onTechChange('vue')">Vue</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'html'" (click)="onTechChange('html')">HTML</button>
-                <button type="button" class="chip-tab" [class.chip-tab--active]="techFilter$.value === 'css'" (click)="onTechChange('css')">CSS</button>
+                <uf-chip size="md" class="filter-chip" label="All tech"
+                         [selected]="techFilter$.value === 'all'"
+                         (selectedChange)="onTechChange('all')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="JavaScript"
+                         [selected]="techFilter$.value === 'javascript'"
+                         (selectedChange)="onTechChange('javascript')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="React"
+                         [selected]="techFilter$.value === 'react'"
+                         (selectedChange)="onTechChange('react')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="Angular"
+                         [selected]="techFilter$.value === 'angular'"
+                         (selectedChange)="onTechChange('angular')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="Vue"
+                         [selected]="techFilter$.value === 'vue'"
+                         (selectedChange)="onTechChange('vue')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="HTML"
+                         [selected]="techFilter$.value === 'html'"
+                         (selectedChange)="onTechChange('html')">
+                </uf-chip>
+                <uf-chip size="md" class="filter-chip" label="CSS"
+                         [selected]="techFilter$.value === 'css'"
+                         (selectedChange)="onTechChange('css')">
+                </uf-chip>
               </div>
             </div>
           </div>
-          <div class="filter-row tabs-row-inline">
-            <div class="filter-input-wrap">
-              <div class="tab-label">Search</div>
-              <input #searchBox class="filter-input" type="search" placeholder="Search questions" [value]="searchTerm" (input)="onSearch(searchBox.value)" />
-            </div>
-            <div class="tab-group">
-              <div class="tab-label">Difficulty</div>
-              <div class="tab-row pill-box">
-                <label class="check-chip" [class.active]="diffFilter$.value.has('easy')">
-                  <input type="checkbox" [checked]="diffFilter$.value.has('easy')" (change)="onDiffToggle('easy')" />
-                  <span>Easy</span>
-                </label>
-                <label class="check-chip" [class.active]="diffFilter$.value.has('intermediate')">
-                  <input type="checkbox" [checked]="diffFilter$.value.has('intermediate')" (change)="onDiffToggle('intermediate')" />
-                  <span>Intermediate</span>
-                </label>
-                <label class="check-chip" [class.active]="diffFilter$.value.has('hard')">
-                  <input type="checkbox" [checked]="diffFilter$.value.has('hard')" (change)="onDiffToggle('hard')" />
-                  <span>Hard</span>
-                </label>
-              </div>
-            </div>
 
-            <div class="sort-group">
-              <div class="tab-label">Sort</div>
-              <select class="sort-select" [ngModel]="sort$.value" (ngModelChange)="onSortChange($event)">
-                <option value="diff-asc">Easiest first</option>
-                <option value="diff-desc">Hardest first</option>
-                <option value="importance-desc">Highest importance</option>
-                <option value="title-asc">Title A-Z</option>
-              </select>
-            </div>
-          </div>
+          <app-coding-filter-panel
+            [searchTerm]="searchTerm"
+            [difficultySelection]="difficultySelection"
+            [importanceSelection]="importanceSelection"
+            [popularTags]="popularTags"
+            [selectedTags]="selectedTags"
+            [tagMatchMode]="tagMatchMode"
+            [sortOpen]="sortOpen"
+            [sortOptions]="sortOptions"
+            [currentSort]="sort$.value"
+            (searchTermChange)="onSearch($event)"
+            (difficultyChange)="onDifficultyChange($event)"
+            (importanceChange)="onImportanceChange($event)"
+            (tagToggled)="onTagToggled($event)"
+            (clearAllTags)="onClearTags()"
+            (tagMatchModeToggle)="onTagMatchToggle()"
+            (sortToggle)="toggleSort()"
+            (sortClose)="closeSort()"
+            (sortChange)="setSort($event)">
+          </app-coding-filter-panel>
         </div>
 
         <section class="list">

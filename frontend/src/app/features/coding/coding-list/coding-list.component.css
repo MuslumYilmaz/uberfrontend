@@ -84,34 +84,17 @@ h1 { color: var(--ink); }
 .imp-high   { border-color: rgba(239,68,68,.24);   background: rgba(239,68,68,.10); }
 
 /* ------------------------------
-   PRIME NG TAG CHIPS (compact)
+   TAG CHIPS (row-level filters)
    ------------------------------ */
-:host ::ng-deep .p-chip.custom-chip {
-  height: 20px !important;
-  padding: 0 8px !important;
-  border-radius: 9999px !important;
-  background: var(--chip-bg) !important;
-  border: 1px solid var(--border) !important;
-  color: var(--ink-sub) !important;
-}
-:host ::ng-deep .p-chip.custom-chip .p-chip-text {
-  font-size: 12px !important; line-height: 18px !important; color: var(--ink-sub) !important;
-}
-:host ::ng-deep .p-chip.custom-chip .p-chip-icon,
-:host ::ng-deep .p-chip.custom-chip .p-chip-remove-icon {
-  font-size: 12px !important; color: var(--ink-dim) !important;
-}
-
-/* clickable state when tag used as filter */
-:host ::ng-deep .tag-clickable { cursor:pointer; }
-:host ::ng-deep .tag-clickable:hover .p-chip { background: var(--chip-hover) !important; }
-:host ::ng-deep .tag-clickable.active .p-chip {
-  background: var(--chip-active) !important;
-  border-color: var(--accent-strong) !important;
-  color: #fff !important;
-  box-shadow:
-    0 0 0 2px var(--ring-soft) inset,
-    0 0 0 1.5px var(--ring);
+.tag-chip {
+  --uf-chip-bg: var(--chip-bg);
+  --uf-chip-hover: var(--chip-hover);
+  --uf-chip-active: var(--chip-active);
+  --uf-chip-border: var(--border);
+  --uf-chip-selected-bg: var(--chip-active);
+  --uf-chip-selected-border: var(--accent-strong);
+  --uf-chip-ring: var(--ring);
+  font-weight: 600;
 }
 
 /* chips cell spacing */

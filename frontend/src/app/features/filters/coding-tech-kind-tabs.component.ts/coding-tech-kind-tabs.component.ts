@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import type { Tech } from '../../../core/models/user.model';
+import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
 
 // keep in sync with parent
 type Kind = 'coding' | 'trivia' | 'all';
@@ -13,7 +14,7 @@ type ListSource = 'tech' | 'company' | 'global-coding';
 @Component({
   selector: 'app-coding-tech-kind-tabs',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, UfChipComponent],
   templateUrl: './coding-tech-kind-tabs.component.html',
   styleUrls: ['./coding-tech-kind-tabs.component.css'],
 })

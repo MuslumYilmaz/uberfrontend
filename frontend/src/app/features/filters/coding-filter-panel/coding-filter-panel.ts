@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
 
 import type { Difficulty } from '../../../core/models/question.model';
+import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
 
 type ImportanceTier = 'low' | 'medium' | 'high';
 
@@ -14,12 +13,14 @@ type SortKey =
   | 'title-asc' | 'title-desc'
   | 'difficulty-asc' | 'difficulty-desc'
   | 'importance-desc' | 'importance-asc'
-  | 'created-desc' | 'created-asc';
+  | 'created-desc' | 'created-asc'
+  // Track-detail uses these names; keep here for compatibility.
+  | 'diff-asc' | 'diff-desc';
 
 @Component({
   selector: 'app-coding-filter-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, ChipModule, InputTextModule],
+  imports: [CommonModule, FormsModule, InputTextModule, UfChipComponent],
   templateUrl: './coding-filter-panel.component.html',
   styleUrls: ['./coding-filter-panel.css'],
 })
@@ -62,15 +63,4 @@ export class CodingFilterPanelComponent {
     return this.selectedTags.includes(tag);
   }
 
-  onDifficultyInputChange(difficulty: Difficulty, ev: Event) {
-    const input = ev.target as HTMLInputElement | null;
-    const checked = !!input?.checked;
-    this.difficultyChange.emit({ difficulty, checked });
-  }
-
-  onImportanceInputChange(tier: ImportanceTier, ev: Event) {
-    const input = ev.target as HTMLInputElement | null;
-    const checked = !!input?.checked;
-    this.importanceChange.emit({ tier, checked });
-  }
 }

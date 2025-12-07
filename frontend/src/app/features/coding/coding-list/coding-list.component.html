@@ -91,10 +91,14 @@
 
           <!-- from: gap-2 -->
           <div class="col-span-2 flex flex-wrap gap-1">
-            <p-chip *ngFor="let tag of (q.tags || [])" [label]="tag"
-              [styleClass]="'custom-chip tag-clickable ' + ((selectedTags$ | async)?.includes(tag) ? 'active' : '')"
-              (click)="toggleTag(tag)">
-            </p-chip>
+            <uf-chip
+              *ngFor="let tag of (q.tags || [])"
+              size="sm"
+              class="tag-chip"
+              [selected]="(selectedTags$ | async)?.includes(tag) || false"
+              (selectedChange)="toggleTag(tag)">
+              {{ tag }}
+            </uf-chip>
           </div>
 
           <div class="col-span-1 text-right">

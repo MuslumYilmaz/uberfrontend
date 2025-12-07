@@ -15,7 +15,8 @@ export type SortKey =
   | 'title-asc' | 'title-desc'
   | 'difficulty-asc' | 'difficulty-desc'
   | 'importance-desc' | 'importance-asc'
-  | 'created-desc' | 'created-asc';
+  | 'created-desc' | 'created-asc'
+  | 'diff-asc' | 'diff-desc';
 
 export interface CodingListFilterState {
   searchTerm: string;

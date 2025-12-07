@@ -1,0 +1,91 @@
+:host {
+  --uf-chip-bg: var(--chip-bg, rgba(255, 255, 255, 0.04));
+  --uf-chip-border: var(--border, rgba(255, 255, 255, 0.14));
+  --uf-chip-hover: var(--chip-hover, rgba(255, 255, 255, 0.07));
+  --uf-chip-active: var(--chip-active, rgba(255, 255, 255, 0.12));
+  --uf-chip-selected-bg: var(--chip-selected-bg, #1f2937);
+  --uf-chip-selected-border: var(--chip-selected-border, rgba(255, 255, 255, 0.32));
+  --uf-chip-ink: var(--ink-sub, #cbd5e1);
+  --uf-chip-ink-strong: var(--ink, #e7eaee);
+  --uf-chip-ring: var(--ring, rgba(255, 255, 255, 0.24));
+
+  display: inline-block;
+}
+
+.uf-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--uf-chip-border);
+  background: var(--uf-chip-bg);
+  color: var(--uf-chip-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.07s ease;
+}
+
+.uf-chip--sm {
+  padding: 6px 11px;
+  font-size: 12px;
+}
+
+.uf-chip--md {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.uf-chip--filled {
+  background: var(--uf-chip-active);
+  color: var(--uf-chip-ink-strong);
+}
+
+.uf-chip:not(.uf-chip--disabled):hover {
+  background: var(--uf-chip-hover);
+  color: #fff;
+}
+
+.uf-chip:not(.uf-chip--disabled):active {
+  transform: translateY(0.5px) scale(0.99);
+  background: var(--uf-chip-active);
+}
+
+.uf-chip--selected {
+  background: var(--uf-chip-selected-bg);
+  border-color: var(--uf-chip-selected-border);
+  color: var(--uf-chip-ink-strong);
+  box-shadow:
+    0 0 0 1.5px var(--uf-chip-ring),
+    0 0 0 3px rgba(0, 0, 0, 0.32);
+}
+
+.uf-chip:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--uf-chip-ring),
+    0 0 0 4px rgba(0, 0, 0, 0.35);
+}
+
+.uf-chip--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.uf-chip__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+}

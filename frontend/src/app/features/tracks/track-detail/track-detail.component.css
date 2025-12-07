@@ -1,5 +1,18 @@
 :host {
   display: block;
+  /* Shared chip/filter palette (aligned with coding list) */
+  --surface-1: #121213;
+  --border: rgba(255, 255, 255, 0.14);
+  --border-weak: rgba(255, 255, 255, 0.10);
+  --chip-bg: rgba(255, 255, 255, 0.04);
+  --chip-hover: rgba(255, 255, 255, 0.06);
+  --chip-active: rgba(255, 255, 255, 0.12);
+  --accent-strong: rgba(255, 255, 255, 0.38);
+  --ring: rgba(255, 255, 255, 0.22);
+  --ring-soft: rgba(255, 255, 255, 0.10);
+  --ink: #e7eaee;
+  --ink-sub: rgba(255, 255, 255, 0.78);
+  --ink-dim: rgba(255, 255, 255, 0.62);
 }
 
 .track {
@@ -203,55 +216,14 @@ h1 {
   gap: 6px;
 }
 
-.check-chip {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #d7dce4;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
-}
-
-.check-chip:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
-}
-
-.check-chip.active {
-  background: rgba(37, 99, 235, 0.12);
-  border-color: rgba(37, 99, 235, 0.65);
-  color: #ecf2ff;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
-}
-
-.check-chip input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.check-chip::before {
-  content: '';
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  display: inline-block;
-  background: transparent;
-  transition: background-color 0.12s ease, border-color 0.12s ease;
-}
-
-.check-chip.active::before {
-  background: rgba(37, 99, 235, 0.9);
-  border-color: rgba(37, 99, 235, 0.9);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+.filter-chip {
+  --uf-chip-bg: rgba(255, 255, 255, 0.02);
+  --uf-chip-hover: rgba(255, 255, 255, 0.08);
+  --uf-chip-active: rgba(255, 255, 255, 0.12);
+  --uf-chip-border: rgba(255, 255, 255, 0.12);
+  --uf-chip-selected-bg: #1f2937;
+  --uf-chip-selected-border: rgba(255, 255, 255, 0.28);
+  font-weight: 700;
 }
 
 .filter-input {
@@ -285,40 +257,6 @@ h1 {
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
 }
-
-.chip-tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 13px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #d7dce4;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, transform 0.06s ease;
-}
-
-.chip-tab:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #fff;
-}
-
-.chip-tab:active {
-  transform: scale(0.98);
-}
-
-.chip-tab--active {
-  background: linear-gradient(120deg, rgba(37, 99, 235, 0.26), rgba(37, 99, 235, 0.12));
-  border-color: rgba(37, 99, 235, 0.65);
-  color: #ecf2ff;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.45);
-}
-
-.chip-tab--active::before { display: none; }
 
 .sort-group {
   display: flex;
