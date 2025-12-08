@@ -1149,7 +1149,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   private dedupeFrameworkRows(list: Row[]): Row[] {
-    if (this.source !== 'global-coding') return list;
+    const shouldDedupe = this.source === 'global-coding' || this.source === 'company';
+    if (!shouldDedupe) return list;
 
     const nonFam: Row[] = [];
     const buckets = new Map<string, Row[]>();

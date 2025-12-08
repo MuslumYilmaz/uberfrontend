@@ -42,6 +42,9 @@ type SortKey =
   | 'created-desc' | 'created-asc'
   | 'diff-asc' | 'diff-desc';
 type NarrowSortKey = 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | 'title-desc';
+type TrackTechFilter = 'all' | 'javascript' | 'html' | 'css' | 'ui';
+
+const UI_TECHS: ReadonlySet<Tech> = new Set<Tech>(['react', 'angular', 'vue']);
 
 @Component({
   selector: 'app-track-detail',
@@ -56,7 +59,7 @@ export class TrackDetailComponent implements OnInit {
   filtered$?: Observable<TrackItem[]>;
 
   kindFilter$ = new BehaviorSubject<TrackQuestionKind | 'all'>('all');
-  techFilter$ = new BehaviorSubject<Tech | 'all'>('all');
+  techFilter$ = new BehaviorSubject<TrackTechFilter>('all');
   search$ = new BehaviorSubject<string>('');
   searchTerm = '';
   diffFilter$ = new BehaviorSubject<Set<'easy' | 'intermediate' | 'hard'>>(new Set());
@@ -93,19 +96,18 @@ export class TrackDetailComponent implements OnInit {
     const qp = this.route.snapshot.queryParamMap;
     const qInit = qp.get('q') || '';
     const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
-    const techInit = (qp.get('tech') as Tech | 'all') || 'all';
+    const techInit = qp.get('tech');
     const diffInit = qp.get('diff') ?? null;
     const impInit = qp.get('imp') ?? null;
     const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
 
     const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
-    const allowedTechs = new Set<Tech | 'all'>(['all', 'javascript', 'react', 'angular', 'vue', 'html', 'css']);
     const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
 
     this.searchTerm = qInit;
     this.search$.next(qInit);
     this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
-    this.techFilter$.next(allowedTechs.has(techInit) ? techInit : 'all');
+    this.techFilter$.next(this.normalizeTechFilter(techInit));
     const parsedDiffs = (diffInit || '')
       .split(',')
       .map((d) => d.trim())
@@ -145,7 +147,11 @@ export class TrackDetailComponent implements OnInit {
 
         const filtered = (items || []).filter((it) => {
           const kindOk = kind === 'all' ? true : it.kind === kind;
-          const techOk = tech === 'all' ? true : it.tech === tech;
+          const techOk = tech === 'all'
+            ? true
+            : tech === 'ui'
+              ? this.isUiTech(it.tech)
+              : it.tech === tech;
           const normDiff = this.normalizeDifficulty(it.difficulty);
           const impTier = this.tierFromImportance(it.importance);
           const diffOk = activeDiffs.has(normDiff);
@@ -153,7 +159,8 @@ export class TrackDetailComponent implements OnInit {
           const termOk = !t || it.title.toLowerCase().includes(t) || (it.description || '').toLowerCase().includes(t);
           return kindOk && techOk && diffOk && impOk && termOk;
         });
-        return filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
+        const sorted = filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
+        return tech === 'ui' ? this.dedupeUiFamilies(sorted) : sorted;
       })
     );
 
@@ -178,9 +185,8 @@ export class TrackDetailComponent implements OnInit {
     this.syncQueryParams();
   }
 
-  onTechChange(val: Tech | 'all') {
-    const allowed = new Set<Tech | 'all'>(['all', 'javascript', 'react', 'angular', 'vue', 'html', 'css']);
-    const next = allowed.has(val) ? val : 'all';
+  onTechChange(val: TrackTechFilter | Tech) {
+    const next = this.normalizeTechFilter(val);
     this.techFilter$.next(next);
     this.syncQueryParams();
   }
@@ -391,11 +397,32 @@ export class TrackDetailComponent implements OnInit {
     return 'diff-mid';
   }
 
+  private familyKey(item: TrackItem): string | null {
+    const fam = FRAMEWORK_FAMILY_BY_ID.get(item.id);
+    return fam ? fam.key : null;
+  }
+
+  private dedupeUiFamilies(items: TrackItem[]): TrackItem[] {
+    const seen = new Set<string>();
+    const result: TrackItem[] = [];
+    for (const it of items) {
+      const key = this.familyKey(it) ?? it.id;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      result.push(it);
+    }
+    return result;
+  }
+
+  private isUiTech(tech?: Tech | null): boolean {
+    return tech ? UI_TECHS.has(tech) : false;
+  }
+
   private inferCategory(tech?: Tech | null): string {
     if (!tech) return 'User interface';
     if (tech === 'html' || tech === 'css') return 'HTML & CSS';
     if (tech === 'javascript') return 'JavaScript';
-    if (tech === 'react' || tech === 'angular' || tech === 'vue') return 'User interface';
+    if (this.isUiTech(tech)) return 'User interface';
     return 'User interface';
   }
 
@@ -419,6 +446,15 @@ export class TrackDetailComponent implements OnInit {
     if (v === 'easy') return 'easy';
     if (v === 'hard') return 'hard';
     return 'intermediate';
+  }
+
+  private normalizeTechFilter(val: string | TrackTechFilter | Tech | null): TrackTechFilter {
+    const v = (val || '').toString().toLowerCase();
+    if (v === 'all') return 'all';
+    if (v === 'javascript' || v === 'html' || v === 'css') return v as TrackTechFilter;
+    if (v === 'ui' || v === 'user-interface') return 'ui';
+    if (v === 'react' || v === 'angular' || v === 'vue') return 'ui';
+    return 'all';
   }
 
   private sortItems(
