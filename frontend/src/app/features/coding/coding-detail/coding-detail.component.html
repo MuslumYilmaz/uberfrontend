@@ -210,10 +210,10 @@
               <h2 class="text-base font-semibold mb-2">Solution</h2>
 
               <!-- Overview -->
-              <section class="space-y-2 mb-5" *ngIf="structuredSolution()?.overview">
+              <section class="space-y-2 mb-5" *ngIf="structuredSolution().overview">
                 <h3 class="text-sm font-semibold opacity-90">Overview</h3>
                 <div class="solution-prose prose prose-invert max-w-none"
-                  [innerHTML]="md(structuredSolution()?.overview)"></div>
+                  [innerHTML]="md(structuredSolution().overview)"></div>
               </section>
 
               <!-- Approaches -->

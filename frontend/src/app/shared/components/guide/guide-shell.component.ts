@@ -182,7 +182,7 @@ type LeftNav = {
     <aside class="left" *ngIf="leftNav">
       <div #leftAnchor></div>
       <div #leftPanel class="left-fixed">
-        <div class="title-sm">{{ leftNav?.title || 'Current guide' }}</div>
+        <div class="title-sm">{{ leftNav.title || 'Current guide' }}</div>
         <ng-container *ngFor="let s of leftNav!.sections">
           <div class="sec">{{ s.title }}</div>
           <a *ngFor="let it of s.items"

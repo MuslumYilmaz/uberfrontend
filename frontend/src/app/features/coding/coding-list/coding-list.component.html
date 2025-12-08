@@ -4,7 +4,7 @@
   <div class="container mx-auto max-w-7xl px-4 py-6">
 
     <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
-      [tech]="tech ?? null" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
+      [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
       [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
       [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
       [filteredCount]="(filteredCount$ | async) || 0" (techSelected)="toggleTech($event)"

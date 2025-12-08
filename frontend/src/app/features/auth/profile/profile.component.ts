@@ -64,7 +64,7 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
             <h4>Name</h4>
             <p class="desc">Shown on your profile. Max 32 characters.</p>
             <input [(ngModel)]="form.username" maxlength="32" />
-            <div class="helper">{{ form.username?.length || 0 }}/32</div>
+            <div class="helper">{{ form.username.length || 0 }}/32</div>
             <button class="btn-save" [disabled]="saving() || !dirty()" (click)="save()">Save changes</button>
           </div>
 
@@ -79,7 +79,7 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
             <h4>Bio</h4>
             <p class="desc">A short bio (max 280 chars).</p>
             <textarea [(ngModel)]="form.bio" maxlength="280"></textarea>
-            <div class="helper">{{ form.bio?.length || 0 }}/280</div>
+            <div class="helper">{{ form.bio.length || 0 }}/280</div>
             <button class="btn-save" [disabled]="saving() || !dirty()" (click)="save()">Save changes</button>
           </div>
 
