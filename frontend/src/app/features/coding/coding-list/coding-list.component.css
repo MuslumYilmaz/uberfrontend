@@ -41,6 +41,7 @@ h1 { color: var(--ink); }
 .list {
   display: grid;
   gap: 10px;
+  min-height: 50vh; /* prevent scroll jump when results shrink */
 }
 
 .list-row {

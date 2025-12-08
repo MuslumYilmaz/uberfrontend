@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
@@ -489,6 +489,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private qs: QuestionService,
     private router: Router,
+    private location: Location,
     private listState: CodingListStateService
   ) {
     this.debug('ctor', {
@@ -930,6 +931,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return map[slug] ?? slug.replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
   }
 
+  private replaceQueryParams(params: Record<string, any>) {
+    const tree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams: params,
+      queryParamsHandling: 'merge',
+    });
+    this.location.replaceState(this.router.serializeUrl(tree));
+  }
+
   // GLOBAL filters
   toggleTech(key: Tech) {
     const curr = this.selectedTech$.value;
@@ -940,11 +950,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     // Formats view'de URL'yi kirletme, sadece state kalsın
     if (this.source === 'global-coding' && !this.isFormatsMode()) {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { tech: next ?? null },
-        queryParamsHandling: 'merge',
-      });
+      this.replaceQueryParams({ tech: next ?? null });
     }
   }
 
@@ -953,11 +959,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       this.selectedKind$.next(k);
 
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { kind: k === 'all' ? null : k },
-        queryParamsHandling: 'merge',
-      });
+      this.replaceQueryParams({ kind: k === 'all' ? null : k });
     } else {
       this.kind = k as any;
     }
@@ -1239,11 +1241,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     // Hem tech hem formats için q'yu URL'ye yaz
     if (this.source === 'global-coding') {
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { q: term || null },
-        queryParamsHandling: 'merge',
-      });
+      this.replaceQueryParams({ q: term || null });
     }
   }
 
@@ -1262,21 +1260,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private syncDiffsToQuery(next: Difficulty[]) {
     if (this.source !== 'global-coding' || this.isFormatsMode()) return;
     const value = next.length ? next.join(',') : null;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { diff: value },
-      queryParamsHandling: 'merge',
-    });
+    this.replaceQueryParams({ diff: value });
   }
 
   private syncImpToQuery(next: ImportanceTier[]) {
     if (this.source !== 'global-coding' || this.isFormatsMode()) return;
     const value = next.length ? next.join(',') : null;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { imp: value },
-      queryParamsHandling: 'merge',
-    });
+    this.replaceQueryParams({ imp: value });
   }
 
   private onViewModeChange(next: ViewMode) {

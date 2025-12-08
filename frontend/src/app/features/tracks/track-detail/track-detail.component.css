@@ -352,6 +352,7 @@ h1 {
   margin-top: 32px;
   display: grid;
   gap: 14px;
+  min-height: 50vh; /* keep layout height stable when search clears results */
 }
 
 .list-head {
