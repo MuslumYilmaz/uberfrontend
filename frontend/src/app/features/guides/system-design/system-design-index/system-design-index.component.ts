@@ -21,11 +21,14 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
 
     .card {
       display:flex; align-items:center; gap:14px;
-      border:1px solid rgba(255,255,255,.14); border-radius:12px;
-      background:linear-gradient(180deg,#141414,#101010);
-      padding:14px 14px; text-decoration:none; color:inherit;
+      --uf-card-bg: linear-gradient(180deg,#141414,#101010);
+      --uf-card-bg-hover: rgba(255,255,255,.05);
+      --uf-card-border: rgba(255,255,255,.14);
+      --uf-card-border-strong: rgba(255,255,255,.24);
+      --uf-card-shadow: 0 10px 26px rgba(0,0,0,.32);
+      --uf-card-shadow-hover: 0 16px 40px rgba(0,0,0,.4);
+      padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--uf-card-radius, 12px);
     }
-    .card:hover { background: rgba(255,255,255,.06); }
     .num {
       width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
       border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); font-size:12px;
@@ -34,7 +37,8 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
     .title { font-weight:700; }
     .sub { opacity:.75; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .mins { font-size:12px; opacity:.7; }
-    .arrow { opacity:.6; }
+    .arrow { opacity:.6; transition: transform 160ms ease, opacity 160ms ease; }
+    .card:hover .arrow { opacity:1; transform: translateX(4px); }
   `],
   template: `
     <div class="wrap">
@@ -50,7 +54,7 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
         <div class="sec-head">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items; let ii = index"
-           class="card"
+           class="card uf-card"
            [routerLink]="['/','guides','system-design', it.slug]">
           <div class="num">{{ starts()[gi] + ii + 1 }}</div>
           <div class="body">

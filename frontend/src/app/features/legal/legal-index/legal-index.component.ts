@@ -18,7 +18,7 @@ import { RouterModule } from '@angular/router';
       </header>
 
       <div class="cards">
-        <a class="card" [routerLink]="['/legal/terms']">
+        <a class="card uf-card" [routerLink]="['/legal/terms']">
           <div class="card-head">
             <span class="pill">Policy</span>
             <span class="hint">User agreement</span>
@@ -27,7 +27,7 @@ import { RouterModule } from '@angular/router';
           <p>Use of UberFrontend, acceptable use, ownership, and limitations of liability.</p>
         </a>
 
-        <a class="card" [routerLink]="['/legal/privacy']">
+        <a class="card uf-card" [routerLink]="['/legal/privacy']">
           <div class="card-head">
             <span class="pill pill-green">Privacy</span>
             <span class="hint">Data handling</span>
@@ -36,7 +36,7 @@ import { RouterModule } from '@angular/router';
           <p>How we collect, use, store, and transfer your personal information.</p>
         </a>
 
-        <a class="card" [routerLink]="['/legal/cookies']">
+        <a class="card uf-card" [routerLink]="['/legal/cookies']">
           <div class="card-head">
             <span class="pill pill-blue">Cookies</span>
             <span class="hint">Preferences</span>
@@ -91,20 +91,18 @@ import { RouterModule } from '@angular/router';
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
     .card {
+      --uf-card-bg: linear-gradient(145deg, #0f172a, #0b1220);
+      --uf-card-bg-hover: linear-gradient(145deg, #111b32, #0d1524);
+      --uf-card-border: #1f2634;
+      --uf-card-border-strong: #2b3550;
+      --uf-card-radius: 14px;
+      --uf-card-shadow: 0 6px 26px rgba(0,0,0,0.28);
+      --uf-card-shadow-hover: 0 12px 34px rgba(0,0,0,0.32);
       display: block;
-      border: 1px solid #1f2634;
-      background: linear-gradient(145deg, #0f172a, #0b1220);
-      border-radius: 14px;
+      border-radius: var(--uf-card-radius);
       padding: 16px 16px 14px;
       color: inherit;
       text-decoration: none;
-      transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
-      box-shadow: 0 6px 26px rgba(0,0,0,0.28);
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: #2b3550;
-      box-shadow: 0 12px 34px rgba(0,0,0,0.32);
     }
     .card-head {
       display: flex;

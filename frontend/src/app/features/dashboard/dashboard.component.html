@@ -10,7 +10,7 @@
             <div class="grid grid-2">
                 <ng-container *ngFor="let card of recommended; trackBy: trackByTitle">
                     <!-- Enabled -->
-                    <a *ngIf="card.route && !card.disabled; else recDisabled" class="row" [routerLink]="card.route"
+                    <a *ngIf="card.route && !card.disabled; else recDisabled" class="row uf-card" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">
@@ -22,7 +22,7 @@
 
                     <!-- Disabled -->
                     <ng-template #recDisabled>
-                        <div class="row disabled">
+                        <div class="row uf-card disabled">
                             <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                             <div class="row-body">
                                 <div class="row-title">
@@ -43,7 +43,7 @@
         <section class="block">
             <div class="block-title">Learning tracks</div>
             <div class="grid grid-2">
-                <a *ngFor="let card of tracks; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                <a *ngFor="let card of tracks; trackBy: trackByTitle" class="row uf-card" [routerLink]="card.route"
                     [queryParams]="card.queryParams">
                     <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                     <div class="row-body">
@@ -62,7 +62,7 @@
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="grid grid-2">
-                    <a *ngFor="let card of companyGuides; trackBy: trackByTitle" class="row" [routerLink]="card.route">
+                    <a *ngFor="let card of companyGuides; trackBy: trackByTitle" class="row uf-card" [routerLink]="card.route">
                         <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">
                             <div class="row-title">{{ card.title }}</div>
@@ -83,7 +83,7 @@
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="grid grid-2">
-                    <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row uf-card" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-icon">
                             <i [ngClass]="piIcon(card.icon)"></i>
@@ -108,7 +108,7 @@
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="grid grid-2">
-                    <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row uf-card" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-icon">
                             <i [ngClass]="piIcon(card.icon)"></i>
@@ -133,7 +133,7 @@
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="grid grid-2">
-                    <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row" [routerLink]="card.route"
+                    <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row uf-card" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">

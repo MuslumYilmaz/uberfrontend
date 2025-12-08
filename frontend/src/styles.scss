@@ -39,6 +39,52 @@ html, body {
   }
 }
 
+/* ---- Shared card surface ---- */
+:root {
+  --uf-card-bg: rgba(255, 255, 255, 0.02);
+  --uf-card-bg-strong: rgba(255, 255, 255, 0.05);
+  --uf-card-bg-hover: var(--uf-card-bg-strong);
+  --uf-card-border: rgba(255, 255, 255, 0.08);
+  --uf-card-border-strong: rgba(255, 255, 255, 0.16);
+  --uf-card-radius: 12px;
+  --uf-card-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  --uf-card-shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.42);
+  --uf-card-focus: #7dd3fc;
+}
+
+.uf-card {
+  position: relative;
+  background: var(--uf-card-bg);
+  border: 1px solid var(--uf-card-border);
+  border-radius: var(--uf-card-radius);
+  box-shadow: var(--uf-card-shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease,
+              border-color 180ms ease, background-color 180ms ease;
+  will-change: transform;
+}
+
+.uf-card:hover {
+  background: var(--uf-card-bg-hover);
+  border-color: var(--uf-card-border-strong);
+  box-shadow: var(--uf-card-shadow-hover);
+  transform: translateY(-1px) scale(1.01);
+}
+
+.uf-card:focus-visible {
+  outline: 2px solid var(--uf-card-focus);
+  outline-offset: 2px;
+  box-shadow: var(--uf-card-shadow-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uf-card {
+    transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  }
+  .uf-card:hover {
+    transform: none;
+  }
+}
+
 .surface-card {
   border: 1px solid #e5e7eb /* Tailwind’s gray-200 hex */;
   border-radius: 0.5rem;     /* matches rounded-lg */

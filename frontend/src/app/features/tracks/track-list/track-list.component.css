@@ -107,23 +107,21 @@
 }
 
 .card {
+  --uf-card-bg: linear-gradient(145deg, #0f172a, #0d111a);
+  --uf-card-bg-hover: linear-gradient(145deg, #121c32, #0f151f);
+  --uf-card-border: rgba(255, 255, 255, 0.08);
+  --uf-card-border-strong: rgba(255, 255, 255, 0.18);
+  --uf-card-radius: 14px;
+  --uf-card-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+  --uf-card-shadow-hover: 0 18px 46px rgba(0, 0, 0, 0.46);
   display: block;
   padding: 18px 18px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(145deg, #0f172a, #0d111a);
+  border-radius: var(--uf-card-radius);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s ease, transform 0.12s ease, box-shadow 0.2s ease;
   min-height: 220px;
   position: relative;
   overflow: hidden;
-}
-
-.card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  transform: translateY(-2px);
 }
 
 .card::before {

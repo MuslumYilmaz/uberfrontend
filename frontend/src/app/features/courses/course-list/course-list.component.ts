@@ -15,7 +15,7 @@ import { CoursesService } from '../../../core/services/course.service';
 
       <div class="grid">
         <a *ngFor="let c of courses"
-           class="card"
+           class="card uf-card"
            [routerLink]="['/courses', c.id]"
            [attr.aria-label]="c.title">
 

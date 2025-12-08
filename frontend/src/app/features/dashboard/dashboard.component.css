@@ -68,26 +68,26 @@
 }
 
 .row {
+  --uf-card-bg: #12141b;
+  --uf-card-bg-hover: #171b26;
+  --uf-card-border: rgba(255, 255, 255, 0.08);
+  --uf-card-border-strong: rgba(255, 255, 255, 0.18);
+  --uf-card-radius: 12px;
+  --uf-card-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+  --uf-card-shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.45);
   display: grid;
   grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  background: #12141b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border-radius: var(--uf-card-radius);
   text-decoration: none;
   color: #e5e9ee;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease,
-    transform 0.02s ease;
-}
-.row:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 .row.disabled {
   cursor: default;
   opacity: 0.7;
+  pointer-events: none;
 }
 .row-step {
   width: 36px;

@@ -30,10 +30,10 @@
         </div>
 
         <!-- Rows -->
-        <div *ngFor="let q of questions" class="list-row grid grid-cols-12 gap-4 items-center px-6 py-4 relative">
-          <a [routerLink]="linkTo(q)" [state]="stateForNav(questions, q, (companySlug$ | async) || null)"
-            class="absolute inset-0 z-10"></a>
-
+        <a *ngFor="let q of questions"
+           class="list-row uf-card grid grid-cols-12 gap-4 items-center px-6 py-4"
+           [routerLink]="linkTo(q)"
+           [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
           <div class="col-span-5">
             <div class="text-lg font-semibold text-white">{{ q.title }}</div>
 
@@ -41,7 +41,7 @@
             <div class="text-xs text-gray-400 mt-0.5 desc-tip-target" [pTooltip]="descriptionText(q)"
               tooltipPosition="bottom" appendTo="body" [tooltipStyleClass]="'desc-tip'" [showDelay]="150"
               [hideDelay]="0" [autoHide]="true" [life]="0" [escape]="false" [tooltipDisabled]="!descriptionText(q)"
-              (click)="go(q, questions)" tabindex="0" (keydown.enter)="go(q, questions)">
+              tabindex="0">
               {{ preview(descriptionText(q), 120) }}
             </div>
 
@@ -106,7 +106,7 @@
               <span>→</span>
             </div>
           </div>
-        </div>
+        </a>
       </ng-container>
 
       <ng-template #loading>

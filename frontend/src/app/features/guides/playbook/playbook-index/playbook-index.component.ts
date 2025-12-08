@@ -19,17 +19,21 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .sec-head { font-weight: 800; opacity:.95; margin-bottom: 10px; }
 
     .card { display:flex; align-items:center; gap:14px;
-      border:1px solid rgba(255,255,255,.14); border-radius:12px;
-      background:linear-gradient(180deg,#141414,#101010);
-      padding:14px 14px; text-decoration:none; color:inherit; }
-    .card:hover { background: rgba(255,255,255,.06); }
+      --uf-card-bg: linear-gradient(180deg,#141414,#101010);
+      --uf-card-bg-hover: rgba(255,255,255,.05);
+      --uf-card-border: rgba(255,255,255,.14);
+      --uf-card-border-strong: rgba(255,255,255,.24);
+      --uf-card-shadow: 0 10px 26px rgba(0,0,0,.32);
+      --uf-card-shadow-hover: 0 16px 40px rgba(0,0,0,.4);
+      padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--uf-card-radius, 12px); }
     .num { width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
       border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); font-size:12px; }
     .body { flex:1; min-width:0; }
     .title { font-weight:700; }
     .sub { opacity:.75; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .mins { font-size:12px; opacity:.7; }
-    .arrow { opacity:.6; }
+    .arrow { opacity:.6; transition: transform 160ms ease, opacity 160ms ease; }
+    .card:hover .arrow { opacity:1; transform: translateX(4px); }
   `],
   template: `
     <div class="wrap">
@@ -45,7 +49,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
         <div class="sec-head">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items"
-           class="card" [routerLink]="['/','guides','playbook', it.slug]">
+           class="card uf-card" [routerLink]="['/','guides','playbook', it.slug]">
           <div class="num">{{ globalIdx().get(it.slug) }}</div>
           <div class="body">
             <div class="title">{{ entries().get(it.slug)?.title || it.slug }}</div>

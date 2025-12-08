@@ -23,7 +23,7 @@
 
   <div class="container">
     <div class="grid">
-      <a class="card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug]" [attr.data-slot]="i">
+      <a class="card uf-card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug]" [attr.data-slot]="i">
         <div class="card-top">
           <span class="pill">{{ track.durationLabel }}</span>
           <span class="pill muted">{{ track.featured.length }} questions</span>
