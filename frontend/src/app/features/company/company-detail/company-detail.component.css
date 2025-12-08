@@ -1,35 +1,63 @@
 :host {
   display: block;
+  color: var(--uf-text);
 }
 
-.company-tabs {
-  gap: 10px;
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 768px) {
+  .company-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.company-header__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--uf-radius-16);
+  background: var(--uf-accent-soft);
+  color: var(--uf-text);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  border: 1px solid var(--uf-border-subtle);
+}
+
+.company-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
+.company-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
 .company-tabs uf-chip {
-  --uf-chip-bg: rgba(255, 255, 255, 0.04);
-  --uf-chip-hover: rgba(255, 255, 255, 0.08);
-  --uf-chip-border: rgba(255, 255, 255, 0.12);
-  --uf-chip-selected-bg: #1f2937;
-  --uf-chip-selected-border: rgba(255, 255, 255, 0.32);
-  --uf-chip-ink: #e7eaee;
-  --uf-chip-ink-strong: #ffffff;
   font-weight: 700;
 }
 
-:host ::ng-deep uf-chip .uf-chip {
-  color: #e7eaee !important;
-  font-size: 14px;
-  letter-spacing: 0;
-  font-weight: 700;
-}
-
-:host ::ng-deep uf-chip .uf-chip * {
-  color: inherit !important;
-}
-
-.company-chip {
-  --uf-chip-ink: #e7eaee;
-  --uf-chip-ink-strong: #ffffff;
+:host ::ng-deep uf-chip .uf-chip.uf-chip--selected {
+  background: var(--uf-accent-soft);
+  border-color: var(--uf-accent);
+  color: var(--uf-text);
+  box-shadow: var(--uf-focus-ring);
 }

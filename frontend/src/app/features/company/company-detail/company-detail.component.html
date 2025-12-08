@@ -1,71 +1,67 @@
 <!-- src/app/features/company/company-detail/company-detail.component.html -->
-<div class="mb-6">
-    <div class="flex items-center gap-3">
-        <div class="h-12 w-12 rounded-2xl bg-white/10 grid place-items-center text-white font-semibold text-lg">
+<div class="company-header uf-card uf-card--elevated">
+    <div class="company-header__left">
+        <div class="company-avatar">
             {{ (label | async)?.[0] }}
         </div>
         <div>
-            <h1 class="text-3xl font-extrabold text-white">
-                {{ label | async }} Front End Interview Guide
-            </h1>
-            <div class="text-gray-400 text-sm">Known questions & practice tailored for {{ label | async }}.</div>
+            <h1 class="uf-page-title">{{ label | async }} Front End Interview Guide</h1>
+            <div class="uf-meta-text">Known questions & practice tailored for {{ label | async }}.</div>
         </div>
     </div>
 
-    <div class="flex items-center gap-3 mt-3 text-xs">
-        <span class="px-2 py-1 rounded-full bg-white/10 text-gray-200">
+    <div class="company-meta">
+        <span class="uf-chip uf-chip--label">
             {{ (counts$ | async)?.all }} known questions
         </span>
-        <span class="px-2 py-1 rounded-full bg-white/10 text-gray-200">
+        <span class="uf-chip uf-chip--label">
             Coding: {{ (counts$ | async)?.coding }} • Trivia: {{ (counts$ | async)?.trivia }}
         </span>
     </div>
-
-    <!-- Local tabs for this company -->
-    <div class="mt-4 flex company-tabs">
-        <uf-chip class="company-chip"
-                 label="All"
-                 [routerLink]="['all']"
-                 [toggle]="false"
-                 size="md"
-                 routerLinkActive="active"
-                 #allTab="routerLinkActive"
-                 [routerLinkActiveOptions]="{ exact: true }"
-                 [selected]="allTab.isActive">
-        </uf-chip>
-
-        <uf-chip class="company-chip"
-                 label="Coding"
-                 [routerLink]="['coding']"
-                 [toggle]="false"
-                 size="md"
-                 routerLinkActive="active"
-                 #codingTab="routerLinkActive"
-                 [selected]="codingTab.isActive">
-        </uf-chip>
-
-        <uf-chip class="company-chip"
-                 label="Trivia"
-                 [routerLink]="['trivia']"
-                 [toggle]="false"
-                 size="md"
-                 routerLinkActive="active"
-                 #triviaTab="routerLinkActive"
-                 [selected]="triviaTab.isActive">
-        </uf-chip>
-
-        <uf-chip class="company-chip"
-                 label="System Design"
-                 [routerLink]="['system']"
-                 [toggle]="false"
-                 size="md"
-                 routerLinkActive="active"
-                 #systemTab="routerLinkActive"
-                 [selected]="systemTab.isActive">
-        </uf-chip>
-    </div>
-
 </div>
 
-<!-- The list itself -->
+<!-- Local tabs for this company -->
+<div class="company-tabs">
+    <uf-chip class="company-chip uf-chip--label"
+             label="All"
+             [routerLink]="['all']"
+             [toggle]="false"
+             size="md"
+             routerLinkActive="active"
+             #allTab="routerLinkActive"
+             [routerLinkActiveOptions]="{ exact: true }"
+             [selected]="allTab.isActive">
+    </uf-chip>
+
+    <uf-chip class="company-chip uf-chip--label"
+             label="Coding"
+             [routerLink]="['coding']"
+             [toggle]="false"
+             size="md"
+             routerLinkActive="active"
+             #codingTab="routerLinkActive"
+             [selected]="codingTab.isActive">
+    </uf-chip>
+
+    <uf-chip class="company-chip uf-chip--label"
+             label="Trivia"
+             [routerLink]="['trivia']"
+             [toggle]="false"
+             size="md"
+             routerLinkActive="active"
+             #triviaTab="routerLinkActive"
+             [selected]="triviaTab.isActive">
+    </uf-chip>
+
+    <uf-chip class="company-chip uf-chip--label"
+             label="System Design"
+             [routerLink]="['system']"
+             [toggle]="false"
+             size="md"
+             routerLinkActive="active"
+             #systemTab="routerLinkActive"
+             [selected]="systemTab.isActive">
+    </uf-chip>
+</div>
+
 <router-outlet />

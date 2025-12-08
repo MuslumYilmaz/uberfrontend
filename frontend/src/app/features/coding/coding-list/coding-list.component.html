@@ -1,120 +1,277 @@
-<div class="container mx-auto max-w-7xl px-4 py-6">
+<div class="coding-shell mx-auto max-w-7xl px-4 py-6">
+  <header class="uf-page-header">
+    <p class="uf-page-kicker">Practice library</p>
+    <h1 class="uf-page-title">All questions</h1>
+    <p class="uf-page-subtitle uf-body">Explore every prompt and slice the library by difficulty, tech, or tags.</p>
+  </header>
 
-  <!-- Tech / Formats pills -->
-  <div class="container mx-auto max-w-7xl px-4 py-6">
+  <app-coding-tech-kind-tabs *ngIf="source!=='company'"
+    [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
+    [tech]="tech" [kind]="kind" [viewMode]="viewMode"
+    [selectedTech]="selectedTech$ | async"
+    [selectedKind]="selectedKind$ | async"
+    [selectedCategory]="selectedCategory$ | async"
+    [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
+    [filteredCount]="(filteredCount$ | async) || 0"
+    (techSelected)="toggleTech($event)"
+    (categoryToggled)="toggleCategory($event)"
+    (kindSelected)="selectKind($event)">
+  </app-coding-tech-kind-tabs>
 
-    <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
-      [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
-      [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
-      [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
-      [filteredCount]="(filteredCount$ | async) || 0" (techSelected)="toggleTech($event)"
-      (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)"></app-coding-tech-kind-tabs>
+  <div class="uf-questions-layout">
+    <aside class="uf-filter-panel uf-card uf-card--elevated" aria-label="Filters">
+      <div class="uf-filter-panel__header">
+        <div>
+          <p class="uf-filter-panel__eyebrow uf-meta-label">All Questions</p>
+          <h2 class="uf-filter-panel__title uf-section-title">Refine the list</h2>
+        </div>
+        <div class="uf-filter-panel__count">
+          <span class="pill uf-chip uf-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
+        </div>
+      </div>
 
+      <div class="uf-filter-section">
+        <div class="uf-filter-section__title uf-meta-label">Difficulty</div>
+        <div class="uf-filter-options">
+          <label *ngFor="let opt of difficultyOptions" class="uf-filter-option">
+            <input type="checkbox"
+                   [checked]="((diffs$ | async) || []).includes(opt.value)"
+                   (change)="onDiffChange(opt.value, $event)">
+            <span class="uf-chip uf-chip--label uf-filter-chip">
+              <span class="uf-filter-chip__icon" aria-hidden="true">⬤</span>
+              {{ opt.label }}
+            </span>
+          </label>
+        </div>
+      </div>
 
-    <!-- Filter Bar -->
-    <app-coding-filter-panel [searchTerm]="searchTerm" [difficultySelection]="(diffs$ | async) || []"
-      [importanceSelection]="(impTiers$ | async) || []" [popularTags]="(popularTags$ | async) || []"
-      [selectedTags]="(selectedTags$ | async) || []" [tagMatchMode]="tagMatchMode" [sortOpen]="sortOpen"
-      [sortOptions]="sortOptions" [currentSort]="(sort$ | async) || 'default'"
-      (searchTermChange)="onSearchTermChange($event)" (difficultyChange)="onDifficultyToggleFromChild($event)"
-      (importanceChange)="onImportanceToggleFromChild($event)" (tagToggled)="toggleTag($event)"
-      (clearAllTags)="clearAllTags()" (tagMatchModeToggle)="toggleTagMatchMode()" (sortToggle)="toggleSort()"
-      (sortClose)="closeSort()" (sortChange)="setSort($event)">
-    </app-coding-filter-panel>
+      <div class="uf-filter-section">
+        <div class="uf-filter-section__title uf-meta-label">Importance</div>
+        <div class="uf-filter-options">
+          <label class="uf-filter-option">
+            <input type="checkbox"
+                   [checked]="((impTiers$ | async) || []).includes('low')"
+                   (change)="onImpChange('low', $event)">
+            <span class="uf-chip uf-chip--label uf-filter-chip">
+              <span class="uf-filter-chip__icon" aria-hidden="true">△</span>
+              Low
+            </span>
+          </label>
+          <label class="uf-filter-option">
+            <input type="checkbox"
+                   [checked]="((impTiers$ | async) || []).includes('medium')"
+                   (change)="onImpChange('medium', $event)">
+            <span class="uf-chip uf-chip--label uf-filter-chip">
+              <span class="uf-filter-chip__icon" aria-hidden="true">▣</span>
+              Medium
+            </span>
+          </label>
+          <label class="uf-filter-option">
+            <input type="checkbox"
+                   [checked]="((impTiers$ | async) || []).includes('high')"
+                   (change)="onImpChange('high', $event)">
+            <span class="uf-chip uf-chip--label uf-filter-chip">
+              <span class="uf-filter-chip__icon" aria-hidden="true">▲</span>
+              High
+            </span>
+          </label>
+        </div>
+      </div>
 
-    <!-- Data -->
-    <div class="list">
-      <ng-container *ngIf="filtered$ | async as questions; else loading">
-        <div *ngIf="questions.length === 0" class="py-6 text-center italic text-gray-500">
-          No questions match your filters.
+      <div class="uf-filter-section" *ngIf="source === 'global-coding'">
+        <div class="uf-filter-section__title uf-meta-label">Technologies</div>
+        <div class="uf-filter-options uf-filter-options--pills">
+          <button
+            *ngFor="let tab of techTabs"
+            type="button"
+            class="uf-chip uf-chip--accent uf-tech-pill"
+            [class.is-active]="(selectedTech$ | async) === tab.key"
+            (click)="toggleTech(tab.key)">
+            <span class="uf-tech-pill__badge">{{ tab.badge }}</span>
+            <span class="uf-tech-pill__label">{{ tab.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="uf-filter-section" *ngIf="(popularTags$ | async) as tagList">
+        <div class="uf-filter-section__header">
+          <div class="uf-filter-section__title uf-meta-label">Tags</div>
+          <div class="uf-filter-section__actions">
+            <button type="button" class="uf-btn uf-btn--ghost uf-toggle" (click)="toggleTagMatchMode()">
+              Match {{ tagMatchMode === 'all' ? 'all' : 'any' }}
+            </button>
+            <button
+              type="button"
+              class="uf-btn uf-btn--ghost uf-link-btn"
+              [disabled]="!((selectedTags$ | async)?.length)"
+              (click)="clearAllTags()">
+              Clear
+            </button>
+          </div>
+        </div>
+        <div class="uf-chip-rail" role="listbox" aria-label="Filter by tags">
+          <uf-chip
+            *ngFor="let tag of tagList"
+            class="uf-chip--topic tag-chip"
+            size="sm"
+            [selected]="((selectedTags$ | async) || []).includes(tag)"
+            (selectedChange)="toggleTag(tag)">
+            <span class="chip-icon" aria-hidden="true">#</span>
+            {{ tag }}
+          </uf-chip>
+        </div>
+      </div>
+    </aside>
+
+    <section class="uf-question-list">
+      <div class="uf-question-list__controls">
+        <div class="uf-question-list__search uf-input">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Search questions"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchTermChange($event)"
+            [ngModelOptions]="{ standalone: true }" />
         </div>
 
-        <!-- Rows -->
-        <a *ngFor="let q of questions"
-           class="list-row uf-card grid grid-cols-12 gap-4 items-center px-6 py-4"
-           [routerLink]="linkTo(q)"
-           [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
-          <div class="col-span-5">
-            <div class="text-lg font-semibold text-white">{{ q.title }}</div>
+        <div class="uf-question-list__actions">
+          <div class="uf-count-badge">
+            {{ (filteredCount$ | async) || 0 }} matches
+          </div>
+          <ng-container *ngIf="sort$ | async as currentSort">
+            <div class="uf-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
+              <button type="button" class="uf-sort__trigger sort-btn uf-btn uf-btn--ghost" (click)="toggleSort()">
+                <span class="uf-sort__label">
+                  {{ currentSortLabel(currentSort) }}
+                </span>
+                <i class="pi pi-chevron-down" [class.up]="sortOpen"></i>
+              </button>
 
-            <!-- description line -->
-            <div class="text-xs text-gray-400 mt-0.5 desc-tip-target" [pTooltip]="descriptionText(q)"
-              tooltipPosition="bottom" appendTo="body" [tooltipStyleClass]="'desc-tip'" [showDelay]="150"
-              [hideDelay]="0" [autoHide]="true" [life]="0" [escape]="false" [tooltipDisabled]="!descriptionText(q)"
-              tabindex="0">
-              {{ preview(descriptionText(q), 120) }}
-            </div>
-
-            <div class="framework-switcher relative z-20" *ngIf="frameworkOptions(q).length > 1">
-              <div class="fw-label-row">
-                <span class="fw-label">Framework versions</span>
-                <span class="fw-hint">Open this challenge in your stack</span>
-              </div>
-              <div class="fw-chip-row">
+              <div class="uf-sort__menu sort-menu" *ngIf="sortOpen">
                 <button
-                  *ngFor="let opt of frameworkOptions(q)"
+                  *ngFor="let opt of sortOptions"
                   type="button"
-                  class="fw-chip"
-                  [class.active]="opt.id === q.id"
-                  [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
-                  (click)="goToFramework($event, opt)">
-                  <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
-                  <span class="fw-cta">Open</span>
+                  class="uf-sort__item sort-item uf-btn uf-btn--ghost"
+                  [class.active]="opt.key === currentSort"
+                  (click)="setSort(opt.key)">
+                  <span class="uf-sort__text">{{ opt.label }}</span>
+                  <span class="uf-sort__check">✓</span>
                 </button>
               </div>
             </div>
-          </div>
-
-
-          <div class="col-span-2">
-            <span class="px-2 py-1 rounded text-xs font-medium" [ngClass]="{
-            'bg-green-800 text-green-300': q.difficulty === 'easy',
-            'bg-yellow-800 text-yellow-300': q.difficulty === 'intermediate',
-            'bg-red-800 text-red-300': q.difficulty === 'hard'
-          }">{{ q.difficulty | titlecase }}</span>
-          </div>
-
-          <div class="col-span-1">
-            <span class="imp-chip" [ngClass]="{
-          'imp-low':    impLabel(q)==='low',
-          'imp-medium': impLabel(q)==='medium',
-          'imp-high':   impLabel(q)==='high'
-        }">
-              {{ impLabel(q) | titlecase }}
-            </span>
-          </div>
-
-          <!-- Show the tech badge when not on per-tech page -->
-          <div class="col-span-1" *ngIf="source!=='tech'">
-            <span class="px-2 py-1 rounded text-xs bg-white/10 text-gray-200">{{ techName(q) }}</span>
-          </div>
-
-          <!-- from: gap-2 -->
-          <div class="col-span-2 flex flex-wrap gap-1">
-            <uf-chip
-              *ngFor="let tag of (q.tags || [])"
-              size="sm"
-              class="tag-chip"
-              [selected]="(selectedTags$ | async)?.includes(tag) || false"
-              (selectedChange)="toggleTag(tag)">
-              {{ tag }}
-            </uf-chip>
-          </div>
-
-          <div class="col-span-1 text-right">
-            <div class="text-blue-400 hover:text-blue-500 font-medium flex items-center gap-1">
-              <span>→</span>
-            </div>
-          </div>
-        </a>
-      </ng-container>
-
-      <ng-template #loading>
-        <div class="py-10 flex justify-center">
-          <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
+          </ng-container>
         </div>
-      </ng-template>
-    </div>
+      </div>
 
-    <app-offline-banner></app-offline-banner>
+      <div class="list">
+        <ng-container *ngIf="filtered$ | async as questions; else loading">
+          <div *ngIf="questions.length === 0" class="py-6 text-center italic text-gray-500">
+            No questions match your filters.
+          </div>
+
+          <a
+            *ngFor="let q of questions"
+            class="list-row uf-card uf-card--interactive uf-question-card uf-question-card--compact"
+            [routerLink]="linkTo(q)"
+            [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
+            <div class="uf-question-card__grid">
+              <div class="uf-question-card__main">
+                <div class="uf-question-card__eyebrow">
+                  <span class="eyebrow-dot"></span>
+                  <span>{{ q.__kind === 'trivia' ? 'Quiz' : 'Coding' }} prompt</span>
+                </div>
+                <div class="uf-question-card__title uf-card-title">{{ q.title }}</div>
+
+                <div
+                  class="uf-question-card__description uf-meta-text desc-tip-target"
+                  [pTooltip]="descriptionText(q)"
+                  tooltipPosition="bottom"
+                  appendTo="body"
+                  [tooltipStyleClass]="'desc-tip'"
+                  [showDelay]="150"
+                  [hideDelay]="0"
+                  [autoHide]="true"
+                  [life]="0"
+                  [escape]="false"
+                  [tooltipDisabled]="!descriptionText(q)"
+                  tabindex="0">
+                  {{ preview(descriptionText(q), 120) }}
+                </div>
+
+                <div class="framework-switcher" *ngIf="frameworkOptions(q).length > 1">
+                  <div class="fw-label-row">
+                    <span class="fw-label">Framework versions</span>
+                    <span class="fw-hint">Open this challenge in your stack</span>
+                  </div>
+                  <div class="fw-chip-row">
+                    <button
+                      *ngFor="let opt of frameworkOptions(q)"
+                      type="button"
+                      class="fw-chip"
+                      [class.active]="opt.id === q.id"
+                      [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
+                      (click)="goToFramework($event, opt)">
+                      <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
+                      <span class="fw-cta">Open</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="uf-question-card__meta-row">
+                <div class="uf-question-card__meta-item">
+                  <span class="uf-meta-label">Difficulty</span>
+                  <span class="uf-chip uf-chip--difficulty" [attr.data-difficulty]="q.difficulty">
+                    {{ q.difficulty | titlecase }}
+                  </span>
+                </div>
+
+                <div class="uf-question-card__meta-item">
+                  <span class="uf-meta-label">Importance</span>
+                  <span class="uf-chip uf-chip--importance" [attr.data-importance]="impLabel(q)">
+                    {{ impLabel(q) | titlecase }}
+                  </span>
+                </div>
+
+                <div class="uf-question-card__meta-item" *ngIf="source!=='tech'">
+                  <span class="uf-meta-label">Tech</span>
+                  <span class="uf-chip uf-chip--tech">
+                    <span class="chip-icon" aria-hidden="true">⟡</span>
+                    {{ techName(q) }}
+                  </span>
+                </div>
+
+                <div class="uf-question-card__meta-item meta-item--tags">
+                  <span class="uf-meta-label">Tags</span>
+                  <div class="meta-tags">
+                    <uf-chip
+                      *ngFor="let tag of (q.tags || [])"
+                      size="sm"
+                      class="tag-chip uf-chip--topic"
+                      [selected]="(selectedTags$ | async)?.includes(tag) || false"
+                      (selectedChange)="toggleTag(tag)">
+                      <span class="chip-icon" aria-hidden="true">#</span>
+                      {{ tag }}
+                    </uf-chip>
+                  </div>
+                </div>
+
+                <span class="ghost-link meta-open uf-btn uf-btn--ghost">Open</span>
+              </div>
+            </div>
+          </a>
+        </ng-container>
+
+        <ng-template #loading>
+          <div class="py-10 flex justify-center">
+            <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
+          </div>
+        </ng-template>
+      </div>
+
+      <app-offline-banner></app-offline-banner>
+    </section>
   </div>
+</div>

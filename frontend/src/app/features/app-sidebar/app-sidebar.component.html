@@ -4,41 +4,127 @@
 
 <aside class="sidebar" [class.is-collapsed]="collapsed" [class.is-open]="drawerOpen()">
     <nav class="nav">
-        <ul>
-            <li *ngFor="let item of nav; let i = index">
-                <!-- top-level links -->
-                <a *ngIf="isLink(item)" class="nav-link" [routerLink]="item.to" [queryParams]="item.query || null"
-                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
-                    [attr.aria-label]="item.label">
-                    <i class="pi nav-ic" [ngClass]="item.icon"></i>
-                    <span class="label">{{ item.label }}</span>
-                </a>
+        <div class="nav-section nav-section--top" *ngIf="isLink(nav[0])">
+            <ul>
+                <li>
+                    <a class="nav-link" [routerLink]="$any(nav[0]).to" [queryParams]="$any(nav[0]).query || null"
+                        routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+                        aria-label="Home">
+                        <i class="pi nav-ic pi-compass"></i>
+                        <span class="label">Home base</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-                <!-- grouped links -->
-                <div *ngIf="isGroup(item)" class="nav-group">
-                    <button class="group-header" type="button" (click)="toggleGroup(i)" [attr.aria-expanded]="item.open"
-                        [attr.aria-controls]="'group-'+i">
-                        <i class="pi nav-ic" [ngClass]="item.icon"></i>
-                        <span class="label">{{ item.label }}</span>
-                        <i class="pi caret" [ngClass]="item.open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+        <div class="nav-section">
+            <p class="section-heading">Practice</p>
+            <ng-container *ngIf="isGroup(nav[1])">
+                <div class="nav-group nav-block">
+                    <button class="group-header" type="button" (click)="toggleGroup(1)"
+                        [attr.aria-expanded]="$any(nav[1]).open" [attr.aria-controls]="'group-1'">
+                        <i class="pi nav-ic pi-box"></i>
+                        <span class="label">Practice catalog</span>
+                        <i class="pi caret" [ngClass]="$any(nav[1]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                     </button>
 
-                    <div class="group-list" [id]="'group-'+i" [class.open]="item.open">
+                    <div class="group-list" [id]="'group-1'" [class.open]="$any(nav[1]).open">
                         <ul class="group-inner">
-                            <li *ngFor="let c of item.children">
+                            <li>
+                                <a class="nav-sublink" [routerLink]="$any(nav[1]).children[0].to"
+                                    [queryParams]="$any(nav[1]).children[0].query || null" routerLinkActive="is-active"
+                                    [routerLinkActiveOptions]="{ exact: true }" aria-label="Question library">
+                                    <i class="pi nav-ic pi-database"></i>
+                                    <span class="label">Question library</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-sublink" [routerLink]="$any(nav[1]).children[1].to"
+                                    [queryParams]="$any(nav[1]).children[1].query || null" routerLinkActive="is-active"
+                                    [routerLinkActiveOptions]="{ exact: true }" aria-label="Tech stacks">
+                                    <i class="pi nav-ic pi-server"></i>
+                                    <span class="label">Tech stacks</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-sublink" [routerLink]="$any(nav[1]).children[2].to"
+                                    [queryParams]="$any(nav[1]).children[2].query || null" routerLinkActive="is-active"
+                                    [routerLinkActiveOptions]="{ exact: true }" aria-label="Question styles">
+                                    <i class="pi nav-ic pi-clone"></i>
+                                    <span class="label">Question styles</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="nav-section">
+            <p class="section-heading">Study</p>
+
+            <ng-container *ngIf="isGroup(nav[2])">
+                <div class="nav-group nav-block">
+                    <button class="group-header" type="button" (click)="toggleGroup(2)"
+                        [attr.aria-expanded]="$any(nav[2]).open" [attr.aria-controls]="'group-2'">
+                        <i class="pi nav-ic pi-directions-alt"></i>
+                        <span class="label">Study paths</span>
+                        <i class="pi caret" [ngClass]="$any(nav[2]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                    </button>
+
+                    <div class="group-list" [id]="'group-2'" [class.open]="$any(nav[2]).open">
+                        <ul class="group-inner">
+                            <li *ngFor="let c of $any(nav[2]).children">
                                 <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
                                     routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
                                     [attr.aria-label]="c.label">
-                                    <i *ngIf="c.icon; else smallDot" class="pi nav-ic" [ngClass]="c.icon"></i>
-                                    <ng-template #smallDot><span class="dot"></span></ng-template>
+                                    <i class="pi nav-ic pi-directions"></i>
                                     <span class="label">{{ c.label }}</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>
-            </li>
-        </ul>
+            </ng-container>
+
+            <ng-container *ngIf="isGroup(nav[3])">
+                <div class="nav-group nav-block">
+                    <button class="group-header" type="button" (click)="toggleGroup(3)"
+                        [attr.aria-expanded]="$any(nav[3]).open" [attr.aria-controls]="'group-3'">
+                        <i class="pi nav-ic pi-bookmark"></i>
+                        <span class="label">Reference guides</span>
+                        <i class="pi caret" [ngClass]="$any(nav[3]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                    </button>
+
+                    <div class="group-list" [id]="'group-3'" [class.open]="$any(nav[3]).open">
+                        <ul class="group-inner">
+                            <li *ngFor="let c of $any(nav[3]).children">
+                                <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
+                                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+                                    [attr.aria-label]="c.label">
+                                    <i class="pi nav-ic pi-book"></i>
+                                    <span class="label">{{ c.label }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="nav-section">
+            <p class="section-heading">Productivity</p>
+            <ul *ngIf="isLink(nav[4])">
+                <li>
+                    <a class="nav-link nav-link--pill" [routerLink]="$any(nav[4]).to"
+                        [queryParams]="$any(nav[4]).query || null" routerLinkActive="is-active"
+                        [routerLinkActiveOptions]="{ exact: true }" aria-label="Shortcuts and tools">
+                        <i class="pi nav-ic pi-stopwatch"></i>
+                        <span class="label">Shortcuts &amp; tools</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </nav>
 
     <!-- bottom tools -->

@@ -1,13 +1,13 @@
 :host {
-  --uf-chip-bg: var(--chip-bg, rgba(255, 255, 255, 0.04));
-  --uf-chip-border: var(--border, rgba(255, 255, 255, 0.14));
-  --uf-chip-hover: var(--chip-hover, rgba(255, 255, 255, 0.07));
-  --uf-chip-active: var(--chip-active, rgba(255, 255, 255, 0.12));
-  --uf-chip-selected-bg: var(--chip-selected-bg, #1f2937);
-  --uf-chip-selected-border: var(--chip-selected-border, rgba(255, 255, 255, 0.32));
-  --uf-chip-ink: var(--ink-sub, #cbd5e1);
-  --uf-chip-ink-strong: var(--ink, #e7eaee);
-  --uf-chip-ring: var(--ring, rgba(255, 255, 255, 0.24));
+  --uf-chip-bg: var(--uf-surface);
+  --uf-chip-border: var(--uf-border-subtle);
+  --uf-chip-hover: rgba(var(--uf-text-rgb), 0.06);
+  --uf-chip-active: rgba(var(--uf-text-rgb), 0.1);
+  --uf-chip-selected-bg: var(--uf-accent-soft);
+  --uf-chip-selected-border: var(--uf-accent);
+  --uf-chip-ink: var(--uf-text);
+  --uf-chip-ink-strong: var(--uf-text);
+  --uf-chip-ring: var(--uf-focus-ring);
 
   display: inline-block;
 }
@@ -16,15 +16,15 @@
   appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 9999px;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--uf-radius-pill);
   border: 1px solid var(--uf-chip-border);
   background: var(--uf-chip-bg);
   color: var(--uf-chip-ink);
   font-size: 13px;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.1;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
@@ -37,12 +37,12 @@
 }
 
 .uf-chip--sm {
-  padding: 6px 11px;
+  padding: 5px 9px;
   font-size: 12px;
 }
 
 .uf-chip--md {
-  padding: 8px 14px;
+  padding: 6px 10px;
   font-size: 13px;
 }
 
@@ -53,7 +53,8 @@
 
 .uf-chip:not(.uf-chip--disabled):hover {
   background: var(--uf-chip-hover);
-  color: #fff;
+  color: var(--uf-chip-ink-strong);
+  border-color: var(--uf-border-strong);
 }
 
 .uf-chip:not(.uf-chip--disabled):active {
@@ -65,16 +66,12 @@
   background: var(--uf-chip-selected-bg);
   border-color: var(--uf-chip-selected-border);
   color: var(--uf-chip-ink-strong);
-  box-shadow:
-    0 0 0 1.5px var(--uf-chip-ring),
-    0 0 0 3px rgba(0, 0, 0, 0.32);
+  box-shadow: var(--uf-chip-ring);
 }
 
 .uf-chip:focus-visible {
   outline: none;
-  box-shadow:
-    0 0 0 2px var(--uf-chip-ring),
-    0 0 0 4px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--uf-chip-ring);
 }
 
 .uf-chip--disabled {

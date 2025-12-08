@@ -481,6 +481,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   ];
 
   // --- UI handlers for sorting ---
+  currentSortLabel(k: SortKey | null | undefined): string {
+    const opt = this.sortOptions.find(o => o.key === k);
+    return opt?.label || 'Difficulty: Easy to Hard';
+  }
   toggleSort() { this.sortOpen = !this.sortOpen; }
   closeSort() { this.sortOpen = false; }
   setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
