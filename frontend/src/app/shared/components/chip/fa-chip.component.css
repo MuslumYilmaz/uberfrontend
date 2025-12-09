@@ -1,0 +1,88 @@
+:host {
+  --fa-chip-bg: var(--fa-surface);
+  --fa-chip-border: var(--fa-border-subtle);
+  --fa-chip-hover: rgba(var(--fa-text-rgb), 0.06);
+  --fa-chip-active: rgba(var(--fa-text-rgb), 0.1);
+  --fa-chip-selected-bg: var(--fa-accent-soft);
+  --fa-chip-selected-border: var(--fa-accent);
+  --fa-chip-ink: var(--fa-text);
+  --fa-chip-ink-strong: var(--fa-text);
+  --fa-chip-ring: var(--fa-focus-ring);
+
+  display: inline-block;
+}
+
+.fa-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--fa-radius-pill);
+  border: 1px solid var(--fa-chip-border);
+  background: var(--fa-chip-bg);
+  color: var(--fa-chip-ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.07s ease;
+}
+
+.fa-chip--sm {
+  padding: 5px 9px;
+  font-size: 12px;
+}
+
+.fa-chip--md {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.fa-chip--filled {
+  background: var(--fa-chip-active);
+  color: var(--fa-chip-ink-strong);
+}
+
+.fa-chip:not(.fa-chip--disabled):hover {
+  background: var(--fa-chip-hover);
+  color: var(--fa-chip-ink-strong);
+  border-color: var(--fa-border-strong);
+}
+
+.fa-chip:not(.fa-chip--disabled):active {
+  transform: translateY(0.5px) scale(0.99);
+  background: var(--fa-chip-active);
+}
+
+.fa-chip--selected {
+  background: var(--fa-chip-selected-bg);
+  border-color: var(--fa-chip-selected-border);
+  color: var(--fa-chip-ink-strong);
+  box-shadow: var(--fa-chip-ring);
+}
+
+.fa-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--fa-chip-ring);
+}
+
+.fa-chip--disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.fa-chip__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+}

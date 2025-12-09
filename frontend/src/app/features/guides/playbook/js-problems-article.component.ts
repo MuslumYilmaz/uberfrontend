@@ -11,7 +11,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     standalone: true,
     imports: [GuideShellComponent, RouterModule],
     template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="JavaScript Problems That Actually Show Up"
     subtitle="Essential patterns and interview-style problems that real companies ask"
     [minutes]="14"
@@ -283,7 +283,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     <code>debounce</code>) or one widget (like a dropdown) each day. With steady
     reps, this flow will feel natural when it matters most.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class JsProblemsArticle {

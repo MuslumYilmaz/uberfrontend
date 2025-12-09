@@ -7,8 +7,8 @@ import {
 } from '../../core/models/user.model';
 import type { ActivityEvent, ActivitySummary } from './activity.service';
 
-const LS_XP = 'uf:xp';
-const LS_STREAK = 'uf:streak';
+const LS_XP = 'fa:xp';
+const LS_STREAK = 'fa:streak';
 
 type StreakData = { current: number; longest: number; lastActive?: string; lastCompleted?: string; };
 type XpData = { total: number; today?: number; lastDay?: string; };

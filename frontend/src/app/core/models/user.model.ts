@@ -115,5 +115,5 @@ export const emptyClientUser = (server: User | null = null): UserClient => ({
 });
 
 // --- localStorage keys (guest & cache) ---
-export const LS_USER_CLIENT = 'uf:user:client';
-export const LS_DAILY_PREFIX = 'uf:daily:'; // e.g. uf:daily:2025-08-24
+export const LS_USER_CLIENT = 'fa:user:client';
+export const LS_DAILY_PREFIX = 'fa:daily:'; // e.g. fa:daily:2025-08-24

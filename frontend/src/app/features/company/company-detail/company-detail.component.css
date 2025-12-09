@@ -1,6 +1,6 @@
 :host {
   display: block;
-  color: var(--uf-text);
+  color: var(--fa-text);
 }
 
 .company-header {
@@ -27,14 +27,14 @@
 .company-avatar {
   width: 48px;
   height: 48px;
-  border-radius: var(--uf-radius-16);
-  background: var(--uf-accent-soft);
-  color: var(--uf-text);
+  border-radius: var(--fa-radius-16);
+  background: var(--fa-accent-soft);
+  color: var(--fa-text);
   display: grid;
   place-items: center;
   font-weight: 700;
   font-size: 18px;
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--fa-border-subtle);
 }
 
 .company-meta {
@@ -51,13 +51,13 @@
   margin-bottom: 6px;
 }
 
-.company-tabs uf-chip {
+.company-tabs fa-chip {
   font-weight: 700;
 }
 
-:host ::ng-deep uf-chip .uf-chip.uf-chip--selected {
-  background: var(--uf-accent-soft);
-  border-color: var(--uf-accent);
-  color: var(--uf-text);
-  box-shadow: var(--uf-focus-ring);
+:host ::ng-deep fa-chip .fa-chip.fa-chip--selected {
+  background: var(--fa-accent-soft);
+  border-color: var(--fa-accent);
+  color: var(--fa-text);
+  box-shadow: var(--fa-focus-ring);
 }

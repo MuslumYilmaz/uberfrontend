@@ -73,9 +73,9 @@ export class AppSidebarComponent {
       icon: 'pi pi-map',
       open: false,
       children: [
-        { type: 'link', label: 'Frontend Interview Playbook', to: '/guides/playbook', icon: 'pi pi-book' },
+        { type: 'link', label: 'FrontendAtlas Interview Blueprint', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
         { type: 'link', label: 'JavaScript Questions', to: '/coding', icon: 'pi pi-code', query: { tech: 'javascript' } },
-        { type: 'link', label: 'System Design Playbook', to: '/guides/system-design', icon: 'pi pi-sitemap' },
+        { type: 'link', label: 'Frontend System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
       ],
     },
 
@@ -85,9 +85,9 @@ export class AppSidebarComponent {
       icon: 'pi pi-book',
       open: false,
       children: [
-        { type: 'link', label: 'Frontend Playbook', to: '/guides/playbook', icon: 'pi pi-book' },
-        { type: 'link', label: 'Behavioral Guide', to: '/guides/behavioral', icon: 'pi pi-users' },
-        { type: 'link', label: 'System Design Guide', to: '/guides/system-design', icon: 'pi pi-sitemap' },
+        { type: 'link', label: 'Interview Blueprint', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
+        { type: 'link', label: 'Behavioral Interview Handbook', to: '/guides/behavioral', icon: 'pi pi-users' },
+        { type: 'link', label: 'System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
       ],
     },
 

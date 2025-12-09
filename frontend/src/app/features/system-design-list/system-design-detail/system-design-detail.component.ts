@@ -283,7 +283,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
         // “continue where you left off” için
         try {
-          localStorage.setItem('uf:lastVisited', JSON.stringify({
+          localStorage.setItem('fa:lastVisited', JSON.stringify({
             to: ['/system-design', merged.id],
             label: merged.title ?? 'System design'
           }));
@@ -306,7 +306,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   /** Send the user to the NotFound page with the missing URL preserved. */
   private navTo404() {
     const missing = this.router.url;
-    try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+    try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
     // replaceUrl so Back returns to the last valid page instead of the bad URL
     this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
   }

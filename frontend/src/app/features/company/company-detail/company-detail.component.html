@@ -1,20 +1,20 @@
 <!-- src/app/features/company/company-detail/company-detail.component.html -->
-<div class="company-header uf-card uf-card--elevated">
+<div class="company-header fa-card fa-card--elevated">
     <div class="company-header__left">
         <div class="company-avatar">
             {{ (label | async)?.[0] }}
         </div>
         <div>
-            <h1 class="uf-page-title">{{ label | async }} Front End Interview Guide</h1>
-            <div class="uf-meta-text">Known questions & practice tailored for {{ label | async }}.</div>
+            <h1 class="fa-page-title">{{ label | async }} Front End Interview Guide</h1>
+            <div class="fa-meta-text">Known questions & practice tailored for {{ label | async }}.</div>
         </div>
     </div>
 
     <div class="company-meta">
-        <span class="uf-chip uf-chip--label">
+        <span class="fa-chip fa-chip--label">
             {{ (counts$ | async)?.all }} known questions
         </span>
-        <span class="uf-chip uf-chip--label">
+        <span class="fa-chip fa-chip--label">
             Coding: {{ (counts$ | async)?.coding }} • Trivia: {{ (counts$ | async)?.trivia }}
         </span>
     </div>
@@ -22,7 +22,7 @@
 
 <!-- Local tabs for this company -->
 <div class="company-tabs">
-    <uf-chip class="company-chip uf-chip--label"
+    <fa-chip class="company-chip fa-chip--label"
              label="All"
              [routerLink]="['all']"
              [toggle]="false"
@@ -31,9 +31,9 @@
              #allTab="routerLinkActive"
              [routerLinkActiveOptions]="{ exact: true }"
              [selected]="allTab.isActive">
-    </uf-chip>
+    </fa-chip>
 
-    <uf-chip class="company-chip uf-chip--label"
+    <fa-chip class="company-chip fa-chip--label"
              label="Coding"
              [routerLink]="['coding']"
              [toggle]="false"
@@ -41,9 +41,9 @@
              routerLinkActive="active"
              #codingTab="routerLinkActive"
              [selected]="codingTab.isActive">
-    </uf-chip>
+    </fa-chip>
 
-    <uf-chip class="company-chip uf-chip--label"
+    <fa-chip class="company-chip fa-chip--label"
              label="Trivia"
              [routerLink]="['trivia']"
              [toggle]="false"
@@ -51,9 +51,9 @@
              routerLinkActive="active"
              #triviaTab="routerLinkActive"
              [selected]="triviaTab.isActive">
-    </uf-chip>
+    </fa-chip>
 
-    <uf-chip class="company-chip uf-chip--label"
+    <fa-chip class="company-chip fa-chip--label"
              label="System Design"
              [routerLink]="['system']"
              [toggle]="false"
@@ -61,7 +61,7 @@
              routerLinkActive="active"
              #systemTab="routerLinkActive"
              [selected]="systemTab.isActive">
-    </uf-chip>
+    </fa-chip>
 </div>
 
 <router-outlet />

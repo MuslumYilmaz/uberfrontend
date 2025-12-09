@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Crafting STAR Stories"
       [minutes]="18"
       [tags]="['behavioral','stories','STAR']"
@@ -102,7 +102,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             <li><strong>Design trade‑off:</strong> “PM wanted pixel‑perfect animations, but page weight spiked. I proposed lighter transitions. Users got smooth interactions, and we shipped on time.”</li>
             <li><strong>Mentorship win:</strong> “Junior struggled with async JS. I paired, explained promises vs callbacks, and helped them land the PR. Later, I ran a team session so everyone leveled up.”</li>
         </ul>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralStoriesArticle {

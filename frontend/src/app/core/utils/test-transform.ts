@@ -1,6 +1,6 @@
 // Make a stable global symbol for the current question id
 export function toGlobalName(id: string) {
-    return `__UF_${id.replace(/[^a-zA-Z0-9_]/g, '_')}__default`;
+    return `__FA_${id.replace(/[^a-zA-Z0-9_]/g, '_')}__default`;
 }
 
 /**
@@ -31,7 +31,7 @@ export function wrapExportDefault(source: string, id: string): string {
     }
 
     // Fallback: if the user didn't use export default, just leave code and don't crash
-    return `${code}\n;globalThis["${g}"] = globalThis["${g}"] ?? (typeof __UF_DEFAULT__!=="undefined" ? __UF_DEFAULT__ : undefined);`;
+    return `${code}\n;globalThis["${g}"] = globalThis["${g}"] ?? (typeof __FA_DEFAULT__!=="undefined" ? __FA_DEFAULT__ : undefined);`;
 }
 
 /**

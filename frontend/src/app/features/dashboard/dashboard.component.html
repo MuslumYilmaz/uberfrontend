@@ -1,22 +1,22 @@
 <div class="dash">
     <div class="container">
-        <header class="page-header uf-page-header">
-            <h1 class="uf-page-title">Prepare</h1>
+        <header class="page-header fa-page-header">
+            <h1 class="fa-page-title">Prepare</h1>
         </header>
 
         <!-- Recommended -->
         <section class="block">
-            <h2 class="block-title uf-section-title">Recommended preparation</h2>
+            <h2 class="block-title fa-section-title">Recommended preparation</h2>
             <div class="section-grid">
                 <ng-container *ngFor="let card of recommended; trackBy: trackByTitle">
                     <!-- Enabled -->
-                    <a *ngIf="card.route && !card.disabled; else recDisabled" class="row uf-card uf-card--interactive" [routerLink]="card.route"
+                    <a *ngIf="card.route && !card.disabled; else recDisabled" class="row fa-card fa-card--interactive" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-main">
                             <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                             <div class="row-body">
-                                <div class="row-title uf-card-title">{{ card.title }}</div>
-                                <div class="row-sub uf-meta-text">{{ card.subtitle }}</div>
+                                <div class="row-title fa-card-title">{{ card.title }}</div>
+                                <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
                             </div>
                         </div>
                         <div class="row-arrow">→</div>
@@ -24,15 +24,15 @@
 
                     <!-- Disabled -->
                     <ng-template #recDisabled>
-                        <div class="row uf-card disabled">
+                        <div class="row fa-card disabled">
                             <div class="row-main">
                                 <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                                 <div class="row-body">
-                                    <div class="row-title uf-card-title">
+                                    <div class="row-title fa-card-title">
                                         {{ card.title }}
                                         <span *ngIf="card.badge" class="badge">{{ card.badge }}</span>
                                     </div>
-                                    <div class="row-sub uf-meta-text">{{ card.subtitle }}</div>
+                                    <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
                                 </div>
                             </div>
                             <div class="row-arrow">→</div>
@@ -44,15 +44,15 @@
 
         <!-- Learning tracks -->
         <section class="block">
-            <h2 class="block-title uf-section-title">Learning tracks</h2>
+            <h2 class="block-title fa-section-title">Learning tracks</h2>
             <div class="section-grid">
-                <a *ngFor="let card of tracks; trackBy: trackByTitle" class="row uf-card uf-card--interactive" [routerLink]="card.route"
+                <a *ngFor="let card of tracks; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
                     [queryParams]="card.queryParams">
                     <div class="row-main">
                         <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">
-                            <div class="row-title uf-card-title">{{ card.title }}</div>
-                            <div class="row-sub uf-meta-text">{{ card.subtitle }}</div>
+                            <div class="row-title fa-card-title">{{ card.title }}</div>
+                            <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
                         </div>
                     </div>
                     <div class="row-arrow">→</div>
@@ -62,16 +62,16 @@
 
         <!-- Company guides -->
         <section class="block">
-            <h2 class="block-title uf-section-title">Company guides</h2>
+            <h2 class="block-title fa-section-title">Company guides</h2>
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="section-grid company-grid">
-                    <a *ngFor="let card of companyGuides; trackBy: trackByTitle" class="row uf-card uf-card--interactive" [routerLink]="card.route">
+                    <a *ngFor="let card of companyGuides; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route">
                         <div class="row-main">
                             <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                             <div class="row-body">
-                                <div class="row-title uf-card-title">{{ card.title }}</div>
-                                <div class="row-sub uf-meta-text">
+                                <div class="row-title fa-card-title">{{ card.title }}</div>
+                                <div class="row-sub fa-meta-text">
                                     {{ getCompanySubtitle(card, stats.companyCounts) }}
                                 </div>
                             </div>
@@ -84,19 +84,19 @@
 
         <!-- Focus areas -->
         <section class="block">
-            <h2 class="block-title uf-section-title">Focus areas</h2>
+            <h2 class="block-title fa-section-title">Focus areas</h2>
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="section-grid">
-                    <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row uf-card uf-card--interactive" [routerLink]="card.route"
+                    <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-main">
                             <div class="row-icon">
                                 <i [ngClass]="piIcon(card.icon)"></i>
                             </div>
                             <div class="row-body">
-                                <div class="row-title uf-card-title">{{ card.title }}</div>
-                                <div class="row-sub uf-meta-text">
+                                <div class="row-title fa-card-title">{{ card.title }}</div>
+                                <div class="row-sub fa-meta-text">
                                     {{ getFocusSubtitle(card, stats.focusCounts) }}
                                 </div>
                             </div>
@@ -109,19 +109,19 @@
 
         <!-- Question formats -->
         <section class="block">
-            <h2 class="block-title uf-section-title">Question formats</h2>
+            <h2 class="block-title fa-section-title">Question formats</h2>
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="section-grid">
-                    <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row uf-card uf-card--interactive" [routerLink]="card.route"
+                    <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                         <div class="row-main">
                             <div class="row-icon">
                                 <i [ngClass]="piIcon(card.icon)"></i>
                             </div>
                             <div class="row-body">
-                                <div class="row-title uf-card-title">{{ card.title }}</div>
-                                <div class="row-sub uf-meta-text">
+                                <div class="row-title fa-card-title">{{ card.title }}</div>
+                                <div class="row-sub fa-meta-text">
                                     {{ getFormatSubtitle(card, stats) }}
                                 </div>
                             </div>
@@ -134,17 +134,17 @@
 
         <!-- Frameworks & languages -->
         <section class="block">
-            <h2 class="block-title uf-section-title">Frameworks and languages</h2>
+            <h2 class="block-title fa-section-title">Frameworks and languages</h2>
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="section-grid">
-                    <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row uf-card uf-card--interactive" [routerLink]="card.route"
+                    <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
                         [queryParams]="card.queryParams">
                     <div class="row-main">
                         <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
                         <div class="row-body">
-                            <div class="row-title uf-card-title">{{ card.title }}</div>
-                            <div class="row-sub uf-meta-text">
+                            <div class="row-title fa-card-title">{{ card.title }}</div>
+                            <div class="row-sub fa-meta-text">
                                 {{ getFrameworkSubtitle(card, stats.techCounts) }}
                             </div>
                         </div>

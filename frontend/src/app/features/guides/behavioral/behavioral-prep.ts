@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <uf-guide-shell
+        <fa-guide-shell
         title="How to Prepare (Fast and Effectively)"
         [minutes]="20"
         [tags]="['behavioral','prep','stories']"
@@ -138,7 +138,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
             The goal isn’t to sound like a TED speaker—it’s to show
             <em>clear thinking under pressure</em>. Short, specific, human answers win.
         </blockquote>
-        </uf-guide-shell>
+        </fa-guide-shell>
   `,
 })
 export class BehavioralPrepArticle {

@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="The Big Picture: Why Behavioral Rounds Matter in Tech"
       [minutes]="8"
       [tags]="['behavioral','hiring','signals']"
@@ -143,7 +143,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Next: <a routerLink="/guides/behavioral/evaluation-areas">What You’re Evaluated On</a>
         · or jump to <a routerLink="/guides/behavioral/prep">How to Prepare</a>.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralBigPictureArticle {

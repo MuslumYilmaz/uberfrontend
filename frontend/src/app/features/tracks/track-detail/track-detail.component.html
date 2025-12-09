@@ -8,113 +8,113 @@
       </nav>
 
       <ng-container *ngIf="filtered$ | async as questions">
-        <section class="uf-track-header uf-card uf-card--elevated">
-          <div class="uf-track-header__left">
-            <div class="uf-track-header__eyebrow uf-meta-label">Track</div>
-            <h1 class="uf-track-header__title uf-page-title">{{ t.title }}</h1>
-            <p class="uf-track-header__subtitle uf-body">{{ t.subtitle }}</p>
-            <div class="uf-track-header__bullets">
-              <span class="uf-track-header__bullet uf-chip uf-chip--label" *ngFor="let item of t.focus">{{ item }}</span>
+        <section class="fa-track-header fa-card fa-card--elevated">
+          <div class="fa-track-header__left">
+            <div class="fa-track-header__eyebrow fa-meta-label">Track</div>
+            <h1 class="fa-track-header__title fa-page-title">{{ t.title }}</h1>
+            <p class="fa-track-header__subtitle fa-body">{{ t.subtitle }}</p>
+            <div class="fa-track-header__bullets">
+              <span class="fa-track-header__bullet fa-chip fa-chip--label" *ngFor="let item of t.focus">{{ item }}</span>
             </div>
           </div>
 
-          <div class="uf-track-header__right">
-            <div class="uf-track-header__meta-row">
-              <span class="meta-chip uf-chip uf-chip--accent">{{ t.durationLabel }}</span>
-              <span class="meta-chip uf-chip uf-chip--accent">{{ questions.length }} questions</span>
+          <div class="fa-track-header__right">
+            <div class="fa-track-header__meta-row">
+              <span class="meta-chip fa-chip fa-chip--accent">{{ t.durationLabel }}</span>
+              <span class="meta-chip fa-chip fa-chip--accent">{{ questions.length }} questions</span>
             </div>
           </div>
         </section>
 
-        <section class="uf-track-filters uf-card uf-card--elevated">
+        <section class="fa-track-filters fa-card fa-card--elevated">
           <div class="filters-row">
             <div class="filter-group">
-              <div class="filter-label uf-meta-label">Type</div>
+              <div class="filter-label fa-meta-label">Type</div>
               <div class="chip-row">
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="All"
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="All"
                          [selected]="kindFilter$.value === 'all'"
                          (selectedChange)="onKindChange('all')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Coding"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Coding"
                          [selected]="kindFilter$.value === 'coding'"
                          (selectedChange)="onKindChange('coding')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Trivia"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Trivia"
                          [selected]="kindFilter$.value === 'trivia'"
                          (selectedChange)="onKindChange('trivia')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="System design"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="System design"
                          [selected]="kindFilter$.value === 'system-design'"
                          (selectedChange)="onKindChange('system-design')">
-                </uf-chip>
+                </fa-chip>
               </div>
             </div>
 
             <div class="filter-group">
-              <div class="filter-label uf-meta-label">Tech</div>
+              <div class="filter-label fa-meta-label">Tech</div>
               <div class="chip-row">
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="All tech"
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="All tech"
                          [selected]="techFilter$.value === 'all'"
                          (selectedChange)="onTechChange('all')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="JavaScript"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="JavaScript"
                          [selected]="techFilter$.value === 'javascript'"
                          (selectedChange)="onTechChange('javascript')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="User interface"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="User interface"
                          [selected]="techFilter$.value === 'ui'"
                          (selectedChange)="onTechChange('ui')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="HTML"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="HTML"
                          [selected]="techFilter$.value === 'html'"
                          (selectedChange)="onTechChange('html')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="CSS"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="CSS"
                          [selected]="techFilter$.value === 'css'"
                          (selectedChange)="onTechChange('css')">
-                </uf-chip>
+                </fa-chip>
               </div>
             </div>
 
             <div class="filter-group">
-              <div class="filter-label uf-meta-label">Difficulty</div>
+              <div class="filter-label fa-meta-label">Difficulty</div>
               <div class="chip-row">
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Easy"
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Easy"
                          [selected]="diffFilter$.value.has('easy')"
                          (selectedChange)="onDiffToggle('easy')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Intermediate"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Intermediate"
                          [selected]="diffFilter$.value.has('intermediate')"
                          (selectedChange)="onDiffToggle('intermediate')">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Hard"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Hard"
                          [selected]="diffFilter$.value.has('hard')"
                          (selectedChange)="onDiffToggle('hard')">
-                </uf-chip>
+                </fa-chip>
               </div>
             </div>
 
             <div class="filter-group">
-              <div class="filter-label uf-meta-label">Importance</div>
+              <div class="filter-label fa-meta-label">Importance</div>
               <div class="chip-row">
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Low"
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Low"
                          [selected]="impFilter$.value.has('low')"
                          (selectedChange)="onImportanceChange({ tier: 'low', checked: $event })">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="Medium"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="Medium"
                          [selected]="impFilter$.value.has('medium')"
                          (selectedChange)="onImportanceChange({ tier: 'medium', checked: $event })">
-                </uf-chip>
-                <uf-chip size="md" class="filter-chip uf-chip--label" label="High"
+                </fa-chip>
+                <fa-chip size="md" class="filter-chip fa-chip--label" label="High"
                          [selected]="impFilter$.value.has('high')"
                          (selectedChange)="onImportanceChange({ tier: 'high', checked: $event })">
-                </uf-chip>
+                </fa-chip>
               </div>
             </div>
 
             <div class="filter-group stretch">
-              <div class="filter-label uf-meta-label">Search</div>
-              <div class="search-box uf-input">
+              <div class="filter-label fa-meta-label">Search</div>
+              <div class="search-box fa-input">
                 <i class="pi pi-search"></i>
                 <input
                   type="text"
@@ -127,8 +127,8 @@
             </div>
 
             <div class="filter-group">
-              <div class="filter-label uf-meta-label">Sort</div>
-              <div class="uf-input sort-select">
+              <div class="filter-label fa-meta-label">Sort</div>
+              <div class="fa-input sort-select">
                 <select [ngModel]="sort$.value" (ngModelChange)="setSort($event)">
                   <option *ngFor="let opt of sortOptions" [value]="opt.key">{{ opt.label }}</option>
                 </select>
@@ -137,28 +137,28 @@
           </div>
         </section>
 
-        <section class="uf-track-questions">
+        <section class="fa-track-questions">
           <div class="list-head">
             <div class="list-title">
-              <span class="list-kicker uf-meta-label">Track questions</span>
+              <span class="list-kicker fa-meta-label">Track questions</span>
               <span class="count">{{ questions.length }}</span>
             </div>
             <div class="note">Pace yourself — no daily check-ins.</div>
           </div>
 
           <a
-            class="uf-card uf-card--interactive uf-question-card uf-question-card--compact"
+            class="fa-card fa-card--interactive fa-question-card fa-question-card--compact"
             *ngFor="let item of questions; let idx = index"
             [routerLink]="linkFor(item)"
             [state]="navState(questions, item)">
-            <div class="uf-question-card__grid">
-              <div class="uf-question-card__main">
-                <div class="uf-question-card__eyebrow">
+            <div class="fa-question-card__grid">
+              <div class="fa-question-card__main">
+                <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
                   <span>Track question {{ idx + 1 }} / {{ questions.length }}</span>
                 </div>
-                <div class="uf-question-card__title uf-card-title">{{ item.title }}</div>
-                <div class="uf-question-card__description uf-meta-text" *ngIf="item.description">
+                <div class="fa-question-card__title fa-card-title">{{ item.title }}</div>
+                <div class="fa-question-card__description fa-meta-text" *ngIf="item.description">
                   {{ preview(item.description, 160) }}
                 </div>
 
@@ -181,46 +181,46 @@
                 </div>
               </div>
 
-              <div class="uf-question-card__meta-row">
-                <div class="uf-question-card__meta-item">
-                  <span class="uf-meta-label">Difficulty</span>
-                  <span class="uf-chip uf-chip--difficulty" [attr.data-difficulty]="(item.difficulty || 'intermediate').toLowerCase()">
+              <div class="fa-question-card__meta-row">
+                <div class="fa-question-card__meta-item">
+                  <span class="fa-meta-label">Difficulty</span>
+                  <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="(item.difficulty || 'intermediate').toLowerCase()">
                     {{ displayDifficulty(item.difficulty) }}
                   </span>
                 </div>
 
-                <div class="uf-question-card__meta-item">
-                  <span class="uf-meta-label">Importance</span>
+                <div class="fa-question-card__meta-item">
+                  <span class="fa-meta-label">Importance</span>
                   <span
-                    class="uf-chip uf-chip--importance"
+                    class="fa-chip fa-chip--importance"
                     [attr.data-importance]="(item.importance ?? 0) >= 4 ? 'high' : (item.importance ?? 0) >= 2 ? 'medium' : 'low'">
                     {{ (item.importance ?? 0) >= 4 ? 'High' : (item.importance ?? 0) >= 2 ? 'Medium' : 'Low' }}
                   </span>
                 </div>
 
-                <div class="uf-question-card__meta-item" *ngIf="item.tech">
-                  <span class="uf-meta-label">Tech</span>
-                  <span class="uf-chip uf-chip--tech">
+                <div class="fa-question-card__meta-item" *ngIf="item.tech">
+                  <span class="fa-meta-label">Tech</span>
+                  <span class="fa-chip fa-chip--tech">
                     <span class="chip-icon" aria-hidden="true">⟡</span>
                     {{ item.tech | titlecase }}
                   </span>
                 </div>
 
-                <div class="uf-question-card__meta-item meta-item--tags" *ngIf="item.tags?.length">
-                  <span class="uf-meta-label">Tags</span>
+                <div class="fa-question-card__meta-item meta-item--tags" *ngIf="item.tags?.length">
+                  <span class="fa-meta-label">Tags</span>
                   <div class="meta-tags">
-                    <uf-chip
+                    <fa-chip
                       *ngFor="let tag of item.tags"
                       size="sm"
-                      class="tag-chip uf-chip--topic"
+                      class="tag-chip fa-chip--topic"
                       [selected]="false">
                       <span class="chip-icon" aria-hidden="true">#</span>
                       {{ tag }}
-                    </uf-chip>
+                    </fa-chip>
                   </div>
                 </div>
 
-                <span class="ghost-link meta-open uf-btn uf-btn--ghost">Open</span>
+                <span class="ghost-link meta-open fa-btn fa-btn--ghost">Open</span>
               </div>
             </div>
           </a>
@@ -235,7 +235,7 @@
     <div class="container">
       <a class="breadcrumb" routerLink="/tracks">← All tracks</a>
       <h1>Track not found</h1>
-      <p class="uf-track-header__subtitle">Pick a track from the list to see its question set.</p>
+      <p class="fa-track-header__subtitle">Pick a track from the list to see its question set.</p>
     </div>
   </div>
 </ng-template>

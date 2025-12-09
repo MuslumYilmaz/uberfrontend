@@ -20,7 +20,7 @@ import { RouterModule } from '@angular/router';
 
       <!-- Intro -->
       <p class="lede">
-        This Cookie Policy explains how <strong>UberFrontend</strong> (“we”, “us”, or “our”) uses cookies
+        This Cookie Policy explains how <strong>FrontendAtlas</strong> (“we”, “us”, or “our”) uses cookies
         and similar technologies to recognize you when you visit our website and use our services.
         It describes what these technologies are, why we use them, and the choices you have to control them.
       </p>
@@ -148,7 +148,7 @@ import { RouterModule } from '@angular/router';
         </p>
         <p>
           Email:
-          <a href="mailto:legal&#64;uberfrontend.com">legal&#64;uberfrontend.com</a><br>
+          <a href="mailto:legal&#64;frontendatlas.com">legal&#64;frontendatlas.com</a><br>
           Subject line: “Cookie Policy Inquiry”
         </p>
       </section>
@@ -159,28 +159,29 @@ import { RouterModule } from '@angular/router';
           <a [routerLink]="['/legal/privacy']">Privacy Notice</a> and
           <a [routerLink]="['/legal/terms']">Terms of Service</a>.
         </p>
-        <p class="tiny">© {{ year }} UberFrontend. All rights reserved.</p>
+        <p class="tiny">© {{ year }} FrontendAtlas. All rights reserved.</p>
       </footer>
     </article>
   `,
   styles: [`
-    :host { display: block; background: radial-gradient(circle at 14% 18%, rgba(59,130,246,0.08), transparent 40%), #050a12; }
+    :host { display: block; background: radial-gradient(circle at 14% 18%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     .doc {
       max-width: 920px;
-      margin: 24px auto 48px;
-      padding: 18px 16px 20px;
-      color: #e6e9ef;
+      margin: 32px auto 48px;
+      padding: 24px 20px 24px;
+      color: var(--uf-text-primary);
       font-size: 15px;
       line-height: 1.65;
-      background: linear-gradient(145deg, rgba(16, 24, 40, 0.95), rgba(9, 12, 23, 0.95));
-      border: 1px solid #1f2634;
-      border-radius: 18px;
-      box-shadow: 0 16px 60px rgba(0,0,0,0.45);
+      background: linear-gradient(145deg, color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 88%, var(--uf-surface-alt)));
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: var(--uf-card-radius);
+      box-shadow: var(--uf-card-shadow-strong);
     }
     .doc-header h1 {
       font-size: clamp(22px, 3.4vw, 30px);
       margin: 0 0 4px;
       font-weight: 800;
+      color: var(--uf-text-primary);
     }
     .doc-meta {
       display: flex;
@@ -191,34 +192,35 @@ import { RouterModule } from '@angular/router';
     .pill {
       display: inline-flex;
       align-items: center;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: rgba(148, 163, 184, 0.18);
-      color: #e6e9ef;
+      padding: 6px 12px;
+      border-radius: var(--uf-radius-pill);
+      border: 1px solid var(--uf-border-subtle);
+      background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+      color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
       font-size: 11px;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      font-weight: 700;
     }
     .pill-blue {
-      background: rgba(59, 130, 246, 0.16);
-      border-color: rgba(59, 130, 246, 0.45);
-      color: #bfdbfe;
+      background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+      border-color: color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle));
+      color: var(--uf-text-primary);
     }
-    .muted { color: #9aa3ad; margin: 0 0 18px; font-size: 13px; }
-    .lede { color: #cfd6df; margin-bottom: 14px; }
+    .muted { color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); margin: 0 0 16px; font-size: 13px; }
+    .lede { color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); margin-bottom: 16px; }
     .toc {
-      background: #0b111b;
-      border: 1px solid #242b38;
-      border-radius: 12px;
+      background: var(--uf-surface);
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: var(--uf-radius-12);
       padding: 12px 14px;
-      margin: 12px 0 18px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+      margin: 16px 0 20px;
+      box-shadow: var(--uf-card-shadow);
     }
     .toc-title {
       font-size: 14px;
       margin: 0 0 8px;
-      color: #cfd6df;
+      color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
       font-weight: 700;
     }
     .toc ol {
@@ -228,41 +230,43 @@ import { RouterModule } from '@angular/router';
       gap: 6px;
     }
     .toc a {
-      color: #9cc3ff;
+      color: var(--uf-accent);
       text-decoration: none;
-      border-bottom: 1px dashed #2a3142;
+      border-bottom: 1px dashed color-mix(in srgb, var(--uf-accent) 50%, transparent);
     }
-    .toc a:hover { color: #c7ddff; border-color: #3a4559; }
+    .toc a:hover { color: var(--uf-accent-strong); border-color: color-mix(in srgb, var(--uf-accent-strong) 65%, transparent); }
     h2 {
       font-size: 18px;
-      margin: 20px 0 8px;
+      margin: 24px 0 8px;
       font-weight: 800;
+      color: var(--uf-text-primary);
     }
     h3 {
       font-size: 16px;
-      margin: 14px 0 6px;
+      margin: 16px 0 8px;
       font-weight: 700;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
     }
-    p { margin: 0 0 10px; }
-    ul { margin: 0 0 10px; padding-left: 18px; }
+    p { margin: 0 0 10px; color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); }
+    ul { margin: 0 0 10px; padding-left: 18px; color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); }
     li { margin: 4px 0; }
-    a[target="_blank"] { color: #9cc3ff; }
-    a[target="_blank"]:hover { color: #c7ddff; }
+    a[target="_blank"] { color: var(--uf-accent); }
+    a[target="_blank"]:hover { color: var(--uf-accent-strong); }
     html { scroll-behavior: smooth; }
     section[id] { scroll-margin-top: 80px; }
     .doc-footer {
       margin-top: 24px;
-      border-top: 1px solid #1f2634;
+      border-top: 1px solid var(--uf-border-subtle);
       padding-top: 12px;
-      color: #aab3bf;
+      color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
     }
     .doc-footer a {
-      color: #9cc3ff;
+      color: var(--uf-accent);
       text-decoration: none;
-      border-bottom: 1px dashed #2a3142;
+      border-bottom: 1px dashed color-mix(in srgb, var(--uf-accent) 50%, transparent);
     }
-    .doc-footer a:hover { color: #c7ddff; border-color: #3a4559; }
-    .tiny { font-size: 12px; color: #95a2b4; margin-top: 6px; }
+    .doc-footer a:hover { color: var(--uf-accent-strong); border-color: color-mix(in srgb, var(--uf-accent-strong) 65%, transparent); }
+    .tiny { font-size: 12px; color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-top: 6px; }
   `]
 })
 export class CookiesComponent {

@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Rendering & App Architecture"
       [minutes]="14"
       [tags]="['system design','architecture','rendering']"
@@ -127,7 +127,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         answer the question — you’ll demonstrate that you think like a 
         senior engineer who can guide a team through real-world complexity.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignArchitectureArticle {

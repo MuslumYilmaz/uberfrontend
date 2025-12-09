@@ -7,7 +7,7 @@ import { Router, RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   styles: [`
-    :host { display:block; color:#e5e7eb; }
+    :host { display:block; color:var(--uf-text-primary); }
 
     /* Fill space between your fixed header & footer */
     .wrap {
@@ -17,65 +17,66 @@ import { Router, RouterLink } from '@angular/router';
       padding: 32px;
       /* soft colored glow that fits the dark UI */
       background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(59,130,246,.12), transparent 60%),
-        radial-gradient(800px 400px at 100% 20%, rgba(236,72,153,.10), transparent 60%);
+        radial-gradient(1200px 600px at 20% -10%, color-mix(in srgb, var(--uf-accent) 12%, transparent), transparent 60%),
+        radial-gradient(800px 400px at 100% 20%, color-mix(in srgb, var(--uf-text-primary) 8%, transparent), transparent 60%),
+        var(--uf-bg);
     }
 
     .card {
       max-width: 720px; width: 100%;
-      background: #0b0f19;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 20px 40px rgba(0,0,0,.35);
+      background: var(--uf-surface);
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: var(--uf-card-radius);
+      padding: 24px;
+      box-shadow: var(--uf-card-shadow-strong);
     }
 
     .kicker {
       display:inline-flex; align-items:center; gap:8px;
       padding:4px 10px; border-radius:9999px;
-      font-size:12px; color:#a1a1aa;
-      background: rgba(255,255,255,.02);
-      border: 1px solid rgba(255,255,255,.12);
+      font-size:12px; color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
+      background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+      border: 1px solid var(--uf-border-subtle);
     }
 
     .big {
       margin: 10px 0 4px;
       font-size: 56px; line-height: 1.05; font-weight: 800;
       letter-spacing: -0.02em;
-      background: linear-gradient(90deg, #60a5fa, #a78bfa);
+      background: linear-gradient(90deg, color-mix(in srgb, var(--uf-accent) 60%, var(--uf-text-primary) 40%), color-mix(in srgb, var(--uf-text-primary) 70%, transparent));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
-    .subtitle { font-size: 18px; margin: 0 0 10px; color:#cbd5e1; }
+    .subtitle { font-size: 18px; margin: 0 0 10px; color:color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); }
 
-    .p { color:#94a3b8; margin: 8px 0 0; }
+    .p { color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin: 8px 0 0; }
     .url {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      background: rgba(2,6,23,.6);
+      background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
       padding: 2px 6px; border-radius: 6px;
-      border: 1px solid rgba(255,255,255,.08);
-      color:#e5e7eb;
+      border: 1px solid var(--uf-border-subtle);
+      color:var(--uf-text-primary);
     }
 
     .actions { display:flex; gap:12px; margin-top:18px; flex-wrap:wrap; }
 
     .btn {
       appearance:none; cursor:pointer; user-select:none;
-      border:1px solid rgba(59,130,246,.4);
-      background:#1f2937; color:#e5e7eb;
+      border:1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+      background: var(--uf-surface-alt); color:var(--uf-text-primary);
       padding:10px 14px; border-radius:10px; font-weight:600;
       text-decoration:none;
       transition: transform .05s ease, background .2s ease, border-color .2s ease;
     }
-    .btn:hover { background:#223045; border-color:#60a5fa; }
+    .btn:hover { background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-text-secondary) 40%); }
     .btn:active { transform: translateY(1px); }
 
-    .btn.primary { background:#2563eb; border-color:#2563eb; }
-    .btn.primary:hover { background:#1d4ed8; }
+    .btn.primary { background: var(--uf-accent); border-color: var(--uf-accent); color: var(--uf-bg); box-shadow: 0 6px 16px color-mix(in srgb, var(--uf-accent) 30%, transparent); }
+    .btn.primary:hover { background: var(--uf-accent-strong); border-color: var(--uf-accent-strong); }
 
-    .small { font-size:12px; color:#9ca3af; margin-top:8px; }
+    .small { font-size:12px; color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-top:8px; }
   `],
   template: `
     <div class="wrap">

@@ -48,7 +48,7 @@ export class SystemDesignHostComponent implements OnDestroy {
         // Left nav (filter to known slugs)
         const registryMap = new Map(SYSTEM.map(e => [e.slug, e]));
         const leftNav = {
-            title: 'Front End System Design',
+            title: 'Frontend System Design Blueprint',
             sections: SYSTEM_GROUPS.map(g => ({
                 title: g.title,
                 items: g.items
@@ -57,7 +57,7 @@ export class SystemDesignHostComponent implements OnDestroy {
                         const entry = registryMap.get(it.slug)!;
                         return {
                             title: entry?.title ?? this.toTitle(it.slug),
-                            link: ['/', 'guides', 'system-design', it.slug],
+                            link: ['/', 'guides', 'system-design-blueprint', it.slug],
                             active: it.slug === slug
                         };
                     })
@@ -66,8 +66,8 @@ export class SystemDesignHostComponent implements OnDestroy {
 
         if (!current) { this.go404(); return; }
 
-        const prev = idx > 0 ? ['/', 'guides', 'system-design', SYSTEM[idx - 1].slug] : null;
-        const next = idx < SYSTEM.length - 1 ? ['/', 'guides', 'system-design', SYSTEM[idx + 1].slug] : null;
+        const prev = idx > 0 ? ['/', 'guides', 'system-design-blueprint', SYSTEM[idx - 1].slug] : null;
+        const next = idx < SYSTEM.length - 1 ? ['/', 'guides', 'system-design-blueprint', SYSTEM[idx + 1].slug] : null;
 
         this.vc.clear();
         try {
@@ -85,8 +85,8 @@ export class SystemDesignHostComponent implements OnDestroy {
     }
 
     private go404() {
-        const missing = this.router.url; // e.g. /guides/system-design/wrong
-        try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+        const missing = this.router.url; // e.g. /guides/system-design-blueprint/wrong
+        try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
         this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
     }
 }

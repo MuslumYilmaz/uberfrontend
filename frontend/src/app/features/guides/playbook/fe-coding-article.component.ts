@@ -55,7 +55,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     .sub-steps li { margin: .18rem 0; }
 `,
   template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="Shipping Code Under Pressure"
     subtitle="How to tackle coding rounds without freezing or over-engineering."
     [minutes]="8"
@@ -259,7 +259,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       Remember: <strong>ship first, then improve</strong>.  
       A working but imperfect widget always beats a half-written “perfect” solution.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class FeCodingArticle {

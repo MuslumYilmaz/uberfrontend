@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Final Checklist"
       [minutes]="8"
       [tags]="['behavioral','checklist','prep']"
@@ -56,7 +56,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Treat yourself like an athlete on game day. Warm up your voice, hydrate,
         and walk in with 2–3 strong stories top of mind. Everything else flows.
       </blockquote>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralChecklistArticle {

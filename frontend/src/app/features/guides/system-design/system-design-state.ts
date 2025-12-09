@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="State, Data Flow, and Caching"
       [minutes]="15"
       [tags]="['system design','state','data','caching']"
@@ -511,7 +511,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         keep complex UIs fast, correct, and maintainable at scale.
       </p>
 
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignStateArticle {

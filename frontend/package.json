@@ -1,5 +1,5 @@
 {
-  "name": "uberfrontend",
+  "name": "frontendatlas",
   "version": "0.0.0",
   "scripts": {
     "gen:data": "node scripts/gen-data-version.mjs",

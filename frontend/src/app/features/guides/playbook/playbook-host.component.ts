@@ -54,7 +54,7 @@ export class PlaybookHostComponent implements OnDestroy {
         // Build the left navigator safely (hide unknown slugs to avoid dead links)
         const registryMap = new Map(PLAYBOOK.map(e => [e.slug, e]));
         const leftNav = {
-            title: 'Front End Interview',
+            title: 'FrontendAtlas Interview Blueprint',
             sections: PLAYBOOK_GROUPS.map(g => ({
                 title: g.title,
                 items: g.items
@@ -63,7 +63,7 @@ export class PlaybookHostComponent implements OnDestroy {
                         const entry = registryMap.get(it.slug)!;
                         return {
                             title: entry.title,
-                            link: ['/', 'guides', 'playbook', entry.slug],
+                            link: ['/', 'guides', 'interview-blueprint', entry.slug],
                             active: entry.slug === slug,
                         };
                     })
@@ -89,8 +89,8 @@ export class PlaybookHostComponent implements OnDestroy {
     }
 
     private go404() {
-        const missing = this.router.url; // e.g. /guides/playbook/asd
-        try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+        const missing = this.router.url; // e.g. /guides/interview-blueprint/asd
+        try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
         this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
     }
 }

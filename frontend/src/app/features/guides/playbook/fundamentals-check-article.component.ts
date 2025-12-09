@@ -40,7 +40,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       opacity: 1;
     }`,
     template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="Fundamentals Check: Browser, CSS, JS, HTTP"
     subtitle="Quick-fire questions that test your grasp of the essentials."
     [minutes]="15"
@@ -222,7 +222,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     <a [routerLink]="['/coding']">quiz practice area</a>.  
     Short daily reps (5–10 minutes) beat cramming the night before.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class FundamentalsCheckArticle {

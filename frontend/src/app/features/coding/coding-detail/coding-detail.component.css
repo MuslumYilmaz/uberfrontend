@@ -76,12 +76,12 @@
 .icon-warning i { font-size:16px; color:#facc15; }
 
 /* ---------- Buttons (shared) ---------- */
-.uf-btn{ display:inline-flex; align-items:center; gap:.25rem; padding:.35rem .75rem; font-size:.875rem; line-height:1.25rem; border:1px solid rgba(255,255,255,.12); border-radius:.375rem; background:#1f2937; color:#e5e7eb; transition:background .15s ease, border-color .15s ease, color .15s ease; }
-.uf-btn:hover{ background:#374151; border-color:rgba(255,255,255,.24); }
-.uf-btn:active{ transform:translateY(1px); }
-.uf-btn--ghost{ background:transparent; border-color:rgba(255,255,255,.12); }
-.uf-btn--ghost:hover{ background:rgba(255,255,255,.06); }
-.uf-chip{ display:inline-flex; align-items:center; padding:2px 6px; border-radius:6px; font-size:10px; line-height:1; opacity:.8; border:1px solid rgba(255,255,255,.12); }
+.fa-btn{ display:inline-flex; align-items:center; gap:.25rem; padding:.35rem .75rem; font-size:.875rem; line-height:1.25rem; border:1px solid rgba(255,255,255,.12); border-radius:.375rem; background:#1f2937; color:#e5e7eb; transition:background .15s ease, border-color .15s ease, color .15s ease; }
+.fa-btn:hover{ background:#374151; border-color:rgba(255,255,255,.24); }
+.fa-btn:active{ transform:translateY(1px); }
+.fa-btn--ghost{ background:transparent; border-color:rgba(255,255,255,.12); }
+.fa-btn--ghost:hover{ background:rgba(255,255,255,.06); }
+.fa-chip{ display:inline-flex; align-items:center; padding:2px 6px; border-radius:6px; font-size:10px; line-height:1; opacity:.8; border:1px solid rgba(255,255,255,.12); }
 
 /* ---------- Tiny icon button ---------- */
 .icon-btn{ display:inline-grid; place-items:center; width:28px; height:28px; border-radius:6px; background:transparent; border:1px solid rgba(255,255,255,.12); color:#e5e7eb; transition:background .15s ease, border-color .15s ease, transform .02s ease; }
@@ -158,12 +158,12 @@
 
 /* ===== Unified reading size for Description & Solution (calmer) ===== */
 :host {
-  --uf-body: 14px;
-  --uf-leading: 1.55;
+  --fa-body: 14px;
+  --fa-leading: 1.55;
 }
 .font-sm {
-  font-size: var(--uf-body);
-  line-height: var(--uf-leading);
+  font-size: var(--fa-body);
+  line-height: var(--fa-leading);
   color: #e6e6e6;
 }
 

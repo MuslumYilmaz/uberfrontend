@@ -243,19 +243,19 @@ import { RouterModule } from '@angular/router';
     </article>
   `,
   styles: [`
-    :host { display: block; background: radial-gradient(circle at 16% 20%, rgba(34,197,94,0.08), transparent 40%), #050a12; }
+    :host { display: block; background: radial-gradient(circle at 16% 20%, color-mix(in srgb, var(--uf-accent) 10%, transparent), transparent 38%), var(--uf-bg); }
     /* Layout */
     .doc {
       max-width: 920px;
-      margin: 24px auto 48px;
-      padding: 18px 16px 20px;
-      color: #e6e9ef;
+      margin: 32px auto 48px;
+      padding: 24px 20px 24px;
+      color: var(--uf-text-primary);
       font-size: 15px;
       line-height: 1.65;
-      background: linear-gradient(145deg, rgba(16, 24, 40, 0.95), rgba(9, 12, 23, 0.95));
-      border: 1px solid #1f2634;
-      border-radius: 18px;
-      box-shadow: 0 16px 60px rgba(0,0,0,0.45);
+      background: linear-gradient(145deg, color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 88%, var(--uf-surface-alt)));
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: var(--uf-card-radius);
+      box-shadow: var(--uf-card-shadow-strong);
     }
 
     .doc-header h1 {
@@ -263,6 +263,7 @@ import { RouterModule } from '@angular/router';
       margin: 0 0 4px;
       font-weight: 800;
       letter-spacing: 0.2px;
+      color: var(--uf-text-primary);
     }
     .doc-meta {
       display: flex;
@@ -273,40 +274,41 @@ import { RouterModule } from '@angular/router';
     .pill {
       display: inline-flex;
       align-items: center;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: rgba(148, 163, 184, 0.18);
-      color: #e6e9ef;
+      padding: 6px 12px;
+      border-radius: var(--uf-radius-pill);
+      border: 1px solid var(--uf-border-subtle);
+      background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+      color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
       font-size: 11px;
       letter-spacing: 0.04em;
       text-transform: uppercase;
+      font-weight: 700;
     }
     .pill-green {
-      background: rgba(34, 197, 94, 0.16);
-      border-color: rgba(34, 197, 94, 0.45);
-      color: #bbf7d0;
+      background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+      border-color: color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle));
+      color: var(--uf-text-primary);
     }
-    .muted { color: #9aa3ad; margin: 0 0 18px; font-size: 13px; }
+    .muted { color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); margin: 0 0 16px; font-size: 13px; }
 
     .lede {
-      color: #cfd6df;
-      margin: 0 0 14px;
+      color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
+      margin: 0 0 16px;
     }
 
     /* TOC */
     .toc {
-      background: #0b111b;
-      border: 1px solid #242b38;
-      border-radius: 12px;
+      background: var(--uf-surface);
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: var(--uf-radius-12);
       padding: 12px 14px;
-      margin: 12px 0 18px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+      margin: 16px 0 20px;
+      box-shadow: var(--uf-card-shadow);
     }
     .toc-title {
       font-size: 14px;
       margin: 0 0 8px;
-      color: #cfd6df;
+      color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
       font-weight: 700;
     }
     .toc ol {
@@ -315,52 +317,54 @@ import { RouterModule } from '@angular/router';
       counter-reset: item;
     }
     .toc a {
-      color: #9cc3ff; text-decoration: none; border-bottom: 1px dashed #2a3142;
+      color: var(--uf-accent); text-decoration: none; border-bottom: 1px dashed color-mix(in srgb, var(--uf-accent) 50%, transparent);
     }
-    .toc a:hover { color: #c7ddff; border-color: #3a4559; }
+    .toc a:hover { color: var(--uf-accent-strong); border-color: color-mix(in srgb, var(--uf-accent-strong) 65%, transparent); }
 
     /* Headings */
     h2 {
       font-size: 18px;
-      margin: 20px 0 8px;
+      margin: 24px 0 8px;
       font-weight: 800;
       letter-spacing: .2px;
+      color: var(--uf-text-primary);
     }
     h3 {
       font-size: 16px;
-      margin: 14px 0 6px;
+      margin: 16px 0 8px;
       font-weight: 700;
+      color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
     }
 
     /* Content */
-    p { margin: 0 0 10px; }
-    ul { margin: 0 0 10px; padding-left: 18px; }
+    p { margin: 0 0 10px; color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); }
+    ul { margin: 0 0 10px; padding-left: 18px; color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); }
     li { margin: 4px 0; }
     .note {
-      background: #0f131a;
-      border: 1px solid #242b38;
+      background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+      border: 1px solid var(--uf-border-subtle);
       border-radius: 10px;
       padding: 10px 12px;
-      color: #cfd6df;
+      color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
     }
 
     /* Footer */
     .doc-footer {
       margin-top: 24px;
-      border-top: 1px solid #1f2634;
+      border-top: 1px solid var(--uf-border-subtle);
       padding-top: 12px;
-      color: #aab3bf;
+      color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
     }
     .doc-footer a {
-      color: #9cc3ff; text-decoration: none; border-bottom: 1px dashed #2a3142;
+      color: var(--uf-accent); text-decoration: none; border-bottom: 1px dashed color-mix(in srgb, var(--uf-accent) 50%, transparent);
     }
-    .doc-footer a:hover { color: #c7ddff; border-color: #3a4559; }
-    .tiny { font-size: 12px; color: #95a2b4; margin-top: 6px; }
+    .doc-footer a:hover { color: var(--uf-accent-strong); border-color: color-mix(in srgb, var(--uf-accent-strong) 65%, transparent); }
+    .tiny { font-size: 12px; color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-top: 6px; }
   `]
 })
 export class PrivacyComponent {
-  readonly companyName = 'UberFrontend';
+  readonly companyName = 'FrontendAtlas';
   /** Prefer a fixed, explicit date for compliance/versioning. */
   readonly effectiveDate = 'October 6, 2025';
-  readonly contactEmail = 'legal@uberfrontend.com';
+  readonly contactEmail = 'legal@frontendatlas.com';
 }

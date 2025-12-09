@@ -78,7 +78,7 @@ app.post('/api/bug-report', async (req, res) => {
         await transporter.sendMail({
             from: `"Bug Reporter" <${process.env.SMTP_USER}>`,
             to: 'mslmyilmaz34@gmail.com',
-            subject: 'Bug report from UberFrontend',
+            subject: 'Bug report from FrontendAtlas',
             text: `Bug report:\n\n${safeText}\n\nPage: ${safeUrl || '(none)'}\nSent ${new Date().toISOString()}`,
             html,
         });

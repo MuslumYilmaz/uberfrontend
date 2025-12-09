@@ -35,8 +35,8 @@ export function navFor(
 }
 
 function inferBase(registry: GuideEntry[]): string | null {
-    if (registry === PLAYBOOK) return 'playbook';
-    if (registry === SYSTEM) return 'system-design';
+    if (registry === PLAYBOOK) return 'interview-blueprint';
+    if (registry === SYSTEM) return 'system-design-blueprint';
     if (registry === BEHAVIORAL) return 'behavioral';
     return null;
 }

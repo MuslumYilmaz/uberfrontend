@@ -5,12 +5,12 @@ import { ActivatedRoute, RouterLink, RouterModule, RouterOutlet } from '@angular
 import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
-import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
+import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 
 @Component({
   standalone: true,
   selector: 'app-company-detail',
-  imports: [CommonModule, RouterModule, RouterOutlet, RouterLink, UfChipComponent],
+  imports: [CommonModule, RouterModule, RouterOutlet, RouterLink, FaChipComponent],
   templateUrl: './company-detail.component.html',
   styleUrls: ['./company-detail.component.scss']
 })

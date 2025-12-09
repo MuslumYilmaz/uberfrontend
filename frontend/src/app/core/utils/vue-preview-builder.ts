@@ -44,10 +44,10 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
     html,body,#app{height:100%}
     body{margin:16px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial}
     ${css || ''}
-    #_uf_overlay{position:fixed;inset:0;background:#2b0000;color:#ffd6d6;padding:16px;display:none;overflow:auto;z-index:999999;border-top:4px solid #ff5555}
-    #_uf_overlay h1{margin:0 0 8px 0;font-size:16px;color:#fff}
-    #_uf_overlay pre{white-space:pre-wrap;margin:0}
-    #_uf_overlay .meta{opacity:.8;margin:6px 0 0}
+    #_fa_overlay{position:fixed;inset:0;background:#2b0000;color:#ffd6d6;padding:16px;display:none;overflow:auto;z-index:999999;border-top:4px solid #ff5555}
+    #_fa_overlay h1{margin:0 0 8px 0;font-size:16px;color:#fff}
+    #_fa_overlay pre{white-space:pre-wrap;margin:0}
+    #_fa_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
 
   <!-- Vue 3 (global build with compiler) -->
@@ -57,14 +57,14 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
 </head>
 <body>
   <div id="app"></div>
-  <div id="_uf_overlay">
+  <div id="_fa_overlay">
     <h1>Something went wrong</h1>
-    <pre id="_uf_overlay_msg"></pre>
-    <div id="_uf_overlay_meta" class="meta"></div>
+    <pre id="_fa_overlay_msg"></pre>
+    <div id="_fa_overlay_meta" class="meta"></div>
   </div>
 
   <!-- user code -->
-  <script id="_uf_user_src" type="text/plain">
+  <script id="_fa_user_src" type="text/plain">
 ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
   </script>
 
@@ -73,9 +73,9 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
     // Strip common network APIs in the sandboxed preview (keep navigator for libs)
     ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
 
-    const overlay = document.getElementById('_uf_overlay');
-    const overlayMsg = document.getElementById('_uf_overlay_msg');
-    const overlayMeta = document.getElementById('_uf_overlay_meta');
+    const overlay = document.getElementById('_fa_overlay');
+    const overlayMsg = document.getElementById('_fa_overlay_msg');
+    const overlayMeta = document.getElementById('_fa_overlay_meta');
 
     function showOverlay(msg, meta){
       try {
@@ -124,7 +124,7 @@ ${appModuleSrc.replace(/<\/script>/g, '<\\/script>')}
     }
 
     function start(){
-      const raw = document.getElementById('_uf_user_src').textContent || '';
+      const raw = document.getElementById('_fa_user_src').textContent || '';
 
       const compiled =
         /:\\s*[A-Za-z_$]/.test(raw) || /interface\\b|type\\b/.test(raw)

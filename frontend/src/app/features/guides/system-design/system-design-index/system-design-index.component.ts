@@ -6,7 +6,7 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
 
 @Component({
   standalone: true,
-  selector: 'uf-system-design-index',
+  selector: 'fa-system-design-index',
   imports: [CommonModule, RouterModule, OfflineBannerComponent],
   styles: [`
     :host { display:block; }
@@ -21,13 +21,13 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
 
     .card {
       display:flex; align-items:center; gap:14px;
-      --uf-card-bg: linear-gradient(180deg,#141414,#101010);
-      --uf-card-bg-hover: rgba(255,255,255,.05);
-      --uf-card-border: rgba(255,255,255,.14);
-      --uf-card-border-strong: rgba(255,255,255,.24);
-      --uf-card-shadow: 0 10px 26px rgba(0,0,0,.32);
-      --uf-card-shadow-hover: 0 16px 40px rgba(0,0,0,.4);
-      padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--uf-card-radius, 12px);
+      --fa-card-bg: linear-gradient(180deg,#141414,#101010);
+      --fa-card-bg-hover: rgba(255,255,255,.05);
+      --fa-card-border: rgba(255,255,255,.14);
+      --fa-card-border-strong: rgba(255,255,255,.24);
+      --fa-card-shadow: 0 10px 26px rgba(0,0,0,.32);
+      --fa-card-shadow-hover: 0 16px 40px rgba(0,0,0,.4);
+      padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--fa-card-radius, 12px);
     }
     .num {
       width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
@@ -42,8 +42,8 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
   `],
   template: `
     <div class="wrap">
-      <h1 class="hero-title">System Design Interview Guide</h1>
-      <div class="hero-sub">A practical path through high-level design, scalability, and trade-offs.</div>
+      <h1 class="hero-title">Frontend System Design Blueprint</h1>
+      <div class="hero-sub">A practical blueprint for high-level design, scalability, and trade-offs.</div>
       <div class="pill-row">
         <span class="pill">Architecture diagrams</span>
         <span class="pill">Scalability & reliability</span>
@@ -54,8 +54,8 @@ import { SYSTEM, SYSTEM_GROUPS } from '../../../../shared/guides/guide.registry'
         <div class="sec-head">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items; let ii = index"
-           class="card uf-card"
-           [routerLink]="['/','guides','system-design', it.slug]">
+           class="card fa-card"
+           [routerLink]="['/','guides','system-design-blueprint', it.slug]">
           <div class="num">{{ starts()[gi] + ii + 1 }}</div>
           <div class="body">
             <div class="title">{{ map().get(it.slug)?.title || it.slug }}</div>

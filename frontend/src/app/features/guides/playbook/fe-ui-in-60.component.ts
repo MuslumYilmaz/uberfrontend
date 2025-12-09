@@ -54,7 +54,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
     template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="Build Great UI in 60 Minutes"
     subtitle="UI coding interviews: from layout to logic to polish under time pressure."
     [minutes]="20"
@@ -303,7 +303,7 @@ document.addEventListener('keydown', (e) =&gt; &#123;
       beats a half-written “perfect” solution every time. Keep progress visible, talk through
       trade-offs, and you’ll score higher than most candidates.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class FeUiIn60Article {

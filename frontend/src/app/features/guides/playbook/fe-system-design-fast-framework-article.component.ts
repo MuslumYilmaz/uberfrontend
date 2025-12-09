@@ -41,7 +41,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
   template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="Client-Side System Design: A Fast Framework"
     subtitle="How to think about front-end system design in interviews."
     [minutes]="15"
@@ -306,7 +306,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       If you structure your answer this way, you’ll come across as someone who can 
       not just code — but <strong>design, communicate, and lead</strong>.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class FeSystemDesignFastFrameworkArticle {

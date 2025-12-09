@@ -21,10 +21,10 @@ export class SeoService {
   private readonly doc = inject(DOCUMENT);
 
   private readonly defaults = {
-    siteName: 'UberFrontend',
-    title: 'Front-end interview prep',
+    siteName: 'FrontendAtlas',
+    title: 'High-signal frontend interview preparation platform.',
     description:
-      'Practice front-end coding, trivia, and system design interview questions with curated guides and company tracks.',
+      'FrontendAtlas — High-signal frontend interview preparation platform. Practice front-end coding, trivia, and system design interview questions with curated guides and company tracks.',
     keywords: [
       'front end interview prep',
       'javascript interview questions',

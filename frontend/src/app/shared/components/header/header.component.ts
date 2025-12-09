@@ -23,17 +23,17 @@ type Mode =
   imports: [CommonModule, RouterModule, FormsModule],
   styleUrls: ['./header.component.css'],
   template: `
-  <div class="ufh-topbar" role="banner" (click)="$event.stopPropagation()">
-    <div class="ufh-inner">
+  <div class="fah-topbar" role="banner" (click)="$event.stopPropagation()">
+    <div class="fah-inner">
       <!-- LEFT (brand) -->
-      <div class="ufh-left">
-        <a class="ufh-brand" routerLink="/">UberFrontend</a>
+      <div class="fah-left">
+        <a class="fah-brand" routerLink="/">FrontendAtlas</a>
       </div>
 
       <!-- CENTER (Prepare trigger) -->
-      <div class="ufh-center">
+      <div class="fah-center">
         <button
-          class="ufh-navlink"
+          class="fah-navlink"
           (click)="toggleMega()"
           aria-haspopup="menu"
           [attr.aria-expanded]="megaOpen()"
@@ -43,32 +43,32 @@ type Mode =
       </div>
 
       <!-- RIGHT (Pricing → Avatar → CTA) -->
-      <div class="ufh-right" (click)="$event.stopPropagation()">
-        <a class="ufh-btn" routerLink="/pricing">Pricing</a>
+      <div class="fah-right" (click)="$event.stopPropagation()">
+        <a class="fah-btn" routerLink="/pricing">Pricing</a>
 
-        <div class="ufh-profile ufh-profile-right">
-          <button class="ufh-avatar"
+        <div class="fah-profile fah-profile-right">
+          <button class="fah-avatar"
                   (click)="toggleProfileMenu()"
                   aria-haspopup="menu"
                   [attr.aria-expanded]="profileOpen()">
             <i class="pi pi-user"></i>
           </button>
-          <div *ngIf="profileOpen()" class="ufh-menu" role="menu">
-            <div class="ufh-menu-section">Account</div>
+          <div *ngIf="profileOpen()" class="fah-menu" role="menu">
+            <div class="fah-menu-section">Account</div>
 
             <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
-              <a class="ufh-menu-item" routerLink="/profile" (click)="closeAll()">
+              <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()">
                 <i class="pi pi-user"></i> My profile
               </a>
-              <div class="ufh-divider"></div>
-              <button class="ufh-menu-item" (click)="logout()"><i class="pi pi-sign-out"></i> Log out</button>
+              <div class="fah-divider"></div>
+              <button class="fah-menu-item" (click)="logout()"><i class="pi pi-sign-out"></i> Log out</button>
             </ng-container>
 
             <ng-template #profileDisabled>
-              <button class="ufh-menu-item" routerLink="/auth/signup" (click)="closeAll()">
+              <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()">
                 <i class="pi pi-user-plus"></i> Sign up
               </button>
-              <button class="ufh-menu-item" routerLink="/auth/login" (click)="closeAll()">
+              <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()">
                 <i class="pi pi-sign-in"></i> Log in
               </button>
             </ng-template>
@@ -76,7 +76,7 @@ type Mode =
         </div>
 
         <!-- Luminous CTA -->
-        <a class="ufh-cta ufh-cta-solid" routerLink="/pricing">
+        <a class="fah-cta fah-cta-solid" routerLink="/pricing">
           {{ auth.isLoggedIn() ? 'Upgrade' : 'Get full access' }}
         </a>
       </div>
@@ -84,42 +84,42 @@ type Mode =
 
     <!-- MEGA MENU -->
     <ng-container *ngIf="megaOpen()">
-      <div class="ufh-backdrop" (click)="closeAll()"></div>
-      <div id="prepare-mega" class="ufh-mega" (click)="$event.stopPropagation()" (keydown.escape)="closeAll()"
+      <div class="fah-backdrop" (click)="closeAll()"></div>
+      <div id="prepare-mega" class="fah-mega" (click)="$event.stopPropagation()" (keydown.escape)="closeAll()"
            tabindex="-1" role="menu" aria-label="Prepare menu">
-        <div class="ufh-mega-inner">
-          <div class="ufh-rail">
+        <div class="fah-mega-inner">
+          <div class="fah-rail">
             <button *ngFor="let g of groups; trackBy: trackByGroupKey"
-                    class="ufh-rail-item"
-                    [class.ufh-rail-active]="g.key===activeGroupKey()"
+                    class="fah-rail-item"
+                    [class.fah-rail-active]="g.key===activeGroupKey()"
                     (click)="activeGroupKey.set(g.key)">
-              <span class="ufh-rail-text">{{ g.title }}</span>
-              <i class="pi pi-chevron-right ufh-rail-caret"></i>
+              <span class="fah-rail-text">{{ g.title }}</span>
+              <i class="pi pi-chevron-right fah-rail-caret"></i>
             </button>
           </div>
 
-          <div class="ufh-pane">
+          <div class="fah-pane">
             <ng-container *ngFor="let item of activeItems(); trackBy: trackByItemKey">
               <div *ngIf="item.disabled || item.intent!=='route' || !item.target; else enabledRow"
-                   class="ufh-card ufh-card-disabled"
+                   class="fah-card fah-card-disabled"
                    role="button" aria-disabled="true" tabindex="-1">
-                <div class="ufh-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                <div class="ufh-card-body">
-                  <div class="ufh-card-title">
+                <div class="fah-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                <div class="fah-card-body">
+                  <div class="fah-card-title">
                     {{ item.title }}
-                    <span *ngIf="item.badge" class="ufh-badge">{{ item.badge }}</span>
+                    <span *ngIf="item.badge" class="fah-badge">{{ item.badge }}</span>
                   </div>
-                  <div class="ufh-card-sub">{{ item.subtitle }}</div>
-                  <div class="ufh-skel"></div>
+                  <div class="fah-card-sub">{{ item.subtitle }}</div>
+                  <div class="fah-skel"></div>
                 </div>
               </div>
               <ng-template #enabledRow>
-                <a class="ufh-card" [routerLink]="intentToLink(item)!" (click)="closeAll()">
-                  <div class="ufh-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                  <div class="ufh-card-body">
-                    <div class="ufh-card-title">{{ item.title }}</div>
-                    <div class="ufh-card-sub">{{ item.subtitle }}</div>
-                    <div class="ufh-skel"></div>
+                <a class="fah-card" [routerLink]="intentToLink(item)!" (click)="closeAll()">
+                  <div class="fah-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                  <div class="fah-card-body">
+                    <div class="fah-card-title">{{ item.title }}</div>
+                    <div class="fah-card-sub">{{ item.subtitle }}</div>
+                    <div class="fah-skel"></div>
                   </div>
                   <div aria-hidden="true">→</div>
                 </a>
@@ -249,7 +249,7 @@ export class HeaderComponent implements OnInit {
       }
       case 'system': {
         const section = t.params?.['section'] as string | undefined;
-        if (section === 'guide') return ['/guides', 'system-design'];
+        if (section === 'guide') return ['/guides', 'system-design-blueprint'];
         return ['/system-design'];
       }
       case 'companies': {
@@ -260,9 +260,9 @@ export class HeaderComponent implements OnInit {
         return ['/courses'];
       case 'guides': {
         const section = (t.params?.['section'] as string | undefined) ?? '';
-        if (section === 'playbook') return (['/guides', 'playbook']);
+        if (section === 'playbook' || section === 'interview-blueprint') return (['/guides', 'interview-blueprint']);
         if (section === 'behavioral') return (['/guides', 'behavioral']);
-        if (section === 'system-design') return (['/guides', 'system-design']);
+        if (section === 'system-design' || section === 'system-design-blueprint') return (['/guides', 'system-design-blueprint']);
         return ['/guides'];
       }
       default:

@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Accessibility, i18n & Offline First"
       [minutes]="10"
       [tags]="['a11y','i18n','offline-first']"
@@ -81,7 +81,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         in great interview answers</strong>. Mentioning them naturally shows 
         you think beyond code, and design systems that work for everyone, everywhere.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignCrossCuttingArticle {

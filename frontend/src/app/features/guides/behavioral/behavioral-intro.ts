@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Behavioral Interviews: What Great Answers Look Like"
       [minutes]="12"
       [tags]="['behavioral','communication','leadership']"
@@ -178,7 +178,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
           <p class="text-sm opacity-90">Reflection: one thing you’d repeat, one you’d change.</p>
         </div>
       </div>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralIntroArticle {

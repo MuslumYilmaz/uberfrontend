@@ -47,7 +47,7 @@ export class BehavioralHostComponent implements OnDestroy {
         // Left nav (filter to known slugs)
         const registryMap = new Map(BEHAVIORAL.map(e => [e.slug, e]));
         const leftNav = {
-            title: 'Behavioral Interviews',
+            title: 'Behavioral Interview Handbook',
             sections: BEHAVIORAL_GROUPS.map(g => ({
                 title: g.title,
                 items: g.items
@@ -86,7 +86,7 @@ export class BehavioralHostComponent implements OnDestroy {
 
     private go404() {
         const missing = this.router.url; // e.g. /guides/behavioral/sad
-        try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+        try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
         this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
     }
 }

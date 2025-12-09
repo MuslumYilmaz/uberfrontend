@@ -18,7 +18,7 @@ import {
   TrackQuestionKind,
   TrackQuestionRef,
 } from '../track.data';
-import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
+import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 
 type PracticeItem = { tech: Tech; kind: QuestionKind; id: string };
@@ -49,7 +49,7 @@ const UI_TECHS: ReadonlySet<Tech> = new Set<Tech>(['react', 'angular', 'vue']);
 @Component({
   selector: 'app-track-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, UfChipComponent, CodingFilterPanelComponent],
+  imports: [CommonModule, RouterModule, FormsModule, FaChipComponent, CodingFilterPanelComponent],
   templateUrl: './track-detail.component.html',
   styleUrls: ['./track-detail.component.css'],
 })

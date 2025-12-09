@@ -156,7 +156,7 @@ export class CourseDetailComponent {
 
   private navTo404() {
     const missing = this.router.url; // e.g., /courses/asd
-    try { sessionStorage.setItem('uf:lastMissing', missing); } catch { }
+    try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
     this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
   }
 

@@ -21,7 +21,7 @@ import { MixedQuestion, QuestionService } from '../../../core/services/question.
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
-import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
+import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -142,7 +142,7 @@ function inferCategory(q: any): CategoryKey {
     CodingTechKindTabsComponent,
     CodingFilterPanelComponent,
     OfflineBannerComponent,
-    UfChipComponent
+    FaChipComponent
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']

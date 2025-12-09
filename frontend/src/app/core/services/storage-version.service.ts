@@ -4,7 +4,7 @@ import { Injectable, isDevMode } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class StorageVersionService {
-  private readonly VERSION_KEY = 'uf:dataVersion';
+  private readonly VERSION_KEY = 'fa:dataVersion';
   private readonly DATA_URL = 'assets/data-version.json';
 
   constructor(private http: HttpClient) { }

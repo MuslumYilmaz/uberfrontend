@@ -39,15 +39,15 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
         items: [
             {
                 key: 'playbook',
-                title: 'Front End Interview Playbook',
+                title: 'FrontendAtlas Interview Blueprint',
                 subtitle: 'A starter guide to front end interviews',
                 pi: 'pi pi-file',
                 intent: 'route',
-                target: { name: 'guides', params: { section: 'playbook' } }
+                target: { name: 'guides', params: { section: 'interview-blueprint' } }
             },
             {
-                key: 'gfe75',
-                title: 'GFE 75',
+                key: 'fa-core-75',
+                title: 'FA Core 75',
                 subtitle: 'The 75 most important front end questions',
                 pi: 'pi pi-list',
                 badge: 'Coming soon',
@@ -57,7 +57,7 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             // NEW
             {
                 key: 'behavioral',
-                title: 'Behavioral Interview Guide',
+                title: 'Behavioral Interview Handbook',
                 subtitle: 'STAR stories, signals, examples',
                 pi: 'pi pi-comments',
                 intent: 'route',
@@ -93,11 +93,11 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
         items: [
             {
                 key: 'sd-guide',
-                title: 'System Design Playbook',
+                title: 'Frontend System Design Blueprint',
                 subtitle: 'Concepts, patterns, interview tactics',
                 pi: 'pi pi-sitemap',
                 intent: 'route',
-                target: { name: 'system', params: { section: 'guide' } } // maps to /guides/system-design
+                target: { name: 'system', params: { section: 'guide' } } // maps to /guides/system-design-blueprint
             },
             {
                 key: 'sd-practice',

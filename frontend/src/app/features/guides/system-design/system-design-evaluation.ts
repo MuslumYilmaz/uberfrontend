@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="What Interviewers Really Look For"
       [minutes]="7"
       [tags]="['system design','signals','trade-offs']"
@@ -125,7 +125,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         guide a team, and make thoughtful choices under pressure. 
         That’s what makes you stand out.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignSignalsArticle {

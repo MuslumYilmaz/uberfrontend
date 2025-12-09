@@ -29,15 +29,15 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
   imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent],
   styles: [`
   /* Unified Results/Console typography */
-  .uf-results, .uf-results * {
+  .fa-results, .fa-results * {
     font-size: 13px !important;
     line-height: 1.35 !important;
   }
-  .uf-results .summary { font-size: 13px !important; }
-  .uf-results .test-card { padding: 6px !important; }
-  .uf-results .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size:13px !important; }
-  .uf-results .test-name i { font-size:13px !important; }
-  .uf-results .test-error { margin-top:4px !important; font-size:11px !important; }
+  .fa-results .summary { font-size: 13px !important; }
+  .fa-results .test-card { padding: 6px !important; }
+  .fa-results .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size:13px !important; }
+  .fa-results .test-name i { font-size:13px !important; }
+  .fa-results .test-error { margin-top:4px !important; font-size:11px !important; }
 
   /* Ensure results area can grow/scroll */
   .results-panel { flex:1 1 auto; min-height:0; }
@@ -183,7 +183,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
 
             <div class="flex-1 min-h-0 overflow-hidden">
               <!-- Results -->
-              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel uf-results">
+              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel fa-results">
                 <!-- 1) No tests -->
                 <div class="h-full grid place-items-center text-xs text-gray-400" *ngIf="!hasAnyTests()">
                   No tests provided for this challenge yet.
@@ -217,7 +217,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
 
               <!-- Console -->
               <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
-                <app-console-logger class="flex-1 console-panel uf-results"
+                <app-console-logger class="flex-1 console-panel fa-results"
                                     [entries]="consoleEntries()" [results]="testResults()"
                                     [max]="500" [autoScroll]="true">
                 </app-console-logger>
@@ -570,7 +570,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   // ---------- solved persistence (same key) ----------
-  private solvedKey(q: Question) { return `uf:coding:solved:${this.tech}:${q.id}`; }
+  private solvedKey(q: Question) { return `fa:coding:solved:${this.tech}:${q.id}`; }
 
   // ---------- banner actions ----------
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }

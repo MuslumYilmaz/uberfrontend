@@ -76,7 +76,7 @@
 
               <!-- Tech focus chips -->
               <div *ngIf="specs.techFocus?.length" class="mt-2 flex flex-wrap gap-1">
-                <span *ngFor="let t of specs.techFocus" class="uf-chip">
+                <span *ngFor="let t of specs.techFocus" class="fa-chip">
                   {{ t }}
                 </span>
               </div>
@@ -222,7 +222,7 @@
                   <span class="ap-num">{{ i + 1 }}</span>
                   <h4 class="ap-title">{{ ap.title }}</h4>
                   <div class="ap-actions">
-                    <button class="uf-btn"
+                    <button class="fa-btn"
                       *ngIf="(isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs))"
                       (click)="loadApproach(ap)" title="Load into editor">
                       Load into editor
@@ -283,7 +283,7 @@
                 <section *ngIf="isFrameworkTech() && solutionFileList().length" class="mt-4 space-y-2">
                   <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold">Files</h3>
-                    <button type="button" class="uf-btn text-[10px]" (click)="loadSolutionIntoEditor()"
+                    <button type="button" class="fa-btn text-[10px]" (click)="loadSolutionIntoEditor()"
                       title="Replace all files with the official solution">
                       Load into editor
                     </button>

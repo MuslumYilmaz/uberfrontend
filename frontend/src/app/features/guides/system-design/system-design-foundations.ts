@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Foundations & Constraints"
       [minutes]="14"
       [tags]="['system design','foundations','constraints']"
@@ -111,7 +111,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       more credible. It signals that you can think like a senior engineer 
       who values clarity, context, and pragmatic choices.
     </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignFoundationsArticle {

@@ -204,13 +204,13 @@ export class DashboardComponent {
   /** ===== Recommended preparation ===== */
   recommended: Card[] = [
     {
-      title: 'Front End Interview Playbook',
+      title: 'FrontendAtlas Interview Blueprint',
       subtitle: 'A starter guide to preparing for front end interviews.',
       icon: 'book',
-      route: ['/guides', 'playbook'],
+      route: ['/guides', 'interview-blueprint'],
     },
     {
-      title: 'GFE 75',
+      title: 'FA Core 75',
       subtitle:
         'The 75 most important front end interview questions. Covers patterns & formats.',
       icon: 'book',
@@ -218,13 +218,13 @@ export class DashboardComponent {
       badge: 'Coming soon',
     },
     {
-      title: 'Front End System Design Playbook',
+      title: 'Frontend System Design Blueprint',
       subtitle: 'Core techniques and deep dives (guide).',
       icon: 'grid',
-      route: ['/guides', 'system-design'],
+      route: ['/guides', 'system-design-blueprint'],
     },
     {
-      title: 'Behavioral Interview Guide',
+      title: 'Behavioral Interview Handbook',
       subtitle: 'STAR method, stories, and high-signal answers.',
       icon: 'book',
       route: ['/guides', 'behavioral'],

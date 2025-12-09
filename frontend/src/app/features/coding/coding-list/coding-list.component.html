@@ -1,8 +1,8 @@
 <div class="coding-shell mx-auto max-w-7xl px-4 py-6">
-  <header class="uf-page-header">
-    <p class="uf-page-kicker">Practice library</p>
-    <h1 class="uf-page-title">All questions</h1>
-    <p class="uf-page-subtitle uf-body">Explore every prompt and slice the library by difficulty, tech, or tags.</p>
+  <header class="fa-page-header">
+    <p class="fa-page-kicker">Practice library</p>
+    <h1 class="fa-page-title">All questions</h1>
+    <p class="fa-page-subtitle fa-body">Explore every prompt and slice the library by difficulty, tech, or tags.</p>
   </header>
 
   <app-coding-tech-kind-tabs *ngIf="source!=='company'"
@@ -18,114 +18,114 @@
     (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
-  <div class="uf-questions-layout">
-    <aside class="uf-filter-panel uf-card uf-card--elevated" aria-label="Filters">
-      <div class="uf-filter-panel__header">
+  <div class="fa-questions-layout">
+    <aside class="fa-filter-panel fa-card fa-card--elevated" aria-label="Filters">
+      <div class="fa-filter-panel__header">
         <div>
-          <p class="uf-filter-panel__eyebrow uf-meta-label">All Questions</p>
-          <h2 class="uf-filter-panel__title uf-section-title">Refine the list</h2>
+          <p class="fa-filter-panel__eyebrow fa-meta-label">All Questions</p>
+          <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
         </div>
-        <div class="uf-filter-panel__count">
-          <span class="pill uf-chip uf-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
+        <div class="fa-filter-panel__count">
+          <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
         </div>
       </div>
 
-      <div class="uf-filter-section">
-        <div class="uf-filter-section__title uf-meta-label">Difficulty</div>
-        <div class="uf-filter-options">
-          <label *ngFor="let opt of difficultyOptions" class="uf-filter-option">
+      <div class="fa-filter-section">
+        <div class="fa-filter-section__title fa-meta-label">Difficulty</div>
+        <div class="fa-filter-options">
+          <label *ngFor="let opt of difficultyOptions" class="fa-filter-option">
             <input type="checkbox"
                    [checked]="((diffs$ | async) || []).includes(opt.value)"
                    (change)="onDiffChange(opt.value, $event)">
-            <span class="uf-chip uf-chip--label uf-filter-chip">
-              <span class="uf-filter-chip__icon" aria-hidden="true">⬤</span>
+            <span class="fa-chip fa-chip--label fa-filter-chip">
+              <span class="fa-filter-chip__icon" aria-hidden="true">⬤</span>
               {{ opt.label }}
             </span>
           </label>
         </div>
       </div>
 
-      <div class="uf-filter-section">
-        <div class="uf-filter-section__title uf-meta-label">Importance</div>
-        <div class="uf-filter-options">
-          <label class="uf-filter-option">
+      <div class="fa-filter-section">
+        <div class="fa-filter-section__title fa-meta-label">Importance</div>
+        <div class="fa-filter-options">
+          <label class="fa-filter-option">
             <input type="checkbox"
                    [checked]="((impTiers$ | async) || []).includes('low')"
                    (change)="onImpChange('low', $event)">
-            <span class="uf-chip uf-chip--label uf-filter-chip">
-              <span class="uf-filter-chip__icon" aria-hidden="true">△</span>
+            <span class="fa-chip fa-chip--label fa-filter-chip">
+              <span class="fa-filter-chip__icon" aria-hidden="true">△</span>
               Low
             </span>
           </label>
-          <label class="uf-filter-option">
+          <label class="fa-filter-option">
             <input type="checkbox"
                    [checked]="((impTiers$ | async) || []).includes('medium')"
                    (change)="onImpChange('medium', $event)">
-            <span class="uf-chip uf-chip--label uf-filter-chip">
-              <span class="uf-filter-chip__icon" aria-hidden="true">▣</span>
+            <span class="fa-chip fa-chip--label fa-filter-chip">
+              <span class="fa-filter-chip__icon" aria-hidden="true">▣</span>
               Medium
             </span>
           </label>
-          <label class="uf-filter-option">
+          <label class="fa-filter-option">
             <input type="checkbox"
                    [checked]="((impTiers$ | async) || []).includes('high')"
                    (change)="onImpChange('high', $event)">
-            <span class="uf-chip uf-chip--label uf-filter-chip">
-              <span class="uf-filter-chip__icon" aria-hidden="true">▲</span>
+            <span class="fa-chip fa-chip--label fa-filter-chip">
+              <span class="fa-filter-chip__icon" aria-hidden="true">▲</span>
               High
             </span>
           </label>
         </div>
       </div>
 
-      <div class="uf-filter-section" *ngIf="source === 'global-coding'">
-        <div class="uf-filter-section__title uf-meta-label">Technologies</div>
-        <div class="uf-filter-options uf-filter-options--pills">
+      <div class="fa-filter-section" *ngIf="source === 'global-coding'">
+        <div class="fa-filter-section__title fa-meta-label">Technologies</div>
+        <div class="fa-filter-options fa-filter-options--pills">
           <button
             *ngFor="let tab of techTabs"
             type="button"
-            class="uf-chip uf-chip--accent uf-tech-pill"
+            class="fa-chip fa-chip--accent fa-tech-pill"
             [class.is-active]="(selectedTech$ | async) === tab.key"
             (click)="toggleTech(tab.key)">
-            <span class="uf-tech-pill__badge">{{ tab.badge }}</span>
-            <span class="uf-tech-pill__label">{{ tab.label }}</span>
+            <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
+            <span class="fa-tech-pill__label">{{ tab.label }}</span>
           </button>
         </div>
       </div>
 
-      <div class="uf-filter-section" *ngIf="(popularTags$ | async) as tagList">
-        <div class="uf-filter-section__header">
-          <div class="uf-filter-section__title uf-meta-label">Tags</div>
-          <div class="uf-filter-section__actions">
-            <button type="button" class="uf-btn uf-btn--ghost uf-toggle" (click)="toggleTagMatchMode()">
+      <div class="fa-filter-section" *ngIf="(popularTags$ | async) as tagList">
+        <div class="fa-filter-section__header">
+          <div class="fa-filter-section__title fa-meta-label">Tags</div>
+          <div class="fa-filter-section__actions">
+            <button type="button" class="fa-btn fa-btn--ghost fa-toggle" (click)="toggleTagMatchMode()">
               Match {{ tagMatchMode === 'all' ? 'all' : 'any' }}
             </button>
             <button
               type="button"
-              class="uf-btn uf-btn--ghost uf-link-btn"
+              class="fa-btn fa-btn--ghost fa-link-btn"
               [disabled]="!((selectedTags$ | async)?.length)"
               (click)="clearAllTags()">
               Clear
             </button>
           </div>
         </div>
-        <div class="uf-chip-rail" role="listbox" aria-label="Filter by tags">
-          <uf-chip
+        <div class="fa-chip-rail" role="listbox" aria-label="Filter by tags">
+          <fa-chip
             *ngFor="let tag of tagList"
-            class="uf-chip--topic tag-chip"
+            class="fa-chip--topic tag-chip"
             size="sm"
             [selected]="((selectedTags$ | async) || []).includes(tag)"
             (selectedChange)="toggleTag(tag)">
             <span class="chip-icon" aria-hidden="true">#</span>
             {{ tag }}
-          </uf-chip>
+          </fa-chip>
         </div>
       </div>
     </aside>
 
-    <section class="uf-question-list">
-      <div class="uf-question-list__controls">
-        <div class="uf-question-list__search uf-input">
+    <section class="fa-question-list">
+      <div class="fa-question-list__controls">
+        <div class="fa-question-list__search fa-input">
           <i class="pi pi-search"></i>
           <input
             pInputText
@@ -136,28 +136,28 @@
             [ngModelOptions]="{ standalone: true }" />
         </div>
 
-        <div class="uf-question-list__actions">
-          <div class="uf-count-badge">
+        <div class="fa-question-list__actions">
+          <div class="fa-count-badge">
             {{ (filteredCount$ | async) || 0 }} matches
           </div>
           <ng-container *ngIf="sort$ | async as currentSort">
-            <div class="uf-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
-              <button type="button" class="uf-sort__trigger sort-btn uf-btn uf-btn--ghost" (click)="toggleSort()">
-                <span class="uf-sort__label">
+            <div class="fa-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
+              <button type="button" class="fa-sort__trigger sort-btn fa-btn fa-btn--ghost" (click)="toggleSort()">
+                <span class="fa-sort__label">
                   {{ currentSortLabel(currentSort) }}
                 </span>
                 <i class="pi pi-chevron-down" [class.up]="sortOpen"></i>
               </button>
 
-              <div class="uf-sort__menu sort-menu" *ngIf="sortOpen">
+              <div class="fa-sort__menu sort-menu" *ngIf="sortOpen">
                 <button
                   *ngFor="let opt of sortOptions"
                   type="button"
-                  class="uf-sort__item sort-item uf-btn uf-btn--ghost"
+                  class="fa-sort__item sort-item fa-btn fa-btn--ghost"
                   [class.active]="opt.key === currentSort"
                   (click)="setSort(opt.key)">
-                  <span class="uf-sort__text">{{ opt.label }}</span>
-                  <span class="uf-sort__check">✓</span>
+                  <span class="fa-sort__text">{{ opt.label }}</span>
+                  <span class="fa-sort__check">✓</span>
                 </button>
               </div>
             </div>
@@ -173,19 +173,19 @@
 
           <a
             *ngFor="let q of questions"
-            class="list-row uf-card uf-card--interactive uf-question-card uf-question-card--compact"
+            class="list-row fa-card fa-card--interactive fa-question-card fa-question-card--compact"
             [routerLink]="linkTo(q)"
             [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
-            <div class="uf-question-card__grid">
-              <div class="uf-question-card__main">
-                <div class="uf-question-card__eyebrow">
+            <div class="fa-question-card__grid">
+              <div class="fa-question-card__main">
+                <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
                   <span>{{ q.__kind === 'trivia' ? 'Quiz' : 'Coding' }} prompt</span>
                 </div>
-                <div class="uf-question-card__title uf-card-title">{{ q.title }}</div>
+                <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
 
                 <div
-                  class="uf-question-card__description uf-meta-text desc-tip-target"
+                  class="fa-question-card__description fa-meta-text desc-tip-target"
                   [pTooltip]="descriptionText(q)"
                   tooltipPosition="bottom"
                   appendTo="body"
@@ -220,45 +220,45 @@
                 </div>
               </div>
 
-              <div class="uf-question-card__meta-row">
-                <div class="uf-question-card__meta-item">
-                  <span class="uf-meta-label">Difficulty</span>
-                  <span class="uf-chip uf-chip--difficulty" [attr.data-difficulty]="q.difficulty">
+              <div class="fa-question-card__meta-row">
+                <div class="fa-question-card__meta-item">
+                  <span class="fa-meta-label">Difficulty</span>
+                  <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="q.difficulty">
                     {{ q.difficulty | titlecase }}
                   </span>
                 </div>
 
-                <div class="uf-question-card__meta-item">
-                  <span class="uf-meta-label">Importance</span>
-                  <span class="uf-chip uf-chip--importance" [attr.data-importance]="impLabel(q)">
+                <div class="fa-question-card__meta-item">
+                  <span class="fa-meta-label">Importance</span>
+                  <span class="fa-chip fa-chip--importance" [attr.data-importance]="impLabel(q)">
                     {{ impLabel(q) | titlecase }}
                   </span>
                 </div>
 
-                <div class="uf-question-card__meta-item" *ngIf="source!=='tech'">
-                  <span class="uf-meta-label">Tech</span>
-                  <span class="uf-chip uf-chip--tech">
+                <div class="fa-question-card__meta-item" *ngIf="source!=='tech'">
+                  <span class="fa-meta-label">Tech</span>
+                  <span class="fa-chip fa-chip--tech">
                     <span class="chip-icon" aria-hidden="true">⟡</span>
                     {{ techName(q) }}
                   </span>
                 </div>
 
-                <div class="uf-question-card__meta-item meta-item--tags">
-                  <span class="uf-meta-label">Tags</span>
+                <div class="fa-question-card__meta-item meta-item--tags">
+                  <span class="fa-meta-label">Tags</span>
                   <div class="meta-tags">
-                    <uf-chip
+                    <fa-chip
                       *ngFor="let tag of (q.tags || [])"
                       size="sm"
-                      class="tag-chip uf-chip--topic"
+                      class="tag-chip fa-chip--topic"
                       [selected]="(selectedTags$ | async)?.includes(tag) || false"
                       (selectedChange)="toggleTag(tag)">
                       <span class="chip-icon" aria-hidden="true">#</span>
                       {{ tag }}
-                    </uf-chip>
+                    </fa-chip>
                   </div>
                 </div>
 
-                <span class="ghost-link meta-open uf-btn uf-btn--ghost">Open</span>
+                <span class="ghost-link meta-open fa-btn fa-btn--ghost">Open</span>
               </div>
             </div>
           </a>

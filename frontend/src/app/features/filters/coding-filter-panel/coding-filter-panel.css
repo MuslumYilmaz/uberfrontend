@@ -36,12 +36,12 @@
 }
 
 .filter-chip {
-  --uf-chip-bg: var(--chip-bg);
-  --uf-chip-hover: var(--chip-hover);
-  --uf-chip-active: var(--chip-active);
-  --uf-chip-border: var(--border);
-  --uf-chip-selected-bg: var(--chip-active);
-  --uf-chip-selected-border: var(--accent-strong);
+  --fa-chip-bg: var(--chip-bg);
+  --fa-chip-hover: var(--chip-hover);
+  --fa-chip-active: var(--chip-active);
+  --fa-chip-border: var(--border);
+  --fa-chip-selected-bg: var(--chip-active);
+  --fa-chip-selected-border: var(--accent-strong);
 }
 
 .tag-filter { margin-top: 6px; margin-bottom: 10px; }
@@ -57,11 +57,11 @@
 .tag-filter__count { font-size:12px; color: var(--ink-dim); }
 
 .tag-filter__mode {
-  --uf-chip-bg: var(--chip-bg);
-  --uf-chip-hover: var(--chip-hover);
-  --uf-chip-border: var(--border);
-  --uf-chip-selected-bg: var(--chip-active);
-  --uf-chip-selected-border: var(--accent-strong);
+  --fa-chip-bg: var(--chip-bg);
+  --fa-chip-hover: var(--chip-hover);
+  --fa-chip-border: var(--border);
+  --fa-chip-selected-bg: var(--chip-active);
+  --fa-chip-selected-border: var(--accent-strong);
   font-weight: 600;
 }
 
@@ -72,12 +72,12 @@
 }
 .tag-scroll-chip {
   flex:0 0 auto;
-  --uf-chip-bg: var(--chip-bg);
-  --uf-chip-hover: var(--chip-hover);
-  --uf-chip-border: var(--border);
-  --uf-chip-selected-bg: var(--chip-active);
-  --uf-chip-selected-border: var(--accent-strong);
-  --uf-chip-ring: var(--ring);
+  --fa-chip-bg: var(--chip-bg);
+  --fa-chip-hover: var(--chip-hover);
+  --fa-chip-border: var(--border);
+  --fa-chip-selected-bg: var(--chip-active);
+  --fa-chip-selected-border: var(--accent-strong);
+  --fa-chip-ring: var(--ring);
   font-weight: 600;
 }
 

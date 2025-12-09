@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 
 import type { Difficulty } from '../../../core/models/question.model';
-import { UfChipComponent } from '../../../shared/components/chip/uf-chip.component';
+import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 
 type ImportanceTier = 'low' | 'medium' | 'high';
 
@@ -20,7 +20,7 @@ type SortKey =
 @Component({
   selector: 'app-coding-filter-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, UfChipComponent],
+  imports: [CommonModule, FormsModule, InputTextModule, FaChipComponent],
   templateUrl: './coding-filter-panel.component.html',
   styleUrls: ['./coding-filter-panel.css'],
 })

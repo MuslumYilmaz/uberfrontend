@@ -454,20 +454,20 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     let name: string | null = null;
     let s = src;
     s = s.replace(/\bexport\s+default\s+function\s+([A-Za-z0-9_]+)?/m, (_m, n) => {
-      name = n || '__UF_DefaultFn__';
+      name = n || '__FA_DefaultFn__';
       return `function ${name}`;
     });
     s = s.replace(/\bexport\s+default\s+class\s+([A-Za-z0-9_]+)?/m, (_m, n) => {
-      name = n || '__UF_DefaultClass__';
+      name = n || '__FA_DefaultClass__';
       return `class ${name}`;
     });
-    if (!/\b__UF_Default(Fn|Class)__\b/.test(s)) {
+    if (!/\b__FA_Default(Fn|Class)__\b/.test(s)) {
       const before = s;
-      s = s.replace(/\bexport\s+default\s+/m, 'const __UF_Default__ = ');
-      if (s !== before) name = name || '__UF_Default__';
+      s = s.replace(/\bexport\s+default\s+/m, 'const __FA_Default__ = ');
+      if (s !== before) name = name || '__FA_Default__';
     }
     s += `
-      ;globalThis.__UF_USER_DEFAULT__ = (typeof ${name} !== "undefined") ? ${name} : undefined;
+      ;globalThis.__FA_USER_DEFAULT__ = (typeof ${name} !== "undefined") ? ${name} : undefined;
       ;try { if (${JSON.stringify(name)} && typeof ${name} !== "undefined") { globalThis[${JSON.stringify(name)}] = ${name}; } } catch {}
     `;
     return s;
@@ -479,7 +479,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       const first = bindings.includes('{')
         ? bindings.replace(/[{}*\s]/g, '').split(',')[0] || '__user'
         : bindings.trim();
-      return `const ${first} = globalThis.__UF_USER_DEFAULT__;`;
+      return `const ${first} = globalThis.__FA_USER_DEFAULT__;`;
     });
     out = out.replace(/^\s*import\s+[^;]+from\s+['"](jest|vitest)['"];\s*$/mg, '');
     return out;

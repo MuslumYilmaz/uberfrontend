@@ -9,7 +9,7 @@ export type SdkAsset = {
     openFile?: string;
 };
 
-const CDN_FLAG_KEY = 'uf:cdn:enabled';
+const CDN_FLAG_KEY = 'fa:cdn:enabled';
 
 function hasLocalStorage(): boolean {
     try {

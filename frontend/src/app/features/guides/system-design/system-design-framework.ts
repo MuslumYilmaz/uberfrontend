@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="A Reusable 5-Step Approach"
       [minutes]="10"
       [tags]="['system design','framework']"
@@ -194,7 +194,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         With this framework, you’ll never feel lost at the whiteboard — 
         you’ll always know the next move.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignFrameworkArticle {

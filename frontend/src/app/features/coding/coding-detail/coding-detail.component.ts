@@ -49,7 +49,7 @@ type TreeNode =
   | { type: 'file'; name: string; path: string; crumb?: string };
 
 // --- Solution (structured) ---
-type UFApproach = {
+type FAApproach = {
   title: string;
   prose?: string;
   codeJs?: string;
@@ -58,14 +58,14 @@ type UFApproach = {
   codeCss?: string;
 };
 
-type UFFollowUpRef = string | { id: string };
+type FAFollowUpRef = string | { id: string };
 
-type UFSolutionBlock = {
+type FASolutionBlock = {
   overview?: string;
-  approaches?: UFApproach[];
+  approaches?: FAApproach[];
   notes?: { pitfalls?: string[]; edgeCases?: string[]; techniques?: string[] };
   followUp?: string[];
-  followUpQuestions?: UFFollowUpRef[];
+  followUpQuestions?: FAFollowUpRef[];
   resources?: { title: string; url: string }[];
   explanation?: string;
   codeJs?: string;
@@ -194,7 +194,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Solution warning
   showSolutionWarning = signal(false);
-  private readonly SOLUTION_WARN_SKIP_KEY = 'uf:coding:skipSolutionWarning';
+  private readonly SOLUTION_WARN_SKIP_KEY = 'fa:coding:skipSolutionWarning';
 
   // Solved persistence
   solved = signal(false);
@@ -391,7 +391,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     return (a.title || '').localeCompare(b.title || '');
   }
 
-  private collapseKey(q: Question) { return `uf:coding:descCollapsed:${this.tech}:${q.id}`; }
+  private collapseKey(q: Question) { return `fa:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
     try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
     catch { this.descCollapsed.set(false); }
@@ -538,7 +538,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ---------- solved persistence ----------
-  private solvedKey(q: Question) { return `uf:coding:solved:${this.tech}:${q.id}`; }
+  private solvedKey(q: Question) { return `fa:coding:solved:${this.tech}:${q.id}`; }
   private loadSolvedFlag(q: Question) {
     try { return localStorage.getItem(this.solvedKey(q)) === 'true'; } catch { return false; }
   }
@@ -1421,9 +1421,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   // NORMALIZED access to the *new* structured solution (keeps legacy fallback)
-  structuredSolution = computed<UFSolutionBlock>(() => {
+  structuredSolution = computed<FASolutionBlock>(() => {
     const q = this.question();
-    const block = (q as any)?.solutionBlock as UFSolutionBlock | undefined;
+    const block = (q as any)?.solutionBlock as FASolutionBlock | undefined;
     if (block) return block;
     const legacy = this.solutionInfo();
     return { overview: legacy.explanation };
@@ -1431,7 +1431,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   // Convenience getters for template
-  approaches = computed<UFApproach[]>(() => {
+  approaches = computed<FAApproach[]>(() => {
     const arr = this.structuredSolution()?.approaches ?? [];
     // Map to prettified copies for display
     return arr.map(ap => ({
@@ -1450,14 +1450,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   });
 
   // Pick code for current lang
-  codeFor(ap: UFApproach): string {
+  codeFor(ap: FAApproach): string {
     return this.currentJsLang() === 'ts'
       ? (ap.codeTs ?? '')
       : (ap.codeJs ?? '');
   }
 
   // Load one approach directly into the appropriate editor
-  loadApproach(ap: UFApproach) {
+  loadApproach(ap: FAApproach) {
     // 1) HTML/CSS questions → delegate to web panel
     if (this.isWebTech()) {
       const html = this.prettifyHtml(this.unescapeJsLiterals(ap.codeHtml ?? ''));
@@ -1694,7 +1694,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /** Normalize follow-up refs: accept ["id","id2"] or [{id:"id"}] */
   private normalizeFollowUpRefs(
-    list: UFFollowUpRef[] | undefined
+    list: FAFollowUpRef[] | undefined
   ): { id: string }[] {
     const arr = Array.isArray(list) ? list : [];
     return arr

@@ -87,15 +87,15 @@ function compileTS(src, filename){
 (function(){
   // ---------- Build normalized in-memory FS ----------
   var RAW = ${JSON.stringify(files)};
-  var UF = {};
+  var FA = {};
   for (var k in RAW) {
     if (!Object.prototype.hasOwnProperty.call(RAW, k)) continue;
     var key = String(k).replace(/^\\/+/,''); // drop leading /
     var v = RAW[k];
     var code = (typeof v === 'string') ? v : (v && v.code) || '';
-    UF[key] = code;
+    FA[key] = code;
   }
-  self.UF_FILES = UF;
+  self.FA_FILES = FA;
 
   // ---------- Path helpers ----------
   function norm(p){ return String(p||'').replace(/^\\/+/,'').replace(/\\\\+/g,'/'); }
@@ -114,9 +114,9 @@ function compileTS(src, filename){
   }
   function readFile(path){
     path = norm(path);
-    if (UF[path] != null) return UF[path];
-    if (UF['src/' + path] != null) return UF['src/' + path];
-    if (UF['src/app/' + path] != null) return UF['src/app/' + path];
+    if (FA[path] != null) return FA[path];
+    if (FA['src/' + path] != null) return FA['src/' + path];
+    if (FA['src/app/' + path] != null) return FA['src/app/' + path];
     return '';
   }
 
@@ -155,17 +155,17 @@ function compileTS(src, filename){
     if (!spec.startsWith('.')) return null; // bare imports handled by import map
     var base = join(fromPath, spec);
     var cands = [base, base + '.ts', base + '.tsx', base + '.js', base + '/index.ts', base + '/index.tsx'];
-    for (var i=0;i<cands.length;i++){ var c=cands[i]; if (UF[c] != null) return c; }
+    for (var i=0;i<cands.length;i++){ var c=cands[i]; if (FA[c] != null) return c; }
     return base;
   }
 
-  function UF_emit(path){
+  function FA_emit(path){
     path = norm(path);
     if (urls.has(path)) return urls.get(path);
     if (seen.has(path)) return urls.get(path) || '';
     seen.add(path);
 
-    var src = String(UF[path] || '');
+    var src = String(FA[path] || '');
     if (!src) throw new Error('File not found: ' + path);
 
     // Inline external resources BEFORE compiling
@@ -176,7 +176,7 @@ function compileTS(src, filename){
     // rewrite only RELATIVE imports to blob URLs
     js = js.replace(/from\\s+(['"])(\\.\\.?[^'"]*)\\1/g, function(m, q, spec){
       var child = resolveImport(path, spec);
-      var childUrl = UF_emit(child);
+      var childUrl = FA_emit(child);
       return 'from ' + q + childUrl + q;
     });
 
@@ -185,7 +185,7 @@ function compileTS(src, filename){
     return url;
   }
 
-  self.UF_emit = UF_emit;
+  self.FA_emit = FA_emit;
 })();
 `;
 
@@ -200,10 +200,10 @@ function compileTS(src, filename){
   <style>
     html,body,#root{height:100%}
     body{margin:16px;font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,Arial}
-    #_uf_overlay{position:fixed;inset:0;background:#1a1a1a;color:#ffd6d6;padding:16px;display:none;overflow:auto;z-index:999999;border-top:4px solid #ff5555}
-    #_uf_overlay h1{margin:0 0 8px 0;font-size:16px;color:#fff}
-    #_uf_overlay pre{white-space:pre-wrap;margin:0}
-    #_uf_overlay .meta{opacity:.8;margin:6px 0 0}
+    #_fa_overlay{position:fixed;inset:0;background:#1a1a1a;color:#ffd6d6;padding:16px;display:none;overflow:auto;z-index:999999;border-top:4px solid #ff5555}
+    #_fa_overlay h1{margin:0 0 8px 0;font-size:16px;color:#fff}
+    #_fa_overlay pre{white-space:pre-wrap;margin:0}
+    #_fa_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
 
   <script type="importmap">${JSON.stringify(importMap)}</script>
@@ -212,12 +212,12 @@ function compileTS(src, filename){
 <body>
   <app-root>Loading Angular preview…</app-root>
 
-  <div id="_uf_overlay"><h1>Something went wrong</h1><pre id="_uf_overlay_msg"></pre><div id="_uf_overlay_meta" class="meta"></div></div>
+  <div id="_fa_overlay"><h1>Something went wrong</h1><pre id="_fa_overlay_msg"></pre><div id="_fa_overlay_meta" class="meta"></div></div>
 
   <script>
-    const overlay = document.getElementById('_uf_overlay');
-    const overlayMsg = document.getElementById('_uf_overlay_msg');
-    const overlayMeta = document.getElementById('_uf_overlay_meta');
+    const overlay = document.getElementById('_fa_overlay');
+    const overlayMsg = document.getElementById('_fa_overlay_msg');
+    const overlayMeta = document.getElementById('_fa_overlay_meta');
     const showOverlay = (msg, meta='') => { try { overlayMsg.textContent = String(msg||'Unknown error'); overlayMeta.textContent = meta; overlay.style.display='block'; } catch {} };
     const hideOverlay = () => { try { overlay.style.display='none'; overlayMsg.textContent=''; overlayMeta.textContent=''; } catch {} };
 
@@ -248,7 +248,7 @@ function compileTS(src, filename){
       await import('@angular/compiler');
 
       // Build & import your app entry via Blob URL (no percent-encoded data URLs)
-      const mainURL = self.UF_emit('src/main.ts');
+      const mainURL = self.FA_emit('src/main.ts');
       await import(mainURL);
     }catch(e){
       console.error(e);

@@ -177,7 +177,7 @@ router.get('/oauth/github/callback', async (req, res) => {
         const ghHeaders = {
             'Authorization': `Bearer ${accessToken}`,
             'Accept': 'application/vnd.github+json',
-            'User-Agent': 'uberfrontend-local',
+            'User-Agent': 'frontendatlas-local',
         };
 
         const meRes = await fetch('https://api.github.com/user', { headers: ghHeaders });

@@ -1,19 +1,19 @@
 /* ==== dialog overlay ==== */
 :host {
-  --sb-surface: var(--uf-surface);
-  --sb-surface-alt: var(--uf-surface-alt);
-  --sb-border: var(--uf-border-subtle);
-  --sb-text: var(--uf-text);
-  --sb-text-muted: var(--uf-text-muted);
-  --sb-ghost: rgba(var(--uf-text-rgb), 0.04);
-  --sb-ghost-strong: rgba(var(--uf-text-rgb), 0.08);
-  --sb-accent: var(--uf-accent);
+  --sb-surface: var(--fa-surface);
+  --sb-surface-alt: var(--fa-surface-alt);
+  --sb-border: var(--fa-border-subtle);
+  --sb-text: var(--fa-text);
+  --sb-text-muted: var(--fa-text-muted);
+  --sb-ghost: rgba(var(--fa-text-rgb), 0.04);
+  --sb-ghost-strong: rgba(var(--fa-text-rgb), 0.08);
+  --sb-accent: var(--fa-accent);
 }
 
 :host ::ng-deep .p-dialog-mask,
 :host ::ng-deep .p-component-overlay {
   z-index: 10000 !important;
-  background: rgba(var(--uf-bg-rgb), 0.72) !important;
+  background: rgba(var(--fa-bg-rgb), 0.72) !important;
   backdrop-filter: blur(2px);
 }
 
@@ -34,7 +34,7 @@
 .bug-textarea:focus {
   outline: none;
   border-color: var(--sb-accent);
-  box-shadow: 0 0 0 3px var(--uf-accent-soft);
+  box-shadow: 0 0 0 3px var(--fa-accent-soft);
 }
 .bug-actions {
   display: flex;
@@ -50,14 +50,14 @@
   top: 56px;
   height: calc(100vh - 56px);
   width: 280px;
-  background: linear-gradient(160deg, rgba(var(--uf-surface-rgb), 0.94), rgba(var(--uf-surface-alt-rgb), 0.96));
+  background: linear-gradient(160deg, rgba(var(--fa-surface-rgb), 0.94), rgba(var(--fa-surface-alt-rgb), 0.96));
   border-right: 1px solid var(--sb-border);
   color: var(--sb-text);
   display: grid;
   grid-template-rows: 1fr auto;
   padding: 10px 8px;
   gap: 8px;
-  font-family: var(--uf-font-body);
+  font-family: var(--fa-font-body);
   font-size: 13px;
   line-height: 1.2;
   transition: width .2s ease;
@@ -75,7 +75,7 @@
   margin-top: 8px;
   border: 1px solid var(--sb-border);
   border-radius: 12px;
-  background: linear-gradient(165deg, rgba(var(--uf-accent-rgb), 0.05), rgba(var(--uf-surface-rgb), 0.92));
+  background: linear-gradient(165deg, rgba(var(--fa-accent-rgb), 0.05), rgba(var(--fa-surface-rgb), 0.92));
   box-shadow: 0 12px 28px rgba(0,0,0,.28);
   padding: 4px 2px;
 }
@@ -125,7 +125,7 @@
 .nav-sublink.active,
 .nav-link.is-active,
 .nav-sublink.is-active {
-  background: rgba(var(--uf-text-rgb), 0.04);
+  background: rgba(var(--fa-text-rgb), 0.04);
   border-color: var(--sb-border);
   color: var(--sb-text);
 }
@@ -134,9 +134,9 @@
 .nav-sublink.active,
 .nav-link.is-active,
 .nav-sublink.is-active {
-  background: rgba(var(--uf-accent-rgb), 0.08);
+  background: rgba(var(--fa-accent-rgb), 0.08);
   border-color: var(--sb-border);
-  box-shadow: 0 0 0 1px var(--uf-accent-soft);
+  box-shadow: 0 0 0 1px var(--fa-accent-soft);
   font-weight: 600;
 }
 
@@ -177,14 +177,14 @@
   position: absolute;
   left: -10px; top: 4px; bottom: 4px;
   width: 1px; border-radius: 1px;
-  background: rgba(var(--uf-text-rgb), .06);
+  background: rgba(var(--fa-text-rgb), .06);
 }
 .group-inner > li { overflow: hidden; list-style: none; }
 
 .nav-link--pill {
   border-radius: 12px;
   border: 1px solid var(--sb-border);
-  background: linear-gradient(150deg, rgba(var(--uf-text-rgb), .02), rgba(var(--uf-surface-alt-rgb), .9));
+  background: linear-gradient(150deg, rgba(var(--fa-text-rgb), .02), rgba(var(--fa-surface-alt-rgb), .9));
   box-shadow: 0 12px 26px rgba(0,0,0,.28);
 }
 
@@ -219,7 +219,7 @@
   transition: background .15s ease, border-color .15s ease;
 }
 .tool-icon-btn:hover,
-.legal-btn:hover { background: rgba(var(--uf-text-rgb), 0.06); }
+.legal-btn:hover { background: rgba(var(--fa-text-rgb), 0.06); }
 
 /* PrimeNG Legal button exact sizing (override Prime styles) */
 .legal-btn {
@@ -244,7 +244,7 @@
   border-radius: 10px;
 }
 .tools .p-button.p-button-text:hover {
-  background: rgba(var(--uf-text-rgb), 0.06);
+  background: rgba(var(--fa-text-rgb), 0.06);
   border-color: var(--sb-border);
 }
 
@@ -357,7 +357,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(var(--uf-bg-rgb), .65);
+  background: rgba(var(--fa-bg-rgb), .65);
   z-index: 39;
 }
 @media (max-width: 1024px) {

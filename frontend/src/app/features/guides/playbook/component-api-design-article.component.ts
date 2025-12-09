@@ -45,7 +45,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
   template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="Designing Component APIs That Scale"
     subtitle="How to design reusable, interview-ready UI component APIs."
     [minutes]="18"
@@ -193,9 +193,9 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   </p>
   <p>
     Want focused practice? Try the <a [routerLink]="['/coding']">coding drills</a> next,
-    or skim <a [routerLink]="['/guides','system-design']">client-side system design</a> patterns.
+    or skim <a [routerLink]="['/guides','system-design-blueprint']">client-side system design</a> patterns.
   </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class ComponentApiDesignArticle {

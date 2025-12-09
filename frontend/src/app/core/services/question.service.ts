@@ -19,7 +19,7 @@ export class QuestionService {
   private readonly dvKey = `${this.cachePrefix}dv`;
 
   // NEW: CDN / LocalStorage switcher flag
-  private readonly cdnFlagKey = 'uf:cdn:enabled';
+  private readonly cdnFlagKey = 'fa:cdn:enabled';
   // Varsayılan: environment.cdnBaseUrl varsa CDN açık kabul ediyoruz
   private readonly defaultCdnEnabled =
     typeof (environment as any).cdnEnabled === 'boolean'

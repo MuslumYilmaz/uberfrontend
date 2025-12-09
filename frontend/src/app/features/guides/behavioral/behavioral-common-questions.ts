@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     imports: [CommonModule, RouterModule, GuideShellComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Common Behavioral Questions (and How to Nail Them)"
       [minutes]="20"
       [tags]="['behavioral','questions','prep']"
@@ -85,7 +85,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         The question is just the surface. Always answer for the <em>signal underneath</em>.
         That’s what gets written in the hiring packet.
       </blockquote>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralQuestionsArticle {

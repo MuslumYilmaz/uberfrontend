@@ -54,9 +54,9 @@ h1 {
 }
 
 .count-chip {
-  --uf-chip-bg: var(--chip-bg);
-  --uf-chip-border: var(--border);
-  --uf-chip-ink: var(--ink-sub);
+  --fa-chip-bg: var(--chip-bg);
+  --fa-chip-border: var(--border);
+  --fa-chip-ink: var(--ink-sub);
   font-weight: 600;
 }
 

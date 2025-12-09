@@ -15,23 +15,23 @@
         <fieldset class="diff-group">
             <legend class="diff-legend">Difficulty</legend>
 
-            <uf-chip size="sm" class="filter-chip"
+            <fa-chip size="sm" class="filter-chip"
                      [selected]="isDiffChecked('easy')"
                      (selectedChange)="difficultyChange.emit({ difficulty: 'easy', checked: $event })">
                 Beginner
-            </uf-chip>
+            </fa-chip>
 
-            <uf-chip size="sm" class="filter-chip"
+            <fa-chip size="sm" class="filter-chip"
                      [selected]="isDiffChecked('intermediate')"
                      (selectedChange)="difficultyChange.emit({ difficulty: 'intermediate', checked: $event })">
                 Intermediate
-            </uf-chip>
+            </fa-chip>
 
-            <uf-chip size="sm" class="filter-chip"
+            <fa-chip size="sm" class="filter-chip"
                      [selected]="isDiffChecked('hard')"
                      (selectedChange)="difficultyChange.emit({ difficulty: 'hard', checked: $event })">
                 Hard
-            </uf-chip>
+            </fa-chip>
         </fieldset>
     </div>
 
@@ -40,23 +40,23 @@
         <fieldset class="diff-group">
             <legend class="diff-legend">Importance</legend>
 
-            <uf-chip size="sm" class="filter-chip"
+            <fa-chip size="sm" class="filter-chip"
                      [selected]="isImpChecked('low')"
                      (selectedChange)="importanceChange.emit({ tier: 'low', checked: $event })">
                 Low
-            </uf-chip>
+            </fa-chip>
 
-            <uf-chip size="sm" class="filter-chip"
+            <fa-chip size="sm" class="filter-chip"
                      [selected]="isImpChecked('medium')"
                      (selectedChange)="importanceChange.emit({ tier: 'medium', checked: $event })">
                 Medium
-            </uf-chip>
+            </fa-chip>
 
-            <uf-chip size="sm" class="filter-chip"
+            <fa-chip size="sm" class="filter-chip"
                      [selected]="isImpChecked('high')"
                      (selectedChange)="importanceChange.emit({ tier: 'high', checked: $event })">
                 High
-            </uf-chip>
+            </fa-chip>
         </fieldset>
     </div>
 </div>
@@ -73,11 +73,11 @@
             <div class="tag-filter__meta" *ngIf="selectedTags as sel">
                 <span class="tag-filter__count" *ngIf="sel.length">{{ sel.length }} selected</span>
 
-                <uf-chip class="tag-filter__mode" size="sm"
+                <fa-chip class="tag-filter__mode" size="sm"
                          [selected]="tagMatchMode === 'any'"
                          (selectedChange)="tagMatchModeToggle.emit()">
                     {{ tagMatchMode === 'all' ? 'Match all' : 'Match any' }}
-                </uf-chip>
+                </fa-chip>
 
                 <button *ngIf="sel.length" class="tag-clear" (click)="clearAllTags.emit()">Clear</button>
             </div>
@@ -104,12 +104,12 @@
     </div>
 
     <div class="tag-scrollbar" role="listbox" aria-label="Filter by tags">
-        <uf-chip *ngFor="let tag of popularTags"
+        <fa-chip *ngFor="let tag of popularTags"
                  class="tag-scroll-chip"
                  size="sm"
                  [selected]="isTagSelected(tag)"
                  (selectedChange)="tagToggled.emit(tag)">
             {{ tag }}
-        </uf-chip>
+        </fa-chip>
     </div>
 </div>

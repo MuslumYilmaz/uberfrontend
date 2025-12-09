@@ -22,7 +22,7 @@ type LeftNav = {
 };
 
 @Component({
-  selector: 'uf-guide-shell',
+  selector: 'fa-guide-shell',
   standalone: true,
   imports: [CommonModule, RouterModule],
   encapsulation: ViewEncapsulation.None,

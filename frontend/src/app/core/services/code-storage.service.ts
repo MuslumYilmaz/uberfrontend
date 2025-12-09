@@ -55,9 +55,9 @@ interface FrameworkBundleV2 {
 
 const DATA_VERSION = '2';
 
-const LF_JS = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_js' });
-const LF_NG = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_ng' });
-const LF_WEB = localForage.createInstance({ name: 'uberfrontend', storeName: 'uf_web' });
+const LF_JS = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_js' });
+const LF_NG = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_ng' });
+const LF_WEB = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_web' });
 
 const BASE = 'code:';
 const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v2:code:
@@ -68,7 +68,7 @@ const V1_JS_RECORD = (qid: string) => `${V1_PREFIX}js:${qid}`;
 const V1_JS_BASELINE = (qid: string, lang: JsLang) => `${V1_PREFIX}js:baseline:${qid}:${lang}`;
 
 /** Old external pref key */
-const UF_LANG_PREF = (qid: string) => `uf:lang:${qid}`;
+const FA_LANG_PREF = (qid: string) => `fa:lang:${qid}`;
 
 /** v2 consolidated key (one per question) */
 const V2_JS_BUNDLE = (qid: string) => `${PREFIX}js2:${qid}`;
@@ -76,7 +76,7 @@ const V2_WEB_BUNDLE = (qid: string) => `${PREFIX}web2:${qid}`;
 const V2_FW_BUNDLE = (tech: FrameworkTech, qid: string) => `${PREFIX}fw2:${tech}:${qid}`;
 
 /** one-time flag so we don't re-copy on every load */
-const MIGRATION_FLAG_JS_IDB = 'uf:js:idb:migrated:v1';
+const MIGRATION_FLAG_JS_IDB = 'fa:js:idb:migrated:v1';
 
 /** Guard: is localStorage usable? (some browsers/iframes can throw) */
 function hasLocalStorage(): boolean {
@@ -223,7 +223,7 @@ export class CodeStorageService {
         if (rec) { qids.add(rec[1]); continue; }
         const base = k.match(/^v1:code:js:baseline:([^:]+):(js|ts)$/);
         if (base) { qids.add(base[1]); continue; }
-        const pref = k.match(/^uf:lang:([^:]+)$/);
+        const pref = k.match(/^fa:lang:([^:]+)$/);
         if (pref) { qids.add(pref[1]); continue; }
       }
 
@@ -248,7 +248,7 @@ export class CodeStorageService {
     const baseTs = this.readBaseline(V1_JS_BASELINE(qid, 'ts'));
 
     // 3) lang preference
-    const prefRaw = localStorage.getItem(UF_LANG_PREF(qid));
+    const prefRaw = localStorage.getItem(FA_LANG_PREF(qid));
     const pref = (prefRaw === 'ts' || prefRaw === 'js') ? (prefRaw as JsLang) : undefined;
 
     if (!v1 && !baseJs && !baseTs && !pref) return; // nothing to migrate
@@ -272,7 +272,7 @@ export class CodeStorageService {
     try { localStorage.removeItem(V1_JS_RECORD(qid)); } catch { }
     try { localStorage.removeItem(V1_JS_BASELINE(qid, 'js')); } catch { }
     try { localStorage.removeItem(V1_JS_BASELINE(qid, 'ts')); } catch { }
-    try { localStorage.removeItem(UF_LANG_PREF(qid)); } catch { }
+    try { localStorage.removeItem(FA_LANG_PREF(qid)); } catch { }
   }
 
   private readBaseline(key: string): string | null {

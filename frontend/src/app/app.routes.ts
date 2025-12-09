@@ -28,9 +28,9 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
     data: {
       seo: {
-        title: 'Front-end interview prep',
+        title: 'High-signal frontend interview prep',
         description:
-          'Practice front-end coding, trivia, and system design interview questions with curated guides and company-specific tracks.',
+          'FrontendAtlas — High-signal frontend interview preparation platform. Practice front-end coding, trivia, and system design interview questions with curated guides and company-specific tracks.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -53,7 +53,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Log in',
-            description: 'Log in to UberFrontend to sync your interview prep.',
+            description: 'Log in to FrontendAtlas to sync your interview prep.',
             robots: 'noindex,nofollow',
           },
         },
@@ -65,7 +65,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Sign up',
-            description: 'Create your UberFrontend account to unlock the full interview-prep library.',
+            description: 'Create your FrontendAtlas account to unlock the full interview-prep library.',
             robots: 'noindex,nofollow',
           },
         },
@@ -239,7 +239,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Pricing',
-        description: 'Compare UberFrontend plans and unlock the full set of interview questions and guides.',
+        description: 'Compare FrontendAtlas plans and unlock the full set of interview questions and guides.',
       },
     },
   },
@@ -340,61 +340,83 @@ export const routes: Routes = [
     path: 'guides',
     data: {
       seo: {
-        title: 'Front-end interview guides',
-        description: 'Playbooks for coding, system design, and behavioral front-end interviews.',
+        title: 'Front-end interview blueprints',
+        description: 'Blueprints for coding, system design, and behavioral front-end interviews.',
       },
     },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'playbook' },
+      { path: '', pathMatch: 'full', redirectTo: 'interview-blueprint' },
 
       {
         path: 'playbook',
+        pathMatch: 'full',
+        redirectTo: 'interview-blueprint',
+      },
+      {
+        path: 'playbook/:slug',
+        pathMatch: 'full',
+        redirectTo: 'interview-blueprint/:slug',
+      },
+
+      {
+        path: 'interview-blueprint',
         loadComponent: () =>
           import('./features/guides/playbook/playbook-index/playbook-index.component').then(
             (m) => m.PlaybookIndexComponent,
           ),
         data: {
           seo: {
-            title: 'Front-end interview playbook',
+            title: 'FrontendAtlas Interview Blueprint',
             description: 'Step-by-step plan to prepare for front-end interviews with checklists and tracks.',
           },
         },
       },
       {
-        path: 'playbook/:slug',
+        path: 'interview-blueprint/:slug',
         loadComponent: () =>
           import('./features/guides/playbook/playbook-host.component').then(
             (m) => m.PlaybookHostComponent,
           ),
         data: {
           seo: {
-            title: 'Front-end interview guide',
+            title: 'FrontendAtlas Interview Blueprint',
             description: 'In-depth guidance for key front-end interview topics.',
           },
         },
       },
+
       {
         path: 'system-design',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint',
+      },
+      {
+        path: 'system-design/:slug',
+        pathMatch: 'full',
+        redirectTo: 'system-design-blueprint/:slug',
+      },
+      {
+        path: 'system-design-blueprint',
         loadComponent: () =>
           import('./features/guides/system-design/system-design-index/system-design-index.component').then(
             (m) => m.SystemDesignIndexComponent,
           ),
         data: {
           seo: {
-            title: 'Front-end system design guide',
+            title: 'Frontend System Design Blueprint',
             description: 'Principles, patterns, and examples for front-end system design interviews.',
           },
         },
       },
       {
-        path: 'system-design/:slug',
+        path: 'system-design-blueprint/:slug',
         loadComponent: () =>
           import('./features/guides/system-design/system-design-host.component').then(
             (m) => m.SystemDesignHostComponent,
           ),
         data: {
           seo: {
-            title: 'System design deep dive',
+            title: 'Frontend System Design Blueprint',
             description: 'Detailed walkthroughs for individual front-end system design topics.',
           },
         },
@@ -408,7 +430,7 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Behavioral interview guide',
+            title: 'Behavioral interview handbook',
             description: 'Story frameworks and examples to answer behavioral front-end interview questions.',
           },
         },
@@ -448,7 +470,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Profile',
-        description: 'Manage your UberFrontend profile and preferences.',
+        description: 'Manage your FrontendAtlas profile and preferences.',
         robots: 'noindex,nofollow',
       },
     },
@@ -460,7 +482,7 @@ export const routes: Routes = [
     data: {
       seo: {
         title: 'Legal',
-        description: 'UberFrontend legal policies and compliance documents.',
+        description: 'FrontendAtlas legal policies and compliance documents.',
         robots: 'index,follow',
       },
     },
@@ -472,7 +494,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Legal overview',
-            description: 'Browse UberFrontend terms, privacy, and cookie policies.',
+            description: 'Browse FrontendAtlas terms, privacy, and cookie policies.',
           },
         },
       },
@@ -483,7 +505,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Terms of Service',
-            description: 'UberFrontend terms of service and user responsibilities.',
+            description: 'FrontendAtlas terms of service and user responsibilities.',
             robots: 'index,follow',
           },
         },
@@ -495,7 +517,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Privacy Policy',
-            description: 'How UberFrontend collects, uses, and protects your data.',
+            description: 'How FrontendAtlas collects, uses, and protects your data.',
             robots: 'index,follow',
           },
         },
@@ -507,7 +529,7 @@ export const routes: Routes = [
         data: {
           seo: {
             title: 'Cookie Policy',
-            description: 'Learn how UberFrontend uses cookies and how to control them.',
+            description: 'Learn how FrontendAtlas uses cookies and how to control them.',
             robots: 'index,follow',
           },
         },

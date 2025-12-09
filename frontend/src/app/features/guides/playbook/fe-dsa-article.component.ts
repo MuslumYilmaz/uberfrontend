@@ -46,7 +46,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
     template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="Just-Enough DSA for Front-End"
     subtitle="The subset of algorithms & data structures you actually need for FE interviews."
     [minutes]="12"
@@ -235,7 +235,7 @@ function dfs(root: Node, visit: (n: Node) =&gt; void) &#123;
       Next: jump into the <a [routerLink]="['/coding']">coding practice area</a> and run the drills above
       under a timer. Build the habit of shipping first, then improving.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class FeDsaArticle {

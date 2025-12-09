@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="One-Page Checklist for Interviews"
       [minutes]="7"
       [tags]="['system design','checklist','cheatsheet']"
@@ -184,7 +184,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         <li>“Trade-offs now; next steps at scale: …”</li>
       </ol>
 
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignChecklistArticle {

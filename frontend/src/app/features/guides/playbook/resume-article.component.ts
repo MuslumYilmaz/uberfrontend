@@ -38,7 +38,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
     template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="A Front-End Resume That Gets Calls Back"
     subtitle="How to write a CV that gets you interviews instead of rejections."
     [minutes]="10"
@@ -215,7 +215,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     What carries you forward is how you <strong>code, explain, and collaborate</strong>.  
     So keep your resume sharp, then shift your energy into interview prep.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class ResumeArticle {

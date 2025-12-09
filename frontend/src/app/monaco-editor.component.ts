@@ -72,8 +72,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       return hasExt ? this.modelKey : `${this.modelKey}.${baseExt}`;
     }
 
-    // fallback: uf-1.ts / uf-2.js vs.
-    return `uf-${++MonacoEditorComponent.seq}.${baseExt}`;
+    // fallback: fa-1.ts / fa-2.js vs.
+    return `fa-${++MonacoEditorComponent.seq}.${baseExt}`;
   }
 
   private readonly amdLoaderPath = 'assets/monaco/min/vs/loader.js';
@@ -287,7 +287,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           ts.typescriptDefaults.setEagerModelSync?.(true);   // push models to the worker ASAP
           ts.typescriptDefaults.addExtraLib?.(
             'declare module "*";',
-            'file:///node_modules/@types/__uf_any__/index.d.ts'
+            'file:///node_modules/@types/__fa_any__/index.d.ts'
           );
 
           const sharedCompilerOptions = {
@@ -316,7 +316,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           ts.javascriptDefaults?.setDiagnosticsOptions?.(sharedDiagnostics);
 
           const mAny = monaco as any;
-          if (!mAny.__ufAngularCoreLib) {
+          if (!mAny.__faAngularCoreLib) {
             const angularCoreLib = [
               "declare module '@angular/core' {",
               "  export interface OnInit { ngOnInit(): void; }",
@@ -354,10 +354,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
             ts.typescriptDefaults.addExtraLib(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularCoreLib, 'file:///node_modules/@angular/core/index.d.ts');
-            mAny.__ufAngularCoreLib = true;
+            mAny.__faAngularCoreLib = true;
           }
 
-          if (!mAny.__ufReactLib) {
+          if (!mAny.__faReactLib) {
             const reactLib = [
               "declare namespace JSX {",
               "  interface IntrinsicElements { [elemName: string]: any; }",
@@ -374,10 +374,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             ].join('\\n');
             ts.typescriptDefaults.addExtraLib(reactLib, 'file:///node_modules/@types/react/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(reactLib, 'file:///node_modules/@types/react/index.d.ts');
-            mAny.__ufReactLib = true;
+            mAny.__faReactLib = true;
           }
 
-          if (!mAny.__ufTestLib) {
+          if (!mAny.__faTestLib) {
             const testLib = [
               "declare function describe(name: string, fn: () => void): void;",
               "declare function it(name: string, fn: () => void): void;",
@@ -388,12 +388,12 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare const beforeAll: (fn: () => void) => void;",
               "declare const afterAll: (fn: () => void) => void;",
             ].join('\\n');
-            ts.typescriptDefaults.addExtraLib(testLib, 'file:///node_modules/@types/uf-test/index.d.ts');
-            ts.javascriptDefaults?.addExtraLib?.(testLib, 'file:///node_modules/@types/uf-test/index.d.ts');
-            mAny.__ufTestLib = true;
+            ts.typescriptDefaults.addExtraLib(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(testLib, 'file:///node_modules/@types/fa-test/index.d.ts');
+            mAny.__faTestLib = true;
           }
 
-          if (!mAny.__ufNodeShimLib) {
+          if (!mAny.__faNodeShimLib) {
             const nodeShim = [
               "declare var require: any;",
               "declare var module: any;",
@@ -402,9 +402,9 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "declare var __dirname: string;",
               "declare var __filename: string;",
             ].join('\\n');
-            ts.typescriptDefaults.addExtraLib(nodeShim, 'file:///node_modules/@types/uf-node-shim/index.d.ts');
-            ts.javascriptDefaults?.addExtraLib?.(nodeShim, 'file:///node_modules/@types/uf-node-shim/index.d.ts');
-            mAny.__ufNodeShimLib = true;
+            ts.typescriptDefaults.addExtraLib(nodeShim, 'file:///node_modules/@types/fa-node-shim/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(nodeShim, 'file:///node_modules/@types/fa-node-shim/index.d.ts');
+            mAny.__faNodeShimLib = true;
           }
 
           resolve();
@@ -426,7 +426,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   private createOrSwapModel(langNorm: string, code: string) {
-    const rawId = this._modelId; // src/App.tsx, uf-1.ts, vs.
+    const rawId = this._modelId; // src/App.tsx, fa-1.ts, vs.
 
     // Dosya path’ini düzgün bir file:// URI’sine çevir
     const normalizedPath = rawId.replace(/^file:\/\//, '').replace(/^\/+/, '');

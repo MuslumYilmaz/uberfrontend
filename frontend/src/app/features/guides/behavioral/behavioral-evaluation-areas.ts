@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="What You’re Evaluated On"
       [minutes]="12"
       [tags]="['behavioral','signals','evaluation']"
@@ -59,7 +59,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         The highest scores go to candidates who make the interviewer’s job easy.
         Spell out the signal as you answer: <em>“This shows how I took ownership when…”</em>
       </blockquote>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralEvaluationAreasArticle {

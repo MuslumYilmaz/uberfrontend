@@ -3,18 +3,18 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Params, RouterLinkActive, RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'uf-chip',
+  selector: 'fa-chip',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
     <ng-container [ngSwitch]="!!routerLink">
       <a *ngSwitchCase="true"
-         class="uf-chip"
+         class="fa-chip"
          routerLinkActive="is-active"
          #rla="routerLinkActive"
          [routerLinkActiveOptions]="routerLinkActiveOptions || { exact: false }"
          [ngClass]="chipClasses"
-         [class.uf-chip--selected]="selected || rla?.isActive"
+         [class.fa-chip--selected]="selected || rla?.isActive"
          [routerLink]="routerLink"
          [queryParams]="queryParams"
          [fragment]="fragment"
@@ -22,7 +22,7 @@ import { Params, RouterLinkActive, RouterModule } from '@angular/router';
          [attr.aria-pressed]="toggle ? (selected || rla?.isActive) : null"
          [attr.tabindex]="disabled ? -1 : 0"
          (click)="handleClick($event)">
-        <span class="uf-chip__content">
+        <span class="fa-chip__content">
           <ng-container *ngIf="label !== undefined && label !== null && label !== ''; else projected">
             {{ label }}
           </ng-container>
@@ -34,12 +34,12 @@ import { Params, RouterLinkActive, RouterModule } from '@angular/router';
 
       <button *ngSwitchDefault
               type="button"
-              class="uf-chip"
+              class="fa-chip"
               [ngClass]="chipClasses"
               [disabled]="disabled"
               [attr.aria-pressed]="toggle ? selected : null"
               (click)="handleClick($event)">
-        <span class="uf-chip__content">
+        <span class="fa-chip__content">
           <ng-container *ngIf="label !== undefined && label !== null && label !== ''; else projectedBtn">
             {{ label }}
           </ng-container>
@@ -50,9 +50,9 @@ import { Params, RouterLinkActive, RouterModule } from '@angular/router';
       </button>
     </ng-container>
   `,
-  styleUrls: ['./uf-chip.component.css']
+  styleUrls: ['./fa-chip.component.css']
 })
-export class UfChipComponent {
+export class FaChipComponent {
   @Input() label?: string;
   @Input() variant: 'filled' | 'outline' = 'outline';
   @Input() size: 'sm' | 'md' = 'md';
@@ -70,12 +70,12 @@ export class UfChipComponent {
 
   get chipClasses() {
     return {
-      'uf-chip--filled': this.variant === 'filled',
-      'uf-chip--outline': this.variant === 'outline',
-      'uf-chip--selected': this.selected,
-      'uf-chip--disabled': this.disabled,
-      'uf-chip--sm': this.size === 'sm',
-      'uf-chip--md': this.size === 'md',
+      'fa-chip--filled': this.variant === 'filled',
+      'fa-chip--outline': this.variant === 'outline',
+      'fa-chip--selected': this.selected,
+      'fa-chip--disabled': this.disabled,
+      'fa-chip--sm': this.size === 'sm',
+      'fa-chip--md': this.size === 'md',
     };
   }
 

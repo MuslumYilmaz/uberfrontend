@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Traps and Anti-Patterns to Avoid"
       [minutes]="9"
       [tags]="['system design','mistakes','anti-patterns']"
@@ -98,7 +98,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         remember cross-cutting concerns, and stay structured, 
         you’ll stand out as a thoughtful, senior-level engineer.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignTrapsArticle {

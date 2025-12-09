@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Performance & Web Vitals at Scale"
       [minutes]="12"
       [tags]="['performance','web vitals','scale']"
@@ -126,7 +126,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         call out the trade-off</em>. That shows you can think like a senior 
         engineer scaling an app to millions of users.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignPerformanceArticle {

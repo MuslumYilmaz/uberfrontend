@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Practical Tips & Anti-Patterns"
       [minutes]="12"
       [tags]="['behavioral','tips','anti-patterns']"
@@ -54,7 +54,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         Always frame answers like you’re writing bullet points in the interviewer’s notes.
         If they can capture your story in 2–3 lines, you nailed it.
       </blockquote>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralTipsArticle {

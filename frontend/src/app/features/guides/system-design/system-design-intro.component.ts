@@ -7,7 +7,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   standalone: true,
   imports: [CommonModule, RouterModule, GuideShellComponent],
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Front-End System Design: What It Really Tests"
       [minutes]="8"
       [tags]="['system design','overview']"
@@ -172,7 +172,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         You’re there to prove you can guide a team through messy, real-world 
         decisions with clarity and empathy. That’s what companies are hiring for.
       </p>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class SystemDesignIntroArticle {

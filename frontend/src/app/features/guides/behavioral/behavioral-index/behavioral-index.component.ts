@@ -18,13 +18,13 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .sec-head { font-weight: 800; opacity:.95; margin-bottom: 10px; }
 
     .card { display:flex; align-items:center; gap:14px;
-      --uf-card-bg: linear-gradient(180deg,#141414,#101010);
-      --uf-card-bg-hover: rgba(255,255,255,.05);
-      --uf-card-border: rgba(255,255,255,.14);
-      --uf-card-border-strong: rgba(255,255,255,.24);
-      --uf-card-shadow: 0 10px 26px rgba(0,0,0,.32);
-      --uf-card-shadow-hover: 0 16px 40px rgba(0,0,0,.4);
-      padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--uf-card-radius, 12px); }
+      --fa-card-bg: linear-gradient(180deg,#141414,#101010);
+      --fa-card-bg-hover: rgba(255,255,255,.05);
+      --fa-card-border: rgba(255,255,255,.14);
+      --fa-card-border-strong: rgba(255,255,255,.24);
+      --fa-card-shadow: 0 10px 26px rgba(0,0,0,.32);
+      --fa-card-shadow-hover: 0 16px 40px rgba(0,0,0,.4);
+      padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--fa-card-radius, 12px); }
     .num { width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
       border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.05); font-size:12px; }
     .body { flex:1; min-width:0; }
@@ -35,7 +35,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .card:hover .arrow { opacity:1; transform: translateX(4px); }
   `], template: `
     <div class="wrap">
-      <h1 class="hero-title">Behavioral Interview Guide</h1>
+      <h1 class="hero-title">Behavioral Interview Handbook</h1>
       <div class="hero-sub">Show your impact with crisp stories and strong signals.</div>
       <div class="pill-row">
         <span class="pill">STAR stories</span>
@@ -47,7 +47,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
         <div class="sec-head">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items; let ii = index"
-           class="card uf-card"
+           class="card fa-card"
            [routerLink]="['/','guides','behavioral', it.slug]">
           <div class="num">{{ starts()[gi] + ii + 1 }}</div>
           <div class="body">

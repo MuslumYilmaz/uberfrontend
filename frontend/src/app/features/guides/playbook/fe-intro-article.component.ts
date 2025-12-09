@@ -136,7 +136,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }
   `],
   template: `
-  <uf-guide-shell
+  <fa-guide-shell
     title="How Front-End Interviews Really Work (and How to Prep)"
     subtitle="Formats you’ll face, what companies actually evaluate, and how to plan your prep."
     [minutes]="10"
@@ -190,7 +190,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <li>Explain your thought process instead of silently coding.</li>
     </ol>
 
-    <h3><a [routerLink]="['/guides','system-design']">System design (senior+)</a></h3>
+    <h3><a [routerLink]="['/guides','system-design-blueprint']">System design (senior+)</a></h3>
     <p>
       For mid–senior candidates, system design is often the deciding round. Instead
       of backend scaling, you’ll focus on <strong>front-end architecture</strong>:
@@ -387,7 +387,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     </ul>
     <p>
       👉 For concrete examples and templates, see the
-      <a [routerLink]="['/guides','playbook','resume']">resume guide</a>.
+      <a [routerLink]="['/guides','interview-blueprint','resume']">resume guide</a>.
     </p>
 
     <!-- Section 7 -->
@@ -512,7 +512,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         feedback as if you were in a live round.
       </li>
       <li>
-        <strong><a [routerLink]="['/guides','system-design']">System design drills</a>:</strong>
+        <strong><a [routerLink]="['/guides','system-design-blueprint']">System design drills</a>:</strong>
         Walk through structured prompts for client-side design problems —
         caching, state modeling, performance trade-offs. We’ll nudge you to cover
         MVP first, then scale up.
@@ -532,7 +532,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       👉 In short: don’t just read — practice here, review your mistakes, and
       build interview muscle memory before the real thing.
     </p>
-  </uf-guide-shell>
+  </fa-guide-shell>
   `
 })
 export class FeIntroArticle {

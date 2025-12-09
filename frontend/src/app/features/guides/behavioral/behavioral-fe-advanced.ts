@@ -9,7 +9,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   imports: [CommonModule, RouterModule, GuideShellComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <uf-guide-shell
+    <fa-guide-shell
       title="Front-End Specific Scenarios"
       [minutes]="15"
       [tags]="['behavioral','frontend','scenarios']"
@@ -57,7 +57,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
       <blockquote>
         Interviewers love when you <em>speak like a peer</em>. Show that you’ve navigated real product decisions—not just taken tickets.
       </blockquote>
-    </uf-guide-shell>
+    </fa-guide-shell>
   `,
 })
 export class BehavioralFeAdvancedArticle {

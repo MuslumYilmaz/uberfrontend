@@ -1,10 +1,10 @@
 :host {
   display: block;
-  color: var(--uf-text);
+  color: var(--fa-text);
 }
 
 .dash {
-  background: var(--uf-bg);
+  background: var(--fa-bg);
   min-height: 100vh;
 }
 
@@ -81,10 +81,10 @@
   height: 32px;
   display: grid;
   place-items: center;
-  border-radius: var(--uf-radius-8);
-  background: var(--uf-surface);
-  border: 1px solid var(--uf-border-subtle);
-  color: rgba(var(--uf-text-rgb), 0.9);
+  border-radius: var(--fa-radius-8);
+  background: var(--fa-surface);
+  border: 1px solid var(--fa-border-subtle);
+  color: rgba(var(--fa-text-rgb), 0.9);
   font-size: 16px;
 }
 
@@ -112,25 +112,25 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: var(--uf-radius-8);
+  border-radius: var(--fa-radius-8);
   font-size: 16px;
-  color: rgba(var(--uf-text-rgb), 0.72);
-  background: rgba(var(--uf-text-rgb), 0.04);
+  color: rgba(var(--fa-text-rgb), 0.72);
+  background: rgba(var(--fa-text-rgb), 0.04);
   border: 1px solid transparent;
   transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
 }
 
-.uf-card--interactive:hover .row-arrow {
-  color: var(--uf-text);
-  border-color: rgba(var(--uf-text-rgb), 0.16);
-  background: rgba(var(--uf-text-rgb), 0.08);
+.fa-card--interactive:hover .row-arrow {
+  color: var(--fa-text);
+  border-color: rgba(var(--fa-text-rgb), 0.16);
+  background: rgba(var(--fa-text-rgb), 0.08);
 }
 
 .badge {
   font-size: 11px;
   padding: 2px 6px;
-  border-radius: var(--uf-radius-pill);
-  background: rgba(var(--uf-text-rgb), 0.08);
-  color: var(--uf-text);
-  border: 1px solid rgba(var(--uf-text-rgb), 0.16);
+  border-radius: var(--fa-radius-pill);
+  background: rgba(var(--fa-text-rgb), 0.08);
+  color: var(--fa-text);
+  border: 1px solid rgba(var(--fa-text-rgb), 0.16);
 }

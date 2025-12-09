@@ -120,7 +120,7 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
         <!-- Billing -->
         <section *ngIf="tab() === 'billing'" class="panel">
           <div class="account-card">
-            <h4>UberFrontend Pro</h4>
+            <h4>FrontendAtlas Pro</h4>
             <p class="desc" *ngIf="billing()?.pro?.status === 'lifetime'">You are on the <b>Lifetime</b> plan.</p>
             <p class="desc" *ngIf="billing()?.pro?.status === 'active'">
               Your subscription renews on {{ billing()?.pro?.renewsAt | date:'mediumDate' }}.
@@ -129,7 +129,7 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
           </div>
 
           <div class="account-card">
-            <h4>UberFrontend Projects</h4>
+            <h4>FrontendAtlas Projects</h4>
             <p class="desc" *ngIf="billing()?.projects?.status === 'active'">
               Your subscription renews on {{ billing()?.projects?.renewsAt | date:'mediumDate' }}.
             </p>
