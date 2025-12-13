@@ -8,24 +8,38 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
   standalone: true,
   imports: [CommonModule, RouterModule, OfflineBannerComponent],
   styles: [`
-    :host { display:block; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 18px 0 48px; }
+    :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 24px 0 48px; }
     .hero-title { margin: 6px 0 6px; }
-    .hero-sub { color: var(--fa-text-muted); margin-bottom: 18px; }
+    .hero-sub { color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent); margin-bottom: 18px; }
     .pill-row { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0 18px; }
-    .pill { padding:4px 10px; }
+    .pill { padding:6px 12px; }
 
     .section { margin: 28px 0; }
-    .sec-head { margin-bottom: 10px; }
+    .sec-head { margin-bottom: 10px; color: var(--uf-text-primary); }
 
-    .card { display:flex; align-items:center; gap:14px; padding:14px 14px; text-decoration:none; color:inherit; }
-    .num { min-width:32px; height:32px; border-radius: var(--fa-radius-pill); display:grid; place-items:center; }
+    .card {
+      display:flex; align-items:center; gap:14px;
+      padding:14px 14px; text-decoration:none; color:inherit;
+      background: var(--uf-surface-alt);
+      border: 1px solid var(--uf-border-subtle);
+      border-radius: var(--uf-card-radius);
+      box-shadow: var(--uf-card-shadow);
+      transition: border-color 160ms ease, background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
+    }
+    .card:hover {
+      background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt));
+      border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+      box-shadow: var(--uf-card-shadow-strong);
+      transform: translateY(-1px);
+    }
+    .num { min-width:32px; height:32px; border-radius: var(--uf-radius-pill); display:grid; place-items:center; }
     .body { flex:1; min-width:0; }
     .title { margin:0; }
-    .sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .mins { font-size:12px; color: var(--fa-text-muted); }
-    .arrow { opacity:.7; transition: transform 160ms ease, opacity 160ms ease; }
-    .card:hover .arrow { opacity:1; transform: translateX(4px); }
+    .sub { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent); }
+    .mins { font-size:12px; color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); }
+    .arrow { color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); transition: transform 160ms ease, opacity 160ms ease; }
+    .card:hover .arrow { opacity:1; transform: translateX(4px); color: var(--uf-text-primary); }
   `],
   template: `
     <div class="wrap fa-body">
@@ -41,7 +55,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
         <div class="sec-head fa-section-title">{{ g.title }}</div>
 
         <a *ngFor="let it of g.items"
-           class="card fa-card fa-card--interactive" [routerLink]="['/','guides','interview-blueprint', it.slug]">
+           class="card" [routerLink]="['/','guides','interview-blueprint', it.slug]">
           <div class="num fa-chip fa-chip--label">{{ globalIdx().get(it.slug) }}</div>
           <div class="body">
             <div class="title fa-card-title">{{ entries().get(it.slug)?.title || it.slug }}</div>
