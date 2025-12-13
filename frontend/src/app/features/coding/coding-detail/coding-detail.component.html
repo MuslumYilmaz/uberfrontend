@@ -444,9 +444,7 @@
   </div>
 </p-dialog>
 
-<app-login-required-dialog
-  [(visible)]="loginPromptOpen"
-  title="Sign in to submit"
-  body="Please log in to submit solutions and track completions."
+<app-login-required-dialog [(visible)]="loginPromptOpen" title="Sign in to save progress"
+  body="To track completed questions and keep your progress synced, sign in or create a free account."
   ctaLabel="Go to login">
 </app-login-required-dialog>

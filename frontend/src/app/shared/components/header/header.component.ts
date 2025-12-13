@@ -1,5 +1,5 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, computed, DestroyRef, HostListener, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
@@ -16,6 +16,14 @@ type Mode =
   | 'course'
   | 'profile'
   | 'not-found';
+
+type VisibleEntry = {
+  origin: string;
+  item: PrepareItem;
+  link: any[] | null;
+  group?: string;
+  isViewAll?: boolean;
+};
 
 @Component({
   selector: 'app-header',
@@ -38,7 +46,7 @@ type Mode =
           aria-haspopup="menu"
           [attr.aria-expanded]="megaOpen()"
           aria-controls="prepare-mega">
-          Prepare <span class="caret" aria-hidden="true">▾</span>
+          Study <span class="caret" aria-hidden="true">▾</span>
         </button>
       </div>
 
@@ -82,50 +90,172 @@ type Mode =
       </div>
     </div>
 
-    <!-- MEGA MENU -->
+    <!-- STUDY PANEL -->
     <ng-container *ngIf="megaOpen()">
       <div class="fah-backdrop" (click)="closeAll()"></div>
-      <div id="prepare-mega" class="fah-mega" (click)="$event.stopPropagation()" (keydown.escape)="closeAll()"
-           tabindex="-1" role="menu" aria-label="Prepare menu">
-        <div class="fah-mega-inner">
-          <div class="fah-rail">
-            <button *ngFor="let g of groups; trackBy: trackByGroupKey"
-                    class="fah-rail-item"
-                    [class.fah-rail-active]="g.key===activeGroupKey()"
-                    (click)="activeGroupKey.set(g.key)">
-              <span class="fah-rail-text">{{ g.title }}</span>
-              <i class="pi pi-chevron-right fah-rail-caret"></i>
-            </button>
-          </div>
-
-          <div class="fah-pane">
-            <ng-container *ngFor="let item of activeItems(); trackBy: trackByItemKey">
-              <div *ngIf="item.disabled || item.intent!=='route' || !item.target; else enabledRow"
-                   class="fah-card fah-card-disabled"
-                   role="button" aria-disabled="true" tabindex="-1">
-                <div class="fah-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                <div class="fah-card-body">
-                  <div class="fah-card-title">
-                    {{ item.title }}
-                    <span *ngIf="item.badge" class="fah-badge">{{ item.badge }}</span>
-                  </div>
-                  <div class="fah-card-sub">{{ item.subtitle }}</div>
-                  <div class="fah-skel"></div>
+      <div id="prepare-mega" class="study-panel" (click)="$event.stopPropagation()" (keydown.escape)="closeAll()"
+           (keydown.arrowdown)="moveActive(1)" (keydown.arrowup)="moveActive(-1)" (keydown.enter)="activateActive()"
+           tabindex="-1" role="menu" aria-label="Study menu">
+        <div class="study-search">
+          <i class="pi pi-search"></i>
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Search study resources" />
+          <span class="shortcut" aria-hidden="true">/</span>
+        </div>
+        <div class="study-scroll">
+          <ng-container *ngIf="!isSearching(); else searchMode">
+            <ng-container *ngIf="recentItems().length">
+              <div class="study-section">
+                <div class="study-section__title">Recent</div>
+                <div class="study-list">
+                  <a *ngFor="let r of recentItems(); let idx = index"
+                     class="study-row"
+                     [class.active]="activeIndex() === rowIndex('recent-' + idx)"
+                     [routerLink]="intentToLink(r)!"
+                     (click)="onItemNavigate(r)">
+                    <div class="row-icon"><i class="pi" [ngClass]="r.pi"></i></div>
+                    <div class="row-body">
+                      <div class="row-title">{{ r.title }}</div>
+                      <div class="row-sub">{{ r.subtitle }}</div>
+                    </div>
+                    <div class="row-meta"><span class="badge">Recent</span><i class="pi pi-arrow-right"></i></div>
+                  </a>
                 </div>
               </div>
-              <ng-template #enabledRow>
-                <a class="fah-card" [routerLink]="intentToLink(item)!" (click)="closeAll()">
-                  <div class="fah-card-icon"><i class="pi" [ngClass]="item.pi"></i></div>
-                  <div class="fah-card-body">
-                    <div class="fah-card-title">{{ item.title }}</div>
-                    <div class="fah-card-sub">{{ item.subtitle }}</div>
-                    <div class="fah-skel"></div>
-                  </div>
-                  <div aria-hidden="true">→</div>
-                </a>
-              </ng-template>
             </ng-container>
-          </div>
+
+            <ng-container *ngIf="topPicks().length">
+              <div class="study-section">
+                <div class="study-section__title">Top picks</div>
+                <div class="study-list">
+                  <ng-container *ngFor="let item of topPicks(); let idx = index">
+                    <div *ngIf="item.disabled || !intentToLink(item); else topPickRow" class="study-row disabled" role="button" aria-disabled="true">
+                      <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                      <div class="row-body">
+                        <div class="row-title">
+                          {{ item.title }}
+                          <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                        </div>
+                        <div class="row-sub">{{ item.subtitle }}</div>
+                      </div>
+                      <div class="row-meta"><i class="pi pi-lock"></i></div>
+                    </div>
+                    <ng-template #topPickRow>
+                      <a class="study-row"
+                         [class.active]="activeIndex() === rowIndex('top-' + idx)"
+                         [routerLink]="intentToLink(item)!"
+                         (click)="onItemNavigate(item)">
+                        <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                        <div class="row-body">
+                          <div class="row-title">
+                            {{ item.title }}
+                            <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                          </div>
+                          <div class="row-sub">{{ item.subtitle }}</div>
+                        </div>
+                        <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
+                      </a>
+                    </ng-template>
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+
+            <button type="button" class="browse-row" (click)="toggleBrowseAll()">
+              <span>Browse all study resources</span>
+              <i class="pi" [ngClass]="browseAllOpen() ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+            </button>
+
+            <ng-container *ngIf="browseAllOpen()">
+              <div *ngFor="let g of limitedGroups()" class="study-section">
+                <button type="button" class="group-header" (click)="toggleGroup(g.key)">
+                  <span>{{ g.title }}</span>
+                  <i class="pi" [ngClass]="isGroupExpanded(g.key) ? 'pi-chevron-up' : 'pi-chevron-down'"></i>
+                </button>
+                <div class="study-list" *ngIf="isGroupExpanded(g.key)">
+                  <ng-container *ngFor="let item of g.items; let ii = index">
+                    <div *ngIf="item.disabled || !intentToLink(item); else groupRow" class="study-row disabled" role="button" aria-disabled="true">
+                      <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                      <div class="row-body">
+                        <div class="row-title">
+                          {{ item.title }}
+                          <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                        </div>
+                        <div class="row-sub">{{ item.subtitle }}</div>
+                      </div>
+                      <div class="row-meta"><i class="pi pi-lock"></i></div>
+                    </div>
+                    <ng-template #groupRow>
+                      <a class="study-row"
+                         [class.active]="activeIndex() === rowIndex('grp-' + g.key + '-' + ii)"
+                         [routerLink]="intentToLink(item)!"
+                         (click)="onItemNavigate(item)">
+                        <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                        <div class="row-body">
+                          <div class="row-title">
+                            {{ item.title }}
+                            <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                          </div>
+                          <div class="row-sub">{{ item.subtitle }}</div>
+                        </div>
+                        <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
+                      </a>
+                    </ng-template>
+                  </ng-container>
+                  <a *ngIf="viewAllLink(g)" class="study-row viewall-row"
+                     [class.active]="activeIndex() === rowIndex('grp-' + g.key + '-viewall')"
+                     [routerLink]="viewAllLink(g)!"
+                     (click)="onViewAll()">
+                    <div class="row-icon"><i class="pi pi-compass"></i></div>
+                    <div class="row-body">
+                      <div class="row-title">View all {{ g.title }}</div>
+                    </div>
+                    <div class="row-meta"><i class="pi pi-arrow-right"></i></div>
+                  </a>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+
+          <ng-template #searchMode>
+            <div class="study-section">
+              <div class="study-section__title">Results</div>
+              <div class="study-list">
+                <ng-container *ngFor="let item of searchResults(); let idx = index">
+                  <div *ngIf="item.disabled || !intentToLink(item); else searchRow" class="study-row disabled" role="button" aria-disabled="true">
+                    <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                    <div class="row-body">
+                      <div class="row-title">
+                        {{ item.title }}
+                        <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                      </div>
+                      <div class="row-sub">{{ item.subtitle }}</div>
+                    </div>
+                    <div class="row-meta"><span class="badge">{{ item._group }}</span></div>
+                  </div>
+                  <ng-template #searchRow>
+                    <a class="study-row"
+                       [class.active]="activeIndex() === rowIndex('search-' + idx)"
+                       [routerLink]="intentToLink(item)!"
+                       (click)="onItemNavigate(item)">
+                      <div class="row-icon"><i class="pi" [ngClass]="item.pi"></i></div>
+                      <div class="row-body">
+                        <div class="row-title">
+                          {{ item.title }}
+                          <span *ngIf="item.badge" class="badge">{{ item.badge }}</span>
+                        </div>
+                        <div class="row-sub">{{ item.subtitle }}</div>
+                      </div>
+                      <div class="row-meta">
+                        <span class="badge">{{ item._group }}</span>
+                        <i class="pi pi-arrow-right"></i>
+                      </div>
+                    </a>
+                  </ng-template>
+                </ng-container>
+                <div *ngIf="!searchResults().length" class="empty-state">No matches</div>
+              </div>
+            </div>
+          </ng-template>
         </div>
       </div>
     </ng-container>
@@ -134,7 +264,6 @@ type Mode =
 })
 export class HeaderComponent implements OnInit {
   private doc = inject(DOCUMENT);
-  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
   // route state
@@ -144,19 +273,32 @@ export class HeaderComponent implements OnInit {
 
   // prepare groups
   groups: PrepareGroup[] = PREPARE_GROUPS.filter(g => g.key !== 'courses');
-  activeGroupKey = signal<PrepareGroup['key']>('practice');
-  activeGroup = computed(
-    () => this.groups.find(g => g.key === this.activeGroupKey()) ?? this.groups[0]
-  );
-
-  // also make sure items inside other groups that might target "courses" are hidden:
-  activeItems = computed(() =>
-    this.activeGroup().items.filter(it => it.target?.name !== 'courses')
-  );
+  private recentKey = 'fa:recent:study';
+  recentItems = signal<PrepareItem[]>([]);
+  searchTerm = '';
+  activeIndex = signal<number>(-1);
+  browseAllOpen = signal(false);
+  expanded = signal<Record<string, boolean>>({ foundations: true, practice: true });
 
   // menus
   megaOpen = signal(false);
   profileOpen = signal(false);
+
+  topPicks(): PrepareItem[] {
+    if (this.isSearching()) return [];
+    const picks: PrepareItem[] = [];
+    for (const g of this.groups) {
+      for (const it of g.items) {
+        picks.push(it);
+        if (picks.length >= 8) return picks;
+      }
+    }
+    return picks;
+  }
+
+  limitedGroups(): PrepareGroup[] {
+    return this.groups.map(g => ({ ...g, items: g.items.slice(0, 2) }));
+  }
 
   public auth = inject(AuthService);
 
@@ -166,13 +308,17 @@ export class HeaderComponent implements OnInit {
         this.parseUrl(this.router.url);
         this.closeAll();
         this.updateSafeTop();
-        this.pickDefaultGroup();
+        this.loadRecents();
       });
   }
 
   ngOnInit(): void { }
 
   // —— utils / routing ——
+  isSearching(): boolean {
+    return (this.searchTerm || '').trim().length > 0;
+  }
+
   private resolveTech(): Tech {
     const pref = (defaultPrefs().defaultTech as Tech | undefined) ?? 'javascript';
     return this.currentTech() ?? pref;
@@ -187,6 +333,64 @@ export class HeaderComponent implements OnInit {
   showPrepareTrigger = computed(() =>
     this.mode() === 'dashboard' || this.mode() === 'tech-detail' || this.mode() === 'profile'
   );
+
+  visibleItems(): VisibleEntry[] {
+    const out: VisibleEntry[] = [];
+    if (this.isSearching()) {
+      this.searchResults().forEach((it, idx) => {
+        const link = this.intentToLink(it);
+        if (!link || it.disabled) return;
+        out.push({ origin: `search-${idx}`, item: it, link, group: (it as any)._group });
+      });
+      return out;
+    }
+
+    this.recentItems().forEach((it, idx) => {
+      const link = this.intentToLink(it);
+      if (!link || it.disabled) return;
+      out.push({ origin: `recent-${idx}`, item: it, link });
+    });
+
+    this.topPicks().forEach((it, idx) => {
+      const link = this.intentToLink(it);
+      if (!link || it.disabled) return;
+      out.push({ origin: `top-${idx}`, item: it, link });
+    });
+
+    if (this.browseAllOpen()) {
+      this.limitedGroups().forEach(g => {
+        if (!this.isGroupExpanded(g.key)) return;
+        g.items.forEach((it, ii) => {
+          const link = this.intentToLink(it);
+          if (!link || it.disabled) return;
+          out.push({ origin: `grp-${g.key}-${ii}`, item: it, link, group: g.title });
+        });
+        const viewAll = this.viewAllLink(g);
+        if (viewAll) {
+          const placeholder: PrepareItem = {
+            key: `viewall-${g.key}`,
+            title: `View all ${g.title}`,
+            subtitle: '',
+            pi: 'pi pi-compass',
+            intent: 'route',
+            target: { name: 'guides' } as any
+          };
+          out.push({
+            origin: `grp-${g.key}-viewall`,
+            item: placeholder,
+            link: viewAll,
+            isViewAll: true,
+            group: g.title
+          });
+        }
+      });
+    }
+    return out;
+  }
+
+  rowIndex(origin: string): number {
+    return this.visibleItems().findIndex(v => v.origin === origin);
+  }
 
   private parseUrl(url: string) {
     const segs = url.split('?')[0].split('#')[0].split('/').filter(Boolean);
@@ -218,26 +422,48 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  private pickDefaultGroup() {
-    if (this.mode() === 'tech-list' || this.mode() === 'tech-detail') {
-      this.activeGroupKey.set('practice');
-      return;
-    }
-    if (this.mode() === 'sd-list' || this.mode() === 'sd-detail') {
-      this.activeGroupKey.set('system');
-      return;
-    }
-    if (this.router.url.startsWith('/companies')) {
-      this.activeGroupKey.set('companies');
-      return;
-    }
-
-    this.activeGroupKey.set('foundations');
-  }
-
-
   trackByGroupKey(_: number, g: PrepareGroup) { return g.key; }
   trackByItemKey(_: number, it: PrepareItem) { return it.key; }
+
+  toggleBrowseAll() {
+    this.browseAllOpen.update(v => !v);
+  }
+
+  toggleGroup(key: string) {
+    this.expanded.update(prev => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  isGroupExpanded(key: string) {
+    return !!this.expanded()[key];
+  }
+
+  viewAllLink(g: PrepareGroup): any[] | null {
+    switch (g.key) {
+      case 'foundations':
+      case 'resources':
+        return ['/guides'];
+      case 'practice':
+        return ['/', this.resolveTech()];
+      case 'system':
+        return ['/system-design'];
+      case 'companies':
+        return ['/companies'];
+      default:
+        return null;
+    }
+  }
+
+  searchResults(): (PrepareItem & { _group?: string })[] {
+    if (!this.isSearching()) return [];
+    const term = this.searchTerm.trim().toLowerCase();
+    const all: (PrepareItem & { _group?: string })[] = [];
+    this.groups.forEach(g => all.push(...g.items.map(it => ({ ...it, _group: g.title }))));
+    const match = (it: PrepareItem & { _group?: string }) => {
+      const hay = [it.title, it.subtitle, it.badge, it._group].filter(Boolean).map(v => String(v).toLowerCase()).join(' ');
+      return hay.includes(term);
+    };
+    return all.filter(match).slice(0, 20);
+  }
 
   intentToLink(it: PrepareItem): any[] | null {
     if (it.intent !== 'route' || !it.target) return null;
@@ -282,9 +508,31 @@ export class HeaderComponent implements OnInit {
   @HostListener('document:keydown.escape')
   onDocumentEsc() { this.closeAll(); }
 
+  @HostListener('document:keydown', ['$event'])
+  onGlobalKey(ev: KeyboardEvent) {
+    const target = ev.target as HTMLElement | null;
+    const inInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+    const key = ev.key.toLowerCase();
+    if ((ev.ctrlKey || ev.metaKey) && key === 'k') {
+      ev.preventDefault();
+      this.toggleMega();
+      return;
+    }
+    if (!inInput && key === '/') {
+      ev.preventDefault();
+      this.openOnly('mega');
+      this.activeIndex.set(0);
+    }
+  }
+
   private openOnly(which: 'mega' | 'profile' | null) {
     this.megaOpen.set(which === 'mega');
     this.profileOpen.set(which === 'profile');
+    if (which === 'mega') {
+      this.activeIndex.set(-1);
+      this.browseAllOpen.set(false);
+      this.loadRecents();
+    }
   }
 
   toggleMega() { this.openOnly(this.megaOpen() ? null : 'mega'); }
@@ -296,5 +544,55 @@ export class HeaderComponent implements OnInit {
     this.auth.logout();
     this.closeAll();
     this.router.navigate(['/']);
+  }
+
+  onItemNavigate(it: PrepareItem) {
+    this.pushRecent(it);
+    this.closeAll();
+  }
+
+  onViewAll() {
+    this.closeAll();
+  }
+
+  moveActive(delta: number) {
+    const list = this.visibleItems();
+    if (!list.length) return;
+    const next = (this.activeIndex() + delta + list.length) % list.length;
+    this.activeIndex.set(next);
+  }
+
+  activateActive() {
+    const list = this.visibleItems();
+    const idx = this.activeIndex();
+    if (idx < 0 || idx >= list.length) return;
+    const entry = list[idx];
+    if (!entry.link) return;
+    this.onItemNavigate(entry.item);
+    this.router.navigate(entry.link);
+  }
+
+  private loadRecents() {
+    try {
+      const raw = localStorage.getItem(this.recentKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const map = new Map(this.groups.flatMap(g => g.items.map(it => [it.key, it])));
+        const items: PrepareItem[] = [];
+        for (const k of parsed) {
+          const it = map.get(k);
+          if (it) items.push(it);
+        }
+        this.recentItems.set(items.slice(0, 5));
+      }
+    } catch { }
+  }
+
+  private pushRecent(it: PrepareItem) {
+    const existing = this.recentItems().filter(r => r.key !== it.key);
+    const next = [it, ...existing].slice(0, 5);
+    this.recentItems.set(next);
+    try { localStorage.setItem(this.recentKey, JSON.stringify(next.map(x => x.key))); } catch { }
   }
 }
