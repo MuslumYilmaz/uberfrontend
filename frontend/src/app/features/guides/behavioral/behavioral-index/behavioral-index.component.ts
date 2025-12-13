@@ -18,20 +18,20 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .sec-head { font-weight: 800; color: var(--uf-text-primary); margin-bottom: 10px; }
 
     .card { display:flex; align-items:center; gap:14px;
-      background: var(--uf-surface-alt);
+      background: var(--uf-surface);
       border: 1px solid var(--uf-border-subtle);
       box-shadow: var(--uf-card-shadow);
       padding:14px 14px; text-decoration:none; color:inherit; border-radius: var(--uf-card-radius, 12px);
       transition: border-color 160ms ease, background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
     }
     .card:hover {
-      background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt));
-      border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+      background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%);
+      border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
       box-shadow: var(--uf-card-shadow-strong);
       transform: translateY(-1px);
     }
     .num { width:28px; height:28px; border-radius:999px; display:grid; place-items:center;
-      border:1px solid var(--uf-border-subtle); background:color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); font-size:12px; color: var(--uf-text-secondary); }
+      border:1px solid var(--uf-border-subtle); background:color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt)); font-size:12px; color: var(--uf-text-secondary); }
     .body { flex:1; min-width:0; }
     .title { font-weight:700; color: var(--uf-text-primary); }
     .sub { color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -43,9 +43,9 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
       <h1 class="hero-title">Behavioral Interview Handbook</h1>
       <div class="hero-sub">Show your impact with crisp stories and strong signals.</div>
       <div class="pill-row">
-        <span class="pill">STAR stories</span>
-        <span class="pill">Signals & examples</span>
-        <span class="pill">FE-focused prompts</span>
+        <span class="pill fa-chip fa-chip--label">STAR stories</span>
+        <span class="pill fa-chip fa-chip--label">Signals & examples</span>
+        <span class="pill fa-chip fa-chip--label">FE-focused prompts</span>
       </div>
 
       <div *ngFor="let g of groups(); let gi = index" class="section">

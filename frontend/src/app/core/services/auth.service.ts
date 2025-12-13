@@ -53,6 +53,7 @@ export interface User {
   stats?: UserStats;
   billing?: Billing;
   coupons?: Array<{ code: string; scope: 'pro' | 'projects'; appliedAt: string }>;
+  solvedQuestionIds?: string[];
   createdAt: string;
 }
 
@@ -104,6 +105,10 @@ export class AuthService {
 
   private authHeaders(): HttpHeaders {
     return new HttpHeaders(this.token ? { Authorization: `Bearer ${this.token}` } : {});
+  }
+
+  public headers(): HttpHeaders {
+    return this.authHeaders();
   }
 
   // ---------- API ----------

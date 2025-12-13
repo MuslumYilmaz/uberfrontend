@@ -80,6 +80,9 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
+    // progress
+    solvedQuestionIds: { type: [String], default: [] },
+
     // security / housekeeping
     passwordUpdatedAt: Date,
     lastLoginAt: Date,

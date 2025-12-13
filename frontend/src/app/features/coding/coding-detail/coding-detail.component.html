@@ -40,7 +40,13 @@
         <!-- Description Panel -->
         <ng-container *ngIf="activePanel()===0">
           <section class="space-y-4">
-            <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
+            <div class="detail-title-row">
+              <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
+              <span class="detail-solved" *ngIf="solved()" aria-label="Solved">
+                <i class="pi pi-check"></i>
+                Solved
+              </span>
+            </div>
             <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
 
             <!-- Özet / prose -->
@@ -405,7 +411,6 @@
       <ng-template #jsBlock>
         <app-coding-js-panel #jsPanel class="flex-1 min-h-0 flex" [question]="question()!" [tech]="tech" [kind]="kind"
           [editorOptions]="editorMonacoOptions" (langChange)="onChildLang($event)"
-          (solvedChange)="solved.set($event); saveSolvedFlag(question()!, $event)"
           (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"
           (codeChange)="onChildCode($event)">
         </app-coding-js-panel>
@@ -420,9 +425,8 @@
   [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
   [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
   [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
-  [submitLabel]="(isFrameworkTech() || isWebTech()) ? 'Mark as complete' : 'Submit'" (prev)="prev()" (next)="next()"
-  (back)="backToReturn()" (coursePrev)="goCoursePrev()" (courseNext)="goCourseNext()"
-  (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
+  [submitLabel]="submitLabel()" (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
+  (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
 </app-footer>
 
 <!-- Preview dialog (Angular only) -->

@@ -174,6 +174,7 @@
           <a
             *ngFor="let q of questions"
             class="list-row fa-card fa-card--interactive fa-question-card fa-question-card--compact"
+            [class.is-solved]="isSolved(q.id)"
             [routerLink]="linkTo(q)"
             [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
             <div class="fa-question-card__grid">
@@ -183,6 +184,10 @@
                   <span>{{ q.__kind === 'trivia' ? 'Quiz' : 'Coding' }} prompt</span>
                 </div>
                 <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
+                <div class="solved-pill" *ngIf="isSolved(q.id)" aria-label="Solved">
+                  <i class="pi pi-check"></i>
+                  <span>Solved</span>
+                </div>
 
                 <div
                   class="fa-question-card__description fa-meta-text desc-tip-target"
@@ -218,9 +223,17 @@
                     </button>
                   </div>
                 </div>
-              </div>
+                </div>
 
               <div class="fa-question-card__meta-row">
+                <div class="fa-question-card__meta-item" *ngIf="isSolved(q.id)">
+                  <span class="fa-meta-label">Status</span>
+                  <span class="fa-chip fa-chip--status">
+                    <i class="pi pi-check" aria-hidden="true"></i>
+                    Solved
+                  </span>
+                </div>
+
                 <div class="fa-question-card__meta-item">
                   <span class="fa-meta-label">Difficulty</span>
                   <span class="fa-chip fa-chip--difficulty" [attr.data-difficulty]="q.difficulty">

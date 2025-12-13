@@ -21,15 +21,15 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .card {
       display:flex; align-items:center; gap:14px;
       padding:14px 14px; text-decoration:none; color:inherit;
-      background: var(--uf-surface-alt);
+      background: var(--uf-surface);
       border: 1px solid var(--uf-border-subtle);
       border-radius: var(--uf-card-radius);
       box-shadow: var(--uf-card-shadow);
       transition: border-color 160ms ease, background-color 160ms ease, box-shadow 180ms ease, transform 120ms ease;
     }
     .card:hover {
-      background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt));
-      border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+      background: color-mix(in srgb, var(--uf-surface) 86%, var(--uf-accent) 14%);
+      border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
       box-shadow: var(--uf-card-shadow-strong);
       transform: translateY(-1px);
     }

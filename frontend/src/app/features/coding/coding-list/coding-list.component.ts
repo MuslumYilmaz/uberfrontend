@@ -22,6 +22,7 @@ import { OfflineBannerComponent } from "../../../shared/components/offline-banne
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
 import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -489,12 +490,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
   closeSort() { this.sortOpen = false; }
   setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
 
+  isSolved(id: string): boolean {
+    return this.progress.isSolved(id);
+  }
+
   constructor(
     private route: ActivatedRoute,
     private qs: QuestionService,
     private router: Router,
     private location: Location,
-    private listState: CodingListStateService
+    private listState: CodingListStateService,
+    private progress: UserProgressService
   ) {
     this.debug('ctor', {
       instance: this.instanceId,

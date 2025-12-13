@@ -1,5 +1,48 @@
 :host { display: block; }
 
+.coding-detail {
+  background: var(--uf-bg);
+  color: var(--uf-text-primary);
+}
+
+.coding-detail aside {
+  background: var(--uf-surface);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-card-radius);
+  box-shadow: var(--uf-card-shadow);
+}
+
+.coding-detail main {
+  background: var(--uf-surface-alt);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-card-radius);
+  box-shadow: var(--uf-card-shadow);
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.detail-solved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--uf-radius-pill);
+  background: var(--uf-accent-soft);
+  color: var(--uf-text-primary);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 70%, var(--uf-border-subtle) 30%);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.detail-solved .pi {
+  font-size: 12px;
+}
+
 /* ---------- Monaco: never overflow horizontally ---------- */
 :host ::ng-deep .monaco-editor,
 :host ::ng-deep .monaco-editor .overflow-guard { max-width: 100% !important; width: 100% !important; }

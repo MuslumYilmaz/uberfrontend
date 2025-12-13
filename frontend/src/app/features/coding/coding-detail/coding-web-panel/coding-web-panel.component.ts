@@ -16,9 +16,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ButtonModule } from 'primeng/button';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
-import { ActivityService } from '../../../../core/services/activity.service';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
-import { DailyService } from '../../../../core/services/daily.service';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
@@ -28,6 +26,151 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
   standalone: true,
   imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent],
   styles: [`
+  :host { color: var(--uf-text-primary); }
+  .web-panel { gap: var(--uf-space-3); }
+  .web-card {
+    background: var(--uf-surface);
+    border: 1px solid var(--uf-border-subtle);
+    border-radius: var(--uf-card-radius);
+    box-shadow: var(--uf-card-shadow);
+  }
+
+  .panel-label {
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--uf-text-secondary);
+    border-bottom: 1px solid var(--uf-border-subtle);
+    background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+    letter-spacing: 0.02em;
+  }
+  .panel-label.muted { color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent); }
+
+  .panel-tabs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--uf-border-subtle);
+    background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+  }
+
+  .tab-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--uf-text-secondary);
+    padding: 6px 12px;
+    border-radius: var(--uf-radius-pill);
+    font-weight: 600;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .tab-btn.active {
+    color: var(--uf-text-primary);
+    background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+    border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 20%, transparent);
+  }
+  .tab-hint { margin-left: auto; color: var(--uf-text-tertiary); font-size: 12px; }
+
+  .preview-actions {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pill-btn {
+    padding: 6px 10px;
+    border-radius: var(--uf-radius-pill);
+    background: var(--uf-accent);
+    border: 1px solid var(--uf-accent);
+    color: var(--uf-bg);
+    font-weight: 700;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--uf-accent) 38%, transparent);
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  }
+  .pill-btn:hover { background: var(--uf-accent-strong); }
+  .pill-btn:active { transform: translateY(1px); }
+
+  .solution-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: var(--uf-radius-pill);
+    background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+    border: 1px solid color-mix(in srgb, var(--uf-accent) 60%, var(--uf-border-subtle));
+    color: var(--uf-text-primary);
+  }
+
+  .empty-preview {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: var(--uf-text-tertiary);
+    background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+  }
+
+  .splitter{
+    width:6px;
+    background:transparent;
+    cursor:col-resize;
+    user-select:none;
+    touch-action:none;
+    position:relative;
+    z-index:20;
+    transition:background-color .15s;
+  }
+  .splitter:hover,
+  .splitter.dragging{ background-color: color-mix(in srgb, var(--uf-accent) 40%, transparent); }
+
+  .horizontal-splitter{
+    height:5px;
+    background:transparent;
+    border-radius:var(--uf-radius-pill);
+    cursor:row-resize;
+    user-select:none;
+    touch-action:none;
+    position:relative;
+    z-index:20;
+    transition:background-color .15s;
+  }
+  .horizontal-splitter:hover,
+  .horizontal-splitter.dragging{ background-color: color-mix(in srgb, var(--uf-accent) 40%, transparent); }
+
+  .results-shell {
+    border-top: 1px solid var(--uf-border-subtle);
+    background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  }
+
+  .results-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+    border-bottom: 1px solid var(--uf-border-subtle);
+  }
+  .run-btn {
+    padding: 8px 12px;
+    border-radius: var(--uf-radius-pill);
+    border: 1px solid var(--uf-border-subtle);
+    background: var(--uf-surface);
+    color: var(--uf-text-primary);
+    font-weight: 700;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .run-btn:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+    background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+  }
+  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .run-btn:active:not(:disabled) { transform: translateY(1px); }
+  .run-summary { margin-left: auto; color: var(--uf-text-secondary); font-size: 12px; }
+
   /* Unified Results/Console typography */
   .fa-results, .fa-results * {
     font-size: 13px !important;
@@ -35,44 +178,38 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
   }
   .fa-results .summary { font-size: 13px !important; }
   .fa-results .test-card { padding: 6px !important; }
-  .fa-results .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size:13px !important; }
+  .fa-results .test-name { display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px !important; }
   .fa-results .test-name i { font-size:13px !important; }
   .fa-results .test-error { margin-top:4px !important; font-size:11px !important; }
 
-  /* Ensure results area can grow/scroll */
   .results-panel { flex:1 1 auto; min-height:0; }
+  .summary-pass { color: color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
+  .summary-fail { color: color-mix(in srgb, var(--uf-text-tertiary) 85%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
+  .empty-state { color: var(--uf-text-tertiary); }
 
-    /* vertical splitter between LEFT and RIGHT columns */
-  .splitter{
-    width:6px;
-    background:transparent;
-    cursor:col-resize;
-    user-select:none;
-    touch-action:none;
-    position:relative;     /* enables z-index */
-    z-index:20;
-    transition:background-color .15s;
+  .test-card {
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--uf-border-subtle);
+    background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+    transition: border-color .15s, background .15s;
   }
-  .splitter:hover,
-  .splitter.dragging{ background-color:#3b82f6; }
-
-  /* horizontal splitters (HTML/CSS and Preview/Results) */
-  .horizontal-splitter{
-    height:5px;
-    background:transparent;
-    border-radius:25px;
-    cursor:row-resize;
-    user-select:none;
-    touch-action:none;
-    position:relative;     /* enables z-index, keeps it above the iframe */
-    z-index:20;
-    transition:background-color .15s;
+  .test-card.test-pass {
+    border-color: color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+    background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
   }
-  .horizontal-splitter:hover,
-  .horizontal-splitter.dragging{ background-color:#3b82f6; }
+  .test-card.test-fail {
+    border-color: color-mix(in srgb, var(--uf-text-tertiary) 60%, var(--uf-border-subtle));
+    background: color-mix(in srgb, var(--uf-text-tertiary) 14%, var(--uf-surface));
+  }
+  .test-name { color: var(--uf-text-primary); }
+  .test-card.test-pass .test-name i { color: color-mix(in srgb, var(--uf-accent) 70%, var(--uf-text-primary)); }
+  .test-card.test-fail .test-name i { color: color-mix(in srgb, var(--uf-text-tertiary) 80%, var(--uf-text-primary)); }
+  .test-error { color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent); font-size: 12px; margin-top: 6px; }
+  .console-panel { border-top: 1px solid var(--uf-border-subtle); }
 `],
   template: `
-<div class="w-full min-h-0 flex flex-col flex-1">
+<div class="web-panel w-full min-h-0 flex flex-col flex-1">
   <!-- Banner -->
   <app-restore-banner
     [isVisible]="showRestoreBanner()"
@@ -81,12 +218,12 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
     (dismiss)="dismissRestoreBanner()">
   </app-restore-banner>
 
-  <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
+  <div class="web-card fa-card fa-card--editor flex flex-col flex-1 overflow-hidden">
     <div class="flex-1 min-h-0 flex">
       <!-- LEFT editors -->
       <div class="min-w-0 flex flex-col" [style.flex]="'0 0 ' + (webColsRatio()*100) + '%'">
         <div #splitContainer class="flex-1 min-h-0 flex flex-col">
-          <div class="border-b border-white/10 px-3 py-1 text-xs opacity-80">&lt;html&gt; HTML</div>
+          <div class="panel-label muted">&lt;html&gt; HTML</div>
 
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <app-monaco-editor class="h-full editor-fill"
@@ -100,7 +237,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
                (pointerdown)="startDrag($event)"></div>
 
           <div class="flex-1 min-h-0 flex flex-col">
-            <div class="border-b border-white/10 px-3 py-1 text-xs opacity-80"># CSS</div>
+            <div class="panel-label muted"># CSS</div>
             <app-monaco-editor class="flex-1 editor-fill"
                                [code]="webCss()" [language]="'css'"
                                [options]="editorOptions"
@@ -117,33 +254,31 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
       <div class="min-w-0 flex-1 flex flex-col">
         <div #previewSplit class="flex-1 flex flex-col overflow-hidden">
           <!-- TOP TABS -->
-          <div class="flex items-center border-b border-white/10 px-3 py-2 text-xs">
-            <button class="px-3 py-1" [class.opacity-100]="isPreviewTop()" [class.opacity-60]="!isPreviewTop()"
-                    (click)="previewTopTab.set('preview')">Preview</button>
-            <button class="px-3 py-1" [class.opacity-100]="isTestCodeTop()" [class.opacity-60]="!isTestCodeTop()"
-                    (click)="previewTopTab.set('testcode')">Test code</button>
-            <div class="ml-auto text-xs opacity-70">Live preview updates as you type</div>
+          <div class="panel-tabs">
+            <button class="tab-btn" [class.active]="isPreviewTop()" (click)="previewTopTab.set('preview')">Preview</button>
+            <button class="tab-btn" [class.active]="isTestCodeTop()" (click)="previewTopTab.set('testcode')">Test code</button>
+            <div class="tab-hint">Live preview updates as you type</div>
           </div>
 
           <!-- TOP CONTENT -->
           <div [style.flex]="'0 0 ' + (previewRatio()*100) + '%'" class="relative min-h-[160px]">
-            <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400"
+            <div *ngIf="!previewUrl()" class="empty-preview"
                  [style.display]="isPreviewTop() ? 'grid' : 'none'">
               Building preview…
             </div>
 
             <!-- WEB PREVIEW TOGGLE -->
-            <div class="absolute top-2 right-3 z-20 flex items-center gap-2">
+            <div class="preview-actions">
               <!-- Show Preview button (when not showing solution) -->
               <button *ngIf="!showingSolutionPreview"
-                      class="text-xs px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-500"
+                      class="pill-btn"
                       (click)="openSolutionPreview()">
                 Show preview
               </button>
 
               <!-- Close banner (when showing solution) -->
               <div *ngIf="showingSolutionPreview"
-                   class="bg-yellow-300 text-black text-xs px-3 py-1.5 rounded shadow-sm flex items-center gap-3">
+                   class="solution-banner">
                 <span class="font-medium">Showing solution preview</span>
                 <button class="text-xs underline" (click)="closeSolutionPreview()">Close preview</button>
               </div>
@@ -168,15 +303,13 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
                (pointerdown)="startPreviewDrag($event)"></div>
 
           <!-- BOTTOM: Results / Console -->
-          <div class="flex-1 min-h-[140px] flex flex-col border-t border-white/10">
-            <div class="flex items-center gap-6 px-3 py-2 text-xs bg-neutral-900/60">
-              <button class="font-medium" (click)="runWebTests()" [disabled]="!hasAnyTests()"
+          <div class="results-shell flex-1 min-h-[140px] flex flex-col">
+            <div class="results-topbar">
+              <button class="run-btn" (click)="runWebTests()" [disabled]="!hasAnyTests()"
                       [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">▶ Run tests</button>
-              <button [class.text-white]="isTestsTab()" [class.text-gray-300]="!isTestsTab()"
-                      (click)="subTab.set('tests')">Results</button>
-              <button [class.text-white]="isConsoleTab()" [class.text-gray-300]="!isConsoleTab()"
-                      (click)="subTab.set('console')">Console</button>
-              <span class="ml-auto opacity-80" *ngIf="hasRunTests && totalCount() > 0">
+              <button class="tab-btn" [class.active]="isTestsTab()" (click)="subTab.set('tests')">Results</button>
+              <button class="tab-btn" [class.active]="isConsoleTab()" (click)="subTab.set('console')">Console</button>
+              <span class="run-summary" *ngIf="hasRunTests && totalCount() > 0">
                 {{ passedCount() }}/{{ totalCount() }} passed
               </span>
             </div>
@@ -185,11 +318,11 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
               <!-- Results -->
               <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel fa-results">
                 <!-- 1) No tests -->
-                <div class="h-full grid place-items-center text-xs text-gray-400" *ngIf="!hasAnyTests()">
+                <div class="h-full grid place-items-center text-xs empty-state" *ngIf="!hasAnyTests()">
                   No tests provided for this challenge yet.
                 </div>
                 <!-- 2) Not run yet -->
-                <div class="h-full grid place-items-center text-xs text-gray-400"
+                <div class="h-full grid place-items-center text-xs empty-state"
                      *ngIf="hasAnyTests() && !hasRunTests">
                   Run tests to see results.
                 </div>
@@ -197,18 +330,18 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
                 <div *ngIf="hasAnyTests() && hasRunTests" class="space-y-2">
                   <div class="summary mb-2">
                     <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
-                    <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
-                    <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                    <span *ngIf="allPassing()" class="summary-pass">All tests passed ✓</span>
+                    <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
                   </div>
 
                   <div *ngFor="let t of testResults()" class="test-card border rounded-md"
-                       [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
+                       [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
                     <div class="test-name">
-                      <i [ngClass]="t.passed ? 'pi pi-check-circle text-green-400'
-                                             : 'pi pi-times-circle text-red-400'"></i>
+                      <i [ngClass]="t.passed ? 'pi pi-check-circle'
+                                             : 'pi pi-times-circle'"></i>
                       <span>{{ t.name }}</span>
                     </div>
-                    <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
+                    <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">
                       {{ t.error }}
                     </div>
                   </div>
@@ -237,8 +370,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   constructor(
     private sanitizer: DomSanitizer,
     private zone: NgZone,
-    private daily: DailyService,
-    private activity: ActivityService,
     private codeStorage: CodeStorageService
   ) { }
 
@@ -297,11 +428,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private dragging = false; private startY = 0; private startRatio = 0;
   private draggingCols = false; private startXCols = 0; private startColsRatio = 0;
   private draggingPreview = false; private startYPreview = 0; private startPreviewRatio = 0;
-
-  // session/credit
-  private sessionStart = Date.now();
-  private recorded = false;
-
 
   // computed preview doc = build from current editors
   previewDocRaw = computed(() => {
@@ -398,8 +524,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.hasRunTests = false;
     this.testResults.set([]);
     this.consoleEntries.set([]);
-    this.sessionStart = Date.now();
-    this.recorded = false;
 
     this.scheduleWebPreview();
   }
@@ -496,14 +620,12 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.testResults.set([]);
     this.hasRunTests = false;
     this.showRestoreBanner.set(false);
-
-    try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
 
 
   // ---------- tests ----------
-  async runWebTests(): Promise<void> {
-    const q = this.question; if (!q) return;
+  async runWebTests(): Promise<TestResult[]> {
+    const q = this.question; if (!q) return [];
 
     this.subTab.set('tests');
     this.hasRunTests = false;
@@ -514,7 +636,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (!code) {
       this.hasRunTests = true;
       this.testResults.set([]);
-      return;
+      return [];
     }
 
     const htmlDoc = this.previewDocRaw();
@@ -541,36 +663,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     this.testResults.set(results);
     this.hasRunTests = true;
-
-    const passing = this.allPassing();
-    // Persist solved flag exactly like parent did
-    try { localStorage.setItem(this.solvedKey(q), String(!!passing)); } catch { }
-
-    if (passing) {
-      this.creditDaily();
-      this.activity.complete({
-        kind: 'coding' as any,
-        tech: this.tech,
-        itemId: q.id,
-        source: 'tech',
-        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(q),
-        solved: true
-      }).subscribe({
-        next: () => {
-          this.recorded = true;
-          this.activity.activityCompleted$.next({ kind: 'coding', tech: this.tech, stats: undefined });
-          this.activity.refreshSummary();
-        },
-        error: (e) => console.error('record completion failed', e),
-      });
-
-      try { await this.fireConfetti(); } catch { }
-    }
+    return results;
   }
-
-  // ---------- solved persistence (same key) ----------
-  private solvedKey(q: Question) { return `fa:coding:solved:${this.tech}:${q.id}`; }
 
   // ---------- banner actions ----------
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
@@ -592,8 +686,6 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.testResults.set([]);
     this.hasRunTests = false;
     this.showRestoreBanner.set(false);
-
-    try { localStorage.removeItem(this.solvedKey(q)); } catch { }
   }
 
   // ---------- helpers (unchanged) ----------
@@ -857,15 +949,4 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     } catch { return css; }
   }
 
-  private async fireConfetti(): Promise<void> {
-    const mod: any = await import('canvas-confetti');
-    const confetti = (mod.default || mod) as (opts: any) => void;
-    const count = 100;
-    const defaults = { spread: 70, ticks: 90, gravity: 0.9, scalar: 1 };
-    const fire = (ratio: number, opts: any = {}) => confetti({ particleCount: Math.floor(count * ratio), ...defaults, ...opts });
-    fire(0.35, { startVelocity: 45, origin: { x: 0.2, y: 0.3 } });
-    fire(0.35, { startVelocity: 45, origin: { x: 0.8, y: 0.3 } });
-  }
-  private xpFor(q: Question): number { return Number((q as any).xp ?? 20); }
-  private creditDaily(): void { this.daily.markCompletedById('coding' as any, this.question?.id); }
 }

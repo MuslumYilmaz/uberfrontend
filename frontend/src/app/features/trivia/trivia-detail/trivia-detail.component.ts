@@ -14,6 +14,7 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -60,6 +61,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   questionsList: Question[] = [];
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
+  solved = signal(false);
 
   private sub?: Subscription;
 
@@ -141,7 +143,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     public router: Router,
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
-    private seo: SeoService
+    private seo: SeoService,
+    private progress: UserProgressService
   ) { }
 
   ngOnInit() {
@@ -208,6 +211,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   private selectQuestion(id: string) {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
+    this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.updateSeo(found);
   }
 
@@ -279,6 +283,23 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   /** ============== UI: interactions ============== */
+  async markComplete() {
+    const q = this.question();
+    if (!q) return;
+    const wasSolved = this.solved();
+    if (wasSolved) {
+      await this.progress.unmarkSolved(q.id);
+      this.solved.set(false);
+    } else {
+      await this.progress.markSolved(q.id);
+      this.solved.set(true);
+    }
+  }
+
+  submitLabel(): string {
+    return this.solved() ? 'Mark as incomplete' : 'Mark as complete';
+  }
+
   copy(code: string, idx: number) {
     navigator.clipboard.writeText(code ?? '').catch(() => { });
     this.copiedIndex.set(idx);

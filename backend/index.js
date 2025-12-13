@@ -104,6 +104,31 @@ app.use('/api/auth', require('./routes/auth'));
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));
 
+// ---- Progress routes ----
+app.post('/api/users/me/solved', requireAuth, async (req, res) => {
+    try {
+        const { questionId, solved } = req.body || {};
+        if (!questionId || typeof questionId !== 'string') {
+            return res.status(400).json({ error: 'questionId is required' });
+        }
+
+        const user = await User.findById(req.auth.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        if (solved === false) {
+            user.solvedQuestionIds = (user.solvedQuestionIds || []).filter((id) => id !== questionId);
+        } else {
+            if (!user.solvedQuestionIds) user.solvedQuestionIds = [];
+            if (!user.solvedQuestionIds.includes(questionId)) user.solvedQuestionIds.push(questionId);
+        }
+
+        await user.save();
+        return res.json({ solvedQuestionIds: user.solvedQuestionIds });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // ---- Profile routes (protected + whitelist) ----
 app.get('/api/users/:id', requireAuth, async (req, res) => {
     try {

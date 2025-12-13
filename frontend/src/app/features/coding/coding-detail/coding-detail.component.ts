@@ -31,6 +31,7 @@ import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-f
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
 import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 
 type CourseNavState =
   | {
@@ -277,6 +278,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   isTopTestsTab = computed(() => this.topTab() === 'tests');
   hasAnyTests = computed(() => !!(this.testCode()?.trim()));
 
+  submitLabel(): string {
+    const solved = this.solved();
+    if (this.isFrameworkTech() || this.isWebTech()) {
+      return solved ? 'Mark as incomplete' : 'Mark as complete';
+    }
+    return solved ? 'Mark as incomplete' : 'Submit';
+  }
+
   // --- file explorer state for framework techs ---
   filesMap = signal<Record<string, string>>({});
   openPath = signal<string>('');
@@ -378,7 +387,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private daily: DailyService,
     private activity: ActivityService,
     private seo: SeoService,
-    private http: HttpClient
+    private http: HttpClient,
+    private progress: UserProgressService
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
   }
@@ -537,18 +547,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch { return css; }
   }
 
-  // ---------- solved persistence ----------
-  private solvedKey(q: Question) { return `fa:coding:solved:${this.tech}:${q.id}`; }
-  private loadSolvedFlag(q: Question) {
-    try { return localStorage.getItem(this.solvedKey(q)) === 'true'; } catch { return false; }
-  }
-  public saveSolvedFlag(q: Question, v: boolean) {
-    try { localStorage.setItem(this.solvedKey(q), String(!!v)); } catch { }
-  }
-  private clearSolvedFlag(q: Question) {
-    try { localStorage.removeItem(this.solvedKey(q)); } catch { }
-  }
-
   private questionDescription(q: Question): string {
     const raw = typeof q.description === 'string'
       ? q.description
@@ -603,7 +601,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.loadSolutionAssetIfAny(q);
 
     // common flags
-    this.solved.set(this.loadSolvedFlag(q));
+    this.solved.set(this.progress.isSolved(q.id));
     this.loadCollapsePref(q);
     let shouldShowBanner = false;
 
@@ -831,7 +829,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.hasRunTests = false;
       this.testResults.set([]);
       this.consoleEntries.set([]);
-      await this.webPanel?.runWebTests?.();     // emits results via (results) output
+      const results = await this.webPanel?.runWebTests?.();
+      this.testResults.set(results ?? []);
       this.hasRunTests = true;
       return;
     }
@@ -844,26 +843,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.jsPanel?.runTests();
     this.hasRunTests = true;
 
-    const qNow = this.question(); if (!qNow) return;
-    const passing = this.allPassing();
-    this.solved.set(passing);
-    this.saveSolvedFlag(qNow, passing);
-    if (passing) {
-      this.creditDaily();
-      this.activity.complete({
-        kind: this.kind, tech: this.tech, itemId: qNow.id,
-        source: 'tech', durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(qNow), solved: true
-      }).subscribe({
-        next: (res: any) => {
-          this.recorded = true;
-          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
-          this.activity.refreshSummary();
-        },
-        error: (e) => console.error('record completion failed', e),
-      });
-      await this.celebrate('tests');
-    }
     this.subTab.set('tests');
   }
 
@@ -872,8 +851,30 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
-    // Angular/framework preview and Web DOM work are "mark complete" on submit.
-    if (this.isFrameworkTech() || this.isWebTech()) {
+    // Toggle off if already completed
+    if (this.solved()) {
+      await this.progress.unmarkSolved(q.id);
+      this.solved.set(false);
+      return;
+    }
+
+    // Angular/framework preview submissions are manual-complete.
+    if (this.isFrameworkTech()) {
+      await this.progress.markSolved(q.id);
+      this.solved.set(true);
+      this.creditDaily();
+      this.recordCompletion('submit');
+      await this.celebrate('submit');
+      return;
+    }
+
+    // Web (HTML/CSS): run tests first, only mark solved on full pass.
+    if (this.isWebTech()) {
+      await this.runTests();
+      const passing = this.allPassing();
+      this.solved.set(passing);
+      if (!passing) return;
+      await this.progress.markSolved(q.id);
       this.creditDaily();
       this.recordCompletion('submit');
       await this.celebrate('submit');
@@ -883,28 +884,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // JS/TS: always run tests (delegates to the panel).
     await this.runTests();
 
-    // For debug, allow credit even if not all tests passed (avoid double-credit if runTests already did it)
-    if (this.kind === 'debug' && !this.allPassing()) {
-      this.creditDaily();
-      this.activity.complete({
-        kind: this.kind,
-        tech: this.tech,
-        itemId: q.id,
-        source: 'tech',
-        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(q),
-        solved: false
-      }).subscribe({
-        next: (res: any) => {
-          this.recorded = true;
-          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
-          this.activity.refreshSummary();
-        },
-        error: (e) => console.error('record completion failed', e),
-      });
+    const passing = this.allPassing();
+    this.solved.set(passing);
 
-      await this.celebrate('submit');
+    if (!passing) {
+      return;
     }
+
+    await this.progress.markSolved(q.id);
+    this.creditDaily();
+    this.recordCompletion('submit');
+    await this.celebrate('submit');
   }
 
 
@@ -1084,7 +1074,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.testResults.set([]);
       this.hasRunTests = false;
       this.solved.set(false);
-      this.clearSolvedFlag(q);
+      try { await this.progress.unmarkSolved(q.id); } catch { }
     } finally {
       this.resetting.set(false);
     }
@@ -1726,36 +1716,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .filter(Boolean) as Array<{ id: string; title: string; difficulty: string; to: any[] }>;
   });
-
-  // ---------- child outputs ----------
-  onChildSolved = (v: boolean) => {
-    this.solved.set(v);
-    const q = this.question();
-    if (!q) return;
-
-    this.saveSolvedFlag(q, v);
-
-    // If the panel ran tests directly (its own Run button), also handle crediting here.
-    if (v) {
-      this.creditDaily();
-      this.activity.complete({
-        kind: this.kind,
-        tech: this.tech,
-        itemId: q.id,
-        source: 'tech',
-        durationMin: Math.max(1, Math.round((Date.now() - this.sessionStart) / 60000)),
-        xp: this.xpFor(q),
-        solved: true
-      }).subscribe({
-        next: (res: any) => {
-          this.recorded = true;
-          this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
-          this.activity.refreshSummary();
-        },
-        error: (e) => console.error('record completion failed', e),
-      });
-    }
-  };
 
   onChildResults = (results: TestResult[]) => {
     this.testResults.set(results);

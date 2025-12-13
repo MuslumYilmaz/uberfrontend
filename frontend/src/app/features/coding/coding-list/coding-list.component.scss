@@ -431,6 +431,43 @@ app-coding-tech-kind-tabs {
   color: var(--ink);
 }
 
+:host .list-row.is-solved {
+  border-color: color-mix(in srgb, var(--fa-border-subtle) 50%, var(--fa-accent) 50%);
+  box-shadow: var(--fa-card-shadow), 0 0 0 1px color-mix(in srgb, var(--fa-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--fa-surface) 88%, var(--fa-accent) 12%);
+}
+
+.solved-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: var(--fa-radius-pill);
+  background: var(--fa-accent-soft);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 70%, var(--fa-border-subtle) 30%);
+}
+
+.solved-pill .pi,
+.fa-chip--status .pi {
+  font-size: 12px;
+}
+
+.fa-chip--status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--fa-radius-pill);
+  background: var(--fa-accent-soft);
+  color: var(--ink);
+  font-weight: 700;
+  border: 1px solid color-mix(in srgb, var(--fa-accent) 70%, var(--fa-border-subtle) 30%);
+}
+
 :host ::ng-deep .p-tooltip.desc-tip {
   pointer-events: none;
   filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.55));

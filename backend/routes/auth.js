@@ -42,6 +42,7 @@ const pick = (u) => ({
     billing: u.billing,
     coupons: u.coupons,
     lastLoginAt: u.lastLoginAt,
+    solvedQuestionIds: u.solvedQuestionIds || [],
 });
 
 const sign = (u) =>

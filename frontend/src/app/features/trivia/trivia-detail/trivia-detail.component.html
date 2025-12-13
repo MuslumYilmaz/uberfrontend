@@ -24,7 +24,13 @@
         <div *ngIf="question() as q; else missing" class="main-stack">
             <!-- Title + chips -->
             <header class="title-block">
-                <h1 class="title">{{ q.title }}</h1>
+                <div class="title-row">
+                    <h1 class="title">{{ q.title }}</h1>
+                    <span class="solved-pill" *ngIf="solved()" aria-label="Solved">
+                        <i class="fa-solid fa-check"></i>
+                        Solved
+                    </span>
+                </div>
                 <div class="meta-chips">
                     <span class="chip chip-freq">{{ importanceLabel(q.importance) }}</span>
                     <span class="chip chip-diff">{{ difficultyLabel(q.difficulty) }}</span>
@@ -143,6 +149,15 @@
 <div id="sr-announcer" aria-live="polite" class="sr-announcer-fixed"></div>
 
 <!-- Footer -->
-<app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
-    (prev)="prev()" (next)="next()" (back)="returnTo ? router.navigate(returnTo) : null">
+<app-footer
+  [mode]="'practice'"
+  [progressText]="progressText()"
+  [prevDisabled]="!hasPrev()"
+  [nextDisabled]="!hasNext()"
+  [showSubmit]="true"
+  [submitLabel]="submitLabel()"
+  (submit)="markComplete()"
+  (prev)="prev()"
+  (next)="next()"
+  (back)="returnTo ? router.navigate(returnTo) : null">
 </app-footer>
