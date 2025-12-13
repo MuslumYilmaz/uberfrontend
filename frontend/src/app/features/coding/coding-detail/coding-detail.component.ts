@@ -21,17 +21,19 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-log
 
 import type { Tech } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
 import { writeHtmlToIframe } from '../../../core/utils/iframe-preview.util';
 import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
+import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
-import { SeoService } from '../../../core/services/seo.service';
-import { UserProgressService } from '../../../core/services/user-progress.service';
 
 type CourseNavState =
   | {
@@ -78,7 +80,9 @@ type FASolutionBlock = {
   standalone: true,
   imports: [
     CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
-    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent, CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent
+    MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
+    CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
+    LoginRequiredDialogComponent
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
@@ -261,6 +265,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Preview dialog (Angular)
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
+  loginPromptOpen = false;
 
   // computed
   passedCount = computed(() => this.testResults().filter(r => r.passed).length);
@@ -284,6 +289,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       return solved ? 'Mark as incomplete' : 'Mark as complete';
     }
     return solved ? 'Mark as incomplete' : 'Submit';
+  }
+
+  ensureAuthenticated(): boolean {
+    if (this.auth.isLoggedIn()) return true;
+    this.loginPromptOpen = true;
+    return false;
+  }
+
+  goToLogin() {
+    this.loginPromptOpen = false;
+    this.router.navigate(['/auth/login']);
   }
 
   // --- file explorer state for framework techs ---
@@ -379,7 +395,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
     private zone: NgZone,
@@ -388,7 +404,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private activity: ActivityService,
     private seo: SeoService,
     private http: HttpClient,
-    private progress: UserProgressService
+    private progress: UserProgressService,
+    private auth: AuthService
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
   }
@@ -848,6 +865,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- submit ----------
   async submitCode(): Promise<void> {
+    if (!this.ensureAuthenticated()) {
+      return;
+    }
+
     const q = this.question();
     if (!q) return;
 

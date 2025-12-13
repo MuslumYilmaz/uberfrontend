@@ -15,6 +15,9 @@ import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { DialogModule } from 'primeng/dialog';
+import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -49,6 +52,8 @@ type PracticeSession = { items: PracticeItem[]; index: number } | null;
     RouterModule,
     CardModule,
     ButtonModule,
+    DialogModule,
+    LoginRequiredDialogComponent,
     FooterComponent,
     PrismHighlightDirective,
   ],
@@ -62,6 +67,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
   solved = signal(false);
+  loginPromptOpen = false;
 
   private sub?: Subscription;
 
@@ -144,7 +150,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     private qs: QuestionService,
     private sanitizer: DomSanitizer,
     private seo: SeoService,
-    private progress: UserProgressService
+    private progress: UserProgressService,
+    private auth: AuthService
   ) { }
 
   ngOnInit() {
@@ -286,6 +293,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   async markComplete() {
     const q = this.question();
     if (!q) return;
+    if (!this.auth.isLoggedIn()) {
+      this.loginPromptOpen = true;
+      return;
+    }
     const wasSolved = this.solved();
     if (wasSolved) {
       await this.progress.unmarkSolved(q.id);
@@ -298,6 +309,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
   submitLabel(): string {
     return this.solved() ? 'Mark as incomplete' : 'Mark as complete';
+  }
+
+  goToLogin() {
+    this.loginPromptOpen = false;
+    this.router.navigate(['/auth/login']);
   }
 
   copy(code: string, idx: number) {

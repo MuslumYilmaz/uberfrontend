@@ -443,3 +443,10 @@
       class="w-full h-full border-0" referrerpolicy="no-referrer"></iframe>
   </div>
 </p-dialog>
+
+<app-login-required-dialog
+  [(visible)]="loginPromptOpen"
+  title="Sign in to submit"
+  body="Please log in to submit solutions and track completions."
+  ctaLabel="Go to login">
+</app-login-required-dialog>
