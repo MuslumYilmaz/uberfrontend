@@ -218,8 +218,8 @@ export class LoginRequiredDialogComponent {
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
 
-  @Input() title = 'Sign in to submit';
-  @Input() body = 'Please log in to submit solutions and track completions.';
+  @Input() title = 'Sign in to save progress';
+  @Input() body = 'To track completed questions and keep your progress synced, sign in or create a free account.';
   @Input() ctaLabel = 'Go to login';
 
   dialogTitleId = 'login-dialog-title';

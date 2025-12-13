@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
-  AfterViewInit, Component, computed,
+  AfterViewInit, Component, computed, effect,
   ElementRef, NgZone,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
@@ -408,6 +408,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private auth: AuthService
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
+
+    effect(() => {
+      const q = this.question();
+      const solvedIds = this.progress.solvedIds();
+      if (q) {
+        this.solved.set(solvedIds.includes(q.id));
+      }
+    });
   }
 
   // ---------- helpers ----------

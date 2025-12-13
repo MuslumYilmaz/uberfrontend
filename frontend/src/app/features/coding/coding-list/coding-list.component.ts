@@ -151,6 +151,7 @@ function inferCategory(q: any): CategoryKey {
 export class CodingListComponent implements OnInit, OnDestroy {
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
+  solvedIds = this.progress.solvedIds;
 
   // ----- filter UI state -----
   searchTerm = '';
@@ -491,7 +492,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
 
   isSolved(id: string): boolean {
-    return this.progress.isSolved(id);
+    return this.solvedIds().includes(id);
   }
 
   constructor(

@@ -10,6 +10,13 @@ export class UserProgressService {
   solvedIds = computed(() => Array.from(this.solved()));
 
   constructor(private auth: AuthService, private http: HttpClient) {
+    // Eagerly hydrate user when a token exists (guards against missing solved list on first load)
+    if (this.auth.isLoggedIn()) {
+      this.auth.ensureMe().subscribe((u) => {
+        if (u) this.initFromUser(u);
+      });
+    }
+
     // React to auth changes
     effect(() => {
       const user = this.auth.user();
