@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, effect, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Tech } from '../models/user.model';
 
 export type Role = 'user' | 'admin';
@@ -103,8 +103,8 @@ export class AuthService {
     return this._token();
   }
 
-  private authHeaders(): HttpHeaders {
-    return new HttpHeaders(this.token ? { Authorization: `Bearer ${this.token}` } : {});
+  private authHeaders(token: string | null = this.token): HttpHeaders {
+    return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
   }
 
   public headers(): HttpHeaders {
@@ -113,42 +113,79 @@ export class AuthService {
 
   // ---------- API ----------
   signup(data: { email: string; username: string; password: string }) {
-    return this.http.post<{ token: string; user: User }>(`${this.base}/signup`, data).pipe(
-      tap((res) => {
-        this.setToken(res.token);
-        this.user.set(res.user);
-      }),
-      shareReplay(1)
-    );
+    return this.http
+      .post<{ token: string; user?: User }>(`${this.base}/signup`, data)
+      .pipe(
+        tap((res) => {
+          this.setToken(res.token);
+          if (res.user) this.user.set(this.cloneUser(res.user));
+        }),
+        switchMap(() => this.fetchMe()),
+        shareReplay(1)
+      );
   }
 
   login(data: { emailOrUsername: string; password: string }) {
-    return this.http.post<{ token: string; user: User }>(`${this.base}/login`, data).pipe(
-      tap((res) => {
-        this.setToken(res.token);
-        this.user.set(res.user);
-      }),
-      shareReplay(1)
-    );
+    return this.http
+      .post<{ token: string; user?: User }>(`${this.base}/login`, data)
+      .pipe(
+        tap((res) => {
+          this.setToken(res.token);
+
+          // optional: keep UI snappy if backend returns user
+          if (res.user) this.user.set(this.cloneUser(res.user));
+        }),
+        // ✅ always hydrate full user (solvedQuestionIds, stats, billing, etc.)
+        switchMap(() => this.fetchMe()),
+        shareReplay(1)
+      );
   }
 
   logout() {
-    this.setToken(null);
+    // Clear reactive state first so dependents react immediately
     this.user.set(null);
+    this.setToken(null);
   }
 
   /** GET /api/auth/me */
   fetchMe(): Observable<User | null> {
-    if (!this.token) return of(null);
-    return this.http
-      .get<User>(`${this.base}/me`, { headers: this.authHeaders() })
-      .pipe(tap((u) => this.user.set(u)));
-  }
+    const tokenAtCall = this.token;
+    if (!tokenAtCall) return of(null);
 
+    return this.http
+      .get<User>(`${this.base}/me`, { headers: this.authHeaders(tokenAtCall) })
+      .pipe(
+        tap((u) => {
+          // If user logged out (or token changed) while request was in-flight, ignore it.
+          if (this.token !== tokenAtCall) return;
+          this.user.set(this.cloneUser(u));
+        }),
+        catchError((err) => {
+          // optional but recommended: if token is invalid, clear it
+          if (this.token === tokenAtCall && (err?.status === 401 || err?.status === 403)) {
+            this.user.set(null);
+            this.setToken(null);
+            return of(null);
+          }
+          return throwError(() => err);
+        })
+      );
+  }
+  
   /** Lazy-load user when needed. */
   ensureMe(): Observable<User | null> {
     if (this.user()) return of(this.user());
     return this.fetchMe();
+  }
+
+  private cloneUser(u: User): User {
+    return {
+      ...u,
+      prefs: u.prefs ? { ...u.prefs } : u.prefs,
+      stats: u.stats ? { ...u.stats } as any : u.stats,
+      billing: u.billing ? { ...u.billing } as any : u.billing,
+      solvedQuestionIds: Array.isArray(u.solvedQuestionIds) ? [...u.solvedQuestionIds] : []
+    };
   }
 
   /** PUT /api/users/:id */

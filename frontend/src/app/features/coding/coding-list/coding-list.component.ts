@@ -1,5 +1,6 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
 
@@ -15,14 +16,15 @@ import { distinctUntilChanged, map, startWith, switchMap, take, takeUntil, tap }
 import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
-import { FRAMEWORK_FAMILIES, FRAMEWORK_FAMILY_BY_ID, FrameworkVariant, frameworkLabel } from '../../../shared/framework-families';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
+import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
+import { FRAMEWORK_FAMILY_BY_ID, frameworkLabel, FrameworkVariant } from '../../../shared/framework-families';
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
-import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
-import { UserProgressService } from '../../../core/services/user-progress.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -152,6 +154,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   solvedIds = this.progress.solvedIds;
+  solvedSet = computed(() => new Set(this.progress.solvedIds()));
+  solvedIds$ = toObservable(this.progress.solvedIds);
 
   // ----- filter UI state -----
   searchTerm = '';
@@ -443,6 +447,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
     })
   );
 
+  // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
+  visible$ = combineLatest([this.filtered$, this.solvedIds$]).pipe(
+    tap(([, ids]) => console.log('[SOLVED-DBG] solvedIds changed', ids)),
+    map(([qs, ids]) => {
+      console.log('[SOLVED-DBG] visible recompute', { count: qs.length, solvedCount: ids.length });
+      return qs;
+    })
+  );
+
   // True when /coding?view=forms and the "System design" pill is selected
   isSystemCategoryActive$ = combineLatest([
     this.viewMode$,
@@ -492,7 +505,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
 
   isSolved(id: string): boolean {
-    return this.solvedIds().includes(id);
+    return this.solvedSet().has(id);
   }
 
   constructor(
@@ -501,7 +514,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
     private router: Router,
     private location: Location,
     private listState: CodingListStateService,
-    private progress: UserProgressService
+    private progress: UserProgressService,
+    public auth: AuthService
   ) {
     this.debug('ctor', {
       instance: this.instanceId,
@@ -583,6 +597,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.viewModeSub = this.viewMode$.subscribe();
+    this.solvedIds$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(ids => console.log('[SOLVED-DBG] solvedIds$ subscription', ids));
 
     // Ensure current view key mirrors the initial URL before async viewMode$ emits
     this.currentViewKey = this.getViewKeyFromRoute();

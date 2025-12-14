@@ -5,17 +5,12 @@
     <p class="fa-page-subtitle fa-body">Explore every prompt and slice the library by difficulty, tech, or tags.</p>
   </header>
 
-  <app-coding-tech-kind-tabs *ngIf="source!=='company'"
-    [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
-    [tech]="tech" [kind]="kind" [viewMode]="viewMode"
-    [selectedTech]="selectedTech$ | async"
-    [selectedKind]="selectedKind$ | async"
-    [selectedCategory]="selectedCategory$ | async"
+  <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
+    [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
+    [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
     [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
-    [filteredCount]="(filteredCount$ | async) || 0"
-    (techSelected)="toggleTech($event)"
-    (categoryToggled)="toggleCategory($event)"
-    (kindSelected)="selectKind($event)">
+    [filteredCount]="(filteredCount$ | async) || 0" (techSelected)="toggleTech($event)"
+    (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
   <div class="fa-questions-layout">
@@ -34,9 +29,8 @@
         <div class="fa-filter-section__title fa-meta-label">Difficulty</div>
         <div class="fa-filter-options">
           <label *ngFor="let opt of difficultyOptions" class="fa-filter-option">
-            <input type="checkbox"
-                   [checked]="((diffs$ | async) || []).includes(opt.value)"
-                   (change)="onDiffChange(opt.value, $event)">
+            <input type="checkbox" [checked]="((diffs$ | async) || []).includes(opt.value)"
+              (change)="onDiffChange(opt.value, $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
               <span class="fa-filter-chip__icon" aria-hidden="true">⬤</span>
               {{ opt.label }}
@@ -49,27 +43,24 @@
         <div class="fa-filter-section__title fa-meta-label">Importance</div>
         <div class="fa-filter-options">
           <label class="fa-filter-option">
-            <input type="checkbox"
-                   [checked]="((impTiers$ | async) || []).includes('low')"
-                   (change)="onImpChange('low', $event)">
+            <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('low')"
+              (change)="onImpChange('low', $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
               <span class="fa-filter-chip__icon" aria-hidden="true">△</span>
               Low
             </span>
           </label>
           <label class="fa-filter-option">
-            <input type="checkbox"
-                   [checked]="((impTiers$ | async) || []).includes('medium')"
-                   (change)="onImpChange('medium', $event)">
+            <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('medium')"
+              (change)="onImpChange('medium', $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
               <span class="fa-filter-chip__icon" aria-hidden="true">▣</span>
               Medium
             </span>
           </label>
           <label class="fa-filter-option">
-            <input type="checkbox"
-                   [checked]="((impTiers$ | async) || []).includes('high')"
-                   (change)="onImpChange('high', $event)">
+            <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('high')"
+              (change)="onImpChange('high', $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
               <span class="fa-filter-chip__icon" aria-hidden="true">▲</span>
               High
@@ -81,12 +72,8 @@
       <div class="fa-filter-section" *ngIf="source === 'global-coding'">
         <div class="fa-filter-section__title fa-meta-label">Technologies</div>
         <div class="fa-filter-options fa-filter-options--pills">
-          <button
-            *ngFor="let tab of techTabs"
-            type="button"
-            class="fa-chip fa-chip--accent fa-tech-pill"
-            [class.is-active]="(selectedTech$ | async) === tab.key"
-            (click)="toggleTech(tab.key)">
+          <button *ngFor="let tab of techTabs" type="button" class="fa-chip fa-chip--accent fa-tech-pill"
+            [class.is-active]="(selectedTech$ | async) === tab.key" (click)="toggleTech(tab.key)">
             <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
             <span class="fa-tech-pill__label">{{ tab.label }}</span>
           </button>
@@ -100,22 +87,15 @@
             <button type="button" class="fa-btn fa-btn--ghost fa-toggle" (click)="toggleTagMatchMode()">
               Match {{ tagMatchMode === 'all' ? 'all' : 'any' }}
             </button>
-            <button
-              type="button"
-              class="fa-btn fa-btn--ghost fa-link-btn"
-              [disabled]="!((selectedTags$ | async)?.length)"
-              (click)="clearAllTags()">
+            <button type="button" class="fa-btn fa-btn--ghost fa-link-btn"
+              [disabled]="!((selectedTags$ | async)?.length)" (click)="clearAllTags()">
               Clear
             </button>
           </div>
         </div>
         <div class="fa-chip-rail" role="listbox" aria-label="Filter by tags">
-          <fa-chip
-            *ngFor="let tag of tagList"
-            class="fa-chip--topic tag-chip"
-            size="sm"
-            [selected]="((selectedTags$ | async) || []).includes(tag)"
-            (selectedChange)="toggleTag(tag)">
+          <fa-chip *ngFor="let tag of tagList" class="fa-chip--topic tag-chip" size="sm"
+            [selected]="((selectedTags$ | async) || []).includes(tag)" (selectedChange)="toggleTag(tag)">
             <span class="chip-icon" aria-hidden="true">#</span>
             {{ tag }}
           </fa-chip>
@@ -127,13 +107,8 @@
       <div class="fa-question-list__controls">
         <div class="fa-question-list__search fa-input">
           <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            placeholder="Search questions"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchTermChange($event)"
-            [ngModelOptions]="{ standalone: true }" />
+          <input pInputText type="text" placeholder="Search questions" [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchTermChange($event)" [ngModelOptions]="{ standalone: true }" />
         </div>
 
         <div class="fa-question-list__actions">
@@ -150,11 +125,8 @@
               </button>
 
               <div class="fa-sort__menu sort-menu" *ngIf="sortOpen">
-                <button
-                  *ngFor="let opt of sortOptions"
-                  type="button"
-                  class="fa-sort__item sort-item fa-btn fa-btn--ghost"
-                  [class.active]="opt.key === currentSort"
+                <button *ngFor="let opt of sortOptions" type="button"
+                  class="fa-sort__item sort-item fa-btn fa-btn--ghost" [class.active]="opt.key === currentSort"
                   (click)="setSort(opt.key)">
                   <span class="fa-sort__text">{{ opt.label }}</span>
                   <span class="fa-sort__check">✓</span>
@@ -166,16 +138,14 @@
       </div>
 
       <div class="list">
-        <ng-container *ngIf="filtered$ | async as questions; else loading">
+        <ng-container *ngIf="visible$ | async as questions; else loading">
           <div *ngIf="questions.length === 0" class="py-6 text-center italic text-gray-500">
             No questions match your filters.
           </div>
 
-          <a
-            *ngFor="let q of questions"
+          <a *ngFor="let q of questions"
             class="list-row fa-card fa-card--interactive fa-question-card fa-question-card--compact"
-            [class.is-solved]="solvedIds().includes(q.id)"
-            [routerLink]="linkTo(q)"
+            [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)" [routerLink]="linkTo(q)"
             [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
             <div class="fa-question-card__grid">
               <div class="fa-question-card__main">
@@ -184,23 +154,14 @@
                   <span>{{ q.__kind === 'trivia' ? 'Quiz' : 'Coding' }} prompt</span>
                 </div>
                 <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
-                <div class="solved-pill" *ngIf="solvedIds().includes(q.id)" aria-label="Solved">
+                <div class="solved-pill" *ngIf="auth.isLoggedIn() && solvedSet().has(q.id)" aria-label="Solved">
                   <i class="pi pi-check"></i>
                   <span>Solved</span>
                 </div>
 
-                <div
-                  class="fa-question-card__description fa-meta-text desc-tip-target"
-                  [pTooltip]="descriptionText(q)"
-                  tooltipPosition="bottom"
-                  appendTo="body"
-                  [tooltipStyleClass]="'desc-tip'"
-                  [showDelay]="150"
-                  [hideDelay]="0"
-                  [autoHide]="true"
-                  [life]="0"
-                  [escape]="false"
-                  [tooltipDisabled]="!descriptionText(q)"
+                <div class="fa-question-card__description fa-meta-text desc-tip-target" [pTooltip]="descriptionText(q)"
+                  tooltipPosition="bottom" appendTo="body" [tooltipStyleClass]="'desc-tip'" [showDelay]="150"
+                  [hideDelay]="0" [autoHide]="true" [life]="0" [escape]="false" [tooltipDisabled]="!descriptionText(q)"
                   tabindex="0">
                   {{ preview(descriptionText(q), 120) }}
                 </div>
@@ -211,22 +172,18 @@
                     <span class="fw-hint">Open this challenge in your stack</span>
                   </div>
                   <div class="fw-chip-row">
-                    <button
-                      *ngFor="let opt of frameworkOptions(q)"
-                      type="button"
-                      class="fw-chip"
-                      [class.active]="opt.id === q.id"
-                      [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
+                    <button *ngFor="let opt of frameworkOptions(q)" type="button" class="fw-chip"
+                      [class.active]="opt.id === q.id" [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
                       (click)="goToFramework($event, opt)">
                       <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
                       <span class="fw-cta">Open</span>
                     </button>
                   </div>
                 </div>
-                </div>
+              </div>
 
               <div class="fa-question-card__meta-row">
-                <div class="fa-question-card__meta-item" *ngIf="solvedIds().includes(q.id)">
+                <div class="fa-question-card__meta-item" *ngIf="auth.isLoggedIn() && solvedSet().has(q.id)">
                   <span class="fa-meta-label">Status</span>
                   <span class="fa-chip fa-chip--status">
                     <i class="pi pi-check" aria-hidden="true"></i>
@@ -259,12 +216,8 @@
                 <div class="fa-question-card__meta-item meta-item--tags">
                   <span class="fa-meta-label">Tags</span>
                   <div class="meta-tags">
-                    <fa-chip
-                      *ngFor="let tag of (q.tags || [])"
-                      size="sm"
-                      class="tag-chip fa-chip--topic"
-                      [selected]="(selectedTags$ | async)?.includes(tag) || false"
-                      (selectedChange)="toggleTag(tag)">
+                    <fa-chip *ngFor="let tag of (q.tags || [])" size="sm" class="tag-chip fa-chip--topic"
+                      [selected]="(selectedTags$ | async)?.includes(tag) || false" (selectedChange)="toggleTag(tag)">
                       <span class="chip-icon" aria-hidden="true">#</span>
                       {{ tag }}
                     </fa-chip>
