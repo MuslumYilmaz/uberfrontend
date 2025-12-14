@@ -50,13 +50,15 @@
 .panel { display: grid; gap: 18px; }
 
 /* Sections */
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+.section-head h3 { margin: 0; }
 .section h3 { font-size: 14px; margin: 0 0 8px; font-weight: 600; }
 .muted { color: color-mix(in srgb, var(--uf-text-tertiary) 75%, transparent); font-size: 12px; }
 
 /* Activity list */
 .activity-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
 .activity-list li {
-  display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 8px;
+  display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 8px;
   padding: 8px; border-radius: 8px; background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
   border: 1px solid var(--uf-border-subtle);
 }

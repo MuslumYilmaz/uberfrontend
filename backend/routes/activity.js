@@ -6,6 +6,8 @@ const ActivityEvent = require('../models/ActivityEvent');
 const XpCredit = require('../models/XpCredit');
 const { requireAuth } = require('../middleware/Auth');
 
+const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
+
 // ---------- date helpers ----------
 function utcDayStr(d = new Date()) {
     return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
@@ -59,7 +61,7 @@ router.post('/complete', requireAuth, async (req, res) => {
         const { kind, tech, itemId, source = 'tech', durationMin = 0, xp = 0 } = req.body || {};
         if (!kind || !tech) return res.status(400).json({ error: 'Missing kind or tech' });
         if (!['coding', 'trivia', 'debug'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' });
-        if (!['javascript', 'angular'].includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
+        if (!VALID_TECHS.includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
 
         const completedAt = new Date();
         const dayUTC = utcDayStr(completedAt);
@@ -116,10 +118,14 @@ router.post('/complete', requireAuth, async (req, res) => {
     }
 });
 
-/** GET /api/activity/recent?limit=20&since=YYYY-MM-DD */
+/** GET /api/activity/recent?limit=20&since=YYYY-MM-DD (limit=0 → no limit) */
 router.get('/recent', requireAuth, async (req, res) => {
     try {
-        const limit = Math.min(Math.max(parseInt(req.query.limit || '20', 10), 1), 100);
+        const rawLimit = parseInt(req.query.limit ?? '20', 10);
+        const unlimited = req?.query?.limit === '0' || req?.query?.all === '1';
+        const limit = unlimited
+            ? 0
+            : Math.min(Math.max(isNaN(rawLimit) ? 20 : rawLimit, 1), 1000);
         const since = req.query.since; // optional 'YYYY-MM-DD'
         const match = { userId: req.auth.userId };
 
@@ -130,7 +136,10 @@ router.get('/recent', requireAuth, async (req, res) => {
             }
         }
 
-        const recent = await ActivityEvent.find(match).sort({ completedAt: -1 }).limit(limit).lean();
+        const query = ActivityEvent.find(match).sort({ completedAt: -1 });
+        if (!unlimited) query.limit(limit);
+
+        const recent = await query.lean();
         res.json(recent);
     } catch (e) {
         res.status(500).json({ error: e.message });

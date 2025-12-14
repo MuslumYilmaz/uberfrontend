@@ -8,7 +8,7 @@ export interface ActivityEvent {
   _id: string;
   userId: string;
   kind: 'coding' | 'trivia' | 'debug';
-  tech: 'javascript' | 'angular';
+  tech: Tech | 'system-design';
   itemId?: string;
   source: 'tech' | 'company' | 'course' | 'system';
   durationMin: number;
@@ -31,7 +31,7 @@ export interface ActivitySummary {
 export type ActivityCompletedEvent = {
   stats?: any;
   kind?: 'coding' | 'trivia' | 'debug';
-  tech?: Tech;
+  tech?: Tech | 'system-design';
   itemId?: string;
 };
 
@@ -117,11 +117,11 @@ export class ActivityService {
   }
 
   getRecent(
-    params?: { limit?: number; since?: string },
+    params?: { limit?: number; since?: string; all?: boolean },
     options?: { force?: boolean; ttlMs?: number }
   ): Observable<ActivityEvent[]> {
     const ttl = options?.ttlMs ?? this.DEFAULT_TTL;
-    const key = `limit=${params?.limit ?? ''}|since=${params?.since ?? ''}`;
+    const key = `limit=${params?.limit ?? ''}|since=${params?.since ?? ''}|all=${params?.all ?? ''}`;
 
     // 🛑 Skip when logged out
     if (!this.isLoggedIn()) {
@@ -136,7 +136,8 @@ export class ActivityService {
     if (hit && (Date.now() - hit.ts) < ttl) return hit.obs;
 
     const q: string[] = [];
-    if (params?.limit) q.push(`limit=${params.limit}`);
+    if (params?.all) q.push('all=1');
+    else if (params?.limit !== undefined) q.push(`limit=${params.limit}`);
     if (params?.since) q.push(`since=${encodeURIComponent(params.since)}`);
     if (options?.force) q.push(`_=${Date.now()}`);
     const qs = q.length ? `?${q.join('&')}` : '';
@@ -192,7 +193,7 @@ export class ActivityService {
   // ---------- mutation ----------
   complete(payload: {
     kind: 'coding' | 'trivia' | 'debug';
-    tech: Tech;
+    tech: Tech | 'system-design';
     itemId?: string;
     source?: 'tech' | 'company' | 'course' | 'system';
     durationMin?: number;
@@ -222,7 +223,7 @@ export class ActivityService {
   }
 
   // ---------- legacy API (kept for compatibility; prefer get* above) ----------
-  recent(params?: { limit?: number; since?: string }) { return this.getRecent(params); }
+  recent(params?: { limit?: number; since?: string; all?: boolean }) { return this.getRecent(params); }
   summary() { return this.getSummary(); }
   heatmap(params?: { days?: number }) { return this.getHeatmap(params); }
   refreshSummary() { this.getSummary({ force: true }).subscribe({ next: () => { }, error: () => { } }); }

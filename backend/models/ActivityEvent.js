@@ -4,7 +4,11 @@ const ActivityEventSchema = new mongoose.Schema(
     {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true, required: true },
         kind: { type: String, enum: ['coding', 'trivia', 'debug'], required: true },
-        tech: { type: String, enum: ['javascript', 'angular'], required: true },
+        tech: {
+            type: String,
+            enum: ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'],
+            required: true
+        },
         itemId: { type: String }, // your internal exercise/trivia id
         source: { type: String, enum: ['tech', 'company', 'course', 'system'], default: 'tech' },
         durationMin: { type: Number, default: 0 },

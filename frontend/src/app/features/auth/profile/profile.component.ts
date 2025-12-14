@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivityEvent, ActivityService } from '../../../core/services/activity.service';
 import { AuthService, User, UserPrefs } from '../../../core/services/auth.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
+import { SolvedQuestion, SolvedQuestionsService } from '../../../core/services/solved-questions.service';
+import { take } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-profile',
@@ -40,20 +43,29 @@ import { AuthService, User, UserPrefs } from '../../../core/services/auth.servic
           <button [class.active]="tab() === 'coupons'" (click)="tab.set('coupons')">Coupons</button>
         </nav>
 
-        <!-- Activity (Recent only) -->
+        <!-- Activity (solved questions) -->
         <section *ngIf="tab() === 'activity'" class="panel">
           <div class="section">
-            <h3>Recent Activity</h3>
-            <ul class="activity-list" *ngIf="recent().length; else noRecent">
-              <li *ngFor="let ev of recent()">
-                <span class="chip kind" [attr.data-kind]="ev.kind">{{ ev.kind }}</span>
-                <span class="chip tech">{{ ev.tech }}</span>
-                <span class="label">{{ ev.itemId || 'Practice' }}</span>
-                <span class="muted">{{ ev.durationMin }}m · {{ ev.xp }} XP · {{ ev.completedAt | date:'mediumDate' }}</span>
-              </li>
-            </ul>
-            <ng-template #noRecent>
-              <p class="muted">No recent activity yet.</p>
+            <div class="section-head">
+              <h3>Solved questions</h3>
+              <span class="muted" *ngIf="solved().length">{{ solved().length }} total</span>
+            </div>
+
+            <ng-container *ngIf="!solvedLoading(); else loadingSolved">
+              <ul class="activity-list" *ngIf="solved().length; else noSolved">
+                <li *ngFor="let row of solved()">
+                  <span class="chip kind" [attr.data-kind]="row.kind">{{ formatKind(row.kind) }}</span>
+                  <span class="chip tech">{{ formatTech(row.tech) }}</span>
+                  <span class="label">{{ row.title }}</span>
+                </li>
+              </ul>
+            </ng-container>
+
+            <ng-template #loadingSolved>
+              <p class="muted">Loading solved questions…</p>
+            </ng-template>
+            <ng-template #noSolved>
+              <p class="muted">No solved questions yet. Start a coding or trivia problem to see it here.</p>
             </ng-template>
           </div>
         </section>
@@ -198,10 +210,16 @@ export class ProfileComponent implements OnInit {
     },
   };
 
-  recent = signal<ActivityEvent[]>([]);
+  solved = signal<SolvedQuestion[]>([]);
+  solvedLoading = signal(false);
   saving = signal(false);
 
-  constructor(private auth: AuthService, private activity: ActivityService) { }
+  constructor(
+    private auth: AuthService,
+    private solvedSvc: SolvedQuestionsService,
+    private progress: UserProgressService,
+    private destroyRef: DestroyRef
+  ) { }
 
   ngOnInit(): void {
     // Load profile
@@ -209,22 +227,12 @@ export class ProfileComponent implements OnInit {
       if (u) this.resetForm(u);
     });
 
-    // Load only recent activity for MVP
-    this.loadRecent();
+    this.refreshSolved();
 
-    // Refresh recent after completions
-    this.activity.activityCompleted$.subscribe(() => this.loadRecent());
-  }
-
-  private loadRecent() {
-    if (!this.auth.isLoggedIn()) {
-      this.recent.set([]);
-      return;
-    }
-    this.activity.recent({ limit: 10 }).subscribe({
-      next: (rows) => this.recent.set(rows || []),
-      error: () => this.recent.set([]),
-    });
+    // Keep solved list in sync with progress (guest/local) and completions
+    toObservable(this.progress.solvedIds)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.refreshSolved());
   }
 
   initials() {
@@ -269,6 +277,20 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  formatTech(t: string): string {
+    if (t === 'system-design') return 'System design';
+    if (t === 'unknown') return 'Unknown';
+    return t.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+  }
+
+  formatKind(k: string): string {
+    if (k === 'system-design') return 'System design';
+    if (k === 'coding') return 'Coding';
+    if (k === 'trivia') return 'Trivia';
+    if (k === 'debug') return 'Debug';
+    return 'Unknown';
+  }
+
   save() {
     const u = this.user();
     if (!u || !this.dirty()) return;
@@ -286,6 +308,24 @@ export class ProfileComponent implements OnInit {
           this.saving.set(false);
         },
         error: () => this.saving.set(false),
+      });
+  }
+
+  private refreshSolved(_force = false) {
+    this.solvedLoading.set(true);
+    const ids = this.progress.solvedIds();
+
+    this.solvedSvc.resolved(ids)
+      .pipe(take(1))
+      .subscribe({
+        next: (rows) => {
+          this.solved.set(rows || []);
+          this.solvedLoading.set(false);
+        },
+        error: () => {
+          this.solved.set([]);
+          this.solvedLoading.set(false);
+        },
       });
   }
 }
