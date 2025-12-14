@@ -42,7 +42,7 @@
           <section class="space-y-4">
             <div class="detail-title-row">
               <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
-              <span class="detail-solved" *ngIf="solved()" aria-label="Solved">
+              <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
                 <i class="pi pi-check"></i>
                 Solved
               </span>

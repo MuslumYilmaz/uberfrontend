@@ -204,6 +204,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   // Solved persistence
   solved = signal(false);
 
+  // ✅ UI solved: only true when authenticated
+  uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());
+
   descSpecs = computed(() => {
     const q = this.question();
     if (!q || !q.description || typeof q.description !== 'object') return null;
@@ -284,7 +287,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   hasAnyTests = computed(() => !!(this.testCode()?.trim()));
 
   submitLabel(): string {
-    const solved = this.solved();
+    const canSave = this.auth.isLoggedIn();
+    const solved = canSave && this.solved();
+
     if (this.isFrameworkTech() || this.isWebTech()) {
       return solved ? 'Mark as incomplete' : 'Mark as complete';
     }
