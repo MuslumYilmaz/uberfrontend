@@ -19,7 +19,7 @@ import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
-import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
+import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-web-panel',
@@ -366,6 +366,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() question!: Question;
   @Input() tech!: Tech;              // should be 'html' or 'css'
   @Input() editorOptions: any;
+  @Input() storageKeyOverride: string | null = null;
+  @Input() disablePersistence = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -383,6 +385,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private cssCode = signal<string>('');
   webHtml = () => this.htmlCode();
   webCss = () => this.cssCode();
+  private storageKeyFor(q: Question): string { return (this.storageKeyOverride || '').trim() || q.id; }
 
   testCode = signal<string>('');
   previewTopTab = signal<'preview' | 'testcode'>('preview');
@@ -435,6 +438,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const html = this.unescapeJsLiterals(this.htmlCode() ?? '');
     return this.buildWebPreviewDoc(html, css);
   });
+  private previewContentWindow: Window | null = null;
 
   ngOnChanges(ch: SimpleChanges): void {
     if (ch['question'] && this.question) {
@@ -447,6 +451,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       window.addEventListener('pointermove', this.onPointerMove);
       window.addEventListener('pointerup', this.onPointerUp);
       window.addEventListener('pointercancel', this.onPointerUp); // <-- add this
+      window.addEventListener('message', this.onPreviewMessage);
     });
   }
 
@@ -454,6 +459,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     window.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
     window.removeEventListener('pointercancel', this.onPointerUp);
+    window.removeEventListener('message', this.onPreviewMessage);
     if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
   }
 
@@ -514,11 +520,18 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const starters = this.getWebStarters(q);
 
     // HTML/CSS come from shared IndexedDB-backed storage
-    const { html, css, restored } = await this.codeStorage.initWebAsync(q.id, starters);
+    if (this.disablePersistence) {
+      this.htmlCode.set(starters.html);
+      this.cssCode.set(starters.css);
+      this.showRestoreBanner.set(false);
+    } else {
+      const key = this.storageKeyFor(q);
+      const { html, css, restored } = await this.codeStorage.initWebAsync(key, starters);
 
-    this.htmlCode.set(html);
-    this.cssCode.set(css);
-    this.showRestoreBanner.set(restored);
+      this.htmlCode.set(html);
+      this.cssCode.set(css);
+      this.showRestoreBanner.set(restored);
+    }
 
     this.testCode.set(this.getWebTests(q));
     this.hasRunTests = false;
@@ -535,9 +548,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.htmlCode.set(code);
     clearTimeout(this.webSaveTimer);
     this.webSaveTimer = setTimeout(() => {
-      const qid = this.question?.id;
-      if (qid) {
-        void this.codeStorage.saveWebAsync(qid, 'html', code);
+      if (!this.disablePersistence) {
+        const qid = this.question ? this.storageKeyFor(this.question) : null;
+        if (qid) {
+          void this.codeStorage.saveWebAsync(qid, 'html', code);
+        }
       }
     }, 200);
 
@@ -555,9 +570,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.cssCode.set(code);
     clearTimeout(this.webSaveTimer);
     this.webSaveTimer = setTimeout(() => {
-      const qid = this.question?.id;
-      if (qid) {
-        void this.codeStorage.saveWebAsync(qid, 'css', code);
+      if (!this.disablePersistence) {
+        const qid = this.question ? this.storageKeyFor(this.question) : null;
+        if (qid) {
+          void this.codeStorage.saveWebAsync(qid, 'css', code);
+        }
       }
     }, 200);
 
@@ -610,7 +627,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
 
-    await this.codeStorage.resetWebBothAsync(q.id, starters);
+    if (!this.disablePersistence) {
+      await this.codeStorage.resetWebBothAsync(this.storageKeyFor(q), starters);
+    }
 
     this.htmlCode.set(starters.html);
     this.cssCode.set(starters.css);
@@ -676,7 +695,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
 
-    await this.codeStorage.resetWebBothAsync(q.id, starters);
+    if (!this.disablePersistence) {
+      await this.codeStorage.resetWebBothAsync(this.storageKeyFor(q), starters);
+    }
 
     this.htmlCode.set(starters.html);
     this.cssCode.set(starters.css);
@@ -738,17 +759,17 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const isFullDoc = /<!doctype\s+html/i.test(html) || /<html[\s>]/i.test(html);
 
     if (isFullDoc) {
-      if (!cssBlock) return html;
+      if (!cssBlock) return this.injectPreviewBridge(html);
       if (/<head[\s>]/i.test(html)) {
-        return html.replace(/<head([^>]*)>/i, (_m, attrs) => `<head${attrs}>\n<style>\n${cssBlock}\n</style>`);
+        return this.injectPreviewBridge(html.replace(/<head([^>]*)>/i, (_m, attrs) => `<head${attrs}>\n<style>\n${cssBlock}\n</style>`));
       }
       if (/<html[^>]*>/i.test(html)) {
-        return html.replace(/<html([^>]*)>/i, (_m, attrs) => `<html${attrs}>\n<head><style>\n${cssBlock}\n</style></head>`);
+        return this.injectPreviewBridge(html.replace(/<html([^>]*)>/i, (_m, attrs) => `<html${attrs}>\n<head><style>\n${cssBlock}\n</style></head>`));
       }
-      return `<!doctype html><html><head><style>${cssBlock}</style></head><body>${html}</body></html>`;
+      return this.injectPreviewBridge(`<!doctype html><html><head><style>${cssBlock}</style></head><body>${html}</body></html>`);
     }
 
-    return `<!doctype html><html lang="en"><head>
+    return this.injectPreviewBridge(`<!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
   :root { color-scheme: light }
@@ -756,7 +777,79 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   html,body { height: 100%; background:#fff; color:#111; }
   body { margin:16px; font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; }
   ${cssBlock}
-</style></head><body>${html}</body></html>`;
+</style></head><body>${html}</body></html>`);
+  }
+
+  private injectPreviewBridge(doc: string): string {
+    const bridge = `
+<script>
+(() => {
+  const allowedProtocols = new Set(['http:', 'https:']);
+  const toUrl = (href) => {
+    try { return new URL(href, window.location.href); } catch { return null; }
+  };
+  const shouldIntercept = (ev, anchor) => {
+    const metaClick = ev.button === 1 || ev.metaKey || ev.ctrlKey;
+    return anchor.target === '_blank' || metaClick;
+  };
+  const handleLinkEvent = (ev) => {
+    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+    if (!el) return;
+    const u = toUrl(el.href || el.getAttribute('href') || '');
+    if (!u || !allowedProtocols.has(u.protocol)) return;
+    if (!shouldIntercept(ev, el)) return;
+    if (typeof ev.preventDefault === 'function') ev.preventDefault();
+    if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
+    try { window.parent?.postMessage({ type: 'UF_OPEN_EXTERNAL', url: u.href }, '*'); } catch {}
+  };
+  const onKeyDown = (ev) => {
+    if (ev.key !== 'Enter') return;
+    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+    if (!el) return;
+    // simulate click intent for Enter on anchor with _blank
+    if (el.getAttribute('target') !== '_blank') return;
+    handleLinkEvent(ev);
+  };
+  document.addEventListener('click', handleLinkEvent, true);
+  document.addEventListener('auxclick', handleLinkEvent, true);
+  document.addEventListener('keydown', onKeyDown, true);
+})();
+</script>`;
+    if (/<\/body>/i.test(doc)) return doc.replace(/<\/body>/i, `${bridge}\n</body>`);
+    return `${doc}\n${bridge}`;
+  }
+
+  private onPreviewMessage = (ev: MessageEvent) => {
+    if (!this.previewContentWindow || ev.source !== this.previewContentWindow) return;
+    const payload = ev.data;
+    if (!payload || payload.type !== 'UF_OPEN_EXTERNAL') return;
+    const raw = typeof payload.url === 'string' ? payload.url : '';
+    if (!raw) {
+      this.zone.run(() => this.pushConsole('warn', 'Blocked external link: missing URL.'));
+      return;
+    }
+    let target: URL;
+    try {
+      target = new URL(raw);
+    } catch {
+      this.zone.run(() => this.pushConsole('warn', 'Blocked external link: invalid URL.'));
+      return;
+    }
+    if (target.protocol !== 'http:' && target.protocol !== 'https:') {
+      this.zone.run(() => this.pushConsole('warn', 'Blocked external link: unsupported protocol.'));
+      return;
+    }
+
+    const opened = window.open(target.href, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      this.zone.run(() => this.pushConsole('warn', 'Popup blocked. Open manually: ' + target.href));
+    }
+  };
+
+  private pushConsole(level: LogLevel, message: string) {
+    const entry: ConsoleEntry = { level, message, timestamp: Date.now() };
+    this.consoleEntries.update((list) => [...list.slice(-499), entry]);
   }
 
   private setPreviewHtml(html: string | null) {
@@ -777,6 +870,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     }
 
     if (!html) {
+      this.previewContentWindow = null;
       const doc = frameEl.contentDocument;
       if (doc) {
         doc.open();
@@ -795,9 +889,13 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     // keep iframe navigation
     const cw = frameEl.contentWindow;
     if (cw) {
+      this.previewContentWindow = cw;
       cw.location.replace(url);
     } else {
-      frameEl.onload = () => frameEl.contentWindow?.location.replace(url);
+      frameEl.onload = () => {
+        this.previewContentWindow = frameEl.contentWindow;
+        frameEl.contentWindow?.location.replace(url);
+      };
       frameEl.setAttribute('src', url);
     }
 
@@ -809,6 +907,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   public async applySolution(payload: { html?: string; css?: string } | string): Promise<void> {
     const q = this.question;
     if (!q) return;
+    const storageKey = this.storageKeyFor(q);
 
     // 1) Normalize incoming content
     let nextHtml = '';
@@ -833,8 +932,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.cssCode.set(nextCss);
 
     // 4) Persist immediately (force = bypass guards)
-    await this.codeStorage.saveWebAsync(q.id, 'html', nextHtml, { force: true });
-    await this.codeStorage.saveWebAsync(q.id, 'css', nextCss, { force: true });
+    if (!this.disablePersistence) {
+      await this.codeStorage.saveWebAsync(storageKey, 'html', nextHtml, { force: true });
+      await this.codeStorage.saveWebAsync(storageKey, 'css', nextCss, { force: true });
+    }
 
     // 5) Exit solution preview state
     this.exitSolutionPreview('load into editor');

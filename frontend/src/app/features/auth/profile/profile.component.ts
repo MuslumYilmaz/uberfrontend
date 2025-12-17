@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, signal, DestroyRef } from '@angular/core';
+import { Component, OnInit, computed, signal, DestroyRef, Injector } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService, User, UserPrefs } from '../../../core/services/auth.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -218,21 +218,20 @@ export class ProfileComponent implements OnInit {
     private auth: AuthService,
     private solvedSvc: SolvedQuestionsService,
     private progress: UserProgressService,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
+    private injector: Injector
   ) { }
 
   ngOnInit(): void {
-    // Load profile
-    this.auth.ensureMe().subscribe((u) => {
-      if (u) this.resetForm(u);
-    });
-
-    this.refreshSolved();
-
-    // Keep solved list in sync with progress (guest/local) and completions
-    toObservable(this.progress.solvedIds)
+    toObservable(this.progress.solvedIds, { injector: this.injector })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.refreshSolved());
+      .subscribe((ids) => this.refreshSolved(ids));
+
+    // Load profile
+    this.auth.ensureMe().pipe(take(1)).subscribe((u) => {
+      if (u) this.resetForm(u);
+      this.refreshSolved(Array.isArray(u?.solvedQuestionIds) ? u!.solvedQuestionIds : undefined);
+    });
   }
 
   initials() {
@@ -311,11 +310,11 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  private refreshSolved(_force = false) {
+  private refreshSolved(ids?: string[]) {
     this.solvedLoading.set(true);
-    const ids = this.progress.solvedIds();
+    const resolvedIds = ids ?? this.progress.solvedIds();
 
-    this.solvedSvc.resolved(ids)
+    this.solvedSvc.resolved(resolvedIds)
       .pipe(take(1))
       .subscribe({
         next: (rows) => {

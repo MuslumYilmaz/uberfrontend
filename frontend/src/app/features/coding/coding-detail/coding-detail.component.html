@@ -1,4 +1,4 @@
-<div class="coding-detail fixed-under-header flex gap-[5px]">
+<div class="coding-detail flex gap-[5px]" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
     [style.flex]="asideFlex()" style="min-width:0;">
@@ -399,18 +399,24 @@
     <!-- FRAMEWORK PANEL -->
     <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"
       [tech]="tech" [editorOptions]="editorMonacoOptions"
-      [solutionFilesMap]="solutionFilesMap()"></app-coding-framework-panel>
+      [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+      [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="solutionFilesMap()">
+    </app-coding-framework-panel>
 
     <!-- NON-FRAMEWORK: WEB or JS -->
     <ng-container *ngIf="!isFrameworkTech()">
       <app-coding-web-panel #webPanel *ngIf="isWebTech(); else jsBlock" [question]="question()!" [tech]="tech"
-        [editorOptions]="editorMonacoOptions" class="flex-1 min-h-0 flex">
+        [editorOptions]="editorMonacoOptions"
+        [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+        [disablePersistence]="disablePersistence || demoMode" class="flex-1 min-h-0 flex">
       </app-coding-web-panel>
 
       <!-- JS / TS EDITOR stays the same -->
       <ng-template #jsBlock>
         <app-coding-js-panel #jsPanel class="flex-1 min-h-0 flex" [question]="question()!" [tech]="tech" [kind]="kind"
-          [editorOptions]="editorMonacoOptions" (langChange)="onChildLang($event)"
+          [editorOptions]="editorMonacoOptions" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+          [hideRestoreBanner]="demoMode || hideRestoreBanner" [disablePersistence]="disablePersistence || demoMode"
+          (langChange)="onChildLang($event)"
           (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"
           (codeChange)="onChildCode($event)">
         </app-coding-js-panel>
@@ -421,13 +427,23 @@
 </div>
 
 <!-- Footer -->
-<app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
-  [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
-  [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
-  [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
-  [submitLabel]="submitLabel()" (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
-  (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
-</app-footer>
+<ng-container *ngIf="!hideFooterBar; else demoFooter">
+  <app-footer [mode]="isCourseContext() ? 'course' : 'practice'" [progressText]="!isCourseContext() ? progressText : null"
+    [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()" [nextDisabledTooltip]="null"
+    [middleSuffixLabel]="kind === 'debug' ? 'Debugging challenge' : 'Coding task'" [leftCourseLabel]="leftDrawerLabel"
+    [outline]="courseOutline || []" [currentLessonId]="currentCourseLessonId" [showSubmit]="!isCourseContext()"
+    [submitLabel]="submitLabel()" (prev)="prev()" (next)="next()" (back)="backToReturn()" (coursePrev)="goCoursePrev()"
+    (courseNext)="goCourseNext()" (selectLesson)="onSelectFromFooter($event)" (submit)="submitCode()">
+  </app-footer>
+</ng-container>
+
+<ng-template #demoFooter>
+  <div class="demo-cta-bar" *ngIf="question() as q">
+    <a class="demo-cta-btn"
+      [routerLink]="(footerLinkTo || ['/coding', q.id])"
+      >{{ footerLinkLabel || 'Open in full workspace' }}</a>
+  </div>
+</ng-template>
 
 <!-- Preview dialog (Angular only) -->
 <p-dialog [(visible)]="previewVisible" [modal]="true" [dismissableMask]="true" [closable]="false" [draggable]="false"

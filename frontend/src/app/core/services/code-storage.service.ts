@@ -149,9 +149,11 @@ export class CodeStorageService {
 
   /** Clear everything for this question (both languages). */
   clearJs(qidRaw: string | number): void {
-    if (!hasLocalStorage()) return;
     const qid = String(qidRaw);
-    try { localStorage.removeItem(V2_JS_BUNDLE(qid)); } catch { }
+    if (hasLocalStorage()) {
+      try { localStorage.removeItem(V2_JS_BUNDLE(qid)); } catch { }
+    }
+    void this.clearJsAsync(qid).catch(() => { /* ignore */ });
   }
 
   // ---------- PUBLIC: Angular (StackBlitz snapshot) ----------
@@ -1023,6 +1025,18 @@ export class CodeStorageService {
     };
 
     await this.saveFrameworkBundlePrimary(tech, qid, bundle);
+  }
+
+  async clearFrameworkAsync(
+    tech: FrameworkTech,
+    qidRaw: string | number
+  ): Promise<void> {
+    const qid = String(qidRaw);
+    const key = V2_FW_BUNDLE(tech, qid);
+    try { await LF_NG.removeItem(key); } catch { /* ignore */ }
+    if (hasLocalStorage()) {
+      try { localStorage.removeItem(key); } catch { /* ignore */ }
+    }
   }
 
   async setFrameworkBundleAsync(

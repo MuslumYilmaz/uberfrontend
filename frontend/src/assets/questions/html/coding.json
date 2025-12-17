@@ -201,7 +201,7 @@
             "beginner"
         ],
         "description": {
-            "summary": "Create a clickable image that links to another website in a new tab, with accessible alt text.",
+            "summary": "Create a clickable image link that is secure (target=_blank + rel) and accessible (non-empty alt). Note: in a sandboxed preview, opening a new tab may be blocked — tests focus on correct markup.",
             "arguments": [
                 {
                     "name": "<a>",
@@ -216,51 +216,52 @@
                 {
                     "name": "target=\"_blank\"",
                     "type": "attribute",
-                    "desc": "Opens the link in a new browser tab or window."
+                    "desc": "Opens the link in a new browser tab or window (may be blocked in sandboxed previews)."
                 },
                 {
                     "name": "rel=\"noopener noreferrer\"",
                     "type": "attribute",
-                    "desc": "Protects from tab-napping and improves security when using target=\"_blank\"."
+                    "desc": "Prevents tab-napping and avoids giving the opened tab access to window.opener."
                 },
                 {
                     "name": "<img>",
                     "type": "inline replaced element",
-                    "desc": "Displays an image; must include an alt attribute for accessibility."
+                    "desc": "Displays an image; must include a non-empty alt attribute for accessibility."
                 }
             ],
             "returns": {
                 "type": "markup",
-                "desc": "A clickable image linking to an external site that opens in a new tab and uses safe attributes."
+                "desc": "A clickable image link with target='_blank', rel='noopener noreferrer', and a non-empty alt."
             },
             "examples": [
-                "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n  </body>\\n</html>"
+                "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked — that's expected.</p>\\n  </body>\\n</html>"
             ]
         },
         "web": {
-            "starterHtml": "<!-- TODO: Make the image clickable and link to another website -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Links and Images</title>\\n  </head>\\n  <body>\\n    <h1>Clickable Image Practice</h1>\\n    <p>Your goal: make the image below link to another site.</p>\\n\\n    <!-- Add an <a> tag that wraps this image -->\\n    <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt=''>\\n\\n    <!-- The link should open in a new tab (target='_blank') and have rel='noopener noreferrer' -->\\n  </body>\\n</html>",
-            "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}",
-            "tests": "it('has an <a> element with an href attribute', () => {\\n  const a = document.querySelector('a');\\n  expect(a && a.hasAttribute('href')).toBe(true);\\n});\\n\\nit('has target=\"_blank\" on the <a> element', () => {\\n  const a = document.querySelector('a');\\n  expect(a && a.getAttribute('target')).toBe('_blank');\\n});\\n\\nit('has rel=\"noopener noreferrer\" on the <a> element', () => {\\n  const a = document.querySelector('a');\\n  const rel = a ? a.getAttribute('rel') : '';\\n  expect(rel && rel.includes('noopener') && rel.includes('noreferrer')).toBe(true);\\n});\\n\\nit('has an <img> element inside the <a> element', () => {\\n  const img = document.querySelector('a img');\\n  expect(!!img).toBe(true);\\n});\\n\\nit('the <img> has a non-empty alt attribute', () => {\\n  const img = document.querySelector('a img');\\n  const alt = img ? img.getAttribute('alt') : '';\\n  expect(alt && alt.trim().length > 0).toBe(true);\\n});"
+            "starterHtml": "<!-- TODO: Make the image clickable and link to another website -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Links and Images</title>\\n  </head>\\n  <body>\\n    <h1>Clickable Image Practice</h1>\\n    <p>Your goal: make the image below link to another site.</p>\\n\\n    <!-- Wrap the image in an <a> tag with href -->\\n    <!-- Use target='_blank' and rel='noopener noreferrer' -->\\n    <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt=''>\\n\\n    <p class='note'>Note: This embedded preview may block opening new tabs. Your code is still correct if the attributes are present.</p>\\n  </body>\\n</html>",
+            "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}\\n.note {\\n  font-size: .9rem;\\n  opacity: .75;\\n  margin-top: 1rem;\\n}",
+            "tests": "it('has an <a> element with an href attribute', () => {\\n  const a = document.querySelector('a');\\n  expect(a && a.hasAttribute('href')).toBe(true);\\n});\\n\\nit('has target=\"_blank\" on the <a> element', () => {\\n  const a = document.querySelector('a');\\n  expect(a && a.getAttribute('target')).toBe('_blank');\\n});\\n\\nit('has rel=\"noopener noreferrer\" on the <a> element', () => {\\n  const a = document.querySelector('a');\\n  const rel = a ? a.getAttribute('rel') : '';\\n  expect(rel && rel.includes('noopener') && rel.includes('noreferrer')).toBe(true);\\n});\\n\\nit('has an <img> element inside the <a> element', () => {\\n  const img = document.querySelector('a img');\\n  expect(!!img).toBe(true);\\n});\\n\\nit('the <img> has a non-empty alt attribute', () => {\\n  const img = document.querySelector('a img');\\n  const alt = img ? img.getAttribute('alt') : '';\\n  expect(alt && alt.trim().length > 0).toBe(true);\\n});\\n\\nit('does not require real navigation in sandboxed previews (structural only)', () => {\\n  const a = document.querySelector('a');\\n  // No click/navigation expectation here by design\\n  expect(!!a).toBe(true);\\n});"
         },
         "solutionBlock": {
-            "overview": "Wrap an image inside an <a> element to make it clickable. Use target='_blank' and rel='noopener noreferrer' for security and accessibility. Always provide alt text for images to ensure they’re usable by screen readers.",
+            "overview": "Wrap the image in an <a> to make it clickable. Use target='_blank' plus rel='noopener noreferrer' for safe external links, and provide a non-empty alt for accessibility. In sandboxed previews, opening a new tab may be blocked — tests validate the markup instead of actual navigation.",
             "approaches": [
                 {
-                    "title": "Approach 1 – Secure clickable image link with heading",
-                    "prose": "A small heading and instruction paragraph make the UI clearer. The <a> wraps the <img> to make it clickable. Use target='_blank' for a new tab and rel='noopener noreferrer' for safety.",
-                    "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n  </body>\\n</html>",
-                    "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }"
+                    "title": "Approach 1 – Secure clickable image link",
+                    "prose": "The <a> wraps the <img>, making it clickable. target='_blank' opens a new tab in normal browsers, while rel='noopener noreferrer' prevents window.opener access and reduces tab-napping risk. The alt text stays non-empty for screen readers.",
+                    "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
+                    "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }"
                 }
             ],
             "notes": {
                 "pitfalls": [
-                    "Forgetting rel='noopener noreferrer' can create a security risk when opening in a new tab.",
-                    "Leaving the alt attribute empty makes the image inaccessible."
+                    "Forgetting rel='noopener noreferrer' is a security risk when using target='_blank'.",
+                    "Leaving alt empty makes the image inaccessible.",
+                    "In sandboxed iframes, clicks may not open a new tab even when the markup is correct."
                 ],
                 "techniques": [
                     "Wrap <img> directly inside <a> for a clickable image.",
-                    "Always combine target='_blank' with rel='noopener noreferrer' when linking externally.",
-                    "Use a short heading or text cue to guide users visually."
+                    "Always combine target='_blank' with rel='noopener noreferrer' for external links.",
+                    "Validate structure and attributes instead of relying on real navigation in embedded previews."
                 ]
             },
             "resources": [
@@ -278,8 +279,8 @@
                 }
             ]
         },
-        "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n  </body>\\n</html>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }"
+        "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
+        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }"
     },
     {
         "id": "html-lists-and-navigation",

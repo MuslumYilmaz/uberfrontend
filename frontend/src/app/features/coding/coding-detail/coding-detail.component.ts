@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
-  AfterViewInit, Component, computed, effect,
+  AfterViewInit, Component, Input, computed, effect,
   ElementRef, NgZone,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
@@ -88,6 +88,16 @@ type FASolutionBlock = {
   styleUrls: ['./coding-detail.component.css'],
 })
 export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() questionId: string | null = null;
+  @Input() questionTech: Tech = 'javascript';
+  @Input() demoMode = false;
+  @Input() storageKeyOverride: string | null = null;
+  @Input() hideRestoreBanner = false;
+  @Input() hideFooterBar = false;
+  @Input() footerLinkLabel = 'Open in full workspace';
+  @Input() footerLinkTo: any[] | string | null = null;
+  @Input() disablePersistence = false;
+
   tech!: Tech;
   kind: Kind = 'coding';
   question = signal<Question | null>(null);
@@ -247,6 +257,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   solutionCurrentFileLabel = computed(() => this.solutionShortName(this.solutionCurrentPath()));
 
   copiedSolutionFile = signal(false);
+  private overflowPatched = false;
 
   @ViewChild('splitContainer', { read: ElementRef }) splitContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
@@ -452,6 +463,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private setInitialAsideWidth() {
+    const initialAside =
+      this.isWebTech() ? 0.35 :               // HTML/CSS: ~35% aside, 65% editors
+        this.tech === 'javascript' ? 0.5 :     // JS: a bit wider spec area
+          0.37;                                   // Frameworks: compact aside
+    this.horizontalRatio.set(initialAside);
+    this.lastAsideRatio = initialAside;
+  }
+
   private hydrateReturnInfo() {
     const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
 
@@ -492,44 +512,44 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- init ----------
   ngOnInit() {
-    const recompute = () => {
-      this.hydrateReturnInfo();
-      this.isCourseContext.set(this.computeIsCourseContext());
-    };
-    recompute();
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
+    if (this.questionId) {
+      this.initDirectQuestion();
+    } else {
+      const recompute = () => {
+        this.hydrateReturnInfo();
+        this.isCourseContext.set(this.computeIsCourseContext());
+      };
+      recompute();
+      this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
 
-    // determine :tech and :kind
-    this.route.paramMap.subscribe((pm) => {
-      let p: ActivatedRoute | null = this.route;
-      let tech: string | null = null;
-      while (p && !tech) {
-        tech = p.snapshot.paramMap.get('tech');
-        p = p.parent!;
-      }
-      this.tech = ((tech || 'javascript') as Tech);
+      // determine :tech and :kind
+      this.route.paramMap.subscribe((pm) => {
+        let p: ActivatedRoute | null = this.route;
+        let tech: string | null = null;
+        while (p && !tech) {
+          tech = p.snapshot.paramMap.get('tech');
+          p = p.parent!;
+        }
+        this.tech = ((tech || 'javascript') as Tech);
 
-      const path = this.route.routeConfig?.path || '';
-      this.kind = path.startsWith('debug') ? 'debug' : 'coding';
+        const path = this.route.routeConfig?.path || '';
+        this.kind = path.startsWith('debug') ? 'debug' : 'coding';
 
-      this.daily.ensureTodaySet(this.tech as any);
-      // Give HTML/CSS more room for the editor by default
-      // aside (description) width = horizontalRatio * 100%
-      const initialAside =
-        this.isWebTech() ? 0.35 :               // HTML/CSS: ~35% aside, 65% editors
-          this.tech === 'javascript' ? 0.5 :     // JS: a bit wider spec area
-            0.37;                                   // Frameworks: compact aside
-      this.horizontalRatio.set(initialAside);
-      this.lastAsideRatio = initialAside;       // keep for restore after collapse
+        this.daily.ensureTodaySet(this.tech as any);
+        this.setInitialAsideWidth();
 
-      const id = pm.get('id')!;
-      this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
-        this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
-        this.loadQuestion(id);
+        const id = pm.get('id')!;
+        this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
+          this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
+          this.loadQuestion(id);
+        });
       });
-    });
+    }
 
-    document.body.style.overflow = 'hidden';
+    if (!this.demoMode) {
+      document.body.style.overflow = 'hidden';
+      this.overflowPatched = true;
+    }
   }
 
   private computeIsCourseContext(): boolean {
@@ -544,6 +564,21 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       !!r.snapshot.paramMap.get('courseSlug')
     );
     return inTree;
+  }
+
+  private initDirectQuestion() {
+    this.tech = (this.questionTech || 'javascript') as Tech;
+    this.kind = 'coding';
+    this.daily.ensureTodaySet(this.tech as any);
+    this.setInitialAsideWidth();
+
+    this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
+      this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
+      const preferred = this.questionId;
+      const fallback = this.allQuestions[0]?.id;
+      const resolvedId = preferred && this.allQuestions.some(q => q.id === preferred) ? preferred : fallback;
+      if (resolvedId) this.loadQuestion(resolvedId);
+    });
   }
 
   ngAfterViewInit() {
@@ -561,7 +596,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
 
-    document.body.style.overflow = '';
+    if (this.overflowPatched) {
+      document.body.style.overflow = '';
+    }
+
+    if (this.demoMode || this.disablePersistence) {
+      const key = this.storageKeyOverride || this.demoStorageKey(this.questionId || this.question()?.id || null);
+      if (key) {
+        if (this.isFrameworkTech()) {
+          void this.codeStore.clearFrameworkAsync(this.tech as any, key);
+        } else if (this.isWebTech()) {
+          void this.codeStore.clearWebAsync(key);
+        } else {
+          void this.codeStore.clearJsAsync(key);
+        }
+      }
+    }
   }
 
   // ---------- WEB (html/css) utilities ----------
@@ -603,6 +653,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  demoStorageKey(id?: string | null): string | null {
+    if (!id) return null;
+    return `showcase-demo:${id}`;
+  }
+
   private updateSeoForQuestion(q: Question): void {
     this.seo.updateTags({
       title: q.title,
@@ -615,7 +670,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private async loadQuestion(id: string) {
     const idx = this.allQuestions.findIndex(q => q.id === id);
     if (idx < 0) {
-      this.router.navigateByUrl('/404', { state: { from: this.router.url } });
+      if (this.questionId && this.allQuestions.length) {
+        const fallback = this.allQuestions[0].id;
+        if (fallback && fallback !== id) {
+          await this.loadQuestion(fallback);
+          return;
+        }
+      } else {
+        this.router.navigateByUrl('/404', { state: { from: this.router.url } });
+      }
       return;
     }
 

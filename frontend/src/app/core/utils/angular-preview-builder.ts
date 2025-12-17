@@ -224,6 +224,78 @@ function compileTS(src, filename){
     // Strip common network APIs inside the sandboxed preview (keep navigator for libs)
     ['fetch','XMLHttpRequest','WebSocket','EventSource'].forEach(function(k){ try { (self)[k] = undefined; } catch (e) {} });
 
+    // Prevent native form submission inside sandboxed iframes (no allow-forms),
+    // while still allowing frameworks to handle submit events.
+    (function(){
+      function isSubmitter(el){
+        if (!el || !el.tagName) return false;
+        const tag = el.tagName.toLowerCase();
+        if (tag === 'button') {
+          const t = (el.getAttribute('type') || '').toLowerCase();
+          return !t || t === 'submit';
+        }
+        if (tag === 'input') {
+          const t = (el.getAttribute('type') || '').toLowerCase();
+          return t === 'submit' || t === 'image';
+        }
+        return false;
+      }
+
+      function dispatchSyntheticSubmit(form, submitter){
+        if (!form) return;
+        try{
+          let ev;
+          if (typeof SubmitEvent === 'function') {
+            ev = new SubmitEvent('submit', { bubbles: true, cancelable: true, submitter: submitter || undefined });
+          } else if (typeof Event === 'function') {
+            ev = new Event('submit', { bubbles: true, cancelable: true });
+          } else {
+            ev = document.createEvent('Event');
+            ev.initEvent('submit', true, true);
+          }
+          form.dispatchEvent(ev);
+        }catch(_e){}
+      }
+
+      function findForm(el){
+        try{
+          // button/input have a .form property that resolves associated form even when outside.
+          if (el && el.form) return el.form;
+        }catch(_e){}
+        try{
+          if (el && el.closest) return el.closest('form');
+        }catch(_e){}
+        return null;
+      }
+
+      document.addEventListener('click', function(e){
+        const target = e && e.target;
+        const el = (target && target.closest) ? target.closest('button, input') : target;
+        if (!isSubmitter(el)) return;
+        const form = findForm(el);
+        if (!form) return;
+        // Cancel the browser's default submit action (which is blocked by sandbox and logs a warning).
+        try{ e.preventDefault(); }catch(_e){}
+        // Re-emit a synthetic submit event so framework handlers (ngSubmit/onSubmit) still run.
+        dispatchSyntheticSubmit(form, el);
+      }, true);
+
+      document.addEventListener('keydown', function(e){
+        if (!e || e.key !== 'Enter') return;
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+        // Don't hijack Enter in textareas/contenteditable
+        const tag = target.tagName ? target.tagName.toLowerCase() : '';
+        if (tag === 'textarea') return;
+        if ((target).isContentEditable) return;
+        const form = target.closest ? target.closest('form') : null;
+        if (!form) return;
+        try{ e.preventDefault(); }catch(_e){}
+        const submitter = form.querySelector('button[type="submit"], button:not([type]), input[type="submit"], input[type="image"]');
+        dispatchSyntheticSubmit(form, submitter);
+      }, true);
+    })();
+
     window.addEventListener('error', (e) => {
       const basic = String(e && (e.message || e.error) || 'Error');
       const where = (e && e.filename) ? (e.filename + (e.lineno? ':'+e.lineno+(e.colno? ':'+e.colno:'') : '')) : '';

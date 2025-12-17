@@ -24,6 +24,9 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() question: Question | null = null;   // <- allow null until bound
   @Input() tech: Tech = 'javascript';         // for future-proofing
   @Input() kind: 'coding' | 'debug' = 'coding';
+  @Input() storageKeyOverride: string | null = null;
+  @Input() hideRestoreBanner = false;
+  @Input() disablePersistence = false;
 
   // optional UI options (pass from parent to keep look consistent)
   @Input() editorOptions: any = {
@@ -63,6 +66,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private _draggingSplit = signal(false);
   isDraggingSplit = this._draggingSplit.asReadonly();
   private _hydrating = true;
+  private volatileBuffers: Record<JsLang, string> = { js: '', ts: '' };
 
   ngOnInit() {
     window.addEventListener('beforeunload', this._persistLangOnUnload);
@@ -73,8 +77,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   private _persistLangOnUnload = () => {
+    if (this.disablePersistence) return;
     const q = this.question;
-    if (q) void this.codeStore.setLastLangAsync(q.id, this.jsLang());
+    const key = this.storageKeyFor(q);
+    if (q && key) void this.codeStore.setLastLangAsync(key, this.jsLang());
   };
 
   private endHydrationSoon() {
@@ -94,19 +100,38 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   async resetToDefault(): Promise<void> {
     const q = this.question;
     if (!q) return;
+    if (this.disablePersistence) {
+      const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
+      this.volatileBuffers = { js: starterJs, ts: starterTs };
+      const lang = this.jsLang();
+      const currentStarter = (lang === 'ts') ? starterTs : starterJs;
+      this.editorContent.set(currentStarter);
+      this.testCode.set(this.pickTests(q as any, lang));
+      this.restoredFromStorage.set(false);
+      this.restoreDismissed.set(true);
+      this.viewingSolution.set(false);
+      this.hasRunTests.set(false);
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      this.solvedChange.emit(false);
+      this.codeChange.emit({ lang, code: currentStarter });
+      return;
+    }
+    const storageKey = this.storageKeyFor(q);
+    if (!storageKey) return;
 
     const lang = this.jsLang();
     const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
 
     // 1) Persist fresh baselines + code for BOTH languages in LS and IDB
-    await this.codeStore.resetJsBothAsync(q.id, { js: starterJs, ts: starterTs });
+    await this.codeStore.resetJsBothAsync(storageKey, { js: starterJs, ts: starterTs });
 
     // 2) Hydrate editor with the active language's starter
     const currentStarter = (lang === 'ts') ? starterTs : starterJs;
     this.editorContent.set(currentStarter);
 
     // 3) Ensure per-lang record exists and last write wins (bypass guards)
-    await this.codeStore.saveJsAsync(q.id, currentStarter, lang, { force: true });
+    await this.codeStore.saveJsAsync(storageKey, currentStarter, lang, { force: true });
 
     // 4) Banner & UI state
     this.restoredFromStorage.set(false); // no user divergence after a clean reset
@@ -170,36 +195,56 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   async initFromQuestion() {
     const q = this.question as Question; if (!q) return;
     this._hydrating = true;
-
     const { js: sJs, ts: sTs } = this.startersForBoth(q);
+
+    if (this.disablePersistence) {
+      this.volatileBuffers = { js: sJs, ts: sTs };
+      const preferred: JsLang = 'js';
+      this.jsLang.set(preferred);
+      this.langChange.emit(preferred);
+      this.editorContent.set(sJs);
+      this.testCode.set(this.pickTests(q as any, preferred));
+      this.restoredFromStorage.set(false);
+      this.restoreDismissed.set(true);
+      this.viewingSolution.set(false);
+      this.hasRunTests.set(false);
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      queueMicrotask(() => window.dispatchEvent(new Event('resize')));
+      requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
+      return;
+    }
+
+    const storageKey = this.storageKeyFor(q);
+    if (!storageKey) return;
 
     // Seed baselines so "dirty" comparisons work reliably
     await Promise.all([
-      this.codeStore.setJsBaselineAsync(q.id, 'js', sJs),
-      this.codeStore.setJsBaselineAsync(q.id, 'ts', sTs),
+      this.codeStore.setJsBaselineAsync(storageKey, 'js', sJs),
+      this.codeStore.setJsBaselineAsync(storageKey, 'ts', sTs),
     ]);
 
     // Decide preferred language: default to JS unless TS is dirty (user-edited)
-    const tsState = await this.codeStore.getJsLangStateAsync(q.id, 'ts').catch(() => null as any);
+    const tsState = await this.codeStore.getJsLangStateAsync(storageKey, 'ts').catch(() => null as any);
     const preferred: JsLang = tsState?.dirty ? 'ts' : 'js';
 
     this.jsLang.set(preferred);
     this.langChange.emit(preferred);
-    await this.codeStore.setLastLangAsync(q.id, preferred);        // keep sticky
+    await this.codeStore.setLastLangAsync(storageKey, preferred);        // keep sticky
 
     // 2) Ensure per-lang slots exist (post-migration safety)
-    const jsSlot = await this.codeStore.getJsForLangAsync(q.id, 'js');
+    const jsSlot = await this.codeStore.getJsForLangAsync(storageKey, 'js');
     if (!(typeof jsSlot === 'string' && jsSlot.trim())) {
-      await this.codeStore.saveJsAsync(q.id, sJs, 'js', { force: true });
+      await this.codeStore.saveJsAsync(storageKey, sJs, 'js', { force: true });
     }
-    const tsSlot = await this.codeStore.getJsForLangAsync(q.id, 'ts');
+    const tsSlot = await this.codeStore.getJsForLangAsync(storageKey, 'ts');
     if (!(typeof tsSlot === 'string' && tsSlot.trim())) {
-      await this.codeStore.saveJsAsync(q.id, sTs, 'ts', { force: true });
+      await this.codeStore.saveJsAsync(storageKey, sTs, 'ts', { force: true });
     }
 
     // 3) Hydrate editor/tests for chosen lang
     const starter = preferred === 'ts' ? sTs : sJs;
-    const { initial, restored } = await this.codeStore.initJsAsync(q.id, preferred, starter);
+    const { initial, restored } = await this.codeStore.initJsAsync(storageKey, preferred, starter);
 
     this.editorContent.set(initial);
     this.testCode.set(this.pickTests(q as any, preferred));
@@ -222,10 +267,30 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     const q = this.question;
     if (!q) return;
+    if (this.disablePersistence) {
+      this.volatileBuffers[currentLang] = this.editorContent();
+      const { js: sJs, ts: sTs } = this.startersForBoth(q);
+      const nextDefault = next === 'ts' ? sTs : sJs;
+      const nextCode = this.volatileBuffers[next] || nextDefault;
+      this.editorContent.set(nextCode);
+      this.testCode.set(this.pickTests(q as any, next));
+      this.viewingSolution.set(false);
+      this.restoredFromStorage.set(false);
+      this.restoreDismissed.set(true);
+      this.hasRunTests.set(false);
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      this.jsLang.set(next);
+      this.langChange.emit(next);
+      this.endHydrationSoon();
+      return;
+    }
+    const storageKey = this.storageKeyFor(q);
+    if (!storageKey) return;
 
     // 1) Persist current code for the current lang (unless we're hydrating)
     if (!this._hydrating) {
-      await this.codeStore.saveJsAsync(q.id, this.editorContent(), currentLang);
+      await this.codeStore.saveJsAsync(storageKey, this.editorContent(), currentLang);
     }
 
     // Snapshot UI flags so we don't lose the banner states
@@ -236,7 +301,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // 2) Pull any existing code for the target language
     const { js: starterJs, ts: starterTs } = this.startersForBoth(q as Question);
-    const rawPerLang = await this.codeStore.getJsForLangAsync(q.id, next);
+    const rawPerLang = await this.codeStore.getJsForLangAsync(storageKey, next);
 
     let nextCode = (typeof rawPerLang === 'string' && rawPerLang.trim())
       ? rawPerLang
@@ -257,7 +322,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       }
 
       // Persist the seed so subsequent switches are stable
-      await this.codeStore.saveJsAsync(q.id, nextCode, next, { force: true });
+      await this.codeStore.saveJsAsync(storageKey, nextCode, next, { force: true });
     }
 
     const nextTests = this.pickTests(q as any, next);
@@ -280,7 +345,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     // Only now flip the language so Monaco sees consistent (lang, code) at once
     this.jsLang.set(next);
     this.langChange.emit(next);
-    await this.codeStore.setLastLangAsync(q.id, next);
+    await this.codeStore.setLastLangAsync(storageKey, next);
 
     // End hydration
     this.endHydrationSoon();
@@ -290,10 +355,22 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   async onCodeChange(code: string) {
     if (this._hydrating) return;
     const q = this.question; if (!q) return;
+    if (this.disablePersistence) {
+      if (code === this.editorContent()) return;
+      this.editorContent.set(code);
+      this.volatileBuffers[this.jsLang()] = code;
+      this.codeChange.emit({ lang: this.jsLang(), code });
+      if (this.viewingSolution()) {
+        this.viewingSolution.set(false);
+      }
+      return;
+    }
+    const storageKey = this.storageKeyFor(q);
+    if (!storageKey) return;
     if (code === this.editorContent()) return;
 
     this.editorContent.set(code);
-    await this.codeStore.saveJsAsync(q.id, code, this.jsLang());
+    await this.codeStore.saveJsAsync(storageKey, code, this.jsLang());
     this.codeChange.emit({ lang: this.jsLang(), code });
 
     if (this.viewingSolution()) {
@@ -508,7 +585,12 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   public async setCode(code: string) {
     this.editorContent.set(code);
     const q = this.question;
-    if (q) await this.codeStore.saveJsAsync(q.id, code, this.jsLang());
+    const storageKey = this.storageKeyFor(q);
+    if (this.disablePersistence) {
+      this.volatileBuffers[this.jsLang()] = code;
+    } else if (q && storageKey) {
+      await this.codeStore.saveJsAsync(storageKey, code, this.jsLang());
+    }
     this.codeChange.emit({ lang: this.jsLang(), code });
   }
 
@@ -533,5 +615,11 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.viewingSolution.set(true);
     this.restoredFromStorage.set(true);
     this.restoreDismissed.set(false);
+  }
+
+  private storageKeyFor(q: Question | null): string | null {
+    if (!q || this.disablePersistence) return null;
+    const override = (this.storageKeyOverride || '').trim();
+    return override ? override : q.id;
   }
 }

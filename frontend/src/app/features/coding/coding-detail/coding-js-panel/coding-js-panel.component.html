@@ -22,7 +22,7 @@
     </div>
 
     <!-- Restore banner -->
-    <app-restore-banner [isVisible]="restoredFromStorage() && !restoreDismissed()" [isSolution]="viewingSolution()"
+    <app-restore-banner *ngIf="!hideRestoreBanner" [isVisible]="restoredFromStorage() && !restoreDismissed()" [isSolution]="viewingSolution()"
         (reset)="resetToDefault()" (dismiss)="dismissRestoreBanner()">
     </app-restore-banner>
 

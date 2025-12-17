@@ -42,6 +42,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() editorOptions: any;
   /** Normalized solution files from solutionAsset, provided by parent */
   @Input() solutionFilesMap: Record<string, string> = {};
+  @Input() storageKeyOverride: string | null = null;
+  @Input() disablePersistence = false;
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
 
@@ -105,6 +107,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private draggingFrameworkCols = false;
   private startXFrameworkCols = 0;
   private startFrameworkColsRatio = 0;
+  private storageKey(q: Question): string { return (this.storageKeyOverride || '').trim() || q.id; }
 
   constructor(
     private codeStore: CodeStorageService,
@@ -200,7 +203,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.editorContent.set(nextFiles[open] ?? '');
 
     // Persist via CodeStorageService
-    void this.codeStore.setFrameworkBundleAsync(q.id, this.tech as any, nextFiles, open);
+    if (!this.disablePersistence) {
+      void this.codeStore.setFrameworkBundleAsync(this.storageKey(q), this.tech as any, nextFiles, open);
+    }
 
     this.viewingSolution.set(true);
     this.showRestoreBanner.set(true);
@@ -233,7 +238,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.frameworkEntryFile = open;
     this.editorContent.set(nextFiles[open] ?? '');
 
-    void this.codeStore.setFrameworkBundleAsync(q.id, this.tech as any, nextFiles, open);
+    if (!this.disablePersistence) {
+      void this.codeStore.setFrameworkBundleAsync(this.storageKey(q), this.tech as any, nextFiles, open);
+    }
 
     this.viewingSolution.set(false);
     this.showRestoreBanner.set(false);
@@ -303,6 +310,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     opts?: { forceReset?: boolean }
   ): Promise<void> {
     const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
+    const key = this.storageKey(q);
 
     let starters: Record<string, string> = {};
     let entryHint: string;
@@ -336,13 +344,30 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
 
     // If caller requested a hard reset, overwrite stored workspace
-    if (opts?.forceReset) {
-      await this.codeStore.resetFrameworkAsync(q.id, this.tech as any, starters, entryHint);
+    if (opts?.forceReset && !this.disablePersistence) {
+      await this.codeStore.resetFrameworkAsync(key, this.tech as any, starters, entryHint);
+    }
+
+    if (this.disablePersistence) {
+      const files = starters;
+      const entryFile = entryHint;
+      this.filesMap.set(files);
+      this.frameworkEntryFile = entryFile;
+      this.openAllDirsFromPaths(Object.keys(files));
+      this.openPath.set(entryFile);
+      this.editorContent.set(files[entryFile] ?? '');
+
+      await this.rebuildFrameworkPreview();
+
+      this.showRestoreBanner.set(false);
+      this.viewingSolution.set(false);
+      this.showingFrameworkSolutionPreview.set(false);
+      return;
     }
 
     // Initialize from storage (may restore previous work)
     const { files, entryFile, restored } =
-      await this.codeStore.initFrameworkAsync(q.id, this.tech as any, starters, entryHint);
+      await this.codeStore.initFrameworkAsync(key, this.tech as any, starters, entryHint);
 
     this.filesMap.set(files);
     this.frameworkEntryFile = entryFile;
@@ -402,7 +427,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.filesMap.update(m => ({ ...m, [path]: code }));
 
     // persist user changes
-    void this.codeStore.saveFrameworkFileAsync(q.id, this.tech as any, path, code);
+    if (!this.disablePersistence) {
+      void this.codeStore.saveFrameworkFileAsync(this.storageKey(q), this.tech as any, path, code);
+    }
 
     // If user was viewing the solution, mark it as edited
     // but keep the restore banner visible so they can still revert manually.

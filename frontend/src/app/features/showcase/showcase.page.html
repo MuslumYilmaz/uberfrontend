@@ -1,0 +1,248 @@
+<section class="showcase-hero reveal" #observeSection aria-labelledby="showcase-hero-title">
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <div class="shell hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Live product proof</p>
+      <h1 id="showcase-hero-title">FrontendAtlas, in motion.</h1>
+      <p class="lede">
+        Skip the fluff — see how the platform renders UI, runs code, and keeps tests honest in one view.
+      </p>
+      <div class="proof-row" aria-label="Platform proof points">
+        <span class="proof-chip"><i class="pi pi-sitemap"></i>Framework-aware</span>
+        <span class="proof-chip"><i class="pi pi-eye"></i>Live previews</span>
+        <span class="proof-chip"><i class="pi pi-check-circle"></i>Local tests</span>
+      </div>
+      <div class="hero-actions">
+        <a class="sk-btn sk-btn-primary" routerLink="/coding" aria-label="Explore coding examples">Explore examples</a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/tracks" aria-label="Open the playground">Open playground</a>
+      </div>
+      <div class="chip-cloud" aria-hidden="true">
+        <span class="floating-chip" *ngFor="let chip of heroBadges; let i = index" [attr.data-tone]="chip.tone"
+          [style.--i]="i">
+          {{ chip.label }}
+        </span>
+      </div>
+    </div>
+
+    <div class="hero-proof" aria-label="Product workflow overview">
+      <div class="proof-card glass">
+        <div class="proof-top">
+          <div class="window-dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="live-pill neutral"><span class="dot"></span>Workflow</div>
+        </div>
+
+        <div class="flow-panel" aria-label="Product workflow overview">
+          <div class="flow-step" *ngFor="let step of heroFlowSteps; let i = index"
+            [class.active]="i === activeFlowIndex" [attr.data-status]="step.status">
+            <div class="flow-icon" aria-hidden="true">
+              <i class="{{ step.icon }}"></i>
+            </div>
+            <div class="flow-meta">
+              <div class="flow-title">{{ step.title }}</div>
+              <div class="flow-sub">{{ step.subtitle }}</div>
+            </div>
+            <div class="flow-indicator" aria-hidden="true">
+              <span class="indicator-bar"></span>
+              <span class="indicator-dot"></span>
+            </div>
+          </div>
+          <p class="flow-caption">Interactive playground is below.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="demo-title">
+  <div class="shell section-head">
+    <div>
+      <p class="eyebrow">Interactive demo</p>
+      <h2 id="demo-title">Run the actual coding workspace.</h2>
+      <p class="muted">Live editor, real tests, and the same UI you get in the product.</p>
+      <div class="demo-tabs" role="tablist" aria-label="Pick a live demo question">
+        <button type="button" class="demo-tab" *ngFor="let tab of demoTabsPrimary" role="tab"
+          [attr.id]="'demo-tab-' + tab.key" [class.active]="tab.key === activePrimaryKey"
+          (click)="setActivePrimary(tab.key)" [attr.aria-selected]="tab.key === activePrimaryKey"
+          [attr.aria-controls]="'demo-pane'">
+          <span class="tab-label">{{ tab.label }}</span>
+          <span class="tab-sub">{{ tab.caption }}</span>
+        </button>
+      </div>
+      <div class="demo-tabs demo-tabs-secondary" role="tablist" aria-label="Pick a framework demo"
+        *ngIf="activePrimaryKey === 'ui'">
+        <button type="button" class="demo-tab" *ngFor="let tab of demoTabsFramework" role="tab"
+          [attr.id]="'demo-tab-' + tab.key" [class.active]="tab.key === activeFrameworkKey"
+          (click)="setActiveFramework(tab.key)" [attr.aria-selected]="tab.key === activeFrameworkKey"
+          [attr.aria-controls]="'demo-pane'">
+          <span class="tab-label">{{ tab.label }}</span>
+          <span class="tab-sub">{{ tab.caption }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="demo-meta">
+      <span class="pill">{{ activeDemo.pill }}</span>
+      <span class="demo-active-label" aria-live="polite">{{ activeDemo.caption }}</span>
+      <button type="button" class="demo-hide-btn" *ngIf="isHideableDemo" (click)="toggleDemoVisibility()"
+        [attr.aria-expanded]="!demoHidden" aria-controls="demo-pane">
+        {{ demoHidden ? 'Show demo' : 'Hide demo' }}
+      </button>
+    </div>
+    <div class="demo-frame-wrap" [class.hidden]="demoHidden">
+      <div class="demo-frame glass" role="tabpanel" id="demo-pane"
+        [attr.aria-labelledby]="'demo-tab-' + activeDemo.key">
+        <ng-container *ngFor="let tab of allDemoTabs">
+          <ng-container *ngIf="tab.key === activeDemoKey">
+            <app-coding-detail [questionId]="tab.questionId" [questionTech]="tab.questionTech" [demoMode]="true"
+              [storageKeyOverride]="tab.storageKey" [hideRestoreBanner]="true" [hideFooterBar]="true"
+              [footerLinkTo]="['/coding', tab.questionId]" [disablePersistence]="true"
+              footerLinkLabel="Open this challenge fully">
+            </app-coding-detail>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+
+
+    <a class="demo-banner" [routerLink]="['/coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden"
+      aria-label="Open the live editor for this demo question">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="trivia-preview-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Trivia snapshot</p>
+        <h2 id="trivia-preview-title">See a real quiz slice.</h2>
+      </div>
+      <p class="muted">Cropped from the live trivia detail page.</p>
+    </div>
+
+    <div class="demo-tabs" role="tablist" aria-label="Pick a trivia question preview">
+      <button type="button" class="demo-tab" *ngFor="let tab of triviaTabs" role="tab"
+        [attr.id]="'trivia-tab-' + tab.key" [class.active]="tab.key === activeTriviaKey"
+        (click)="setActiveTrivia(tab.key)" [attr.aria-selected]="tab.key === activeTriviaKey"
+        aria-controls="trivia-pane">
+        <span class="tab-label">{{ tab.label }}</span>
+        <span class="tab-sub">{{ tab.caption }}</span>
+      </button>
+    </div>
+
+    <div class="trivia-preview-card glass" role="region" aria-label="Trivia question preview">
+      <div class="trivia-frame" role="tabpanel" id="trivia-pane"
+        [attr.aria-labelledby]="'trivia-tab-' + activeTriviaTab.key">
+        <ng-container *ngComponentOutlet="triviaDetailComponent; injector: triviaInjector"></ng-container>
+        <div class="trivia-gradient" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
+      [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' trivia question'">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="text">Read the rest in the app →</span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="system-preview-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">System design snapshot</p>
+        <h2 id="system-preview-title">Architecture slices, not slides.</h2>
+      </div>
+      <p class="muted">A real front-end system design walkthrough, clipped for a quick peek.</p>
+    </div>
+
+    <div class="system-preview-card glass" role="region" aria-label="System design question preview">
+      <div class="system-frame" role="tabpanel">
+        <ng-container *ngComponentOutlet="systemDesignDetailComponent; injector: systemInjector"></ng-container>
+        <div class="trivia-gradient" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <a class="demo-banner" [routerLink]="systemPreviewLink" role="button"
+      aria-label="Open the full system design scenario">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="text">Open the full scenario →</span>
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+</section>
+
+<section class="section reveal cap-section" #observeSection aria-labelledby="capabilities-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">What makes FrontendAtlas different</p>
+        <h2 id="capabilities-title">Crafted for front-end engineers.</h2>
+      </div>
+      <p class="muted">High-signal depth, not filler. Each tile maps to a capability inside the FrontendAtlas
+        workspace.</p>
+    </div>
+
+    <div class="cap-grid">
+      <article class="cap-card glass" *ngFor="let cap of capabilities; let i = index" [attr.data-icon]="cap.icon"
+        [style.animationDelay]="(i * 60) + 'ms'">
+        <div class="cap-icon" aria-hidden="true"></div>
+        <h3>{{ cap.title }}</h3>
+        <p>{{ cap.copy }}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="tracks-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Tracks</p>
+        <h2 id="tracks-title">Pick your lane.</h2>
+      </div>
+      <p class="muted">Built for progression: the brief stays premium while the scaffolding evolves.</p>
+    </div>
+
+    <div class="track-grid">
+      <article class="track-card glass" *ngFor="let track of tracks; let i = index">
+        <header>
+          <span class="pill">{{ track.name }}</span>
+          <span class="meta">Series {{ i + 1 }}</span>
+        </header>
+        <ul>
+          <li *ngFor="let bullet of track.bullets">{{ bullet }}</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" #observeSection>
+  <app-pricing></app-pricing>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="cta-title">
+  <div class="shell">
+    <div class="cta-card glass">
+      <div>
+        <p class="eyebrow">Final step</p>
+        <h2 id="cta-title">Try the playground with your own prompts.</h2>
+        <p class="muted">Open the playground, ship code, and let the tests push back.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="sk-btn sk-btn-primary" routerLink="/auth/signup">Start free preview</a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/guides">View interview blueprint</a>
+      </div>
+    </div>
+  </div>
+</section>

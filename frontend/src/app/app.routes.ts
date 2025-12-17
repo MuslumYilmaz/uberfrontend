@@ -41,6 +41,17 @@ export const routes: Routes = [
       },
     },
   },
+  {
+    path: 'showcase',
+    loadComponent: () =>
+      import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
+    data: {
+      seo: {
+        title: 'Showcase',
+        description: 'See FrontendAtlas in action with live UI challenges, guided flows, and interactive demos.',
+      },
+    },
+  },
 
   // Auth
   {

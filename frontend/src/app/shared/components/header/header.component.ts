@@ -52,6 +52,7 @@ type VisibleEntry = {
 
       <!-- RIGHT (Pricing → Avatar → CTA) -->
       <div class="fah-right" (click)="$event.stopPropagation()">
+        <a class="fah-btn" routerLink="/showcase">Showcase</a>
         <a class="fah-btn" routerLink="/pricing">Pricing</a>
 
         <div class="fah-profile fah-profile-right">
