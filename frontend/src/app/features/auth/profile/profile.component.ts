@@ -228,7 +228,7 @@ export class ProfileComponent implements OnInit {
       .subscribe((ids) => this.refreshSolved(ids));
 
     // Load profile
-    this.auth.ensureMe().pipe(take(1)).subscribe((u) => {
+    this.auth.fetchMe().pipe(take(1)).subscribe((u) => {
       if (u) this.resetForm(u);
       this.refreshSolved(Array.isArray(u?.solvedQuestionIds) ? u!.solvedQuestionIds : undefined);
     });
