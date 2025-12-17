@@ -3,15 +3,15 @@
   <div class="ambient ambient-b"></div>
   <div class="shell hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow">Live product proof</p>
-      <h1 id="showcase-hero-title">FrontendAtlas, in motion.</h1>
+      <p class="eyebrow">Built for front-end interviews</p>
+      <h1 id="showcase-hero-title">Stop watching frontend. Start building it.</h1>
       <p class="lede">
-        Skip the fluff — see how the platform renders UI, runs code, and keeps tests honest in one view.
+        Practice UI-first problems in a real workflow: code, preview, tests, and review signals — fast.
       </p>
       <div class="proof-row" aria-label="Platform proof points">
-        <span class="proof-chip"><i class="pi pi-sitemap"></i>Framework-aware</span>
-        <span class="proof-chip"><i class="pi pi-eye"></i>Live previews</span>
-        <span class="proof-chip"><i class="pi pi-check-circle"></i>Local tests</span>
+        <span class="proof-chip"><i class="pi pi-sitemap"></i>Real workflow</span>
+        <span class="proof-chip"><i class="pi pi-eye"></i>UI-first problems</span>
+        <span class="proof-chip"><i class="pi pi-check-circle"></i>Fast feedback</span>
       </div>
       <div class="hero-actions">
         <a class="sk-btn sk-btn-primary" routerLink="/coding" aria-label="Explore coding examples">Explore examples</a>
@@ -181,6 +181,48 @@
   </div>
 </section>
 
+<section class="section reveal" #observeSection aria-labelledby="library-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Question library</p>
+        <h2 id="library-title">Explore the Atlas.</h2>
+        <p class="muted">
+          A few real prompts from the workspace. Solve in the tech you pick; each ships with starters and checks.
+        </p>
+      </div>
+
+      <a class="sk-btn sk-btn-ghost" routerLink="/coding" aria-label="Open the full library">
+        Open full library <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="library-card glass">
+      <div class="library-highlights" role="region" aria-label="Sample questions">
+        <a class="qcard" *ngFor="let q of libraryHighlights" [routerLink]="q.link">
+          <div class="qtop">
+            <div class="qtitle"><span class="qno">{{ q.no }}</span> {{ q.title }}</div>
+            <div class="qmeta">
+              <span class="qchip">{{ q.meta.difficulty }}</span>
+              <span class="qchip neutral">{{ q.meta.minutes }} min</span>
+            </div>
+          </div>
+          <div class="qdesc">{{ q.desc }}</div>
+          <div class="qtags">
+            <span class="qtag" *ngFor="let t of q.tags">{{ t }}</span>
+          </div>
+        </a>
+      </div>
+
+      <a class="demo-banner library-cta" routerLink="/coding" role="button" aria-label="Open the full library">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="text">Open the full scenario →</span>
+        <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
 <section class="section reveal cap-section" #observeSection aria-labelledby="capabilities-title">
   <div class="shell">
     <div class="section-head">
@@ -229,6 +271,121 @@
 
 <section class="section reveal" #observeSection>
   <app-pricing></app-pricing>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="faq-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-title">Common questions, answered.</h2>
+      </div>
+      <p class="muted">Short, direct answers. If you still have questions, you can link to /guides or /contact.</p>
+    </div>
+
+    <div class="faq-card glass" role="region" aria-label="Frequently asked questions">
+      <div class="faq-item" *ngFor="let item of faqItems">
+        <button type="button" class="faq-q" (click)="toggleFaq(item.key)" [attr.aria-expanded]="isFaqOpen(item.key)"
+          [attr.aria-controls]="'faq-a-' + item.key">
+          <span class="faq-q-text">{{ item.q }}</span>
+          <i class="pi pi-chevron-down faq-icon" aria-hidden="true" [class.open]="isFaqOpen(item.key)"></i>
+        </button>
+
+        <div class="faq-a" [class.open]="isFaqOpen(item.key)" [attr.id]="'faq-a-' + item.key" role="region">
+          <p>{{ item.a }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" #observeSection aria-labelledby="contact-title">
+  <div class="shell">
+    <div class="contact-card glass">
+      <div class="contact-copy">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Still have a question?</h2>
+        <p class="muted">
+          If the FAQ didn’t cover it, reach out. We read every message.
+        </p>
+
+        <div class="contact-pills" aria-label="Contact options">
+          <form class="contact-form" (ngSubmit)="submitContact()" #f="ngForm" novalidate>
+            <div class="contact-form-row">
+              <label class="contact-label">
+                <span>Name</span>
+                <input class="contact-input" name="name" [(ngModel)]="contact.name" required autocomplete="name"
+                  placeholder="Your name" />
+              </label>
+
+              <label class="contact-label">
+                <span>Email</span>
+                <input class="contact-input" name="email" [(ngModel)]="contact.email" required email
+                  autocomplete="email" placeholder="you@company.com" />
+              </label>
+            </div>
+
+            <div class="contact-form-row">
+              <label class="contact-label">
+                <span>Topic</span>
+                <select class="contact-input" name="topic" [(ngModel)]="contact.topic">
+                  <option value="general">General</option>
+                  <option value="billing">Billing</option>
+                  <option value="bug">Bug report</option>
+                  <option value="feature">Feature request</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="contact-label">
+              <span>Message</span>
+              <textarea class="contact-textarea" name="message" [(ngModel)]="contact.message" required rows="5"
+                placeholder="What can we help with? Include URL + screenshot if it’s a bug."></textarea>
+            </label>
+
+            <div class="contact-form-actions">
+              <button type="submit" class="sk-btn sk-btn-primary" [disabled]="f.invalid || contactSubmitting">
+                <i class="pi pi-send" aria-hidden="true"></i>
+                <span>Send message</span>
+              </button>
+
+              <div class="contact-actions-note muted">
+                This opens your email client.
+              </div>
+            </div>
+            <div class="contact-shortcuts" aria-label="Quick links">
+              <a class="contact-pill" routerLink="/guides" aria-label="Open guides">
+                <i class="pi pi-book" aria-hidden="true"></i>
+                <span>Guides</span>
+              </a>
+
+              <a class="contact-pill" routerLink="/pricing" aria-label="View pricing">
+                <i class="pi pi-tag" aria-hidden="true"></i>
+                <span>Pricing</span>
+              </a>
+            </div>
+          </form>
+        </div>
+
+        <p class="contact-meta">
+          Typical response: <strong>1–2 business days</strong>.
+        </p>
+      </div>
+
+      <div class="contact-side" aria-hidden="true">
+        <div class="contact-badge">
+          <div class="badge-dot"></div>
+          <div class="badge-title">Support</div>
+          <div class="badge-sub">Product · Billing · Bugs</div>
+        </div>
+
+        <div class="contact-note">
+          Prefer reporting bugs?
+          <span class="muted">Use the contact page and include a screenshot + URL.</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="section reveal" #observeSection aria-labelledby="cta-title">
