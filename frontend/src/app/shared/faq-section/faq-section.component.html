@@ -1,0 +1,31 @@
+<section class="faq-section">
+  <div class="section-head" *ngIf="title || subtitle">
+    <div>
+      <p class="eyebrow" *ngIf="eyebrow">{{ eyebrow }}</p>
+      <h2 class="faq-title" *ngIf="title">{{ title }}</h2>
+    </div>
+    <p class="muted" *ngIf="subtitle">{{ subtitle }}</p>
+  </div>
+
+  <div class="faq-card glass" role="region" aria-label="Frequently asked questions">
+    <div class="faq-item" *ngFor="let item of items; let i = index; trackBy: trackById">
+      <button
+        type="button"
+        class="faq-q"
+        (click)="toggle(getId(item, i))"
+        [attr.aria-expanded]="isOpen(getId(item, i))"
+        [attr.aria-controls]="'faq-a-' + getId(item, i)">
+        <span class="faq-q-text">{{ item.q }}</span>
+        <i class="pi pi-chevron-down faq-icon" aria-hidden="true" [class.open]="isOpen(getId(item, i))"></i>
+      </button>
+
+      <div
+        class="faq-a"
+        [class.open]="isOpen(getId(item, i))"
+        [attr.id]="'faq-a-' + getId(item, i)"
+        role="region">
+        <p>{{ item.a }}</p>
+      </div>
+    </div>
+  </div>
+</section>

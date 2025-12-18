@@ -270,32 +270,23 @@
 </section>
 
 <section class="section reveal" #observeSection>
-  <app-pricing></app-pricing>
+  <app-pricing-plans-section
+    variant="compact"
+    [paymentsEnabled]="false"
+    ctaMode="navigatePricing">
+  </app-pricing-plans-section>
 </section>
 
 <section class="section reveal" #observeSection aria-labelledby="faq-title">
   <div class="shell">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">FAQ</p>
-        <h2 id="faq-title">Common questions, answered.</h2>
-      </div>
-      <p class="muted">Short, direct answers. If you still have questions, you can link to /guides or /contact.</p>
-    </div>
-
-    <div class="faq-card glass" role="region" aria-label="Frequently asked questions">
-      <div class="faq-item" *ngFor="let item of faqItems">
-        <button type="button" class="faq-q" (click)="toggleFaq(item.key)" [attr.aria-expanded]="isFaqOpen(item.key)"
-          [attr.aria-controls]="'faq-a-' + item.key">
-          <span class="faq-q-text">{{ item.q }}</span>
-          <i class="pi pi-chevron-down faq-icon" aria-hidden="true" [class.open]="isFaqOpen(item.key)"></i>
-        </button>
-
-        <div class="faq-a" [class.open]="isFaqOpen(item.key)" [attr.id]="'faq-a-' + item.key" role="region">
-          <p>{{ item.a }}</p>
-        </div>
-      </div>
-    </div>
+    <app-faq-section
+      id="faq-title"
+      eyebrow="FAQ"
+      title="Common questions, answered."
+      subtitle="Short, direct answers. If you still have questions, you can link to /guides or /contact."
+      [items]="faqItems"
+      [singleOpen]="true">
+    </app-faq-section>
   </div>
 </section>
 

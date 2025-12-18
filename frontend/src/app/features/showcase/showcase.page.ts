@@ -14,9 +14,10 @@ import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router
 import { of } from 'rxjs';
 import { Tech } from '../../core/models/user.model';
 import { CodingDetailComponent } from '../coding/coding-detail/coding-detail.component';
-import { PricingComponent } from '../pricing/pricing.component';
+import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { SystemDesignDetailComponent } from '../system-design-list/system-design-detail/system-design-detail.component';
 import { TriviaDetailComponent } from '../trivia/trivia-detail/trivia-detail.component';
+import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -24,7 +25,7 @@ type LibraryLane = 'skills' | 'tech' | 'format';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CodingDetailComponent, PricingComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CodingDetailComponent, PricingPlansSectionComponent, FaqSectionComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -275,16 +276,6 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
         a: `Yes. New questions and improvements are shipped continuously. The goal is to keep the library current with real interview patterns and modern frontend practices.`,
       },
     ];
-
-  faqOpenKey: string | null = null;
-
-  toggleFaq(key: string) {
-    this.faqOpenKey = this.faqOpenKey === key ? null : key;
-  }
-
-  isFaqOpen(key: string) {
-    return this.faqOpenKey === key;
-  }
 
   libraryLanes: Array<{
     key: LibraryLane;

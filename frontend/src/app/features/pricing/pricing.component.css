@@ -1,18 +1,4 @@
-/* src/app/features/pricing/pricing.component.css */
-.pr-wrap{max-width:1100px;margin:48px auto;padding:0 20px;color:var(--uf-text-primary)}
-.pr-hero h1{font-size:32px;line-height:1.2;margin:0 0 8px;color:var(--uf-text-primary)}
-.muted{color:color-mix(in srgb,var(--uf-text-tertiary) 75%,transparent)}
-.pr-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px}
-.pr-card{background:var(--uf-surface);border:1px solid var(--uf-border-subtle);border-radius:var(--uf-card-radius);padding:16px;position:relative;box-shadow:var(--uf-card-shadow)}
-.pr-rec{border-color:color-mix(in srgb,var(--uf-accent) 45%,var(--uf-border-subtle))}
-.rec-badge{position:absolute;right:12px;top:12px;font-size:11px;background:var(--uf-accent);color:var(--uf-bg);padding:4px 8px;border-radius:999px;font-weight:600;box-shadow:0 8px 18px color-mix(in srgb,var(--uf-accent) 28%,transparent)}
-.title{margin:4px 0 8px;font-weight:600;color:var(--uf-text-primary)}
-.price{font-size:28px;font-weight:700;margin:4px 0 12px;color:var(--uf-text-primary)}
-.price span{font-size:12px;font-weight:500;color:color-mix(in srgb,var(--uf-text-secondary) 80%,transparent);margin-left:6px}
-.features{list-style:none;padding:0;margin:0 0 16px;color:color-mix(in srgb,var(--uf-text-secondary) 85%,transparent)}
-.features li{margin:6px 0}
-.btn{width:100%;padding:10px 14px;border-radius:10px;background:var(--uf-accent);color:var(--uf-bg);font-weight:600;border:1px solid var(--uf-accent);box-shadow:0 10px 24px color-mix(in srgb,var(--uf-accent) 35%,transparent)}
-.btn:disabled{opacity:.7}
-.tiny{margin-top:18px;font-size:12px;color:color-mix(in srgb,var(--uf-text-tertiary) 80%,transparent)}
-@media (max-width:960px){.pr-grid{grid-template-columns:1fr 1fr}}
-@media (max-width:640px){.pr-grid{grid-template-columns:1fr}}
+/* page wrapper for pricing */
+.pricing-page{
+  padding: 32px 0 40px;
+}

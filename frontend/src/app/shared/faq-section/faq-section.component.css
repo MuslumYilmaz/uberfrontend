@@ -1,0 +1,73 @@
+.faq-card {
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.faq-item + .faq-item {
+  border-top: 1px solid var(--uf-border-subtle);
+}
+
+.faq-q {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--uf-text-primary);
+  text-align: left;
+  border-radius: 12px;
+  transition: background 160ms ease, transform 140ms ease;
+}
+
+.faq-q:hover {
+  background: color-mix(in srgb, var(--uf-text-primary) 5%, transparent);
+  transform: translateY(-1px);
+}
+
+.faq-q:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--uf-accent) 60%, #fff 10%);
+  outline-offset: 2px;
+}
+
+.faq-q-text {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.faq-icon {
+  font-size: 12px;
+  opacity: 0.9;
+  transition: transform 180ms ease;
+}
+
+.faq-icon.open {
+  transform: rotate(180deg);
+}
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: max-height 240ms ease, opacity 200ms ease, transform 200ms ease;
+  padding: 0 12px;
+}
+
+.faq-a.open {
+  max-height: 260px;
+  opacity: 1;
+  transform: translateY(0);
+  padding-bottom: 14px;
+}
+
+.faq-a p {
+  margin: 0;
+  color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
+  line-height: 1.55;
+  font-size: 13.5px;
+}
