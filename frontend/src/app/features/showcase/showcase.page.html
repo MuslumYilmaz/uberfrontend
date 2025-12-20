@@ -223,6 +223,40 @@
   </div>
 </section>
 
+<section class="section reveal" #observeSection aria-labelledby="company-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Company practice</p>
+        <h2 id="company-title">Prep with company-flavored prompts.</h2>
+        <p class="muted">A few examples from company sets. UI, JS, and system slices shaped for each team’s flavor.</p>
+      </div>
+      <a class="sk-btn sk-btn-ghost" routerLink="/companies" aria-label="Browse company sets">
+        Browse companies <i class="pi pi-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="company-grid">
+      <article class="company-card glass" *ngFor="let c of companyQuestions">
+        <div class="company-logo" [style.background]="c.color" [attr.data-slug]="c.slug">
+          <span aria-hidden="true">{{ c.icon }}</span>
+          <span class="sr-only">{{ c.name }}</span>
+        </div>
+        <div class="company-meta">
+          <div class="company-name">{{ c.name }}</div>
+          <div class="company-note">{{ c.note }}</div>
+        </div>
+        <div class="company-meta-right">
+          <ng-container *ngIf="companyCounts$ | async as cc">
+            <span class="company-count" *ngIf="cc[c.slug]">{{ cc[c.slug].all }} questions</span>
+          </ng-container>
+          <a class="company-link" [routerLink]="c.link">View set <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="section reveal cap-section" #observeSection aria-labelledby="capabilities-title">
   <div class="shell">
     <div class="section-head">

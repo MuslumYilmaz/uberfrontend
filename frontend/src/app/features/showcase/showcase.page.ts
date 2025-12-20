@@ -11,13 +11,15 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
-import { of } from 'rxjs';
+import { of, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { CodingDetailComponent } from '../coding/coding-detail/coding-detail.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { SystemDesignDetailComponent } from '../system-design-list/system-design-detail/system-design-detail.component';
 import { TriviaDetailComponent } from '../trivia/trivia-detail/trivia-detail.component';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
+import { QuestionService } from '../../core/services/question.service';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -329,9 +331,39 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { no: 'Q-240', title: 'Infinite Scroll List', desc: 'Cache, pagination, and perf budgets.', tags: ['System design', 'Performance'], meta: { difficulty: 'Medium', minutes: 45 }, link: ['/system-design', 'infinite-scroll-list'] },
   ];
 
+  companyQuestions = [
+    { name: 'Google', slug: 'google', icon: 'G', color: '#4285F4', note: 'UI, JS, systems', link: ['/companies', 'google'] },
+    { name: 'Amazon', slug: 'amazon', icon: 'A', color: '#232F3E', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon'] },
+    { name: 'Netflix', slug: 'netflix', icon: 'N', color: '#E50914', note: 'UI architecture, state', link: ['/companies', 'netflix'] },
+    { name: 'Apple', slug: 'apple', icon: '', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple'] },
+  ];
+
+  companyCounts$ = combineLatest([
+    this.qs.loadAllQuestions('coding'),
+    this.qs.loadAllQuestions('trivia'),
+    this.qs.loadSystemDesign(),
+  ]).pipe(
+    map(([coding, trivia, system]) => {
+      const counts: Record<string, { all: number; coding: number; trivia: number; system: number }> = {};
+      const bump = (slug: string, key: 'coding' | 'trivia' | 'system') => {
+        const bucket = counts[slug] || { all: 0, coding: 0, trivia: 0, system: 0 };
+        bucket[key] += 1;
+        bucket.all += 1;
+        counts[slug] = bucket;
+      };
+      const addList = (list: any[], key: 'coding' | 'trivia' | 'system') => {
+        list.forEach((q) => (q.companies || []).forEach((slug: string) => bump(slug, key)));
+      };
+      addList(coding, 'coding');
+      addList(trivia, 'trivia');
+      addList(system, 'system');
+      return counts;
+    })
+  );
+
   explanationVisible = false;
 
-  constructor(private injector: Injector) { }
+  constructor(private injector: Injector, private qs: QuestionService) { }
 
   ngOnInit(): void {
     this.buildTriviaInjector();

@@ -94,10 +94,11 @@ export class CompanyIndexComponent {
           const list: CompanyCard[] = SEED.map(s => ({
             ...s,
             count: counts.get(s.slug) ?? 0
-          }));
+          })).filter(c => c.count > 0);
 
           // Add any extra slugs found in data that aren’t in the seed
           counts.forEach((count, slug) => {
+            if (count <= 0) return;
             if (!SEED.find(s => s.slug === slug)) {
               list.push({
                 slug,
