@@ -69,7 +69,8 @@
       "meta",
       "uber"
     ],
-    "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
+    "access": "free"
   },
   {
     "id": "angular-contact-form-starter",
@@ -158,6 +159,7 @@
       "meta",
       "airbnb"
     ],
-    "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
+    "access": "free"
   }
 ]

@@ -47,12 +47,18 @@
                 </div>
 
                 <div *ngFor="let q of questions; trackBy: trackById"
-                    class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative">
+                    class="grid grid-cols-12 gap-4 items-center px-6 py-4 border-b border-gray-700 hover:bg-gray-900 relative"
+                    [class.is-locked]="isLocked(q)">
                     <!-- full-row clickable overlay (relative link keeps :tech prefix) -->
-                    <a [routerLink]="[q.id]" class="absolute inset-0 z-10"></a>
+                    <a [routerLink]="[q.id]" class="absolute inset-0 z-10"
+                        [attr.aria-disabled]="isLocked(q) ? true : null"
+                        (click)="handleRowClick($event, q)"></a>
 
                     <div class="col-span-8">
-                        <div class="text-lg font-semibold text-white">{{ q.title }}</div>
+                        <div class="text-lg font-semibold text-white">
+                            {{ q.title }}
+                            <span class="premium-pill" *ngIf="isLocked(q)">Premium</span>
+                        </div>
                         <div class="text-xs text-gray-400 mt-0.5">{{ q.description | slice:0:120 }}...</div>
                     </div>
 

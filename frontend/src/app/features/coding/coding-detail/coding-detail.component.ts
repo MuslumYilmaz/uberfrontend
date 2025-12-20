@@ -13,6 +13,7 @@ import { DialogModule } from 'primeng/dialog';
 import { filter, Subject } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
+import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
@@ -213,6 +214,11 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Solved persistence
   solved = signal(false);
+  locked = computed(() => {
+    const q = this.question();
+    const tier = this.auth.user()?.accessTier ?? 'free';
+    return q ? isQuestionLockedForTier(q, tier) : false;
+  });
 
   // ✅ UI solved: only true when authenticated
   uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());
@@ -318,6 +324,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/auth/login']);
   }
 
+  goToPricing() {
+    this.router.navigate(['/pricing']);
+  }
+
   // --- file explorer state for framework techs ---
   filesMap = signal<Record<string, string>>({});
   openPath = signal<string>('');
@@ -421,7 +431,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     private seo: SeoService,
     private http: HttpClient,
     private progress: UserProgressService,
-    private auth: AuthService
+    public auth: AuthService
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
 

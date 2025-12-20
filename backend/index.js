@@ -159,6 +159,14 @@ app.put('/api/users/:id', requireAuth, async (req, res) => {
             if (k in req.body) update[k] = req.body[k];
         }
 
+        // Allow admins to set accessTier manually
+        if (req.auth.role === 'admin' && typeof req.body.accessTier === 'string') {
+            const tier = req.body.accessTier;
+            if (['free', 'premium'].includes(tier)) {
+                update.accessTier = tier;
+            }
+        }
+
         const user = await User.findByIdAndUpdate(req.params.id, update, {
             new: true,
         }).select('-passwordHash');

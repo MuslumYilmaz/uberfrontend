@@ -1,6 +1,9 @@
+import { Tech } from './user.model';
+
 export type QuestionType = 'trivia' | 'coding' | 'system-design';
-export type Technology = 'javascript' | 'angular';
+export type Technology = Tech;
 export type Difficulty = 'easy' | 'intermediate' | 'hard';
+export type AccessLevel = 'free' | 'premium';
 
 export type QuestionKind = 'trivia' | 'coding';
 
@@ -38,6 +41,7 @@ export interface Question {
   solutionBlock?: StructuredSolution;
   type: QuestionType;
   technology: Technology;
+  access: AccessLevel;
   difficulty: Difficulty;
   tags: string[];
   importance: number;
@@ -47,3 +51,8 @@ export interface Question {
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
 }
+
+export const isQuestionLockedForTier = (
+  q: Pick<Question, 'access'>,
+  userTier: AccessLevel | undefined
+): boolean => q.access === 'premium' && userTier !== 'premium';

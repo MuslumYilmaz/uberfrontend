@@ -1,3 +1,4 @@
+<ng-container *ngIf="!locked(); else lockedView">
 <div class="coding-detail flex gap-[5px]" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
@@ -464,3 +465,25 @@
   body="To track completed questions and keep your progress synced, sign in or create a free account."
   ctaLabel="Go to login">
 </app-login-required-dialog>
+</ng-container>
+
+<ng-template #lockedView>
+  <div class="locked-shell">
+    <div class="locked-card">
+      <div class="locked-pill">Premium</div>
+      <h1 class="locked-title">Premium question</h1>
+      <p class="locked-copy">
+        <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
+          You're on the free tier. Upgrade to unlock this challenge.
+        </ng-container>
+        <ng-template #lockedGuest>
+          Upgrade to FrontendAtlas Premium to unlock this challenge. Already upgraded? Sign in to continue.
+        </ng-template>
+      </p>
+      <div class="locked-actions">
+        <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricing()">View pricing</button>
+        <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLogin()">Sign in</button>
+      </div>
+    </div>
+  </div>
+</ng-template>

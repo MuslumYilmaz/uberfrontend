@@ -1,810 +1,820 @@
 [
-    {
-        "id": "css-selectors-text-basics",
-        "title": "Selectors & Text Basics (Warm-up)",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "easy",
-        "importance": 1,
-        "tags": [
-            "css",
-            "selectors",
-            "text",
-            "basics",
-            "beginner"
-        ],
-        "description": {
-            "summary": "Style a headline and paragraph using class and element selectors to learn the basics of CSS targeting and text formatting.",
-            "arguments": [
-                {
-                    "name": "Element selectors",
-                    "type": "selector",
-                    "desc": "Select HTML elements by their tag name (e.g., h1, p) to apply global styles."
-                },
-                {
-                    "name": "Class selectors",
-                    "type": "selector",
-                    "desc": "Use a dot prefix (.) to target specific elements with custom styles."
-                },
-                {
-                    "name": "Text properties",
-                    "type": "style",
-                    "desc": "Use font-size, color, and line-height to control text appearance."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A styled headline and paragraph demonstrating element and class selectors."
-            },
-            "examples": [
-                "h1 { color: #111; font-size: 2rem; }",
-                ".highlight { color: #3b82f6; font-weight: 600; }",
-                "p { color: #555; line-height: 1.6; }"
-            ]
+  {
+    "id": "css-selectors-text-basics",
+    "title": "Selectors & Text Basics (Warm-up)",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "easy",
+    "importance": 1,
+    "tags": [
+      "css",
+      "selectors",
+      "text",
+      "basics",
+      "beginner"
+    ],
+    "description": {
+      "summary": "Style a headline and paragraph using class and element selectors to learn the basics of CSS targeting and text formatting.",
+      "arguments": [
+        {
+          "name": "Element selectors",
+          "type": "selector",
+          "desc": "Select HTML elements by their tag name (e.g., h1, p) to apply global styles."
         },
-        "web": {
-            "starterHtml": "<h1 class=\"headline\">Welcome to CSS Basics</h1>\n<p class=\"tagline\">CSS lets you style text, layouts, and more.</p>",
-            "starterCss": "/* Base styles */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Use element selector (h1) to style the headline — change color and font-size.\n  2) Use class selector (.tagline) to style the paragraph — adjust color and spacing.\n  3) Optionally add a .highlight class to emphasize words.\n*/",
-            "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('styles h1 element selector with color or font-size',()=>{\n  const hasH1=cssTextContains('h1','color')||cssTextContains('h1','font-size');\n  expect(hasH1).toBe(true);\n});\n\nit('styles .tagline class with color or line-height',()=>{\n  const hasClass=cssTextContains('.tagline','color')||cssTextContains('.tagline','line-height');\n  expect(hasClass).toBe(true);\n});"
+        {
+          "name": "Class selectors",
+          "type": "selector",
+          "desc": "Use a dot prefix (.) to target specific elements with custom styles."
         },
-        "solutionBlock": {
-            "overview": "Start with element selectors for general styles and class selectors for specific overrides. You’ll practice using h1 and p selectors to set color and text size, and a class selector for custom tweaks.",
-            "approaches": [
-                {
-                    "title": "Approach — Element + Class Selectors",
-                    "prose": "Use `h1` and `p` for basic styling, then apply `.tagline` for extra text tweaks. Combine selectors to control text hierarchy and readability.",
-                    "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
-                    "codeCss": "h1 {\n  color: #111;\n  font-size: 2rem;\n}\n\np.tagline {\n  color: #555;\n  line-height: 1.6;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Forgetting the dot before a class selector (e.g., using 'tagline' instead of '.tagline').",
-                    "Overusing element selectors can make it hard to override styles later."
-                ],
-                "techniques": [
-                    "Use element selectors for base styles and class selectors for specific tweaks.",
-                    "Combine selectors for cleaner, modular CSS."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – CSS Selectors",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors"
-                },
-                {
-                    "title": "MDN – CSS Text Basics",
-                    "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Fundamentals"
-                }
-            ]
-        },
-        "webSolutionHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { color: #111; font-size: 2rem; }\n.tagline { color: #555; line-height: 1.6; }\n.highlight { color: #3b82f6; font-weight: 600; }"
+        {
+          "name": "Text properties",
+          "type": "style",
+          "desc": "Use font-size, color, and line-height to control text appearance."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A styled headline and paragraph demonstrating element and class selectors."
+      },
+      "examples": [
+        "h1 { color: #111; font-size: 2rem; }",
+        ".highlight { color: #3b82f6; font-weight: 600; }",
+        "p { color: #555; line-height: 1.6; }"
+      ]
     },
-    {
-        "id": "css-box-model-margin-padding-border",
-        "title": "Box Model: Margin, Padding, Border",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "easy",
-        "importance": 2,
-        "tags": [
-            "css",
-            "box-model",
-            "margin",
-            "padding",
-            "border",
-            "layout",
-            "beginner"
-        ],
-        "description": {
-            "summary": "Build a simple card layout and practice the box model by using padding for inner spacing, margin for outer spacing, and border for outlines.",
-            "arguments": [
-                {
-                    "name": "Padding",
-                    "type": "box model property",
-                    "desc": "Adds space inside the element between the content and the border."
-                },
-                {
-                    "name": "Margin",
-                    "type": "box model property",
-                    "desc": "Adds space outside the element between it and neighboring elements."
-                },
-                {
-                    "name": "Border",
-                    "type": "box model property",
-                    "desc": "Defines the outline edge of the element and helps visualize spacing."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A visually separated set of cards with internal padding, border outline, and equal spacing between cards."
-            },
-            "examples": [
-                ".card { padding: 16px; border: 1px solid #ccc; margin-bottom: 12px; border-radius: 8px; }"
-            ]
-        },
-        "web": {
-            "starterHtml": "<div class=\"card\">Card 1</div>\n<div class=\"card\">Card 2</div>\n<div class=\"card\">Card 3</div>",
-            "starterCss": "body {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  background: #fafafa;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Give each .card padding (inner space around text).\n  2) Add a border and rounded corners to each card.\n  3) Add vertical spacing (margin-bottom) between the cards.\n*/",
-            "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel.includes(selector) && r.cssText.includes(text)) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('applies padding to .card',()=>{\n  expect(cssTextContains('.card','padding')).toBe(true);\n});\n\nit('applies border to .card',()=>{\n  expect(cssTextContains('.card','border')).toBe(true);\n});\n\nit('adds margin between cards',()=>{\n  expect(cssTextContains('.card','margin')||cssTextContains('.card','margin-bottom')).toBe(true);\n});"
-        },
-        "solutionBlock": {
-            "overview": "This exercise demonstrates how the CSS box model affects layout and spacing. Padding adds inner breathing room, margins separate elements externally, and borders visually define boundaries.",
-            "approaches": [
-                {
-                    "title": "Approach — Apply Padding, Border, and Margin",
-                    "prose": "Give each .card a padding for internal space, a subtle border for visibility, and a margin to separate multiple cards. Rounded corners make the design friendlier.",
-                    "codeHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
-                    "codeCss": ".card {\n  padding: 16px;\n  border: 1px solid #ccc;\n  border-radius: 8px;\n  margin-bottom: 12px;\n  background: #fff;\n}"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Forgetting that padding affects box size unless box-sizing is set to border-box.",
-                    "Using only margin or padding for spacing makes it unclear which side creates the space."
-                ],
-                "techniques": [
-                    "Use padding for internal spacing, margin for separation between elements.",
-                    "Add a border to make box boundaries visible when debugging layout issues."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – CSS Box Model",
-                    "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model"
-                },
-                {
-                    "title": "MDN – box-sizing",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
-                }
-            ]
-        },
-        "webSolutionHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; line-height: 1.6; }\n.card { padding: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }"
+    "web": {
+      "starterHtml": "<h1 class=\"headline\">Welcome to CSS Basics</h1>\n<p class=\"tagline\">CSS lets you style text, layouts, and more.</p>",
+      "starterCss": "/* Base styles */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Use element selector (h1) to style the headline — change color and font-size.\n  2) Use class selector (.tagline) to style the paragraph — adjust color and spacing.\n  3) Optionally add a .highlight class to emphasize words.\n*/",
+      "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('styles h1 element selector with color or font-size',()=>{\n  const hasH1=cssTextContains('h1','color')||cssTextContains('h1','font-size');\n  expect(hasH1).toBe(true);\n});\n\nit('styles .tagline class with color or line-height',()=>{\n  const hasClass=cssTextContains('.tagline','color')||cssTextContains('.tagline','line-height');\n  expect(hasClass).toBe(true);\n});"
     },
-    {
-        "id": "css-inline-centering",
-        "title": "Display & Centering: Center Inline Content",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "easy",
-        "importance": 2,
-        "tags": [
-            "css",
-            "layout",
-            "display",
-            "centering",
-            "inline-block"
+    "solutionBlock": {
+      "overview": "Start with element selectors for general styles and class selectors for specific overrides. You’ll practice using h1 and p selectors to set color and text size, and a class selector for custom tweaks.",
+      "approaches": [
+        {
+          "title": "Approach — Element + Class Selectors",
+          "prose": "Use `h1` and `p` for basic styling, then apply `.tagline` for extra text tweaks. Combine selectors to control text hierarchy and readability.",
+          "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
+          "codeCss": "h1 {\n  color: #111;\n  font-size: 2rem;\n}\n\np.tagline {\n  color: #555;\n  line-height: 1.6;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting the dot before a class selector (e.g., using 'tagline' instead of '.tagline').",
+          "Overusing element selectors can make it hard to override styles later."
         ],
-        "description": {
-            "summary": "Center a heading and a row of chip-like tags using inline/inline-block display and text alignment (no flex, no positioning).",
-            "arguments": [
-                {
-                    "name": "text-align",
-                    "type": "alignment",
-                    "desc": "Use text-align: center on a parent to center inline/inline-block children as a group."
-                },
-                {
-                    "name": ".tag { display: inline-block }",
-                    "type": "display",
-                    "desc": "Inline-block lets tags sit on one line while supporting padding and border radius."
-                },
-                {
-                    "name": "Padding, radius, and spacing",
-                    "type": "box-model",
-                    "desc": "Use padding: 8px 12px; border-radius: 6px; and an 8px horizontal margin for consistent gaps."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A centered heading and a single line of evenly-spaced chip tags, centered as a group."
-            },
-            "examples": [
-                ".chips { text-align: center; }",
-                ".tag { display: inline-block; padding: 8px 12px; border-radius: 6px; margin-right: 8px; }",
-                ".tag:last-child { margin-right: 0; }"
-            ]
+        "techniques": [
+          "Use element selectors for base styles and class selectors for specific tweaks.",
+          "Combine selectors for cleaner, modular CSS."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – CSS Selectors",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors"
         },
-        "web": {
-            "starterHtml": "<div class=\"box\">\\n  <h2>Centered Content</h2>\\n  <p class=\"chips\">\\n    <span class=\"tag\">HTML</span><span class=\"tag\">CSS</span><span class=\"tag\">UI</span>\\n  </p>\\n</div>",
-            "starterCss": "/* TODOs:\\n  1) Center the chips as a group using text-align: center (on .chips or .box).\\n  2) Make .tag inline-block with padding 8px/12px and radius 6px.\\n  3) Create ~8px horizontal gaps between tags using margin-right.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.box {\\n  background: #222;\\n  color: #fff;\\n  padding: 20px;\\n  border: 1px solid #444;\\n  border-radius: 10px;\\n  max-width: 600px;\\n  margin: 0 auto; /* optional: centers the box in the viewport */\\n}\\n\\n.chips {\\n  margin-top: 12px;\\n  /* Add text-align: center here */\\n}\\n\\n.tag {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Add display, padding, radius, and spacing here */\\n}\\n\\n/* Hint: use .tag:last-child { margin-right: 0; } to remove the final gap */",
-            "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\n\\nconst box = document.querySelector('.box');\\nconst chips = document.querySelector('.chips');\\nconst tags = [...document.querySelectorAll('.tag')];\\n\\n// 1) Centering of inline content via text-align\\nit('centers inline content using text-align', () => {\\n  const centerOnChips = cssValue(chips, 'text-align').trim() === 'center';\\n  const centerOnBox = cssValue(box, 'text-align').trim() === 'center';\\n  expect(centerOnChips || centerOnBox).toBe(true);\\n});\\n\\n// 2) Tags are inline-block with correct padding and radius\\nit('styles .tag as inline-block chips with padding and radius', () => {\\n  const ok = tags.every(t => {\\n    const disp = cssValue(t, 'display').trim();\\n    const pt = pxNum(cssValue(t, 'padding-top'));\\n    const pb = pxNum(cssValue(t, 'padding-bottom'));\\n    const pl = pxNum(cssValue(t, 'padding-left'));\\n    const pr = pxNum(cssValue(t, 'padding-right'));\\n    const br = pxNum(cssValue(t, 'border-radius'));\\n    return disp === 'inline-block' && pt===8 && pb===8 && pl===12 && pr===12 && br===6;\\n  });\\n  expect(ok).toBe(true);\\n});\\n\\n// 3) ~8px gaps via margin-right on non-last tags (tolerate tiny rounding)\\nit('keeps ~8px gaps between chips', () => {\\n  if(tags.length < 2){ expect(true).toBe(true); return; }\\n  const nonLast = tags.slice(0, -1);\\n  const gapsOK = nonLast.every(t => pxNum(cssValue(t, 'margin-right')) >= 7.5);\\n  expect(gapsOK).toBe(true);\\n});"
-        },
-        "solutionBlock": {
-            "overview": "Center inline content by setting `text-align: center` on a parent container. Make the chips `inline-block` so they can have padding and rounded corners, and space them with a small horizontal margin.",
-            "approaches": [
-                {
-                    "title": "Approach — text-align Center + Inline-Block Chips",
-                    "prose": "Set `text-align: center` on `.chips` (or `.box`) to center all inline children as a group. Use `display: inline-block` on `.tag` to allow padding and border radius, and add `margin-right: 8px` (removed on the last tag) to create consistent gaps.",
-                    "codeHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
-                    "codeCss": ".box {\\n  background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto;\\n}\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Only inline-level content is centered by `text-align`. Blocks ignore it unless they are inline or inline-block.",
-                    "Forgetting to remove the last chip’s right margin causes visual imbalance."
-                ],
-                "techniques": [
-                    "Use `inline-block` for chips to keep a single line while allowing padding and border radius.",
-                    "`text-align: center` on the wrapper is a simple, widely supported centering method for inline content."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – text-align",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/text-align"
-                },
-                {
-                    "title": "MDN – display",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/display"
-                }
-            ]
-        },
-        "webSolutionHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; }\\n.box { background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto; }\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }"
+        {
+          "title": "MDN – CSS Text Basics",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Fundamentals"
+        }
+      ]
     },
-    {
-        "id": "css-positioning-badge",
-        "title": "Positioning: Relative/Absolute Badge",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "easy",
-        "importance": 3,
-        "tags": [
-            "css",
-            "layout",
-            "positioning",
-            "relative",
-            "absolute"
-        ],
-        "description": {
-            "summary": "Add a small 'NEW' badge to the top-right corner of an image using relative and absolute positioning.",
-            "arguments": [
-                {
-                    "name": ".product { position: relative }",
-                    "type": "positioning context",
-                    "desc": "Make the container establish a local coordinate system for absolutely positioned children."
-                },
-                {
-                    "name": ".badge { position: absolute; top/right }",
-                    "type": "absolute positioning",
-                    "desc": "Place the badge relative to the nearest positioned ancestor (the product container)."
-                },
-                {
-                    "name": "Styling",
-                    "type": "box model",
-                    "desc": "Add small padding, rounded corners, and a contrasting background to the badge."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A product image with a small badge pinned to its top-right corner that stays in place on scroll or resize."
-            },
-            "examples": [
-                ".product { position: relative; }",
-                ".badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; }"
-            ]
+    "webSolutionHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { color: #111; font-size: 2rem; }\n.tagline { color: #555; line-height: 1.6; }\n.highlight { color: #3b82f6; font-weight: 600; }",
+    "access": "free"
+  },
+  {
+    "id": "css-box-model-margin-padding-border",
+    "title": "Box Model: Margin, Padding, Border",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "easy",
+    "importance": 2,
+    "tags": [
+      "css",
+      "box-model",
+      "margin",
+      "padding",
+      "border",
+      "layout",
+      "beginner"
+    ],
+    "description": {
+      "summary": "Build a simple card layout and practice the box model by using padding for inner spacing, margin for outer spacing, and border for outlines.",
+      "arguments": [
+        {
+          "name": "Padding",
+          "type": "box model property",
+          "desc": "Adds space inside the element between the content and the border."
         },
-        "web": {
-            "starterHtml": "<div class=\"product\">\\n  <img src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180'><rect width='100%' height='100%' fill='%23ddd'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23666' font-family='Arial' font-size='20'>Product</text></svg>\" alt=\"Product\">\\n  <span class=\"badge\">NEW</span>\\n</div>",
-            "starterCss": "/* TODOs:\\n  1) Make .product a positioned container (position: relative).\\n  2) Absolutely position .badge inside it using top/right offsets.\\n  3) Add padding, border-radius, and a red background for visibility.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.product {\\n  display: inline-block;\\n}\\n\\n.badge {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Your positioning and spacing here */\\n}\\n\\nimg {\\n  display: block;\\n  max-width: 100%;\\n  border-radius: 8px;\\n}",
-            "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\n\\nconst product = document.querySelector('.product');\\nconst badge = document.querySelector('.badge');\\n\\nit('makes .product a positioning context', () => {\\n  expect(cssValue(product, 'position').trim()).toBe('relative');\\n});\\n\\nit('positions .badge absolutely near the top-right', () => {\\n  const pos = cssValue(badge, 'position').trim();\\n  const top = pxNum(cssValue(badge, 'top'));\\n  const right = pxNum(cssValue(badge, 'right'));\\n  expect(pos === 'absolute' && top >= 0 && right >= 0).toBe(true);\\n});\\n\\nit('styles .badge with padding, rounded corners, and contrasting background', () => {\\n  const padTop = pxNum(cssValue(badge, 'padding-top'));\\n  const padLeft = pxNum(cssValue(badge, 'padding-left'));\\n  const br = pxNum(cssValue(badge, 'border-radius'));\\n  const bg = cssValue(badge, 'background-color');\\n  const hasColor = /(rgb|#)/.test(bg);\\n  expect(padTop >= 3 && padLeft >= 6 && br >= 4 && hasColor).toBe(true);\\n});"
+        {
+          "name": "Margin",
+          "type": "box model property",
+          "desc": "Adds space outside the element between it and neighboring elements."
         },
-        "solutionBlock": {
-            "overview": "To pin a badge to a specific corner of an element, make the parent `.product` relatively positioned so it establishes a local coordinate system. Then, absolutely position the `.badge` in the top-right with a small offset and apply visual styles for clarity.",
-            "approaches": [
-                {
-                    "title": "Approach — Relative Parent + Absolute Child",
-                    "prose": "Use `position: relative` on the `.product` container. This allows the `.badge` to be positioned absolutely within it. Apply `top` and `right` offsets to anchor the badge to the top-right corner. Add padding, border-radius, and a red background for visibility.",
-                    "codeHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
-                    "codeCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "If `.product` isn’t positioned relatively, `.badge` will be placed relative to the entire page.",
-                    "Avoid using large pixel offsets that break responsive behavior."
-                ],
-                "techniques": [
-                    "Relative positioning on the parent establishes a local coordinate system.",
-                    "Absolute positioning on the child allows fixed placement within that parent."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – position property",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
-                },
-                {
-                    "title": "MDN – top/right/bottom/left",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/top"
-                }
-            ]
-        },
-        "webSolutionHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
-        "webSolutionCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }"
+        {
+          "name": "Border",
+          "type": "box model property",
+          "desc": "Defines the outline edge of the element and helps visualize spacing."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A visually separated set of cards with internal padding, border outline, and equal spacing between cards."
+      },
+      "examples": [
+        ".card { padding: 16px; border: 1px solid #ccc; margin-bottom: 12px; border-radius: 8px; }"
+      ]
     },
-    {
-        "id": "css-flexbox-navbar",
-        "title": "Flexbox: Responsive Navbar",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "intermediate",
-        "importance": 3,
-        "tags": [
-            "css",
-            "layout",
-            "flexbox",
-            "responsive",
-            "navbar"
-        ],
-        "description": {
-            "summary": "Build a responsive navigation bar with a left-aligned logo, centered links, and a right-aligned call-to-action (CTA) using Flexbox.",
-            "arguments": [
-                {
-                    "name": ".nav { display: flex; align-items: center }",
-                    "type": "flex container",
-                    "desc": "Sets up Flexbox on the nav bar to align logo, links, and CTA horizontally."
-                },
-                {
-                    "name": ".links { flex: 1; display: flex; justify-content: center; gap: ... }",
-                    "type": "flex behavior",
-                    "desc": "Makes links expand to fill available space, centers them, and adds spacing."
-                },
-                {
-                    "name": "Responsive layout",
-                    "type": "media query",
-                    "desc": "Stack items vertically on small screens (≤480px)."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A clean, responsive navigation bar that aligns logo–links–CTA in one line on desktop and stacks them neatly on mobile."
-            },
-            "examples": [
-                ".nav { display: flex; align-items: center; gap: 1rem; }",
-                ".links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; }",
-                "@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } }"
-            ]
-        },
-        "web": {
-            "starterHtml": "<nav class=\"nav\">\\n  <div class=\"logo\">Brand</div>\\n  <ul class=\"links\">\\n    <li><a href=\"#\">Docs</a></li>\\n    <li><a href=\"#\">Pricing</a></li>\\n    <li><a href=\"#\">Blog</a></li>\\n  </ul>\\n  <a class=\"cta\" href=\"#\">Sign up</a>\\n</nav>",
-            "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens ≤480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}",
-            "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst nav=document.querySelector('.nav');\\nconst links=document.querySelector('.links');\\n\\nit('makes .nav a flex container aligned center',()=>{\\n  const disp=cssValue(nav,'display').trim();\\n  const align=cssValue(nav,'align-items').trim();\\n  expect(disp==='flex' && align==='center').toBe(true);\\n});\\n\\nit('makes .links flex:1 and centered',()=>{\\n  const disp=cssValue(links,'display').trim();\\n  const justify=cssValue(links,'justify-content').trim();\\n  const flexGrow=cssValue(links,'flex-grow').trim();\\n  expect(disp==='flex' && justify==='center' && flexGrow==='1').toBe(true);\\n});\\n\\nit('applies column layout under 480px',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('480px'));\\n  const hasColumnRule=mediaRules.some(r=>r.cssText.includes('flex-direction: column'));\\n  expect(hasColumnRule).toBe(true);\\n});"
-        },
-        "solutionBlock": {
-            "overview": "Flexbox makes it simple to align navbar elements horizontally and adapt to small screens. The logo stays left, links expand and center themselves, and the CTA sits at the right. On mobile, the nav stacks neatly with centered alignment.",
-            "approaches": [
-                {
-                    "title": "Approach — Flex Container with Responsive Direction",
-                    "prose": "Use `display: flex` on `.nav` with `align-items: center`. Give `.links` `flex: 1` and `display: flex; justify-content: center` to center them while pushing the CTA right. Add `gap` for spacing. A media query changes `.nav` to `flex-direction: column` under 480px for vertical stacking.",
-                    "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
-                    "codeCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Forgetting to give `.links` flex:1 will prevent the center alignment.",
-                    "Not resetting list-style and padding on `.links` can misalign the layout."
-                ],
-                "techniques": [
-                    "Flexbox is ideal for aligning items both horizontally and vertically.",
-                    "Use a media query to switch layouts responsively without changing HTML."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – Flexbox basics",
-                    "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox"
-                },
-                {
-                    "title": "MDN – Media Queries",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries"
-                }
-            ]
-        },
-        "webSolutionHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
-        "webSolutionCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
+    "web": {
+      "starterHtml": "<div class=\"card\">Card 1</div>\n<div class=\"card\">Card 2</div>\n<div class=\"card\">Card 3</div>",
+      "starterCss": "body {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  background: #fafafa;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Give each .card padding (inner space around text).\n  2) Add a border and rounded corners to each card.\n  3) Add vertical spacing (margin-bottom) between the cards.\n*/",
+      "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel.includes(selector) && r.cssText.includes(text)) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('applies padding to .card',()=>{\n  expect(cssTextContains('.card','padding')).toBe(true);\n});\n\nit('applies border to .card',()=>{\n  expect(cssTextContains('.card','border')).toBe(true);\n});\n\nit('adds margin between cards',()=>{\n  expect(cssTextContains('.card','margin')||cssTextContains('.card','margin-bottom')).toBe(true);\n});"
     },
-    {
-        "id": "css-grid-card-gallery",
-        "title": "Grid: Card Gallery (2→4 Columns)",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "intermediate",
-        "importance": 3,
-        "tags": [
-            "css",
-            "layout",
-            "grid",
-            "responsive",
-            "gallery"
+    "solutionBlock": {
+      "overview": "This exercise demonstrates how the CSS box model affects layout and spacing. Padding adds inner breathing room, margins separate elements externally, and borders visually define boundaries.",
+      "approaches": [
+        {
+          "title": "Approach — Apply Padding, Border, and Margin",
+          "prose": "Give each .card a padding for internal space, a subtle border for visibility, and a margin to separate multiple cards. Rounded corners make the design friendlier.",
+          "codeHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
+          "codeCss": ".card {\n  padding: 16px;\n  border: 1px solid #ccc;\n  border-radius: 8px;\n  margin-bottom: 12px;\n  background: #fff;\n}"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting that padding affects box size unless box-sizing is set to border-box.",
+          "Using only margin or padding for spacing makes it unclear which side creates the space."
         ],
-        "description": {
-            "summary": "Create a responsive card gallery that shows 2 columns on small screens and 4 columns on large screens using CSS Grid.",
-            "arguments": [
-                {
-                    "name": ".gallery { display: grid }",
-                    "type": "grid container",
-                    "desc": "Enable CSS Grid layout for the gallery container."
-                },
-                {
-                    "name": "grid-template-columns: repeat(2, 1fr)",
-                    "type": "grid setup",
-                    "desc": "Define two equal-width columns by default for small screens."
-                },
-                {
-                    "name": "Media query at ≥1024px",
-                    "type": "responsive layout",
-                    "desc": "Switch the grid to four columns for larger screens."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A flexible card gallery that automatically adjusts from 2 to 4 columns depending on screen width."
-            },
-            "examples": [
-                ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }",
-                "@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
-            ]
+        "techniques": [
+          "Use padding for internal spacing, margin for separation between elements.",
+          "Add a border to make box boundaries visible when debugging layout issues."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – CSS Box Model",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model"
         },
-        "web": {
-            "starterHtml": "<section class=\"gallery\">\\n  <article class=\"card\">1</article>\\n  <article class=\"card\">2</article>\\n  <article class=\"card\">3</article>\\n  <article class=\"card\">4</article>\\n  <article class=\"card\">5</article>\\n  <article class=\"card\">6</article>\\n</section>",
-            "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths ≥1024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}",
-            "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst gallery=document.querySelector('.gallery');\\n\\nit('makes .gallery a grid container',()=>{\\n  const disp=cssValue(gallery,'display').trim();\\n  expect(disp==='grid').toBe(true);\\n});\\n\\nit('defines 2 equal columns by default',()=>{\\n  const cols=cssValue(gallery,'grid-template-columns');\\n  expect(/repeat\\\\(2,/.test(cols)||cols.split(' ').length===2).toBe(true);\\n});\\n\\nit('has a media query at ≥1024px changing to 4 columns',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('1024px'));\\n  const hasFourCols=mediaRules.some(r=>r.cssText.includes('repeat(4')||r.cssText.includes('1fr 1fr 1fr 1fr'));\\n  expect(hasFourCols).toBe(true);\\n});"
-        },
-        "solutionBlock": {
-            "overview": "CSS Grid makes it simple to create responsive galleries that adapt to different screen sizes. Use `repeat(2, 1fr)` for small screens, then switch to `repeat(4, 1fr)` inside a media query for large screens.",
-            "approaches": [
-                {
-                    "title": "Approach — Responsive Grid Columns",
-                    "prose": "Define a grid with two columns by default using `grid-template-columns: repeat(2, 1fr)`. Add a `gap` for spacing. Then, at larger screen widths (min-width: 1024px), increase the columns to four by redefining the grid template.",
-                    "codeHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
-                    "codeCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Forgetting to use `repeat()` may lead to repetitive manual definitions.",
-                    "Not including a `gap` can make cards stick together visually."
-                ],
-                "techniques": [
-                    "Use fractional units (`fr`) for flexible column sizing.",
-                    "Use media queries to progressively enhance layout for larger viewports."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – CSS Grid Layout",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout"
-                },
-                {
-                    "title": "MDN – repeat()",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/repeat"
-                }
-            ]
-        },
-        "webSolutionHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
-        "webSolutionCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
+        {
+          "title": "MDN – box-sizing",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
+        }
+      ]
     },
-    {
-        "id": "css-fluid-clamp",
-        "title": "Fluid Type & Spacing with clamp()",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "intermediate",
-        "importance": 3,
-        "tags": [
-            "css",
-            "responsive",
-            "typography",
-            "spacing",
-            "clamp"
-        ],
-        "description": {
-            "summary": "Make the main heading size and the container’s horizontal padding scale smoothly with the viewport using CSS clamp().",
-            "arguments": [
-                {
-                    "name": "Fluid type with clamp()",
-                    "type": "typography",
-                    "desc": "Use font-size: clamp(min, preferred, max) on the h1 to scale with viewport width while staying within bounds."
-                },
-                {
-                    "name": "Fluid spacing with clamp()",
-                    "type": "spacing",
-                    "desc": "Use padding-inline (or left/right) with clamp() so horizontal padding grows on large screens and shrinks on small."
-                },
-                {
-                    "name": "Reasonable bounds",
-                    "type": "UX",
-                    "desc": "Pick sensible min/max so text isn’t tiny on phones or gigantic on desktops."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A hero section whose heading and side padding scale fluidly but remain readable across screen sizes."
-            },
-            "examples": [
-                "h1 { font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }",
-                ".hero { padding-inline: clamp(1rem, 4vw, 3rem); }"
-            ]
+    "webSolutionHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; line-height: 1.6; }\n.card { padding: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }",
+    "access": "free"
+  },
+  {
+    "id": "css-inline-centering",
+    "title": "Display & Centering: Center Inline Content",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "easy",
+    "importance": 2,
+    "tags": [
+      "css",
+      "layout",
+      "display",
+      "centering",
+      "inline-block"
+    ],
+    "description": {
+      "summary": "Center a heading and a row of chip-like tags using inline/inline-block display and text alignment (no flex, no positioning).",
+      "arguments": [
+        {
+          "name": "text-align",
+          "type": "alignment",
+          "desc": "Use text-align: center on a parent to center inline/inline-block children as a group."
         },
-        "web": {
-            "starterHtml": "<header class=\"hero\">\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
-            "starterCss": "/* Base page styles */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 0;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n/* Visual container */\\n.hero {\\n  background: #222;\\n  color: #fff;\\n  /* TODO: Use clamp() to make horizontal padding scale with viewport width */\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  /* TODO: Use clamp() to make font-size scale smoothly */\\n}\\n\\n.hero p {\\n  margin: 0;\\n  opacity: 0.9;\\n}",
-            "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\nfunction cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && r.cssText.includes(text)) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nconst hero=document.querySelector('.hero');\\nconst h1=document.querySelector('.hero h1');\\n\\n// 1) h1 font-size uses clamp() (by rule presence)\\nit('uses clamp() for fluid heading size', () => {\\n  const hasClampRule = cssTextContains('.hero h1', 'font-size') && cssTextContains('.hero h1', 'clamp(');\\n  expect(hasClampRule).toBe(true);\\n});\\n\\n// 2) .hero horizontal padding uses clamp() (by rule presence)\\nit('uses clamp() for fluid horizontal padding', () => {\\n  const hasClampPad = cssTextContains('.hero', 'padding-inline') && cssTextContains('.hero', 'clamp(');\\n  expect(hasClampPad).toBe(true);\\n});\\n\\n// 3) Computed values fall within sensible bounds on this viewport\\nit('keeps heading size and padding within sensible bounds', () => {\\n  const fs = pxNum(cssValue(h1, 'font-size'));\\n  const pl = pxNum(cssValue(hero, 'padding-left'));\\n  const pr = pxNum(cssValue(hero, 'padding-right'));\\n  const inRangeFs = fs >= 20 && fs <= 48;\\n  const inRangePad = pl >= 12 && pr >= 12 && pl <= 48 && pr <= 48;\\n  expect(inRangeFs && inRangePad).toBe(true);\\n});"
+        {
+          "name": ".tag { display: inline-block }",
+          "type": "display",
+          "desc": "Inline-block lets tags sit on one line while supporting padding and border radius."
         },
-        "solutionBlock": {
-            "overview": "Use CSS clamp() to create fluid values with safe minimum and maximum bounds. Apply it to the heading’s font-size and the hero’s horizontal padding so both scale smoothly with viewport width.",
-            "approaches": [
-                {
-                    "title": "Approach — clamp() for Type & Padding",
-                    "prose": "Assign a fluid font size to the h1 using clamp(min, preferred, max). Do the same for the hero’s horizontal padding via padding-inline. This provides responsive scaling without media queries while ensuring legibility at small and large sizes.",
-                    "codeHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
-                    "codeCss": ".hero {\\n  background: #222;\\n  color: #fff;\\n  padding-inline: clamp(1rem, 4vw, 3rem);\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  font-size: clamp(1.5rem, 3vw + 1rem, 3rem);\\n}\\n.hero p { margin: 0; opacity: 0.9; }"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Using an overly small min can make headings unreadable on tiny screens.",
-                    "Setting an excessive max can cause overflow or awkward line breaks on large displays."
-                ],
-                "techniques": [
-                    "Combine vw with a base rem (e.g., 3vw + 1rem) inside clamp() for smoother scaling.",
-                    "Use padding-inline to set left/right together; it mirrors automatically in RTL layouts."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – clamp()",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp"
-                },
-                {
-                    "title": "MDN – CSS Values and Units (vw, rem)",
-                    "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units"
-                }
-            ]
-        },
-        "webSolutionHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: #fafafa; color: #111; }\\n.hero { background: #222; color: #fff; padding-inline: clamp(1rem, 4vw, 3rem); padding-block: 2rem; border-bottom: 1px solid #444; }\\n.hero h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }\\n.hero p { margin: 0; opacity: 0.9; }"
+        {
+          "name": "Padding, radius, and spacing",
+          "type": "box-model",
+          "desc": "Use padding: 8px 12px; border-radius: 6px; and an 8px horizontal margin for consistent gaps."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A centered heading and a single line of evenly-spaced chip tags, centered as a group."
+      },
+      "examples": [
+        ".chips { text-align: center; }",
+        ".tag { display: inline-block; padding: 8px 12px; border-radius: 6px; margin-right: 8px; }",
+        ".tag:last-child { margin-right: 0; }"
+      ]
     },
-    {
-        "id": "css-forms-pseudoclasses",
-        "title": "Forms & Pseudo-classes: Focus, Invalid, Required, Helper Text",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "intermediate",
-        "importance": 3,
-        "tags": [
-            "css",
-            "forms",
-            "accessibility",
-            "pseudo-classes",
-            "focus"
-        ],
-        "description": {
-            "summary": "Style an accessible form so keyboard focus is clearly visible, invalid inputs are indicated, required state is respected, and helper text is readable.",
-            "arguments": [
-                {
-                    "name": ":focus / :focus-visible",
-                    "type": "accessibility",
-                    "desc": "Provide a visible outline for keyboard focus. Prefer :focus-visible with a :focus fallback."
-                },
-                {
-                    "name": ":invalid and :required",
-                    "type": "validation",
-                    "desc": "Indicate invalid inputs with a subtle border color; don’t rely on color alone. Optional: style :required."
-                },
-                {
-                    "name": "::placeholder and :focus-within",
-                    "type": "usability",
-                    "desc": "Make placeholder text lighter; highlight the label group when its input is focused using :focus-within."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A form where focus rings are visible, invalid fields are clearly indicated, required fields are supported, and helper text is readable."
-            },
-            "examples": [
-                "input:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
-                "input:invalid { border-color: #e63946; }",
-                "label:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
-                "input::placeholder { color: #9aa0a6; }"
-            ]
-        },
-        "web": {
-            "starterHtml": "<form class=\"form\" onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type=\"email\" required placeholder=\"you@example.com\">\\n  </label>\\n  <small class=\"hint\">We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
-            "starterCss": "/* TODOs:\\n  1) Add a visible focus style using :focus-visible (with :focus fallback). Use outline, not only box-shadow.\\n  2) Style :invalid inputs with a subtle border color change.\\n  3) Make ::placeholder lighter; highlight the label group with :focus-within.\\n*/\\n\\n/* Plain starter (intentionally minimal so it doesn't look like the solution) */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n.form {\\n  border: 1px solid #e5e7eb; /* light gray */\\n  padding: 12px;\\n  max-width: 420px;\\n  background: #fff;\\n}\\n\\nlabel {\\n  display: block;\\n  margin-bottom: 8px;\\n}\\n\\ninput {\\n  display: block;\\n  width: 100%;\\n  margin-top: 4px;\\n  padding: 8px 10px;\\n  border: 1px solid #cfcfcf;\\n  border-radius: 4px; /* subtle */\\n  background: #fff;\\n  color: inherit;\\n}\\n\\nbutton {\\n  margin-top: 10px;\\n  padding: 8px 12px;\\n  border: 1px solid #d1d5db;\\n  border-radius: 4px;\\n  background: #f9fafb;\\n  color: #111;\\n}\\n\\n.hint {\\n  display: block;\\n  margin-top: 6px;\\n  color: #6b7280; /* muted */\\n}",
-            "tests": "function cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\n// 1) Focus style present via :focus-visible or :focus and not removing outline\\nit('provides a visible focus outline', () => {\\n  const hasFocusOutline = (cssTextContains('input:focus-visible','outline') || cssTextContains('input:focus','outline'));\\n  const removesOutline = cssTextContains('input:focus-visible','outline: none') || cssTextContains('input:focus','outline: none');\\n  expect(hasFocusOutline && !removesOutline).toBe(true);\\n});\\n\\n// 2) Invalid state styling exists (border/border-color)\\nit('indicates invalid inputs with a border color change', () => {\\n  const hasInvalid = cssTextContains('input:invalid','border-color') || cssTextContains('input:invalid','border');\\n  expect(hasInvalid).toBe(true);\\n});\\n\\n// 3) Placeholder is styled and label group highlights with :focus-within\\nit('styles ::placeholder and highlights label with :focus-within', () => {\\n  const hasPlaceholder = cssTextContains('::placeholder','color') || cssTextContains('input::placeholder','color');\\n  const hasFocusWithin = cssTextContains('label:focus-within','outline') || cssTextContains('label:focus-within','border') || cssTextContains('label:focus-within','box-shadow');\\n  expect(hasPlaceholder && hasFocusWithin).toBe(true);\\n});"
-        },
-        "solutionBlock": {
-            "overview": "Use :focus-visible (with a :focus fallback) to show an outline ring, :invalid to indicate errors, ::placeholder for lighter hint text, and :focus-within on the label to highlight the label+input group. The solution also applies nicer visual styling so it looks clearly different from the starter.",
-            "approaches": [
-                {
-                    "title": "Approach — Focus Rings + Validation States",
-                    "prose": "Add a visible outline on focus using :focus-visible (and :focus as fallback). Style :invalid to adjust the border color when constraints fail. Use ::placeholder for lighter hint text. Apply :focus-within on the label to add an outline around the group. Extra visual polish (radius, stronger button) is included here so the solution preview is obviously different than the starter.",
-                    "codeHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
-                    "codeCss": "/* Base + polish */\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\n\\n/* Accessibility & states */\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; } /* fallback */\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }"
-                }
-            ]
-        },
-        "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; color: #111; }\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }"
+    "web": {
+      "starterHtml": "<div class=\"box\">\\n  <h2>Centered Content</h2>\\n  <p class=\"chips\">\\n    <span class=\"tag\">HTML</span><span class=\"tag\">CSS</span><span class=\"tag\">UI</span>\\n  </p>\\n</div>",
+      "starterCss": "/* TODOs:\\n  1) Center the chips as a group using text-align: center (on .chips or .box).\\n  2) Make .tag inline-block with padding 8px/12px and radius 6px.\\n  3) Create ~8px horizontal gaps between tags using margin-right.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.box {\\n  background: #222;\\n  color: #fff;\\n  padding: 20px;\\n  border: 1px solid #444;\\n  border-radius: 10px;\\n  max-width: 600px;\\n  margin: 0 auto; /* optional: centers the box in the viewport */\\n}\\n\\n.chips {\\n  margin-top: 12px;\\n  /* Add text-align: center here */\\n}\\n\\n.tag {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Add display, padding, radius, and spacing here */\\n}\\n\\n/* Hint: use .tag:last-child { margin-right: 0; } to remove the final gap */",
+      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\n\\nconst box = document.querySelector('.box');\\nconst chips = document.querySelector('.chips');\\nconst tags = [...document.querySelectorAll('.tag')];\\n\\n// 1) Centering of inline content via text-align\\nit('centers inline content using text-align', () => {\\n  const centerOnChips = cssValue(chips, 'text-align').trim() === 'center';\\n  const centerOnBox = cssValue(box, 'text-align').trim() === 'center';\\n  expect(centerOnChips || centerOnBox).toBe(true);\\n});\\n\\n// 2) Tags are inline-block with correct padding and radius\\nit('styles .tag as inline-block chips with padding and radius', () => {\\n  const ok = tags.every(t => {\\n    const disp = cssValue(t, 'display').trim();\\n    const pt = pxNum(cssValue(t, 'padding-top'));\\n    const pb = pxNum(cssValue(t, 'padding-bottom'));\\n    const pl = pxNum(cssValue(t, 'padding-left'));\\n    const pr = pxNum(cssValue(t, 'padding-right'));\\n    const br = pxNum(cssValue(t, 'border-radius'));\\n    return disp === 'inline-block' && pt===8 && pb===8 && pl===12 && pr===12 && br===6;\\n  });\\n  expect(ok).toBe(true);\\n});\\n\\n// 3) ~8px gaps via margin-right on non-last tags (tolerate tiny rounding)\\nit('keeps ~8px gaps between chips', () => {\\n  if(tags.length < 2){ expect(true).toBe(true); return; }\\n  const nonLast = tags.slice(0, -1);\\n  const gapsOK = nonLast.every(t => pxNum(cssValue(t, 'margin-right')) >= 7.5);\\n  expect(gapsOK).toBe(true);\\n});"
     },
-    {
-        "id": "css-transitions-transforms-lift",
-        "title": "Transitions & Transforms: Lift on Hover",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "intermediate",
-        "importance": 3,
-        "tags": [
-            "css",
-            "animation",
-            "transition",
-            "transform",
-            "accessibility"
+    "solutionBlock": {
+      "overview": "Center inline content by setting `text-align: center` on a parent container. Make the chips `inline-block` so they can have padding and rounded corners, and space them with a small horizontal margin.",
+      "approaches": [
+        {
+          "title": "Approach — text-align Center + Inline-Block Chips",
+          "prose": "Set `text-align: center` on `.chips` (or `.box`) to center all inline children as a group. Use `display: inline-block` on `.tag` to allow padding and border radius, and add `margin-right: 8px` (removed on the last tag) to create consistent gaps.",
+          "codeHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
+          "codeCss": ".box {\\n  background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto;\\n}\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Only inline-level content is centered by `text-align`. Blocks ignore it unless they are inline or inline-block.",
+          "Forgetting to remove the last chip’s right margin causes visual imbalance."
         ],
-        "description": {
-            "summary": "Create a card that smoothly “lifts” on hover using transitions and transforms, with motion-respectful behavior.",
-            "arguments": [
-                {
-                    "name": ".lift (base)",
-                    "type": "visual",
-                    "desc": "Define a neutral card with padding, subtle border, and initial box-shadow."
-                },
-                {
-                    "name": ".lift:hover (interaction)",
-                    "type": "transform",
-                    "desc": "Apply transform (e.g., scale or translateY) and a stronger shadow on hover."
-                },
-                {
-                    "name": "transition",
-                    "type": "animation",
-                    "desc": "Animate both transform and box-shadow smoothly."
-                },
-                {
-                    "name": "@media (prefers-reduced-motion: reduce)",
-                    "type": "a11y",
-                    "desc": "Disable animations for users who prefer reduced motion."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "An elevated card that animates on hover and respects reduced-motion preferences."
-            },
-            "examples": [
-                ".lift { transition: transform 200ms ease, box-shadow 200ms ease; }",
-                ".lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }",
-                "@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }"
-            ]
+        "techniques": [
+          "Use `inline-block` for chips to keep a single line while allowing padding and border radius.",
+          "`text-align: center` on the wrapper is a simple, widely supported centering method for inline content."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – text-align",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/text-align"
         },
-        "web": {
-            "starterHtml": "<article class=\"lift\">\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
-            "starterCss": "/* TODOs:\\n  1) Add a transition on transform and box-shadow for smooth motion.\\n  2) On .lift:hover, increase elevation (box-shadow) and apply a slight transform (scale or translateY).\\n  3) Respect reduced motion using @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n.lift {\\n  background: #fff;\\n  border: 1px solid #e5e7eb;\\n  border-radius: 10px;\\n  padding: 16px 18px;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  /* Add transition here */\\n}\\n\\n/* Add .lift:hover and reduced-motion styles below */",
-            "tests": "function cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nfunction hasReducedMotionDisableTransitions(){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        if(r.media && (r.media.mediaText||'').includes('prefers-reduced-motion')){\\n          const inner=[...((r.cssRules)||[])];\\n          const found=inner.some(ir=>/transition\\s*:\\s*none/i.test(ir.cssText) || /transition\\s*:\\s*0s/i.test(ir.cssText));\\n          if(found) return true;\\n        }\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nconst card=document.querySelector('.lift');\\n\\nit('adds a transition for smooth hover', () => {\\n  const hasTrans = cssTextContains('.lift', 'transition');\\n  expect(hasTrans).toBe(true);\\n});\\n\\nit('lifts on hover with transform and stronger shadow', () => {\\n  const hasHoverTransform = cssTextContains('.lift:hover', 'transform');\\n  const hasHoverShadow = cssTextContains('.lift:hover', 'box-shadow');\\n  expect(hasHoverTransform && hasHoverShadow).toBe(true);\\n});\\n\\nit('respects prefers-reduced-motion', () => {\\n  expect(hasReducedMotionDisableTransitions()).toBe(true);\\n});"
-        },
-        "solutionBlock": {
-            "overview": "Animate elevation by transitioning both transform and box-shadow. A tiny scale or upward translate combined with a deeper shadow gives a realistic lift effect. Always provide a reduced-motion fallback.",
-            "approaches": [
-                {
-                    "title": "Approach — Transition + Hover Transform",
-                    "prose": "Set a base card with a subtle shadow. Add a transition that covers both transform and box-shadow. On :hover, scale slightly and/or translate up a couple pixels, and increase the shadow. Finally, disable transitions under prefers-reduced-motion.",
-                    "codeHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
-                    "codeCss": ".lift {\\n  background: #fff;\\n  border: 1px solid #e5e7eb;\\n  border-radius: 12px;\\n  padding: 18px 20px;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  transition: transform 200ms ease, box-shadow 200ms ease;\\n}\\n.lift:hover {\\n  transform: translateY(-2px) scale(1.02);\\n  box-shadow: 0 10px 24px rgba(0,0,0,.15);\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  * { transition: none !important; }\\n}"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Forgetting to include box-shadow in the transition causes a snap in the shadow.",
-                    "Using a large scale or translate can look jumpy; keep values subtle."
-                ],
-                "techniques": [
-                    "Pair transform with shadow changes for convincing depth.",
-                    "Use ease or ease-out for a natural feel; keep duration around 150–250ms."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – transition",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transition"
-                },
-                {
-                    "title": "MDN – transform",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"
-                },
-                {
-                    "title": "MDN – prefers-reduced-motion",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
-                }
-            ]
-        },
-        "webSolutionHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
-        "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; color: #111; }\\n.lift { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: transform 200ms ease, box-shadow 200ms ease; }\\n.lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }\\n@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }"
+        {
+          "title": "MDN – display",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/display"
+        }
+      ]
     },
-    {
-        "id": "css-theme-variables-dark-mode",
-        "title": "Theming with CSS Variables (incl. Dark Mode)",
-        "type": "coding",
-        "technology": "css",
-        "difficulty": "intermediate",
-        "importance": 4,
-        "tags": [
-            "css",
-            "variables",
-            "custom-properties",
-            "dark-mode",
-            "theming",
-            "accessibility"
+    "webSolutionHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; }\\n.box { background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto; }\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }",
+    "access": "free"
+  },
+  {
+    "id": "css-positioning-badge",
+    "title": "Positioning: Relative/Absolute Badge",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "css",
+      "layout",
+      "positioning",
+      "relative",
+      "absolute"
+    ],
+    "description": {
+      "summary": "Add a small 'NEW' badge to the top-right corner of an image using relative and absolute positioning.",
+      "arguments": [
+        {
+          "name": ".product { position: relative }",
+          "type": "positioning context",
+          "desc": "Make the container establish a local coordinate system for absolutely positioned children."
+        },
+        {
+          "name": ".badge { position: absolute; top/right }",
+          "type": "absolute positioning",
+          "desc": "Place the badge relative to the nearest positioned ancestor (the product container)."
+        },
+        {
+          "name": "Styling",
+          "type": "box model",
+          "desc": "Add small padding, rounded corners, and a contrasting background to the badge."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A product image with a small badge pinned to its top-right corner that stays in place on scroll or resize."
+      },
+      "examples": [
+        ".product { position: relative; }",
+        ".badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<div class=\"product\">\\n  <img src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='180'><rect width='100%' height='100%' fill='%23ddd'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23666' font-family='Arial' font-size='20'>Product</text></svg>\" alt=\"Product\">\\n  <span class=\"badge\">NEW</span>\\n</div>",
+      "starterCss": "/* TODOs:\\n  1) Make .product a positioned container (position: relative).\\n  2) Absolutely position .badge inside it using top/right offsets.\\n  3) Add padding, border-radius, and a red background for visibility.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.product {\\n  display: inline-block;\\n}\\n\\n.badge {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Your positioning and spacing here */\\n}\\n\\nimg {\\n  display: block;\\n  max-width: 100%;\\n  border-radius: 8px;\\n}",
+      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\n\\nconst product = document.querySelector('.product');\\nconst badge = document.querySelector('.badge');\\n\\nit('makes .product a positioning context', () => {\\n  expect(cssValue(product, 'position').trim()).toBe('relative');\\n});\\n\\nit('positions .badge absolutely near the top-right', () => {\\n  const pos = cssValue(badge, 'position').trim();\\n  const top = pxNum(cssValue(badge, 'top'));\\n  const right = pxNum(cssValue(badge, 'right'));\\n  expect(pos === 'absolute' && top >= 0 && right >= 0).toBe(true);\\n});\\n\\nit('styles .badge with padding, rounded corners, and contrasting background', () => {\\n  const padTop = pxNum(cssValue(badge, 'padding-top'));\\n  const padLeft = pxNum(cssValue(badge, 'padding-left'));\\n  const br = pxNum(cssValue(badge, 'border-radius'));\\n  const bg = cssValue(badge, 'background-color');\\n  const hasColor = /(rgb|#)/.test(bg);\\n  expect(padTop >= 3 && padLeft >= 6 && br >= 4 && hasColor).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "To pin a badge to a specific corner of an element, make the parent `.product` relatively positioned so it establishes a local coordinate system. Then, absolutely position the `.badge` in the top-right with a small offset and apply visual styles for clarity.",
+      "approaches": [
+        {
+          "title": "Approach — Relative Parent + Absolute Child",
+          "prose": "Use `position: relative` on the `.product` container. This allows the `.badge` to be positioned absolutely within it. Apply `top` and `right` offsets to anchor the badge to the top-right corner. Add padding, border-radius, and a red background for visibility.",
+          "codeHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
+          "codeCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "If `.product` isn’t positioned relatively, `.badge` will be placed relative to the entire page.",
+          "Avoid using large pixel offsets that break responsive behavior."
         ],
-        "description": {
-            "summary": "Build a themeable panel using CSS custom properties. Provide light defaults on :root, dark values via OS dark mode, and a .theme-dark class that overrides everything.",
-            "arguments": [
-                {
-                    "name": "Define variables on :root",
-                    "type": "custom properties",
-                    "desc": "Create --bg, --text, --surface, --accent (and optionally --border) with sensible light-theme defaults."
-                },
-                {
-                    "name": "OS dark mode",
-                    "type": "media query",
-                    "desc": "Use @media (prefers-color-scheme: dark) to redefine the same variables for dark mode."
-                },
-                {
-                    "name": "Manual override",
-                    "type": "cascade",
-                    "desc": "Add a .theme-dark class (e.g., on <html>) that sets dark variables and is declared AFTER the media query so it always wins."
-                }
-            ],
-            "returns": {
-                "type": "markup+style",
-                "desc": "A panel styled entirely with variables that adapts to OS theme and can be force-switched to dark with .theme-dark."
-            },
-            "examples": [
-                ":root { --bg:#fafafa; --text:#111; --surface:#fff; --accent:#3b82f6; }",
-                "@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; } }",
-                "html.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; }"
-            ]
+        "techniques": [
+          "Relative positioning on the parent establishes a local coordinate system.",
+          "Absolute positioning on the child allows fixed placement within that parent."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – position property",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
         },
-        "web": {
-            "starterHtml": "<!-- Tip: add class 'theme-dark' to <html> to force dark mode regardless of OS setting -->\\n<div class=\"panel\">\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <button class=\"btn\">Action</button>\\n</div>",
-            "starterCss": "/* TODOs:\\n  1) Define variables on :root: --bg, --text, --surface, --accent (optional: --border).\\n  2) Provide dark values inside @media (prefers-color-scheme: dark).\\n  3) Add html.theme-dark { ... } as a manual override, placed AFTER the media query.\\n*/\\n\\n/* Base page styles using variables (to be defined by you) */\\nhtml, body { height: 100%; }\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 0;\\n  line-height: 1.6;\\n  background: var(--bg);   /* relies on your :root variables */\\n  color: var(--text);       /* relies on your :root variables */\\n  display: grid;\\n  place-items: center;\\n  padding: 2rem;\\n}\\n\\n/* The component must use ONLY variables for colors */\\n.panel {\\n  background: var(--surface);\\n  color: var(--text);\\n  border: 1px solid var(--border, rgba(0,0,0,0.08));\\n  border-radius: 12px;\\n  padding: 1.25rem;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  max-width: 520px;\\n}\\n\\n.btn {\\n  background: var(--accent);\\n  color: #fff;\\n  border: 0;\\n  padding: .5rem .9rem;\\n  border-radius: .6rem;\\n  font-weight: 600;\\n}",
-            "tests": "function getAllRules(){ try { return [...document.styleSheets].flatMap(s=>[...((s.cssRules)||[])]);} catch(e){ return []; } }\\nfunction hasRootVars(){\\n  const rules=getAllRules();\\n  return rules.some(r=>r.selectorText==\":root\" && /--bg\\s*:/.test(r.cssText) && /--text\\s*:/.test(r.cssText));\\n}\\nfunction hasDarkMediaVars(){\\n  const rules=getAllRules();\\n  return rules.some(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark') && [...(r.cssRules||[])].some(ir=>ir.selectorText===':root' && /--bg\\s*:/.test(ir.cssText)));\\n}\\nfunction ruleIndex(pred){ const rules=getAllRules(); for(let i=0;i<rules.length;i++){ const r=rules[i]; if(pred(r,i)) return i; } return -1; }\\nfunction darkMediaIndex(){ return ruleIndex(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark')); }\\nfunction themeDarkIndex(){ return ruleIndex(r=>r.selectorText && /(^|\\s|\\.)theme-dark/.test(r.selectorText)); }\\n\\nit('defines core variables on :root',()=>{\\n  expect(hasRootVars()).toBe(true);\\n});\\n\\nit('provides dark-mode variables via media query',()=>{\\n  expect(hasDarkMediaVars()).toBe(true);\\n});\\n\\nit('declares .theme-dark override after the media query',()=>{\\n  const dmi=darkMediaIndex();\\n  const tdi=themeDarkIndex();\\n  expect(dmi>=0 && tdi>dmi).toBe(true);\\n});"
+        {
+          "title": "MDN – top/right/bottom/left",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/top"
+        }
+      ]
+    },
+    "webSolutionHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
+    "webSolutionCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }",
+    "access": "free"
+  },
+  {
+    "id": "css-flexbox-navbar",
+    "title": "Flexbox: Responsive Navbar",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "css",
+      "layout",
+      "flexbox",
+      "responsive",
+      "navbar"
+    ],
+    "description": {
+      "summary": "Build a responsive navigation bar with a left-aligned logo, centered links, and a right-aligned call-to-action (CTA) using Flexbox.",
+      "arguments": [
+        {
+          "name": ".nav { display: flex; align-items: center }",
+          "type": "flex container",
+          "desc": "Sets up Flexbox on the nav bar to align logo, links, and CTA horizontally."
         },
-        "solutionBlock": {
-            "overview": "Declare a palette as CSS variables on :root. Redefine them under @media (prefers-color-scheme: dark) for OS dark mode. Finally, add html.theme-dark with the same dark values AFTER the media query so authors can force dark regardless of OS.",
-            "approaches": [
-                {
-                    "title": "Approach — Variables + Dark Media + Manual Override",
-                    "prose": "Keep all component colors reading from variables (no literals). Light theme on :root, dark values in the media query, and a later .theme-dark rule to override. This keeps the component themeable without changing the markup or styles inside the panel.",
-                    "codeHtml": "<div class='panel'>\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <div style='display:flex; gap:.5rem; margin:.75rem 0 1rem;'>\\n    <button class='btn' onclick=\"document.body.classList.remove('theme-dark'); this.nextElementSibling.textContent='Force Dark';\">Auto (OS)</button>\\n    <button class='btn' onclick=\"document.body.classList.toggle('theme-dark'); this.textContent = document.body.classList.contains('theme-dark') ? 'Disable Dark' : 'Force Dark';\">Force Dark</button>\\n  </div>\\n</div>",
-                    "codeCss": "/* 1) Light defaults */\\n:root {\\n  --bg: #fafafa;\\n  --text: #111111;\\n  --surface: #ffffff;\\n  --accent: #3b82f6;\\n  --border: rgba(0,0,0,0.12);\\n}\\n\\n/* 2) OS dark mode */\\n@media (prefers-color-scheme: dark) {\\n  :root {\\n    --bg: #0b0b0c;\\n    --text: #f3f4f6;\\n    --surface: #16181a;\\n    --accent: #60a5fa;\\n    --border: rgba(255,255,255,0.14);\\n  }\\n}\\n\\n/* 3) Manual override (AFTER media query) */\\nhtml.theme-dark, body.theme-dark {\\n  --bg: #0b0b0c;\\n  --text: #f3f4f6;\\n  --surface: #16181a;\\n  --accent: #60a5fa;\\n  --border: rgba(255,255,255,0.14);\\n}\\n\\n/* Component using variables */\\nhtml, body { height: 100%; }\\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: var(--bg); color: var(--text); display: grid; place-items: center; padding: 2rem; }\\n.panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); max-width: 520px; }\\n.btn { background: var(--accent); color: #fff; border: 0; padding: .5rem .9rem; border-radius: .6rem; font-weight: 600; cursor: pointer; }\\n.btn + .btn { margin-left: .5rem; }"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Declaring .theme-dark BEFORE the media query will lose the override due to cascade order.",
-                    "Mixing hard-coded colors with variables in the component breaks themeability."
-                ],
-                "techniques": [
-                    "Use variables everywhere inside the component so themes swap instantly.",
-                    "Prefer placing author overrides (like .theme-dark) after media queries."
-                ]
-            },
-            "resources": [
-                {
-                    "title": "MDN – Using CSS custom properties (variables)",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties"
-                },
-                {
-                    "title": "MDN – prefers-color-scheme",
-                    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"
-                }
-            ]
+        {
+          "name": ".links { flex: 1; display: flex; justify-content: center; gap: ... }",
+          "type": "flex behavior",
+          "desc": "Makes links expand to fill available space, centers them, and adds spacing."
         },
-        "webSolutionHtml": "<div class='panel'>\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <div style='display:flex; gap:.5rem; margin:.75rem 0 1rem;'>\\n    <button class='btn' onclick=\"document.body.classList.remove('theme-dark'); this.nextElementSibling.textContent='Force Dark';\">Auto (OS)</button>\\n    <button class='btn' onclick=\"document.body.classList.toggle('theme-dark'); this.textContent = document.body.classList.contains('theme-dark') ? 'Disable Dark' : 'Force Dark';\">Force Dark</button>\\n  </div>\\n</div>",
-        "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} @media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} } html.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} html, body { height:100%; } body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; line-height:1.6; background: var(--bg); color: var(--text); display:grid; place-items:center; padding:2rem; } .panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); max-width: 520px; } .btn { background: var(--accent); color:#fff; border:0; padding:.5rem .9rem; border-radius:.6rem; font-weight:600; cursor:pointer; } .btn + .btn { margin-left:.5rem; }"
-    }
+        {
+          "name": "Responsive layout",
+          "type": "media query",
+          "desc": "Stack items vertically on small screens (≤480px)."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A clean, responsive navigation bar that aligns logo–links–CTA in one line on desktop and stacks them neatly on mobile."
+      },
+      "examples": [
+        ".nav { display: flex; align-items: center; gap: 1rem; }",
+        ".links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; }",
+        "@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<nav class=\"nav\">\\n  <div class=\"logo\">Brand</div>\\n  <ul class=\"links\">\\n    <li><a href=\"#\">Docs</a></li>\\n    <li><a href=\"#\">Pricing</a></li>\\n    <li><a href=\"#\">Blog</a></li>\\n  </ul>\\n  <a class=\"cta\" href=\"#\">Sign up</a>\\n</nav>",
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens ≤480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}",
+      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst nav=document.querySelector('.nav');\\nconst links=document.querySelector('.links');\\n\\nit('makes .nav a flex container aligned center',()=>{\\n  const disp=cssValue(nav,'display').trim();\\n  const align=cssValue(nav,'align-items').trim();\\n  expect(disp==='flex' && align==='center').toBe(true);\\n});\\n\\nit('makes .links flex:1 and centered',()=>{\\n  const disp=cssValue(links,'display').trim();\\n  const justify=cssValue(links,'justify-content').trim();\\n  const flexGrow=cssValue(links,'flex-grow').trim();\\n  expect(disp==='flex' && justify==='center' && flexGrow==='1').toBe(true);\\n});\\n\\nit('applies column layout under 480px',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('480px'));\\n  const hasColumnRule=mediaRules.some(r=>r.cssText.includes('flex-direction: column'));\\n  expect(hasColumnRule).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "Flexbox makes it simple to align navbar elements horizontally and adapt to small screens. The logo stays left, links expand and center themselves, and the CTA sits at the right. On mobile, the nav stacks neatly with centered alignment.",
+      "approaches": [
+        {
+          "title": "Approach — Flex Container with Responsive Direction",
+          "prose": "Use `display: flex` on `.nav` with `align-items: center`. Give `.links` `flex: 1` and `display: flex; justify-content: center` to center them while pushing the CTA right. Add `gap` for spacing. A media query changes `.nav` to `flex-direction: column` under 480px for vertical stacking.",
+          "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
+          "codeCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to give `.links` flex:1 will prevent the center alignment.",
+          "Not resetting list-style and padding on `.links` can misalign the layout."
+        ],
+        "techniques": [
+          "Flexbox is ideal for aligning items both horizontally and vertically.",
+          "Use a media query to switch layouts responsively without changing HTML."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – Flexbox basics",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox"
+        },
+        {
+          "title": "MDN – Media Queries",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries"
+        }
+      ]
+    },
+    "webSolutionHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
+    "webSolutionCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }",
+    "access": "free"
+  },
+  {
+    "id": "css-grid-card-gallery",
+    "title": "Grid: Card Gallery (2→4 Columns)",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "css",
+      "layout",
+      "grid",
+      "responsive",
+      "gallery"
+    ],
+    "description": {
+      "summary": "Create a responsive card gallery that shows 2 columns on small screens and 4 columns on large screens using CSS Grid.",
+      "arguments": [
+        {
+          "name": ".gallery { display: grid }",
+          "type": "grid container",
+          "desc": "Enable CSS Grid layout for the gallery container."
+        },
+        {
+          "name": "grid-template-columns: repeat(2, 1fr)",
+          "type": "grid setup",
+          "desc": "Define two equal-width columns by default for small screens."
+        },
+        {
+          "name": "Media query at ≥1024px",
+          "type": "responsive layout",
+          "desc": "Switch the grid to four columns for larger screens."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A flexible card gallery that automatically adjusts from 2 to 4 columns depending on screen width."
+      },
+      "examples": [
+        ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }",
+        "@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<section class=\"gallery\">\\n  <article class=\"card\">1</article>\\n  <article class=\"card\">2</article>\\n  <article class=\"card\">3</article>\\n  <article class=\"card\">4</article>\\n  <article class=\"card\">5</article>\\n  <article class=\"card\">6</article>\\n</section>",
+      "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths ≥1024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}",
+      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst gallery=document.querySelector('.gallery');\\n\\nit('makes .gallery a grid container',()=>{\\n  const disp=cssValue(gallery,'display').trim();\\n  expect(disp==='grid').toBe(true);\\n});\\n\\nit('defines 2 equal columns by default',()=>{\\n  const cols=cssValue(gallery,'grid-template-columns');\\n  expect(/repeat\\\\(2,/.test(cols)||cols.split(' ').length===2).toBe(true);\\n});\\n\\nit('has a media query at ≥1024px changing to 4 columns',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('1024px'));\\n  const hasFourCols=mediaRules.some(r=>r.cssText.includes('repeat(4')||r.cssText.includes('1fr 1fr 1fr 1fr'));\\n  expect(hasFourCols).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "CSS Grid makes it simple to create responsive galleries that adapt to different screen sizes. Use `repeat(2, 1fr)` for small screens, then switch to `repeat(4, 1fr)` inside a media query for large screens.",
+      "approaches": [
+        {
+          "title": "Approach — Responsive Grid Columns",
+          "prose": "Define a grid with two columns by default using `grid-template-columns: repeat(2, 1fr)`. Add a `gap` for spacing. Then, at larger screen widths (min-width: 1024px), increase the columns to four by redefining the grid template.",
+          "codeHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
+          "codeCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to use `repeat()` may lead to repetitive manual definitions.",
+          "Not including a `gap` can make cards stick together visually."
+        ],
+        "techniques": [
+          "Use fractional units (`fr`) for flexible column sizing.",
+          "Use media queries to progressively enhance layout for larger viewports."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – CSS Grid Layout",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout"
+        },
+        {
+          "title": "MDN – repeat()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/repeat"
+        }
+      ]
+    },
+    "webSolutionHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
+    "webSolutionCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }",
+    "access": "free"
+  },
+  {
+    "id": "css-fluid-clamp",
+    "title": "Fluid Type & Spacing with clamp()",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "css",
+      "responsive",
+      "typography",
+      "spacing",
+      "clamp"
+    ],
+    "description": {
+      "summary": "Make the main heading size and the container’s horizontal padding scale smoothly with the viewport using CSS clamp().",
+      "arguments": [
+        {
+          "name": "Fluid type with clamp()",
+          "type": "typography",
+          "desc": "Use font-size: clamp(min, preferred, max) on the h1 to scale with viewport width while staying within bounds."
+        },
+        {
+          "name": "Fluid spacing with clamp()",
+          "type": "spacing",
+          "desc": "Use padding-inline (or left/right) with clamp() so horizontal padding grows on large screens and shrinks on small."
+        },
+        {
+          "name": "Reasonable bounds",
+          "type": "UX",
+          "desc": "Pick sensible min/max so text isn’t tiny on phones or gigantic on desktops."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A hero section whose heading and side padding scale fluidly but remain readable across screen sizes."
+      },
+      "examples": [
+        "h1 { font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }",
+        ".hero { padding-inline: clamp(1rem, 4vw, 3rem); }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<header class=\"hero\">\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
+      "starterCss": "/* Base page styles */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 0;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n/* Visual container */\\n.hero {\\n  background: #222;\\n  color: #fff;\\n  /* TODO: Use clamp() to make horizontal padding scale with viewport width */\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  /* TODO: Use clamp() to make font-size scale smoothly */\\n}\\n\\n.hero p {\\n  margin: 0;\\n  opacity: 0.9;\\n}",
+      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\nfunction cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && r.cssText.includes(text)) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nconst hero=document.querySelector('.hero');\\nconst h1=document.querySelector('.hero h1');\\n\\n// 1) h1 font-size uses clamp() (by rule presence)\\nit('uses clamp() for fluid heading size', () => {\\n  const hasClampRule = cssTextContains('.hero h1', 'font-size') && cssTextContains('.hero h1', 'clamp(');\\n  expect(hasClampRule).toBe(true);\\n});\\n\\n// 2) .hero horizontal padding uses clamp() (by rule presence)\\nit('uses clamp() for fluid horizontal padding', () => {\\n  const hasClampPad = cssTextContains('.hero', 'padding-inline') && cssTextContains('.hero', 'clamp(');\\n  expect(hasClampPad).toBe(true);\\n});\\n\\n// 3) Computed values fall within sensible bounds on this viewport\\nit('keeps heading size and padding within sensible bounds', () => {\\n  const fs = pxNum(cssValue(h1, 'font-size'));\\n  const pl = pxNum(cssValue(hero, 'padding-left'));\\n  const pr = pxNum(cssValue(hero, 'padding-right'));\\n  const inRangeFs = fs >= 20 && fs <= 48;\\n  const inRangePad = pl >= 12 && pr >= 12 && pl <= 48 && pr <= 48;\\n  expect(inRangeFs && inRangePad).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "Use CSS clamp() to create fluid values with safe minimum and maximum bounds. Apply it to the heading’s font-size and the hero’s horizontal padding so both scale smoothly with viewport width.",
+      "approaches": [
+        {
+          "title": "Approach — clamp() for Type & Padding",
+          "prose": "Assign a fluid font size to the h1 using clamp(min, preferred, max). Do the same for the hero’s horizontal padding via padding-inline. This provides responsive scaling without media queries while ensuring legibility at small and large sizes.",
+          "codeHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
+          "codeCss": ".hero {\\n  background: #222;\\n  color: #fff;\\n  padding-inline: clamp(1rem, 4vw, 3rem);\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  font-size: clamp(1.5rem, 3vw + 1rem, 3rem);\\n}\\n.hero p { margin: 0; opacity: 0.9; }"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using an overly small min can make headings unreadable on tiny screens.",
+          "Setting an excessive max can cause overflow or awkward line breaks on large displays."
+        ],
+        "techniques": [
+          "Combine vw with a base rem (e.g., 3vw + 1rem) inside clamp() for smoother scaling.",
+          "Use padding-inline to set left/right together; it mirrors automatically in RTL layouts."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – clamp()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp"
+        },
+        {
+          "title": "MDN – CSS Values and Units (vw, rem)",
+          "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units"
+        }
+      ]
+    },
+    "webSolutionHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: #fafafa; color: #111; }\\n.hero { background: #222; color: #fff; padding-inline: clamp(1rem, 4vw, 3rem); padding-block: 2rem; border-bottom: 1px solid #444; }\\n.hero h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }\\n.hero p { margin: 0; opacity: 0.9; }",
+    "access": "free"
+  },
+  {
+    "id": "css-forms-pseudoclasses",
+    "title": "Forms & Pseudo-classes: Focus, Invalid, Required, Helper Text",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "css",
+      "forms",
+      "accessibility",
+      "pseudo-classes",
+      "focus"
+    ],
+    "description": {
+      "summary": "Style an accessible form so keyboard focus is clearly visible, invalid inputs are indicated, required state is respected, and helper text is readable.",
+      "arguments": [
+        {
+          "name": ":focus / :focus-visible",
+          "type": "accessibility",
+          "desc": "Provide a visible outline for keyboard focus. Prefer :focus-visible with a :focus fallback."
+        },
+        {
+          "name": ":invalid and :required",
+          "type": "validation",
+          "desc": "Indicate invalid inputs with a subtle border color; don’t rely on color alone. Optional: style :required."
+        },
+        {
+          "name": "::placeholder and :focus-within",
+          "type": "usability",
+          "desc": "Make placeholder text lighter; highlight the label group when its input is focused using :focus-within."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A form where focus rings are visible, invalid fields are clearly indicated, required fields are supported, and helper text is readable."
+      },
+      "examples": [
+        "input:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
+        "input:invalid { border-color: #e63946; }",
+        "label:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
+        "input::placeholder { color: #9aa0a6; }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<form class=\"form\" onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type=\"email\" required placeholder=\"you@example.com\">\\n  </label>\\n  <small class=\"hint\">We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+      "starterCss": "/* TODOs:\\n  1) Add a visible focus style using :focus-visible (with :focus fallback). Use outline, not only box-shadow.\\n  2) Style :invalid inputs with a subtle border color change.\\n  3) Make ::placeholder lighter; highlight the label group with :focus-within.\\n*/\\n\\n/* Plain starter (intentionally minimal so it doesn't look like the solution) */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n.form {\\n  border: 1px solid #e5e7eb; /* light gray */\\n  padding: 12px;\\n  max-width: 420px;\\n  background: #fff;\\n}\\n\\nlabel {\\n  display: block;\\n  margin-bottom: 8px;\\n}\\n\\ninput {\\n  display: block;\\n  width: 100%;\\n  margin-top: 4px;\\n  padding: 8px 10px;\\n  border: 1px solid #cfcfcf;\\n  border-radius: 4px; /* subtle */\\n  background: #fff;\\n  color: inherit;\\n}\\n\\nbutton {\\n  margin-top: 10px;\\n  padding: 8px 12px;\\n  border: 1px solid #d1d5db;\\n  border-radius: 4px;\\n  background: #f9fafb;\\n  color: #111;\\n}\\n\\n.hint {\\n  display: block;\\n  margin-top: 6px;\\n  color: #6b7280; /* muted */\\n}",
+      "tests": "function cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\n// 1) Focus style present via :focus-visible or :focus and not removing outline\\nit('provides a visible focus outline', () => {\\n  const hasFocusOutline = (cssTextContains('input:focus-visible','outline') || cssTextContains('input:focus','outline'));\\n  const removesOutline = cssTextContains('input:focus-visible','outline: none') || cssTextContains('input:focus','outline: none');\\n  expect(hasFocusOutline && !removesOutline).toBe(true);\\n});\\n\\n// 2) Invalid state styling exists (border/border-color)\\nit('indicates invalid inputs with a border color change', () => {\\n  const hasInvalid = cssTextContains('input:invalid','border-color') || cssTextContains('input:invalid','border');\\n  expect(hasInvalid).toBe(true);\\n});\\n\\n// 3) Placeholder is styled and label group highlights with :focus-within\\nit('styles ::placeholder and highlights label with :focus-within', () => {\\n  const hasPlaceholder = cssTextContains('::placeholder','color') || cssTextContains('input::placeholder','color');\\n  const hasFocusWithin = cssTextContains('label:focus-within','outline') || cssTextContains('label:focus-within','border') || cssTextContains('label:focus-within','box-shadow');\\n  expect(hasPlaceholder && hasFocusWithin).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "Use :focus-visible (with a :focus fallback) to show an outline ring, :invalid to indicate errors, ::placeholder for lighter hint text, and :focus-within on the label to highlight the label+input group. The solution also applies nicer visual styling so it looks clearly different from the starter.",
+      "approaches": [
+        {
+          "title": "Approach — Focus Rings + Validation States",
+          "prose": "Add a visible outline on focus using :focus-visible (and :focus as fallback). Style :invalid to adjust the border color when constraints fail. Use ::placeholder for lighter hint text. Apply :focus-within on the label to add an outline around the group. Extra visual polish (radius, stronger button) is included here so the solution preview is obviously different than the starter.",
+          "codeHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+          "codeCss": "/* Base + polish */\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\n\\n/* Accessibility & states */\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; } /* fallback */\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }"
+        }
+      ]
+    },
+    "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; color: #111; }\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
+    "access": "free"
+  },
+  {
+    "id": "css-transitions-transforms-lift",
+    "title": "Transitions & Transforms: Lift on Hover",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "css",
+      "animation",
+      "transition",
+      "transform",
+      "accessibility"
+    ],
+    "description": {
+      "summary": "Create a card that smoothly “lifts” on hover using transitions and transforms, with motion-respectful behavior.",
+      "arguments": [
+        {
+          "name": ".lift (base)",
+          "type": "visual",
+          "desc": "Define a neutral card with padding, subtle border, and initial box-shadow."
+        },
+        {
+          "name": ".lift:hover (interaction)",
+          "type": "transform",
+          "desc": "Apply transform (e.g., scale or translateY) and a stronger shadow on hover."
+        },
+        {
+          "name": "transition",
+          "type": "animation",
+          "desc": "Animate both transform and box-shadow smoothly."
+        },
+        {
+          "name": "@media (prefers-reduced-motion: reduce)",
+          "type": "a11y",
+          "desc": "Disable animations for users who prefer reduced motion."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "An elevated card that animates on hover and respects reduced-motion preferences."
+      },
+      "examples": [
+        ".lift { transition: transform 200ms ease, box-shadow 200ms ease; }",
+        ".lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }",
+        "@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<article class=\"lift\">\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
+      "starterCss": "/* TODOs:\\n  1) Add a transition on transform and box-shadow for smooth motion.\\n  2) On .lift:hover, increase elevation (box-shadow) and apply a slight transform (scale or translateY).\\n  3) Respect reduced motion using @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n.lift {\\n  background: #fff;\\n  border: 1px solid #e5e7eb;\\n  border-radius: 10px;\\n  padding: 16px 18px;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  /* Add transition here */\\n}\\n\\n/* Add .lift:hover and reduced-motion styles below */",
+      "tests": "function cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nfunction hasReducedMotionDisableTransitions(){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        if(r.media && (r.media.mediaText||'').includes('prefers-reduced-motion')){\\n          const inner=[...((r.cssRules)||[])];\\n          const found=inner.some(ir=>/transition\\s*:\\s*none/i.test(ir.cssText) || /transition\\s*:\\s*0s/i.test(ir.cssText));\\n          if(found) return true;\\n        }\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nconst card=document.querySelector('.lift');\\n\\nit('adds a transition for smooth hover', () => {\\n  const hasTrans = cssTextContains('.lift', 'transition');\\n  expect(hasTrans).toBe(true);\\n});\\n\\nit('lifts on hover with transform and stronger shadow', () => {\\n  const hasHoverTransform = cssTextContains('.lift:hover', 'transform');\\n  const hasHoverShadow = cssTextContains('.lift:hover', 'box-shadow');\\n  expect(hasHoverTransform && hasHoverShadow).toBe(true);\\n});\\n\\nit('respects prefers-reduced-motion', () => {\\n  expect(hasReducedMotionDisableTransitions()).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "Animate elevation by transitioning both transform and box-shadow. A tiny scale or upward translate combined with a deeper shadow gives a realistic lift effect. Always provide a reduced-motion fallback.",
+      "approaches": [
+        {
+          "title": "Approach — Transition + Hover Transform",
+          "prose": "Set a base card with a subtle shadow. Add a transition that covers both transform and box-shadow. On :hover, scale slightly and/or translate up a couple pixels, and increase the shadow. Finally, disable transitions under prefers-reduced-motion.",
+          "codeHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
+          "codeCss": ".lift {\\n  background: #fff;\\n  border: 1px solid #e5e7eb;\\n  border-radius: 12px;\\n  padding: 18px 20px;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  transition: transform 200ms ease, box-shadow 200ms ease;\\n}\\n.lift:hover {\\n  transform: translateY(-2px) scale(1.02);\\n  box-shadow: 0 10px 24px rgba(0,0,0,.15);\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  * { transition: none !important; }\\n}"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to include box-shadow in the transition causes a snap in the shadow.",
+          "Using a large scale or translate can look jumpy; keep values subtle."
+        ],
+        "techniques": [
+          "Pair transform with shadow changes for convincing depth.",
+          "Use ease or ease-out for a natural feel; keep duration around 150–250ms."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – transition",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transition"
+        },
+        {
+          "title": "MDN – transform",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"
+        },
+        {
+          "title": "MDN – prefers-reduced-motion",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+        }
+      ]
+    },
+    "webSolutionHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; color: #111; }\\n.lift { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: transform 200ms ease, box-shadow 200ms ease; }\\n.lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }\\n@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }",
+    "access": "free"
+  },
+  {
+    "id": "css-theme-variables-dark-mode",
+    "title": "Theming with CSS Variables (incl. Dark Mode)",
+    "type": "coding",
+    "technology": "css",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "css",
+      "variables",
+      "custom-properties",
+      "dark-mode",
+      "theming",
+      "accessibility"
+    ],
+    "description": {
+      "summary": "Build a themeable panel using CSS custom properties. Provide light defaults on :root, dark values via OS dark mode, and a .theme-dark class that overrides everything.",
+      "arguments": [
+        {
+          "name": "Define variables on :root",
+          "type": "custom properties",
+          "desc": "Create --bg, --text, --surface, --accent (and optionally --border) with sensible light-theme defaults."
+        },
+        {
+          "name": "OS dark mode",
+          "type": "media query",
+          "desc": "Use @media (prefers-color-scheme: dark) to redefine the same variables for dark mode."
+        },
+        {
+          "name": "Manual override",
+          "type": "cascade",
+          "desc": "Add a .theme-dark class (e.g., on <html>) that sets dark variables and is declared AFTER the media query so it always wins."
+        }
+      ],
+      "returns": {
+        "type": "markup+style",
+        "desc": "A panel styled entirely with variables that adapts to OS theme and can be force-switched to dark with .theme-dark."
+      },
+      "examples": [
+        ":root { --bg:#fafafa; --text:#111; --surface:#fff; --accent:#3b82f6; }",
+        "@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; } }",
+        "html.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; }"
+      ]
+    },
+    "web": {
+      "starterHtml": "<!-- Tip: add class 'theme-dark' to <html> to force dark mode regardless of OS setting -->\\n<div class=\"panel\">\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <button class=\"btn\">Action</button>\\n</div>",
+      "starterCss": "/* TODOs:\\n  1) Define variables on :root: --bg, --text, --surface, --accent (optional: --border).\\n  2) Provide dark values inside @media (prefers-color-scheme: dark).\\n  3) Add html.theme-dark { ... } as a manual override, placed AFTER the media query.\\n*/\\n\\n/* Base page styles using variables (to be defined by you) */\\nhtml, body { height: 100%; }\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 0;\\n  line-height: 1.6;\\n  background: var(--bg);   /* relies on your :root variables */\\n  color: var(--text);       /* relies on your :root variables */\\n  display: grid;\\n  place-items: center;\\n  padding: 2rem;\\n}\\n\\n/* The component must use ONLY variables for colors */\\n.panel {\\n  background: var(--surface);\\n  color: var(--text);\\n  border: 1px solid var(--border, rgba(0,0,0,0.08));\\n  border-radius: 12px;\\n  padding: 1.25rem;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  max-width: 520px;\\n}\\n\\n.btn {\\n  background: var(--accent);\\n  color: #fff;\\n  border: 0;\\n  padding: .5rem .9rem;\\n  border-radius: .6rem;\\n  font-weight: 600;\\n}",
+      "tests": "function getAllRules(){ try { return [...document.styleSheets].flatMap(s=>[...((s.cssRules)||[])]);} catch(e){ return []; } }\\nfunction hasRootVars(){\\n  const rules=getAllRules();\\n  return rules.some(r=>r.selectorText==\":root\" && /--bg\\s*:/.test(r.cssText) && /--text\\s*:/.test(r.cssText));\\n}\\nfunction hasDarkMediaVars(){\\n  const rules=getAllRules();\\n  return rules.some(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark') && [...(r.cssRules||[])].some(ir=>ir.selectorText===':root' && /--bg\\s*:/.test(ir.cssText)));\\n}\\nfunction ruleIndex(pred){ const rules=getAllRules(); for(let i=0;i<rules.length;i++){ const r=rules[i]; if(pred(r,i)) return i; } return -1; }\\nfunction darkMediaIndex(){ return ruleIndex(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark')); }\\nfunction themeDarkIndex(){ return ruleIndex(r=>r.selectorText && /(^|\\s|\\.)theme-dark/.test(r.selectorText)); }\\n\\nit('defines core variables on :root',()=>{\\n  expect(hasRootVars()).toBe(true);\\n});\\n\\nit('provides dark-mode variables via media query',()=>{\\n  expect(hasDarkMediaVars()).toBe(true);\\n});\\n\\nit('declares .theme-dark override after the media query',()=>{\\n  const dmi=darkMediaIndex();\\n  const tdi=themeDarkIndex();\\n  expect(dmi>=0 && tdi>dmi).toBe(true);\\n});"
+    },
+    "solutionBlock": {
+      "overview": "Declare a palette as CSS variables on :root. Redefine them under @media (prefers-color-scheme: dark) for OS dark mode. Finally, add html.theme-dark with the same dark values AFTER the media query so authors can force dark regardless of OS.",
+      "approaches": [
+        {
+          "title": "Approach — Variables + Dark Media + Manual Override",
+          "prose": "Keep all component colors reading from variables (no literals). Light theme on :root, dark values in the media query, and a later .theme-dark rule to override. This keeps the component themeable without changing the markup or styles inside the panel.",
+          "codeHtml": "<div class='panel'>\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <div style='display:flex; gap:.5rem; margin:.75rem 0 1rem;'>\\n    <button class='btn' onclick=\"document.body.classList.remove('theme-dark'); this.nextElementSibling.textContent='Force Dark';\">Auto (OS)</button>\\n    <button class='btn' onclick=\"document.body.classList.toggle('theme-dark'); this.textContent = document.body.classList.contains('theme-dark') ? 'Disable Dark' : 'Force Dark';\">Force Dark</button>\\n  </div>\\n</div>",
+          "codeCss": "/* 1) Light defaults */\\n:root {\\n  --bg: #fafafa;\\n  --text: #111111;\\n  --surface: #ffffff;\\n  --accent: #3b82f6;\\n  --border: rgba(0,0,0,0.12);\\n}\\n\\n/* 2) OS dark mode */\\n@media (prefers-color-scheme: dark) {\\n  :root {\\n    --bg: #0b0b0c;\\n    --text: #f3f4f6;\\n    --surface: #16181a;\\n    --accent: #60a5fa;\\n    --border: rgba(255,255,255,0.14);\\n  }\\n}\\n\\n/* 3) Manual override (AFTER media query) */\\nhtml.theme-dark, body.theme-dark {\\n  --bg: #0b0b0c;\\n  --text: #f3f4f6;\\n  --surface: #16181a;\\n  --accent: #60a5fa;\\n  --border: rgba(255,255,255,0.14);\\n}\\n\\n/* Component using variables */\\nhtml, body { height: 100%; }\\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: var(--bg); color: var(--text); display: grid; place-items: center; padding: 2rem; }\\n.panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); max-width: 520px; }\\n.btn { background: var(--accent); color: #fff; border: 0; padding: .5rem .9rem; border-radius: .6rem; font-weight: 600; cursor: pointer; }\\n.btn + .btn { margin-left: .5rem; }"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Declaring .theme-dark BEFORE the media query will lose the override due to cascade order.",
+          "Mixing hard-coded colors with variables in the component breaks themeability."
+        ],
+        "techniques": [
+          "Use variables everywhere inside the component so themes swap instantly.",
+          "Prefer placing author overrides (like .theme-dark) after media queries."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN – Using CSS custom properties (variables)",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties"
+        },
+        {
+          "title": "MDN – prefers-color-scheme",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"
+        }
+      ]
+    },
+    "webSolutionHtml": "<div class='panel'>\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <div style='display:flex; gap:.5rem; margin:.75rem 0 1rem;'>\\n    <button class='btn' onclick=\"document.body.classList.remove('theme-dark'); this.nextElementSibling.textContent='Force Dark';\">Auto (OS)</button>\\n    <button class='btn' onclick=\"document.body.classList.toggle('theme-dark'); this.textContent = document.body.classList.contains('theme-dark') ? 'Disable Dark' : 'Force Dark';\">Force Dark</button>\\n  </div>\\n</div>",
+    "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} @media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} } html.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} html, body { height:100%; } body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; line-height:1.6; background: var(--bg); color: var(--text); display:grid; place-items:center; padding:2rem; } .panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); max-width: 520px; } .btn { background: var(--accent); color:#fff; border:0; padding:.5rem .9rem; border-radius:.6rem; font-weight:600; cursor:pointer; } .btn + .btn { margin-left:.5rem; }",
+    "access": "free"
+  }
 ]

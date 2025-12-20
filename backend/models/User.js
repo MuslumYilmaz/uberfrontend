@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    accessTier: { type: String, enum: ['free', 'premium'], default: 'free' },
 
     // profile
     bio: { type: String, maxlength: 280 },

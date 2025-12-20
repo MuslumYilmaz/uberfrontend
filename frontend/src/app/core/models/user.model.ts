@@ -6,6 +6,7 @@ export interface User {
     bio?: string;
     avatarUrl?: string;
     role: 'user' | 'admin';
+    accessTier?: 'free' | 'premium';
     solvedQuestionIds?: string[];
     createdAt: string;
     updatedAt: string;

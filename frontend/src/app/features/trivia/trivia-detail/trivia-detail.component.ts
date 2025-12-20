@@ -9,7 +9,7 @@ import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.js';
 import { Subscription, combineLatest, map, switchMap, tap } from 'rxjs';
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
-import { Question } from '../../../core/models/question.model';
+import { Question, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -75,6 +75,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   private practice: PracticeSession = null;
   returnTo: any[] | null = null;
   private returnLabel = signal<string | null>(null);
+  locked = computed(() => {
+    const q = this.question();
+    const tier = this.auth.user()?.accessTier ?? 'free';
+    return q ? isQuestionLockedForTier(q, tier) : false;
+  });
 
   // footer helpers
   readonly progressText = computed(() =>
@@ -151,7 +156,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private seo: SeoService,
     private progress: UserProgressService,
-    private auth: AuthService
+    public auth: AuthService
   ) { }
 
   ngOnInit() {
@@ -314,6 +319,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   goToLogin() {
     this.loginPromptOpen = false;
     this.router.navigate(['/auth/login']);
+  }
+
+  goToPricing() {
+    this.router.navigate(['/pricing']);
   }
 
   copy(code: string, idx: number) {

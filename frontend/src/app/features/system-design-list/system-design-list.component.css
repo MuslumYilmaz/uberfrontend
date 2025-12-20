@@ -79,3 +79,32 @@
   background: rgba(255, 255, 255, 0.08);
   border-color: #5a9df9;
 }
+
+.premium-pill{
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.18);
+  color: #e5e7eb;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.is-locked{
+  opacity: .85;
+  cursor: not-allowed;
+}
+.is-locked::after{
+  content: 'Premium — upgrade to unlock';
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.9);
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px dashed rgba(148, 163, 184, 0.35);
+  padding: 6px 8px;
+  border-radius: 8px;
+}

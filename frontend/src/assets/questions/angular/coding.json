@@ -65,7 +65,8 @@
       "storageKey": "v2:ui:angular:angular-counter-starter"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
+    "access": "free"
   },
   {
     "id": "angular-contact-form-starter",
@@ -150,7 +151,8 @@
       "storageKey": "v2:ui:angular:angular-contact-form-starter"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
+    "access": "free"
   },
   {
     "id": "angular-todo-list-starter",
@@ -231,7 +233,8 @@
       "storageKey": "v2:ui:angular:angular-todo-list-starter"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-image-slider-starter",
@@ -312,7 +315,8 @@
       "amazon",
       "google"
     ],
-    "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
+    "access": "free"
   },
   {
     "id": "angular-tabs-switcher",
@@ -385,7 +389,8 @@
     "companies": [
       "amazon"
     ],
-    "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
+    "access": "free"
   },
   {
     "id": "angular-filterable-user-list",
@@ -464,7 +469,8 @@
       "storageKey": "v2:ui:angular:angular-filterable-user-list"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-faq-accordion",
@@ -539,7 +545,8 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-faq-accordion"
     },
-    "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-pagination-table",
@@ -619,7 +626,8 @@
       "storageKey": "v2:ui:angular:angular-pagination-table"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-theme-toggle",
@@ -701,7 +709,8 @@
       "storageKey": "v2:ui:angular:angular-theme-toggle"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-multi-step-form-starter",
@@ -785,7 +794,8 @@
       "storageKey": "v2:ui:angular:angular-multi-step-form-starter"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-shopping-cart-mini",
@@ -872,7 +882,8 @@
       "storageKey": "v2:ui:angular:angular-shopping-cart"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-debounced-search",
@@ -960,7 +971,8 @@
       "storageKey": "v1:ui:angular:angular-debounced-search"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-star-rating",
@@ -1038,7 +1050,8 @@
     "companies": [
       "amazon"
     ],
-    "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-dynamic-table-starter",
@@ -1113,7 +1126,8 @@
       "storageKey": "v2:ui:angular:angular-dynamic-table-starter"
     },
     "companies": [],
-    "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json",
+    "access": "premium"
   },
   {
     "id": "angular-nested-checkboxes",
@@ -1191,6 +1205,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v1:ui:angular:angular-nested-checkboxes"
     },
-    "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json"
+    "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
+    "access": "premium"
   }
 ]

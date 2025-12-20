@@ -14,7 +14,7 @@ import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subs
 import { distinctUntilChanged, map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
-import { Difficulty, Question, QuestionKind, Technology } from '../../../core/models/question.model';
+import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
@@ -506,6 +506,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   isSolved(id: string): boolean {
     return this.solvedSet().has(id);
+  }
+
+  isLocked(q: Row): boolean {
+    const tier = this.auth.user()?.accessTier ?? 'free';
+    return isQuestionLockedForTier(q, tier);
+  }
+
+  handleCardClick(ev: Event, q: Row) {
+    if (!this.isLocked(q)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
   }
 
   constructor(
@@ -1039,6 +1050,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
           importance: 4,
           tags: it.tags ?? [],
           companies: it.companies ?? [],
+          access: (it as any).access ?? 'free',
           __kind: 'coding',
           tech: undefined,
           __sd: true
@@ -1229,9 +1241,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
     return frameworkLabel(tech);
   }
 
-  goToFramework(ev: Event, opt: FrameworkVariant) {
+  goToFramework(ev: Event, opt: FrameworkVariant, source?: Row) {
     ev.stopPropagation();
     ev.preventDefault();
+
+    if (source && this.isLocked(source)) {
+      return;
+    }
 
     const path = ['/', opt.tech, opt.kind === 'trivia' ? 'trivia' : 'coding', opt.id];
     this.router.navigate(path, {

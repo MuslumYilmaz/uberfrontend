@@ -333,6 +333,36 @@ app-coding-tech-kind-tabs {
   cursor: pointer;
 }
 
+.premium-pill{
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-accent) 28%, transparent);
+  color: var(--uf-text-primary);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.fa-question-card.is-locked{
+  cursor: not-allowed;
+  opacity: .85;
+  position: relative;
+}
+.fa-question-card.is-locked::after{
+  content: 'Premium — upgrade to unlock';
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  font-size: 11px;
+  color: var(--uf-text-secondary);
+  background: color-mix(in srgb, var(--uf-surface) 92%, transparent);
+  border: 1px dashed var(--uf-border-subtle);
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
 .text-gray-400,
 .text-gray-500 {
   color: var(--ink-dim) !important;

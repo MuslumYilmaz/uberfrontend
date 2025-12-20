@@ -10,6 +10,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { QuestionService } from '../../core/services/question.service';
+import { isQuestionLockedForTier } from '../../core/models/question.model';
+import { AuthService } from '../../core/services/auth.service';
 
 type SysDesign = {
   id: string;
@@ -17,6 +19,7 @@ type SysDesign = {
   description: string;
   tags: string[];
   type: 'system-design';
+  access?: 'free' | 'premium';
 };
 
 @Component({
@@ -54,7 +57,19 @@ export class SystemDesignListComponent {
     })
   );
 
-  constructor(public qs: QuestionService) { }
+  constructor(public qs: QuestionService, private auth: AuthService) { }
 
   trackById = (_: number, q: SysDesign) => q.id;
+
+  isLocked(q: SysDesign): boolean {
+    const tier = this.auth.user()?.accessTier ?? 'free';
+    const access = q.access ?? 'free';
+    return isQuestionLockedForTier({ access } as any, tier);
+  }
+
+  handleRowClick(ev: Event, q: SysDesign) {
+    if (!this.isLocked(q)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
 }

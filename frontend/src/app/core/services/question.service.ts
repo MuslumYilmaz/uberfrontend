@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Question } from '../models/question.model';
+import { AccessLevel, Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
 
 type Kind = 'coding' | 'trivia' | 'debug';
@@ -135,7 +135,12 @@ export class QuestionService {
 
     if (cachedRaw) {
       const parsed = this.safeParse(cachedRaw);
-      if (Array.isArray(parsed)) return of(parsed as any[]);
+      if (Array.isArray(parsed)) {
+        const hasAccess = parsed.every((q: any) => q && typeof q === 'object' && 'access' in q);
+        if (hasAccess) return of(parsed as any[]);
+        // stale cache missing access tags; drop and re-fetch
+        try { localStorage.removeItem(key); } catch { /* ignore */ }
+      }
     }
 
     const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
@@ -298,6 +303,7 @@ export class QuestionService {
       ...q,
       technology: q?.technology ?? technology,
       type: q?.type ?? kind,
+      access: (q?.access as AccessLevel) ?? 'free',
       difficulty: q?.difficulty ?? 'easy',
       importance: Number(q?.importance ?? 0),
       languageDefault: q?.languageDefault ?? 'js',

@@ -4,11 +4,13 @@ import {
   QueryList, ViewChild, ViewChildren, WritableSignal, computed, inject, signal
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
+import { isQuestionLockedForTier } from '../../../core/models/question.model';
 
 type Block =
   | { type: 'text'; text: string }
@@ -84,6 +86,7 @@ type SDQuestion = {
   title: string;
   description: string;
   tags: string[];
+  access?: 'free' | 'premium';
   type?: string;
 
   radio?: RadioSection[];
@@ -104,9 +107,10 @@ type SDQuestion = {
 })
 export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  readonly router = inject(Router);
   private qs = inject(QuestionService);
   private seo = inject(SeoService);
+  readonly auth = inject(AuthService);
 
   q: WritableSignal<SDQuestion | null> = signal(null);
   all: SDQuestion[] = [];
@@ -116,6 +120,11 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   title = computed(() => this.q()?.title ?? '');
   description = computed(() => this.q()?.description ?? '');
   tags = computed(() => this.q()?.tags ?? []);
+  locked = computed(() => {
+    const access = (this.q() as any)?.access ?? 'free';
+    const tier = this.auth.user()?.accessTier ?? 'free';
+    return isQuestionLockedForTier({ access } as any, tier);
+  });
 
   sections = computed<Required<RadioSection>[]>(() => {
     const item = this.q(); if (!item) return [];
@@ -275,7 +284,10 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
           type: meta.type,
 
           // Sonra detail meta (meta.json içindeki ekstra alanlar / radio, sections, vs.):
-          ...(detail as Partial<SDQuestion>)
+          ...(detail as Partial<SDQuestion>),
+
+          // access: keep index authority
+          access: (meta as any).access ?? 'free',
         };
 
         this.q.set(merged);

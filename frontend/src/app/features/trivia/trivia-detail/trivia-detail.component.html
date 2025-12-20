@@ -10,6 +10,7 @@
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
                     <div class="side-item-main">
                         <div class="side-item-title">{{ q.title }}</div>
+                        <span class="chip chip-premium" *ngIf="q.access === 'premium'">Premium</span>
                     </div>
                     <div class="side-item-tail">
                         <i class="fa-solid fa-chevron-right" *ngIf="!isActive(q)"></i>
@@ -22,6 +23,7 @@
     <!-- Detail -->
     <main class="main">
         <div *ngIf="question() as q; else missing" class="main-stack">
+            <ng-container *ngIf="!locked(); else lockedView">
             <!-- Title + chips -->
             <header class="title-block">
                 <div class="title-row">
@@ -35,6 +37,7 @@
                     <span class="chip chip-freq">{{ importanceLabel(q.importance) }}</span>
                     <span class="chip chip-diff">{{ difficultyLabel(q.difficulty) }}</span>
                     <span class="chip chip-tech">{{ (q.technology || '—') | titlecase }}</span>
+                    <span class="chip chip-premium" *ngIf="locked()">Premium</span>
                 </div>
             </header>
 
@@ -135,11 +138,32 @@
                     <div class="content" [innerHTML]="summaryHelp()"></div>
                 </div>
             </section>
+            </ng-container>
         </div>
 
         <ng-template #missing>
             <div class="empty">
                 <div class="empty-text">Question not found.</div>
+            </div>
+        </ng-template>
+        <ng-template #lockedView>
+            <div class="locked-shell">
+                <div class="locked-card">
+                    <div class="locked-pill">Premium</div>
+                    <h1 class="locked-title">Premium question</h1>
+                    <p class="locked-copy">
+                        <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
+                            You're on the free tier. Upgrade to view this answer.
+                        </ng-container>
+                        <ng-template #lockedGuest>
+                            Upgrade to FrontendAtlas Premium to view this answer. Already upgraded? Sign in to continue.
+                        </ng-template>
+                    </p>
+                    <div class="locked-actions">
+                        <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricing()">View pricing</button>
+                        <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLogin()">Sign in</button>
+                    </div>
+                </div>
             </div>
         </ng-template>
     </main>

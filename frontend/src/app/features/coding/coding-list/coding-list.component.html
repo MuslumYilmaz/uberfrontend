@@ -145,13 +145,18 @@
 
           <a *ngFor="let q of questions"
             class="list-row fa-card fa-card--interactive fa-question-card fa-question-card--compact"
-            [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)" [routerLink]="linkTo(q)"
+            [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)"
+            [class.is-locked]="isLocked(q)"
+            [attr.aria-disabled]="isLocked(q) ? true : null"
+            [routerLink]="linkTo(q)"
+            (click)="handleCardClick($event, q)"
             [state]="stateForNav(questions, q, (companySlug$ | async) || null)">
             <div class="fa-question-card__grid">
               <div class="fa-question-card__main">
                 <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
                   <span>{{ q.__kind === 'trivia' ? 'Quiz' : 'Coding' }} prompt</span>
+                  <span class="premium-pill" *ngIf="isLocked(q)">Premium</span>
                 </div>
                 <div class="fa-question-card__title fa-card-title">{{ q.title }}</div>
                 <div class="solved-pill" *ngIf="auth.isLoggedIn() && solvedSet().has(q.id)" aria-label="Solved">
@@ -174,7 +179,7 @@
                   <div class="fw-chip-row">
                     <button *ngFor="let opt of frameworkOptions(q)" type="button" class="fw-chip"
                       [class.active]="opt.id === q.id" [attr.aria-label]="'Open '+frameworkLabel(opt.tech)+' version'"
-                      (click)="goToFramework($event, opt)">
+                      (click)="goToFramework($event, opt, q)">
                       <span class="fw-chip-label">{{ frameworkLabel(opt.tech) }}</span>
                       <span class="fw-cta">Open</span>
                     </button>

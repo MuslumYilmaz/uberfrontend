@@ -36,6 +36,7 @@ const pick = (u) => ({
     bio: u.bio,
     avatarUrl: u.avatarUrl,
     role: u.role,
+    accessTier: u.accessTier || 'free',
     createdAt: u.createdAt,
     prefs: u.prefs,
     stats: u.stats,

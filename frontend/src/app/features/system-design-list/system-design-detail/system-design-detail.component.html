@@ -1,3 +1,4 @@
+<ng-container *ngIf="!locked(); else lockedView">
 <div class="sdl-root">
     <div class="sdl-main">
         <!-- LEFT : fixed rail -->
@@ -186,3 +187,25 @@
         (prev)="onPrev()" (next)="onNext()">
     </app-footer>
 </div>
+</ng-container>
+
+<ng-template #lockedView>
+    <div class="locked-shell">
+        <div class="locked-card">
+            <div class="locked-pill">Premium</div>
+            <h1 class="locked-title">Premium question</h1>
+            <p class="locked-copy">
+                <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
+                    You're on the free tier. Upgrade to access this system design scenario.
+                </ng-container>
+                <ng-template #lockedGuest>
+                    Upgrade to FrontendAtlas Premium to access this system design scenario. Already upgraded? Sign in to continue.
+                </ng-template>
+            </p>
+            <div class="locked-actions">
+                <button class="fa-btn fa-btn--primary" type="button" (click)="router.navigate(['/pricing'])">View pricing</button>
+                <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="router.navigate(['/auth/login'])">Sign in</button>
+            </div>
+        </div>
+    </div>
+</ng-template>

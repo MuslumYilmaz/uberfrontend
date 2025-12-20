@@ -1,158 +1,160 @@
 [
-    {
-        "id": "react-counter",
-        "title": "Counter (Component with Guarded Decrement)",
-        "type": "coding",
-        "technology": "react",
-        "difficulty": "beginner",
-        "importance": 3,
-        "tags": [
-            "react",
-            "state",
-            "event-handlers",
-            "components"
+  {
+    "id": "react-counter",
+    "title": "Counter (Component with Guarded Decrement)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "beginner",
+    "importance": 3,
+    "tags": [
+      "react",
+      "state",
+      "event-handlers",
+      "components"
+    ],
+    "description": {
+      "summary": "Build a simple <Counter /> component that displays a value and has '+' and '-' buttons. The count must never go below 0.",
+      "specs": {
+        "requirements": [
+          "Render a <Counter /> as the main UI.",
+          "Display the current count value.",
+          "Provide '+' and '-' buttons to increment and decrement.",
+          "Prevent the count from ever going below 0."
         ],
-        "description": {
-            "summary": "Build a simple <Counter /> component that displays a value and has '+' and '-' buttons. The count must never go below 0.",
-            "specs": {
-                "requirements": [
-                    "Render a <Counter /> as the main UI.",
-                    "Display the current count value.",
-                    "Provide '+' and '-' buttons to increment and decrement.",
-                    "Prevent the count from ever going below 0."
-                ],
-                "expectedBehavior": [
-                    "Clicking '+' increases the count by 1.",
-                    "Clicking '-' decreases the count by 1, but never below 0.",
-                    "Initial count starts at 0."
-                ],
-                "implementationNotes": [
-                    "Use React state (useState) to store the count.",
-                    "Guard the decrement so it never sets a negative value.",
-                    "Keep everything in a single small component for this exercise."
-                ],
-                "techFocus": [
-                    "React useState",
-                    "Event handlers",
-                    "Basic component structure"
-                ]
-            }
-        },
-        "solutionBlock": {
-            "overview": "Use a single piece of state managed with `useState(0)` to store the count. The '+' button increments by 1. The '-' button should call `setCount` with `Math.max(0, count - 1)` (or equivalent) so the value never goes negative.\n\n**Key ideas**\n- Co-locate state in the component.\n- Use click handlers for both buttons.\n- Always guard the decrement.\n\n**Test cases**\n- Initial render shows `0`.\n- Clicking '+' increments.\n- Clicking '-' at 0 leaves the value at 0.\n- From a positive value, clicking '-' decrements by 1 but never below 0.",
-            "approaches": [
-                {
-                    "title": "Single component with guarded decrement",
-                    "prose": "Store `count` in state and provide two handlers: one to increment, one to decrement. The decrement handler uses `Math.max(0, count - 1)` so the count never becomes negative.",
-                    "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Updating the value without clamping, which allows negatives.",
-                    "Recomputing from stale state instead of using the current value correctly."
-                ],
-                "techniques": [
-                    "Using `useState` for local component state.",
-                    "Guarding updates with `Math.max`."
-                ]
-            }
-        },
-        "sdk": {
-            "asset": "assets/sb/react/question/react-counter.v1.json",
-            "openFile": "/src/App.tsx",
-            "storageKey": "v2:ui:react:react-counter"
-        },
-        "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
-        "companies": [
-            "meta",
-            "google"
+        "expectedBehavior": [
+          "Clicking '+' increases the count by 1.",
+          "Clicking '-' decreases the count by 1, but never below 0.",
+          "Initial count starts at 0."
+        ],
+        "implementationNotes": [
+          "Use React state (useState) to store the count.",
+          "Guard the decrement so it never sets a negative value.",
+          "Keep everything in a single small component for this exercise."
+        ],
+        "techFocus": [
+          "React useState",
+          "Event handlers",
+          "Basic component structure"
         ]
+      }
     },
-    {
-        "id": "react-contact-form-starter",
-        "title": "Contact Form (Component + HTTP)",
-        "type": "coding",
-        "technology": "react",
-        "difficulty": "intermediate",
-        "importance": 4,
-        "tags": [
-            "react",
-            "forms",
-            "http",
-            "validation",
-            "user-input"
+    "solutionBlock": {
+      "overview": "Use a single piece of state managed with `useState(0)` to store the count. The '+' button increments by 1. The '-' button should call `setCount` with `Math.max(0, count - 1)` (or equivalent) so the value never goes negative.\n\n**Key ideas**\n- Co-locate state in the component.\n- Use click handlers for both buttons.\n- Always guard the decrement.\n\n**Test cases**\n- Initial render shows `0`.\n- Clicking '+' increments.\n- Clicking '-' at 0 leaves the value at 0.\n- From a positive value, clicking '-' decrements by 1 but never below 0.",
+      "approaches": [
+        {
+          "title": "Single component with guarded decrement",
+          "prose": "Store `count` in state and provide two handlers: one to increment, one to decrement. The decrement handler uses `Math.max(0, count - 1)` so the count never becomes negative.",
+          "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Updating the value without clamping, which allows negatives.",
+          "Recomputing from stale state instead of using the current value correctly."
         ],
-        "description": {
-            "summary": "Build a contact form using a React component with controlled inputs and basic validation. You will only work in `src/App.tsx` – the HTML shell and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
-            "specs": {
-                "requirements": [
-                    "Work only inside `src/App.tsx` (the CSS in `App.css` and `public/index.html` are already wired up to the expected classes).",
-                    "Render a `Contact Us` form with fields for name, email, and message.",
-                    "Make all fields required; validate the email with a basic email check.",
-                    "Disable the submit button while the form is invalid or while a request is in progress.",
-                    "On a valid submit, send a POST request with the form body to `https://jsonplaceholder.typicode.com/posts` using `fetch`.",
-                    "If the request succeeds, show the success text: `\"Your message has been sent. Thank you!\"`.",
-                    "If the request fails, show the error text: `\"Something went wrong. Please try again.\"`.",
-                    "Track an `isSubmitting` flag so the user cannot trigger multiple requests at the same time."
-                ],
-                "expectedBehavior": [
-                    "Initially, the submit button is disabled until all required fields are filled and the email looks valid.",
-                    "If the user submits invalid data, all fields are marked as touched and inline validation error messages are shown where appropriate.",
-                    "On a valid submit, a POST request is sent to `https://jsonplaceholder.typicode.com/posts` and the button is disabled while `isSubmitting` is `true`.",
-                    "On success, `isSubmitting` becomes `false`, the message `\"Your message has been sent. Thank you!\"` is displayed, and the form may optionally be reset.",
-                    "On error, `isSubmitting` becomes `false`, the message `\"Something went wrong. Please try again.\"` is displayed, and the user can fix the issue and resubmit."
-                ],
-                "implementationNotes": [
-                    "Use React controlled inputs with `useState` to store the values for `name`, `email`, and `message`.",
-                    "Track `isSubmitting`, `successMessage`, and `errorMessage` in component state for UX and request lifecycle.",
-                    "Track simple `touched` flags for each field so you only show error messages after a field has been visited or after the user submits.",
-                    "Derive a boolean like `formIsValid` from the current values and use it (plus `isSubmitting`) to control the disabled state of the submit button.",
-                    "Use the built-in `fetch` API to send a `POST` request to `https://jsonplaceholder.typicode.com/posts` with a JSON body `{ name, email, message }`.",
-                    "Always clear previous `successMessage` / `errorMessage` at the start of the submit handler so only the latest result is visible.",
-                    "Keep everything inside `App` in `App.tsx`; you don’t need additional components or state management libraries for this exercise."
-                ],
-                "techFocus": [
-                    "React `useState` and controlled form inputs",
-                    "Form validation and UX (touched state, inline errors, disabled submit)",
-                    "Using `fetch` for a POST request and handling loading/success/error states"
-                ]
-            }
-        },
-        "solutionBlock": {
-            "overview": "This exercise uses a single React component (`App`) with controlled inputs and a simple HTTP POST using `fetch`. You only change `src/App.tsx`; the HTML shell and CSS already match the design used in the Angular version.\n\nThe component holds state for the three fields (`name`, `email`, `message`), three `touched` flags (so you know when to show errors), an `isSubmitting` flag to disable the button during the request, and two strings: `successMessage` and `errorMessage`.\n\nOn submit, you prevent the default form event, mark all fields as touched, clear previous messages, and compute whether the form is valid (all fields non-empty, email passes a basic pattern, message at least 10 characters). If invalid, you bail out. If valid, you set `isSubmitting = true`, call `fetch('https://jsonplaceholder.typicode.com/posts', ...)` with a JSON body and `Content-Type: application/json`, then handle success and error:\n- On success, set `successMessage` to `\"Your message has been sent. Thank you!\"`, reset the field values, and clear the touched flags.\n- On error, set `errorMessage` to `\"Something went wrong. Please try again.\"`.\nIn both cases you must set `isSubmitting` back to `false` when the request is finished.\n\n**Test cases**\n- With all fields empty, the submit button is disabled.\n- Typing an invalid email keeps the form invalid and the button disabled.\n- Submitting with invalid fields marks them as touched and shows inline error text.\n- With valid inputs, clicking submit sends a POST request to `https://jsonplaceholder.typicode.com/posts` and disables the button while `isSubmitting` is true.\n- On success, `\"Your message has been sent. Thank you!\"` appears and the form resets.\n- On error, `\"Something went wrong. Please try again.\"` appears and the user can resubmit.",
-            "approaches": [
-                {
-                    "title": "Single React component with controlled inputs and fetch",
-                    "prose": "Keep everything inside a single `App` component. Use `useState` to store `name`, `email`, `message`, `isSubmitting`, `successMessage`, `errorMessage`, and three touched flags (one per field). Derive `nameIsValid`, `emailIsValid`, and `messageIsValid`, then combine them into `formIsValid`. The JSX uses controlled inputs bound to these state values and `onChange` handlers, plus `onBlur` to mark fields as touched. Error messages are conditionally rendered based on `touchedX` and the validity booleans. The submit handler is an `async` function that prevents default, marks all fields as touched, checks `formIsValid`, and if valid, sends a `fetch` POST to `https://jsonplaceholder.typicode.com/posts`. It sets the exact success and error messages required by the exercise and always toggles `isSubmitting` appropriately.\n\nThis mirrors the Angular exercise but using idiomatic React patterns (controlled components, local state, and `fetch`).",
-                    "codeJs": "import React from 'react';\nimport './App.css';\n\nexport default function App() {\n  const [name, setName] = React.useState('');\n  const [email, setEmail] = React.useState('');\n  const [message, setMessage] = React.useState('');\n\n  const [touchedName, setTouchedName] = React.useState(false);\n  const [touchedEmail, setTouchedEmail] = React.useState(false);\n  const [touchedMessage, setTouchedMessage] = React.useState(false);\n\n  const [isSubmitting, setIsSubmitting] = React.useState(false);\n  const [successMessage, setSuccessMessage] = React.useState('');\n  const [errorMessage, setErrorMessage] = React.useState('');\n\n  const nameIsValid = name.trim().length > 0;\n  const emailIsValid = /\\S+@\\S+\\.\\S+/.test(email);\n  const messageIsValid = message.trim().length >= 10;\n  const formIsValid = nameIsValid && emailIsValid && messageIsValid;\n\n  const handleSubmit = async (event) => {\n    event.preventDefault();\n\n    setTouchedName(true);\n    setTouchedEmail(true);\n    setTouchedMessage(true);\n\n    setSuccessMessage('');\n    setErrorMessage('');\n\n    if (!formIsValid) {\n      return;\n    }\n\n    setIsSubmitting(true);\n\n    try {\n      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({ name, email, message }),\n      });\n\n      if (!response.ok) {\n        throw new Error('Request failed');\n      }\n\n      setSuccessMessage('Your message has been sent. Thank you!');\n      setName('');\n      setEmail('');\n      setMessage('');\n      setTouchedName(false);\n      setTouchedEmail(false);\n      setTouchedMessage(false);\n    } catch (err) {\n      setErrorMessage('Something went wrong. Please try again.');\n    } finally {\n      setIsSubmitting(false);\n    }\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Contact Us</h1>\n\n        <form className=\"panel\" noValidate onSubmit={handleSubmit}>\n          <div className=\"field\">\n            <label htmlFor=\"name\">Name</label>\n            <input\n              id=\"name\"\n              type=\"text\"\n              value={name}\n              onChange={(e) => setName(e.target.value)}\n              onBlur={() => setTouchedName(true)}\n            />\n            {touchedName && !nameIsValid && (\n              <p className=\"error\">Name is required.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"email\">Email</label>\n            <input\n              id=\"email\"\n              type=\"email\"\n              value={email}\n              onChange={(e) => setEmail(e.target.value)}\n              onBlur={() => setTouchedEmail(true)}\n            />\n            {touchedEmail && !email && (\n              <p className=\"error\">Email is required.</p>\n            )}\n            {touchedEmail && email && !emailIsValid && (\n              <p className=\"error\">Enter a valid email address.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"message\">Message</label>\n            <textarea\n              id=\"message\"\n              rows={4}\n              value={message}\n              onChange={(e) => setMessage(e.target.value)}\n              onBlur={() => setTouchedMessage(true)}\n            />\n            {touchedMessage && !message && (\n              <p className=\"error\">Message is required.</p>\n            )}\n            {touchedMessage && message && !messageIsValid && (\n              <p className=\"error\">Message should be at least 10 characters.</p>\n            )}\n          </div>\n\n          <button\n            type=\"submit\"\n            className=\"primary\"\n            disabled={!formIsValid || isSubmitting}\n          >\n            {isSubmitting ? 'Sending…' : 'Send message'}\n          </button>\n\n          {successMessage && <p className=\"success\">{successMessage}</p>}\n          {errorMessage && <p className=\"error\">{errorMessage}</p>}\n        </form>\n      </section>\n    </main>\n  );\n}\n"
-                }
-            ],
-            "notes": {
-                "pitfalls": [
-                    "Leaving validation only in the JSX and forgetting to guard inside the submit handler, which lets invalid data be sent.",
-                    "Not resetting `isSubmitting` in both success and error paths.",
-                    "Using different success/error messages than the ones specified, which can cause tests to fail.",
-                    "Forgetting to call `event.preventDefault()` in the submit handler, causing a full page reload."
-                ],
-                "techniques": [
-                    "Using React controlled inputs for form fields.",
-                    "Deriving validation flags from current state instead of storing them separately.",
-                    "Using `fetch` to call a fake JSON API endpoint.",
-                    "Managing loading, success, and error states with simple boolean and string state variables."
-                ]
-            }
-        },
-        "sdk": {
-            "asset": "assets/sb/react/question/react-contact-form.v1.json",
-            "openFile": "/src/App.tsx",
-            "storageKey": "v2:ui:react:react-contact-form-starter"
-        },
-        "solutionAsset": "assets/sb/react/solution/react-contact-form-solution.v1.json",
-        "companies": [
-            "meta",
-            "google",
-            "airbnb"
+        "techniques": [
+          "Using `useState` for local component state.",
+          "Guarding updates with `Math.max`."
         ]
-    }
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-counter.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-counter"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
+    "companies": [
+      "meta",
+      "google"
+    ],
+    "access": "free"
+  },
+  {
+    "id": "react-contact-form-starter",
+    "title": "Contact Form (Component + HTTP)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "forms",
+      "http",
+      "validation",
+      "user-input"
+    ],
+    "description": {
+      "summary": "Build a contact form using a React component with controlled inputs and basic validation. You will only work in `src/App.tsx` – the HTML shell and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
+      "specs": {
+        "requirements": [
+          "Work only inside `src/App.tsx` (the CSS in `App.css` and `public/index.html` are already wired up to the expected classes).",
+          "Render a `Contact Us` form with fields for name, email, and message.",
+          "Make all fields required; validate the email with a basic email check.",
+          "Disable the submit button while the form is invalid or while a request is in progress.",
+          "On a valid submit, send a POST request with the form body to `https://jsonplaceholder.typicode.com/posts` using `fetch`.",
+          "If the request succeeds, show the success text: `\"Your message has been sent. Thank you!\"`.",
+          "If the request fails, show the error text: `\"Something went wrong. Please try again.\"`.",
+          "Track an `isSubmitting` flag so the user cannot trigger multiple requests at the same time."
+        ],
+        "expectedBehavior": [
+          "Initially, the submit button is disabled until all required fields are filled and the email looks valid.",
+          "If the user submits invalid data, all fields are marked as touched and inline validation error messages are shown where appropriate.",
+          "On a valid submit, a POST request is sent to `https://jsonplaceholder.typicode.com/posts` and the button is disabled while `isSubmitting` is `true`.",
+          "On success, `isSubmitting` becomes `false`, the message `\"Your message has been sent. Thank you!\"` is displayed, and the form may optionally be reset.",
+          "On error, `isSubmitting` becomes `false`, the message `\"Something went wrong. Please try again.\"` is displayed, and the user can fix the issue and resubmit."
+        ],
+        "implementationNotes": [
+          "Use React controlled inputs with `useState` to store the values for `name`, `email`, and `message`.",
+          "Track `isSubmitting`, `successMessage`, and `errorMessage` in component state for UX and request lifecycle.",
+          "Track simple `touched` flags for each field so you only show error messages after a field has been visited or after the user submits.",
+          "Derive a boolean like `formIsValid` from the current values and use it (plus `isSubmitting`) to control the disabled state of the submit button.",
+          "Use the built-in `fetch` API to send a `POST` request to `https://jsonplaceholder.typicode.com/posts` with a JSON body `{ name, email, message }`.",
+          "Always clear previous `successMessage` / `errorMessage` at the start of the submit handler so only the latest result is visible.",
+          "Keep everything inside `App` in `App.tsx`; you don’t need additional components or state management libraries for this exercise."
+        ],
+        "techFocus": [
+          "React `useState` and controlled form inputs",
+          "Form validation and UX (touched state, inline errors, disabled submit)",
+          "Using `fetch` for a POST request and handling loading/success/error states"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise uses a single React component (`App`) with controlled inputs and a simple HTTP POST using `fetch`. You only change `src/App.tsx`; the HTML shell and CSS already match the design used in the Angular version.\n\nThe component holds state for the three fields (`name`, `email`, `message`), three `touched` flags (so you know when to show errors), an `isSubmitting` flag to disable the button during the request, and two strings: `successMessage` and `errorMessage`.\n\nOn submit, you prevent the default form event, mark all fields as touched, clear previous messages, and compute whether the form is valid (all fields non-empty, email passes a basic pattern, message at least 10 characters). If invalid, you bail out. If valid, you set `isSubmitting = true`, call `fetch('https://jsonplaceholder.typicode.com/posts', ...)` with a JSON body and `Content-Type: application/json`, then handle success and error:\n- On success, set `successMessage` to `\"Your message has been sent. Thank you!\"`, reset the field values, and clear the touched flags.\n- On error, set `errorMessage` to `\"Something went wrong. Please try again.\"`.\nIn both cases you must set `isSubmitting` back to `false` when the request is finished.\n\n**Test cases**\n- With all fields empty, the submit button is disabled.\n- Typing an invalid email keeps the form invalid and the button disabled.\n- Submitting with invalid fields marks them as touched and shows inline error text.\n- With valid inputs, clicking submit sends a POST request to `https://jsonplaceholder.typicode.com/posts` and disables the button while `isSubmitting` is true.\n- On success, `\"Your message has been sent. Thank you!\"` appears and the form resets.\n- On error, `\"Something went wrong. Please try again.\"` appears and the user can resubmit.",
+      "approaches": [
+        {
+          "title": "Single React component with controlled inputs and fetch",
+          "prose": "Keep everything inside a single `App` component. Use `useState` to store `name`, `email`, `message`, `isSubmitting`, `successMessage`, `errorMessage`, and three touched flags (one per field). Derive `nameIsValid`, `emailIsValid`, and `messageIsValid`, then combine them into `formIsValid`. The JSX uses controlled inputs bound to these state values and `onChange` handlers, plus `onBlur` to mark fields as touched. Error messages are conditionally rendered based on `touchedX` and the validity booleans. The submit handler is an `async` function that prevents default, marks all fields as touched, checks `formIsValid`, and if valid, sends a `fetch` POST to `https://jsonplaceholder.typicode.com/posts`. It sets the exact success and error messages required by the exercise and always toggles `isSubmitting` appropriately.\n\nThis mirrors the Angular exercise but using idiomatic React patterns (controlled components, local state, and `fetch`).",
+          "codeJs": "import React from 'react';\nimport './App.css';\n\nexport default function App() {\n  const [name, setName] = React.useState('');\n  const [email, setEmail] = React.useState('');\n  const [message, setMessage] = React.useState('');\n\n  const [touchedName, setTouchedName] = React.useState(false);\n  const [touchedEmail, setTouchedEmail] = React.useState(false);\n  const [touchedMessage, setTouchedMessage] = React.useState(false);\n\n  const [isSubmitting, setIsSubmitting] = React.useState(false);\n  const [successMessage, setSuccessMessage] = React.useState('');\n  const [errorMessage, setErrorMessage] = React.useState('');\n\n  const nameIsValid = name.trim().length > 0;\n  const emailIsValid = /\\S+@\\S+\\.\\S+/.test(email);\n  const messageIsValid = message.trim().length >= 10;\n  const formIsValid = nameIsValid && emailIsValid && messageIsValid;\n\n  const handleSubmit = async (event) => {\n    event.preventDefault();\n\n    setTouchedName(true);\n    setTouchedEmail(true);\n    setTouchedMessage(true);\n\n    setSuccessMessage('');\n    setErrorMessage('');\n\n    if (!formIsValid) {\n      return;\n    }\n\n    setIsSubmitting(true);\n\n    try {\n      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({ name, email, message }),\n      });\n\n      if (!response.ok) {\n        throw new Error('Request failed');\n      }\n\n      setSuccessMessage('Your message has been sent. Thank you!');\n      setName('');\n      setEmail('');\n      setMessage('');\n      setTouchedName(false);\n      setTouchedEmail(false);\n      setTouchedMessage(false);\n    } catch (err) {\n      setErrorMessage('Something went wrong. Please try again.');\n    } finally {\n      setIsSubmitting(false);\n    }\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Contact Us</h1>\n\n        <form className=\"panel\" noValidate onSubmit={handleSubmit}>\n          <div className=\"field\">\n            <label htmlFor=\"name\">Name</label>\n            <input\n              id=\"name\"\n              type=\"text\"\n              value={name}\n              onChange={(e) => setName(e.target.value)}\n              onBlur={() => setTouchedName(true)}\n            />\n            {touchedName && !nameIsValid && (\n              <p className=\"error\">Name is required.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"email\">Email</label>\n            <input\n              id=\"email\"\n              type=\"email\"\n              value={email}\n              onChange={(e) => setEmail(e.target.value)}\n              onBlur={() => setTouchedEmail(true)}\n            />\n            {touchedEmail && !email && (\n              <p className=\"error\">Email is required.</p>\n            )}\n            {touchedEmail && email && !emailIsValid && (\n              <p className=\"error\">Enter a valid email address.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"message\">Message</label>\n            <textarea\n              id=\"message\"\n              rows={4}\n              value={message}\n              onChange={(e) => setMessage(e.target.value)}\n              onBlur={() => setTouchedMessage(true)}\n            />\n            {touchedMessage && !message && (\n              <p className=\"error\">Message is required.</p>\n            )}\n            {touchedMessage && message && !messageIsValid && (\n              <p className=\"error\">Message should be at least 10 characters.</p>\n            )}\n          </div>\n\n          <button\n            type=\"submit\"\n            className=\"primary\"\n            disabled={!formIsValid || isSubmitting}\n          >\n            {isSubmitting ? 'Sending…' : 'Send message'}\n          </button>\n\n          {successMessage && <p className=\"success\">{successMessage}</p>}\n          {errorMessage && <p className=\"error\">{errorMessage}</p>}\n        </form>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Leaving validation only in the JSX and forgetting to guard inside the submit handler, which lets invalid data be sent.",
+          "Not resetting `isSubmitting` in both success and error paths.",
+          "Using different success/error messages than the ones specified, which can cause tests to fail.",
+          "Forgetting to call `event.preventDefault()` in the submit handler, causing a full page reload."
+        ],
+        "techniques": [
+          "Using React controlled inputs for form fields.",
+          "Deriving validation flags from current state instead of storing them separately.",
+          "Using `fetch` to call a fake JSON API endpoint.",
+          "Managing loading, success, and error states with simple boolean and string state variables."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-contact-form.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-contact-form-starter"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-contact-form-solution.v1.json",
+    "companies": [
+      "meta",
+      "google",
+      "airbnb"
+    ],
+    "access": "premium"
+  }
 ]

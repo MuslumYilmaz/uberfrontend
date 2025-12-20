@@ -49,6 +49,7 @@ export interface User {
   bio?: string;
   avatarUrl?: string;
   role: Role;
+  accessTier?: 'free' | 'premium';
   prefs: UserPrefs;
   stats?: UserStats;
   billing?: Billing;
@@ -181,6 +182,7 @@ export class AuthService {
   private cloneUser(u: User): User {
     return {
       ...u,
+      accessTier: u.accessTier ?? 'free',
       prefs: u.prefs ? { ...u.prefs } : u.prefs,
       stats: u.stats ? { ...u.stats } as any : u.stats,
       billing: u.billing ? { ...u.billing } as any : u.billing,
