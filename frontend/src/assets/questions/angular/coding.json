@@ -152,7 +152,7 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
-    "access": "free"
+    "access": "premium"
   },
   {
     "id": "angular-todo-list-starter",
@@ -234,7 +234,7 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
-    "access": "premium"
+    "access": "free"
   },
   {
     "id": "angular-image-slider-starter",

@@ -8,6 +8,7 @@
 
 /* PrimeIcons */
 @import 'primeicons/primeicons.css';
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
 
 @import "prismjs/themes/prism-tomorrow.css";         /* theme */
 @import "prismjs/plugins/line-numbers/prism-line-numbers.css"; /* optional */
@@ -473,6 +474,10 @@ app-root {
   height: 40px;
   padding: 0;
   justify-content: center;
+}
+
+.social-icon{
+  margin-right: 10px;
 }
 
 /* Inputs */

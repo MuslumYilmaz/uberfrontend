@@ -1435,11 +1435,12 @@
   width: 100%;
   border-radius: 12px;
   border: 1px solid var(--uf-border-subtle);
-  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-text-primary) 8%);
+  background: var(--uf-surface-alt);
   color: var(--uf-text-primary);
-  padding: 10px 12px;
+  padding: 12px;
+  font-weight: 600;
   outline: none;
-  transition: border-color 160ms ease, box-shadow 200ms ease, transform 140ms ease;
+  transition: border-color 160ms ease, box-shadow 200ms ease, background-color 160ms ease;
 }
 
 .contact-textarea{
@@ -1449,8 +1450,15 @@
 
 .contact-input:focus,
 .contact-textarea:focus{
-  border-color: color-mix(in srgb, var(--uf-border-subtle) 45%, var(--uf-accent) 55%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--uf-accent) 18%, transparent);
+  border-color: var(--uf-accent);
+  box-shadow: var(--uf-focus-ring);
+  background: var(--uf-surface);
+}
+
+.contact-input:hover,
+.contact-textarea:hover{
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt));
 }
 
 .contact-form-actions{

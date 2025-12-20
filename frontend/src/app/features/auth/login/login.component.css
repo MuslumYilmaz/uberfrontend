@@ -8,6 +8,7 @@
 .btn-surface{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--uf-border-subtle); background:var(--uf-surface-alt); color:var(--uf-text-primary); font-weight:600; cursor:pointer; transition:border-color .16s, background-color .16s, transform .1s;}
 .btn-surface:hover{border-color:color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-secondary) 30%); background:color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface-alt));}
 .btn-surface:active{transform:translateY(1px);}
+.btn-surface .social-icon{margin-right:10px; font-size:16px;}
 .divider{display:flex; align-items:center; gap:10px;}
 .divider .line{flex:1; height:1px; background:var(--uf-border-subtle);}
 .divider .label{text-transform:uppercase; letter-spacing:.18em; font-size:11px; color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);}
