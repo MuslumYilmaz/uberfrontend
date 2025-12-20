@@ -104,11 +104,20 @@
                 </button>
             </div>
 
+            <div *ngIf="loadingPreview()" class="preview-loading">
+                <div class="spinner" aria-hidden="true"></div>
+                <div class="loading-copy">
+                    <div class="loading-title">Loading preview…</div>
+                    <div class="loading-sub">This might take a few seconds.</div>
+                </div>
+            </div>
+
             <div *ngIf="!previewUrl()" class="absolute inset-0 grid place-items-center text-xs text-gray-400">
                 No preview yet. Click “Rebuild preview”.
             </div>
 
-            <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" referrerpolicy="no-referrer"
+            <iframe #previewFrame class="preview-frame absolute inset-0 w-full h-full border-0" referrerpolicy="no-referrer"
+                [class.is-loading]="loadingPreview()"
                 sandbox="allow-scripts">
             </iframe>
         </div>

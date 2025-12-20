@@ -71,6 +71,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private _previewUrl = signal<SafeResourceUrl | null>(null);
   previewUrl = () => this._previewUrl();
 
+  // preview loading
+  loadingPreview = signal(true);
+
   // drag state (for future extensibility; currently only simple layout)
   private rebuildTimer: any = null;
   private userFilesBackup: Record<string, string> | null = null;
@@ -166,6 +169,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
 
+    this.loadingPreview.set(true);
     this.viewingSolution.set(false);
     this.showRestoreBanner.set(false);
     this.showingFrameworkSolutionPreview.set(false);
@@ -460,6 +464,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   async rebuildFrameworkPreview(): Promise<void> {
+    this.loadingPreview.set(true);
     try {
       const files = this.filesMap();
 
@@ -479,6 +484,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     } catch (e) {
       console.error('[framework-panel] preview build failed', e);
       this.setPreviewHtml(null);
+      this.loadingPreview.set(false);
     }
   }
 
@@ -510,16 +516,27 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         doc.close();
       }
       this._previewUrl.set(null);
+      this.loadingPreview.set(false);
       return;
     }
+
+    this.loadingPreview.set(true);
 
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
 
+    const onLoad = () => {
+      this.zone.run(() => this.loadingPreview.set(false));
+    };
+
     if (frameEl.contentWindow) {
+      frameEl.onload = onLoad;
       frameEl.contentWindow.location.replace(url);
     } else {
-      frameEl.onload = () => frameEl.contentWindow?.location.replace(url);
+      frameEl.onload = () => {
+        frameEl.contentWindow?.location.replace(url);
+        onLoad();
+      };
       frameEl.src = url;
     }
 

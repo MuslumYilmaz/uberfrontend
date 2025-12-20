@@ -210,7 +210,7 @@ function compileTS(src, filename){
   <script src="https://unpkg.com/typescript@5.6.3/lib/typescript.js"></script>
 </head>
 <body>
-  <app-root>Loading Angular preview…</app-root>
+  <app-root></app-root>
 
   <div id="_fa_overlay"><h1>Something went wrong</h1><pre id="_fa_overlay_msg"></pre><div id="_fa_overlay_meta" class="meta"></div></div>
 
