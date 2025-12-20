@@ -6,6 +6,7 @@ import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, shareRep
 import { Question, QuestionKind } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
+import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SeoService } from '../../../core/services/seo.service';
 import {
   FRAMEWORK_FAMILY_BY_ID,
@@ -82,7 +83,12 @@ export class TrackDetailComponent implements OnInit {
     private qs: QuestionService,
     private seo: SeoService,
     private location: Location,
+    public progress: UserProgressService,
   ) { }
+
+  isSolved(id: string | undefined): boolean {
+    return id ? this.progress.isSolved(id) : false;
+  }
 
   ngOnInit(): void {
     const slug = (this.route.snapshot.paramMap.get('slug') || '').toLowerCase();

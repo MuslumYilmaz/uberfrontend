@@ -288,3 +288,16 @@
 .fw-chip:hover .fw-cta {
   color: var(--fa-text);
 }
+
+.solved-pill{
+  margin-left: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fa-accent) 25%, transparent);
+  color: var(--fa-text);
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border:1px solid color-mix(in srgb, var(--fa-accent) 55%, var(--fa-border-subtle));
+}

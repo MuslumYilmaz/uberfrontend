@@ -156,6 +156,7 @@
                 <div class="fa-question-card__eyebrow">
                   <span class="eyebrow-dot"></span>
                   <span>Track question {{ idx + 1 }} / {{ questions.length }}</span>
+                  <span class="solved-pill" *ngIf="isSolved(item.id)">Solved</span>
                 </div>
                 <div class="fa-question-card__title fa-card-title">{{ item.title }}</div>
                 <div class="fa-question-card__description fa-meta-text" *ngIf="item.description">
