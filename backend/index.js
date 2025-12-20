@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const { requireAuth } = require('./middleware/Auth');
 const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer'); // <-- NEW
+const { requireAdmin } = require('./middleware/RequireAdmin');
 
 const app = express();
 
@@ -103,6 +104,8 @@ app.use('/api/auth', require('./routes/auth'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));
+// ---- Admin routes (protected) ----
+app.use('/api/admin', requireAuth, requireAdmin, require('./routes/admin'));
 
 // ---- Progress routes ----
 app.post('/api/users/me/solved', requireAuth, async (req, res) => {

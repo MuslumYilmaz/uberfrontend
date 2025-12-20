@@ -69,6 +69,9 @@ type VisibleEntry = {
               <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()">
                 <i class="pi pi-user"></i> My profile
               </a>
+              <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()">
+                <i class="pi pi-shield"></i> Admin: Users
+              </a>
               <div class="fah-divider"></div>
               <button class="fah-menu-item" (click)="logout()"><i class="pi pi-sign-out"></i> Log out</button>
             </ng-container>
@@ -311,6 +314,10 @@ export class HeaderComponent implements OnInit {
         this.updateSafeTop();
         this.loadRecents();
       });
+  }
+
+  isAdmin(): boolean {
+    return (this.auth.user()?.role ?? 'user') === 'admin';
   }
 
   ngOnInit(): void { }

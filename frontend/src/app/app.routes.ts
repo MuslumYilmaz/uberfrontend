@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
+import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -40,6 +41,25 @@ export const routes: Routes = [
         ],
       },
     },
+  },
+  {
+    path: 'admin',
+    canMatch: [adminMatchGuard],
+    children: [
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./features/admin/admin-users.component').then((m) => m.AdminUsersComponent),
+        canActivate: [adminGuard],
+        data: {
+          seo: {
+            title: 'Admin • Users',
+            description: 'Admin view for managing FrontendAtlas users.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
+    ],
   },
   {
     path: 'showcase',
