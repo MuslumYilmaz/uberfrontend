@@ -74,7 +74,19 @@
 
 /* ---------- Layout guards ---------- */
 .coding-detail .min-w-0, .coding-detail .flex-1 { min-width: 0; }
-.fixed-under-header { position:fixed; top:var(--app-safe-top,64px); right:0; left:0; bottom:56px; overflow:hidden; }
+.fixed-under-header {
+  position:fixed;
+  top:var(--app-safe-top,64px);
+  right:0;
+  left:0;
+  bottom:56px;
+  overflow:hidden;
+}
+.coding-detail__scroll {
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 120px; /* leave room above footer bar */
+}
 .coding-detail.demo-embed {
   position: relative;
   height: 100%;

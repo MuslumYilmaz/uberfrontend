@@ -1675,7 +1675,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   loadSolutionIntoEditor() {
     // For frameworks: delegate to panel; for JS/TS keep existing behavior.
     if (this.isFrameworkTech()) {
-      this.frameworkPanel?.applySolutionFiles();
+      this.frameworkPanel?.applySolutionFiles(this.solutionOpenPath());
       return;
     }
     this.loadSolutionCode(); // JS/TS legacy

@@ -1,41 +1,41 @@
 {
-    "version": "v2",
-    "type": "user-interface",
-    "title": "Angular Contact Form (solution: reactive form + HttpClient)",
-    "openFile": "/src/app/app.component.ts",
-    "dependencies": {
-        "@angular/core": "17.1.0",
-        "@angular/common": "17.1.0",
-        "@angular/platform-browser": "17.1.0",
-        "@angular/forms": "17.1.0",
-        "@angular/common/http": "17.1.0",
-        "rxjs": "7.8.1",
-        "zone.js": "^0.14.2"
+  "version": "v2",
+  "type": "user-interface",
+  "title": "Angular Contact Form (solution: reactive form + HttpClient)",
+  "openFile": "/src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "@angular/forms": "17.1.0",
+    "@angular/common/http": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"angular-contact-form-solution\",\n  \"private\": true\n}\n"
     },
-    "files": {
-        "/package.json": {
-            "code": "{\n  \"name\": \"angular-contact-form-solution\",\n  \"private\": true\n}\n"
-        },
-        "/src/main.ts": {
-            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
-        },
-        "/src/index.html": {
-            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Contact Form (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
-        },
-        "/src/app/app.component.ts": {
-            "code": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { HttpBackend, HttpClient, HttpClientModule, HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';\nimport { Observable, delay, of } from 'rxjs';\n\n// Local fake backend so the form works inside the sandbox (no real network needed)\nclass FakeBackend implements HttpBackend {\n  handle(_req: HttpRequest<unknown>): Observable<HttpEvent<unknown>> {\n    return of(new HttpResponse({ status: 201, body: { ok: true } })).pipe(delay(500));\n  }\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],\n  providers: [{ provide: HttpBackend, useClass: FakeBackend }],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  // Function-based DI for this environment\n  private fb = inject(FormBuilder);\n  private http = new HttpClient(inject(HttpBackend));\n\n  contactForm = this.fb.group({\n    name: ['', [Validators.required]],\n    email: ['', [Validators.required, Validators.email]],\n    message: ['', [Validators.required, Validators.minLength(10)]],\n  });\n\n  isSubmitting = false;\n  successMessage = '';\n  errorMessage = '';\n\n  get f() {\n    return this.contactForm.controls;\n  }\n\n  submit(event?: Event): void {\n    event?.preventDefault();\n    event?.stopPropagation();\n\n    this.successMessage = '';\n    this.errorMessage = '';\n\n    if (this.contactForm.invalid) {\n      this.contactForm.markAllAsTouched();\n      return;\n    }\n\n    this.isSubmitting = true;\n\n    this.http.post('/api/contact', this.contactForm.value).subscribe({\n      next: () => {\n        this.isSubmitting = false;\n        this.successMessage = 'Your message has been sent. Thank you!';\n        this.contactForm.reset();\n      },\n      error: () => {\n        this.isSubmitting = false;\n        this.errorMessage = 'Something went wrong. Please try again.';\n      },\n    });\n  }\n}\n\n// Also export a named AppComponent so the bootstrap import always works\nexport { AppComponent };\n"
-        },
-        "/src/app/app.component.html": {
-            "code": "<main style=\"min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:480px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Contact Us (Solution)</h1>\n\n    <form [formGroup]=\"contactForm\" (submit)=\"$event.preventDefault(); $event.stopPropagation();\" (ngSubmit)=\"submit($event)\" class=\"panel\" novalidate>\n      <div class=\"field\">\n        <label for=\"name\">Name</label>\n        <input id=\"name\" type=\"text\" formControlName=\"name\" />\n        <p class=\"error\" *ngIf=\"f.name.touched && f.name.invalid\">Name is required.</p>\n      </div>\n\n      <div class=\"field\">\n        <label for=\"email\">Email</label>\n        <input id=\"email\" type=\"email\" formControlName=\"email\" />\n        <p class=\"error\" *ngIf=\"f.email.touched && f.email.errors?.['required']\">Email is required.</p>\n        <p class=\"error\" *ngIf=\"f.email.touched && f.email.errors?.['email']\">Enter a valid email address.</p>\n      </div>\n\n      <div class=\"field\">\n        <label for=\"message\">Message</label>\n        <textarea id=\"message\" rows=\"4\" formControlName=\"message\"></textarea>\n        <p class=\"error\" *ngIf=\"f.message.touched && f.message.errors?.['required']\">Message is required.</p>\n        <p class=\"error\" *ngIf=\"f.message.touched && f.message.errors?.['minlength']\">Message should be at least 10 characters.</p>\n      </div>\n\n      <button type=\"button\" class=\"primary\" (click)=\"submit($event)\" [disabled]=\"contactForm.invalid || isSubmitting\">\n        {{ isSubmitting ? 'Sending…' : 'Send message' }}\n      </button>\n\n      <p *ngIf=\"successMessage\" class=\"success\">{{ successMessage }}</p>\n      <p *ngIf=\"errorMessage\" class=\"error\">{{ errorMessage }}</p>\n    </form>\n  </section>\n</main>\n"
-        },
-        "/src/app/app.component.css": {
-            "code": ".panel{background:#020617;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.field{display:grid;gap:4px;}\nlabel{font-size:13px;color:#9ca3af;}\ninput,textarea{background:#020617;border-radius:8px;border:1px solid #1f2937;padding:8px 10px;color:#e5e7eb;font-size:14px;}\ninput:focus,textarea:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f1;}\nbutton.primary{margin-top:4px;background:#4ade80;color:#022c22;border:none;border-radius:999px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}\nbutton.primary[disabled]{opacity:.6;cursor:not-allowed;}\n.success{margin:4px 0 0;font-size:13px;color:#22c55e;}\n.error{margin:4px 0 0;font-size:13px;color:#f97316;}\n"
-        },
-        "/src/styles.css": {
-            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
-        },
-        "/tsconfig.json": {
-            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
-        }
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK \u2022 Contact Form (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+    "/src/app/app.component.ts": {
+      "code": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport default class AppComponent {\n  private fb = inject(FormBuilder);\n\n  contactForm = this.fb.group({\n    name: ['', [Validators.required]],\n    email: ['', [Validators.required, Validators.email]],\n    message: ['', [Validators.required, Validators.minLength(10)]],\n  });\n\n  isSubmitting = false;\n  successMessage = '';\n  errorMessage = '';\n\n  get f() {\n    return this.contactForm.controls;\n  }\n\n  submit(event?: Event): void {\n    event?.preventDefault();\n    event?.stopPropagation();\n\n    this.successMessage = '';\n    this.errorMessage = '';\n\n    if (this.contactForm.invalid) {\n      this.contactForm.markAllAsTouched();\n      return;\n    }\n\n    this.isSubmitting = true;\n\n    // Simulated async submit (no real network in sandbox)\n    setTimeout(() => {\n      this.isSubmitting = false;\n      this.successMessage = 'Your message has been sent. Thank you!';\n      this.contactForm.reset();\n    }, 500);\n  }\n}\n\nexport { AppComponent };\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main style=\"min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:480px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Contact Us (Solution)</h1>\n\n    <form [formGroup]=\"contactForm\" (submit)=\"$event.preventDefault(); $event.stopPropagation();\" (ngSubmit)=\"submit($event)\" class=\"panel\" novalidate>\n      <div class=\"field\">\n        <label for=\"name\">Name</label>\n        <input id=\"name\" type=\"text\" formControlName=\"name\" />\n        <p class=\"error\" *ngIf=\"f.name.touched && f.name.invalid\">Name is required.</p>\n      </div>\n\n      <div class=\"field\">\n        <label for=\"email\">Email</label>\n        <input id=\"email\" type=\"email\" formControlName=\"email\" />\n        <p class=\"error\" *ngIf=\"f.email.touched && f.email.errors?.['required']\">Email is required.</p>\n        <p class=\"error\" *ngIf=\"f.email.touched && f.email.errors?.['email']\">Enter a valid email address.</p>\n      </div>\n\n      <div class=\"field\">\n        <label for=\"message\">Message</label>\n        <textarea id=\"message\" rows=\"4\" formControlName=\"message\"></textarea>\n        <p class=\"error\" *ngIf=\"f.message.touched && f.message.errors?.['required']\">Message is required.</p>\n        <p class=\"error\" *ngIf=\"f.message.touched && f.message.errors?.['minlength']\">Message should be at least 10 characters.</p>\n      </div>\n\n      <button type=\"button\" class=\"primary\" (click)=\"submit($event)\" [disabled]=\"contactForm.invalid || isSubmitting\">\n        {{ isSubmitting ? 'Sending\u2026' : 'Send message' }}\n      </button>\n\n      <p *ngIf=\"successMessage\" class=\"success\">{{ successMessage }}</p>\n      <p *ngIf=\"errorMessage\" class=\"error\">{{ errorMessage }}</p>\n    </form>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": ".panel{background:#020617;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}\n.field{display:grid;gap:4px;}\nlabel{font-size:13px;color:#9ca3af;}\ninput,textarea{background:#020617;border-radius:8px;border:1px solid #1f2937;padding:8px 10px;color:#e5e7eb;font-size:14px;}\ninput:focus,textarea:focus{outline:none;border-color:#6366f1;box-shadow:0 0 0 1px #6366f1;}\nbutton.primary{margin-top:4px;background:#4ade80;color:#022c22;border:none;border-radius:999px;padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}\nbutton.primary[disabled]{opacity:.6;cursor:not-allowed;}\n.success{margin:4px 0 0;font-size:13px;color:#22c55e;}\n.error{margin:4px 0 0;font-size:13px;color:#f97316;}\n"
+    },
+    "/src/styles.css": {
+      "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
     }
+  }
 }

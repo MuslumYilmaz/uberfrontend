@@ -1,42 +1,42 @@
 {
-    "version": "v2",
-    "type": "user-interface",
-    "title": "Angular Theme Toggle (solution: ThemeService + data-theme)",
-    "openFile": "/src/app/app.component.ts",
-    "dependencies": {
-        "@angular/core": "17.1.0",
-        "@angular/common": "17.1.0",
-        "@angular/platform-browser": "17.1.0",
-        "rxjs": "7.8.1",
-        "zone.js": "^0.14.2"
+  "version": "v2",
+  "type": "user-interface",
+  "title": "Angular Theme Toggle (solution: ThemeService + data-theme)",
+  "openFile": "/src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"angular-theme-toggle-solution\",\n  \"private\": true\n}\n"
     },
-    "files": {
-        "/package.json": {
-            "code": "{\n  \"name\": \"angular-theme-toggle-solution\",\n  \"private\": true\n}\n"
-        },
-        "/src/main.ts": {
-            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
-        },
-        "/src/index.html": {
-            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Theme Toggle (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
-        },
-        "/src/app/theme.service.ts": {
-            "code": "import { Inject, Injectable } from '@angular/core';\nimport { DOCUMENT } from '@angular/common';\n\nexport type Theme = 'light' | 'dark';\n\nconst STORAGE_KEY = 'uf-theme';\n\n@Injectable({ providedIn: 'root' })\nexport class ThemeService {\n  currentTheme: Theme = 'light';\n\n  constructor(@Inject(DOCUMENT) private document: Document) {\n    const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;\n    if (stored === 'light' || stored === 'dark') {\n      this.currentTheme = stored;\n    } else {\n      this.currentTheme = 'light';\n    }\n\n    this.applyTheme(this.currentTheme);\n  }\n\n  private applyTheme(theme: Theme): void {\n    const root = this.document.documentElement;\n    root.setAttribute('data-theme', theme);\n  }\n\n  setTheme(theme: Theme): void {\n    this.currentTheme = theme;\n    if (typeof window !== 'undefined') {\n      window.localStorage.setItem(STORAGE_KEY, theme);\n    }\n    this.applyTheme(theme);\n  }\n\n  toggleTheme(): void {\n    const next: Theme = this.currentTheme === 'light' ? 'dark' : 'light';\n    this.setTheme(next);\n  }\n}\n"
-        },
-        "/src/app/app.component.ts": {
-            "code": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ThemeService } from './theme.service';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly themeService = inject(ThemeService);\n\n  get isDark(): boolean {\n    return this.themeService.currentTheme === 'dark';\n  }\n\n  onToggleClick(): void {\n    this.themeService.toggleTheme();\n  }\n}\n"
-        },
-        "/src/app/app.component.html": {
-            "code": "<main class=\"app-shell\">\n  <header class=\"app-header\">\n    <h1 class=\"app-title\">Theme Toggle (Solution)</h1>\n\n    <button\n      type=\"button\"\n      class=\"theme-toggle\"\n      (click)=\"onToggleClick()\"\n      aria-label=\"Toggle theme\"\n    >\n      <span class=\"icon\" aria-hidden=\"true\">{{ isDark ? '🌙' : '☀️' }}</span>\n      <span class=\"label\">{{ isDark ? 'Dark' : 'Light' }}</span>\n    </button>\n  </header>\n\n  <section class=\"content\">\n    <div class=\"card\">\n      <h2>Preview area</h2>\n      <p>\n        The background, text, and card colors are driven by the current theme\n        via CSS variables on <code>:root</code>. Toggle the theme and refresh the\n        page to verify that localStorage is respected.\n      </p>\n    </div>\n  </section>\n</main>\n"
-        },
-        "/src/app/app.component.css": {
-            "code": ".app-shell {\n  min-height: 100vh;\n  background: #f9fafb;\n  color: #020617;\n  display: flex;\n  flex-direction: column;\n  padding: 16px;\n  box-sizing: border-box;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.app-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 24px;\n}\n\n.app-title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 700;\n}\n\n.content {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: flex-start;\n}\n\n.card {\n  width: 100%;\n  max-width: 480px;\n  background: #ffffff;\n  border-radius: 12px;\n  border: 1px solid #e5e7eb;\n  padding: 20px;\n  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);\n}\n\n.card h2 {\n  margin-top: 0;\n  margin-bottom: 8px;\n  font-size: 16px;\n  font-weight: 700;\n}\n\n.card p {\n  margin: 0;\n  font-size: 14px;\n  line-height: 1.5;\n}\n\n.theme-toggle {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 12px;\n  border-radius: 999px;\n  border: 1px solid #e5e7eb;\n  background: #eef2ff;\n  color: #020617;\n  cursor: pointer;\n  font-size: 13px;\n  font-weight: 600;\n  transition: transform 120ms ease, box-shadow 120ms ease;\n}\n\n.theme-toggle .icon {\n  font-size: 16px;\n}\n\n.theme-toggle:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);\n}\n\n:host-context([data-theme='dark']) .app-shell {\n  background: #020617;\n  color: #e5e7eb;\n}\n\n:host-context([data-theme='dark']) .card {\n  background: #020617;\n  border-color: #1f2937;\n  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.75);\n}\n\n:host-context([data-theme='dark']) .theme-toggle {\n  border-color: #1f2937;\n  background: #111827;\n  color: #e5e7eb;\n}\n"
-        },
-        "/src/styles.css": {
-            "code": ":root {\n  color-scheme: light;\n  --bg: #f9fafb;\n  --fg: #020617;\n  --card-bg: #ffffff;\n  --border: #e5e7eb;\n  --accent: #4f46e5;\n  --accent-soft: #eef2ff;\n}\n\n:root[data-theme='dark'] {\n  color-scheme: dark;\n  --bg: #020617;\n  --fg: #e5e7eb;\n  --card-bg: #020617;\n  --border: #1f2937;\n  --accent: #a855f7;\n  --accent-soft: #111827;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n}\n\nbody {\n  background: var(--bg);\n  color: var(--fg);\n}\n"
-        },
-        "/tsconfig.json": {
-            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
-        }
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK \u2022 Theme Toggle (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+    "/src/app/theme.service.ts": {
+      "code": "import { Inject, Injectable } from '@angular/core';\nimport { DOCUMENT } from '@angular/common';\n\nexport type Theme = 'light' | 'dark';\n\nconst STORAGE_KEY = 'uf-theme';\nlet memoryTheme: Theme = 'light';\n\nfunction safeReadTheme(): Theme | null {\n  try {\n    const raw = window.localStorage.getItem(STORAGE_KEY);\n    if (raw === 'light' || raw === 'dark') return raw;\n  } catch {\n    /* sandboxed iframe */\n  }\n  return null;\n}\n\nfunction safeWriteTheme(theme: Theme): void {\n  memoryTheme = theme;\n  try {\n    window.localStorage.setItem(STORAGE_KEY, theme);\n  } catch {\n    /* sandboxed iframe */\n  }\n}\n\n@Injectable({ providedIn: 'root' })\nexport class ThemeService {\n  currentTheme: Theme = 'light';\n\n  constructor(@Inject(DOCUMENT) private document: Document) {\n    const stored = safeReadTheme();\n    this.currentTheme = stored ?? memoryTheme ?? 'light';\n    this.applyTheme(this.currentTheme);\n  }\n\n  private applyTheme(theme: Theme): void {\n    const root = this.document.documentElement;\n    root.setAttribute('data-theme', theme);\n  }\n\n  setTheme(theme: Theme): void {\n    this.currentTheme = theme;\n    safeWriteTheme(theme);\n    this.applyTheme(theme);\n  }\n\n  toggleTheme(): void {\n    const next: Theme = this.currentTheme === 'light' ? 'dark' : 'light';\n    this.setTheme(next);\n  }\n}\n"
+    },
+    "/src/app/app.component.ts": {
+      "code": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ThemeService } from './theme.service';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly themeService = inject(ThemeService);\n\n  get isDark(): boolean {\n    return this.themeService.currentTheme === 'dark';\n  }\n\n  onToggleClick(): void {\n    this.themeService.toggleTheme();\n  }\n}\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main class=\"app-shell\">\n  <header class=\"app-header\">\n    <h1 class=\"app-title\">Theme Toggle (Solution)</h1>\n\n    <button\n      type=\"button\"\n      class=\"theme-toggle\"\n      (click)=\"onToggleClick()\"\n      aria-label=\"Toggle theme\"\n    >\n      <span class=\"icon\" aria-hidden=\"true\">{{ isDark ? '\ud83c\udf19' : '\u2600\ufe0f' }}</span>\n      <span class=\"label\">{{ isDark ? 'Dark' : 'Light' }}</span>\n    </button>\n  </header>\n\n  <section class=\"content\">\n    <div class=\"card\">\n      <h2>Preview area</h2>\n      <p>\n        The background, text, and card colors are driven by the current theme\n        via CSS variables on <code>:root</code>. Toggle the theme and refresh the\n        page to verify that localStorage is respected.\n      </p>\n    </div>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": ".app-shell {\n  min-height: 100vh;\n  background: #f9fafb;\n  color: #020617;\n  display: flex;\n  flex-direction: column;\n  padding: 16px;\n  box-sizing: border-box;\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n}\n\n.app-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 24px;\n}\n\n.app-title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 700;\n}\n\n.content {\n  flex: 1;\n  display: flex;\n  justify-content: center;\n  align-items: flex-start;\n}\n\n.card {\n  width: 100%;\n  max-width: 480px;\n  background: #ffffff;\n  border-radius: 12px;\n  border: 1px solid #e5e7eb;\n  padding: 20px;\n  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);\n}\n\n.card h2 {\n  margin-top: 0;\n  margin-bottom: 8px;\n  font-size: 16px;\n  font-weight: 700;\n}\n\n.card p {\n  margin: 0;\n  font-size: 14px;\n  line-height: 1.5;\n}\n\n.theme-toggle {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 12px;\n  border-radius: 999px;\n  border: 1px solid #e5e7eb;\n  background: #eef2ff;\n  color: #020617;\n  cursor: pointer;\n  font-size: 13px;\n  font-weight: 600;\n  transition: transform 120ms ease, box-shadow 120ms ease;\n}\n\n.theme-toggle .icon {\n  font-size: 16px;\n}\n\n.theme-toggle:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);\n}\n\n:host-context([data-theme='dark']) .app-shell {\n  background: #020617;\n  color: #e5e7eb;\n}\n\n:host-context([data-theme='dark']) .card {\n  background: #020617;\n  border-color: #1f2937;\n  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.75);\n}\n\n:host-context([data-theme='dark']) .theme-toggle {\n  border-color: #1f2937;\n  background: #111827;\n  color: #e5e7eb;\n}\n"
+    },
+    "/src/styles.css": {
+      "code": ":root {\n  color-scheme: light;\n  --bg: #f9fafb;\n  --fg: #020617;\n  --card-bg: #ffffff;\n  --border: #e5e7eb;\n  --accent: #4f46e5;\n  --accent-soft: #eef2ff;\n}\n\n:root[data-theme='dark'] {\n  color-scheme: dark;\n  --bg: #020617;\n  --fg: #e5e7eb;\n  --card-bg: #020617;\n  --border: #1f2937;\n  --accent: #a855f7;\n  --accent-soft: #111827;\n}\n\nhtml, body {\n  margin: 0;\n  height: 100%;\n}\n\nbody {\n  background: var(--bg);\n  color: var(--fg);\n}\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
     }
+  }
 }

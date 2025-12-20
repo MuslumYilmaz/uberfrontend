@@ -1,7 +1,7 @@
 <ng-container *ngIf="!locked(); else lockedView">
 <div class="coding-detail flex gap-[5px]" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
-  <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden"
+  <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
     [style.flex]="asideFlex()" style="min-width:0;">
     <!-- Collapsed rail -->
     <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
@@ -395,7 +395,7 @@
     (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->
-  <main class="flex-1 flex flex-col overflow-hidden">
+  <main class="flex-1 flex flex-col overflow-hidden coding-detail__scroll">
 
     <!-- FRAMEWORK PANEL -->
     <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"

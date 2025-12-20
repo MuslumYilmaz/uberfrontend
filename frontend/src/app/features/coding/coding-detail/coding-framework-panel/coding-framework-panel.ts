@@ -182,7 +182,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   /** Parent: "Load solution into editor" button from Solution panel. */
-  applySolutionFiles(): void {
+  applySolutionFiles(preferredOpenPath?: string): void {
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
 
@@ -199,7 +199,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     }
 
     const nextFiles = { ...sol };
-    const open = this.pickFirstOpen(nextFiles);
+    const preferredClean = (preferredOpenPath || '').replace(/^\/+/, '');
+    const open =
+      (preferredClean && preferredClean in nextFiles && preferredClean) ||
+      this.pickFirstOpen(nextFiles);
 
     this.filesMap.set(nextFiles);
     this.openPath.set(open);

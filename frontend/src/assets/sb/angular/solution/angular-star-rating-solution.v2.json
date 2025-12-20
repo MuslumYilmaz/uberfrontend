@@ -2,7 +2,7 @@
     "version": "v2",
     "type": "user-interface",
     "title": "Angular Star Rating (solution: Input/Output widget)",
-    "openFile": "/src/app/app.component.ts",
+    "openFile": "/src/app/star-rating.component.ts",
     "dependencies": {
         "@angular/core": "17.1.0",
         "@angular/common": "17.1.0",
@@ -18,7 +18,7 @@
             "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
         },
         "/src/index.html": {
-            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Star Rating (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK \u2022 Star Rating (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
         },
         "/src/app/app.component.ts": {
             "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { StarRatingComponent } from './star-rating.component';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, StarRatingComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  currentRating = 0;\n}\n"
@@ -33,7 +33,7 @@
             "code": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-star-rating',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './star-rating.component.html',\n  styleUrls: ['./star-rating.component.css']\n})\nexport class StarRatingComponent {\n  @Input() max = 5;\n  @Input() rating = 0;\n  @Output() ratingChange = new EventEmitter();\n\n  get stars(): number[] {\n    return Array.from({ length: this.max }, (_, i) => i + 1);\n  }\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max) {\n      return;\n    }\n    this.rating = value;\n    this.ratingChange.emit(this.rating);\n  }\n}\n"
         },
         "/src/app/star-rating.component.html": {
-            "code": "<div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n  <button\n    *ngFor=\"let star of stars\"\n    type=\"button\"\n    class=\"star\"\n    [class.filled]=\"star <= rating\"\n    (click)=\"onRate(star)\"\n    [attr.aria-label]=\"star + ' out of ' + max\"\n    [attr.aria-pressed]=\"star <= rating\"\n  >\n    ★\n  </button>\n</div>\n"
+            "code": "<div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n  <button\n    *ngFor=\"let star of stars\"\n    type=\"button\"\n    class=\"star\"\n    [class.filled]=\"star <= rating\"\n    (click)=\"onRate(star)\"\n    [attr.aria-label]=\"star + ' out of ' + max\"\n    [attr.aria-pressed]=\"star <= rating\"\n  >\n    \u2605\n  </button>\n</div>\n"
         },
         "/src/app/star-rating.component.css": {
             "code": ":host{display:inline-flex;}\n.stars{display:inline-flex;gap:4px;}\n.star{background:transparent;border:none;font-size:28px;cursor:pointer;padding:4px;line-height:1;color:#4b5563;transition:transform .1s ease,color .1s ease;}\n.star.filled{color:#facc15;}\n.star:focus-visible{outline:2px solid #facc15;outline-offset:2px;}\n.star:hover{transform:scale(1.1);}\n"

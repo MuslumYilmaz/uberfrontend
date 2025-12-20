@@ -327,6 +327,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export interface AfterContentChecked { ngAfterContentChecked(): void; }",
               "  export interface AfterViewInit { ngAfterViewInit(): void; }",
               "  export interface AfterViewChecked { ngAfterViewChecked(): void; }",
+              "  export function ViewChild(token: any, opts?: any): any;",
+              "  export function ViewChildren(token: any, opts?: any): any;",
+              "  export function ContentChild(token: any, opts?: any): any;",
+              "  export function ContentChildren(token: any, opts?: any): any;",
+              "  export class ElementRef<T = any> { constructor(nativeElement: T); nativeElement: T; }",
               "  export interface SimpleChange { previousValue: any; currentValue: any; firstChange: boolean; isFirstChange(): boolean; }",
               "  export type SimpleChanges = { [propName: string]: SimpleChange };",
               "  export interface PipeTransform { transform(value: any, ...args: any[]): any; }",
@@ -341,6 +346,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export function NgModule(opts: any): ClassDecorator;",
               "  export function Input(bindingPropertyName?: string): any;",
               "  export function Output(bindingPropertyName?: string): any;",
+              "  export function inject(token: any): any;",
               "  export function HostListener(eventName: string, args?: string[]): any;",
               "  export function HostBinding(hostPropertyName?: string): any;",
               "  export function Optional(): any;",
@@ -377,6 +383,68 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             ts.typescriptDefaults.addExtraLib(reactLib, 'file:///node_modules/@types/react/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(reactLib, 'file:///node_modules/@types/react/index.d.ts');
             mAny.__faReactLib = true;
+          }
+
+          if (!mAny.__faAngularFormsLib) {
+            const angularFormsLib = [
+              "declare module '@angular/forms' {",
+              "  export type ValidationErrors = Record<string, any> | null;",
+              "  export type ValidatorFn = (control: AbstractControl<any>) => ValidationErrors;",
+              "  export abstract class AbstractControl<T = any> {",
+              "    readonly value: T;",
+              "    readonly valid: boolean;",
+              "    readonly invalid: boolean;",
+              "    readonly touched: boolean;",
+              "    readonly errors: ValidationErrors;",
+              "    markAllAsTouched(): void;",
+              "  }",
+              "  export class FormControl<T = any> extends AbstractControl<T> {",
+              "    constructor(value: T, validators?: ValidatorFn | ValidatorFn[]);",
+              "    setValue(value: T): void;",
+              "    reset(value?: T): void;",
+              "  }",
+              "  export class FormGroup<T extends Record<string, any> = any> extends AbstractControl<T> {",
+              "    controls: { [K in keyof T]: AbstractControl<T[K]> };",
+              "    constructor(controls: { [key: string]: AbstractControl<any> | any[] });",
+              "    get(path: string): AbstractControl<any> | null;",
+              "    reset(value?: Partial<T>): void;",
+              "  }",
+              "  export class FormBuilder {",
+              "    group(controls: { [key: string]: any[] | AbstractControl<any> }): FormGroup<any>;",
+              "    control<T>(value: T, validators?: ValidatorFn | ValidatorFn[]): FormControl<T>;",
+              "  }",
+              "  export class Validators {",
+              "    static required: ValidatorFn;",
+              "    static email: ValidatorFn;",
+              "    static minLength(min: number): ValidatorFn;",
+              "    static maxLength(max: number): ValidatorFn;",
+              "  }",
+              "  export class ReactiveFormsModule {}",
+              "  export class FormsModule {}",
+              "}",
+            ].join('\\n');
+            ts.typescriptDefaults.addExtraLib(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(angularFormsLib, 'file:///node_modules/@angular/forms/index.d.ts');
+            mAny.__faAngularFormsLib = true;
+          }
+
+          if (!mAny.__faAngularHttpLib) {
+            const angularHttpLib = [
+              "declare module '@angular/common/http' {",
+              "  export class HttpClient {",
+              "    constructor(handler: any);",
+              "    post<T = any>(url: string, body: any): any;",
+              "  }",
+              "  export class HttpClientModule {}",
+              "  export class HttpResponse<T = any> { constructor(init: { status?: number; body?: T }); status: number; body: T; }",
+              "  export class HttpRequest<T = any> { constructor(method: string, url: string, body?: T); }",
+              "  export type HttpEvent<T = any> = HttpResponse<T>;",
+              "  export abstract class HttpBackend { handle(req: HttpRequest<any>): any; }",
+            "}",
+            ].join('\\n');
+            ts.typescriptDefaults.addExtraLib(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
+            ts.javascriptDefaults?.addExtraLib?.(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
+            mAny.__faAngularHttpLib = true;
           }
 
           if (!mAny.__faTestLib) {
