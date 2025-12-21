@@ -36,6 +36,11 @@
 
 :root {
   color-scheme: dark;
+  /* Runner typography tokens (Results/Console areas) */
+  --fa-runner-font: 12px;
+  --fa-runner-font-sm: 11px;
+  --fa-runner-title: 12px;
+  --fa-runner-line: 1.35;
 
   /* Core palette */
   --uf-bg: #050607;
@@ -130,6 +135,91 @@
   --fa-card-focus: var(--uf-accent);
   --fa-focus-ring: var(--uf-focus-ring);
 }
+
+/* Shared runner (Results / Console) design */
+.fa-runner-shell {
+  border-top: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  display: flex;
+  flex-direction: column;
+}
+.fa-runner-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+  border-bottom: 1px solid var(--uf-border-subtle);
+  font-size: var(--fa-runner-title);
+  line-height: var(--fa-runner-line);
+}
+.fa-runner-run-btn {
+  padding: 8px 12px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid var(--uf-border-subtle);
+  background: var(--uf-surface);
+  color: var(--uf-text-primary);
+  font-weight: 700;
+  font-size: var(--fa-runner-title);
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.fa-runner-run-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+}
+.fa-runner-run-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.fa-runner-run-btn:active:not(:disabled) { transform: translateY(1px); }
+
+.fa-runner-tab-btn {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--uf-text-secondary);
+  font-weight: 600;
+  font-size: var(--fa-runner-title);
+  transition: color .15s, background .15s, border-color .15s;
+}
+.fa-runner-tab-btn.active {
+  color: var(--uf-text-primary);
+  background: rgba(var(--fa-text-rgb), 0.06);
+  border-color: var(--uf-border-subtle);
+}
+
+.fa-runner-summary {
+  margin-left: auto;
+  color: var(--uf-text-secondary);
+  font-size: var(--fa-runner-font);
+}
+
+.fa-results, .fa-results * {
+  font-size: var(--fa-runner-font);
+  line-height: var(--fa-runner-line);
+}
+.fa-results .summary { font-size: var(--fa-runner-title); }
+.fa-results .test-card {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  transition: border-color .15s, background .15s;
+}
+.fa-results .test-card.test-pass {
+  border-color: color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+}
+.fa-results .test-card.test-fail {
+  border-color: color-mix(in srgb, var(--uf-text-tertiary) 60%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-text-tertiary) 14%, var(--uf-surface));
+}
+.fa-results .test-name { color: var(--uf-text-primary); font-weight: 600; }
+.fa-results .test-card.test-pass .test-name i { color: color-mix(in srgb, var(--uf-accent) 70%, var(--uf-text-primary)); }
+.fa-results .test-card.test-fail .test-name i { color: color-mix(in srgb, var(--uf-text-tertiary) 80%, var(--uf-text-primary)); }
+.fa-results .test-error { color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent); font-size: var(--fa-runner-font-sm); margin-top: 6px; }
+.fa-results .summary-pass { color: color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
+.fa-results .summary-fail { color: color-mix(in srgb, var(--uf-text-tertiary) 85%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
+.fa-results .empty-state { color: var(--uf-text-tertiary); }
+.fa-results .console-panel { border-top: 1px solid var(--uf-border-subtle); }
 
 html, body {
   height: 100%;

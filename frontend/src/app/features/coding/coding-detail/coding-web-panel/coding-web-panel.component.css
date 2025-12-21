@@ -6,16 +6,16 @@
   min-height: 0;
 }
 
-/* Results/Console: opt-out of inherited tiny fonts */
+/* Results/Console: standardize slightly smaller fonts */
 :host .results-panel,
 :host .results-panel * {
-  font-size: 13px !important;
-  line-height: 1.4 !important;
+  font-size: var(--fa-runner-font) !important;
+  line-height: var(--fa-runner-line) !important;
 }
 
 /* Small polish so icons don’t shrink */
 :host .results-panel .test-name i {
-  font-size: 14px !important;
+  font-size: var(--fa-runner-font) !important;
 }
 
 /* Ensure the results area can actually grow and scroll */

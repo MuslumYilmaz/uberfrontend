@@ -27,17 +27,17 @@ app-monaco-editor {
 .horizontal-splitter.dragging{ background-color:#3b82f6; }
 
 /* ===== Smaller Results typography ===== */
-.results-panel { font-size: 13px; line-height: 1.35; }
-.results-panel .summary { font-size: 13px; }
-.results-panel .test-card { padding: 6px; }
-.results-panel .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size:13px; }
-.results-panel .test-name i { font-size:13px; }
-.results-panel .test-error { margin-top:4px; font-size:11px; }
+.results-panel { font-size: var(--fa-runner-font); line-height: var(--fa-runner-line); }
+.results-panel .summary { font-size: var(--fa-runner-title); }
+.results-panel .test-card { padding: 10px; }
+.results-panel .test-name { display:flex; align-items:center; gap:6px; font-weight:500; font-size: var(--fa-runner-font); }
+.results-panel .test-name i { font-size: var(--fa-runner-font); }
+.results-panel .test-error { margin-top:4px; font-size: var(--fa-runner-font-sm); }
 
 /* ===== Smaller Console typography ===== */
-:host ::ng-deep app-console-logger.console-panel { font-size: 13px; line-height: 1.35; }
+:host ::ng-deep app-console-logger.console-panel { font-size: var(--fa-runner-font); line-height: var(--fa-runner-line); }
 :host ::ng-deep app-console-logger.console-panel pre,
-:host ::ng-deep app-console-logger.console-panel code { font-size: 13px; }
+:host ::ng-deep app-console-logger.console-panel code { font-size: var(--fa-runner-font); }
 
 /* Monaco: keep from overflowing horizontally */
 :host ::ng-deep .monaco-editor,

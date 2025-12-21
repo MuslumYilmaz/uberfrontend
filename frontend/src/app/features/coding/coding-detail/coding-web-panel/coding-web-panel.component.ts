@@ -52,6 +52,8 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
     padding: 10px 12px;
     border-bottom: 1px solid var(--uf-border-subtle);
     background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+    font-size: 12px;
+    line-height: 1.3;
   }
 
   .tab-btn {
@@ -61,6 +63,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
     padding: 6px 12px;
     border-radius: var(--uf-radius-pill);
     font-weight: 600;
+    font-size: 12px;
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   }
   .tab-btn.active {
@@ -69,7 +72,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
     border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--uf-accent) 20%, transparent);
   }
-  .tab-hint { margin-left: auto; color: var(--uf-text-tertiary); font-size: 12px; }
+  .tab-hint { margin-left: auto; color: var(--uf-text-tertiary); font-size: 11px; }
 
   .preview-actions {
     position: absolute;
@@ -141,72 +144,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
   .horizontal-splitter:hover,
   .horizontal-splitter.dragging{ background-color: color-mix(in srgb, var(--uf-accent) 40%, transparent); }
 
-  .results-shell {
-    border-top: 1px solid var(--uf-border-subtle);
-    background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
-  }
-
-  .results-topbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
-    border-bottom: 1px solid var(--uf-border-subtle);
-  }
-  .run-btn {
-    padding: 8px 12px;
-    border-radius: var(--uf-radius-pill);
-    border: 1px solid var(--uf-border-subtle);
-    background: var(--uf-surface);
-    color: var(--uf-text-primary);
-    font-weight: 700;
-    transition: border-color .15s, background .15s, transform .1s;
-  }
-  .run-btn:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--uf-accent) 50%, var(--uf-border-subtle));
-    background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
-  }
-  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .run-btn:active:not(:disabled) { transform: translateY(1px); }
-  .run-summary { margin-left: auto; color: var(--uf-text-secondary); font-size: 12px; }
-
-  /* Unified Results/Console typography */
-  .fa-results, .fa-results * {
-    font-size: 13px !important;
-    line-height: 1.35 !important;
-  }
-  .fa-results .summary { font-size: 13px !important; }
-  .fa-results .test-card { padding: 6px !important; }
-  .fa-results .test-name { display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px !important; }
-  .fa-results .test-name i { font-size:13px !important; }
-  .fa-results .test-error { margin-top:4px !important; font-size:11px !important; }
-
-  .results-panel { flex:1 1 auto; min-height:0; }
-  .summary-pass { color: color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
-  .summary-fail { color: color-mix(in srgb, var(--uf-text-tertiary) 85%, var(--uf-text-primary)); margin-left: 8px; font-weight: 700; }
-  .empty-state { color: var(--uf-text-tertiary); }
-
-  .test-card {
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid var(--uf-border-subtle);
-    background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
-    transition: border-color .15s, background .15s;
-  }
-  .test-card.test-pass {
-    border-color: color-mix(in srgb, var(--uf-accent) 55%, var(--uf-border-subtle));
-    background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
-  }
-  .test-card.test-fail {
-    border-color: color-mix(in srgb, var(--uf-text-tertiary) 60%, var(--uf-border-subtle));
-    background: color-mix(in srgb, var(--uf-text-tertiary) 14%, var(--uf-surface));
-  }
-  .test-name { color: var(--uf-text-primary); }
-  .test-card.test-pass .test-name i { color: color-mix(in srgb, var(--uf-accent) 70%, var(--uf-text-primary)); }
-  .test-card.test-fail .test-name i { color: color-mix(in srgb, var(--uf-text-tertiary) 80%, var(--uf-text-primary)); }
-  .test-error { color: color-mix(in srgb, var(--uf-text-tertiary) 88%, transparent); font-size: 12px; margin-top: 6px; }
-  .console-panel { border-top: 1px solid var(--uf-border-subtle); }
+  /* Runner styles come from global .fa-runner-* and .fa-results classes */
 `],
   template: `
 <div class="web-panel w-full min-h-0 flex flex-col flex-1">
@@ -303,13 +241,13 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                (pointerdown)="startPreviewDrag($event)"></div>
 
           <!-- BOTTOM: Results / Console -->
-          <div class="results-shell flex-1 min-h-[140px] flex flex-col">
-            <div class="results-topbar">
-              <button class="run-btn" (click)="runWebTests()" [disabled]="!hasAnyTests()"
+          <div class="results-shell fa-runner-shell flex-1 min-h-[140px] flex flex-col">
+            <div class="results-topbar fa-runner-topbar">
+              <button class="run-btn fa-runner-run-btn" (click)="runWebTests()" [disabled]="!hasAnyTests()"
                       [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">▶ Run tests</button>
-              <button class="tab-btn" [class.active]="isTestsTab()" (click)="subTab.set('tests')">Results</button>
-              <button class="tab-btn" [class.active]="isConsoleTab()" (click)="subTab.set('console')">Console</button>
-              <span class="run-summary" *ngIf="hasRunTests && totalCount() > 0">
+              <button class="tab-btn fa-runner-tab-btn" [class.active]="isTestsTab()" (click)="subTab.set('tests')">Results</button>
+              <button class="tab-btn fa-runner-tab-btn" [class.active]="isConsoleTab()" (click)="subTab.set('console')">Console</button>
+              <span class="run-summary fa-runner-summary" *ngIf="hasRunTests && totalCount() > 0">
                 {{ passedCount() }}/{{ totalCount() }} passed
               </span>
             </div>

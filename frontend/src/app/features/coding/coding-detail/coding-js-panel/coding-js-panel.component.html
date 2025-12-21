@@ -53,22 +53,22 @@
         </div>
 
         <!-- BOTTOM: Actions + Results/Console -->
-        <div class="flex-1 min-h-0 flex flex-col border-t border-white/10">
-            <div class="flex items-center gap-6 px-3 py-2 text-xs border-b border-white/10 bg-neutral-900/60">
-                <button class="font-medium" (click)="runTests()" [disabled]="!(testCode()||'').trim()">▶ Run
+        <div class="flex-1 min-h-0 flex flex-col fa-runner-shell">
+            <div class="fa-runner-topbar">
+                <button class="fa-runner-run-btn" (click)="runTests()" [disabled]="!(testCode()||'').trim()">▶ Run
                     tests</button>
-                <button [class.text-white]="subTab()==='tests'" [class.text-gray-300]="subTab()!=='tests'"
+                <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
-                <button [class.text-white]="subTab()==='console'" [class.text-gray-300]="subTab()!=='console'"
+                <button class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
                     (click)="subTab.set('console')">Console</button>
-                <span class="ml-auto opacity-80" *ngIf="hasRunTests()">{{ passedCount() }}/{{ totalCount() }}
+                <span class="fa-runner-summary" *ngIf="hasRunTests()">{{ passedCount() }}/{{ totalCount() }}
                     passed</span>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
                 <!-- Results -->
-                <div *ngIf="subTab()==='tests'" class="h-full overflow-auto p-3 results-panel">
-                    <div *ngIf="!hasRunTests()" class="h-full grid place-items-center text-[11px] text-gray-400">
+                <div *ngIf="subTab()==='tests'" class="h-full overflow-auto p-4 results-panel fa-results">
+                    <div *ngIf="!hasRunTests()" class="h-full grid place-items-center text-[11px] text-gray-400 empty-state">
                         Run tests to see results.
                     </div>
 
@@ -76,19 +76,18 @@
                         <div class="summary mb-2">
                             <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
                             <ng-container *ngIf="totalCount() > 0">
-                                <span *ngIf="allPassing()" class="text-green-500 ml-2">All tests passed ✓</span>
-                                <span *ngIf="!allPassing()" class="text-red-400 ml-2">Some tests failed</span>
+                                <span *ngIf="allPassing()" class="summary-pass">All tests passed ✓</span>
+                                <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
                             </ng-container>
                         </div>
 
-                        <div *ngFor="let t of testResults()" class="test-card border rounded-md p-2"
-                            [ngClass]="t.passed ? 'border-green-500 bg-green-100/10' : 'border-red-500 bg-red-100/10'">
+                        <div *ngFor="let t of testResults()" class="test-card"
+                            [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
                             <div class="test-name">
-                                <i
-                                    [ngClass]="t.passed ? 'pi pi-check-circle text-green-400' : 'pi pi-times-circle text-red-400'"></i>
+                                <i [ngClass]="t.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
                                 <span>{{ t.name }}</span>
                             </div>
-                            <div *ngIf="t.error" class="test-error text-red-300 whitespace-pre-wrap break-words">
+                            <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">
                                 {{ t.error }}
                             </div>
                         </div>
@@ -97,7 +96,7 @@
 
                 <!-- Console -->
                 <div *ngIf="subTab()==='console'" class="h-full overflow-auto p-3">
-                    <app-console-logger class="console-panel block w-full h-full" [entries]="consoleEntries()"
+                    <app-console-logger class="console-panel block w-full h-full fa-results" [entries]="consoleEntries()"
                         [results]="testResults()" [max]="500" [autoScroll]="true"></app-console-logger>
                 </div>
 
