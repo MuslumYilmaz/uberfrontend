@@ -44,6 +44,15 @@ import { RouterModule } from '@angular/router';
           <h2>Cookie Policy</h2>
           <p>Details on analytics, preferences, and how to manage cookie choices.</p>
         </a>
+
+        <a class="card fa-card" [routerLink]="['/legal/refund']">
+          <div class="card-head">
+            <span class="pill pill-green">Refunds</span>
+            <span class="hint">Billing</span>
+          </div>
+          <h2>Refund Policy</h2>
+          <p>When refunds may be granted, exclusions, and how to request a review.</p>
+        </a>
       </div>
     </section>
   `,
@@ -88,7 +97,10 @@ import { RouterModule } from '@angular/router';
       margin-top: 18px;
       display: grid;
       gap: 14px;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+    @media (min-width: 960px) {
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .card {
       --fa-card-bg: linear-gradient(145deg, #0f172a, #0b1220);

@@ -554,6 +554,18 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'refund',
+        loadComponent: () =>
+          import('./features/legal/refund/refund.component').then((m) => m.RefundComponent),
+        data: {
+          seo: {
+            title: 'Refund Policy',
+            description: 'FrontendAtlas refund policy for digital subscription products.',
+            robots: 'index,follow',
+          },
+        },
+      },
+      {
         path: 'cookies',
         loadComponent: () =>
           import('./features/legal/cookies/cookies.component').then((m) => m.CookiesComponent),
