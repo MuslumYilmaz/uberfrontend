@@ -18,6 +18,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Override Inter font-face from external themes to avoid missing asset fetches */
+@font-face {
+  font-family: 'Inter';
+  src: local('Inter'), local('Inter Regular'), local('Inter-Regular');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter var';
+  src: local('Inter var'), local('InterVar'), local('Inter Variable');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
 
@@ -42,8 +58,8 @@
   --uf-focus-ring: 0 0 0 2px color-mix(in srgb, var(--uf-accent) 55%, transparent), 0 10px 28px rgba(0, 0, 0, 0.38);
 
   /* Typography */
-  --uf-font-body: 'Space Grotesk', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --uf-font-heading: 'Space Grotesk', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --uf-font-body: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --uf-font-heading: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --uf-body-size: 14px;
   --uf-body-weight: 400;
   --uf-page-title-size: 28px;

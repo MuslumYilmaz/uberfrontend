@@ -26,7 +26,7 @@ export class UserProgressService {
       } else {
         this.solved.set(new Set(this.readGuestSolved()));
       }
-    });
+    }, { allowSignalWrites: true });
 
     // Seed for guests on startup
     if (!this.auth.user()) {
