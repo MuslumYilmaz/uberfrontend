@@ -36,6 +36,12 @@
 .fah-left{ display:flex; align-items:center; gap:8px; min-width:0; }
 .fah-center{ display:flex; justify-content:center; align-items:center; }
 
+.fah-logo{
+  width: 32px;
+  height: 24px;
+  border-radius: 8px;
+}
+
 .fah-brand{
   font-weight: 800; letter-spacing: .2px;
   color: var(--fah-fg); text-decoration:none; margin-right:4px; white-space:nowrap;
