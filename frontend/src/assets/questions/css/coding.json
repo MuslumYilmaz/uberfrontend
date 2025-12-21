@@ -44,14 +44,14 @@
     },
     "web": {
       "starterHtml": "<h1 class=\"headline\">Welcome to CSS Basics</h1>\n<p class=\"tagline\">CSS lets you style text, layouts, and more.</p>",
-      "starterCss": "/* Base styles */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Use element selector (h1) to style the headline — change color and font-size.\n  2) Use class selector (.tagline) to style the paragraph — adjust color and spacing.\n  3) Optionally add a .highlight class to emphasize words.\n*/",
+      "starterCss": "/* Base styles */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Use element selector (h1) to style the headline \u2014 change color and font-size.\n  2) Use class selector (.tagline) to style the paragraph \u2014 adjust color and spacing.\n  3) Optionally add a .highlight class to emphasize words.\n*/",
       "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('styles h1 element selector with color or font-size',()=>{\n  const hasH1=cssTextContains('h1','color')||cssTextContains('h1','font-size');\n  expect(hasH1).toBe(true);\n});\n\nit('styles .tagline class with color or line-height',()=>{\n  const hasClass=cssTextContains('.tagline','color')||cssTextContains('.tagline','line-height');\n  expect(hasClass).toBe(true);\n});"
     },
     "solutionBlock": {
-      "overview": "Start with element selectors for general styles and class selectors for specific overrides. You’ll practice using h1 and p selectors to set color and text size, and a class selector for custom tweaks.",
+      "overview": "Start with element selectors for general styles and class selectors for specific overrides. You\u2019ll practice using h1 and p selectors to set color and text size, and a class selector for custom tweaks.",
       "approaches": [
         {
-          "title": "Approach — Element + Class Selectors",
+          "title": "Approach \u2014 Element + Class Selectors",
           "prose": "Use `h1` and `p` for basic styling, then apply `.tagline` for extra text tweaks. Combine selectors to control text hierarchy and readability.",
           "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
           "codeCss": "h1 {\n  color: #111;\n  font-size: 2rem;\n}\n\np.tagline {\n  color: #555;\n  line-height: 1.6;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
@@ -69,11 +69,11 @@
       },
       "resources": [
         {
-          "title": "MDN – CSS Selectors",
+          "title": "MDN \u2013 CSS Selectors",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors"
         },
         {
-          "title": "MDN – CSS Text Basics",
+          "title": "MDN \u2013 CSS Text Basics",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Fundamentals"
         }
       ]
@@ -134,7 +134,7 @@
       "overview": "This exercise demonstrates how the CSS box model affects layout and spacing. Padding adds inner breathing room, margins separate elements externally, and borders visually define boundaries.",
       "approaches": [
         {
-          "title": "Approach — Apply Padding, Border, and Margin",
+          "title": "Approach \u2014 Apply Padding, Border, and Margin",
           "prose": "Give each .card a padding for internal space, a subtle border for visibility, and a margin to separate multiple cards. Rounded corners make the design friendlier.",
           "codeHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
           "codeCss": ".card {\n  padding: 16px;\n  border: 1px solid #ccc;\n  border-radius: 8px;\n  margin-bottom: 12px;\n  background: #fff;\n}"
@@ -152,11 +152,11 @@
       },
       "resources": [
         {
-          "title": "MDN – CSS Box Model",
+          "title": "MDN \u2013 CSS Box Model",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model"
         },
         {
-          "title": "MDN – box-sizing",
+          "title": "MDN \u2013 box-sizing",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
         }
       ]
@@ -217,7 +217,7 @@
       "overview": "Center inline content by setting `text-align: center` on a parent container. Make the chips `inline-block` so they can have padding and rounded corners, and space them with a small horizontal margin.",
       "approaches": [
         {
-          "title": "Approach — text-align Center + Inline-Block Chips",
+          "title": "Approach \u2014 text-align Center + Inline-Block Chips",
           "prose": "Set `text-align: center` on `.chips` (or `.box`) to center all inline children as a group. Use `display: inline-block` on `.tag` to allow padding and border radius, and add `margin-right: 8px` (removed on the last tag) to create consistent gaps.",
           "codeHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
           "codeCss": ".box {\\n  background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto;\\n}\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }"
@@ -226,7 +226,7 @@
       "notes": {
         "pitfalls": [
           "Only inline-level content is centered by `text-align`. Blocks ignore it unless they are inline or inline-block.",
-          "Forgetting to remove the last chip’s right margin causes visual imbalance."
+          "Forgetting to remove the last chip\u2019s right margin causes visual imbalance."
         ],
         "techniques": [
           "Use `inline-block` for chips to keep a single line while allowing padding and border radius.",
@@ -235,11 +235,11 @@
       },
       "resources": [
         {
-          "title": "MDN – text-align",
+          "title": "MDN \u2013 text-align",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/text-align"
         },
         {
-          "title": "MDN – display",
+          "title": "MDN \u2013 display",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/display"
         }
       ]
@@ -299,7 +299,7 @@
       "overview": "To pin a badge to a specific corner of an element, make the parent `.product` relatively positioned so it establishes a local coordinate system. Then, absolutely position the `.badge` in the top-right with a small offset and apply visual styles for clarity.",
       "approaches": [
         {
-          "title": "Approach — Relative Parent + Absolute Child",
+          "title": "Approach \u2014 Relative Parent + Absolute Child",
           "prose": "Use `position: relative` on the `.product` container. This allows the `.badge` to be positioned absolutely within it. Apply `top` and `right` offsets to anchor the badge to the top-right corner. Add padding, border-radius, and a red background for visibility.",
           "codeHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
           "codeCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }"
@@ -307,7 +307,7 @@
       ],
       "notes": {
         "pitfalls": [
-          "If `.product` isn’t positioned relatively, `.badge` will be placed relative to the entire page.",
+          "If `.product` isn\u2019t positioned relatively, `.badge` will be placed relative to the entire page.",
           "Avoid using large pixel offsets that break responsive behavior."
         ],
         "techniques": [
@@ -317,11 +317,11 @@
       },
       "resources": [
         {
-          "title": "MDN – position property",
+          "title": "MDN \u2013 position property",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
         },
         {
-          "title": "MDN – top/right/bottom/left",
+          "title": "MDN \u2013 top/right/bottom/left",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/top"
         }
       ]
@@ -360,12 +360,12 @@
         {
           "name": "Responsive layout",
           "type": "media query",
-          "desc": "Stack items vertically on small screens (≤480px)."
+          "desc": "Stack items vertically on small screens (\u2264480px)."
         }
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A clean, responsive navigation bar that aligns logo–links–CTA in one line on desktop and stacks them neatly on mobile."
+        "desc": "A clean, responsive navigation bar that aligns logo\u2013links\u2013CTA in one line on desktop and stacks them neatly on mobile."
       },
       "examples": [
         ".nav { display: flex; align-items: center; gap: 1rem; }",
@@ -375,14 +375,14 @@
     },
     "web": {
       "starterHtml": "<nav class=\"nav\">\\n  <div class=\"logo\">Brand</div>\\n  <ul class=\"links\">\\n    <li><a href=\"#\">Docs</a></li>\\n    <li><a href=\"#\">Pricing</a></li>\\n    <li><a href=\"#\">Blog</a></li>\\n  </ul>\\n  <a class=\"cta\" href=\"#\">Sign up</a>\\n</nav>",
-      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens ≤480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}",
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens \u2264480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}",
       "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst nav=document.querySelector('.nav');\\nconst links=document.querySelector('.links');\\n\\nit('makes .nav a flex container aligned center',()=>{\\n  const disp=cssValue(nav,'display').trim();\\n  const align=cssValue(nav,'align-items').trim();\\n  expect(disp==='flex' && align==='center').toBe(true);\\n});\\n\\nit('makes .links flex:1 and centered',()=>{\\n  const disp=cssValue(links,'display').trim();\\n  const justify=cssValue(links,'justify-content').trim();\\n  const flexGrow=cssValue(links,'flex-grow').trim();\\n  expect(disp==='flex' && justify==='center' && flexGrow==='1').toBe(true);\\n});\\n\\nit('applies column layout under 480px',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('480px'));\\n  const hasColumnRule=mediaRules.some(r=>r.cssText.includes('flex-direction: column'));\\n  expect(hasColumnRule).toBe(true);\\n});"
     },
     "solutionBlock": {
       "overview": "Flexbox makes it simple to align navbar elements horizontally and adapt to small screens. The logo stays left, links expand and center themselves, and the CTA sits at the right. On mobile, the nav stacks neatly with centered alignment.",
       "approaches": [
         {
-          "title": "Approach — Flex Container with Responsive Direction",
+          "title": "Approach \u2014 Flex Container with Responsive Direction",
           "prose": "Use `display: flex` on `.nav` with `align-items: center`. Give `.links` `flex: 1` and `display: flex; justify-content: center` to center them while pushing the CTA right. Add `gap` for spacing. A media query changes `.nav` to `flex-direction: column` under 480px for vertical stacking.",
           "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
           "codeCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
@@ -400,11 +400,11 @@
       },
       "resources": [
         {
-          "title": "MDN – Flexbox basics",
+          "title": "MDN \u2013 Flexbox basics",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox"
         },
         {
-          "title": "MDN – Media Queries",
+          "title": "MDN \u2013 Media Queries",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries"
         }
       ]
@@ -415,7 +415,7 @@
   },
   {
     "id": "css-grid-card-gallery",
-    "title": "Grid: Card Gallery (2→4 Columns)",
+    "title": "Grid: Card Gallery (2\u21924 Columns)",
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
@@ -441,7 +441,7 @@
           "desc": "Define two equal-width columns by default for small screens."
         },
         {
-          "name": "Media query at ≥1024px",
+          "name": "Media query at \u22651024px",
           "type": "responsive layout",
           "desc": "Switch the grid to four columns for larger screens."
         }
@@ -457,14 +457,14 @@
     },
     "web": {
       "starterHtml": "<section class=\"gallery\">\\n  <article class=\"card\">1</article>\\n  <article class=\"card\">2</article>\\n  <article class=\"card\">3</article>\\n  <article class=\"card\">4</article>\\n  <article class=\"card\">5</article>\\n  <article class=\"card\">6</article>\\n</section>",
-      "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths ≥1024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}",
-      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst gallery=document.querySelector('.gallery');\\n\\nit('makes .gallery a grid container',()=>{\\n  const disp=cssValue(gallery,'display').trim();\\n  expect(disp==='grid').toBe(true);\\n});\\n\\nit('defines 2 equal columns by default',()=>{\\n  const cols=cssValue(gallery,'grid-template-columns');\\n  expect(/repeat\\\\(2,/.test(cols)||cols.split(' ').length===2).toBe(true);\\n});\\n\\nit('has a media query at ≥1024px changing to 4 columns',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('1024px'));\\n  const hasFourCols=mediaRules.some(r=>r.cssText.includes('repeat(4')||r.cssText.includes('1fr 1fr 1fr 1fr'));\\n  expect(hasFourCols).toBe(true);\\n});"
+      "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths \u22651024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}",
+      "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nconst gallery=document.querySelector('.gallery');\\n\\nit('makes .gallery a grid container',()=>{\\n  const disp=cssValue(gallery,'display').trim();\\n  expect(disp==='grid').toBe(true);\\n});\\n\\nit('defines 2 equal columns by default',()=>{\\n  const cols=cssValue(gallery,'grid-template-columns');\\n  expect(/repeat\\\\(2,/.test(cols)||cols.split(' ').length===2).toBe(true);\\n});\\n\\nit('has a media query at \u22651024px changing to 4 columns',()=>{\\n  const mediaRules=[...document.styleSheets].flatMap(s=>[...s.cssRules||[]]).filter(r=>r.media&&r.media[0].includes('1024px'));\\n  const hasFourCols=mediaRules.some(r=>r.cssText.includes('repeat(4')||r.cssText.includes('1fr 1fr 1fr 1fr'));\\n  expect(hasFourCols).toBe(true);\\n});"
     },
     "solutionBlock": {
       "overview": "CSS Grid makes it simple to create responsive galleries that adapt to different screen sizes. Use `repeat(2, 1fr)` for small screens, then switch to `repeat(4, 1fr)` inside a media query for large screens.",
       "approaches": [
         {
-          "title": "Approach — Responsive Grid Columns",
+          "title": "Approach \u2014 Responsive Grid Columns",
           "prose": "Define a grid with two columns by default using `grid-template-columns: repeat(2, 1fr)`. Add a `gap` for spacing. Then, at larger screen widths (min-width: 1024px), increase the columns to four by redefining the grid template.",
           "codeHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
           "codeCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
@@ -482,11 +482,11 @@
       },
       "resources": [
         {
-          "title": "MDN – CSS Grid Layout",
+          "title": "MDN \u2013 CSS Grid Layout",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout"
         },
         {
-          "title": "MDN – repeat()",
+          "title": "MDN \u2013 repeat()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/repeat"
         }
       ]
@@ -510,7 +510,7 @@
       "clamp"
     ],
     "description": {
-      "summary": "Make the main heading size and the container’s horizontal padding scale smoothly with the viewport using CSS clamp().",
+      "summary": "Make the main heading size and the container\u2019s horizontal padding scale smoothly with the viewport using CSS clamp().",
       "arguments": [
         {
           "name": "Fluid type with clamp()",
@@ -525,7 +525,7 @@
         {
           "name": "Reasonable bounds",
           "type": "UX",
-          "desc": "Pick sensible min/max so text isn’t tiny on phones or gigantic on desktops."
+          "desc": "Pick sensible min/max so text isn\u2019t tiny on phones or gigantic on desktops."
         }
       ],
       "returns": {
@@ -543,11 +543,11 @@
       "tests": "function cssValue(el, prop){ return getComputedStyle(el).getPropertyValue(prop); }\\nfunction pxNum(v){ const m=/([\\d.]+)px/.exec(v||''); return m?parseFloat(m[1]):NaN; }\\nfunction cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && r.cssText.includes(text)) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\nconst hero=document.querySelector('.hero');\\nconst h1=document.querySelector('.hero h1');\\n\\n// 1) h1 font-size uses clamp() (by rule presence)\\nit('uses clamp() for fluid heading size', () => {\\n  const hasClampRule = cssTextContains('.hero h1', 'font-size') && cssTextContains('.hero h1', 'clamp(');\\n  expect(hasClampRule).toBe(true);\\n});\\n\\n// 2) .hero horizontal padding uses clamp() (by rule presence)\\nit('uses clamp() for fluid horizontal padding', () => {\\n  const hasClampPad = cssTextContains('.hero', 'padding-inline') && cssTextContains('.hero', 'clamp(');\\n  expect(hasClampPad).toBe(true);\\n});\\n\\n// 3) Computed values fall within sensible bounds on this viewport\\nit('keeps heading size and padding within sensible bounds', () => {\\n  const fs = pxNum(cssValue(h1, 'font-size'));\\n  const pl = pxNum(cssValue(hero, 'padding-left'));\\n  const pr = pxNum(cssValue(hero, 'padding-right'));\\n  const inRangeFs = fs >= 20 && fs <= 48;\\n  const inRangePad = pl >= 12 && pr >= 12 && pl <= 48 && pr <= 48;\\n  expect(inRangeFs && inRangePad).toBe(true);\\n});"
     },
     "solutionBlock": {
-      "overview": "Use CSS clamp() to create fluid values with safe minimum and maximum bounds. Apply it to the heading’s font-size and the hero’s horizontal padding so both scale smoothly with viewport width.",
+      "overview": "Use CSS clamp() to create fluid values with safe minimum and maximum bounds. Apply it to the heading\u2019s font-size and the hero\u2019s horizontal padding so both scale smoothly with viewport width.",
       "approaches": [
         {
-          "title": "Approach — clamp() for Type & Padding",
-          "prose": "Assign a fluid font size to the h1 using clamp(min, preferred, max). Do the same for the hero’s horizontal padding via padding-inline. This provides responsive scaling without media queries while ensuring legibility at small and large sizes.",
+          "title": "Approach \u2014 clamp() for Type & Padding",
+          "prose": "Assign a fluid font size to the h1 using clamp(min, preferred, max). Do the same for the hero\u2019s horizontal padding via padding-inline. This provides responsive scaling without media queries while ensuring legibility at small and large sizes.",
           "codeHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
           "codeCss": ".hero {\\n  background: #222;\\n  color: #fff;\\n  padding-inline: clamp(1rem, 4vw, 3rem);\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  font-size: clamp(1.5rem, 3vw + 1rem, 3rem);\\n}\\n.hero p { margin: 0; opacity: 0.9; }"
         }
@@ -564,11 +564,11 @@
       },
       "resources": [
         {
-          "title": "MDN – clamp()",
+          "title": "MDN \u2013 clamp()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp"
         },
         {
-          "title": "MDN – CSS Values and Units (vw, rem)",
+          "title": "MDN \u2013 CSS Values and Units (vw, rem)",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units"
         }
       ]
@@ -602,7 +602,7 @@
         {
           "name": ":invalid and :required",
           "type": "validation",
-          "desc": "Indicate invalid inputs with a subtle border color; don’t rely on color alone. Optional: style :required."
+          "desc": "Indicate invalid inputs with a subtle border color; don\u2019t rely on color alone. Optional: style :required."
         },
         {
           "name": "::placeholder and :focus-within",
@@ -622,7 +622,7 @@
       ]
     },
     "web": {
-      "starterHtml": "<form class=\"form\" onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type=\"email\" required placeholder=\"you@example.com\">\\n  </label>\\n  <small class=\"hint\">We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+      "starterHtml": "<form class=\"form\" onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type=\"email\" required placeholder=\"you@example.com\">\\n  </label>\\n  <small class=\"hint\">We\u2019ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
       "starterCss": "/* TODOs:\\n  1) Add a visible focus style using :focus-visible (with :focus fallback). Use outline, not only box-shadow.\\n  2) Style :invalid inputs with a subtle border color change.\\n  3) Make ::placeholder lighter; highlight the label group with :focus-within.\\n*/\\n\\n/* Plain starter (intentionally minimal so it doesn't look like the solution) */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n.form {\\n  border: 1px solid #e5e7eb; /* light gray */\\n  padding: 12px;\\n  max-width: 420px;\\n  background: #fff;\\n}\\n\\nlabel {\\n  display: block;\\n  margin-bottom: 8px;\\n}\\n\\ninput {\\n  display: block;\\n  width: 100%;\\n  margin-top: 4px;\\n  padding: 8px 10px;\\n  border: 1px solid #cfcfcf;\\n  border-radius: 4px; /* subtle */\\n  background: #fff;\\n  color: inherit;\\n}\\n\\nbutton {\\n  margin-top: 10px;\\n  padding: 8px 12px;\\n  border: 1px solid #d1d5db;\\n  border-radius: 4px;\\n  background: #f9fafb;\\n  color: #111;\\n}\\n\\n.hint {\\n  display: block;\\n  margin-top: 6px;\\n  color: #6b7280; /* muted */\\n}",
       "tests": "function cssTextContains(selector, text){\\n  try{\\n    const sheets=[...document.styleSheets];\\n    for(const s of sheets){\\n      const rules=[...((s.cssRules)||[])];\\n      for(const r of rules){\\n        const sel=r.selectorText||'';\\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\\n      }\\n    }\\n  }catch(e){}\\n  return false;\\n}\\n\\n// 1) Focus style present via :focus-visible or :focus and not removing outline\\nit('provides a visible focus outline', () => {\\n  const hasFocusOutline = (cssTextContains('input:focus-visible','outline') || cssTextContains('input:focus','outline'));\\n  const removesOutline = cssTextContains('input:focus-visible','outline: none') || cssTextContains('input:focus','outline: none');\\n  expect(hasFocusOutline && !removesOutline).toBe(true);\\n});\\n\\n// 2) Invalid state styling exists (border/border-color)\\nit('indicates invalid inputs with a border color change', () => {\\n  const hasInvalid = cssTextContains('input:invalid','border-color') || cssTextContains('input:invalid','border');\\n  expect(hasInvalid).toBe(true);\\n});\\n\\n// 3) Placeholder is styled and label group highlights with :focus-within\\nit('styles ::placeholder and highlights label with :focus-within', () => {\\n  const hasPlaceholder = cssTextContains('::placeholder','color') || cssTextContains('input::placeholder','color');\\n  const hasFocusWithin = cssTextContains('label:focus-within','outline') || cssTextContains('label:focus-within','border') || cssTextContains('label:focus-within','box-shadow');\\n  expect(hasPlaceholder && hasFocusWithin).toBe(true);\\n});"
     },
@@ -630,14 +630,14 @@
       "overview": "Use :focus-visible (with a :focus fallback) to show an outline ring, :invalid to indicate errors, ::placeholder for lighter hint text, and :focus-within on the label to highlight the label+input group. The solution also applies nicer visual styling so it looks clearly different from the starter.",
       "approaches": [
         {
-          "title": "Approach — Focus Rings + Validation States",
+          "title": "Approach \u2014 Focus Rings + Validation States",
           "prose": "Add a visible outline on focus using :focus-visible (and :focus as fallback). Style :invalid to adjust the border color when constraints fail. Use ::placeholder for lighter hint text. Apply :focus-within on the label to add an outline around the group. Extra visual polish (radius, stronger button) is included here so the solution preview is obviously different than the starter.",
-          "codeHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+          "codeHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We\u2019ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
           "codeCss": "/* Base + polish */\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\n\\n/* Accessibility & states */\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; } /* fallback */\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }"
         }
       ]
     },
-    "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+    "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We\u2019ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; color: #111; }\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
     "access": "free"
   },
@@ -656,7 +656,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Create a card that smoothly “lifts” on hover using transitions and transforms, with motion-respectful behavior.",
+      "summary": "Create a card that smoothly \u201clifts\u201d on hover using transitions and transforms, with motion-respectful behavior.",
       "arguments": [
         {
           "name": ".lift (base)",
@@ -698,7 +698,7 @@
       "overview": "Animate elevation by transitioning both transform and box-shadow. A tiny scale or upward translate combined with a deeper shadow gives a realistic lift effect. Always provide a reduced-motion fallback.",
       "approaches": [
         {
-          "title": "Approach — Transition + Hover Transform",
+          "title": "Approach \u2014 Transition + Hover Transform",
           "prose": "Set a base card with a subtle shadow. Add a transition that covers both transform and box-shadow. On :hover, scale slightly and/or translate up a couple pixels, and increase the shadow. Finally, disable transitions under prefers-reduced-motion.",
           "codeHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
           "codeCss": ".lift {\\n  background: #fff;\\n  border: 1px solid #e5e7eb;\\n  border-radius: 12px;\\n  padding: 18px 20px;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  transition: transform 200ms ease, box-shadow 200ms ease;\\n}\\n.lift:hover {\\n  transform: translateY(-2px) scale(1.02);\\n  box-shadow: 0 10px 24px rgba(0,0,0,.15);\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  * { transition: none !important; }\\n}"
@@ -711,20 +711,20 @@
         ],
         "techniques": [
           "Pair transform with shadow changes for convincing depth.",
-          "Use ease or ease-out for a natural feel; keep duration around 150–250ms."
+          "Use ease or ease-out for a natural feel; keep duration around 150\u2013250ms."
         ]
       },
       "resources": [
         {
-          "title": "MDN – transition",
+          "title": "MDN \u2013 transition",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transition"
         },
         {
-          "title": "MDN – transform",
+          "title": "MDN \u2013 transform",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"
         },
         {
-          "title": "MDN – prefers-reduced-motion",
+          "title": "MDN \u2013 prefers-reduced-motion",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
         }
       ]
@@ -786,10 +786,10 @@
       "overview": "Declare a palette as CSS variables on :root. Redefine them under @media (prefers-color-scheme: dark) for OS dark mode. Finally, add html.theme-dark with the same dark values AFTER the media query so authors can force dark regardless of OS.",
       "approaches": [
         {
-          "title": "Approach — Variables + Dark Media + Manual Override",
+          "title": "Approach \u2014 Variables + Dark Media + Manual Override",
           "prose": "Keep all component colors reading from variables (no literals). Light theme on :root, dark values in the media query, and a later .theme-dark rule to override. This keeps the component themeable without changing the markup or styles inside the panel.",
-          "codeHtml": "<div class='panel'>\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <div style='display:flex; gap:.5rem; margin:.75rem 0 1rem;'>\\n    <button class='btn' onclick=\"document.body.classList.remove('theme-dark'); this.nextElementSibling.textContent='Force Dark';\">Auto (OS)</button>\\n    <button class='btn' onclick=\"document.body.classList.toggle('theme-dark'); this.textContent = document.body.classList.contains('theme-dark') ? 'Disable Dark' : 'Force Dark';\">Force Dark</button>\\n  </div>\\n</div>",
-          "codeCss": "/* 1) Light defaults */\\n:root {\\n  --bg: #fafafa;\\n  --text: #111111;\\n  --surface: #ffffff;\\n  --accent: #3b82f6;\\n  --border: rgba(0,0,0,0.12);\\n}\\n\\n/* 2) OS dark mode */\\n@media (prefers-color-scheme: dark) {\\n  :root {\\n    --bg: #0b0b0c;\\n    --text: #f3f4f6;\\n    --surface: #16181a;\\n    --accent: #60a5fa;\\n    --border: rgba(255,255,255,0.14);\\n  }\\n}\\n\\n/* 3) Manual override (AFTER media query) */\\nhtml.theme-dark, body.theme-dark {\\n  --bg: #0b0b0c;\\n  --text: #f3f4f6;\\n  --surface: #16181a;\\n  --accent: #60a5fa;\\n  --border: rgba(255,255,255,0.14);\\n}\\n\\n/* Component using variables */\\nhtml, body { height: 100%; }\\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: var(--bg); color: var(--text); display: grid; place-items: center; padding: 2rem; }\\n.panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); max-width: 520px; }\\n.btn { background: var(--accent); color: #fff; border: 0; padding: .5rem .9rem; border-radius: .6rem; font-weight: 600; cursor: pointer; }\\n.btn + .btn { margin-left: .5rem; }"
+          "codeHtml": "<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>Switch variables to theme the UI.</p>\n  <div class='btn-row'>\n    <button class='btn is-active' data-mode='auto'>Auto (OS)</button>\n    <button class='btn' data-mode='dark'>Force Dark</button>\n    <button class='btn' data-mode='light'>Force Light</button>\n  </div>\n  <div class='card'>\n    <h3>Card title</h3>\n    <p>Card uses CSS variables for background, text, and border.</p>\n  </div>\n</div>\n<script>\n  (function(){\n    const root = document.documentElement;\n    const buttons = document.querySelectorAll('.btn[data-mode]');\n\n    function applyMode(mode){\n      root.classList.remove('theme-dark','theme-light');\n      if(mode === 'dark') root.classList.add('theme-dark');\n      if(mode === 'light') root.classList.add('theme-light');\n      buttons.forEach(btn => btn.classList.toggle('is-active', btn.dataset.mode === mode));\n    }\n\n    buttons.forEach(btn => {\n      btn.addEventListener('click', () => applyMode(btn.dataset.mode || 'auto'));\n    });\n\n    applyMode('auto');\n  })();\n</script>\n",
+          "codeCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \n@media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} }\nhtml.theme-light, body.theme-light { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \nhtml.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} \nhtml, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\nbody { padding: 20px; }\n.panel { background: var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; box-shadow: 0 10px 28px rgba(0,0,0,.12); max-width:520px; }\n.btn-row{ display:flex; gap:10px; margin:12px 0 18px; flex-wrap:wrap; }\n.btn{ padding:10px 14px; border-radius:12px; border:1px solid var(--border); background: var(--accent); color:#0b1220; font-weight:700; cursor:pointer; transition: transform 120ms ease, filter 120ms ease; }\n.btn:hover{ filter: brightness(1.05); }\n.btn.is-active{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.12); }\n.card{ margin-top:10px; padding:14px; border-radius:12px; border:1px solid var(--border); background: color-mix(in srgb, var(--surface) 96%, var(--text) 4%); }\n"
         }
       ],
       "notes": {
@@ -804,17 +804,17 @@
       },
       "resources": [
         {
-          "title": "MDN – Using CSS custom properties (variables)",
+          "title": "MDN \u2013 Using CSS custom properties (variables)",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties"
         },
         {
-          "title": "MDN – prefers-color-scheme",
+          "title": "MDN \u2013 prefers-color-scheme",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"
         }
       ]
     },
-    "webSolutionHtml": "<div class='panel'>\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <div style='display:flex; gap:.5rem; margin:.75rem 0 1rem;'>\\n    <button class='btn' onclick=\"document.body.classList.remove('theme-dark'); this.nextElementSibling.textContent='Force Dark';\">Auto (OS)</button>\\n    <button class='btn' onclick=\"document.body.classList.toggle('theme-dark'); this.textContent = document.body.classList.contains('theme-dark') ? 'Disable Dark' : 'Force Dark';\">Force Dark</button>\\n  </div>\\n</div>",
-    "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} @media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} } html.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} html, body { height:100%; } body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; line-height:1.6; background: var(--bg); color: var(--text); display:grid; place-items:center; padding:2rem; } .panel { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); max-width: 520px; } .btn { background: var(--accent); color:#fff; border:0; padding:.5rem .9rem; border-radius:.6rem; font-weight:600; cursor:pointer; } .btn + .btn { margin-left:.5rem; }",
+    "webSolutionHtml": "<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>Switch variables to theme the UI.</p>\n  <div class='btn-row'>\n    <button class='btn is-active' data-mode='auto'>Auto (OS)</button>\n    <button class='btn' data-mode='dark'>Force Dark</button>\n    <button class='btn' data-mode='light'>Force Light</button>\n  </div>\n  <div class='card'>\n    <h3>Card title</h3>\n    <p>Card uses CSS variables for background, text, and border.</p>\n  </div>\n</div>\n<script>\n  (function(){\n    const root = document.documentElement;\n    const buttons = document.querySelectorAll('.btn[data-mode]');\n\n    function applyMode(mode){\n      root.classList.remove('theme-dark','theme-light');\n      if(mode === 'dark') root.classList.add('theme-dark');\n      if(mode === 'light') root.classList.add('theme-light');\n      buttons.forEach(btn => btn.classList.toggle('is-active', btn.dataset.mode === mode));\n    }\n\n    buttons.forEach(btn => {\n      btn.addEventListener('click', () => applyMode(btn.dataset.mode || 'auto'));\n    });\n\n    applyMode('auto');\n  })();\n</script>\n",
+    "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \n@media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} }\nhtml.theme-light, body.theme-light { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \nhtml.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} \nhtml, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\nbody { padding: 20px; }\n.panel { background: var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; box-shadow: 0 10px 28px rgba(0,0,0,.12); max-width:520px; }\n.btn-row{ display:flex; gap:10px; margin:12px 0 18px; flex-wrap:wrap; }\n.btn{ padding:10px 14px; border-radius:12px; border:1px solid var(--border); background: var(--accent); color:#0b1220; font-weight:700; cursor:pointer; transition: transform 120ms ease, filter 120ms ease; }\n.btn:hover{ filter: brightness(1.05); }\n.btn.is-active{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.12); }\n.card{ margin-top:10px; padding:14px; border-radius:12px; border:1px solid var(--border); background: color-mix(in srgb, var(--surface) 96%, var(--text) 4%); }\n",
     "access": "free"
   }
 ]
