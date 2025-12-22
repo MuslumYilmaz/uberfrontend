@@ -468,6 +468,10 @@ export class TrackDetailComponent implements OnInit {
     b: TrackItem,
     sortKey: NarrowSortKey,
   ) {
+    const aw = this.isWarmupTitle(a.title);
+    const bw = this.isWarmupTitle(b.title);
+    if (aw !== bw) return aw ? -1 : 1;
+
     if (sortKey === 'diff-desc') {
       return this.diffRank(b.difficulty) - this.diffRank(a.difficulty) || (b.importance ?? 0) - (a.importance ?? 0);
     }
@@ -481,6 +485,10 @@ export class TrackDetailComponent implements OnInit {
       return b.title.localeCompare(a.title);
     }
     return this.diffRank(a.difficulty) - this.diffRank(b.difficulty) || (b.importance ?? 0) - (a.importance ?? 0);
+  }
+
+  private isWarmupTitle(title: string | null | undefined): boolean {
+    return /\bwarm[-\s]?up\b/i.test(title ?? '');
   }
 
   private normalizeSortKey(val: SortKey): SortKey {

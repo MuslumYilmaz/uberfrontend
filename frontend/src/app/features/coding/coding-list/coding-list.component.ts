@@ -443,7 +443,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
       const cmp = this.makeComparator(sortKey as SortKey);
       const deduped = this.dedupeFrameworkRows(filtered);
-      return deduped.slice().sort(cmp);
+      const warmupFirst = (a: any, b: any) => {
+        const aw = this.isWarmupTitle(a?.title);
+        const bw = this.isWarmupTitle(b?.title);
+        if (aw !== bw) return aw ? -1 : 1;
+        return cmp(a, b);
+      };
+
+      return deduped.slice().sort(warmupFirst);
     })
   );
 
@@ -1155,6 +1162,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private difficultyRank(d: Difficulty | string | undefined): number {
     const map: Record<string, number> = { easy: 0, intermediate: 1, hard: 2 };
     return map[String(d || '').toLowerCase()] ?? 1;
+  }
+
+  private isWarmupTitle(title: string | null | undefined): boolean {
+    return /\bwarm[-\s]?up\b/i.test(title ?? '');
   }
   private createdTs(q: any): number {
     const raw = q.createdAt || q.created || q.date || q.addedAt || q.added;
