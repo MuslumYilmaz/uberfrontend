@@ -121,23 +121,29 @@ test('persistence: partial edit -> refresh -> code restored safely', async ({ pa
   await expect.poll(() => getMonacoModelValue(page, codeModelKey)).toContain(marker);
 });
 
-test('offline/slow static assets -> shows user-friendly state (no crash)', async ({ page }) => {
-  // Simulate slow/unavailable question data without causing browser-level "Failed to load resource" errors.
-  await page.route('**/assets/questions/**/*.json', async (route: any) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: '[]',
-    });
+test.describe('offline/slow static assets', () => {
+  test.use({
+    // Scoped allowlist: expected offline network errors for question JSON only.
+    consoleErrorAllowlist: [
+      'Failed to load resource:.*\\/assets\\/questions\\/.*\\.json',
+      'GET .*\\/assets\\/questions\\/.*\\.json.*net::ERR_',
+    ],
   });
 
-  await page.goto('/coding');
-  await expect(page.getByTestId('coding-list-page')).toBeVisible();
+  test('offline/slow static assets -> shows user-friendly state (no crash)', async ({ page }) => {
+    // Simulate static asset failures for question data.
+    await page.route('**/assets/questions/**/*.json', async (route: any) => {
+      await route.abort('internetdisconnected');
+    });
 
-  // Flip app's offline banner on without breaking the already-loaded shell.
-  await page.evaluate(() => window.dispatchEvent(new Event('offline')));
-  await expect(page.getByTestId('offline-banner')).toBeVisible();
-  await expect(page.getByTestId('coding-empty-state')).toBeVisible();
+    await page.goto('/coding');
+    await expect(page.getByTestId('coding-list-page')).toBeVisible();
+
+    // Flip app's offline banner on without breaking the already-loaded shell.
+    await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+    await expect(page.getByTestId('offline-banner')).toBeVisible();
+    await expect(page.getByTestId('coding-empty-state')).toBeVisible();
+  });
 });
 
 test('deep link to question detail works after hard refresh', async ({ page }) => {

@@ -6,8 +6,13 @@ type CollectedIssue = {
   message: string;
 };
 
-function isAllowlisted(message: string): boolean {
-  return CONSOLE_ERROR_ALLOWLIST.some((re) => re.test(message));
+function compileAllowlist(patterns: string[] | undefined): RegExp[] {
+  const safe = Array.isArray(patterns) ? patterns : [];
+  return safe.map((source) => new RegExp(source, 'i'));
+}
+
+function isAllowlisted(message: string, extraAllowlist: RegExp[]): boolean {
+  return [...CONSOLE_ERROR_ALLOWLIST, ...extraAllowlist].some((re) => re.test(message));
 }
 
 function formatConsoleMessage(msg: ConsoleMessage): string {
@@ -32,8 +37,8 @@ async function installUnhandledRejectionHook(page: Page, issues: CollectedIssue[
   });
 }
 
-async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[]) {
-  const relevant = issues.filter((i) => !(i.type === 'console.error' && isAllowlisted(i.message)));
+async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[], extraAllowlist: RegExp[]) {
+  const relevant = issues.filter((i) => !(i.type === 'console.error' && isAllowlisted(i.message, extraAllowlist)));
   if (!relevant.length) return;
 
   const body = relevant
@@ -48,9 +53,13 @@ async function attachAndFailIfNeeded(testInfo: TestInfo, issues: CollectedIssue[
   throw new Error(`Browser emitted ${relevant.length} error(s). See attachment: browser-issues`);
 }
 
-export const test = baseTest.extend({
-  page: async ({ page }, use, testInfo) => {
+export const test = baseTest.extend<{
+  consoleErrorAllowlist: string[];
+}>({
+  consoleErrorAllowlist: [[], { option: true }],
+  page: async ({ page, consoleErrorAllowlist }, use, testInfo) => {
     const issues: CollectedIssue[] = [];
+    const extraAllowlist = compileAllowlist(consoleErrorAllowlist);
 
     page.on('console', (msg) => {
       if (msg.type() !== 'error') return;
@@ -65,9 +74,8 @@ export const test = baseTest.extend({
 
     await use(page);
 
-    await attachAndFailIfNeeded(testInfo, issues);
+    await attachAndFailIfNeeded(testInfo, issues, extraAllowlist);
   },
 });
 
 export const expect = baseExpect;
-
