@@ -57,7 +57,7 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
             // NEW
             {
                 key: 'behavioral',
-                title: 'Behavioral Interview Handbook',
+                title: 'Behavioral Interview Blueprint',
                 subtitle: 'STAR stories, signals, examples',
                 pi: 'pi pi-comments',
                 intent: 'route',

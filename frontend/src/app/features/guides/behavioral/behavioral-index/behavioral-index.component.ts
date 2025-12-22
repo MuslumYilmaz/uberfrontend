@@ -40,7 +40,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .card:hover .arrow { opacity:1; transform: translateX(4px); color: var(--uf-text-primary); }
   `], template: `
     <div class="wrap">
-      <h1 class="hero-title">Behavioral Interview Handbook</h1>
+      <h1 class="hero-title">Behavioral Interview Blueprint</h1>
       <div class="hero-sub">Show your impact with crisp stories and strong signals.</div>
       <div class="pill-row">
         <span class="pill fa-chip fa-chip--label">STAR stories</span>

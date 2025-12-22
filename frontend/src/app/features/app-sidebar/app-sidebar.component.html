@@ -114,16 +114,29 @@
 
         <div class="nav-section">
             <p class="section-heading">Productivity</p>
-            <ul *ngIf="isLink(nav[4])">
-                <li>
-                    <a class="nav-link nav-link--pill" [routerLink]="$any(nav[4]).to"
-                        [queryParams]="$any(nav[4]).query || null" routerLinkActive="is-active"
-                        [routerLinkActiveOptions]="{ exact: true }" aria-label="Shortcuts and tools">
+            <ng-container *ngIf="isGroup(nav[4])">
+                <div class="nav-group nav-block">
+                    <button class="group-header nav-link--pill" type="button" (click)="toggleGroup(4)"
+                        [attr.aria-expanded]="$any(nav[4]).open" [attr.aria-controls]="'group-4'">
                         <i class="pi nav-ic pi-stopwatch"></i>
                         <span class="label">Shortcuts &amp; tools</span>
-                    </a>
-                </li>
-            </ul>
+                        <i class="pi caret" [ngClass]="$any(nav[4]).open ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                    </button>
+
+                    <div class="group-list" [id]="'group-4'" [class.open]="$any(nav[4]).open">
+                        <ul class="group-inner">
+                            <li *ngFor="let c of $any(nav[4]).children">
+                                <a class="nav-sublink" [routerLink]="c.to" [queryParams]="c.query || null"
+                                    routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+                                    [attr.aria-label]="c.label">
+                                    <i class="pi nav-ic" [ngClass]="c.icon || 'pi pi-link'"></i>
+                                    <span class="label">{{ c.label }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </ng-container>
         </div>
     </nav>
 

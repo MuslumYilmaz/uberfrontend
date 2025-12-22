@@ -69,13 +69,13 @@ export class AppSidebarComponent {
 
     {
       type: 'group',
-      label: 'Recommended strategy',
-      icon: 'pi pi-map',
+      label: 'Study paths',
+      icon: 'pi pi-directions-alt',
       open: false,
       children: [
-        { type: 'link', label: 'FrontendAtlas Interview Blueprint', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
-        { type: 'link', label: 'JavaScript Questions', to: '/coding', icon: 'pi pi-code', query: { tech: 'javascript' } },
-        { type: 'link', label: 'Frontend System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
+        { type: 'link', label: 'Crash Track (7 days)', to: '/tracks/crash-7d', icon: 'pi pi-bolt' },
+        { type: 'link', label: 'Foundations Track (30 days)', to: '/tracks/foundations-30d', icon: 'pi pi-calendar' },
+        { type: 'link', label: 'Companies', to: '/companies', icon: 'pi pi-building' },
       ],
     },
 
@@ -86,12 +86,23 @@ export class AppSidebarComponent {
       open: false,
       children: [
         { type: 'link', label: 'Interview Blueprint', to: '/guides/interview-blueprint', icon: 'pi pi-book' },
-        { type: 'link', label: 'Behavioral Interview Handbook', to: '/guides/behavioral', icon: 'pi pi-users' },
+        { type: 'link', label: 'Behavioral Interview Blueprint', to: '/guides/behavioral', icon: 'pi pi-users' },
         { type: 'link', label: 'System Design Blueprint', to: '/guides/system-design-blueprint', icon: 'pi pi-sitemap' },
       ],
     },
 
-    { type: 'link', label: 'Time-savers', icon: 'pi pi-bolt', to: '/time-savers' },
+    {
+      type: 'group',
+      label: 'Shortcuts & tools',
+      icon: 'pi pi-stopwatch',
+      open: false,
+      children: [
+        { type: 'link', label: 'Question library', to: '/coding', icon: 'pi pi-database' },
+        { type: 'link', label: 'Question formats', to: '/coding', icon: 'pi pi-clone', query: { view: 'formats' } },
+        { type: 'link', label: 'Tracks', to: '/tracks', icon: 'pi pi-directions' },
+        { type: 'link', label: 'Companies', to: '/companies', icon: 'pi pi-building' },
+      ],
+    },
   ];
 
   toggleGroup(i: number) {

@@ -1,8 +1,8 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, shareReplay } from 'rxjs';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, forkJoin, map, Observable, of, shareReplay, Subject, takeUntil } from 'rxjs';
 import { Question, QuestionKind } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
@@ -54,10 +54,12 @@ const UI_TECHS: ReadonlySet<Tech> = new Set<Tech>(['react', 'angular', 'vue']);
   templateUrl: './track-detail.component.html',
   styleUrls: ['./track-detail.component.css'],
 })
-export class TrackDetailComponent implements OnInit {
+export class TrackDetailComponent implements OnInit, OnDestroy {
   track: TrackConfig | null = null;
   featured$?: Observable<TrackItem[]>;
   filtered$?: Observable<TrackItem[]>;
+
+  private destroy$ = new Subject<void>();
 
   kindFilter$ = new BehaviorSubject<TrackQuestionKind | 'all'>('all');
   techFilter$ = new BehaviorSubject<TrackTechFilter>('all');
@@ -91,7 +93,21 @@ export class TrackDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const slug = (this.route.snapshot.paramMap.get('slug') || '').toLowerCase();
+    this.route.paramMap
+      .pipe(
+        map((pm) => (pm.get('slug') || '').toLowerCase()),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((slug) => this.loadTrack(slug));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadTrack(slug: string) {
     const track = TRACK_LOOKUP.get(slug as any) ?? null;
 
     if (!track) {
@@ -110,26 +126,27 @@ export class TrackDetailComponent implements OnInit {
     const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
     const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
 
+    // Reset/hydrate filter state from URL every time the track changes.
     this.searchTerm = qInit;
     this.search$.next(qInit);
     this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
     this.techFilter$.next(this.normalizeTechFilter(techInit));
+
     const parsedDiffs = (diffInit || '')
       .split(',')
       .map((d) => d.trim())
       .filter((d) => !!d)
       .map((d) => this.normalizeDifficulty(d)) as Array<'easy' | 'intermediate' | 'hard'>;
-    if (parsedDiffs.length) {
-      this.diffFilter$.next(new Set(parsedDiffs));
-    }
+    this.diffFilter$.next(new Set(parsedDiffs));
+
     const parsedImps = (impInit || '')
       .split(',')
       .map((d) => d.trim().toLowerCase())
       .filter((d) => d === 'low' || d === 'medium' || d === 'high') as ImportanceTier[];
-    if (parsedImps.length) {
-      this.impFilter$.next(new Set(parsedImps));
-    }
+    this.impFilter$.next(new Set(parsedImps));
+
     this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
+    this.sortOpen = false;
 
     this.track = track;
     this.featured$ = this.loadFeatured(track).pipe(shareReplay(1));
@@ -140,7 +157,7 @@ export class TrackDetailComponent implements OnInit {
       this.search$,
       this.diffFilter$,
       this.impFilter$,
-      this.sort$
+      this.sort$,
     ]).pipe(
       map(([items, kind, tech, term, diffs, imps, sortKey]) => {
         const t = term.trim().toLowerCase();
@@ -167,7 +184,7 @@ export class TrackDetailComponent implements OnInit {
         });
         const sorted = filtered.slice().sort((a, b) => this.sortItems(a, b, sortKey));
         return tech === 'ui' ? this.dedupeUiFamilies(sorted) : sorted;
-      })
+      }),
     );
 
     this.seo.updateTags({

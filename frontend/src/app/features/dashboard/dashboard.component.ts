@@ -224,7 +224,7 @@ export class DashboardComponent {
       route: ['/guides', 'system-design-blueprint'],
     },
     {
-      title: 'Behavioral Interview Handbook',
+      title: 'Behavioral Interview Blueprint',
       subtitle: 'STAR method, stories, and high-signal answers.',
       icon: 'book',
       route: ['/guides', 'behavioral'],

@@ -47,7 +47,7 @@ export class BehavioralHostComponent implements OnDestroy {
         // Left nav (filter to known slugs)
         const registryMap = new Map(BEHAVIORAL.map(e => [e.slug, e]));
         const leftNav = {
-            title: 'Behavioral Interview Handbook',
+            title: 'Behavioral Interview Blueprint',
             sections: BEHAVIORAL_GROUPS.map(g => ({
                 title: g.title,
                 items: g.items

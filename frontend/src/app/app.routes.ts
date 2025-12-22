@@ -461,7 +461,7 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Behavioral interview handbook',
+            title: 'Behavioral interview blueprint',
             description: 'Story frameworks and examples to answer behavioral front-end interview questions.',
           },
         },
