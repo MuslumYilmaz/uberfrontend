@@ -1,4 +1,4 @@
-<div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden">
+<div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex flex-col flex-1 overflow-hidden" data-testid="js-panel">
     <!-- Header -->
     <div class="flex items-center border-b border-white/10 px-4">
         <div class="flex">
@@ -33,7 +33,7 @@
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
             <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'">
-                <app-monaco-editor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
+                <app-monaco-editor class="h-full editor-fill" data-testid="js-code-editor" [modelKey]="'q-' + question?.id + '-code'"
                     [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                     [options]="editorOptions" (codeChange)="onCodeChange($event)">
                 </app-monaco-editor>
@@ -41,7 +41,7 @@
 
             <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->
             <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
-                <app-monaco-editor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-tests'"
+                <app-monaco-editor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
                     [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
                     [options]="editorOptions" (codeChange)="onTestsChange($event)">
                 </app-monaco-editor>
@@ -55,7 +55,7 @@
         <!-- BOTTOM: Actions + Results/Console -->
         <div class="flex-1 min-h-0 flex flex-col fa-runner-shell">
             <div class="fa-runner-topbar">
-                <button class="fa-runner-run-btn" (click)="runTests()" [disabled]="!(testCode()||'').trim()">▶ Run
+                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()" [disabled]="!(testCode()||'').trim()">▶ Run
                     tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
@@ -67,7 +67,7 @@
 
             <div class="flex-1 min-h-0 overflow-hidden">
                 <!-- Results -->
-                <div *ngIf="subTab()==='tests'" class="h-full overflow-auto p-4 results-panel fa-results">
+                <div *ngIf="subTab()==='tests'" class="h-full overflow-auto p-4 results-panel fa-results" data-testid="js-results-panel">
                     <div *ngIf="!hasRunTests()" class="h-full grid place-items-center text-[11px] text-gray-400 empty-state">
                         Run tests to see results.
                     </div>
@@ -81,10 +81,11 @@
                             </ng-container>
                         </div>
 
-                        <div *ngFor="let t of testResults()" class="test-card"
+                        <div *ngFor="let t of testResults()" class="test-card" data-testid="test-result"
                             [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
                             <div class="test-name">
                                 <i [ngClass]="t.passed ? 'pi pi-check-circle' : 'pi pi-times-circle'"></i>
+                                <span class="sr-only" data-testid="test-status">{{ t.passed ? 'PASS' : 'FAIL' }}</span>
                                 <span>{{ t.name }}</span>
                             </div>
                             <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">

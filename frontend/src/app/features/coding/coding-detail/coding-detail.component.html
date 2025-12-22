@@ -1,5 +1,5 @@
 <ng-container *ngIf="!locked(); else lockedView">
-<div class="coding-detail flex gap-[5px]" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
+<div class="coding-detail flex gap-[5px]" data-testid="coding-detail-page" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
     [style.flex]="asideFlex()" style="min-width:0;">
@@ -42,7 +42,7 @@
         <ng-container *ngIf="activePanel()===0">
           <section class="space-y-4">
             <div class="detail-title-row">
-              <h1 class="text-xl font-bold">{{ question()?.title }}</h1>
+              <h1 class="text-xl font-bold" data-testid="question-title">{{ question()?.title }}</h1>
               <span class="detail-solved" *ngIf="uiSolved()" aria-label="Solved">
                 <i class="pi pi-check"></i>
                 Solved

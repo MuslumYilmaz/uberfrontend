@@ -147,7 +147,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
   /* Runner styles come from global .fa-runner-* and .fa-results classes */
 `],
   template: `
-<div class="web-panel w-full min-h-0 flex flex-col flex-1">
+<div class="web-panel w-full min-h-0 flex flex-col flex-1" data-testid="web-panel">
   <!-- Banner -->
   <app-restore-banner
     [isVisible]="showRestoreBanner()"
@@ -164,7 +164,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
           <div class="panel-label muted">&lt;html&gt; HTML</div>
 
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
-            <app-monaco-editor class="h-full editor-fill"
+            <app-monaco-editor class="h-full editor-fill" data-testid="web-html-editor"
                                [code]="webHtml()" [language]="'html'"
                                [options]="editorOptions"
                                (codeChange)="onHtmlChange($event)">
@@ -176,7 +176,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 
           <div class="flex-1 min-h-0 flex flex-col">
             <div class="panel-label muted"># CSS</div>
-            <app-monaco-editor class="flex-1 editor-fill"
+            <app-monaco-editor class="flex-1 editor-fill" data-testid="web-css-editor"
                                [code]="webCss()" [language]="'css'"
                                [options]="editorOptions"
                                (codeChange)="onCssChange($event)">
@@ -200,7 +200,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 
           <!-- TOP CONTENT -->
           <div [style.flex]="'0 0 ' + (previewRatio()*100) + '%'" class="relative min-h-[160px]">
-            <div *ngIf="!previewUrl()" class="empty-preview"
+            <div *ngIf="!previewUrl()" class="empty-preview" data-testid="web-preview-placeholder"
                  [style.display]="isPreviewTop() ? 'grid' : 'none'">
               Building preview…
             </div>
@@ -222,13 +222,13 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
               </div>
             </div>
 
-            <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white"
+            <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" data-testid="web-preview-iframe"
                     referrerpolicy="no-referrer"
                     sandbox="allow-scripts">
             </iframe>
 
             <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">
-              <app-monaco-editor class="h-full"
+              <app-monaco-editor class="h-full" data-testid="web-tests-editor"
                                  [code]="testCode()" [language]="'javascript'"
                                  [options]="editorOptions"
                                  (codeChange)="testCode.set($event)">
@@ -241,20 +241,20 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                (pointerdown)="startPreviewDrag($event)"></div>
 
           <!-- BOTTOM: Results / Console -->
-          <div class="results-shell fa-runner-shell flex-1 min-h-[140px] flex flex-col">
-            <div class="results-topbar fa-runner-topbar">
-              <button class="run-btn fa-runner-run-btn" (click)="runWebTests()" [disabled]="!hasAnyTests()"
-                      [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">▶ Run tests</button>
-              <button class="tab-btn fa-runner-tab-btn" [class.active]="isTestsTab()" (click)="subTab.set('tests')">Results</button>
-              <button class="tab-btn fa-runner-tab-btn" [class.active]="isConsoleTab()" (click)="subTab.set('console')">Console</button>
-              <span class="run-summary fa-runner-summary" *ngIf="hasRunTests && totalCount() > 0">
-                {{ passedCount() }}/{{ totalCount() }} passed
-              </span>
-            </div>
+	          <div class="results-shell fa-runner-shell flex-1 min-h-[140px] flex flex-col">
+	            <div class="results-topbar fa-runner-topbar">
+	              <button class="run-btn fa-runner-run-btn" data-testid="web-run-tests" (click)="runWebTests()" [disabled]="!hasAnyTests()"
+	                      [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">▶ Run tests</button>
+	              <button class="tab-btn fa-runner-tab-btn" [class.active]="isTestsTab()" (click)="subTab.set('tests')">Results</button>
+	              <button class="tab-btn fa-runner-tab-btn" [class.active]="isConsoleTab()" (click)="subTab.set('console')">Console</button>
+	              <span class="run-summary fa-runner-summary" *ngIf="hasRunTests && totalCount() > 0">
+	                {{ passedCount() }}/{{ totalCount() }} passed
+	              </span>
+	            </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
               <!-- Results -->
-              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel fa-results">
+	              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel fa-results" data-testid="web-results-panel">
                 <!-- 1) No tests -->
                 <div class="h-full grid place-items-center text-xs empty-state" *ngIf="!hasAnyTests()">
                   No tests provided for this challenge yet.
@@ -272,16 +272,17 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
                     <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
                   </div>
 
-                  <div *ngFor="let t of testResults()" class="test-card border rounded-md"
-                       [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
-                    <div class="test-name">
-                      <i [ngClass]="t.passed ? 'pi pi-check-circle'
-                                             : 'pi pi-times-circle'"></i>
-                      <span>{{ t.name }}</span>
-                    </div>
-                    <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">
-                      {{ t.error }}
-                    </div>
+	                  <div *ngFor="let t of testResults()" class="test-card border rounded-md" data-testid="test-result"
+	                       [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
+	                    <div class="test-name">
+	                      <i [ngClass]="t.passed ? 'pi pi-check-circle'
+	                                             : 'pi pi-times-circle'"></i>
+	                      <span class="sr-only" data-testid="test-status">{{ t.passed ? 'PASS' : 'FAIL' }}</span>
+	                      <span>{{ t.name }}</span>
+	                    </div>
+	                    <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">
+	                      {{ t.error }}
+	                    </div>
                   </div>
                 </div>
               </div>
@@ -391,6 +392,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       window.addEventListener('pointercancel', this.onPointerUp); // <-- add this
       window.addEventListener('message', this.onPreviewMessage);
     });
+
+    this.previewContentWindow = this.previewFrame?.nativeElement.contentWindow ?? null;
   }
 
   ngOnDestroy(): void {
@@ -820,22 +823,13 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       return;
     }
 
+    this.previewContentWindow = this.previewFrame?.nativeElement.contentWindow ?? this.previewContentWindow;
+
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
 
-    // keep iframe navigation
-    const cw = frameEl.contentWindow;
-    if (cw) {
-      this.previewContentWindow = cw;
-      cw.location.replace(url);
-    } else {
-      frameEl.onload = () => {
-        this.previewContentWindow = frameEl.contentWindow;
-        frameEl.contentWindow?.location.replace(url);
-      };
-      frameEl.setAttribute('src', url);
-    }
+    frameEl.src = url;
 
     // 👇 update the reactive url used by the template
     this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));

@@ -7,7 +7,7 @@ import { OfflineService } from '../../../core/services/offline';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="offline()" class="offline-banner">
+    <div *ngIf="offline()" class="offline-banner" data-testid="offline-banner">
       <div class="offline-banner__inner">
         <i class="pi pi-wifi offline-banner__icon"></i>
 

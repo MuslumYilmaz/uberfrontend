@@ -1,4 +1,4 @@
-<div class="coding-shell mx-auto max-w-7xl px-4 py-6">
+<div class="coding-shell mx-auto max-w-7xl px-4 py-6" data-testid="coding-list-page">
   <header class="fa-page-header">
     <p class="fa-page-kicker">Practice library</p>
     <h1 class="fa-page-title">All questions</h1>
@@ -28,7 +28,8 @@
       <div class="fa-filter-section">
         <div class="fa-filter-section__title fa-meta-label">Difficulty</div>
         <div class="fa-filter-options">
-          <label *ngFor="let opt of difficultyOptions" class="fa-filter-option">
+          <label *ngFor="let opt of difficultyOptions" class="fa-filter-option"
+            [attr.data-testid]="'filter-difficulty-' + opt.value">
             <input type="checkbox" [checked]="((diffs$ | async) || []).includes(opt.value)"
               (change)="onDiffChange(opt.value, $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
@@ -42,7 +43,7 @@
       <div class="fa-filter-section">
         <div class="fa-filter-section__title fa-meta-label">Importance</div>
         <div class="fa-filter-options">
-          <label class="fa-filter-option">
+          <label class="fa-filter-option" data-testid="filter-importance-low">
             <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('low')"
               (change)="onImpChange('low', $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
@@ -50,7 +51,7 @@
               Low
             </span>
           </label>
-          <label class="fa-filter-option">
+          <label class="fa-filter-option" data-testid="filter-importance-medium">
             <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('medium')"
               (change)="onImpChange('medium', $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
@@ -58,7 +59,7 @@
               Medium
             </span>
           </label>
-          <label class="fa-filter-option">
+          <label class="fa-filter-option" data-testid="filter-importance-high">
             <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('high')"
               (change)="onImpChange('high', $event)">
             <span class="fa-chip fa-chip--label fa-filter-chip">
@@ -73,6 +74,7 @@
         <div class="fa-filter-section__title fa-meta-label">Technologies</div>
         <div class="fa-filter-options fa-filter-options--pills">
           <button *ngFor="let tab of techTabs" type="button" class="fa-chip fa-chip--accent fa-tech-pill"
+            [attr.data-testid]="'filter-tech-' + tab.key"
             [class.is-active]="(selectedTech$ | async) === tab.key" (click)="toggleTech(tab.key)">
             <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
             <span class="fa-tech-pill__label">{{ tab.label }}</span>
@@ -108,6 +110,7 @@
         <div class="fa-question-list__search fa-input">
           <i class="pi pi-search"></i>
           <input pInputText type="text" placeholder="Search questions" [(ngModel)]="searchTerm"
+            data-testid="coding-list-search"
             (ngModelChange)="onSearchTermChange($event)" [ngModelOptions]="{ standalone: true }" />
         </div>
 
@@ -117,7 +120,8 @@
           </div>
           <ng-container *ngIf="sort$ | async as currentSort">
             <div class="fa-sort sort-wrap" (keydown.escape)="closeSort()" [class.open]="sortOpen">
-              <button type="button" class="fa-sort__trigger sort-btn fa-btn fa-btn--ghost" (click)="toggleSort()">
+              <button type="button" class="fa-sort__trigger sort-btn fa-btn fa-btn--ghost" (click)="toggleSort()"
+                data-testid="coding-list-sort-trigger">
                 <span class="fa-sort__label">
                   {{ currentSortLabel(currentSort) }}
                 </span>
@@ -126,6 +130,7 @@
 
               <div class="fa-sort__menu sort-menu" *ngIf="sortOpen">
                 <button *ngFor="let opt of sortOptions" type="button"
+                  [attr.data-testid]="'coding-list-sort-' + opt.key"
                   class="fa-sort__item sort-item fa-btn fa-btn--ghost" [class.active]="opt.key === currentSort"
                   (click)="setSort(opt.key)">
                   <span class="fa-sort__text">{{ opt.label }}</span>
@@ -145,6 +150,7 @@
 
           <a *ngFor="let q of questions"
             class="list-row fa-card fa-card--interactive fa-question-card fa-question-card--compact"
+            [attr.data-testid]="'question-card-' + q.id"
             [class.is-solved]="auth.isLoggedIn() && solvedSet().has(q.id)"
             [class.is-locked]="isLocked(q)"
             [attr.aria-disabled]="isLocked(q) ? true : null"

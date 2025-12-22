@@ -148,6 +148,11 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   ngOnChanges(changes: SimpleChanges) {
     if (!this.editor && !this.model) return;
 
+    if (changes['modelKey'] && !changes['modelKey'].isFirstChange()) {
+      const langNorm = this.normalizeLanguage(this.language);
+      this.createOrSwapModel(langNorm, this.code ?? '');
+    }
+
     if (changes['code'] && !changes['code'].isFirstChange()) {
       const next = this.code ?? '';
       if (this.model && this.model.getValue?.() !== next) {

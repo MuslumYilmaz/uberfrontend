@@ -441,7 +441,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       if (q) {
         this.solved.set(solvedIds.includes(q.id));
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   // ---------- helpers ----------
