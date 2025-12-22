@@ -218,17 +218,6 @@
                   </span>
                 </div>
 
-                <div class="fa-question-card__meta-item meta-item--tags">
-                  <span class="fa-meta-label">Tags</span>
-                  <div class="meta-tags">
-                    <fa-chip *ngFor="let tag of (q.tags || [])" size="sm" class="tag-chip fa-chip--topic"
-                      [selected]="(selectedTags$ | async)?.includes(tag) || false" (selectedChange)="toggleTag(tag)">
-                      <span class="chip-icon" aria-hidden="true">#</span>
-                      {{ tag }}
-                    </fa-chip>
-                  </div>
-                </div>
-
                 <span class="ghost-link meta-open fa-btn fa-btn--ghost">Open</span>
               </div>
             </div>
