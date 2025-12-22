@@ -19,22 +19,23 @@
 
 /* ==== dialog body pieces ==== */
 .bug-body { display: grid; gap: 10px; }
-.bug-label { font-size: 12.5px; color: var(--sb-text-muted); }
+.bug-label { font-size: 12.5px; color: var(--fa-text-muted, #c2c7d2); }
 .bug-textarea {
   width: 100%;
   min-height: 140px;
   resize: vertical;
-  background: var(--sb-surface-alt);
-  border: 1px solid var(--sb-border);
-  color: var(--sb-text);
+  /* Dialog is appended to <body>, so avoid component-scoped --sb-* vars here. */
+  background: #151a22;
+  border: 1px solid #2a3142;
+  color: var(--fa-text, #f5f6fa);
   border-radius: 8px;
   padding: 10px;
 }
-.bug-textarea::placeholder { color: var(--sb-text-muted); }
+.bug-textarea::placeholder { color: var(--fa-text-muted, #c2c7d2); opacity: 0.85; }
 .bug-textarea:focus {
   outline: none;
-  border-color: var(--sb-accent);
-  box-shadow: 0 0 0 3px var(--fa-accent-soft);
+  border-color: var(--fa-accent, #f4c15d);
+  box-shadow: 0 0 0 3px var(--fa-accent-soft, rgba(244, 193, 93, 0.25));
 }
 .bug-actions {
   display: flex;
@@ -42,7 +43,7 @@
   gap: 10px;
   margin-top: 8px;
 }
-.bug-success { color: var(--sb-accent); font-size: 13px; margin-top: 6px; }
+.bug-success { color: var(--fa-accent, #f4c15d); font-size: 13px; margin-top: 6px; }
 
 /* ==== sidebar layout ==== */
 .sidebar {
