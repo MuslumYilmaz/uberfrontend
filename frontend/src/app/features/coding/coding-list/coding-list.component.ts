@@ -1155,6 +1155,39 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
   clearAllTags() { this.selectedTags$.next([]); }
 
+  resetAllFilters() {
+    if (this.source === 'global-coding') {
+      // Clear persisted view state so filters don't "snap back" later.
+      (this.listState as any).globalCodingState = {};
+    }
+
+    // Runtime state
+    this.searchTerm = '';
+    this.sliderValue = 5;
+    this.search$.next('');
+    this.diffs$.next([]);
+    this.impTiers$.next([]);
+    this.selectedTags$.next([]);
+    this.sort$.next('default');
+    this.tagMatchMode = 'all';
+    this.selectedTech$.next(null);
+    this.selectedKind$.next('all');
+    this.selectedCategory$.next(null);
+    this.closeSort();
+
+    // URL state
+    this.replaceQueryParams({
+      q: null,
+      diff: null,
+      imp: null,
+      tech: null,
+      kind: null,
+      category: null,
+      focus: null,
+      reset: null,
+    });
+  }
+
   toggleTagMatchMode() {
     this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
   }

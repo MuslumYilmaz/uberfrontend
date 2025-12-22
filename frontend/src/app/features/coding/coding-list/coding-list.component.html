@@ -144,8 +144,12 @@
 
       <div class="list">
         <ng-container *ngIf="visible$ | async as questions; else loading">
-          <div *ngIf="questions.length === 0" class="py-6 text-center italic text-gray-500">
-            No questions match your filters.
+          <div *ngIf="questions.length === 0" class="py-6 text-center text-gray-500">
+            <div class="italic" data-testid="coding-empty-state">No questions match your filters.</div>
+            <button type="button" class="fa-btn fa-btn--ghost fa-link-btn mt-3" data-testid="coding-empty-reset"
+              (click)="resetAllFilters()">
+              Reset filters
+            </button>
           </div>
 
           <a *ngFor="let q of questions"

@@ -79,7 +79,7 @@ import { Router, RouterLink } from '@angular/router';
     .small { font-size:12px; color:color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-top:8px; }
   `],
   template: `
-    <div class="wrap">
+    <div class="wrap" data-testid="not-found-page">
       <div class="card">
         <span class="kicker">Not found</span>
         <div class="big">404</div>

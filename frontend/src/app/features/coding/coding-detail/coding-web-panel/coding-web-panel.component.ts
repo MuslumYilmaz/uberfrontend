@@ -165,6 +165,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <app-monaco-editor class="h-full editor-fill" data-testid="web-html-editor"
+                               [modelKey]="question ? 'q-' + question.id + '-html' : undefined"
                                [code]="webHtml()" [language]="'html'"
                                [options]="editorOptions"
                                (codeChange)="onHtmlChange($event)">
@@ -177,6 +178,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
           <div class="flex-1 min-h-0 flex flex-col">
             <div class="panel-label muted"># CSS</div>
             <app-monaco-editor class="flex-1 editor-fill" data-testid="web-css-editor"
+                               [modelKey]="question ? 'q-' + question.id + '-css' : undefined"
                                [code]="webCss()" [language]="'css'"
                                [options]="editorOptions"
                                (codeChange)="onCssChange($event)">
@@ -229,6 +231,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 
             <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">
               <app-monaco-editor class="h-full" data-testid="web-tests-editor"
+                                 [modelKey]="question ? 'q-' + question.id + '-web-tests' : undefined"
                                  [code]="testCode()" [language]="'javascript'"
                                  [options]="editorOptions"
                                  (codeChange)="testCode.set($event)">
@@ -695,7 +698,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   private buildWebPreviewDoc(userHtml: string, css: string): string {
-    const html = (userHtml || '').trim();
+    const html = this.stripScriptTags((userHtml || '').trim());
     const cssBlock = (css || '').trim();
     const isFullDoc = /<!doctype\s+html/i.test(html) || /<html[\s>]/i.test(html);
 
@@ -719,6 +722,14 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   body { margin:16px; font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; }
   ${cssBlock}
 </style></head><body>${html}</body></html>`);
+  }
+
+  private stripScriptTags(html: string): string {
+    // Basic safety: don't execute user-provided <script> tags inside the preview iframe.
+    // (We still inject our own small bridge script for link handling.)
+    return (html || '')
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, '')
+      .replace(/<script\b[^>]*\/\s*>/gi, '');
   }
 
   private injectPreviewBridge(doc: string): string {

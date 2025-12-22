@@ -28,15 +28,23 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 Install the Playwright browser (one-time):
 
-`npx playwright install chromium`
+`npx playwright install chromium webkit`
 
 Run locally (headed by default):
 
 `npm run test:e2e`
 
+Enable WebKit locally (optional):
+
+`PLAYWRIGHT_ENABLE_WEBKIT=1 npm run test:e2e`
+
 Run in CI (headless, retries enabled):
 
 `CI=true npm run test:e2e`
+
+Stress locally (shake out flakes):
+
+`npx playwright test --repeat-each=10 --workers=4`
 
 Notes:
 - Tests fail on `console.error`, `pageerror`, and `unhandledrejection` by default (allowlist: `frontend/e2e/console-allowlist.ts`).
