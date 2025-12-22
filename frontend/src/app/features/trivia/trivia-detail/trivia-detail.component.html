@@ -180,5 +180,5 @@
 <!-- Footer -->
 <app-footer [mode]="'practice'" [progressText]="progressText()" [prevDisabled]="!hasPrev()" [nextDisabled]="!hasNext()"
     [showSubmit]="true" [submitLabel]="submitLabel()" (submit)="markComplete()" (prev)="prev()" (next)="next()"
-    (back)="returnTo ? router.navigate(returnTo) : null">
+    (back)="backToReturn()">
 </app-footer>

@@ -863,6 +863,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       state: {
         session: this.practice,
         returnTo: this.returnTo ?? undefined,
+        returnToUrl: this.returnToUrl ?? undefined,
         returnLabel: this.returnLabel() ?? undefined,
       },
     });

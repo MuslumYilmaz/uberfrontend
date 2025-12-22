@@ -644,9 +644,38 @@ export class CodingListComponent implements OnInit, OnDestroy {
       globalState: this.source === 'global-coding' ? this.listState.globalCodingState : null
     });
 
-    if (this.source !== 'global-coding') return;
-
     const qp = this.route.snapshot.queryParamMap;
+
+    // Non-global lists still need to hydrate URL-backed filters (q/diff/imp).
+    if (this.source !== 'global-coding') {
+      const qFromUrl = qp.get('q');
+      if (qFromUrl !== null) {
+        this.searchTerm = qFromUrl;
+        this.search$.next(qFromUrl);
+      }
+
+      const diffFromUrl = qp.get('diff');
+      if (diffFromUrl !== null) {
+        const allowed: Difficulty[] = ['easy', 'intermediate', 'hard'];
+        const parts = diffFromUrl
+          .split(',')
+          .map(x => x.trim() as Difficulty)
+          .filter(x => allowed.includes(x));
+        this.diffs$.next(parts);
+      }
+
+      const impFromUrl = qp.get('imp');
+      if (impFromUrl !== null) {
+        const allowed: ImportanceTier[] = ['low', 'medium', 'high'];
+        const parts = impFromUrl
+          .split(',')
+          .map(x => x.trim() as ImportanceTier)
+          .filter(x => allowed.includes(x));
+        this.impTiers$.next(parts);
+      }
+
+      return;
+    }
     const viewKey: ViewMode =
       qp.get('view') === 'formats' ? 'formats' : 'tech';
 
@@ -866,7 +895,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const index = Math.max(0, list.findIndex((r) => r.id === current.id));
     const session: PracticeSession = { items, index };
 
-    let returnToUrl = this.router.url;
+    let returnToUrl = this.location.path(true) || this.router.url;
 
     // 🔹 Global /coding listesi: encode current filters into return URL
     if (this.source === 'global-coding') {
@@ -977,6 +1006,17 @@ export class CodingListComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
     });
     this.location.replaceState(this.router.serializeUrl(tree));
+  }
+
+  tabsQueryParams(): Record<string, any> {
+    const q = (this.searchTerm || '').trim();
+    const diffs = this.diffs$.value;
+    const imps = this.impTiers$.value;
+    return {
+      q: q || null,
+      diff: diffs.length ? diffs.join(',') : null,
+      imp: imps.length ? imps.join(',') : null,
+    };
   }
 
   // GLOBAL filters
@@ -1252,7 +1292,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const path = ['/', opt.tech, opt.kind === 'trivia' ? 'trivia' : 'coding', opt.id];
     this.router.navigate(path, {
       state: {
-        returnToUrl: this.router.url,
+        returnToUrl: this.location.path(true) || this.router.url,
         returnLabel: 'Back to questions',
       },
     });
@@ -1283,10 +1323,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.searchTerm = term;
     this.search$.next(term);
 
-    // Hem tech hem formats için q'yu URL'ye yaz
-    if (this.source === 'global-coding') {
-      this.replaceQueryParams({ q: term || null });
-    }
+    this.replaceQueryParams({ q: term || null });
   }
 
   onDifficultyToggleFromChild(evt: { difficulty: Difficulty; checked: boolean }) {
@@ -1302,13 +1339,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   private syncDiffsToQuery(next: Difficulty[]) {
-    if (this.source !== 'global-coding' || this.isFormatsMode()) return;
+    if (this.isFormatsMode()) return;
     const value = next.length ? next.join(',') : null;
     this.replaceQueryParams({ diff: value });
   }
 
   private syncImpToQuery(next: ImportanceTier[]) {
-    if (this.source !== 'global-coding' || this.isFormatsMode()) return;
+    if (this.isFormatsMode()) return;
     const value = next.length ? next.join(',') : null;
     this.replaceQueryParams({ imp: value });
   }

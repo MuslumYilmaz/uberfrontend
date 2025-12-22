@@ -74,6 +74,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   // practice session
   private practice: PracticeSession = null;
   returnTo: any[] | null = null;
+  private returnToUrl: string | null = null;
   private returnLabel = signal<string | null>(null);
   locked = computed(() => {
     const q = this.question();
@@ -188,7 +189,20 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
     this.practice = (s?.session ?? null) as PracticeSession;
     this.returnTo = s?.returnTo ?? null;
+    this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
     this.returnLabel.set(s?.returnLabel ?? null);
+  }
+
+  backToReturn() {
+    if (this.returnTo) {
+      this.router.navigate(this.returnTo);
+    } else if (this.returnToUrl) {
+      this.router.navigateByUrl(this.returnToUrl);
+    } else if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/coding']);
+    }
   }
 
   private ensurePracticeBuilt(currentId: string) {
@@ -215,6 +229,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       state: {
         session: { items: this.practice.items, index: newIndex },
         returnTo: this.returnTo ?? undefined,
+        returnToUrl: this.returnToUrl ?? undefined,
         returnLabel: this.returnLabel() ?? undefined
       }
     });
@@ -268,6 +283,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       state: {
         session: this.practice!,
         returnTo: this.returnTo ?? undefined,
+        returnToUrl: this.returnToUrl ?? undefined,
         returnLabel: this.returnLabel() ?? undefined
       }
     });

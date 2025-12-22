@@ -34,6 +34,7 @@ export class CodingTechKindTabsComponent {
 
   @Input() isSystemCategoryActive = false;  // burada tipi netleştir, boolean | null yerine
   @Input() filteredCount = 0;
+  @Input() navQueryParams: Record<string, any> | null = null;
 
   @Output() techSelected = new EventEmitter<Tech>();
   @Output() categoryToggled = new EventEmitter<CategoryKey>();

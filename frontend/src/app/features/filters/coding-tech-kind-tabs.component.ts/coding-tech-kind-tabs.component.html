@@ -33,6 +33,7 @@
       <fa-chip *ngFor="let t of techTabs"
                size="md"
                [routerLink]="['/', t.key, kind]"
+               [queryParams]="navQueryParams"
                [toggle]="false"
                [selected]="t.key === tech">
         <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
@@ -67,6 +68,7 @@
       <fa-chip *ngFor="let k of kindTabs"
                size="sm"
                [routerLink]="['/', tech || 'javascript', k.key]"
+               [queryParams]="navQueryParams"
                [toggle]="false"
                [selected]="k.key === kind">
         {{ k.label }}

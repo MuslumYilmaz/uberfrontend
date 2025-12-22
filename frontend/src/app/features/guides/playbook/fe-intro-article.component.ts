@@ -518,12 +518,19 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
         MVP first, then scale up.
       </li>
       <li>
-        <strong><a [routerLink]="['/trivia']">Trivia & quick checks</a>:</strong>
+        <strong>
+          <a
+            [routerLink]="['/coding']"
+            [queryParams]="{ kind: 'trivia' }"
+          >
+            Trivia & quick checks
+          </a>:
+        </strong>
         Short quiz-style questions on JavaScript, CSS, browsers, and HTTP. Great for
         filling idle 10-minute blocks and strengthening recall.
       </li>
       <li>
-        <strong><a [routerLink]="['/behavioral']">Behavioral prep</a>:</strong> STAR templates
+        <strong><a [routerLink]="['/guides','behavioral']">Behavioral prep</a>:</strong> STAR templates
         and reflection prompts to help you build strong stories (failure, conflict,
         leadership, learning).
       </li>

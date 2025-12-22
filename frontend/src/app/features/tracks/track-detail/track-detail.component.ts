@@ -298,7 +298,7 @@ export class TrackDetailComponent implements OnInit {
     }
 
     const first = practice[0];
-    const returnToUrl = `/tracks/${this.track?.slug}`;
+    const returnToUrl = this.location.path(true) || `/tracks/${this.track?.slug}`;
 
     this.router.navigate(
       ['/', first.tech, first.kind === 'trivia' ? 'trivia' : 'coding', first.id],
@@ -350,7 +350,7 @@ export class TrackDetailComponent implements OnInit {
     const path = ['/', opt.tech, opt.kind === 'trivia' ? 'trivia' : 'coding', opt.id];
     this.router.navigate(path, {
       state: {
-        returnToUrl: this.router.url,
+        returnToUrl: this.location.path(true) || this.router.url,
         returnLabel: this.track?.title ?? 'Back to track',
       },
     });
@@ -370,7 +370,7 @@ export class TrackDetailComponent implements OnInit {
 
     return {
       session: { items: practice, index: idx },
-      returnToUrl: `/tracks/${this.track?.slug}`,
+      returnToUrl: this.location.path(true) || `/tracks/${this.track?.slug}`,
       returnLabel: this.track?.title,
     };
   }

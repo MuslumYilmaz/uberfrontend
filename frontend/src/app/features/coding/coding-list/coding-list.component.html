@@ -9,7 +9,7 @@
     [tech]="tech" [kind]="kind" [viewMode]="viewMode" [selectedTech]="selectedTech$ | async"
     [selectedKind]="selectedKind$ | async" [selectedCategory]="selectedCategory$ | async"
     [isSystemCategoryActive]="(isSystemCategoryActive$ | async) ?? false"
-    [filteredCount]="(filteredCount$ | async) || 0" (techSelected)="toggleTech($event)"
+    [filteredCount]="(filteredCount$ | async) || 0" [navQueryParams]="tabsQueryParams()" (techSelected)="toggleTech($event)"
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
 
