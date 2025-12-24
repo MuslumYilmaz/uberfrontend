@@ -1105,7 +1105,21 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
 
-    frameEl.src = url;
+    // Avoid polluting the browser's joint session history on every live-preview update.
+    // If we use `iframe.src = ...`, the browser back button walks through iframe states
+    // (often broken because we revoke old blob URLs).
+    if (frameEl.contentWindow) {
+      try {
+        frameEl.contentWindow.location.replace(url);
+      } catch {
+        frameEl.src = url;
+      }
+    } else {
+      frameEl.onload = () => {
+        try { frameEl.contentWindow?.location.replace(url); } catch { }
+      };
+      frameEl.src = url;
+    }
 
     // 👇 update the reactive url used by the template
     this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
