@@ -381,6 +381,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     return this.buildWebPreviewDoc(html, css);
   });
   private previewContentWindow: Window | null = null;
+  private cachedPreviewFormMessagesForQuestionId: string | null = null;
+  private cachedPreviewFormMessages: { valid: string | null; invalid: string | null } = { valid: null, invalid: null };
 
   ngOnChanges(ch: SimpleChanges): void {
     if (ch['question'] && this.question) {
@@ -732,13 +734,79 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       .replace(/<script\b[^>]*\/\s*>/gi, '');
   }
 
+  private getPreviewFormMessages(): { valid: string | null; invalid: string | null } {
+    const q = this.question;
+    const qid = q?.id ?? null;
+    if (qid && qid === this.cachedPreviewFormMessagesForQuestionId) {
+      return this.cachedPreviewFormMessages;
+    }
+
+    const empty = { valid: null, invalid: null };
+    this.cachedPreviewFormMessagesForQuestionId = qid;
+
+    if (!q) {
+      this.cachedPreviewFormMessages = empty;
+      return empty;
+    }
+
+    const sol = this.getWebSolutions(q);
+    const html = String(sol?.html ?? '');
+    if (!html) {
+      this.cachedPreviewFormMessages = empty;
+      return empty;
+    }
+
+    const scripts: string[] = [];
+    const scriptRe = /<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi;
+    let sm: RegExpExecArray | null;
+    while ((sm = scriptRe.exec(html))) scripts.push(String(sm[1] ?? ''));
+    const js = scripts.join('\n');
+
+    type Assign = { name: string; value: string };
+    const assigns: Assign[] = [];
+    const assignRe = /([A-Za-z_$][\w$]*)\s*\.\s*(?:textContent|innerText)\s*=\s*(['"`])([\s\S]*?)\2/g;
+    let am: RegExpExecArray | null;
+    while ((am = assignRe.exec(js))) {
+      const name = String(am[1] ?? '');
+      const value = String(am[3] ?? '').replace(/\s+/g, ' ').trim();
+      if (!name || !value) continue;
+      if (value.length > 200) continue;
+      assigns.push({ name, value });
+    }
+
+    const preferred = assigns.filter(a => /(status|confirm|live|msg|message|success|error|validation)/i.test(a.name));
+    const candidates = (preferred.length ? preferred : assigns).map(a => a.value);
+
+    const pickFirst = (re: RegExp) => candidates.find(v => re.test(v)) ?? null;
+    const invalid =
+      pickFirst(/(fix|highlight|invalid|error|required|please|try again|must)/i);
+    const valid =
+      pickFirst(/(thank|success|good|✅|✓|done|recorded|received|submitted|sent|saved)/i) ??
+      (candidates.length === 1 ? candidates[0] : null);
+
+    const finalValid = (valid && invalid && valid === invalid) ? null : valid;
+    this.cachedPreviewFormMessages = { valid: finalValid, invalid };
+    return this.cachedPreviewFormMessages;
+  }
+
   private injectPreviewBridge(doc: string): string {
+    const msgs = this.getPreviewFormMessages();
+    const safeJsString = (v: string | null) =>
+      v ? JSON.stringify(v).replace(/<\/script>/gi, '<\\/script>') : 'null';
+
     const bridge = `
 <script>
 (() => {
+  const MSG_INVALID = ${safeJsString(msgs.invalid)};
+  const MSG_VALID = ${safeJsString(msgs.valid)};
   const allowedProtocols = new Set(['http:', 'https:']);
   const toUrl = (href) => {
     try { return new URL(href, window.location.href); } catch { return null; }
+  };
+  const stopEvent = (ev) => {
+    try { if (typeof ev.preventDefault === 'function') ev.preventDefault(); } catch {}
+    try { if (typeof ev.stopPropagation === 'function') ev.stopPropagation(); } catch {}
+    try { if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation(); } catch {}
   };
   const shouldIntercept = (ev, anchor) => {
     const metaClick = ev.button === 1 || ev.metaKey || ev.ctrlKey;
@@ -750,12 +818,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const u = toUrl(el.href || el.getAttribute('href') || '');
     if (!u || !allowedProtocols.has(u.protocol)) return;
     if (!shouldIntercept(ev, el)) return;
-    if (typeof ev.preventDefault === 'function') ev.preventDefault();
-    if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
-    if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
+    stopEvent(ev);
     try { window.parent?.postMessage({ type: 'UF_OPEN_EXTERNAL', url: u.href }, '*'); } catch {}
   };
-  const onKeyDown = (ev) => {
+  const onKeyDownLink = (ev) => {
     if (ev.key !== 'Enter') return;
     const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
     if (!el) return;
@@ -763,9 +829,208 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (el.getAttribute('target') !== '_blank') return;
     handleLinkEvent(ev);
   };
+
+  // Prevent native form submission inside sandboxed iframes (no allow-forms),
+  // while still allowing inline handlers / frameworks to handle submit events.
+  function isSubmitter(el) {
+    if (!el || !el.tagName) return false;
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'button') {
+      const t = (el.getAttribute('type') || '').toLowerCase();
+      return !t || t === 'submit';
+    }
+    if (tag === 'input') {
+      const t = (el.getAttribute('type') || '').toLowerCase();
+      return t === 'submit' || t === 'image';
+    }
+    return false;
+  }
+
+  function findForm(el) {
+    try {
+      // button/input have a .form property that resolves associated form even when outside.
+      if (el && el.form) return el.form;
+    } catch (_e) {}
+    try {
+      if (el && el.closest) return el.closest('form');
+    } catch (_e) {}
+    return null;
+  }
+
+  function isPseudoSubmitButton(el, form) {
+    if (!el || !form || !el.tagName) return false;
+    const tag = el.tagName.toLowerCase();
+    const type = ((el.getAttribute && el.getAttribute('type')) || '').toLowerCase();
+    if (tag !== 'button' && tag !== 'input') return false;
+    if (type !== 'button') return false;
+
+    try {
+      // Don't hijack forms that already have a real submit control.
+      if (form.querySelector('button[type="submit"], button:not([type]), input[type="submit"], input[type="image"]')) return false;
+    } catch (_e) {}
+
+    const id = (((el.getAttribute && el.getAttribute('id')) || '') + ' ' + ((el.getAttribute && el.getAttribute('name')) || ''));
+    const label =
+      tag === 'input'
+        ? (((el.getAttribute && el.getAttribute('value')) || '') + '')
+        : ((el.textContent || '') + '');
+    const hint = (id + ' ' + label).toLowerCase();
+    return /submit|sign\s*up|signup|send/.test(hint);
+  }
+
+  function findPseudoSubmitter(form) {
+    if (!form || !form.querySelectorAll) return null;
+    let nodes;
+    try {
+      nodes = form.querySelectorAll('button[type="button"], input[type="button"]');
+    } catch (_e) { return null; }
+    for (let i = 0; i < nodes.length; i++) {
+      const el = nodes[i];
+      if (isPseudoSubmitButton(el, form)) return el;
+    }
+    return null;
+  }
+
+  function shouldBypassValidation(form, submitter) {
+    try { if (form && form.noValidate) return true; } catch (_e) {}
+    try { if (submitter && submitter.formNoValidate) return true; } catch (_e) {}
+    try { if (submitter && submitter.hasAttribute && submitter.hasAttribute('formnovalidate')) return true; } catch (_e) {}
+    return false;
+  }
+
+  function getValidity(form, submitter) {
+    if (!form) return true;
+    if (shouldBypassValidation(form, submitter)) return true;
+    try {
+      if (typeof form.checkValidity === 'function') {
+        return !!form.checkValidity();
+      }
+    } catch (_e) {}
+    return true;
+  }
+
+  function reportIfInvalid(form, submitter, valid) {
+    if (!form) return;
+    if (valid) return;
+    if (shouldBypassValidation(form, submitter)) return;
+    try { if (typeof form.reportValidity === 'function') form.reportValidity(); } catch (_e) {}
+  }
+
+  function findStatusEl(form) {
+    if (!form || !form.querySelector) return null;
+    try { return form.querySelector('#status, [role="status"], [aria-live]'); } catch (_e) { return null; }
+  }
+
+  function canOverwriteStatus(el) {
+    if (!el) return false;
+    const txt = String(el.textContent || '').trim();
+    if (!txt) return true;
+    if (MSG_INVALID && txt === MSG_INVALID) return true;
+    if (MSG_VALID && txt === MSG_VALID) return true;
+    return false;
+  }
+
+  function setStatusText(el, msg) {
+    if (!msg) return;
+    if (!el) return;
+    if (!canOverwriteStatus(el)) return;
+    try { el.textContent = msg; } catch (_e) {}
+  }
+
+  function findSuccessEls(form) {
+    const out = [];
+    if (form && form.querySelectorAll) {
+      try {
+        const nodes = form.querySelectorAll('#successMsg, .success-msg, [data-uf-success]');
+        for (let i = 0; i < nodes.length; i++) out.push(nodes[i]);
+      } catch (_e) {}
+    }
+    if (out.length) return out;
+    try {
+      const global = document.getElementById('successMsg') || document.getElementById('formMessage');
+      if (global) out.push(global);
+    } catch (_e) {}
+    return out;
+  }
+
+  function setSuccessVisible(form, visible) {
+    const els = findSuccessEls(form);
+    for (let i = 0; i < els.length; i++) {
+      const el = els[i];
+      try {
+        if (visible) {
+          el.style.display = 'block';
+          if (el.hasAttribute && el.hasAttribute('hidden')) el.removeAttribute('hidden');
+          if (el.getAttribute && el.getAttribute('aria-hidden') === 'true') el.setAttribute('aria-hidden', 'false');
+        } else {
+          el.style.display = 'none';
+        }
+      } catch (_e) {}
+    }
+  }
+
+  function dispatchSyntheticSubmit(form, submitter) {
+    if (!form) return;
+    try {
+      let ev;
+      if (typeof SubmitEvent === 'function') {
+        ev = new SubmitEvent('submit', { bubbles: true, cancelable: true, submitter: submitter || undefined });
+      } else if (typeof Event === 'function') {
+        ev = new Event('submit', { bubbles: true, cancelable: true });
+      } else {
+        ev = document.createEvent('Event');
+        ev.initEvent('submit', true, true);
+      }
+      form.dispatchEvent(ev);
+    } catch (_e) {}
+  }
+
+  function handleSubmitAttempt(form, submitter) {
+    if (!form) return;
+    const status = findStatusEl(form);
+    dispatchSyntheticSubmit(form, submitter);
+    const valid = getValidity(form, submitter);
+    reportIfInvalid(form, submitter, valid);
+    if (!valid) {
+      setSuccessVisible(form, false);
+      setStatusText(status, MSG_INVALID);
+      return;
+    }
+    setStatusText(status, MSG_VALID);
+    setSuccessVisible(form, true);
+  }
+
+  document.addEventListener('click', function (e) {
+    const target = e && e.target;
+    const el = (target && target.closest) ? target.closest('button, input') : target;
+    const form = findForm(el);
+    if (!form) return;
+    if (!isSubmitter(el) && !isPseudoSubmitButton(el, form)) return;
+    try { if (typeof e.preventDefault === 'function') e.preventDefault(); } catch (_e) {}
+    handleSubmitAttempt(form, el);
+  }, true);
+
+  document.addEventListener('keydown', function (e) {
+    if (!e || e.key !== 'Enter') return;
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+    // Don't hijack Enter in textareas/contenteditable
+    const tag = target.tagName ? target.tagName.toLowerCase() : '';
+    if (tag === 'textarea') return;
+    if (target.isContentEditable) return;
+    if (target.closest && target.closest('a[href]')) return;
+    const form = target.closest ? target.closest('form') : null;
+    if (!form) return;
+    try { if (typeof e.preventDefault === 'function') e.preventDefault(); } catch (_e) {}
+    const submitter =
+      form.querySelector('button[type="submit"], button:not([type]), input[type="submit"], input[type="image"]') ||
+      findPseudoSubmitter(form);
+    handleSubmitAttempt(form, submitter);
+  }, true);
+
   document.addEventListener('click', handleLinkEvent, true);
   document.addEventListener('auxclick', handleLinkEvent, true);
-  document.addEventListener('keydown', onKeyDown, true);
+  document.addEventListener('keydown', onKeyDownLink, true);
 })();
 </script>`;
     if (/<\/body>/i.test(doc)) return doc.replace(/<\/body>/i, `${bridge}\n</body>`);

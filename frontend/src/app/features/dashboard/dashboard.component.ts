@@ -210,14 +210,6 @@ export class DashboardComponent {
       route: ['/guides', 'interview-blueprint'],
     },
     {
-      title: 'FA Core 75',
-      subtitle:
-        'The 75 most important front end interview questions. Covers patterns & formats.',
-      icon: 'book',
-      disabled: true,
-      badge: 'Coming soon',
-    },
-    {
       title: 'Frontend System Design Blueprint',
       subtitle: 'Core techniques and deep dives (guide).',
       icon: 'grid',

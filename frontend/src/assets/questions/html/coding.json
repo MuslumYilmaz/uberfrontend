@@ -4,7 +4,7 @@
     "title": "Warm-Up: Basic Structure",
     "type": "coding",
     "technology": "html",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "importance": 1,
     "tags": [
       "html",
@@ -137,28 +137,28 @@
         "desc": "A small page with two paragraphs, one inline image, bolded text inside a paragraph, and a short explanation of inline vs block."
       },
       "examples": [
-        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>First paragraph.</p>\\n    <p>Second paragraph with a <strong>bold</strong> word and an image: <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /></p>\\n    <section id='explanation'>\\n      <p>The <p> element is block; the <img> and <strong> elements are inline.</p>\\n    </section>\\n  </body>\\n</html>"
+        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>First paragraph.</p>\\n    <p>Second paragraph with a <strong>bold</strong> word and an image: <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /></p>\\n    <section id='explanation'>\\n      <p>The &lt;p&gt; element is block-level; the &lt;img&gt; and &lt;strong&gt; elements are inline.</p>\\n    </section>\\n  </body>\\n</html>"
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Add two <p>, an <img>, and a <strong> inside one paragraph. Then explain which are inline vs block. -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>Task: Add two paragraphs. In the second one, include a <strong>bold</strong> word and an inline <img>. Then, write an explanation below.</p>\\n\\n    <!-- Paragraph 1 -->\\n\\n    <!-- Paragraph 2 with a <strong>word</strong> and an <img> -->\\n\\n    <!-- Explanation area -->\\n    <section id='explanation'>\\n      <!-- Briefly state which elements are inline vs block (p is block; img and strong are inline) -->\\n    </section>\\n  </body>\\n</html>",
+      "starterHtml": "<!-- TODO: Add two <p>, an <img>, and a <strong> inside one paragraph. Then explain which are inline vs block. -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>Task: Add two paragraphs. In the second one, include a <strong>bold</strong> word and an inline <img>. Then, write an explanation below.</p>\\n\\n    <!-- Paragraph 1 -->\\n\\n    <!-- Paragraph 2 with a <strong>word</strong> and an <img> -->\\n\\n    <!-- Explanation area -->\\n    <section id='explanation'>\\n      <!-- Briefly state which elements are inline vs block (p is block; img and strong are inline).\\n           Tip: if you want to write tags in text, escape them like &lt;p&gt; -->\\n    </section>\\n  </body>\\n</html>",
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
-      "tests": "it('has at least two <p> elements', () => {\\n  const ps = document.querySelectorAll('p');\\n  expect(ps.length >= 2).toBe(true);\\n});\\n\\nit('has an <img> element present', () => {\\n  const im = document.querySelector('img');\\n  expect(!!im).toBeTruthy();\\n});\\n\\nit('has a <strong> inside one of the paragraphs', () => {\\n  const strongInP = document.querySelector('p strong');\\n  expect(!!strongInP).toBeTruthy();\\n});\\n\\nit('computed display defaults match: <p> is block, <img> is inline, <strong> is inline', () => {\\n  const p = document.querySelector('p');\\n  const img = document.querySelector('img');\\n  const strong = document.querySelector('strong');\\n  const gp = window.getComputedStyle(p).display;\\n  const gi = window.getComputedStyle(img).display;\\n  const gs = window.getComputedStyle(strong).display;\\n  expect(gp).toBe('block');\\n  expect(gi).toBe('inline');\\n  expect(gs).toBe('inline');\\n});\\n\\nit('has an explanation section that references inline vs block for p, img, and strong', () => {\\n  const exp = document.querySelector('#explanation');\\n  expect(!!exp).toBeTruthy();\\n  const t = (exp.textContent || '').toLowerCase();\\n  expect(t.includes('inline')).toBeTruthy();\\n  expect(t.includes('block')).toBeTruthy();\\n  expect(t.includes('p')).toBeTruthy();\\n  expect(t.includes('img')).toBeTruthy();\\n  expect(t.includes('strong')).toBeTruthy();\\n});"
+      "tests": "it('has at least two <p> elements', () => {\\n  const ps = document.querySelectorAll('p');\\n  expect(ps.length >= 2).toBe(true);\\n});\\n\\nit('has an <img> element present', () => {\\n  const im = document.querySelector('img');\\n  expect(!!im).toBeTruthy();\\n});\\n\\nit('has a <strong> inside one of the paragraphs', () => {\\n  const strongInP = document.querySelector('p strong');\\n  expect(!!strongInP).toBeTruthy();\\n});\\n\\nit('has an explanation section that references inline vs block for p, img, and strong', () => {\\n  const exp = document.querySelector('#explanation');\\n  expect(!!exp).toBeTruthy();\\n  const t = (exp.textContent || '').toLowerCase();\\n  expect(t.includes('inline')).toBeTruthy();\\n  expect(t.includes('block')).toBeTruthy();\\n  expect(t.includes('p')).toBeTruthy();\\n  expect(t.includes('img')).toBeTruthy();\\n  expect(t.includes('strong')).toBeTruthy();\\n});"
     },
     "solutionBlock": {
       "overview": "Paragraphs (<p>) are block-level elements: they start on a new line and take up the full width available. The image (<img>) and the emphasis element (<strong>) are inline by default: they do not force a new line and flow with surrounding text.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Minimal semantic example",
-          "prose": "Create two paragraphs. Put a <strong>bold</strong> word inside one paragraph and an <img> next to text so you can see inline flow. Add a short explanation of which are inline vs block.",
-          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image\\n      <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n\\n    <section id='explanation'>\\n      <p>The <p> element is block-level, while the <img> and <strong> elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
+          "title": "Approach 1 – Minimal semantic example",
+          "prose": "Create two paragraphs. Put a <strong>bold</strong> word inside one paragraph and an <img> next to text so you can see inline flow. Add a short explanation of which are inline vs block. If you show tags as text inside HTML, escape them (e.g. &lt;p&gt;).",
+          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image\\n      <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n\\n    <section id='explanation'>\\n      <p>The &lt;p&gt; element is block-level, while the &lt;img&gt; and &lt;strong&gt; elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nimg { vertical-align: middle; }"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Do not wrap block elements like <p> inside inline-only elements.",
-          "Avoid placing block elements directly inside <p> \u2014 paragraphs cannot contain other block elements."
+          "If you want to show tag names in text, escape them: &lt;p&gt;, &lt;img&gt;, &lt;strong&gt;.",
+          "Avoid placing block elements directly inside <p> — paragraphs cannot contain other block elements."
         ],
         "techniques": [
           "Use <section id='explanation'> (or a <div>) to keep the explanation separate.",
@@ -167,24 +167,24 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 Block and inline layout in normal flow",
+          "title": "MDN – Block and inline layout in normal flow",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flow_layout/Block_and_inline_layout_in_normal_flow"
         },
         {
-          "title": "MDN \u2013 <p> element",
+          "title": "MDN – <p> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"
         },
         {
-          "title": "MDN \u2013 <img> element",
+          "title": "MDN – <img> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
         },
         {
-          "title": "MDN \u2013 <strong> element",
+          "title": "MDN – <strong> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n    <section id='explanation'>\\n      <p>The <p> element is block; the <img> and <strong> elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
+    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n    <section id='explanation'>\\n      <p>The &lt;p&gt; element is block-level; the &lt;img&gt; and &lt;strong&gt; elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nimg { vertical-align: middle; }",
     "access": "free"
   },
@@ -689,22 +689,17 @@
       "intermediate"
     ],
     "description": {
-      "summary": "Add client-side validation to a signup form using built-in HTML5 attributes like 'required', 'pattern', 'type', and 'minlength'. The form should prevent submission when fields are left empty or invalid, displaying the browser\u2019s default validation message.",
+      "summary": "Build a signup form using built-in HTML5 validation attributes: required, type, minlength, and pattern. Ensure the browser considers the form invalid until inputs are correct. You do not need to submit the form; validation is the goal.",
       "arguments": [
         {
           "name": "required",
           "type": "attribute",
-          "desc": "Ensures the user must fill out this field before submitting the form."
+          "desc": "Ensures the user must fill out this field before the form can be valid."
         },
         {
           "name": "type",
           "type": "attribute",
-          "desc": "Determines the input\u2019s format, such as 'email' for email validation or 'password' for hidden characters."
-        },
-        {
-          "name": "pattern",
-          "type": "attribute",
-          "desc": "Defines a regular expression the input value must match (e.g., at least one number or uppercase letter)."
+          "desc": "Determines the input’s format, such as 'email' for built-in email validation."
         },
         {
           "name": "minlength",
@@ -712,63 +707,77 @@
           "desc": "Specifies the minimum number of characters required for a text input."
         },
         {
-          "name": "validation feedback",
+          "name": "pattern",
+          "type": "attribute",
+          "desc": "Defines a regular expression the input value must match (for example, a password policy)."
+        },
+        {
+          "name": "constraint validation API",
           "type": "browser behavior",
-          "desc": "HTML5 automatically shows an error tooltip when invalid fields are submitted."
+          "desc": "The browser exposes form.checkValidity(), input.checkValidity(), and form.reportValidity() based on these attributes."
         }
       ],
       "returns": {
         "type": "markup",
-        "desc": "A functional signup form that prevents invalid submissions and provides built-in validation messages."
+        "desc": "A signup form with Name, Email, and Password fields that uses HTML attributes to enforce validity and shows a small status message after a submit attempt."
       },
       "examples": [
-        "Example structure:\n<form>\n  <label for='name'>Name:</label>\n  <input id='name' name='name' type='text' required />\n\n  <label for='email'>Email:</label>\n  <input id='email' name='email' type='email' required />\n\n  <label for='password'>Password:</label>\n  <input id='password' name='password' type='password' minlength='6' required />\n\n  <button type='submit'>Sign Up</button>\n</form>"
+        "Example structure:\n<form>\n  <label for='name'>Name:</label>\n  <input id='name' name='name' type='text' required autocomplete='name' />\n\n  <label for='email'>Email:</label>\n  <input id='email' name='email' type='email' required autocomplete='email' />\n\n  <label for='password'>Password:</label>\n  <input id='password' name='password' type='password' minlength='8' pattern='(?=.*[A-Z])(?=.*\\d).{8,}' required autocomplete='new-password' />\n\n  <button type='submit'>Sign up</button>\n  <p id='status' aria-live='polite'></p>\n</form>"
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Build a signup form with validation for name, email, and password fields. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n    <p style='color:#666'>Add inputs for Name, Email, and Password. Use HTML5 validation attributes like required, type, and minlength so that invalid submissions show the browser's default validation message.</p>\n\n    <!-- Your form goes here -->\n  </body>\n</html>",
-      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }",
-      "tests": "it('has a <form> element', () => {\\n  const form = document.querySelector('form');\\n  expect(!!form).toBe(true);\\n});\\n\\nit('contains inputs for name, email, and password', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name).toBe(true);\\n  expect(!!email).toBe(true);\\n  expect(!!password).toBe(true);\\n});\\n\\nit('each input has required validation', () => {\\n  const inputs = document.querySelectorAll('input');\\n  expect(inputs.length > 0).toBe(true); // fail if no inputs exist\\n  inputs.forEach(input => {\\n    expect(input.hasAttribute('required')).toBe(true);\\n  });\\n});\\n\\nit('email input has type=\"email\" and password has minlength', () => {\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!email).toBe(true);\\n  expect(!!password).toBe(true);\\n  expect(email.getAttribute('type')).toBe('email');\\n  expect(password.hasAttribute('minlength')).toBe(true);\\n});"
+      "starterHtml": "<!-- TODO: Build a signup form with built-in validation for name, email, and password. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n    <p style='color:#666'>Add inputs for Name, Email, and Password. Use HTML5 validation attributes (required, type, minlength, pattern) so the form is invalid until inputs are correct. You don’t need to actually send data anywhere; focus on validation behavior.</p>\n\n    <!-- Your form goes here -->\n  </body>\n</html>",
+      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
+      "tests": "it('has a <form> element', () => {\\n  const form = document.querySelector('form');\\n  expect(!!form).toBe(true);\\n});\\n\\nit('contains inputs for name, email, and password', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name).toBe(true);\\n  expect(!!email).toBe(true);\\n  expect(!!password).toBe(true);\\n});\\n\\nit('each input is required', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name && !!email && !!password).toBe(true);\\n  [name, email, password].forEach(input => {\\n    expect(input.hasAttribute('required')).toBe(true);\\n  });\\n});\\n\\nit('email uses type=\"email\" and name/email have useful autocomplete', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  expect(!!name && !!email).toBe(true);\\n  expect(email.getAttribute('type')).toBe('email');\\n  const acName = (name.getAttribute('autocomplete') || '').toLowerCase();\\n  const acEmail = (email.getAttribute('autocomplete') || '').toLowerCase();\\n  expect(acName === 'name' || acName === 'given-name' || acName === 'family-name').toBe(true);\\n  expect(acEmail === 'email').toBe(true);\\n});\\n\\nit('password enforces minlength and a pattern (at least 1 uppercase + 1 number)', () => {\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!password).toBe(true);\\n  expect(password.hasAttribute('minlength')).toBe(true);\\n  expect(password.hasAttribute('pattern')).toBe(true);\\n\\n  password.value = 'short1A';\\n  expect(password.checkValidity()).toBe(false);\\n\\n  password.value = 'longbutnonumberA';\\n  expect(password.checkValidity()).toBe(false);\\n\\n  password.value = 'ValidPass1';\\n  expect(password.checkValidity()).toBe(true);\\n});\\n\\nit('form is invalid when empty and becomes valid when correctly filled', () => {\\n  const form = document.querySelector('form');\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!form && !!name && !!email && !!password).toBe(true);\\n\\n  name.value = '';\\n  email.value = '';\\n  password.value = '';\\n  expect(form.checkValidity()).toBe(false);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'not-an-email';\\n  password.value = 'ValidPass1';\\n  expect(form.checkValidity()).toBe(false);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'ada@example.com';\\n  password.value = 'ValidPass1';\\n  expect(form.checkValidity()).toBe(true);\\n});\\n\\nit('has a submit button', () => {\\n  const btn = document.querySelector('button[type=\"submit\"], input[type=\"submit\"]');\\n  expect(!!btn).toBe(true);\\n});\\n\\nit('shows visible feedback text after submit attempt (invalid vs valid)', () => {\\n  const form = document.querySelector('form');\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  const status = document.querySelector('#status');\\n  expect(!!form && !!name && !!email && !!password && !!status).toBe(true);\\n\\n  name.value = '';\\n  email.value = '';\\n  password.value = '';\\n  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));\\n  expect((status.textContent || '').toLowerCase().includes('fix')).toBe(true);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'ada@example.com';\\n  password.value = 'ValidPass1';\\n  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));\\n  expect((status.textContent || '').toLowerCase().includes('looks good')).toBe(true);\\n});"
     },
     "solutionBlock": {
-      "overview": "This exercise demonstrates how HTML5 validation works using built-in attributes like 'required', 'type', and 'minlength'. These attributes let the browser handle common validation without JavaScript.",
+      "overview": "This exercise teaches HTML5 constraint validation using attributes. The browser determines validity via required/type/minlength/pattern. A submit attempt can be intercepted with JavaScript to keep the user on the page, while still using the browser’s native validation UI and a small status message for consistent feedback.",
       "approaches": [
         {
-      "title": "Approach 1 \u2013 Basic Signup Form with Validation",
-          "prose": "Wrap your inputs in a form element. Use 'required' for all fields, 'type=\"email\"' for email validation, and 'minlength' on the password field. The handler calls checkValidity/reportValidity to keep the browser's native messages and only shows the success text when everything is valid.",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <form id='signupForm' onsubmit=\"event.preventDefault();\">\n      <label for='name'>Name:</label>\n      <input id='name' name='name' type='text' required />\n\n      <label for='email'>Email:</label>\n      <input id='email' name='email' type='email' required />\n\n      <label for='password'>Password:</label>\n      <input id='password' name='password' type='password' minlength='6' required />\n\n      <button type='button'>Sign Up</button>\n      <p id='successMsg' style='display:none;color:green;font-weight:600;'>Thanks! We received your signup.</p>\n    </form>\n\n    <script>\n      (function(){\n        const form = document.getElementById('signupForm');\n        const success = document.getElementById('successMsg');\n        const submitBtn = document.querySelector('button[type=\"button\"]');\n\n        function handleSubmit(e){\n          e?.preventDefault();\n          if(!form.checkValidity()){\n            form.reportValidity();\n            success.style.display = 'none';\n            return;\n          }\n          success.style.display = 'block';\n        }\n\n        form.addEventListener('submit', handleSubmit);\n        submitBtn?.addEventListener('click', handleSubmit);\n      })();\n    </script>\n  </body>\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }"
+          "title": "Approach 1 – Submit-driven validation feedback (no navigation)",
+          "prose": "Create a form with Name, Email, and Password fields. Connect labels via for/id. Add required to all fields, type=\"email\" for email, and minlength + pattern for the password. Add autocomplete hints for better UX. Use a real submit button, but prevent navigation in a submit handler and show a small status message based on form.checkValidity().",
+          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Signup Form Validation</title>\\n  </head>\\n  <body>\\n    <h1>Signup Form</h1>\\n\\n    <form id='signupForm' aria-label='Signup form'>\\n      <label for='name'>Name</label>\\n      <input id='name' name='name' type='text' required autocomplete='name' />\\n\\n      <label for='email'>Email</label>\\n      <input id='email' name='email' type='email' required autocomplete='email' />\\n\\n      <label for='password'>Password</label>\\n      <input\\n        id='password'\\n        name='password'\\n        type='password'\\n        required\\n        minlength='8'\\n        autocomplete='new-password'\\n        pattern='(?=.*[A-Z])(?=.*\\\\d).{8,}'\\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\\n      />\\n\\n      <button type='submit'>Sign up</button>\\n      <p id='status' aria-live='polite'></p>\\n    </form>\\n\\n    <script>\\n      (function () {\\n        const form = document.getElementById('signupForm');\\n        const status = document.getElementById('status');\\n\\n        form.addEventListener('submit', (e) => {\\n          // Keep the user on the page; focus on validation behavior.\\n          e.preventDefault();\\n\\n          const valid = form.checkValidity();\\n          if (!valid) {\\n            form.reportValidity();\\n            status.textContent = 'Fix the highlighted fields.';\\n            return;\\n          }\\n\\n          status.textContent = 'Looks good ✅';\\n        });\\n      })();\\n    </script>\\n  </body>\\n</html>",
+          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\\nlabel { font-weight: 500; }\\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\\nbutton:hover { background: #005fa3; }\\n#status { font-weight: 600; margin-top: 0.25rem; }"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Omitting 'required' allows empty submissions.",
-          "Forgetting 'type=\"email\"' disables built-in email validation.",
-          "Using 'pattern' incorrectly can block valid input if not tested carefully."
+          "Missing for/id pairing makes labels less accessible and breaks click-to-focus behavior.",
+          "A pattern that is too strict can block valid user input; test it with real examples.",
+          "Relying on placeholders instead of labels hurts accessibility."
         ],
         "techniques": [
-          "Always use 'required' on fields that must be filled out.",
-          "Use 'minlength' for passwords to enforce stronger inputs.",
-          "Combine HTML5 validation with JavaScript for more complex rules if needed."
+          "Use type=\"email\" for built-in email validation.",
+          "Use minlength + pattern for password policies.",
+          "Add autocomplete tokens (name/email/new-password) for faster form filling.",
+          "Use form.reportValidity() to show the browser’s native validation UI."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 Form validation overview",
+          "title": "MDN – Form validation overview",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation"
         },
         {
-          "title": "MDN \u2013 HTML attribute: required",
+          "title": "MDN – HTML attribute: required",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required"
         },
         {
-          "title": "MDN \u2013 minlength attribute",
+          "title": "MDN – minlength attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/minlength"
+        },
+        {
+          "title": "MDN – pattern attribute",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/pattern"
+        },
+        {
+          "title": "MDN – autocomplete attribute",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <form id='signupForm' onsubmit=\"event.preventDefault();\">\n      <label for='name'>Name:</label>\n      <input id='name' name='name' type='text' required />\n\n      <label for='email'>Email:</label>\n      <input id='email' name='email' type='email' required />\n\n      <label for='password'>Password:</label>\n      <input id='password' name='password' type='password' minlength='6' required />\n\n      <button type='button'>Sign Up</button>\n      <p id='successMsg' style='display:none;color:green;font-weight:600;'>Thanks! We received your signup.</p>\n    </form>\n\n    <script>\n      (function(){\n        const form = document.getElementById('signupForm');\n        const success = document.getElementById('successMsg');\n        const submitBtn = document.querySelector('button[type=\"button\"]');\n\n        function handleSubmit(e){\n          e?.preventDefault();\n          if(!form.checkValidity()){\n            form.reportValidity();\n            success.style.display = 'none';\n            return;\n          }\n          success.style.display = 'block';\n        }\n\n        form.addEventListener('submit', handleSubmit);\n        submitBtn?.addEventListener('click', handleSubmit);\n      })();\n    </script>\n  </body>\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }",
+    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form id='signupForm' aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const form = document.getElementById('signupForm');\n        const status = document.getElementById('status');\n\n        form.addEventListener('submit', (e) => {\n          e.preventDefault();\n\n          const valid = form.checkValidity();\n          if (!valid) {\n            form.reportValidity();\n            status.textContent = 'Fix the highlighted fields.';\n            return;\n          }\n\n          status.textContent = 'Looks good ✅';\n        });\n      })();\n    </script>\n  </body>\n</html>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
     "access": "free"
   },
   {

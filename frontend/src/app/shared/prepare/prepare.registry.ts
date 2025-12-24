@@ -45,15 +45,6 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 intent: 'route',
                 target: { name: 'guides', params: { section: 'interview-blueprint' } }
             },
-            {
-                key: 'fa-core-75',
-                title: 'FA Core 75',
-                subtitle: 'The 75 most important front end questions',
-                pi: 'pi pi-list',
-                badge: 'Coming soon',
-                disabled: true,
-                intent: 'placeholder'
-            },
             // NEW
             {
                 key: 'behavioral',
