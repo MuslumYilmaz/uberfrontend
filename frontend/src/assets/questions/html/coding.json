@@ -99,7 +99,7 @@
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 2,
     "tags": [
       "html",
       "display",
@@ -109,60 +109,65 @@
       "beginner"
     ],
     "description": {
-      "summary": "Add two paragraphs, an image, and a bold word inside one of the paragraphs. Then, explain which of them are inline and which are block elements.",
+      "summary": "Build a tiny demo page that proves (in markup) the difference between block and inline elements. Create two paragraphs. In the second paragraph, include a <strong> word and an inline <img> that sits in the same line of text. Then add a short explanation section that names <p>, <strong>, and <img> and states which are block vs inline. Do NOT change the CSS or tests.",
       "arguments": [
+        {
+          "name": "<main>",
+          "type": "landmark",
+          "desc": "Wrap the core content in a main landmark to keep the structure clean and accessible."
+        },
         {
           "name": "<p>",
           "type": "block element",
-          "desc": "Paragraphs are block-level elements that start on a new line by default."
-        },
-        {
-          "name": "<img>",
-          "type": "replaced inline element",
-          "desc": "Images are inline by default and sit in the text flow."
+          "desc": "Paragraphs are block-level elements; each paragraph starts on a new line."
         },
         {
           "name": "<strong>",
           "type": "inline element",
-          "desc": "Used to strongly emphasize text; does not break the line."
+          "desc": "Strong emphasis is inline; it flows within the same line of text."
+        },
+        {
+          "name": "<img>",
+          "type": "replaced inline element",
+          "desc": "Images are inline by default; they sit in the text flow (make sure it has a non-empty alt)."
         },
         {
           "name": "<section id='explanation'>",
           "type": "section",
-          "desc": "Briefly state which elements are inline vs block."
+          "desc": "Add a short explanation using escaped tag names and/or <code> to clearly state inline vs block."
         }
       ],
       "returns": {
         "type": "markup",
-        "desc": "A small page with two paragraphs, one inline image, bolded text inside a paragraph, and a short explanation of inline vs block."
+        "desc": "A small page with a <main> containing two paragraphs, where the second paragraph includes <strong> and an inline <img>, plus an explanation section stating which elements are inline vs block."
       },
       "examples": [
-        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>First paragraph.</p>\\n    <p>Second paragraph with a <strong>bold</strong> word and an image: <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /></p>\\n    <section id='explanation'>\\n      <p>The &lt;p&gt; element is block-level; the &lt;img&gt; and &lt;strong&gt; elements are inline.</p>\\n    </section>\\n  </body>\\n</html>"
+        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <main>\\n      <p>First paragraph. This is a block-level element.</p>\\n      <p>Second paragraph with a <strong>bold</strong> word and an inline image <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n\\n      <section id='explanation'>\\n        <h2>Explanation</h2>\\n        <p><code>&lt;p&gt;</code> is block-level. <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default.</p>\\n      </section>\\n    </main>\\n  </body>\\n</html>"
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Add two <p>, an <img>, and a <strong> inside one paragraph. Then explain which are inline vs block. -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>Task: Add two paragraphs. In the second one, include a <strong>bold</strong> word and an inline <img>. Then, write an explanation below.</p>\\n\\n    <!-- Paragraph 1 -->\\n\\n    <!-- Paragraph 2 with a <strong>word</strong> and an <img> -->\\n\\n    <!-- Explanation area -->\\n    <section id='explanation'>\\n      <!-- Briefly state which elements are inline vs block (p is block; img and strong are inline).\\n           Tip: if you want to write tags in text, escape them like &lt;p&gt; -->\\n    </section>\\n  </body>\\n</html>",
-      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
-      "tests": "it('has at least two <p> elements', () => {\\n  const ps = document.querySelectorAll('p');\\n  expect(ps.length >= 2).toBe(true);\\n});\\n\\nit('has an <img> element present', () => {\\n  const im = document.querySelector('img');\\n  expect(!!im).toBeTruthy();\\n});\\n\\nit('has a <strong> inside one of the paragraphs', () => {\\n  const strongInP = document.querySelector('p strong');\\n  expect(!!strongInP).toBeTruthy();\\n});\\n\\nit('has an explanation section that references inline vs block for p, img, and strong', () => {\\n  const exp = document.querySelector('#explanation');\\n  expect(!!exp).toBeTruthy();\\n  const t = (exp.textContent || '').toLowerCase();\\n  expect(t.includes('inline')).toBeTruthy();\\n  expect(t.includes('block')).toBeTruthy();\\n  expect(t.includes('p')).toBeTruthy();\\n  expect(t.includes('img')).toBeTruthy();\\n  expect(t.includes('strong')).toBeTruthy();\\n});"
+      "starterHtml": "<!-- TODO (HTML only):\\n  1) Wrap the demo content in <main>.\\n  2) Add TWO paragraphs inside <main>.\\n  3) In the SECOND paragraph: include a <strong> word and an inline <img> in the same line of text.\\n  4) In #explanation, state which of <p>, <strong>, <img> are block vs inline.\\n  Note: Do NOT change CSS or tests. -->\\n<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <!-- Add <main> here -->\\n\\n    <!-- Explanation area (keep this id) -->\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <!-- Tip: if you want to write tag names as text, escape them like &lt;p&gt; or wrap them in <code>. -->\\n    </section>\\n  </body>\\n</html>",
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
+      "tests": "it('has a <main> element', () => {\\n  const main = document.querySelector('main');\\n  expect(!!main).toBeTruthy();\\n});\\n\\nit('has at least two <p> elements inside <main>', () => {\\n  const ps = document.querySelectorAll('main p');\\n  expect(ps.length >= 2).toBe(true);\\n});\\n\\nit('has a <strong> inside the second paragraph', () => {\\n  const p2 = document.querySelectorAll('main p')[1];\\n  expect(!!p2).toBeTruthy();\\n  const strong = p2.querySelector('strong');\\n  expect(!!strong).toBeTruthy();\\n});\\n\\nit('has an <img> inside the second paragraph with a non-empty alt', () => {\\n  const p2 = document.querySelectorAll('main p')[1];\\n  expect(!!p2).toBeTruthy();\\n  const img = p2.querySelector('img');\\n  expect(!!img).toBeTruthy();\\n  expect(((img.getAttribute('alt') || '').trim().length) > 0).toBe(true);\\n});\\n\\nit('has an explanation section that mentions inline vs block and references p, img, and strong', () => {\\n  const exp = document.querySelector('#explanation');\\n  expect(!!exp).toBeTruthy();\\n  const t = (exp.textContent || '').toLowerCase();\\n  expect(t.includes('inline')).toBeTruthy();\\n  expect(t.includes('block')).toBeTruthy();\\n  expect(t.includes('p')).toBeTruthy();\\n  expect(t.includes('img')).toBeTruthy();\\n  expect(t.includes('strong')).toBeTruthy();\\n});"
     },
     "solutionBlock": {
-      "overview": "Paragraphs (<p>) are block-level elements: they start on a new line and take up the full width available. The image (<img>) and the emphasis element (<strong>) are inline by default: they do not force a new line and flow with surrounding text.",
+      "overview": "This task is about demonstrating normal flow using HTML only: <p> is block-level by default (each paragraph starts on a new line). <strong> and <img> are inline by default, so they appear within the same line of text unless CSS changes that.",
       "approaches": [
         {
-          "title": "Approach 1 – Minimal semantic example",
-          "prose": "Create two paragraphs. Put a <strong>bold</strong> word inside one paragraph and an <img> next to text so you can see inline flow. Add a short explanation of which are inline vs block. If you show tags as text inside HTML, escape them (e.g. &lt;p&gt;).",
-          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image\\n      <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n\\n    <section id='explanation'>\\n      <p>The &lt;p&gt; element is block-level, while the &lt;img&gt; and &lt;strong&gt; elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nimg { vertical-align: middle; }"
+          "title": "Approach 1 – Minimal demo with semantic structure",
+          "prose": "Wrap content in <main>, add two paragraphs, place <strong> and <img> inside the second paragraph so they flow inline, and write a short explanation in #explanation using escaped tag names or <code>.",
+          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <main>\\n      <p>This is the first paragraph. It is a block-level element by default.</p>\\n\\n      <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image\\n        <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n    </main>\\n\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <p><code>&lt;p&gt;</code> is block-level (starts on a new line). <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default (they flow within a line of text).</p>\\n    </section>\\n  </body>\\n</html>",
+          "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "If you want to show tag names in text, escape them: &lt;p&gt;, &lt;img&gt;, &lt;strong&gt;.",
-          "Avoid placing block elements directly inside <p> — paragraphs cannot contain other block elements."
+          "Don’t put block elements inside a <p> (a paragraph cannot contain other block-level sections).",
+          "If you want to show tag names as text, escape them (e.g. &lt;p&gt;) or wrap in <code>."
         ],
         "techniques": [
-          "Use <section id='explanation'> (or a <div>) to keep the explanation separate.",
-          "Inline elements (like <strong> and <img>) flow within a line; block elements start on a new line."
+          "Keep <strong> and <img> inside the same paragraph to demonstrate inline flow.",
+          "Use <main> as a clean landmark; keep #explanation separate so it’s easy to read and test."
         ]
       },
       "resources": [
@@ -171,21 +176,21 @@
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flow_layout/Block_and_inline_layout_in_normal_flow"
         },
         {
-          "title": "MDN – <p> element",
+          "title": "MDN – <p>: The Paragraph element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/p"
         },
         {
-          "title": "MDN – <img> element",
+          "title": "MDN – <img>: The Image Embed element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
         },
         {
-          "title": "MDN – <strong> element",
+          "title": "MDN – <strong>: The Strong Importance element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n    <p>This is the first paragraph. It is a block-level element.</p>\\n    <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='demo' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the flow.</p>\\n    <section id='explanation'>\\n      <p>The &lt;p&gt; element is block-level; the &lt;img&gt; and &lt;strong&gt; elements are inline.</p>\\n    </section>\\n  </body>\\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nimg { vertical-align: middle; }",
+    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <main>\\n      <p>This is the first paragraph. It is a block-level element by default.</p>\\n      <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n    </main>\\n\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <p><code>&lt;p&gt;</code> is block-level (starts on a new line). <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default (they flow within a line of text).</p>\\n    </section>\\n  </body>\\n</html>",
+    "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
     "access": "free"
   },
   {
@@ -392,85 +397,85 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Structure a simple blog page using semantic layout elements like <header>, <main>, <article>, <section>, and <footer>.",
+      "summary": "Replace the generic <div> wrappers in the starter HTML with a semantic blog layout using <header>, <main>, two <article> posts, and a <footer>. Each post must include an <h2> and a <section> for its content. Do not change the CSS or JS; HTML only.",
       "arguments": [
         {
           "name": "<header>",
           "type": "semantic element",
-          "desc": "Represents introductory content or a navigational area for the page."
+          "desc": "Introductory content for the page (usually includes the main heading)."
         },
         {
           "name": "<main>",
           "type": "semantic element",
-          "desc": "Contains the dominant content of the document; unique per page."
+          "desc": "The primary content of the page; only one <main> per document."
         },
         {
           "name": "<article>",
           "type": "semantic element",
-          "desc": "Encapsulates a self-contained composition like a blog post or article."
+          "desc": "A self-contained post. You must create exactly two articles."
         },
         {
           "name": "<section>",
           "type": "semantic element",
-          "desc": "Groups related content within the page or an article."
+          "desc": "Groups the main content inside each article (put the post body here)."
         },
         {
           "name": "<footer>",
           "type": "semantic element",
-          "desc": "Defines footer content, such as author info, copyright, or links."
+          "desc": "Footer area for closing info (copyright, links, etc.)."
         }
       ],
       "returns": {
         "type": "markup",
-        "desc": "A semantically structured blog layout with clear content hierarchy and accessibility-friendly HTML elements."
+        "desc": "A semantically structured blog page where tests pass without touching CSS or JS."
       },
       "examples": [
-        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Semantic Blog Layout</title>\\n  </head>\\n  <body>\\n    <header>\\n      <h1>My Blog</h1>\\n      <p>Thoughts on web development and design</p>\\n    </header>\\n\\n    <main>\\n      <article>\\n        <h2>First Post</h2>\\n        <section>\\n          <p>This is the first article\u2019s main content.</p>\\n        </section>\\n      </article>\\n\\n      <article>\\n        <h2>Second Post</h2>\\n        <section>\\n          <p>This is the second article\u2019s main content.</p>\\n        </section>\\n      </article>\\n    </main>\\n\\n    <footer>\\n      <p>\u00a9 2025 My Blog. All rights reserved.</p>\\n    </footer>\\n  </body>\\n</html>"
+        "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Thoughts on web development and design</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>© 2025 My Blog. All rights reserved.</p>\n    </footer>\n  </body>\n</html>"
       ]
     },
     "web": {
       "starterHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <!-- TODO: Replace these generic wrappers with semantic elements -->\n    <div class='top'>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </div>\n\n    <div class='content'>\n      <p style='color:#666'>Add two posts here. Each should be a self-contained block with a heading and a content section.</p>\n    </div>\n\n    <div class='bottom'>\n      <p>Footer placeholder.</p>\n    </div>\n  </body>\n</html>",
-      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\\nmain { margin-top: 1.5rem; }\\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\\narticle h2 { margin-top: 0; }",
-      "tests": "it('has a <header> element with a main heading', () => {\\n  const header = document.querySelector('header');\\n  const h1 = header && header.querySelector('h1');\\n  expect(!!h1).toBe(true);\\n});\\n\\nit('has a <main> element containing two <article> elements', () => {\\n  const main = document.querySelector('main');\\n  const articles = main && main.querySelectorAll('article');\\n  expect(articles.length).toBe(2);\\n});\\n\\nit('each <article> contains an <h2> and a <section>', () => {\\n  const articles = document.querySelectorAll('article');\\n  expect(articles.length).toBe(2);\\n  articles.forEach(article => {\\n    expect(!!article.querySelector('h2')).toBe(true);\\n    expect(!!article.querySelector('section')).toBe(true);\\n  });\\n});\\n\\nit('has a <footer> element present at the end', () => {\\n  const footer = document.querySelector('footer');\\n  expect(!!footer).toBe(true);\\n});"
+      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }",
+      "tests": "it('has a <header> element with a main heading', () => {\n  const header = document.querySelector('header');\n  const h1 = header && header.querySelector('h1');\n  expect(!!h1).toBe(true);\n});\n\nit('has a <main> element containing two <article> elements', () => {\n  const main = document.querySelector('main');\n  const articles = main && main.querySelectorAll('article');\n  expect(articles.length).toBe(2);\n});\n\nit('each <article> contains an <h2> and a <section>', () => {\n  const articles = document.querySelectorAll('article');\n  expect(articles.length).toBe(2);\n  articles.forEach(article => {\n    expect(!!article.querySelector('h2')).toBe(true);\n    expect(!!article.querySelector('section')).toBe(true);\n  });\n});\n\nit('has a <footer> element present at the end', () => {\n  const footer = document.querySelector('footer');\n  expect(!!footer).toBe(true);\n});"
     },
     "solutionBlock": {
-      "overview": "This exercise teaches semantic page layout. Instead of using generic <div> tags, use semantic HTML5 elements to structure your page \u2014 making it easier for screen readers and search engines to understand.",
+      "overview": "Swap generic layout <div>s for semantic elements so the page structure is clear to assistive tech and tooling. The CSS already targets semantic tags, so once you use <header>, <main>, <article>, <section>, and <footer>, styling and tests work without changes.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Semantic Blog Page",
-          "prose": "Use <header> for the page\u2019s introduction, <main> to contain your blog posts, <article> for individual posts, and <footer> for closing info. Inside each article, add a <section> for the main content to illustrate proper hierarchy.",
-          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Semantic Blog Layout</title>\\n  </head>\\n  <body>\\n    <header>\\n      <h1>My Blog</h1>\\n      <p>Thoughts on web development and design</p>\\n    </header>\\n\\n    <main>\\n      <article>\\n        <h2>First Post</h2>\\n        <section>\\n          <p>This is the first article\u2019s main content.</p>\\n        </section>\\n      </article>\\n      <article>\\n        <h2>Second Post</h2>\\n        <section>\\n          <p>This is the second article\u2019s main content.</p>\\n        </section>\\n      </article>\\n    </main>\\n\\n    <footer>\\n      <p>\u00a9 2025 My Blog. All rights reserved.</p>\\n    </footer>\\n  </body>\\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\\nmain { margin-top: 1.5rem; }\\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\\narticle h2 { margin-top: 0; }"
+          "title": "Approach 1 — Replace wrappers with semantic layout",
+          "prose": "Turn the top wrapper into <header> with an <h1>. Turn the content wrapper into <main> and add exactly two <article> blocks. Each article must include an <h2> and a <section> containing the post text. Turn the bottom wrapper into <footer>.",
+          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
+          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Avoid wrapping everything in <div>s \u2014 use proper semantics.",
-          "Do not place <header> or <footer> inside <article> unless it\u2019s article-specific metadata."
+          "Don’t change CSS/JS — tests expect structure only.",
+          "Ensure there is exactly one <main> and exactly two <article> elements.",
+          "Each <article> must include both an <h2> and a <section> (not just a <div>)."
         ],
         "techniques": [
-          "Use <main> for the page\u2019s core content; only one per page.",
-          "Each <article> should have its own heading for clarity and accessibility.",
-          "Keep hierarchy clear: header \u2192 main \u2192 article/section \u2192 footer."
+          "Use one clear page hierarchy: header → main → article/section → footer.",
+          "Put the page’s primary heading (<h1>) inside <header>."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 HTML5 Semantic Elements",
+          "title": "MDN — Semantics in HTML",
           "url": "https://developer.mozilla.org/en-US/docs/Glossary/Semantics#semantics_in_html"
         },
         {
-          "title": "MDN \u2013 <article> element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"
+          "title": "MDN — <main>",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"
         },
         {
-          "title": "MDN \u2013 <main> element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/main"
+          "title": "MDN — <article>",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Semantic Blog Layout</title>\\n    <style>\\n      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\n      header, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\\n      main { margin-top: 1.5rem; }\\n      article { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\\n      article h2 { margin-top: 0; }\\n    </style>\\n  </head>\\n  <body>\\n    <header>\\n      <h1>My Blog</h1>\\n      <p>Thoughts on web development and design</p>\\n    </header>\\n\\n    <main>\\n      <article>\\n        <h2>First Post</h2>\\n        <section>\\n          <p>This is the first article\u2019s main content.</p>\\n        </section>\\n      </article>\\n      <article>\\n        <h2>Second Post</h2>\\n        <section>\\n          <p>This is the second article\u2019s main content.</p>\\n        </section>\\n      </article>\\n    </main>\\n\\n    <footer>\\n      <p>\u00a9 2025 My Blog. All rights reserved.</p>\\n    </footer>\\n  </body>\\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\\nmain { margin-top: 1.5rem; }\\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\\narticle h2 { margin-top: 0; }",
+    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n    <style>\n      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\n      header, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\n      main { margin-top: 1.5rem; }\n      article { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\n      article h2 { margin-top: 0; }\n    </style>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }",
     "access": "free"
   },
   {
@@ -571,101 +576,88 @@
     "access": "free"
   },
   {
-    "id": "html-forms-input-basics",
-    "title": "Forms: Input Basics",
+    "id": "html-contact-form-labeled",
+    "title": "Contact Form with Proper Labels",
     "type": "coding",
     "technology": "html",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "html",
       "forms",
-      "inputs",
+      "a11y",
       "labels",
+      "inputs",
       "accessibility",
       "beginner"
     ],
     "description": {
-      "summary": "Build a small form with labeled inputs for name and email, and a submit button. Each label should correctly associate with its input using matching 'for' and 'id' attributes. The form should look like a simple contact form that collects basic user information.",
+      "summary": "A support page needs a contact form. Write HTML that works well with keyboard and screen readers: use real <label> elements paired via for/id, correct input types, and required fields. Show an on-page success message only after a VALID submit (HTML validation must run; no JavaScript). You do NOT need to touch the CSS.",
       "arguments": [
         {
-          "name": "<form>",
+          "name": "<form action=\"#thanks\">",
           "type": "container element",
-          "desc": "Wraps interactive controls to collect and submit user input."
+          "desc": "Navigates to #thanks only when the submission is not blocked by HTML constraint validation."
         },
         {
-          "name": "<label>",
-          "type": "text element",
-          "desc": "Defines a text label for a specific input. The 'for' attribute must match the corresponding input's 'id'."
+          "name": "Constraint validation",
+          "type": "browser behavior",
+          "desc": "Use required + type=\"email\" (optionally minlength) so invalid submissions are blocked and #thanks is not reached."
         },
         {
-          "name": "<input>",
-          "type": "form control",
-          "desc": "Accepts user input; its behavior depends on the 'type' attribute such as text, email, or submit."
-        },
-        {
-          "name": "id and for",
-          "type": "attribute pair",
-          "desc": "The label's 'for' attribute must match the input's 'id' for proper accessibility."
-        },
-        {
-          "name": "type",
-          "type": "attribute",
-          "desc": "Defines the kind of input control (for example: text, email, or submit)."
+          "name": ":target",
+          "type": "css selector",
+          "desc": "Shows the success message only when the URL fragment is #thanks."
         }
       ],
       "returns": {
         "type": "markup",
-        "desc": "A functional and accessible form with two labeled input fields (name and email) and a submit button."
+        "desc": "An accessible contact form with labeled, required fields. Submitting a valid form reveals a success message without JavaScript."
       },
       "examples": [
-        "Example structure:\n<form>\n <label for='name'>Name:</label>\n <input id='name' name='name' type='text' />\n\n <label for='email'>Email:</label>\n <input id='email' name='email' type='email' />\n\n <button type='submit'>Submit</button>\n</form>"
+        "Try submitting empty fields → browser blocks submit; success message stays hidden."
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Build a labeled form for name and email inputs with a submit button. -->\n<!DOCTYPE html>\n<html lang='en'>\n <head>\n <meta charset='UTF-8'>\n <title>Forms: Input Basics</title>\n </head>\n <body>\n <h1>Contact Form</h1>\n <p style='color:#666'>Add labeled inputs for Name and Email. Make sure each label is correctly associated with its input using the 'for' and 'id' attributes.</p>\n\n <!-- Your form goes here -->\n </body>\n</html>",
-      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }",
-      "tests": "it('has a <form> element', () => {\\n const form = document.querySelector('form');\\n expect(!!form).toBe(true);\\n});\\n\\nit('contains at least two labeled inputs (name and email)', () => {\\n const labels = document.querySelectorAll('label');\\n const inputs = document.querySelectorAll('input');\\n expect(labels.length >= 2).toBe(true);\\n expect(inputs.length >= 2).toBe(true);\\n});\\n\\nit('each label has a for attribute and matches an existing input id', () => {\\n const labels = document.querySelectorAll('label');\\n expect(labels.length > 0).toBe(true); // fail if no labels at all\\n labels.forEach(label => {\\n const forAttr = label.getAttribute('for');\\n expect(!!forAttr && forAttr.trim().length > 0).toBe(true);\\n const input = document.getElementById(forAttr);\\n expect(!!input).toBe(true);\\n });\\n});\\n\\nit('includes a submit button', () => {\\n const btn = document.querySelector('button[type=\\\\\"submit\\\\\"], input[type=\\\\\"submit\\\\\"]');\\n expect(!!btn).toBe(true);\\n});"
+      "starterHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <!-- TODO: Add labeled fields for Name, Email, and Message. -->\n    <!-- Must use HTML validation (do NOT add novalidate). -->\n    <!-- Requirement: action must stay \"#thanks\" so valid submit reveals the success message. -->\n\n    <!-- TODO: Add a submit button. -->\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>\n      Message sent\n    </h2>\n    <p>\n      Thanks! We received your message and will reply soon.\n    </p>\n  </section>\n</body>\n</html>\n",
+      "starterCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n/* CSS-only success message */\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n",
+      "tests": "(() => {\n  const form = document.querySelector('form');\n  if (!form) throw new Error('Expected a <form>.');\n\n  // Must rely on browser validation.\n  if (form.hasAttribute('novalidate')) throw new Error('Do not use novalidate; HTML validation must run.');\n\n  // Must submit to #thanks (only reachable after valid submit).\n  if ((form.getAttribute('action') || '').trim() !== '#thanks') {\n    throw new Error('Form action must be \"#thanks\".');\n  }\n\n  const nameInput = document.querySelector('input[name=\"name\"]');\n  const emailInput = document.querySelector('input[name=\"email\"]');\n  const msg = document.querySelector('textarea[name=\"message\"]');\n  const btn = document.querySelector('button[type=\"submit\"], input[type=\"submit\"], button:not([type])');\n\n  if (!nameInput) throw new Error('Expected input[name=\"name\"].');\n  if (!emailInput) throw new Error('Expected input[name=\"email\"].');\n  if (!msg) throw new Error('Expected textarea[name=\"message\"].');\n  if (!btn) throw new Error('Expected a submit control.');\n\n  // Constraints that block invalid submit.\n  if (!nameInput.hasAttribute('required')) throw new Error('Name must be required.');\n  if (!emailInput.hasAttribute('required')) throw new Error('Email must be required.');\n  if (!msg.hasAttribute('required')) throw new Error('Message must be required.');\n  if ((emailInput.getAttribute('type') || '').toLowerCase() !== 'email') throw new Error('Email input must use type=\"email\".');\n\n  const checkLabelFor = (el, labelText) => {\n    const id = el.getAttribute('id');\n    if (!id) throw new Error(`${labelText} control must have an id.`);\n    const label = document.querySelector(`label[for=\"${CSS.escape(id)}\"]`);\n    if (!label) throw new Error(`Missing <label for=\"${id}\"> for ${labelText}.`);\n  };\n\n  checkLabelFor(nameInput, 'Name');\n  checkLabelFor(emailInput, 'Email');\n  checkLabelFor(msg, 'Message');\n\n  // Success message exists and is targetable.\n  const thanks = document.getElementById('thanks');\n  if (!thanks) throw new Error('Expected a success message element with id=\"thanks\".');\n  if (thanks.getAttribute('role') !== 'status') throw new Error('Success message must have role=\"status\".');\n  if (thanks.getAttribute('aria-live') !== 'polite') throw new Error('Success message must have aria-live=\"polite\".');\n})();\n"
     },
     "solutionBlock": {
-      "overview": "This exercise introduces basic form elements and accessibility through labels. Using matching 'for' and 'id' attributes ensures that assistive technologies can correctly identify which label belongs to which input.",
+      "overview": "HTML constraint validation blocks invalid submissions automatically. By setting action=\"#thanks\", the page only navigates to the #thanks fragment after a valid submission attempt, which lets CSS :target reveal a success message without JavaScript.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Basic Accessible Form",
-          "prose": "Wrap inputs in a form element. Each input has a label with a 'for' attribute that matches its id. Use appropriate input types (text, email) and add a submit button to complete the form.",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Form Example</title>\n  </head>\n  <body>\n    <form id='contactForm'>\n      <label for='name'>Name:</label>\n      <input id='name' name='name' type='text' />\n\n      <label for='email'>Email:</label>\n      <input id='email' name='email' type='email' />\n\n      <button type='button' id='submitBtn'>Submit</button>\n    </form>\n\n    <p id='formMessage' style='color: green; font-weight: 500; display: none;'>Form submitted!</p>\n\n    <script>\n      const form = document.getElementById('contactForm');\n      const submitBtn = document.getElementById('submitBtn');\n      const message = document.getElementById('formMessage');\n\n      function handleSubmit(event) {\n        event?.preventDefault();\n        message.style.display = 'block';\n      }\n\n      form.addEventListener('submit', handleSubmit);\n      submitBtn.addEventListener('click', handleSubmit);\n    </script>\n  </body>\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }"
+          "title": "Approach 1 – Valid submit reveals success via :target",
+          "prose": "Use required fields and type=\"email\" so the browser blocks invalid submissions. Keep form action=\"#thanks\". The success section already exists with id=\"thanks\". CSS hides it by default and shows it only when targeted. Do not use novalidate.",
+          "codeHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
+          "codeCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Forgetting to connect labels with inputs makes forms harder to use for screen readers.",
-          "Using placeholder text instead of labels reduces accessibility.",
-          "Not setting input types correctly can cause wrong keyboards on mobile devices."
+          "Using novalidate disables browser validation, so invalid submits would still reach #thanks.",
+          "This pattern signals 'valid submit attempt', not server-confirmed delivery.",
+          "Using method=\"get\" means form values may appear in the URL query string."
         ],
         "techniques": [
-          "Always connect labels and inputs with matching 'for' and 'id'.",
-          "Use clear, descriptive labels to improve usability.",
-          "Wrap all related inputs in one form for submission."
+          "Rely on required + type=\"email\" so invalid submits are blocked.",
+          "Use action=\"#thanks\" + :target for a no-JS success message.",
+          "Optionally add minlength on the message to reduce accidental empty-ish submits."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 form element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"
+          "title": "MDN – Constraint validation",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation"
         },
         {
-          "title": "MDN \u2013 label element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label"
-        },
-        {
-          "title": "MDN \u2013 input element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input"
+          "title": "MDN – :target",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:target"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Form Example</title>\n  </head>\n  <body>\n    <form id='contactForm'>\n      <label for='name'>Name:</label>\n      <input id='name' name='name' type='text' />\n      <label for='email'>Email:</label>\n      <input id='email' name='email' type='email' />\n      <button type='button' id='submitBtn'>Submit</button>\n    </form>\n\n    <p id='formMessage' style='color: green; font-weight: 500; display: none;'>Form submitted!</p>\n\n    <script>\n      const form = document.getElementById('contactForm');\n      const submitBtn = document.getElementById('submitBtn');\n      const message = document.getElementById('formMessage');\n\n      function handleSubmit(event) {\n        event?.preventDefault();\n        message.style.display = 'block';\n      }\n\n      form.addEventListener('submit', handleSubmit);\n      submitBtn.addEventListener('click', handleSubmit);\n    </script>\n  </body>\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 300px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }",
+    "webSolutionHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
+    "webSolutionCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n",
     "access": "free"
   },
   {
@@ -684,7 +676,7 @@
       "intermediate"
     ],
     "description": {
-      "summary": "Build a signup form using built-in HTML5 validation attributes: required, type, minlength, and pattern. Ensure the browser considers the form invalid until inputs are correct. You do not need to submit the form; validation is the goal.",
+      "summary": "Build a signup form using built-in HTML5 validation attributes: required, type, minlength, and pattern. Ensure the browser considers the form invalid until inputs are correct. You do not need to submit data anywhere; validation behavior is the goal. Starter code already includes JavaScript for submit handling and CSS for layout and feedback — you must NOT modify the JavaScript or CSS. Focus only on writing correct HTML markup and attributes.",
       "arguments": [
         {
           "name": "required",
@@ -717,35 +709,34 @@
         "desc": "A signup form with Name, Email, and Password fields that uses HTML attributes to enforce validity and shows a small status message after a submit attempt."
       },
       "examples": [
-        "Example structure:\n<form>\n  <label for='name'>Name:</label>\n  <input id='name' name='name' type='text' required autocomplete='name' />\n\n  <label for='email'>Email:</label>\n  <input id='email' name='email' type='email' required autocomplete='email' />\n\n  <label for='password'>Password:</label>\n  <input id='password' name='password' type='password' minlength='8' pattern='(?=.*[A-Z])(?=.*\\d).{8,}' required autocomplete='new-password' />\n\n  <button type='submit'>Sign up</button>\n  <p id='status' aria-live='polite'></p>\n</form>"
+        "Password policy example: at least 8 characters, including 1 uppercase letter and 1 number."
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Build a signup form with built-in validation for name, email, and password. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n    <p style='color:#666'>Add inputs for Name, Email, and Password. Use HTML5 validation attributes (required, type, minlength, pattern) so the form is invalid until inputs are correct. You don’t need to actually send data anywhere; focus on validation behavior.</p>\n\n    <!-- Your form goes here -->\n  </body>\n</html>",
+      "starterHtml": "<!-- TODO: Build a signup form with built-in validation for name, email, and password. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n    <p style='color:#666'>Add inputs for Name, Email, and Password. Use HTML5 validation attributes (required, type, minlength, pattern) so the form is invalid until inputs are correct. Do not add novalidate. You don’t need to send data anywhere; focus on validation behavior.</p>\n\n    <!-- Your form goes here -->\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        // Runs after you add the form markup.\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return; // still waiting for user markup\n\n          form.addEventListener('submit', (e) => {\n            // Keep user on the page; validation is the goal.\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        // Try now and after DOM updates.\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
-      "tests": "it('has a <form> element', () => {\\n  const form = document.querySelector('form');\\n  expect(!!form).toBe(true);\\n});\\n\\nit('contains inputs for name, email, and password', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name).toBe(true);\\n  expect(!!email).toBe(true);\\n  expect(!!password).toBe(true);\\n});\\n\\nit('each input is required', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name && !!email && !!password).toBe(true);\\n  [name, email, password].forEach(input => {\\n    expect(input.hasAttribute('required')).toBe(true);\\n  });\\n});\\n\\nit('email uses type=\"email\" and name/email have useful autocomplete', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  expect(!!name && !!email).toBe(true);\\n  expect(email.getAttribute('type')).toBe('email');\\n  const acName = (name.getAttribute('autocomplete') || '').toLowerCase();\\n  const acEmail = (email.getAttribute('autocomplete') || '').toLowerCase();\\n  expect(acName === 'name' || acName === 'given-name' || acName === 'family-name').toBe(true);\\n  expect(acEmail === 'email').toBe(true);\\n});\\n\\nit('password enforces minlength and a pattern (at least 1 uppercase + 1 number)', () => {\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!password).toBe(true);\\n  expect(password.hasAttribute('minlength')).toBe(true);\\n  expect(password.hasAttribute('pattern')).toBe(true);\\n\\n  password.value = 'short1A';\\n  expect(password.checkValidity()).toBe(false);\\n\\n  password.value = 'longbutnonumberA';\\n  expect(password.checkValidity()).toBe(false);\\n\\n  password.value = 'ValidPass1';\\n  expect(password.checkValidity()).toBe(true);\\n});\\n\\nit('form is invalid when empty and becomes valid when correctly filled', () => {\\n  const form = document.querySelector('form');\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!form && !!name && !!email && !!password).toBe(true);\\n\\n  name.value = '';\\n  email.value = '';\\n  password.value = '';\\n  expect(form.checkValidity()).toBe(false);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'not-an-email';\\n  password.value = 'ValidPass1';\\n  expect(form.checkValidity()).toBe(false);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'ada@example.com';\\n  password.value = 'ValidPass1';\\n  expect(form.checkValidity()).toBe(true);\\n});\\n\\nit('has a submit button', () => {\\n  const btn = document.querySelector('button[type=\"submit\"], input[type=\"submit\"]');\\n  expect(!!btn).toBe(true);\\n});\\n\\nit('shows visible feedback text after submit attempt (invalid vs valid)', () => {\\n  const form = document.querySelector('form');\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  const status = document.querySelector('#status');\\n  expect(!!form && !!name && !!email && !!password && !!status).toBe(true);\\n\\n  name.value = '';\\n  email.value = '';\\n  password.value = '';\\n  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));\\n  expect((status.textContent || '').toLowerCase().includes('fix')).toBe(true);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'ada@example.com';\\n  password.value = 'ValidPass1';\\n  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));\\n  expect((status.textContent || '').toLowerCase().includes('looks good')).toBe(true);\\n});"
+      "tests": "it('has a <form> element', () => {\\n  const form = document.querySelector('form');\\n  expect(!!form).toBe(true);\\n});\\n\\nit('contains inputs for name, email, and password', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name).toBe(true);\\n  expect(!!email).toBe(true);\\n  expect(!!password).toBe(true);\\n});\\n\\nit('each input is required', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!name && !!email && !!password).toBe(true);\\n  [name, email, password].forEach(input => {\\n    expect(input.hasAttribute('required')).toBe(true);\\n  });\\n});\\n\\nit('email uses type=\"email\" and name/email have useful autocomplete', () => {\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  expect(!!name && !!email).toBe(true);\\n  expect(email.getAttribute('type')).toBe('email');\\n  const acName = (name.getAttribute('autocomplete') || '').toLowerCase();\\n  const acEmail = (email.getAttribute('autocomplete') || '').toLowerCase();\\n  expect(acName === 'name' || acName === 'given-name' || acName === 'family-name').toBe(true);\\n  expect(acEmail === 'email').toBe(true);\\n});\\n\\nit('password enforces minlength and a pattern (at least 1 uppercase + 1 number)', () => {\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!password).toBe(true);\\n  expect(password.hasAttribute('minlength')).toBe(true);\\n  expect(password.hasAttribute('pattern')).toBe(true);\\n\\n  password.value = 'short1A';\\n  expect(password.checkValidity()).toBe(false);\\n\\n  password.value = 'longbutnonumberA';\\n  expect(password.checkValidity()).toBe(false);\\n\\n  password.value = 'ValidPass1';\\n  expect(password.checkValidity()).toBe(true);\\n});\\n\\nit('form is invalid when empty and becomes valid when correctly filled', () => {\\n  const form = document.querySelector('form');\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  expect(!!form && !!name && !!email && !!password).toBe(true);\\n\\n  name.value = '';\\n  email.value = '';\\n  password.value = '';\\n  expect(form.checkValidity()).toBe(false);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'not-an-email';\\n  password.value = 'ValidPass1';\\n  expect(form.checkValidity()).toBe(false);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'ada@example.com';\\n  password.value = 'ValidPass1';\\n  expect(form.checkValidity()).toBe(true);\\n});\\n\\nit('has a submit button', () => {\\n  const btn = document.querySelector('button[type=\"submit\"], input[type=\"submit\"]');\\n  expect(!!btn).toBe(true);\\n});\\n\\nit('has a status element for feedback', () => {\\n  const status = document.querySelector('#status');\\n  expect(!!status).toBe(true);\\n});\\n\\nit('shows visible feedback text after submit attempt (invalid vs valid)', () => {\\n  const form = document.querySelector('form');\\n  const name = document.querySelector('input[name=\"name\"]');\\n  const email = document.querySelector('input[name=\"email\"]');\\n  const password = document.querySelector('input[name=\"password\"]');\\n  const status = document.querySelector('#status');\\n  expect(!!form && !!name && !!email && !!password && !!status).toBe(true);\\n\\n  name.value = '';\\n  email.value = '';\\n  password.value = '';\\n  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));\\n  expect((status.textContent || '').toLowerCase().includes('fix')).toBe(true);\\n\\n  name.value = 'Ada Lovelace';\\n  email.value = 'ada@example.com';\\n  password.value = 'ValidPass1';\\n  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));\\n  expect((status.textContent || '').toLowerCase().includes('looks good')).toBe(true);\\n});"
     },
     "solutionBlock": {
-      "overview": "This exercise teaches HTML5 constraint validation using attributes. The browser determines validity via required/type/minlength/pattern. A submit attempt can be intercepted with JavaScript to keep the user on the page, while still using the browser’s native validation UI and a small status message for consistent feedback.",
+      "overview": "This exercise teaches HTML5 constraint validation using attributes. The browser determines validity via required/type/minlength/pattern. JavaScript is already provided in the starter to prevent navigation and display consistent feedback using form.checkValidity() and form.reportValidity().",
       "approaches": [
         {
-          "title": "Approach 1 – Submit-driven validation feedback (no navigation)",
-          "prose": "Create a form with Name, Email, and Password fields. Connect labels via for/id. Add required to all fields, type=\"email\" for email, and minlength + pattern for the password. Add autocomplete hints for better UX. Use a real submit button, but prevent navigation in a submit handler and show a small status message based on form.checkValidity().",
-          "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Signup Form Validation</title>\\n  </head>\\n  <body>\\n    <h1>Signup Form</h1>\\n\\n    <form id='signupForm' aria-label='Signup form'>\\n      <label for='name'>Name</label>\\n      <input id='name' name='name' type='text' required autocomplete='name' />\\n\\n      <label for='email'>Email</label>\\n      <input id='email' name='email' type='email' required autocomplete='email' />\\n\\n      <label for='password'>Password</label>\\n      <input\\n        id='password'\\n        name='password'\\n        type='password'\\n        required\\n        minlength='8'\\n        autocomplete='new-password'\\n        pattern='(?=.*[A-Z])(?=.*\\\\d).{8,}'\\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\\n      />\\n\\n      <button type='submit'>Sign up</button>\\n      <p id='status' aria-live='polite'></p>\\n    </form>\\n\\n    <script>\\n      (function () {\\n        const form = document.getElementById('signupForm');\\n        const status = document.getElementById('status');\\n\\n        form.addEventListener('submit', (e) => {\\n          // Keep the user on the page; focus on validation behavior.\\n          e.preventDefault();\\n\\n          const valid = form.checkValidity();\\n          if (!valid) {\\n            form.reportValidity();\\n            status.textContent = 'Fix the highlighted fields.';\\n            return;\\n          }\\n\\n          status.textContent = 'Looks good ✅';\\n        });\\n      })();\\n    </script>\\n  </body>\\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\\nlabel { font-weight: 500; }\\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\\nbutton:hover { background: #005fa3; }\\n#status { font-weight: 600; margin-top: 0.25rem; }"
+          "title": "Approach 1 – Attribute-driven validation",
+          "prose": "Create a form with Name, Email, and Password fields. Connect labels via for/id. Add required to all fields, type=\"email\" for email, and minlength + pattern for the password. Add autocomplete hints. Include a submit button and a status element with aria-live=\"polite\".",
+          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
+          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }"
         }
       ],
       "notes": {
         "pitfalls": [
           "Missing for/id pairing makes labels less accessible and breaks click-to-focus behavior.",
           "A pattern that is too strict can block valid user input; test it with real examples.",
-          "Relying on placeholders instead of labels hurts accessibility."
+          "Using novalidate disables browser validation APIs like reportValidity()."
         ],
         "techniques": [
           "Use type=\"email\" for built-in email validation.",
           "Use minlength + pattern for password policies.",
-          "Add autocomplete tokens (name/email/new-password) for faster form filling.",
-          "Use form.reportValidity() to show the browser’s native validation UI."
+          "Add autocomplete tokens (name/email/new-password) for faster form filling."
         ]
       },
       "resources": [
@@ -771,207 +762,207 @@
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form id='signupForm' aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const form = document.getElementById('signupForm');\n        const status = document.getElementById('status');\n\n        form.addEventListener('submit', (e) => {\n          e.preventDefault();\n\n          const valid = form.checkValidity();\n          if (!valid) {\n            form.reportValidity();\n            status.textContent = 'Fix the highlighted fields.';\n            return;\n          }\n\n          status.textContent = 'Looks good ✅';\n        });\n      })();\n    </script>\n  </body>\n</html>",
+    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
     "access": "free"
   },
   {
-    "id": "html-forms-grouping-semantic",
-    "title": "Forms: Grouping and Semantic Controls",
+    "id": "html-head-seo-basics",
+    "title": "SEO: Essential <head> Metadata",
     "type": "coding",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "medium",
     "importance": 3,
     "tags": [
       "html",
-      "forms",
-      "fieldset",
-      "legend",
-      "radio",
-      "checkbox",
-      "select",
-      "accessibility",
-      "intermediate"
+      "seo",
+      "head",
+      "metadata",
+      "viewport",
+      "charset"
     ],
     "description": {
-      "summary": "Build a short survey form that groups related controls using <fieldset> and <legend>. Include a gender section (radio buttons), an interests section (checkboxes), and a country dropdown using <select>. Each group should be labeled semantically to improve accessibility and organization.",
+      "summary": "You’re given a simple marketing page that renders fine in the browser, but it’s missing production-grade <head> metadata. Update ONLY the <head> so the page has correct encoding, mobile-friendly viewport behavior, a descriptive title, and a meta description. Do not change the <body>. No CSS/JS changes are needed.",
       "arguments": [
         {
-          "name": "<fieldset>",
-          "type": "container element",
-          "desc": "Groups related form controls together for better organization and accessibility."
+          "name": "<meta charset=\"utf-8\">",
+          "type": "metadata",
+          "desc": "Defines UTF-8 encoding so text renders consistently (including Turkish characters)."
         },
         {
-          "name": "<legend>",
-          "type": "caption element",
-          "desc": "Provides a descriptive caption for the <fieldset>, helping screen readers identify the group."
+          "name": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+          "type": "metadata",
+          "desc": "Makes the page layout match device width on mobile (prevents weird zoom / scaling)."
         },
         {
-          "name": "radio inputs",
-          "type": "input type='radio'",
-          "desc": "Allow selecting exactly one option within a named group."
+          "name": "<title>Brand – Page intent</title>",
+          "type": "document metadata",
+          "desc": "Sets the browser tab title and is a primary on-page SEO signal; should be specific, not just “Home”."
         },
         {
-          "name": "checkbox inputs",
-          "type": "input type='checkbox'",
-          "desc": "Allow selecting multiple options independently."
+          "name": "<meta name=\"description\" content=\"...\">",
+          "type": "metadata",
+          "desc": "Short summary of the page (commonly used for search snippets); keep it readable and concrete."
         },
         {
-          "name": "<select>",
-          "type": "dropdown control",
-          "desc": "Lets users choose one option from a list of countries."
+          "name": "<link rel=\"stylesheet\" href=\"styles.css\">",
+          "type": "resource hint",
+          "desc": "Loads the provided CSS from the CSS file (avoid <style> tags in this challenge)."
         }
       ],
       "returns": {
         "type": "markup",
-        "desc": "A well-structured and accessible survey form with grouped radio and checkbox controls, and a country selector."
+        "desc": "A valid HTML document where the <head> contains charset, viewport, a non-empty title, and a non-empty meta description (and keeps CSS in the external stylesheet)."
       },
       "examples": [
-        "Example structure:\n<form>\n  <fieldset>\n    <legend>Gender</legend>\n    <label><input type='radio' name='gender' value='male' /> Male</label>\n    <label><input type='radio' name='gender' value='female' /> Female</label>\n  </fieldset>\n\n  <fieldset>\n    <legend>Interests</legend>\n    <label><input type='checkbox' name='interests' value='coding' /> Coding</label>\n    <label><input type='checkbox' name='interests' value='music' /> Music</label>\n  </fieldset>\n\n  <label for='country'>Country:</label>\n  <select id='country' name='country'>\n    <option value=''>Select...</option>\n    <option value='turkey'>Turkey</option>\n    <option value='usa'>USA</option>\n    <option value='japan'>Japan</option>\n  </select>\n\n  <button type='submit'>Submit</button>\n</form>"
+        "<head>\\n  <meta charset=\"utf-8\">\\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n  <title>FrontendAtlas – Frontend Interview Practice</title>\\n  <meta name=\"description\" content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\">\\n  <link rel=\"stylesheet\" href=\"styles.css\">\\n</head>"
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Build a survey form using fieldset + legend, radios, checkboxes, and a country select. Show a success message when submitting (already included). -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>User Survey</title>\n  </head>\n  <body>\n    <h1>User Survey</h1>\n    <p style='color:#666'>Group related form controls using &lt;fieldset&gt; and &lt;legend&gt; to improve organization and accessibility. Create radio buttons for gender, checkboxes for interests, and a &lt;select&gt; dropdown for country.</p>\n\n    <form id='surveyForm' onsubmit=\"event.preventDefault();\">\n      <!-- TODO: Add your form controls here -->\n      <fieldset>\n        <legend>Gender</legend>\n        <!-- radio inputs here -->\n      </fieldset>\n\n      <fieldset>\n        <legend>Interests</legend>\n        <!-- checkbox inputs here -->\n      </fieldset>\n\n      <fieldset>\n        <legend>Feedback</legend>\n        <!-- textarea, select, etc. -->\n      </fieldset>\n\n      <button type='button' id='submitBtn'>Submit</button>\n      <p id='successMsg' class='success-msg'>Response recorded!</p>\n    </form>\n\n    <script>\n      // Optional: wire up the submit button to show the success message\n      // const success = document.getElementById('successMsg');\n      // document.getElementById('submitBtn').addEventListener('click', () => {\n      //   success.style.display = 'block';\n      // });\n    </script>\n  </body>\n</html>\n",
-      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 1rem; max-width: 400px; }\nfieldset { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; }\nlegend { font-weight: 600; }\nlabel { display: block; margin-top: 0.25rem; }\nselect, input[type='radio'], input[type='checkbox'] { margin-right: 0.5rem; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n.success-msg { display: none; color: green; font-weight: 600; }\n",
-      "tests": "it('has a <form> element', () => {\\n  const form = document.querySelector('form');\\n  expect(!!form).toBe(true);\\n});\\n\\nit('contains at least two <fieldset> elements with <legend>', () => {\\n  const fieldsets = document.querySelectorAll('fieldset');\\n  expect(fieldsets.length >= 2).toBe(true);\\n  fieldsets.forEach(f => {\\n    expect(!!f.querySelector('legend')).toBe(true);\\n  });\\n});\\n\\nit('has a group of radio buttons named gender', () => {\\n  const radios = document.querySelectorAll('input[type=\"radio\"][name=\"gender\"]');\\n  expect(radios.length >= 2).toBe(true);\\n});\\n\\nit('has a group of checkboxes named interests', () => {\\n  const checks = document.querySelectorAll('input[type=\"checkbox\"][name=\"interests\"]');\\n  expect(checks.length >= 2).toBe(true);\\n});\\n\\nit('has a <select> element with at least 3 options', () => {\\n  const select = document.querySelector('select');\\n  expect(!!select).toBe(true);\\n  const options = select.querySelectorAll('option');\\n  expect(options.length >= 3).toBe(true);\\n});"
+      "starterHtml": "<!-- TODO: Edit ONLY the <head>. Do NOT change <body>. No JS needed. -->\\n<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <!-- Add: <meta charset=\"utf-8\"> -->\\n    <!-- Add: responsive viewport meta -->\\n    <!-- Add: a descriptive <title> -->\\n    <!-- Add: meta description -->\\n\\n    <!-- Keep CSS external (no <style> tag). -->\\n    <!-- Ensure this link remains in <head>. -->\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
+      "tests": "it('has <meta charset=\"utf-8\"> in <head>', () => {\\n  const m = document.querySelector('head meta[charset]');\\n  expect(!!m).toBe(true);\\n  expect(m.getAttribute('charset').toLowerCase()).toBe('utf-8');\\n});\\n\\nit('has a responsive viewport meta tag', () => {\\n  const m = document.querySelector('head meta[name=\"viewport\"]');\\n  expect(!!m).toBe(true);\\n  const c = (m.getAttribute('content') || '').replace(/\\s+/g, '');\\n  expect(c.includes('width=device-width')).toBe(true);\\n  expect(c.includes('initial-scale=1')).toBe(true);\\n});\\n\\nit('has a non-empty <title>', () => {\\n  const t = document.querySelector('head title');\\n  expect(!!t).toBe(true);\\n  expect(t.textContent.trim().length).toBeGreaterThan(0);\\n});\\n\\nit('has a non-empty meta description', () => {\\n  const m = document.querySelector('head meta[name=\"description\"]');\\n  expect(!!m).toBe(true);\\n  expect((m.getAttribute('content') || '').trim().length).toBeGreaterThan(0);\\n});\\n\\nit('keeps CSS external via <link rel=\"stylesheet\" href=\"styles.css\">', () => {\\n  const link = document.querySelector('head link[rel=\"stylesheet\"][href=\"styles.css\"]');\\n  expect(!!link).toBe(true);\\n});\\n\\nit('does not use inline <style> or <script> tags', () => {\\n  expect(document.querySelectorAll('style').length).toBe(0);\\n  expect(document.querySelectorAll('script').length).toBe(0);\\n});"
     },
     "solutionBlock": {
-      "overview": "This solution shows how to group related inputs with <fieldset>/<legend>, provide radios, checkboxes, and a select, and wire a simple click handler that prevents navigation and reveals a success message.",
+      "overview": "This is a realistic production check: you can have “valid HTML” that still fails basic SEO/mobile standards. The fix is to complete the <head> with the small set of tags almost every team expects in reviews: charset, viewport, meaningful title, and meta description—while keeping styling in the external CSS file.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Grouped Semantic Survey Form",
-          "prose": "Use <fieldset> with <legend> to organize form sections. Create a radio group for gender, checkboxes for interests, and a <select> for country. A short script listens for clicks, prevents default submission in the sandbox, and shows a success message so users get immediate feedback.",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Survey Form</title>\n  </head>\n  <body>\n    <form id='surveyForm' onsubmit=\"event.preventDefault();\">\n      <fieldset>\n        <legend>Gender</legend>\n        <label><input type='radio' name='gender' value='male' required> Male</label>\n        <label><input type='radio' name='gender' value='female' required> Female</label>\n      </fieldset>\n\n      <fieldset>\n        <legend>Interests</legend>\n        <label><input type='checkbox' name='interests' value='coding'> Coding</label>\n        <label><input type='checkbox' name='interests' value='music'> Music</label>\n        <label><input type='checkbox' name='interests' value='sports'> Sports</label>\n      </fieldset>\n\n      <fieldset>\n        <legend>Feedback</legend>\n        <textarea name='feedback' rows='4' cols='30' placeholder='Share your thoughts'></textarea>\n        <label for='country'>Country</label>\n        <select id='country' name='country'>\n          <option value=''>Select a country</option>\n          <option value='us'>United States</option>\n          <option value='ca'>Canada</option>\n          <option value='uk'>United Kingdom</option>\n        </select>\n      </fieldset>\n\n      <button type='button' id='submitBtn'>Submit</button>\n      <p id='successMsg' style='display:none;color:green;font-weight:600;'>Response recorded!</p>\n    </form>\n\n    <script>\n      (function () {\n        const form = document.getElementById('surveyForm');\n        const success = document.getElementById('successMsg');\n        const submitBtn = document.getElementById('submitBtn');\n\n        function handleSubmit(e) {\n          e?.preventDefault();\n          success.style.display = 'block';\n        }\n\n        form.addEventListener('submit', handleSubmit);\n        submitBtn.addEventListener('click', handleSubmit);\n      })();\n    </script>\n  </body>\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 1rem; max-width: 400px; }\nfieldset { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; }\nlegend { font-weight: 600; }\nlabel { display: block; margin-top: 0.25rem; }\nselect, input[type='radio'], input[type='checkbox'] { margin-right: 0.5rem; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }"
+          "title": "Approach 1 – Minimal production <head>",
+          "prose": "Add UTF-8 encoding first, then the viewport meta for mobile. Write a title that includes the product name plus clear intent (what the page is about). Add a short, human-readable description (one sentence) describing the value. Keep CSS loaded via the existing external stylesheet link and avoid <style>/<script> for this task.",
+          "codeHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
+          "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Not using <fieldset> makes it harder for screen readers to understand grouped inputs.",
-          "Forgetting to add <legend> removes contextual meaning for assistive users.",
-          "Using unrelated names for radio buttons prevents mutual exclusivity."
+          "Putting <title> in <body> instead of <head> (invalid placement).",
+          "Skipping the viewport meta, causing mobile pages to render zoomed-out.",
+          "Using a generic title like “Home” instead of “Brand – page intent”.",
+          "Writing a meta description that is empty, too vague, or stuffed with keywords."
         ],
         "techniques": [
-          "Always group related controls using <fieldset> and <legend>.",
-          "Use the same 'name' for radio buttons to ensure only one can be selected.",
-          "Label checkboxes individually for better accessibility."
+          "Order in <head> is typically: charset early, then viewport, then title/description, then CSS link.",
+          "Meta description should be a readable summary (roughly 1 sentence)."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 fieldset element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset"
+          "title": "MDN – The <head> element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"
         },
         {
-          "title": "MDN \u2013 legend element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/legend"
+          "title": "MDN – The <title> element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"
         },
         {
-          "title": "MDN \u2013 select element",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select"
+          "title": "MDN – <meta> element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta"
+        },
+        {
+          "title": "MDN – Responsive design basics (viewport)",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Survey Form</title>\n  </head>\n  <body>\n    <form id='surveyForm' onsubmit=\"event.preventDefault();\">\n      <fieldset>\n        <legend>Gender</legend>\n        <label><input type='radio' name='gender' value='male' required> Male</label>\n        <label><input type='radio' name='gender' value='female' required> Female</label>\n      </fieldset>\n\n      <fieldset>\n        <legend>Interests</legend>\n        <label><input type='checkbox' name='interests' value='coding'> Coding</label>\n        <label><input type='checkbox' name='interests' value='music'> Music</label>\n        <label><input type='checkbox' name='interests' value='sports'> Sports</label>\n      </fieldset>\n\n      <fieldset>\n        <legend>Feedback</legend>\n        <textarea name='feedback' rows='4' cols='30' placeholder='Share your thoughts'></textarea>\n        <label for='country'>Country</label>\n        <select id='country' name='country'>\n          <option value=''>Select a country</option>\n          <option value='us'>United States</option>\n          <option value='ca'>Canada</option>\n          <option value='uk'>United Kingdom</option>\n        </select>\n      </fieldset>\n\n      <button type='button' id='submitBtn'>Submit</button>\n      <p id='successMsg' style='display:none;color:green;font-weight:600;'>Response recorded!</p>\n    </form>\n\n    <script>\n      (function () {\n        const form = document.getElementById('surveyForm');\n        const success = document.getElementById('successMsg');\n        const submitBtn = document.getElementById('submitBtn');\n\n        function handleSubmit(e) {\n          e?.preventDefault();\n          success.style.display = 'block';\n        }\n\n        form.addEventListener('submit', handleSubmit);\n        submitBtn.addEventListener('click', handleSubmit);\n      })();\n    </script>\n  </body>\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 1rem; max-width: 400px; }\nfieldset { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; }\nlegend { font-weight: 600; }\nlabel { display: block; margin-top: 0.25rem; }\nselect, input[type='radio'], input[type='checkbox'] { margin-right: 0.5rem; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }",
+    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
+    "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
     "access": "free"
   },
   {
-    "id": "html-forms-submission-feedback",
-    "title": "Forms: Submission and Feedback",
+    "id": "html-dialog-confirm-a11y",
+    "title": "Modal: Native <dialog> Confirm (Accessible Naming)",
     "type": "coding",
     "technology": "html",
-    "difficulty": "intermediate",
+    "difficulty": "hard",
     "importance": 3,
     "tags": [
       "html",
-      "forms",
-      "aria",
-      "accessibility",
-      "live-region",
-      "semantics"
+      "dialog",
+      "a11y",
+      "aria-labelledby",
+      "aria-describedby",
+      "forms"
     ],
     "description": {
-      "summary": "Mark up a feedback form with a multiline text area, a submit button, and a confirmation area that announces updates using an ARIA live region set to 'polite'. Prevent page navigation and show 'Thank you for submitting!' after a valid submission.",
+      "summary": "Build a native confirm dialog for deleting a project using the HTML <dialog> element. The dialog must be accessible (proper name + description) and must be visible in the preview without JavaScript. Only edit HTML. Do not change CSS.",
       "arguments": [
         {
-          "name": "<form>",
-          "type": "container element",
-          "desc": "Wraps the feedback controls and handles submission."
+          "name": "<dialog open>",
+          "type": "native dialog element",
+          "desc": "Renders the dialog visible without JS (real apps typically open it via showModal())."
         },
         {
-          "name": "<textarea>",
-          "type": "form control",
-          "desc": "Collects multiline feedback. Use required and a sensible minlength."
+          "name": "aria-labelledby",
+          "type": "accessibility attribute",
+          "desc": "Points to the dialog title element id to provide the dialog’s accessible name."
         },
         {
-          "name": "<label>",
-          "type": "text element",
-          "desc": "Associates text with the textarea via matching for and id."
+          "name": "aria-describedby",
+          "type": "accessibility attribute",
+          "desc": "Points to description text id to provide context for screen readers."
         },
         {
-          "name": "submit button",
-          "type": "control",
-          "desc": "Use a button with type='submit' to trigger form submission."
+          "name": "<form method=\"dialog\">",
+          "type": "form behavior",
+          "desc": "Lets buttons close the dialog and return a value to the opener."
         },
         {
-          "name": "ARIA live region",
-          "type": "accessibility feature",
-          "desc": "An element with aria-live='polite' (optionally role='status') that announces confirmation text to assistive technologies."
+          "name": "<button value=\"cancel|confirm\">",
+          "type": "control element",
+          "desc": "Returns the chosen action value when the dialog closes."
         }
       ],
       "returns": {
-        "type": "markup + behavior",
-        "desc": "A feedback form that prevents navigation on submit and updates a polite live region with a thank-you message when the input is valid."
+        "type": "markup",
+        "desc": "A visible, accessible confirm dialog with correct ARIA naming and a native dialog form with Cancel/Delete actions."
       },
       "examples": [
-        "Example structure:\n<form>\n  <label for='feedback'>Your feedback</label>\n  <textarea id='feedback' name='feedback' required minlength='10'></textarea>\n  <button type='submit'>Send</button>\n  <p id='confirm' aria-live='polite' role='status'></p>\n</form>"
+        "<dialog open aria-labelledby=\"dlg-title\" aria-describedby=\"dlg-desc\">\\n  <h2 id=\"dlg-title\">Delete project?</h2>\\n  <p id=\"dlg-desc\">This action cannot be undone.</p>\\n  <form method=\"dialog\">\\n    <button value=\"cancel\">Cancel</button>\\n    <button value=\"confirm\">Delete</button>\\n  </form>\\n</dialog>"
       ]
     },
     "web": {
-      "starterHtml": "<!-- TODO: Build a feedback form with a textarea, a submit button, and a polite ARIA live region for confirmation. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Feedback Form</title>\n  </head>\n  <body>\n    <h1>Feedback</h1>\n    <p style='color:#666'>Create a form with a labeled textarea, a submit button, and a confirmation area that uses aria-live='polite' to announce updates.</p>\n\n    <!-- Your form goes here -->\n  </body>\n</html>",
-      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 420px; }\nlabel { font-weight: 500; }\ntextarea { width: 100%; min-height: 120px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.55rem 0.9rem; background: #007acc; color: #fff; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#confirm { margin-top: 0.5rem; color: #0a7a0a; font-weight: 600; }",
-      "tests": "it('has a <form> element', () => {\\n  const form = document.querySelector('form');\\n  expect(!!form).toBe(true);\\n});\\n\\nit('contains a labeled <textarea> (label for matches textarea id)', () => {\\n  const label = document.querySelector('label[for]');\\n  const area = label ? document.getElementById(label.getAttribute('for')) : null;\\n  expect(!!label).toBe(true);\\n  expect(!!area && area.tagName.toLowerCase() === 'textarea').toBe(true);\\n});\\n\\nit('includes a submit button', () => {\\n  const btn = document.querySelector('button[type=\"submit\"], input[type=\"submit\"]');\\n  expect(!!btn).toBe(true);\\n});\\n\\nit('has a confirmation area with aria-live=\"polite\"', () => {\\n  const live = document.querySelector('[aria-live=\"polite\"]');\\n  expect(!!live).toBe(true);\\n});"
+      "starterHtml": "<!-- TODO: Add a visible native confirm <dialog> (HTML only). Do NOT change CSS. -->\\n<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>Project Settings</title>\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <h1>Project Settings</h1>\\n    <p>Danger zone</p>\\n\\n    <!-- Requirements:\\n         - Use <dialog> and make it visible in preview (no JS): add the `open` attribute\\n         - Include a visible title + description inside\\n         - Use aria-labelledby and aria-describedby that reference those elements\\n         - Add <form method=\"dialog\"> with two buttons:\\n           - Cancel: value=\"cancel\"\\n           - Delete: value=\"confirm\"\\n         - Do NOT change CSS\\n    -->\\n\\n    <!-- Your dialog goes here -->\\n\\n  </body>\\n</html>",
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n\\ndialog {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 520px;\\n}\\n\\n.row {\\n  display: flex;\\n  gap: 8px;\\n  justify-content: flex-end;\\n}\\n\\nbutton {\\n  padding: 8px 12px;\\n}",
+      "tests": "it('renders a <dialog> element', () => {\\n  const dlg = document.querySelector('dialog');\\n  expect(!!dlg).toBe(true);\\n});\\n\\nit('dialog is visible without JS (has the open attribute)', () => {\\n  const dlg = document.querySelector('dialog');\\n  expect(dlg.hasAttribute('open')).toBe(true);\\n});\\n\\nit('dialog has aria-labelledby and aria-describedby pointing to existing elements', () => {\\n  const dlg = document.querySelector('dialog');\\n  const labelledBy = (dlg.getAttribute('aria-labelledby') || '').trim();\\n  const describedBy = (dlg.getAttribute('aria-describedby') || '').trim();\\n  expect(labelledBy.length > 0).toBe(true);\\n  expect(describedBy.length > 0).toBe(true);\\n  expect(!!document.getElementById(labelledBy)).toBe(true);\\n  expect(!!document.getElementById(describedBy)).toBe(true);\\n});\\n\\nit('dialog contains a <form method=\"dialog\">', () => {\\n  const form = document.querySelector('dialog form');\\n  expect(!!form).toBe(true);\\n  expect((form.getAttribute('method') || '').toLowerCase()).toBe('dialog');\\n});\\n\\nit('dialog form has Cancel and Delete buttons with correct values', () => {\\n  const cancel = document.querySelector('dialog form button[value=\"cancel\"]');\\n  const confirm = document.querySelector('dialog form button[value=\"confirm\"]');\\n  expect(!!cancel).toBe(true);\\n  expect(!!confirm).toBe(true);\\n});"
     },
     "solutionBlock": {
-      "overview": "Use a semantic form with a labeled textarea, a polite live region, and a button that is handled in JavaScript. Prevent navigation in the sandbox, use checkValidity/reportValidity so invalid input stops the flow, and write the thank-you text (plus a visible success message) only after the form is valid.",
+      "overview": "Native <dialog> is a real, semantic HTML element for dialogs. Interviewers typically look for: visible title/description, correct accessible naming (aria-labelledby/aria-describedby), and predictable actions using <form method=\"dialog\">. Since this challenge is HTML-only, the dialog is kept visible using the `open` attribute (instead of JS showModal()).",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Submit with ARIA Live Feedback",
-          "prose": "The polite live region lets assistive tech announce updates without interrupting the user. Required + minlength leverage built-in validation; the handler prevents default navigation, calls reportValidity on failures, and when the textarea is valid writes the confirmation text and shows the success message.",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Feedback Form</title>\n  </head>\n  <body>\n    <form onsubmit=\\\"event.preventDefault();\\\" id='feedbackForm' action='#'>\n      <label for='feedback'>Your feedback</label>\n      <textarea id='feedback' name='feedback' required minlength='10' placeholder='Write at least 10 characters'></textarea>\n      <button type='button'>Send</button>\n      <p id='confirm' aria-live='polite' role='status'></p>\n      <p id='successMsg' style='display:none;color:green;font-weight:600;'>Thanks! We received your message.</p>\n</form>\n    <script>\n      const form = document.getElementById('feedbackForm');\n      const live = document.getElementById('confirm');\n      form.addEventListener('submit', (e) => {\n        e.preventDefault(); // prevent navigation first\n        if (!form.checkValidity()) {\n          form.reportValidity();\n          return;\n        }\n        live.textContent = 'Thank you for submitting!';\n      });\n          const success = document.getElementById('successMsg');\n      const submitBtn = document.querySelector('button[type=\\\"button\\\"]');\n      submitBtn?.addEventListener('click', () => { success.style.display = 'block'; });\n    </script>\n  </body>\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 420px; }\\nlabel { font-weight: 500; }\\ntextarea { width: 100%; min-height: 120px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\\nbutton { padding: 0.55rem 0.9rem; background: #007acc; color: #fff; border: none; border-radius: 4px; cursor: pointer; }\\nbutton:hover { background: #005fa3; }\\n#confirm { margin-top: 0.5rem; color: #0a7a0a; font-weight: 600; }"
+          "title": "Approach 1 – Visible <dialog> with ARIA naming + dialog form",
+          "prose": "Add `open` so the dialog renders in the preview without JavaScript. Put a real title and description inside, then reference them via aria-labelledby/aria-describedby. Use <form method=\"dialog\"> and two buttons with values so the dialog can close and return the selected action in real usage.",
+          "codeHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>Project Settings</title>\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <h1>Project Settings</h1>\\n    <p>Danger zone</p>\\n\\n    <dialog open aria-labelledby=\"dlg-title\" aria-describedby=\"dlg-desc\">\\n      <h2 id=\"dlg-title\">Delete project?</h2>\\n      <p id=\"dlg-desc\">This action cannot be undone. All project data will be removed.</p>\\n\\n      <form method=\"dialog\">\\n        <div class=\"row\">\\n          <button value=\"cancel\">Cancel</button>\\n          <button value=\"confirm\">Delete</button>\\n        </div>\\n      </form>\\n    </dialog>\\n  </body>\\n</html>",
+          "codeCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n\\ndialog {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 520px;\\n}\\n\\n.row {\\n  display: flex;\\n  gap: 8px;\\n  justify-content: flex-end;\\n}\\n\\nbutton {\\n  padding: 8px 12px;\\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Forgetting aria-live on the confirmation area means screen readers may not announce updates.",
-          "Not preventing default navigation will reload or navigate the page on submit.",
-          "Placing the live region outside the form but not in the DOM flow can make it harder to find."
+          "Forgetting `open` in an HTML-only environment (the dialog exists but is not shown).",
+          "Using aria-labelledby/aria-describedby ids that don’t exist.",
+          "Not using method=\"dialog\" and losing the native close/return-value behavior."
         ],
         "techniques": [
-          "Use aria-live='polite' and role='status' for non-intrusive announcements.",
-          "Call reportValidity to show built-in messages before custom behavior.",
-          "Keep the live region present in the DOM (not created dynamically) so AT can monitor it."
+          "Prefer visible text as the source of truth (aria-labelledby points to the visible heading).",
+          "Keep action values stable (cancel/confirm) so app code can handle the result reliably."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 Form submission",
-          "url": "https://developer.mozilla.org/en-US/docs/Learn/Forms/Sending_and_retrieving_form_data"
+          "title": "MDN – The <dialog> element",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"
         },
         {
-          "title": "MDN \u2013 Using aria-live",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-live"
+          "title": "MDN – ARIA: aria-labelledby",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby"
         },
         {
-          "title": "MDN \u2013 Textarea",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea"
+          "title": "MDN – ARIA: aria-describedby",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-describedby"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Feedback Form</title>\n  </head>\n  <body>\n    <form onsubmit=\\\"event.preventDefault();\\\" id='feedbackForm' action='#'>\n      <label for='feedback'>Your feedback</label>\n      <textarea id='feedback' name='feedback' required minlength='10' placeholder='Write at least 10 characters'></textarea>\n      <button type='button'>Send</button>\n      <p id='confirm' aria-live='polite' role='status'></p>\n      <p id='successMsg' style='display:none;color:green;font-weight:600;'>Thanks! We received your message.</p>\n</form>\n    <script>\n      const form = document.getElementById('feedbackForm');\n      const live = document.getElementById('confirm');\n      form.addEventListener('submit', (e) => {\n        e.preventDefault(); // prevent navigation first\n        if (!form.checkValidity()) {\n          form.reportValidity();\n          return;\n        }\n        live.textContent = 'Thank you for submitting!';\n      });\n          const success = document.getElementById('successMsg');\n      const submitBtn = document.querySelector('button[type=\\\"button\\\"]');\n      submitBtn?.addEventListener('click', () => { success.style.display = 'block'; });\n    </script>\n  </body>\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 420px; }\\nlabel { font-weight: 500; }\\ntextarea { width: 100%; min-height: 120px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\\nbutton { padding: 0.55rem 0.9rem; background: #007acc; color: #fff; border: none; border-radius: 4px; cursor: pointer; }\\nbutton:hover { background: #005fa3; }\\n#confirm { margin-top: 0.5rem; color: #0a7a0a; font-weight: 600; }",
+    "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>Project Settings</title>\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <h1>Project Settings</h1>\\n    <p>Danger zone</p>\\n\\n    <dialog open aria-labelledby=\"dlg-title\" aria-describedby=\"dlg-desc\">\\n      <h2 id=\"dlg-title\">Delete project?</h2>\\n      <p id=\"dlg-desc\">This action cannot be undone. All project data will be removed.</p>\\n\\n      <form method=\"dialog\">\\n        <div class=\"row\">\\n          <button value=\"cancel\">Cancel</button>\\n          <button value=\"confirm\">Delete</button>\\n        </div>\\n      </form>\\n    </dialog>\\n  </body>\\n</html>",
+    "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n\\ndialog {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 520px;\\n}\\n\\n.row {\\n  display: flex;\\n  gap: 8px;\\n  justify-content: flex-end;\\n}\\n\\nbutton {\\n  padding: 8px 12px;\\n}",
     "access": "free"
   }
 ]

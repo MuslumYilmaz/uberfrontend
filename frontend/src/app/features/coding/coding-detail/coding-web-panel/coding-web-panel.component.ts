@@ -813,6 +813,12 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    return anchor.target === '_blank' || metaClick;
 	  };
 
+	  const setHash = (hash) => {
+	    if (!hash || typeof hash !== 'string' || hash[0] !== '#') return;
+	    try { history.replaceState(null, '', hash); } catch (_e) {}
+	    try { if (window.location.hash !== hash) window.location.hash = hash; } catch (_e) {}
+	  };
+
 	  // srcdoc inherits the parent document base URL, so fragment-only links like '#about'
 	  // can unexpectedly navigate the iframe to the host app URL. Force in-document
 	  // hash navigation to stay within the preview without polluting browser history.
@@ -823,12 +829,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    if (!rawHref || rawHref[0] !== '#') return;
 	    try { if (typeof ev.preventDefault === 'function') ev.preventDefault(); } catch {}
 	    if (rawHref === '#') return;
-	    try {
-	      const base = String(window.location.href || '').split('#')[0] || 'about:srcdoc';
-	      window.location.replace(base + rawHref);
-	    } catch {
-	      try { window.location.hash = rawHref.slice(1); } catch {}
-	    }
+	    setHash(rawHref);
 	  };
 
 	  const handleLinkEvent = (ev) => {
@@ -992,8 +993,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     }
   }
 
-  function dispatchSyntheticSubmit(form, submitter) {
-    if (!form) return;
+	  function dispatchSyntheticSubmit(form, submitter) {
+	    if (!form) return;
     try {
       let ev;
       if (typeof SubmitEvent === 'function') {
@@ -1008,20 +1009,56 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     } catch (_e) {}
   }
 
-  function handleSubmitAttempt(form, submitter) {
-    if (!form) return;
-    const status = findStatusEl(form);
-    dispatchSyntheticSubmit(form, submitter);
-    const valid = getValidity(form, submitter);
-    reportIfInvalid(form, submitter, valid);
-    if (!valid) {
-      setSuccessVisible(form, false);
-      setStatusText(status, MSG_INVALID);
-      return;
-    }
-    setStatusText(status, MSG_VALID);
-    setSuccessVisible(form, true);
-  }
+	  function handleSubmitAttempt(form, submitter) {
+	    if (!form) return;
+	    const status = findStatusEl(form);
+	    dispatchSyntheticSubmit(form, submitter);
+
+      // Support <dialog><form method="dialog">... without enabling 'allow-forms' on the sandbox.
+      // Native dialog form submission closes the dialog with the submitter's value; we emulate that.
+      try {
+        const method = String((form.getAttribute && form.getAttribute('method')) || '').toLowerCase();
+        if (method === 'dialog') {
+          const dlg =
+            (submitter && submitter.closest && submitter.closest('dialog')) ||
+            (form.closest && form.closest('dialog')) ||
+            null;
+          if (dlg) {
+            let rv = '';
+            try {
+              if (submitter && typeof submitter.value === 'string') rv = submitter.value;
+              else if (submitter && submitter.getAttribute) rv = String(submitter.getAttribute('value') || '');
+            } catch (_e) { }
+            try {
+              if (typeof dlg.close === 'function') dlg.close(rv);
+              else if (dlg.removeAttribute) dlg.removeAttribute('open');
+            } catch (_e) { }
+            return;
+          }
+        }
+      } catch (_e) { }
+	    const valid = getValidity(form, submitter);
+	    reportIfInvalid(form, submitter, valid);
+	    if (!valid) {
+	      setSuccessVisible(form, false);
+	      setStatusText(status, MSG_INVALID);
+	      return;
+	    }
+	    setStatusText(status, MSG_VALID);
+	    setSuccessVisible(form, true);
+
+	    // Support CSS-only "success via :target" patterns (e.g. action="#thanks") without allow-forms.
+	    try {
+	      const actionFromSubmitter =
+	        (submitter && submitter.getAttribute && submitter.getAttribute('formaction')) || '';
+	      const actionFromForm =
+	        (form && form.getAttribute && form.getAttribute('action')) || '';
+	      const rawAction = String(actionFromSubmitter || actionFromForm || '').trim();
+	      if (rawAction && rawAction[0] === '#') {
+	        setHash(rawAction);
+	      }
+	    } catch (_e) {}
+	  }
 
   document.addEventListener('click', function (e) {
     const target = e && e.target;
