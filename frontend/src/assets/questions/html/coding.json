@@ -297,89 +297,84 @@
       "lists",
       "navigation",
       "semantics",
-      "accessibility",
-      "javascript"
+      "accessibility"
     ],
     "description": {
-      "summary": "Build a semantic nav bar (nav > ul > li > a) and use a small script to show one section at a time when a link is clicked. Keep everything on the same page (prevent navigation); toggle visibility and update the active link state.",
+      "summary": "Build a semantic nav bar (nav > ul > li > a) for a single-page layout. Use hash links (#...) and CSS :target to show exactly one section at a time (no JavaScript). Only one section should be visible at any moment. When there is no hash, Home must be visible by default. You do not need to change the CSS for this task.",
       "arguments": [
         {
           "name": "<nav>",
           "type": "semantic container",
-          "desc": "Defines a section of navigation links."
+          "desc": "Defines the primary navigation region (add an accessible label)."
         },
         {
           "name": "<ul>, <li>",
           "type": "list elements",
-          "desc": "Used to create an unordered list for navigation links."
+          "desc": "Use a list to group the navigation links."
         },
         {
-          "name": "<a>",
+          "name": "<a href=\"#...\">",
           "type": "anchor element",
-          "desc": "Used inside list items to create clickable navigation links."
+          "desc": "Each link must point to a section id on the same page (hash link)."
         },
         {
-          "name": "<section id='...'>",
+          "name": "<section id=\"...\">",
           "type": "content section",
-          "desc": "Each section represents a page area (Home, About, Contact) that will be shown or hidden."
+          "desc": "Create three sections with ids: home, about, contact. Home must be last."
         },
         {
-          "name": "JavaScript logic",
-          "type": "interactivity",
-          "desc": "Adds logic to hide and show sections dynamically based on the clicked link."
+          "name": "CSS :target",
+          "type": "no-JS interactivity",
+          "desc": "Use :target to show the currently selected section based on the URL fragment."
         }
       ],
       "returns": {
         "type": "markup + behavior",
-        "desc": "A semantic, accessible navigation bar that toggles visible sections without reloading the page."
+        "desc": "A semantic navigation bar and three sections where only one section is visible at a time using CSS :target (no JavaScript)."
       },
       "examples": [
-        "Basic structure:\n<nav aria-label='Primary'>\n  <ul>\n    <li><a href='#home' data-target='home'>Home</a></li>\n    <li><a href='#about' data-target='about'>About</a></li>\n    <li><a href='#contact' data-target='contact'>Contact</a></li>\n  </ul>\n</nav>\n<section id='home'>...</section>\n<section id='about' hidden>...</section>\n<section id='contact' hidden>...</section>\nUse JavaScript to prevent default clicks, set aria-current, and toggle hidden sections."
+        "Expected structure: nav > ul > li > a with href values #home, #about, #contact; sections with matching ids (home last)."
       ]
     },
     "web": {
-      "starterHtml": "<!-- Starter for a single-page nav: wire up JS to show/hide sections on click. -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home' data-target='home'>Home</a></li>\n        <li><a href='#about' data-target='about'>About</a></li>\n        <li><a href='#contact' data-target='contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <!-- Home is visible by default; others start hidden. -->\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Welcome! Make link clicks switch which section is shown.</p>\n    </section>\n\n    <section id='about' hidden>\n      <h2>About</h2>\n      <p>Reveal this when the About link is active.</p>\n    </section>\n\n    <section id='contact' hidden>\n      <h2>Contact</h2>\n      <p>Reveal this when the Contact link is active.</p>\n    </section>\n\n    <script>\n      // TODO: Add click handlers that prevent default navigation, toggle sections\n      // by removing/adding the 'hidden' attribute, and set aria-current on the\n      // active link.\n    </script>\n  </body>\n</html>",
-      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a[aria-current='page'] { text-decoration: underline; font-weight: 600; }\nsection { margin-top: 1rem; }\n",
-      "tests": "it('has a <nav> containing a <ul> with three <li> links', () => {\\n  const lis = document.querySelectorAll('nav ul li');\\n  expect(lis.length).toBe(3);\\n});\\n\\nit('has exactly three <a> elements and each links to an internal section', () => {\\n  const links = document.querySelectorAll('nav a');\\n  expect(links.length).toBe(3);\\n  const allInternal = Array.from(links).every(a => {\\n    const href = a.getAttribute('href') || '';\\n    return href.startsWith('#') && href.length > 1;\\n  });\\n  expect(allInternal).toBe(true);\\n});\\n\\nit('has sections with matching IDs: home, about, contact', () => {\\n  ['home', 'about', 'contact'].forEach(id => {\\n    const sec = document.getElementById(id);\\n    expect(!!sec).toBe(true);\\n  });\\n});\\n\\nit('shows only #home by default', () => {\\n  const sections = Array.from(document.querySelectorAll('section'));\\n  const visible = sections.filter(s => !s.hasAttribute('hidden'));\\n  expect(visible.length).toBe(1);\\n  expect(visible[0].id).toBe('home');\\n});"
+      "starterHtml": "<!-- Starter: complete the nav + ids so CSS :target can show one section at a time (no JS). -->\n<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <!-- TODO: Add aria-label to nav, then make links point to #home, #about, #contact -->\n    <nav>\n      <ul>\n        <li><a href='#'>Home</a></li>\n        <li><a href='#'>About</a></li>\n        <li><a href='#'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <!-- TODO: Add ids: about, contact, and home (Home MUST be last) -->\n    <section>\n      <h2>About</h2>\n      <p>Write something about this page.</p>\n    </section>\n\n    <section>\n      <h2>Contact</h2>\n      <p>Add contact details or a short message.</p>\n    </section>\n\n    <section>\n      <h2>Home</h2>\n      <p>Home should be visible by default when there is no hash.</p>\n    </section>\n  </body>\n</html>",
+      "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n",
+      "tests": "it('has a <nav> containing a <ul> with three <li> links', () => {\\n  const lis = document.querySelectorAll('nav ul li');\\n  expect(lis.length).toBe(3);\\n});\\n\\nit('has exactly three <a> elements and each links to an internal section', () => {\\n  const links = document.querySelectorAll('nav a');\\n  expect(links.length).toBe(3);\\n  const allInternal = Array.from(links).every(a => {\\n    const href = a.getAttribute('href') || '';\\n    return href.startsWith('#') && href.length > 1;\\n  });\\n  expect(allInternal).toBe(true);\\n});\\n\\nit('has sections with matching IDs: home, about, contact', () => {\\n  ['home', 'about', 'contact'].forEach(id => {\\n    const sec = document.getElementById(id);\\n    expect(!!sec).toBe(true);\\n  });\\n});\\n\\nit('shows only #home by default (CSS)', () => {\\n  const sections = Array.from(document.querySelectorAll('section'));\\n  const visible = sections.filter(s => window.getComputedStyle(s).display !== 'none');\\n  expect(visible.length).toBe(1);\\n  expect(visible[0].id).toBe('home');\\n});\\n\\nit('shows only #about when the hash is #about', async () => {\\n  window.location.hash = '#about';\\n  await new Promise(r => setTimeout(r, 0));\\n  const sections = Array.from(document.querySelectorAll('section'));\\n  const visible = sections.filter(s => window.getComputedStyle(s).display !== 'none');\\n  expect(visible.length).toBe(1);\\n  expect(visible[0].id).toBe('about');\\n});\\n\\nit('shows only #contact when the hash is #contact', async () => {\\n  window.location.hash = '#contact';\\n  await new Promise(r => setTimeout(r, 0));\\n  const sections = Array.from(document.querySelectorAll('section'));\\n  const visible = sections.filter(s => window.getComputedStyle(s).display !== 'none');\\n  expect(visible.length).toBe(1);\\n  expect(visible[0].id).toBe('contact');\\n});"
     },
     "solutionBlock": {
-      "overview": "Use a semantic nav list plus a small script: prevent navigation, read data-target, toggle sections with hidden, and update aria-current for the active link.",
+      "overview": "Use a semantic list-based nav with hash links and CSS :target so only the active section is visible (no JavaScript).",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Semantic navigation with show/hide behavior",
-          "prose": "Use semantic HTML for the nav (nav > ul > li > a) and sections. Attach click handlers that prevent default navigation, read data-target, and show only the matching section by toggling the hidden attribute. Also set aria-current='page' on the active link to aid accessibility.",
-          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home' data-target='home'>Home</a></li>\n        <li><a href='#about' data-target='about'>About</a></li>\n        <li><a href='#contact' data-target='contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Welcome! This is the home section. Clicking the nav switches visible content.</p>\n    </section>\n\n    <section id='about' hidden>\n      <h2>About</h2>\n      <p>This section describes the page. It starts hidden and becomes visible when selected.</p>\n    </section>\n\n    <section id='contact' hidden>\n      <h2>Contact</h2>\n      <p>Here\u2019s how to reach us. Also hidden by default until chosen.</p>\n    </section>\n\n    <script>\n      (function () {\n        const sections = Array.from(document.querySelectorAll('section[id]'));\n        const links = Array.from(document.querySelectorAll('nav a[data-target]'));\n\n        function show(id) {\n          const targetId = id || 'home';\n          sections.forEach(function(s){ s.hidden = (s.id !== targetId); });\n          links.forEach(function(a){\n            const isActive = (a.dataset.target === targetId);\n            a.setAttribute('aria-current', isActive ? 'page' : 'false');\n          });\n        }\n\n        links.forEach(function(a){\n          a.addEventListener('click', function(e){\n            e.preventDefault();\n            show(a.dataset.target || 'home');\n          });\n        });\n\n        show('home');\n      })();\n    </script>\n  </body>\n</html>",
-          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a[aria-current='page'] { text-decoration: underline; font-weight: 600; }\nsection { margin-top: 1rem; }\n"
+          "title": "Approach 1 – CSS-only navigation with :target",
+          "prose": "Make each nav link point to a section id (#home, #about, #contact). Give the sections matching ids and keep the Home section last so the sibling selector (~) can hide it when another section becomes :target (the selector only affects elements that come after the targeted section in the DOM). Add an accessible label to the nav.",
+          "codeHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home'>Home</a></li>\n        <li><a href='#about'>About</a></li>\n        <li><a href='#contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='about'>\n      <h2>About</h2>\n      <p>This section becomes visible when the URL hash is #about.</p>\n    </section>\n\n    <section id='contact'>\n      <h2>Contact</h2>\n      <p>This section becomes visible when the URL hash is #contact.</p>\n    </section>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Home is visible by default (when there is no hash).</p>\n    </section>\n  </body>\n</html>",
+          "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Without JavaScript, all sections will remain visible.",
-          "Forgetting to hide inactive sections makes the interface confusing."
+          "Forgetting to match each link href to a real section id.",
+          "Not keeping #home last (the sibling selector relies on document order).",
+          "Trying to toggle the HTML hidden attribute with CSS (it won't work as intended here)."
         ],
         "techniques": [
-          "Use <nav> for navigation semantics and <section> for content structure.",
-          "Use the hidden attribute to toggle visibility.",
-          "Use aria-current='page' to indicate the active link for accessibility."
+          "Use <nav> + list markup for semantic navigation.",
+          "Use :target to react to URL fragments without JavaScript."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 <nav> element",
+          "title": "MDN – <nav> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/nav"
         },
         {
-          "title": "MDN \u2013 hashchange event",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event"
-        },
-        {
-          "title": "MDN \u2013 Using aria-current",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current"
+          "title": "MDN – :target",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:target"
         }
       ]
     },
-    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home' data-target='home'>Home</a></li>\n        <li><a href='#about' data-target='about'>About</a></li>\n        <li><a href='#contact' data-target='contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Welcome! This is the home section. Clicking the nav switches visible content.</p>\n    </section>\n\n    <section id='about' hidden>\n      <h2>About</h2>\n      <p>This section describes the page. It starts hidden and becomes visible when selected.</p>\n    </section>\n\n    <section id='contact' hidden>\n      <h2>Contact</h2>\n      <p>Here\u2019s how to reach us. Also hidden by default until chosen.</p>\n    </section>\n\n    <script>\n      (function () {\n        const sections = Array.from(document.querySelectorAll('section[id]'));\n        const links = Array.from(document.querySelectorAll('nav a[data-target]'));\n\n        function show(id) {\n          const targetId = id || 'home';\n          sections.forEach(function(s){ s.hidden = (s.id !== targetId); });\n          links.forEach(function(a){\n            const isActive = (a.dataset.target === targetId);\n            a.setAttribute('aria-current', isActive ? 'page' : 'false');\n          });\n        }\n\n        links.forEach(function(a){\n          a.addEventListener('click', function(e){\n            e.preventDefault();\n            show(a.dataset.target || 'home');\n          });\n        });\n\n        show('home');\n      })();\n    </script>\n  </body>\n</html>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a[aria-current='page'] { text-decoration: underline; font-weight: 600; }\nsection { margin-top: 1rem; }\n",
+    "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home'>Home</a></li>\n        <li><a href='#about'>About</a></li>\n        <li><a href='#contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='about'>\n      <h2>About</h2>\n      <p>This section becomes visible when the URL hash is #about.</p>\n    </section>\n\n    <section id='contact'>\n      <h2>Contact</h2>\n      <p>This section becomes visible when the URL hash is #contact.</p>\n    </section>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Home is visible by default (when there is no hash).</p>\n    </section>\n  </body>\n</html>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n",
     "access": "free"
   },
   {

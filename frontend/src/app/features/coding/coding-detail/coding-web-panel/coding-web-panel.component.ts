@@ -797,38 +797,61 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     const bridge = `
 <script>
 (() => {
-  const MSG_INVALID = ${safeJsString(msgs.invalid)};
-  const MSG_VALID = ${safeJsString(msgs.valid)};
-  const allowedProtocols = new Set(['http:', 'https:']);
-  const toUrl = (href) => {
-    try { return new URL(href, window.location.href); } catch { return null; }
+	  const MSG_INVALID = ${safeJsString(msgs.invalid)};
+	  const MSG_VALID = ${safeJsString(msgs.valid)};
+		  const allowedProtocols = new Set(['http:', 'https:']);
+		  const toUrl = (href) => {
+		    try { return new URL(href, document.baseURI || window.location.href); } catch { return null; }
+		  };
+		  const stopEvent = (ev) => {
+		    try { if (typeof ev.preventDefault === 'function') ev.preventDefault(); } catch {}
+	    try { if (typeof ev.stopPropagation === 'function') ev.stopPropagation(); } catch {}
+	    try { if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation(); } catch {}
   };
-  const stopEvent = (ev) => {
-    try { if (typeof ev.preventDefault === 'function') ev.preventDefault(); } catch {}
-    try { if (typeof ev.stopPropagation === 'function') ev.stopPropagation(); } catch {}
-    try { if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation(); } catch {}
-  };
-  const shouldIntercept = (ev, anchor) => {
-    const metaClick = ev.button === 1 || ev.metaKey || ev.ctrlKey;
-    return anchor.target === '_blank' || metaClick;
-  };
-  const handleLinkEvent = (ev) => {
-    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
-    if (!el) return;
-    const u = toUrl(el.href || el.getAttribute('href') || '');
-    if (!u || !allowedProtocols.has(u.protocol)) return;
-    if (!shouldIntercept(ev, el)) return;
-    stopEvent(ev);
+	  const shouldIntercept = (ev, anchor) => {
+	    const metaClick = ev.button === 1 || ev.metaKey || ev.ctrlKey;
+	    return anchor.target === '_blank' || metaClick;
+	  };
+
+	  // srcdoc inherits the parent document base URL, so fragment-only links like '#about'
+	  // can unexpectedly navigate the iframe to the host app URL. Force in-document
+	  // hash navigation to stay within the preview without polluting browser history.
+	  const handleHashNav = (ev) => {
+	    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+	    if (!el) return;
+	    const rawHref = (el.getAttribute && el.getAttribute('href')) || '';
+	    if (!rawHref || rawHref[0] !== '#') return;
+	    try { if (typeof ev.preventDefault === 'function') ev.preventDefault(); } catch {}
+	    if (rawHref === '#') return;
+	    try {
+	      const base = String(window.location.href || '').split('#')[0] || 'about:srcdoc';
+	      window.location.replace(base + rawHref);
+	    } catch {
+	      try { window.location.hash = rawHref.slice(1); } catch {}
+	    }
+	  };
+
+	  const handleLinkEvent = (ev) => {
+	    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+	    if (!el) return;
+	    const rawHref = (el.getAttribute && el.getAttribute('href')) || '';
+	    if (rawHref && rawHref[0] === '#') return; // handled by hash nav (and should never open externally)
+	    const u = toUrl(el.href || el.getAttribute('href') || '');
+	    if (!u || !allowedProtocols.has(u.protocol)) return;
+	    if (!shouldIntercept(ev, el)) return;
+	    stopEvent(ev);
     try { window.parent?.postMessage({ type: 'UF_OPEN_EXTERNAL', url: u.href }, '*'); } catch {}
   };
-  const onKeyDownLink = (ev) => {
-    if (ev.key !== 'Enter') return;
-    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
-    if (!el) return;
-    // simulate click intent for Enter on anchor with _blank
-    if (el.getAttribute('target') !== '_blank') return;
-    handleLinkEvent(ev);
-  };
+	  const onKeyDownLink = (ev) => {
+	    if (ev.key !== 'Enter') return;
+	    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+	    if (!el) return;
+	    const rawHref = (el.getAttribute && el.getAttribute('href')) || '';
+	    if (rawHref && rawHref[0] === '#') return; // handled by hash nav
+	    // simulate click intent for Enter on anchor with _blank
+	    if (el.getAttribute('target') !== '_blank') return;
+	    handleLinkEvent(ev);
+	  };
 
   // Prevent native form submission inside sandboxed iframes (no allow-forms),
   // while still allowing inline handlers / frameworks to handle submit events.
@@ -1028,9 +1051,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     handleSubmitAttempt(form, submitter);
   }, true);
 
-  document.addEventListener('click', handleLinkEvent, true);
-  document.addEventListener('auxclick', handleLinkEvent, true);
-  document.addEventListener('keydown', onKeyDownLink, true);
+	  document.addEventListener('click', handleHashNav, true);
+	  document.addEventListener('click', handleLinkEvent, true);
+	  document.addEventListener('auxclick', handleLinkEvent, true);
+	  document.addEventListener('keydown', onKeyDownLink, true);
 })();
 </script>`;
     if (/<\/body>/i.test(doc)) return doc.replace(/<\/body>/i, `${bridge}\n</body>`);
@@ -1088,12 +1112,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     if (!html) {
       this.previewContentWindow = null;
-      const doc = frameEl.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write('<!doctype html><meta charset="utf-8">');
-        doc.close();
-      }
+      try {
+        // Avoid touching `contentDocument` (cross-origin when sandboxed without allow-same-origin).
+        (frameEl as any).srcdoc = '<!doctype html><meta charset="utf-8">';
+      } catch { }
       // important: clear url so the "Building preview…" condition is correct
       this._previewUrl.set(null);
       return;
@@ -1101,27 +1123,24 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     this.previewContentWindow = this.previewFrame?.nativeElement.contentWindow ?? this.previewContentWindow;
 
+    // Prefer srcdoc to avoid blob: URL navigation issues in sandboxed iframes (hash links, history).
+    try {
+      (frameEl as any).srcdoc = html;
+      // 👇 update the reactive url used by the template (truthy => hide placeholder)
+      this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl('about:srcdoc'));
+      return;
+    } catch { }
+
+    // Fallback: blob URL (older browsers / unexpected failures)
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     this.previewObjectUrl = url;
-
-    // Avoid polluting the browser's joint session history on every live-preview update.
-    // If we use `iframe.src = ...`, the browser back button walks through iframe states
-    // (often broken because we revoke old blob URLs).
-    if (frameEl.contentWindow) {
-      try {
-        frameEl.contentWindow.location.replace(url);
-      } catch {
-        frameEl.src = url;
-      }
-    } else {
-      frameEl.onload = () => {
-        try { frameEl.contentWindow?.location.replace(url); } catch { }
-      };
+    try {
+      // Avoid polluting the browser's joint session history on every live-preview update.
+      frameEl.contentWindow?.location.replace(url);
+    } catch {
       frameEl.src = url;
     }
-
-    // 👇 update the reactive url used by the template
     this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
 

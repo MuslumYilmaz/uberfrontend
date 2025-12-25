@@ -51,6 +51,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private disposed = false;
   private resizeObs?: ResizeObserver;
   private static seq = 0;
+  private static webCompletionsInstalled = false;
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
     const baseExt =
@@ -86,6 +87,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     window.monaco?.editor?.setTheme?.(this.theme);
 
     const langNorm = this.normalizeLanguage(this.language);
+    const langDefaults = this.getLanguageDefaultOptions(langNorm);
 
     // Base options (do NOT pass "value" here; model will carry the text)
     const baseOpts = {
@@ -95,6 +97,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       automaticLayout: !this.autoHeight,
       scrollBeyondLastLine: false,
       minimap: { enabled: false },
+      ...langDefaults,
       ...this.options,
     };
 
@@ -105,17 +108,32 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     // ✅ Create the model first with a deterministic URI/extension
     this.createOrSwapModel(langNorm, this.code ?? '');
 
-    // Then create the editor bound to that model
-    this.editor = window.monaco.editor.create(this.container.nativeElement, {
-      ...baseOpts,
-      model: this.model,
-    });
+	    // Then create the editor bound to that model
+	    this.editor = window.monaco.editor.create(this.container.nativeElement, {
+	      ...baseOpts,
+	      model: this.model,
+	    });
 
-    // Mirror -> @Output
-    this.editor.onDidChangeModelContent?.(() => {
-      if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
-      this.codeChange.emit(this.editor.getValue());
-      if (this.autoHeight) this.fit();
+	    // Some embedding contexts can break Monaco's default Enter/Tab acceptance for suggestions.
+	    // Re-bind them explicitly when the suggest widget is visible.
+	    try {
+	      const monaco = (window as any).monaco;
+	      const whenSuggest = monaco?.editor?.ContextKeyExpr?.has?.('suggestWidgetVisible');
+	      if (whenSuggest) {
+	        this.editor.addCommand(monaco.KeyCode.Enter, () => {
+	          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
+	        }, whenSuggest);
+	        this.editor.addCommand(monaco.KeyCode.Tab, () => {
+	          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
+	        }, whenSuggest);
+	      }
+	    } catch { }
+
+	    // Mirror -> @Output
+	    this.editor.onDidChangeModelContent?.(() => {
+	      if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
+	      this.codeChange.emit(this.editor.getValue());
+	      if (this.autoHeight) this.fit();
     });
 
     // Auto-height handling
@@ -287,6 +305,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         (window as any).require(['vs/editor/editor.main'], () => {
           const monaco = (window as any).monaco;
           const ts = monaco.languages.typescript;
+
+          MonacoEditorComponent.installWebCompletions(monaco);
 
           // NEW: ensure models sync early and soften diagnostics for “module not found” cases
           ts.typescriptDefaults.setEagerModelSync?.(true);   // push models to the worker ASAP
@@ -497,6 +517,272 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       s.onload = () => { (window as any).require = (window as any).require || {}; start(); };
       s.onerror = () => { console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath); resolve(); };
       document.body.appendChild(s);
+    });
+  }
+
+  private getLanguageDefaultOptions(langNorm: string): any {
+    if (langNorm === 'html') {
+      return {
+        autoClosingBrackets: 'always',
+        autoClosingQuotes: 'always',
+        autoClosingTags: true,
+        acceptSuggestionOnEnter: 'on',
+        acceptSuggestionOnCommitCharacter: true,
+        suggestOnTriggerCharacters: true,
+        quickSuggestions: { other: true, comments: false, strings: true },
+        tabCompletion: 'on',
+        tabFocusMode: false,
+        snippetSuggestions: 'inline',
+        suggestSelection: 'first',
+      };
+    }
+
+    if (langNorm === 'css') {
+      return {
+        autoClosingBrackets: 'always',
+        autoClosingQuotes: 'always',
+        acceptSuggestionOnEnter: 'on',
+        acceptSuggestionOnCommitCharacter: true,
+        suggestOnTriggerCharacters: true,
+        quickSuggestions: { other: true, comments: false, strings: true },
+        tabCompletion: 'on',
+        tabFocusMode: false,
+        snippetSuggestions: 'inline',
+        suggestSelection: 'first',
+      };
+    }
+
+    return {};
+  }
+
+  private static installWebCompletions(monaco: any) {
+    if (MonacoEditorComponent.webCompletionsInstalled) return;
+    MonacoEditorComponent.webCompletionsInstalled = true;
+
+    const getSiblingModel = (model: any, fromSuffix: string, toSuffix: string) => {
+      const uriStr = model?.uri?.toString?.() || '';
+      if (!uriStr.endsWith(fromSuffix)) return null;
+      try {
+        const siblingUri = monaco.Uri.parse(uriStr.replace(fromSuffix, toSuffix));
+        return monaco.editor.getModel(siblingUri);
+      } catch {
+        return null;
+      }
+    };
+
+    const extractCssTokens = (css: string) => {
+      const classes = new Set<string>();
+      const ids = new Set<string>();
+
+      const classRe = /\.([_a-zA-Z][\w-]*)/g;
+      const idRe = /#([_a-zA-Z][\w-]*)/g;
+
+      for (let m; (m = classRe.exec(css));) classes.add(m[1]);
+      for (let m; (m = idRe.exec(css));) ids.add(m[1]);
+
+      return {
+        classes: Array.from(classes.values()).sort(),
+        ids: Array.from(ids.values()).sort(),
+      };
+    };
+
+    const extractHtmlTokens = (html: string) => {
+      const classes = new Set<string>();
+      const ids = new Set<string>();
+
+      const classAttrRe = /\bclass\s*=\s*(["'])(.*?)\1/gi;
+      const idAttrRe = /\bid\s*=\s*(["'])(.*?)\1/gi;
+
+      for (let m; (m = classAttrRe.exec(html));) {
+        const val = m[2] || '';
+        for (const token of val.split(/\s+/g)) {
+          if (token && /^[_a-zA-Z][\w-]*$/.test(token)) classes.add(token);
+        }
+      }
+      for (let m; (m = idAttrRe.exec(html));) {
+        const token = (m[2] || '').trim();
+        if (token && /^[_a-zA-Z][\w-]*$/.test(token)) ids.add(token);
+      }
+
+      return {
+        classes: Array.from(classes.values()).sort(),
+        ids: Array.from(ids.values()).sort(),
+      };
+    };
+
+    // HTML: suggest CSS class/id names inside class="" and id="".
+    monaco.languages.registerCompletionItemProvider('html', {
+      triggerCharacters: ['"', '\'', ' '],
+      provideCompletionItems: (model: any, position: any) => {
+        const cssModel = getSiblingModel(model, '-html.html', '-css.css');
+        if (!cssModel) return { suggestions: [] };
+
+        const line = model.getLineContent(position.lineNumber);
+        const before = line.slice(0, Math.max(0, position.column - 1));
+        const m = /(?:^|[\s<])(?:(class|id)\s*=\s*)(["'])([^"']*)$/i.exec(before);
+        if (!m) return { suggestions: [] };
+
+        const attr = (m[1] || '').toLowerCase();
+        const valueSoFar = m[3] || '';
+
+        const { classes, ids } = extractCssTokens(cssModel.getValue?.() || '');
+        const pool = attr === 'class' ? classes : attr === 'id' ? ids : [];
+        if (!pool.length) return { suggestions: [] };
+
+        const typed =
+          attr === 'class'
+            ? (valueSoFar.split(/\s+/g).pop() || '')
+            : valueSoFar;
+
+        const startColumn = Math.max(1, position.column - typed.length);
+        const range = new monaco.Range(position.lineNumber, startColumn, position.lineNumber, position.column);
+        const typedLower = typed.toLowerCase();
+
+        const kind =
+          attr === 'id'
+            ? monaco.languages.CompletionItemKind.Value
+            : monaco.languages.CompletionItemKind.Class;
+
+        const suggestions = pool
+          .filter((t) => !typedLower || t.toLowerCase().startsWith(typedLower))
+          .map((t) => ({
+            label: t,
+            kind,
+            insertText: t,
+            range,
+          }));
+
+        return { suggestions };
+      },
+    });
+
+    // HTML: expand plain tag names (Emmet-lite), e.g. `h1` -> `<h1></h1>`.
+    monaco.languages.registerCompletionItemProvider('html', {
+      provideCompletionItems: (model: any, position: any) => {
+        if (!model?.getWordUntilPosition) return { suggestions: [] };
+
+        const wordInfo = model.getWordUntilPosition(position);
+        const word = (wordInfo?.word || '').trim();
+        if (!word) return { suggestions: [] };
+        if (position.column !== wordInfo.endColumn) return { suggestions: [] };
+
+        const tag = word.toLowerCase();
+        if (!/^[a-z][\w-]*$/.test(tag)) return { suggestions: [] };
+
+        const line = model.getLineContent(position.lineNumber) || '';
+        const startIdx = Math.max(0, wordInfo.startColumn - 2); // 0-based char before word
+        const endIdx = Math.max(0, wordInfo.endColumn - 1);     // 0-based char after word
+        const chBefore = line[startIdx] || '';
+        const chAfter = line[endIdx] || '';
+
+        // Only expand when the word is a standalone "token" (avoid inline text surprises)
+        if (chBefore && !/\s|[>({[]/.test(chBefore)) return { suggestions: [] };
+        if (chAfter && !/\s|[<})\\]]/.test(chAfter)) return { suggestions: [] };
+
+        // Don't offer this inside an existing tag like `<h|` or attributes.
+        const before = line.slice(0, Math.max(0, wordInfo.startColumn - 1));
+        const beforeTrimmed = before.trimEnd();
+        if (beforeTrimmed && !/[>({[]$/.test(beforeTrimmed)) return { suggestions: [] };
+        const lastLt = before.lastIndexOf('<');
+        const lastGt = before.lastIndexOf('>');
+        if (lastLt > lastGt) return { suggestions: [] };
+
+        const COMMON_TAGS = new Set([
+          'a', 'article', 'aside', 'button', 'caption', 'div', 'em', 'figure', 'figcaption', 'footer', 'form',
+          'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hr', 'img', 'input', 'label', 'li', 'link', 'main',
+          'meta', 'nav', 'ol', 'option', 'p', 'section', 'select', 'small', 'span', 'strong', 'table', 'tbody',
+          'td', 'textarea', 'tfoot', 'th', 'thead', 'title', 'tr', 'ul',
+        ]);
+        if (!COMMON_TAGS.has(tag)) return { suggestions: [] };
+
+        const VOID_TAGS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
+
+        const snippetByTag: Record<string, string> = {
+          a: `<a href="$1">$0</a>`,
+          button: `<button type="$1">$0</button>`,
+          form: `<form action="$1">$0</form>`,
+          img: `<img src="$1" alt="$2" />`,
+          input: `<input type="$1" name="$2" />`,
+          link: `<link rel="$1" href="$2" />`,
+          meta: `<meta name="$1" content="$2" />`,
+        };
+
+        const snippet =
+          snippetByTag[tag] ||
+          (VOID_TAGS.has(tag) ? `<${tag} $0>` : `<${tag}>$0</${tag}>`);
+
+        const range = new monaco.Range(position.lineNumber, wordInfo.startColumn, position.lineNumber, wordInfo.endColumn);
+        const rules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
+
+        return {
+          suggestions: [
+            {
+              label: word,
+              kind: monaco.languages.CompletionItemKind.Snippet,
+              insertText: snippet,
+              insertTextRules: rules,
+              range,
+              sortText: `0-${tag}`,
+              detail: `Expand to ${snippet.replace(/\$[0-9]+/g, '').replace(/\$0/g, '')}`,
+            },
+          ],
+        };
+      },
+    });
+
+    // CSS: suggest HTML class/id names when typing .foo / #bar in selectors.
+    monaco.languages.registerCompletionItemProvider('css', {
+      triggerCharacters: ['.', '#'],
+      provideCompletionItems: (model: any, position: any) => {
+        const htmlModel = getSiblingModel(model, '-css.css', '-html.html');
+        if (!htmlModel) return { suggestions: [] };
+
+        const line = model.getLineContent(position.lineNumber);
+        const before = line.slice(0, Math.max(0, position.column - 1));
+        const m = /([.#])([_a-zA-Z][\w-]*)?$/.exec(before);
+        if (!m) return { suggestions: [] };
+
+        const sigil = m[1];
+        const typed = m[2] || '';
+        if (!typed) return { suggestions: [] };
+        const sigilIdx = before.length - typed.length - 1;
+
+        if (sigil === '.' && sigilIdx > 0 && /\d/.test(before[sigilIdx - 1] || '')) {
+          return { suggestions: [] }; // avoid decimals like 0.5
+        }
+        if (sigil === '#') {
+          for (let i = sigilIdx - 1; i >= 0; i--) {
+            const ch = before[i];
+            if (!ch || /\s/.test(ch)) continue;
+            if (ch === ':') return { suggestions: [] }; // avoid colors like color: #fff
+            break;
+          }
+        }
+
+        const { classes, ids } = extractHtmlTokens(htmlModel.getValue?.() || '');
+        const pool = sigil === '.' ? classes : ids;
+        if (!pool.length) return { suggestions: [] };
+
+        const startColumn = Math.max(1, position.column - typed.length);
+        const range = new monaco.Range(position.lineNumber, startColumn, position.lineNumber, position.column);
+        const typedLower = typed.toLowerCase();
+
+        const kind =
+          sigil === '#'
+            ? monaco.languages.CompletionItemKind.Value
+            : monaco.languages.CompletionItemKind.Class;
+
+        const suggestions = pool
+          .filter((t) => !typedLower || t.toLowerCase().startsWith(typedLower))
+          .map((t) => ({
+            label: t,
+            kind,
+            insertText: t,
+            range,
+          }));
+
+        return { suggestions };
+      },
     });
   }
 
