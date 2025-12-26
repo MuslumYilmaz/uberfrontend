@@ -158,10 +158,10 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 
   <div class="web-card fa-card fa-card--editor flex flex-col flex-1 overflow-hidden">
     <div class="flex-1 min-h-0 flex">
-      <!-- LEFT editors -->
-      <div class="min-w-0 flex flex-col" [style.flex]="'0 0 ' + (webColsRatio()*100) + '%'">
-        <div #splitContainer class="flex-1 min-h-0 flex flex-col">
-          <div class="panel-label muted">&lt;html&gt; HTML</div>
+	      <!-- LEFT editors -->
+	      <div class="min-w-0 flex flex-col" [style.flex]="'0 0 ' + (webColsRatio()*100) + '%'">
+	        <div #splitContainer class="flex-1 min-h-0 flex flex-col">
+	          <div class="panel-label muted">&lt;html&gt; HTML</div>
 
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
             <app-monaco-editor class="h-full editor-fill" data-testid="web-html-editor"
@@ -185,122 +185,45 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
             </app-monaco-editor>
           </div>
         </div>
-      </div>
+	      </div>
 
-      <!-- MIDDLE splitter -->
-      <div class="splitter" [class.dragging]="isDraggingCols()" (pointerdown)="startWebColumnDrag($event)"></div>
+	      <!-- MIDDLE splitter -->
+	      <div class="splitter" [class.dragging]="isDraggingCols()" (pointerdown)="startWebColumnDrag($event)"></div>
 
-      <!-- RIGHT: top (Preview/Test code) + bottom (Results/Console) -->
-      <div class="min-w-0 flex-1 flex flex-col">
-        <div #previewSplit class="flex-1 flex flex-col overflow-hidden">
-          <!-- TOP TABS -->
-          <div class="panel-tabs">
-            <button class="tab-btn" [class.active]="isPreviewTop()" (click)="previewTopTab.set('preview')">Preview</button>
-            <button class="tab-btn" [class.active]="isTestCodeTop()" (click)="previewTopTab.set('testcode')">Test code</button>
-            <div class="tab-hint">Live preview updates as you type</div>
-          </div>
+	      <!-- RIGHT: preview (tests removed) -->
+	      <div class="min-w-0 flex-1 flex flex-col">
+	        <div class="panel-tabs">
+	          <button class="tab-btn active" type="button">Preview</button>
+	          <div class="tab-hint">Live preview updates as you type</div>
+	        </div>
 
-          <!-- TOP CONTENT -->
-          <div [style.flex]="'0 0 ' + (previewRatio()*100) + '%'" class="relative min-h-[160px]">
-            <div *ngIf="!previewUrl()" class="empty-preview" data-testid="web-preview-placeholder"
-                 [style.display]="isPreviewTop() ? 'grid' : 'none'">
-              Building preview…
-            </div>
+	        <div #previewSplit class="flex-1 relative min-h-[160px] overflow-hidden">
+	          <div *ngIf="!previewUrl()" class="empty-preview" data-testid="web-preview-placeholder">
+	            Building preview…
+	          </div>
 
-            <!-- WEB PREVIEW TOGGLE -->
-            <div class="preview-actions">
-              <!-- Show Preview button (when not showing solution) -->
-              <button *ngIf="!showingSolutionPreview"
-                      class="pill-btn"
-                      (click)="openSolutionPreview()">
-                Show preview
-              </button>
+	          <!-- WEB PREVIEW TOGGLE -->
+	          <div class="preview-actions">
+	            <button *ngIf="!showingSolutionPreview"
+	                    class="pill-btn"
+	                    type="button"
+	                    (click)="openSolutionPreview()">
+	              Show preview
+	            </button>
 
-              <!-- Close banner (when showing solution) -->
-              <div *ngIf="showingSolutionPreview"
-                   class="solution-banner">
-                <span class="font-medium">Showing solution preview</span>
-                <button class="text-xs underline" (click)="closeSolutionPreview()">Close preview</button>
-              </div>
-            </div>
-
-            <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" data-testid="web-preview-iframe"
-                    referrerpolicy="no-referrer"
-                    sandbox="allow-scripts">
-            </iframe>
-
-            <div class="absolute inset-0" [style.display]="isTestCodeTop() ? 'block' : 'none'">
-              <app-monaco-editor class="h-full" data-testid="web-tests-editor"
-                                 [modelKey]="question ? 'q-' + question.id + '-web-tests' : undefined"
-                                 [code]="testCode()" [language]="'javascript'"
-                                 [options]="editorOptions"
-                                 (codeChange)="testCode.set($event)">
-              </app-monaco-editor>
-            </div>
-          </div>
-
-          <!-- Splitter between TOP and BOTTOM -->
-          <div class="horizontal-splitter" [class.dragging]="isDraggingRight()"
-               (pointerdown)="startPreviewDrag($event)"></div>
-
-          <!-- BOTTOM: Results / Console -->
-	          <div class="results-shell fa-runner-shell flex-1 min-h-[140px] flex flex-col">
-	            <div class="results-topbar fa-runner-topbar">
-	              <button class="run-btn fa-runner-run-btn" data-testid="web-run-tests" (click)="runWebTests()" [disabled]="!hasAnyTests()"
-	                      [title]="hasAnyTests() ? 'Run tests' : 'Add tests to enable'">▶ Run tests</button>
-	              <button class="tab-btn fa-runner-tab-btn" [class.active]="isTestsTab()" (click)="subTab.set('tests')">Results</button>
-	              <button class="tab-btn fa-runner-tab-btn" [class.active]="isConsoleTab()" (click)="subTab.set('console')">Console</button>
-	              <span class="run-summary fa-runner-summary" *ngIf="hasRunTests && totalCount() > 0">
-	                {{ passedCount() }}/{{ totalCount() }} passed
-	              </span>
+	            <div *ngIf="showingSolutionPreview"
+	                 class="solution-banner">
+	              <span class="font-medium">Showing solution preview</span>
+	              <button class="text-xs underline" type="button" (click)="closeSolutionPreview()">Close preview</button>
 	            </div>
+	          </div>
 
-            <div class="flex-1 min-h-0 overflow-hidden">
-              <!-- Results -->
-	              <div *ngIf="isTestsTab()" class="h-full overflow-auto p-4 results-panel fa-results" data-testid="web-results-panel">
-                <!-- 1) No tests -->
-                <div class="h-full grid place-items-center text-xs empty-state" *ngIf="!hasAnyTests()">
-                  No tests provided for this challenge yet.
-                </div>
-                <!-- 2) Not run yet -->
-                <div class="h-full grid place-items-center text-xs empty-state"
-                     *ngIf="hasAnyTests() && !hasRunTests">
-                  Run tests to see results.
-                </div>
-                <!-- 3) Run -->
-                <div *ngIf="hasAnyTests() && hasRunTests" class="space-y-2">
-                  <div class="summary mb-2">
-                    <strong>{{ passedCount() }}</strong>/<strong>{{ totalCount() }}</strong> passed
-                    <span *ngIf="allPassing()" class="summary-pass">All tests passed ✓</span>
-                    <span *ngIf="!allPassing()" class="summary-fail">Some tests failed</span>
-                  </div>
-
-	                  <div *ngFor="let t of testResults()" class="test-card border rounded-md" data-testid="test-result"
-	                       [ngClass]="t.passed ? 'test-pass' : 'test-fail'">
-	                    <div class="test-name">
-	                      <i [ngClass]="t.passed ? 'pi pi-check-circle'
-	                                             : 'pi pi-times-circle'"></i>
-	                      <span class="sr-only" data-testid="test-status">{{ t.passed ? 'PASS' : 'FAIL' }}</span>
-	                      <span>{{ t.name }}</span>
-	                    </div>
-	                    <div *ngIf="t.error" class="test-error whitespace-pre-wrap break-words">
-	                      {{ t.error }}
-	                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Console -->
-              <div [style.display]="isConsoleTab() ? 'flex' : 'none'" class="flex-1 min-h-0 flex flex-col">
-                <app-console-logger class="flex-1 console-panel fa-results"
-                                    [entries]="consoleEntries()" [results]="testResults()"
-                                    [max]="500" [autoScroll]="true">
-                </app-console-logger>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+	          <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" data-testid="web-preview-iframe"
+	                  referrerpolicy="no-referrer"
+	                  sandbox="allow-scripts">
+	          </iframe>
+	        </div>
+	      </div>
     </div>
   </div>`,
 })
@@ -533,34 +456,33 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.scheduleWebPreview();
   }
 
-  private scheduleWebPreview() {
-    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
-    this.webPreviewTimer = setTimeout(() => {
-      try {
-        this.exitSolutionPreview('rebuilding from editors');
-        const htmlDoc = this.previewDocRaw();
-        this.setPreviewHtml(htmlDoc);
-      } catch (e) {
-        console.error('web preview build failed', e);
-        this.setPreviewHtml(null);
-      }
-    }, 120);
-  }
+	  private scheduleWebPreview() {
+	    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
+	    this.webPreviewTimer = setTimeout(() => {
+	      try {
+	        this.exitSolutionPreview('rebuilding from editors');
+	        const htmlDoc = this.previewDocRaw();
+	        this.setPreviewHtml(htmlDoc);
+	      } catch (e) {
+	        console.error('web preview build failed', e);
+	        this.setPreviewHtml(null);
+	      }
+	    }, 120);
+	  }
 
-  openSolutionPreview() {
-    const q = this.question; if (!q || this.showingSolutionPreview) return;
-    const sol = this.getWebSolutions(q);
-    const html = this.unescapeJsLiterals(sol.html || '');
-    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
-    const full = this.buildWebPreviewDoc(html, css);
-    this.setPreviewHtml(full);
-    this.showingSolutionPreview = true;
-    this.previewTopTab.set('preview');
-  }
-  closeSolutionPreview() {
-    this.exitSolutionPreview('user closed banner');
-    this.scheduleWebPreview();
-  }
+	  openSolutionPreview() {
+	    const q = this.question; if (!q || this.showingSolutionPreview) return;
+	    const sol = this.getWebSolutions(q);
+	    const html = this.unescapeJsLiterals(sol.html || '');
+	    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
+	    const full = this.buildWebPreviewDoc(html, css);
+	    this.setPreviewHtml(full);
+	    this.showingSolutionPreview = true;
+	  }
+	  closeSolutionPreview() {
+	    this.exitSolutionPreview('user closed banner');
+	    this.scheduleWebPreview();
+	  }
   private exitSolutionPreview(_reason?: string) {
     if (!this.showingSolutionPreview) return;
     this.showingSolutionPreview = false;

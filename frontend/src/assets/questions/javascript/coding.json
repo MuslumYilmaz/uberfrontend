@@ -1553,12 +1553,12 @@
       "utility"
     ],
     "description": {
-      "summary": "Implement a `compose(...fns)` function that takes multiple functions as arguments and returns a new function that applies them from **right to left**. The output of one function becomes the input of the previous one. If no functions are provided, return an identity function `(x) => x`.",
+      "summary": "Implement `compose(...fns)` that returns a new function applying the provided functions from **right to left**. The rightmost function may accept multiple arguments; every other function is unary and receives the previous result. If no functions are provided, return an identity function `(x) => x`.",
       "arguments": [
         {
           "name": "fns",
           "type": "Function[]",
-          "desc": "A list of functions to compose. The rightmost function can take multiple arguments; the rest are unary."
+          "desc": "Functions to compose. The rightmost function can be variadic; the rest are unary."
         }
       ],
       "returns": {
@@ -1580,36 +1580,48 @@
         "const add = (a, b) => a + b;",
         "const double2 = n => n * 2;",
         "const fn = compose(double2, add);",
-        "fn(2, 3); // => 10"
+        "fn(2, 3); // => 10",
+        "",
+        "// Pipeline can change types",
+        "const toStr = n => String(n);",
+        "const wrap = s => `#${s}`;",
+        "const fn2 = compose(wrap, toStr, add);",
+        "fn2(2, 3); // => \"#5\""
       ]
     },
     "starterCode": "export default function compose(...fns) {\n  // TODO: Implement function composition (right-to-left)\n  // Rightmost function may take multiple arguments; the rest should be unary.\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function compose(...fns: Function[]): Function {\n  // TODO: Implement function composition (right-to-left)\n  // Rightmost function may take multiple arguments; the rest should be unary.\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: build a composed function that runs several functions from right to left. The rightmost function can take multiple arguments; its return value is then passed through the remaining functions one by one as a single argument. If no functions are given, return an identity function `(x) => x`.",
+      "overview": "Goal: build a composed function that runs several functions from right to left. The rightmost function can take multiple arguments; its return value is passed through the remaining functions one by one as a single argument. If no functions are given, return an identity function `(x) => x`.",
       "approaches": [
         {
-          "title": "Approach 1: Explicit loop (rightmost can be variadic)",
-          "prose": "Idea: treat composition as a right-to-left chain. Start by calling the rightmost function with all arguments, then feed the result into each remaining function moving left.\n\nHow it works:\n1. If `fns.length === 0`, return the identity function `(x) => x`.\n2. Otherwise, return a new function that gathers its arguments into an array `args`.\n3. Call the rightmost function `fns[last]` with `...args` to get an initial `result`.\n4. Loop leftwards over the remaining functions and update `result = fns[i](result)` each time.\n5. After the loop, return the final `result`.\n\nWhy use it: this implementation is explicit, works with a multi-argument rightmost function, and keeps the logic easy to read and debug.",
-          "codeJs": "export default function compose(...fns) {\n  if (fns.length === 0) return x => x;\n\n  return function (...args) {\n    // Call the rightmost function with all arguments\n    let index = fns.length - 1;\n    let result = fns[index](...args);\n\n    // Feed the result through the remaining functions (unary)\n    for (index = index - 1; index >= 0; index--) {\n      result = fns[index](result);\n    }\n\n    return result;\n  };\n}\n",
-          "codeTs": "export default function compose(...fns: Function[]): Function {\n  if (fns.length === 0) {\n    return (x: any) => x;\n  }\n\n  return function (...args: any[]): any {\n    let index = fns.length - 1;\n    let result = (fns[index] as any)(...args);\n\n    for (index = index - 1; index >= 0; index--) {\n      result = (fns[index] as any)(result);\n    }\n\n    return result;\n  };\n}\n"
+          "title": "Approach 1: Explicit loop (clear + variadic rightmost)",
+          "prose": "Idea: treat composition as a right-to-left chain.\n\nHow it works:\n1) If `fns.length === 0`, return identity.\n2) Call the rightmost function with all incoming args.\n3) Feed the result into each remaining function moving left.\n\nWhy use it: explicit, debuggable, and correctly supports a multi-argument rightmost function.",
+          "codeJs": "export default function compose(...fns) {\n  if (fns.length === 0) return x => x;\n\n  return function (...args) {\n    let i = fns.length - 1;\n    let result = fns[i](...args);\n\n    for (i = i - 1; i >= 0; i--) {\n      result = fns[i](result);\n    }\n\n    return result;\n  };\n}\n",
+          "codeTs": "export default function compose(...fns: Function[]): Function {\n  if (fns.length === 0) {\n    return (x: any) => x;\n  }\n\n  return function (...args: any[]): any {\n    let i = fns.length - 1;\n    let result = (fns[i] as any)(...args);\n\n    for (i = i - 1; i >= 0; i--) {\n      result = (fns[i] as any)(result);\n    }\n\n    return result;\n  };\n}\n"
+        },
+        {
+          "title": "Approach 2: reduceRight (concise + functional)",
+          "prose": "Idea: `reduceRight` naturally models right-to-left application.\n\nKey detail: only the rightmost function can be variadic. We handle that by calling it first with `...args`, then reduceRight over the remaining functions (unary).\n\nWhy use it: shorter implementation, still interview-grade if you keep the variadic-rightmost rule correct.",
+          "codeJs": "export default function compose(...fns) {\n  if (fns.length === 0) return x => x;\n\n  return function (...args) {\n    const lastIndex = fns.length - 1;\n    const initial = fns[lastIndex](...args);\n\n    return fns\n      .slice(0, lastIndex)\n      .reduceRight((acc, fn) => fn(acc), initial);\n  };\n}\n",
+          "codeTs": "export default function compose(...fns: Function[]): Function {\n  if (fns.length === 0) {\n    return (x: any) => x;\n  }\n\n  return function (...args: any[]): any {\n    const lastIndex = fns.length - 1;\n    const initial = (fns[lastIndex] as any)(...args);\n\n    return fns\n      .slice(0, lastIndex)\n      .reduceRight((acc: any, fn: any) => fn(acc), initial);\n  };\n}\n"
         }
       ],
       "notes": {
         "pitfalls": [
           "Only the rightmost function can take multiple arguments. All other functions are treated as unary and receive a single value.",
           "If you pass no functions at all, you must still return a callable function (the identity), not `undefined`.",
-          "If any function throws or returns an unexpected type, the composed function will propagate that error or value — there is no extra type safety here."
+          "Composition is not type-safe in plain JS: if a function returns an unexpected type, the next function will receive it as-is."
         ],
         "edgeCases": [
-          "No functions → `compose()` returns an identity function, so `compose()(value)` returns `value` unchanged.",
-          "Single function → `compose(fn)` just returns a wrapper that forwards its arguments to `fn`.",
-          "Long chains → still O(n) in the number of functions; each function is called exactly once per composed call."
+          "No functions → `compose()` returns identity, so `compose()(value)` returns `value` unchanged.",
+          "Single function → `compose(fn)` returns a wrapper that forwards its arguments to `fn`.",
+          "Each composed call runs O(n) functions; each function is called exactly once."
         ],
         "techniques": [
-          "Working with rest parameters (`...fns` and `...args`).",
-          "Iterating functions from right to left to implement composition.",
-          "Using an identity function as a safe default when there are no functions to compose."
+          "Rest parameters (`...fns`, `...args`).",
+          "Right-to-left iteration (manual loop) vs `reduceRight`.",
+          "Identity function as the neutral element for composition."
         ]
       },
       "followUpQuestions": [
@@ -1627,8 +1639,8 @@
         }
       ]
     },
-    "tests": "import compose from './compose';\n\ndescribe('compose', () => {\n  const add1 = n => n + 1;\n  const double = n => n * 2;\n  const subtract10 = n => n - 10;\n\n  test('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  test('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  test('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(5)).toBe(5);\n  });\n\n  test('allows rightmost function to take multiple arguments', () => {\n    const add = (a, b) => a + b;\n    const double2 = n => n * 2;\n    const fn = compose(double2, add);\n    expect(fn(2, 3)).toBe(10);\n  });\n});\n",
-    "testsTs": "import compose from './compose';\n\ndescribe('compose (TypeScript)', () => {\n  const add1 = (n: number) => n + 1;\n  const double = (n: number) => n * 2;\n  const subtract10 = (n: number) => n - 10;\n\n  it('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  it('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  it('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(10)).toBe(10);\n  });\n\n  it('allows rightmost function to take multiple arguments', () => {\n    const add = (a: number, b: number) => a + b;\n    const double2 = (n: number) => n * 2;\n    const fn = compose(double2, add);\n    expect(fn(2, 3)).toBe(10);\n  });\n});\n",
+    "tests": "import compose from './compose';\n\ndescribe('compose', () => {\n  const add1 = n => n + 1;\n  const double = n => n * 2;\n  const subtract10 = n => n - 10;\n\n  test('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  test('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  test('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(5)).toBe(5);\n  });\n\n  test('allows rightmost function to take multiple arguments', () => {\n    const add = (a, b) => a + b;\n    const double2 = n => n * 2;\n    const fn = compose(double2, add);\n    expect(fn(2, 3)).toBe(10);\n  });\n\n  test('supports type transformation in the middle of the pipeline', () => {\n    const add = (a, b) => a + b; // number\n    const toStr = n => String(n); // number -> string\n    const wrap = s => `#${s}`; // string -> string\n\n    const fn = compose(wrap, toStr, add);\n    expect(fn(2, 3)).toBe('#5');\n  });\n});\n",
+    "testsTs": "import compose from './compose';\n\ndescribe('compose (TypeScript)', () => {\n  const add1 = (n: number) => n + 1;\n  const double = (n: number) => n * 2;\n  const subtract10 = (n: number) => n - 10;\n\n  it('applies functions right-to-left', () => {\n    const fn = compose(subtract10, double, add1);\n    expect(fn(3)).toBe(-2);\n  });\n\n  it('works with single function', () => {\n    const fn = compose(add1);\n    expect(fn(4)).toBe(5);\n  });\n\n  it('returns identity when empty', () => {\n    const fn = compose();\n    expect(fn(10)).toBe(10);\n  });\n\n  it('allows rightmost function to take multiple arguments', () => {\n    const add = (a: number, b: number) => a + b;\n    const double2 = (n: number) => n * 2;\n    const fn = compose(double2, add);\n    expect(fn(2, 3)).toBe(10);\n  });\n\n  it('supports type transformation in the middle of the pipeline', () => {\n    const add = (a: number, b: number) => a + b; // number\n    const toStr = (n: number) => String(n); // number -> string\n    const wrap = (s: string) => `#${s}`; // string -> string\n\n    const fn = compose(wrap, toStr, add);\n    expect(fn(2, 3)).toBe('#5');\n  });\n});\n",
     "access": "premium"
   },
   {

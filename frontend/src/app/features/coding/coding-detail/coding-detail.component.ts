@@ -925,19 +925,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return;
 
-    if (this.isFrameworkTech()) return;
-
-    if (this.isWebTech()) {
-      // Delegate testing completely to the web panel
-      this.subTab.set('tests');
-      this.hasRunTests = false;
-      this.testResults.set([]);
-      this.consoleEntries.set([]);
-      const results = await this.webPanel?.runWebTests?.();
-      this.testResults.set(results ?? []);
-      this.hasRunTests = true;
-      return;
-    }
+    if (this.isFrameworkTech() || this.isWebTech()) return;
 
     // Plain JS/TS -> delegate to child panel
     this.subTab.set('console');
@@ -967,22 +955,9 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Angular/framework preview submissions are manual-complete.
-    if (this.isFrameworkTech()) {
+    if (this.isFrameworkTech() || this.isWebTech()) {
       await this.progress.markSolved(q.id);
       this.solved.set(true);
-      this.creditDaily();
-      this.recordCompletion('submit');
-      await this.celebrate('submit');
-      return;
-    }
-
-    // Web (HTML/CSS): run tests first, only mark solved on full pass.
-    if (this.isWebTech()) {
-      await this.runTests();
-      const passing = this.allPassing();
-      this.solved.set(passing);
-      if (!passing) return;
-      await this.progress.markSolved(q.id);
       this.creditDaily();
       this.recordCompletion('submit');
       await this.celebrate('submit');
