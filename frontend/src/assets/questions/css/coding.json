@@ -1,85 +1,89 @@
 [
   {
     "id": "css-selectors-text-basics",
-    "title": "Selectors & Text Basics (Warm-up)",
+    "title": "Selectors & Text: Hero Title + Lead + Emphasis (Interview Warm-up)",
     "type": "coding",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 1,
+    "importance": 2,
     "tags": [
       "css",
       "selectors",
+      "specificity",
       "text",
       "basics",
       "beginner"
     ],
     "description": {
-      "summary": "Style a headline and paragraph using class and element selectors to learn the basics of CSS targeting and text formatting.",
+      "summary": "Style a small hero header using BOTH element selectors and class selectors. Goal: set a clean base text style via element selectors, then override specific parts using classes (headline, tagline, highlight). This is a common interview check for basic selector targeting + readable typography.",
       "arguments": [
         {
           "name": "Element selectors",
           "type": "selector",
-          "desc": "Select HTML elements by their tag name (e.g., h1, p) to apply global styles."
+          "desc": "Use element selectors (h1, p) for base typography: font-size, color, line-height, and spacing."
         },
         {
           "name": "Class selectors",
           "type": "selector",
-          "desc": "Use a dot prefix (.) to target specific elements with custom styles."
+          "desc": "Use class selectors (.headline, .tagline, .highlight) to override specific elements without changing HTML structure."
         },
         {
-          "name": "Text properties",
-          "type": "style",
-          "desc": "Use font-size, color, and line-height to control text appearance."
+          "name": "Specificity (override correctly)",
+          "type": "concept",
+          "desc": "Your class-based rules should override the element base styles where needed (e.g., .tagline overrides p color)."
         }
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A styled headline and paragraph demonstrating element and class selectors."
+        "desc": "A hero header with consistent base paragraph styling, a distinct headline, and a highlighted word inside the tagline."
       },
       "examples": [
-        "h1 { color: #111; font-size: 2rem; }",
-        ".highlight { color: #3b82f6; font-weight: 600; }",
-        "p { color: #555; line-height: 1.6; }"
+        "h1 { font-size: 2rem; margin: 0; }",
+        "p { margin: 0.5rem 0 0; line-height: 1.6; }",
+        ".tagline { color: #555; }",
+        ".highlight { color: #3b82f6; font-weight: 600; }"
       ]
     },
     "web": {
-      "starterHtml": "<h1 class=\"headline\">Welcome to CSS Basics</h1>\n<p class=\"tagline\">CSS lets you style text, layouts, and more.</p>",
-      "starterCss": "/* Base styles */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TODOs:\n  1) Use element selector (h1) to style the headline \u2014 change color and font-size.\n  2) Use class selector (.tagline) to style the paragraph \u2014 adjust color and spacing.\n  3) Optionally add a .highlight class to emphasize words.\n*/",
-      "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('styles h1 element selector with color or font-size',()=>{\n  const hasH1=cssTextContains('h1','color')||cssTextContains('h1','font-size');\n  expect(hasH1).toBe(true);\n});\n\nit('styles .tagline class with color or line-height',()=>{\n  const hasClass=cssTextContains('.tagline','color')||cssTextContains('.tagline','line-height');\n  expect(hasClass).toBe(true);\n});"
+      "starterHtml": "<h1 class=\"headline\">Welcome to CSS Basics</h1>\n<p class=\"tagline\">CSS lets you style <span class=\"highlight\">text</span>, layouts, and more.</p>",
+      "starterCss": "/* Base styles (do not remove) */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TASK\n  Use BOTH element selectors and class selectors.\n\n  1) Element selectors:\n     - Style h1: set font-size and remove default margin.\n     - Style p: set a base color and line-height, and add top margin.\n\n  2) Class selectors (overrides):\n     - .tagline: override the base p color to a softer gray.\n     - .highlight: emphasize the word \"text\" using color + font-weight.\n\n  Notes:\n    - Don't change the HTML.\n    - Keep it simple: only typography + spacing.\n*/",
+      "tests": "function cssTextContains(selector, text){\n  try{\n    const sheets=[...document.styleSheets];\n    for(const s of sheets){\n      const rules=[...((s.cssRules)||[])];\n      for(const r of rules){\n        const sel=r.selectorText||'';\n        if(sel && sel.includes(selector) && (!text || r.cssText.includes(text))) return true;\n      }\n    }\n  }catch(e){}\n  return false;\n}\n\nit('styles h1 using an element selector with font-size and margin reset',()=>{\n  const hasFontSize = cssTextContains('h1','font-size');\n  const hasMarginReset = cssTextContains('h1','margin');\n  expect(hasFontSize && hasMarginReset).toBe(true);\n});\n\nit('styles p using an element selector with line-height and margin-top (spacing)',()=>{\n  const hasLineHeight = cssTextContains('p','line-height');\n  const hasSpacing = cssTextContains('p','margin') || cssTextContains('p','margin-top');\n  expect(hasLineHeight && hasSpacing).toBe(true);\n});\n\nit('styles .tagline using a class selector (override base p color)',()=>{\n  const hasTaglineColor = cssTextContains('.tagline','color');\n  expect(hasTaglineColor).toBe(true);\n});\n\nit('styles .highlight using a class selector (emphasis)',()=>{\n  const hasHighlightColor = cssTextContains('.highlight','color');\n  const hasHighlightWeight = cssTextContains('.highlight','font-weight');\n  expect(hasHighlightColor && hasHighlightWeight).toBe(true);\n});"
     },
     "solutionBlock": {
-      "overview": "Start with element selectors for general styles and class selectors for specific overrides. You\u2019ll practice using h1 and p selectors to set color and text size, and a class selector for custom tweaks.",
+      "overview": "In interviews, the key check is: can you set sensible base typography with element selectors, then override specific parts with classes without fighting specificity. Here we style `h1` and `p` as the base, then use `.tagline` and `.highlight` for targeted overrides.",
       "approaches": [
         {
-          "title": "Approach \u2014 Element + Class Selectors",
-          "prose": "Use `h1` and `p` for basic styling, then apply `.tagline` for extra text tweaks. Combine selectors to control text hierarchy and readability.",
-          "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
-          "codeCss": "h1 {\n  color: #111;\n  font-size: 2rem;\n}\n\np.tagline {\n  color: #555;\n  line-height: 1.6;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
+          "title": "Approach — Base Elements + Targeted Class Overrides",
+          "prose": "Use element selectors to create consistent defaults (sizes, margins, line-height). Then override the tagline color with a class and emphasize a single word using `.highlight`. This mirrors real UI work: base styles + small component overrides.",
+          "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style <span class='highlight'>text</span>, layouts, and more.</p>",
+          "codeCss": "h1 {\n  font-size: 2rem;\n  margin: 0;\n  color: #111;\n}\n\np {\n  margin: 0.5rem 0 0;\n  line-height: 1.6;\n  color: #333;\n}\n\n.tagline {\n  color: #555;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Forgetting the dot before a class selector (e.g., using 'tagline' instead of '.tagline').",
-          "Overusing element selectors can make it hard to override styles later."
+          "Only using classes and skipping element selectors defeats the point of the exercise.",
+          "Forgetting to reset default margins often causes unexpected spacing in real UIs.",
+          "If you style `p` color but never override `.tagline`, you miss the specificity/override practice."
         ],
         "techniques": [
-          "Use element selectors for base styles and class selectors for specific tweaks.",
-          "Combine selectors for cleaner, modular CSS."
+          "Use element selectors for baseline typography and layout rhythm.",
+          "Use classes for component-level overrides and emphasis.",
+          "Keep overrides minimal so the cascade stays predictable."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 CSS Selectors",
+          "title": "MDN — CSS selectors",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors"
         },
         {
-          "title": "MDN \u2013 CSS Text Basics",
-          "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Fundamentals"
+          "title": "MDN — Cascade and specificity",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity"
         }
       ]
     },
-    "webSolutionHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style text, layouts, and more.</p>",
-    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { color: #111; font-size: 2rem; }\n.tagline { color: #555; line-height: 1.6; }\n.highlight { color: #3b82f6; font-weight: 600; }",
+    "webSolutionHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style <span class='highlight'>text</span>, layouts, and more.</p>",
+    "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { font-size: 2rem; margin: 0; color: #111; }\np { margin: 0.5rem 0 0; line-height: 1.6; color: #333; }\n.tagline { color: #555; }\n.highlight { color: #3b82f6; font-weight: 600; }",
     "access": "free"
   },
   {
@@ -735,7 +739,7 @@
   },
   {
     "id": "css-theme-variables-dark-mode",
-    "title": "Theming with CSS Variables (incl. Dark Mode)",
+    "title": "Theming with CSS Variables: OS Dark Mode + Manual Override",
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
@@ -746,75 +750,81 @@
       "custom-properties",
       "dark-mode",
       "theming",
-      "accessibility"
+      "cascade"
     ],
     "description": {
-      "summary": "Build a themeable panel using CSS custom properties. Provide light defaults on :root, dark values via OS dark mode, and a .theme-dark class that overrides everything.",
+      "summary": "Create a themeable panel using ONLY CSS custom properties. Define light defaults on :root, redefine the SAME variables for OS dark mode via @media (prefers-color-scheme: dark), then add a manual override using html.theme-dark that is declared AFTER the media query so it always wins. Toggle by manually adding class=\"theme-dark\" to the <html> element (no JavaScript).",
       "arguments": [
         {
-          "name": "Define variables on :root",
+          "name": ":root variables (light defaults)",
           "type": "custom properties",
-          "desc": "Create --bg, --text, --surface, --accent (and optionally --border) with sensible light-theme defaults."
+          "desc": "Define theme tokens on :root: --bg, --text, --surface, --accent, --border, --accent-contrast."
         },
         {
-          "name": "OS dark mode",
+          "name": "OS dark mode variables",
           "type": "media query",
-          "desc": "Use @media (prefers-color-scheme: dark) to redefine the same variables for dark mode."
+          "desc": "Use @media (prefers-color-scheme: dark) to redefine those SAME variables for dark mode."
         },
         {
-          "name": "Manual override",
+          "name": "Manual override wins by order",
           "type": "cascade",
-          "desc": "Add a .theme-dark class (e.g., on <html>) that sets dark variables and is declared AFTER the media query so it always wins."
+          "desc": "Add html.theme-dark AFTER the media query. It must set the dark values again, so it overrides OS settings."
+        },
+        {
+          "name": "Components use ONLY variables",
+          "type": "constraint",
+          "desc": "Inside .panel and .btn, do not hard-code any colors. All colors must come from variables."
         }
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A panel styled entirely with variables that adapts to OS theme and can be force-switched to dark with .theme-dark."
+        "desc": "A panel and button fully themeable via variables, adapting to OS theme, and forceable to dark by adding html.theme-dark."
       },
       "examples": [
-        ":root { --bg:#fafafa; --text:#111; --surface:#fff; --accent:#3b82f6; }",
-        "@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; } }",
-        "html.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; }"
+        ":root { --bg:#fafafa; --text:#111; --surface:#fff; --accent:#3b82f6; --border:rgba(0,0,0,.12); --accent-contrast:#fff; }",
+        "@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,.14); --accent-contrast:#0b0b0c; } }",
+        "html.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,.14); --accent-contrast:#0b0b0c; }"
       ]
     },
     "web": {
-      "starterHtml": "<!-- Tip: add class 'theme-dark' to <html> to force dark mode regardless of OS setting -->\\n<div class=\"panel\">\\n  <h2>Theme Demo</h2>\\n  <p>Switch variables to theme the UI.</p>\\n  <button class=\"btn\">Action</button>\\n</div>",
-      "starterCss": "/* TODOs:\\n  1) Define variables on :root: --bg, --text, --surface, --accent (optional: --border).\\n  2) Provide dark values inside @media (prefers-color-scheme: dark).\\n  3) Add html.theme-dark { ... } as a manual override, placed AFTER the media query.\\n*/\\n\\n/* Base page styles using variables (to be defined by you) */\\nhtml, body { height: 100%; }\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 0;\\n  line-height: 1.6;\\n  background: var(--bg);   /* relies on your :root variables */\\n  color: var(--text);       /* relies on your :root variables */\\n  display: grid;\\n  place-items: center;\\n  padding: 2rem;\\n}\\n\\n/* The component must use ONLY variables for colors */\\n.panel {\\n  background: var(--surface);\\n  color: var(--text);\\n  border: 1px solid var(--border, rgba(0,0,0,0.08));\\n  border-radius: 12px;\\n  padding: 1.25rem;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  max-width: 520px;\\n}\\n\\n.btn {\\n  background: var(--accent);\\n  color: #fff;\\n  border: 0;\\n  padding: .5rem .9rem;\\n  border-radius: .6rem;\\n  font-weight: 600;\\n}",
-      "tests": "function getAllRules(){ try { return [...document.styleSheets].flatMap(s=>[...((s.cssRules)||[])]);} catch(e){ return []; } }\\nfunction hasRootVars(){\\n  const rules=getAllRules();\\n  return rules.some(r=>r.selectorText==\":root\" && /--bg\\s*:/.test(r.cssText) && /--text\\s*:/.test(r.cssText));\\n}\\nfunction hasDarkMediaVars(){\\n  const rules=getAllRules();\\n  return rules.some(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark') && [...(r.cssRules||[])].some(ir=>ir.selectorText===':root' && /--bg\\s*:/.test(ir.cssText)));\\n}\\nfunction ruleIndex(pred){ const rules=getAllRules(); for(let i=0;i<rules.length;i++){ const r=rules[i]; if(pred(r,i)) return i; } return -1; }\\nfunction darkMediaIndex(){ return ruleIndex(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark')); }\\nfunction themeDarkIndex(){ return ruleIndex(r=>r.selectorText && /(^|\\s|\\.)theme-dark/.test(r.selectorText)); }\\n\\nit('defines core variables on :root',()=>{\\n  expect(hasRootVars()).toBe(true);\\n});\\n\\nit('provides dark-mode variables via media query',()=>{\\n  expect(hasDarkMediaVars()).toBe(true);\\n});\\n\\nit('declares .theme-dark override after the media query',()=>{\\n  const dmi=darkMediaIndex();\\n  const tdi=themeDarkIndex();\\n  expect(dmi>=0 && tdi>dmi).toBe(true);\\n});"
+      "starterHtml": "<!-- Toggle: manually add class=\"theme-dark\" to the <html> element to force dark mode (no JS) -->\n<div class=\"panel\">\n  <h2>Theme Demo</h2>\n  <p>This UI reads all colors from CSS variables.</p>\n  <button class=\"btn\" type=\"button\">Action</button>\n</div>",
+      "starterCss": "/* TASK\n  1) Define variables on :root (light defaults):\n     --bg, --text, --surface, --accent, --border, --accent-contrast\n\n  2) OS dark mode:\n     @media (prefers-color-scheme: dark) { :root { ...same vars, dark values... } }\n\n  3) Manual override:\n     html.theme-dark { ...same vars, dark values... }\n     IMPORTANT: place html.theme-dark AFTER the media query so it always wins.\n\n  Constraint:\n    - .panel and .btn must use ONLY variables for colors (no literal colors).\n*/\n\n/* Base page styles using variables (you will define them) */\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}",
+      "tests": "function getAllRules(){ try { return [...document.styleSheets].flatMap(s=>[...((s.cssRules)||[])]);} catch(e){ return []; } }\n\nfunction hasRootVars(){\n  const rules=getAllRules();\n  return rules.some(r=>r.selectorText==\":root\" && /--bg\\s*:/.test(r.cssText) && /--text\\s*:/.test(r.cssText) && /--surface\\s*:/.test(r.cssText) && /--accent\\s*:/.test(r.cssText));\n}\n\nfunction hasDarkMediaVars(){\n  const rules=getAllRules();\n  return rules.some(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark') && [...(r.cssRules||[])].some(ir=>ir.selectorText===':root' && /--bg\\s*:/.test(ir.cssText) && /--text\\s*:/.test(ir.cssText)));\n}\n\nfunction ruleIndex(pred){ const rules=getAllRules(); for(let i=0;i<rules.length;i++){ const r=rules[i]; if(pred(r,i)) return i; } return -1; }\nfunction darkMediaIndex(){ return ruleIndex(r=>r.media && (r.media.mediaText||'').includes('prefers-color-scheme: dark')); }\nfunction themeDarkIndex(){ return ruleIndex(r=>r.selectorText && r.selectorText.trim()==='html.theme-dark'); }\n\nfunction ruleUsesNoLiteralColors(sel){\n  const rules=getAllRules();\n  const rule = rules.find(r=>r.selectorText && r.selectorText.includes(sel));\n  if(!rule) return false;\n  const txt = rule.cssText;\n  // allow rgba() in box-shadow etc; but disallow hex and named colors and rgb() in component rules.\n  const hasHex = /#[0-9a-fA-F]{3,8}\\b/.test(txt);\n  const hasNamed = /\\b(white|black|red|blue|green|gray|grey)\\b/i.test(txt);\n  const hasRgb = /\\brgb\\(/i.test(txt);\n  // component rules should read colors from var(--*)\n  const usesVarsForColors = /var\\(--/.test(txt);\n  return !hasHex && !hasNamed && !hasRgb && usesVarsForColors;\n}\n\nit('defines core variables on :root',()=>{\n  expect(hasRootVars()).toBe(true);\n});\n\nit('provides dark-mode variables via media query',()=>{\n  expect(hasDarkMediaVars()).toBe(true);\n});\n\nit('declares html.theme-dark override after the media query',()=>{\n  const dmi=darkMediaIndex();\n  const tdi=themeDarkIndex();\n  expect(dmi>=0 && tdi>dmi).toBe(true);\n});\n\nit('component rules do not use literal colors (panel + btn)',()=>{\n  expect(ruleUsesNoLiteralColors('.panel')).toBe(true);\n  expect(ruleUsesNoLiteralColors('.btn')).toBe(true);\n});"
     },
     "solutionBlock": {
-      "overview": "Declare a palette as CSS variables on :root. Redefine them under @media (prefers-color-scheme: dark) for OS dark mode. Finally, add html.theme-dark with the same dark values AFTER the media query so authors can force dark regardless of OS.",
+      "overview": "A high-signal CSS theming setup is: tokens on :root, OS dark override via prefers-color-scheme, then an author-controlled override class declared later to win the cascade. The component must never hard-code colors—only consume tokens—so theme swaps are instant.",
       "approaches": [
         {
-          "title": "Approach \u2014 Variables + Dark Media + Manual Override",
-          "prose": "Keep all component colors reading from variables (no literals). Light theme on :root, dark values in the media query, and a later .theme-dark rule to override. This keeps the component themeable without changing the markup or styles inside the panel.",
-          "codeHtml": "<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>Switch variables to theme the UI.</p>\n  <div class='btn-row'>\n    <button class='btn is-active' data-mode='auto'>Auto (OS)</button>\n    <button class='btn' data-mode='dark'>Force Dark</button>\n    <button class='btn' data-mode='light'>Force Light</button>\n  </div>\n  <div class='card'>\n    <h3>Card title</h3>\n    <p>Card uses CSS variables for background, text, and border.</p>\n  </div>\n</div>\n<script>\n  (function(){\n    const root = document.documentElement;\n    const buttons = document.querySelectorAll('.btn[data-mode]');\n\n    function applyMode(mode){\n      root.classList.remove('theme-dark','theme-light');\n      if(mode === 'dark') root.classList.add('theme-dark');\n      if(mode === 'light') root.classList.add('theme-light');\n      buttons.forEach(btn => btn.classList.toggle('is-active', btn.dataset.mode === mode));\n    }\n\n    buttons.forEach(btn => {\n      btn.addEventListener('click', () => applyMode(btn.dataset.mode || 'auto'));\n    });\n\n    applyMode('auto');\n  })();\n</script>\n",
-          "codeCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \n@media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} }\nhtml.theme-light, body.theme-light { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \nhtml.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} \nhtml, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\nbody { padding: 20px; }\n.panel { background: var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; box-shadow: 0 10px 28px rgba(0,0,0,.12); max-width:520px; }\n.btn-row{ display:flex; gap:10px; margin:12px 0 18px; flex-wrap:wrap; }\n.btn{ padding:10px 14px; border-radius:12px; border:1px solid var(--border); background: var(--accent); color:#0b1220; font-weight:700; cursor:pointer; transition: transform 120ms ease, filter 120ms ease; }\n.btn:hover{ filter: brightness(1.05); }\n.btn.is-active{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.12); }\n.card{ margin-top:10px; padding:14px; border-radius:12px; border:1px solid var(--border); background: color-mix(in srgb, var(--surface) 96%, var(--text) 4%); }\n"
+          "title": "Approach — Tokens on :root + Dark Media + html.theme-dark Override",
+          "prose": "Define a minimal token set (bg/text/surface/accent/border/accent-contrast). Redefine the same tokens in the dark media query for OS-level theming. Then repeat the dark token values in html.theme-dark after the media query so manual override always wins. Toggle by adding theme-dark to <html> (no JS).",
+          "codeHtml": "<!-- To force dark mode, add class=\"theme-dark\" to <html> manually -->\n<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>This UI reads all colors from CSS variables.</p>\n  <button class='btn' type='button'>Action</button>\n</div>",
+          "codeCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n  }\n}\n\n/* Manual override (declared AFTER media query so it always wins) */\nhtml.theme-dark {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n}"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Declaring .theme-dark BEFORE the media query will lose the override due to cascade order.",
-          "Mixing hard-coded colors with variables in the component breaks themeability."
+          "Placing html.theme-dark before the media query can cause it to lose depending on order.",
+          "Hard-coding a component color (e.g., button text) breaks themeability—add a token like --accent-contrast instead."
         ],
         "techniques": [
-          "Use variables everywhere inside the component so themes swap instantly.",
-          "Prefer placing author overrides (like .theme-dark) after media queries."
+          "Keep the token set small but complete (include contrast token for accent).",
+          "Use the exact same variable names across all theme layers (:root, media query, manual override).",
+          "Rely on cascade order (manual override after media query) rather than increasing specificity."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 Using CSS custom properties (variables)",
+          "title": "MDN — Using CSS custom properties (variables)",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties"
         },
         {
-          "title": "MDN \u2013 prefers-color-scheme",
+          "title": "MDN — prefers-color-scheme",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"
         }
       ]
     },
-    "webSolutionHtml": "<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>Switch variables to theme the UI.</p>\n  <div class='btn-row'>\n    <button class='btn is-active' data-mode='auto'>Auto (OS)</button>\n    <button class='btn' data-mode='dark'>Force Dark</button>\n    <button class='btn' data-mode='light'>Force Light</button>\n  </div>\n  <div class='card'>\n    <h3>Card title</h3>\n    <p>Card uses CSS variables for background, text, and border.</p>\n  </div>\n</div>\n<script>\n  (function(){\n    const root = document.documentElement;\n    const buttons = document.querySelectorAll('.btn[data-mode]');\n\n    function applyMode(mode){\n      root.classList.remove('theme-dark','theme-light');\n      if(mode === 'dark') root.classList.add('theme-dark');\n      if(mode === 'light') root.classList.add('theme-light');\n      buttons.forEach(btn => btn.classList.toggle('is-active', btn.dataset.mode === mode));\n    }\n\n    buttons.forEach(btn => {\n      btn.addEventListener('click', () => applyMode(btn.dataset.mode || 'auto'));\n    });\n\n    applyMode('auto');\n  })();\n</script>\n",
-    "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \n@media (prefers-color-scheme: dark){ :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} }\nhtml.theme-light, body.theme-light { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border: rgba(0,0,0,0.12);} \nhtml.theme-dark, body.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border: rgba(255,255,255,0.14);} \nhtml, body { margin:0; padding:0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\nbody { padding: 20px; }\n.panel { background: var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; box-shadow: 0 10px 28px rgba(0,0,0,.12); max-width:520px; }\n.btn-row{ display:flex; gap:10px; margin:12px 0 18px; flex-wrap:wrap; }\n.btn{ padding:10px 14px; border-radius:12px; border:1px solid var(--border); background: var(--accent); color:#0b1220; font-weight:700; cursor:pointer; transition: transform 120ms ease, filter 120ms ease; }\n.btn:hover{ filter: brightness(1.05); }\n.btn.is-active{ transform: translateY(-1px); box-shadow: 0 10px 20px rgba(0,0,0,.12); }\n.card{ margin-top:10px; padding:14px; border-radius:12px; border:1px solid var(--border); background: color-mix(in srgb, var(--surface) 96%, var(--text) 4%); }\n",
+    "webSolutionHtml": "<!-- To force dark mode, add class=\"theme-dark\" to <html> manually -->\n<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>This UI reads all colors from CSS variables.</p>\n  <button class='btn' type='button'>Action</button>\n</div>",
+    "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border:rgba(0,0,0,0.12); --accent-contrast:#ffffff; }\n@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,0.14); --accent-contrast:#0b0b0c; } }\nhtml.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,0.14); --accent-contrast:#0b0b0c; }",
     "access": "free"
   }
 ]
