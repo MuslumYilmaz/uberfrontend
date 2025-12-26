@@ -147,14 +147,14 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
   /* Runner styles come from global .fa-runner-* and .fa-results classes */
 `],
   template: `
-<div class="web-panel w-full min-h-0 flex flex-col flex-1" data-testid="web-panel">
-  <!-- Banner -->
-  <app-restore-banner
-    [isVisible]="showRestoreBanner()"
-    [isSolution]="viewingSolution()"
-    (reset)="resetFromBanner()"
-    (dismiss)="dismissRestoreBanner()">
-  </app-restore-banner>
+	<div class="web-panel w-full min-h-0 flex flex-col flex-1" data-testid="web-panel">
+	  <!-- Banner -->
+	  <app-restore-banner *ngIf="!hideRestoreBanner"
+	    [isVisible]="showRestoreBanner()"
+	    [isSolution]="viewingSolution()"
+	    (reset)="resetFromBanner()"
+	    (dismiss)="dismissRestoreBanner()">
+	  </app-restore-banner>
 
   <div class="web-card fa-card fa-card--editor flex flex-col flex-1 overflow-hidden">
     <div class="flex-1 min-h-0 flex">
@@ -233,6 +233,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() editorOptions: any;
   @Input() storageKeyOverride: string | null = null;
   @Input() disablePersistence = false;
+  @Input() hideRestoreBanner = false;
 
   constructor(
     private sanitizer: DomSanitizer,
