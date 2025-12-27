@@ -358,6 +358,17 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  private decodeHtmlEntities(s: string): string {
+    // Fast path for common entities (also fixes double-escaped cases like "&amp;lt;")
+    return (s ?? '')
+      .replace(/&amp;(?=lt;|gt;|amp;|quot;|#39;)/g, '&') // &amp;lt; -> &lt; (etc.)
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+  }
+
   dedent(source: string = ''): string {
     const s = (source ?? '').replace(/^\n+|\n+$/g, '');
     const lines = s.split('\n');
@@ -371,9 +382,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   // ================== Markdown -> HTML with a tiny HTML whitelist ==================
   // 2) Full, corrected md()
   md(src: unknown): SafeHtml {
-    const raw = typeof src === 'string'
+    let raw = typeof src === 'string'
       ? src
       : (src && (src as any).toString ? (src as any).toString() : '');
+
+    // Fix legacy content that contains HTML entities like "&lt;div /&gt;"
+    raw = this.decodeHtmlEntities(raw);
 
     // Normalize CRLF
     let text = raw.replace(/\r\n?/g, '\n');

@@ -1,96 +1,138 @@
 [
   {
-    "id": "angular-introduction",
-    "title": "What is Angular?",
+    "id": "angular-cli-component-generation",
+    "title": "What does Angular CLI generate when you create a component, and why does that structure matter?",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 5,
-    "description": "Angular is a powerful, full-featured front-end framework developed and maintained by Google. It is designed for building dynamic, single-page web applications (SPAs) with a strong focus on scalability, maintainability, and performance. Angular provides a complete ecosystem with built-in support for components, dependency injection, routing, forms, and reactive programming using RxJS.",
+    "importance": 4,
+    "description": "Angular CLI generates a ready-to-use component folder (class, template, styles, tests) and wires it into your app (module-based or standalone). This standard structure matters because it enforces consistency, separation of concerns, and predictable wiring in large codebases.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Angular is a TypeScript-based open-source front-end framework created by Google for building robust, maintainable, and scalable web applications. It follows a component-driven architecture, where each part of the user interface is defined as a reusable component. Angular is not just a library like React — it is a full framework that provides all the essential tools for modern web development, including routing, state management, forms, HTTP communication, and testing support."
+          "text": "<strong>Overview</strong><br><br>When you run <code>ng generate component</code> (or <code>ng g c</code>), Angular CLI scaffolds a component as a small, self-contained unit: TypeScript class + HTML template + styles + tests. Depending on your project setup, it also wires the component into an NgModule or generates it as a standalone component."
         },
         {
-          "type": "text",
-          "text": "<strong>Key Characteristics</strong><br>Angular is known for its opinionated structure, which enforces consistency and best practices across teams. It uses TypeScript, a superset of JavaScript that adds static typing and advanced tooling. This allows developers to write cleaner, safer, and more maintainable code while benefiting from strong IDE support and autocomplete features."
+          "type": "code",
+          "language": "bash",
+          "code": "# Basic\nng g c user-profile\n\n# With a path (creates folders as needed)\nng g c features/account/user-profile"
         },
         {
           "type": "list",
           "columns": [
-            "Feature",
-            "Description"
+            "Generated file",
+            "What it contains",
+            "Why it exists"
           ],
           "rows": [
             [
-              "Component-Based Architecture",
-              "Applications are built using modular, reusable components that define their own template, styles, and logic."
+              "user-profile.component.ts",
+              "The component class + @Component metadata",
+              "Encapsulates UI logic and declares how the component is composed (template/styles/imports)."
             ],
             [
-              "Dependency Injection",
-              "A powerful design pattern that manages how components acquire their dependencies, improving flexibility and testability."
+              "user-profile.component.html",
+              "The template",
+              "Keeps markup separate from logic; easier to read, review, and test."
             ],
             [
-              "Two-Way Data Binding",
-              "Synchronizes data between the model and view layers automatically, reducing boilerplate code."
+              "user-profile.component.css / .scss",
+              "Component styles",
+              "Scoped styling by default (ViewEncapsulation) and predictable styling location."
             ],
             [
-              "Reactive Programming with RxJS",
-              "Angular embraces reactive streams, enabling developers to handle asynchronous data efficiently."
-            ],
-            [
-              "Routing and Navigation",
-              "Built-in RouterModule allows the creation of multi-view single-page applications (SPAs) with dynamic route management."
-            ],
-            [
-              "Ahead-of-Time (AOT) Compilation",
-              "Compiles templates at build time, improving performance by reducing the amount of work the browser does."
-            ],
-            [
-              "CLI Tooling",
-              "The Angular CLI provides commands for scaffolding components, building projects, running tests, and deploying applications."
+              "user-profile.component.spec.ts",
+              "Unit tests",
+              "Encourages testability and regression safety from day one."
             ]
           ],
-          "caption": "Core features that make Angular a complete front-end framework"
+          "caption": "Typical files created by Angular CLI for a component"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Project style",
+            "What CLI wires/updates"
+          ],
+          "rows": [
+            [
+              "Standalone (modern default in many setups)",
+              "Generates the component with <code>standalone: true</code> and an <code>imports</code> array inside the component metadata. No NgModule declaration update is needed."
+            ],
+            [
+              "NgModule-based",
+              "Updates the nearest module (or the one you specify) by adding the component to <code>declarations</code> (and sometimes adjusting imports if needed)."
+            ]
+          ],
+          "caption": "The “wiring” step depends on whether your app uses standalone components or NgModules"
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Example: Basic Angular Component\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-hello',\n  template: `<h1>Hello, {{ name }}!</h1>`,\n  styles: ['h1 { color: #007bff; }']\n})\nexport class HelloComponent {\n  name = 'Angular Developer';\n}\n\n// This component defines its selector, template, and logic in one place."
+          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-user-profile',\n  templateUrl: './user-profile.component.html',\n  styleUrls: ['./user-profile.component.css']\n  // In standalone projects you may also see:\n  // standalone: true,\n  // imports: [...]\n})\nexport class UserProfileComponent {}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Why the structure matters",
+            "Practical impact"
+          ],
+          "rows": [
+            [
+              "Separation of concerns (TS / HTML / CSS / tests)",
+              "PRs are clearer; changes are easier to review and reason about."
+            ],
+            [
+              "Predictable conventions (naming, folder layout, selector prefix)",
+              "Faster onboarding and less “where is this defined?” friction in large teams."
+            ],
+            [
+              "Encapsulation",
+              "Component is a stable unit for refactors, reuse, and isolated testing."
+            ],
+            [
+              "Tooling + builds (AOT, linting, test runners)",
+              "Generated files match Angular tooling expectations; fewer setup mistakes."
+            ],
+            [
+              "Scalability",
+              "As the app grows, consistent component boundaries prevent “everything in one file” chaos."
+            ]
+          ],
+          "caption": "Why CLI scaffolding is more than “boilerplate”"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common flags",
+            "What they change"
+          ],
+          "rows": [
+            [
+              "--skip-tests",
+              "Doesn’t generate the <code>.spec.ts</code> file."
+            ],
+            [
+              "--inline-template / --inline-style",
+              "Puts template/styles directly into the <code>.ts</code> file (often discouraged for real apps)."
+            ],
+            [
+              "--style=scss",
+              "Generates <code>.scss</code> instead of <code>.css</code>."
+            ],
+            [
+              "--standalone",
+              "Forces generating a standalone component (if your workspace supports both styles)."
+            ],
+            [
+              "--module=feature",
+              "In NgModule projects, declares the component in a specific module."
+            ]
+          ]
         },
         {
           "type": "text",
-          "text": "<strong>How Angular Works</strong><br><br>When an Angular application runs, it bootstraps a root module that defines how the app is structured. Each module groups together related components, services, and directives. Angular’s change detection system tracks data changes and updates the DOM automatically, ensuring that the UI always reflects the current application state."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Angular Architecture</strong><br><ul><li><strong>Modules (NgModules):</strong> Group components, services, and pipes logically, making the app scalable and maintainable.</li><li><strong>Components:</strong> The fundamental building blocks of the UI, combining HTML templates, CSS, and TypeScript logic.</li><li><strong>Templates:</strong> Define the structure and appearance of the component’s view using Angular’s declarative syntax and directives.</li><li><strong>Services:</strong> Contain shared logic or data fetching operations, often injected into components via dependency injection.</li><li><strong>Directives:</strong> Extend HTML capabilities by adding custom behaviors to DOM elements.</li><li><strong>Pipes:</strong> Transform displayed data in templates (e.g., currency, date, or custom formats).</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example of Data Binding</strong><br>Angular supports multiple binding types, including property binding, event binding, and two-way data binding. This helps keep the UI and logic synchronized seamlessly."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Example: Two-way data binding -->\n<input [(ngModel)]=\"username\" placeholder=\"Enter your name\" />\n<p>Hello, {{ username }}!</p>\n\n<!-- As you type in the input, the paragraph updates instantly -->"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advantages of Using Angular</strong><br><ul><li>Comprehensive framework — includes everything from routing to forms and HTTP services.</li><li>Consistent structure and coding conventions enforced through TypeScript and CLI tooling.</li><li>Enterprise-grade scalability and maintainability.</li><li>Reactive architecture for handling real-time data efficiently.</li><li>Rich ecosystem and long-term support from Google.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>When to Use Angular</strong><br>Angular is particularly well-suited for large-scale enterprise applications where consistency, modularity, and long-term maintainability are important. It’s ideal for dashboards, data-intensive SPAs, and projects requiring complex UI states or real-time interactions."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular as an all-in-one framework: it gives you the structure, patterns, and tools to build everything from small prototypes to massive enterprise-level applications efficiently."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Angular is a full-featured, TypeScript-based front-end framework maintained by Google.</li><li>It uses components, modules, and dependency injection for building scalable applications.</li><li>With built-in tools like the CLI, RxJS, and routing, Angular offers a complete development ecosystem out of the box.</li><li>It emphasizes performance, maintainability, and enterprise-level consistency.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>Angular CLI generates a component as a consistent mini-package (logic/template/styles/tests) and wires it correctly (standalone vs NgModule). That structure is what keeps Angular apps maintainable when the codebase and team size grow."
         }
       ]
     },
