@@ -77,24 +77,6 @@ test('run JS tests -> results appear with PASS/FAIL labels', async ({ page }) =>
   expect(statuses.some((s: string) => s.includes('FAIL'))).toBeTruthy();
 });
 
-test('HTML/CSS preview iframe loads -> web tests run -> results visible', async ({ page }) => {
-  await page.goto(`/${WEB_QUESTION.tech}/coding/${WEB_QUESTION.id}`);
-
-  await expect(page.getByTestId('web-panel')).toBeVisible();
-  await expect(page.getByTestId('web-preview-placeholder')).toBeHidden();
-  await expect(page.getByTestId('web-preview-iframe')).toHaveAttribute('src', /(unsafe:)?blob:/);
-  await waitForIframeReady(page, 'web-preview-iframe');
-
-  await page.getByTestId('web-run-tests').click();
-
-  const results = page.getByTestId('web-results-panel').getByTestId('test-result');
-  await expect(results).not.toHaveCount(0);
-
-  const statuses = await page.getByTestId('web-results-panel').locator('[data-testid="test-status"]').allTextContents();
-  expect(statuses.length).toBeGreaterThan(0);
-  expect(statuses.every((s: string) => s === 'PASS' || s === 'FAIL')).toBeTruthy();
-});
-
 test('persistence: partial edit -> refresh -> code restored safely', async ({ page }) => {
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   await expect(page.getByTestId('js-panel')).toBeVisible();

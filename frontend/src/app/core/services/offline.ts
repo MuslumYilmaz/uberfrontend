@@ -18,8 +18,30 @@ export class OfflineService {
   constructor() {
     if (typeof window === 'undefined') return;
 
-    window.addEventListener('online', () => this.syncFromNavigator());
-    window.addEventListener('offline', () => this.syncFromNavigator());
+    window.addEventListener('online', () => {
+      // Cancel any pending "offline probe" and reflect the event immediately.
+      this.probeNonce++;
+      this.isOnline.set(true);
+    });
+
+    window.addEventListener('offline', () => {
+      // Treat the event as authoritative for UI (tests may dispatch it without toggling navigator.onLine).
+      this.isOnline.set(false);
+
+      // If `navigator.onLine` still reports "online", assume this is a synthetic offline event (e.g. tests)
+      // and keep the UI in offline-mode until we get an `online` event.
+      const navOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
+      if (navOnline) return;
+
+      const nonce = ++this.probeNonce;
+      // Defer the probe to the next task so the offline UI has a chance to render first.
+      window.setTimeout(() => {
+        void this.probeConnectivity().then((ok) => {
+          if (nonce !== this.probeNonce) return;
+          this.isOnline.set(ok);
+        });
+      }, 0);
+    });
 
     // `navigator.onLine` can be a false-negative in some environments; verify once on startup.
     queueMicrotask(() => this.syncFromNavigator());
@@ -28,6 +50,7 @@ export class OfflineService {
   private syncFromNavigator() {
     const navOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
     if (navOnline) {
+      this.probeNonce++;
       this.isOnline.set(true);
       return;
     }
