@@ -6,19 +6,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   template: `
-  <div *ngIf="isVisible" class="restore-banner">
-    <span class="msg">
-      {{ isSolution ? "You’re viewing the solution code." : "Your code was restored from local storage." }}
-    </span>
+	  <div *ngIf="isVisible" class="restore-banner" data-testid="restore-banner">
+	    <span class="msg" data-testid="restore-banner-message">
+	      {{ isSolution ? "You’re viewing the solution code." : "Your code was restored from local storage." }}
+	    </span>
 
-    <div class="actions">
-      <button class="reset" (click)="reset.emit()">
-        {{ isSolution ? 'Revert to your code' : 'Reset to default' }}
-      </button>
-      <button class="close" (click)="dismiss.emit()">✕</button>
-    </div>
-  </div>
-  `,
+	    <div class="actions">
+	      <button class="reset" data-testid="restore-banner-reset" (click)="reset.emit()">
+	        {{ isSolution ? 'Revert to your code' : 'Reset to default' }}
+	      </button>
+	      <button class="close" data-testid="restore-banner-dismiss" (click)="dismiss.emit()">✕</button>
+	    </div>
+	  </div>
+	  `,
   styles: [`
     :host {
       display: block;

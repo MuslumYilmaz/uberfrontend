@@ -11,7 +11,7 @@
         <div class="ml-auto flex items-center gap-2">
             <span class="text-xs opacity-70">Language</span>
             <div class="lang-wrap">
-                <select #langSel class="lang-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
+                <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
                     aria-label="Editor language">
                     <option value="js">JavaScript</option>
                     <option value="ts">TypeScript</option>
@@ -49,7 +49,7 @@
         </div>
 
         <!-- SPLITTER between editors and results -->
-        <div class="horizontal-splitter" [class.dragging]="isDraggingSplit()" (pointerdown)="startSplitDrag($event)">
+        <div class="horizontal-splitter" data-testid="js-editor-splitter" [class.dragging]="isDraggingSplit()" (pointerdown)="startSplitDrag($event)">
         </div>
 
         <!-- BOTTOM: Actions + Results/Console -->

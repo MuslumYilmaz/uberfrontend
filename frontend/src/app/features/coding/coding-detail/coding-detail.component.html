@@ -13,7 +13,7 @@
           [ngClass]="{ 'text-white': activePanel()===0, 'opacity-60': activePanel()!==0 }"
           (click)="activePanel.set(0); toggleDescription()" aria-label="Description"></button>
 
-        <button pButton type="button" icon="pi pi-code" class="p-button-rounded p-button-text"
+        <button pButton type="button" icon="pi pi-code" class="p-button-rounded p-button-text" data-testid="coding-solution-tab"
           [ngClass]="{ 'text-white': activePanel()===1, 'opacity-60': activePanel()!==1 }"
           (click)="onSolutionTabClick()" aria-label="Solution"></button>
       </div>
@@ -28,7 +28,7 @@
             [class.text-blue-400]="activePanel()===0" [class.text-gray-300]="activePanel()!==0"
             (click)="activePanel.set(0)">Description</button>
 
-          <button class="px-4 py-2 flex-1 text-left font-medium" [class.border-b-2]="activePanel()===1"
+          <button class="px-4 py-2 flex-1 text-left font-medium" data-testid="coding-solution-tab" [class.border-b-2]="activePanel()===1"
             [class.text-blue-400]="activePanel()===1" [class.text-gray-300]="activePanel()!==1"
             (click)="onSolutionTabClick()">Solution</button>
         </div>
@@ -195,7 +195,7 @@
           <section class="space-y-4">
             <!-- Uyarı -->
             <ng-container *ngIf="showSolutionWarning(); else solBody">
-              <div class="solution-warning">
+              <div class="solution-warning" data-testid="solution-warning">
                 <div class="flex items-start gap-3">
                   <div class="icon-warning"><i class="pi pi-exclamation-triangle"></i></div>
                   <div class="flex-1">
@@ -204,9 +204,9 @@
                       Viewing the solution early can reduce learning benefits. You can still load it read-only.
                     </div>
                     <div class="actions flex items-center gap-3">
-                      <button pButton label="View solution" class="p-button-danger"
+                      <button pButton label="View solution" class="p-button-danger" data-testid="solution-warning-view"
                         (click)="confirmSolutionReveal()"></button>
-                      <button pButton label="Cancel" class="p-button-text" (click)="cancelSolutionReveal()"></button>
+                      <button pButton label="Cancel" class="p-button-text" data-testid="solution-warning-cancel" (click)="cancelSolutionReveal()"></button>
                     </div>
                   </div>
                 </div>
@@ -230,7 +230,7 @@
                   <span class="ap-num">{{ i + 1 }}</span>
                   <h4 class="ap-title">{{ ap.title }}</h4>
                   <div class="ap-actions">
-                    <button class="fa-btn"
+                    <button class="fa-btn" [attr.data-testid]="'solution-load-approach-' + i"
                       *ngIf="(isWebTech() && (ap.codeHtml || ap.codeCss)) || (!isWebTech() && !isFrameworkTech() && codeFor(ap)?.trim()) || (!isFrameworkTech() && (ap.codeJs || ap.codeTs))"
                       (click)="loadApproach(ap)" title="Load into editor">
                       Load into editor
