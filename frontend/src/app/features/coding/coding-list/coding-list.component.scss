@@ -60,7 +60,9 @@ app-coding-tech-kind-tabs {
 
 .fa-filter-panel {
   position: sticky;
-  top: 16px;
+  top: calc(var(--app-safe-top, 56px) + 16px);
+  max-height: calc(100vh - (var(--app-safe-top, 56px) + 32px));
+  overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -72,6 +74,8 @@ app-coding-tech-kind-tabs {
   .fa-filter-panel {
     position: relative;
     top: 0;
+    max-height: none;
+    overflow: visible;
   }
 }
 
