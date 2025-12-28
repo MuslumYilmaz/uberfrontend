@@ -69,21 +69,77 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private _hydrating = true;
   private volatileBuffers: Record<JsLang, string> = { js: '', ts: '' };
   private _runSeq = 0;
+  private persistTimer: any = null;
+  private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
+  private resizeRaf: number | null = null;
 
   ngOnInit() {
     window.addEventListener('beforeunload', this._persistLangOnUnload);
   }
 
   ngOnDestroy() {
+    this.flushPendingPersist();
     window.removeEventListener('beforeunload', this._persistLangOnUnload);
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    if (this.resizeRaf != null) {
+      cancelAnimationFrame(this.resizeRaf);
+      this.resizeRaf = null;
+    }
   }
 
   private _persistLangOnUnload = () => {
+    this.flushPendingPersist();
     if (this.disablePersistence) return;
     const q = this.question;
     const key = this.storageKeyFor(q);
     if (q && key) void this.codeStore.setLastLangAsync(key, this.jsLang());
   };
+
+  private cancelPendingPersist() {
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    this.pendingPersist = null;
+  }
+
+  private schedulePersist(key: string, lang: JsLang, code: string) {
+    if (this.disablePersistence) return;
+    this.pendingPersist = { key, lang, code };
+
+    if (this.persistTimer) clearTimeout(this.persistTimer);
+    this.persistTimer = setTimeout(() => {
+      const p = this.pendingPersist;
+      this.pendingPersist = null;
+      this.persistTimer = null;
+      if (!p) return;
+      void this.codeStore.saveJsAsync(p.key, p.code, p.lang);
+    }, 200);
+  }
+
+  private flushPendingPersist() {
+    if (!this.pendingPersist) return;
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    const p = this.pendingPersist;
+    this.pendingPersist = null;
+    if (!this.disablePersistence) {
+      void this.codeStore.saveJsAsync(p.key, p.code, p.lang);
+    }
+  }
+
+  private scheduleResize() {
+    if (this.resizeRaf != null) return;
+    this.resizeRaf = requestAnimationFrame(() => {
+      this.resizeRaf = null;
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
 
   private endHydrationSoon() {
     requestAnimationFrame(() =>
@@ -102,6 +158,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   async resetToDefault(): Promise<void> {
     const q = this.question;
     if (!q) return;
+    this.cancelPendingPersist();
     if (this.disablePersistence) {
       const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
       this.volatileBuffers = { js: starterJs, ts: starterTs };
@@ -166,8 +223,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       const y = e.clientY - rect.top;
       const ratio = Math.min(0.9, Math.max(0.2, y / rect.height)); // clamp 20%–90%
       this.editorRatio.set(ratio);
-      // nudge Monaco to relayout
-      window.dispatchEvent(new Event('resize'));
+      this.scheduleResize();
     };
 
     const onUp = () => {
@@ -292,6 +348,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // 1) Persist current code for the current lang (unless we're hydrating)
     if (!this._hydrating) {
+      this.cancelPendingPersist();
       await this.codeStore.saveJsAsync(storageKey, this.editorContent(), currentLang);
     }
 
@@ -354,7 +411,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   /* ---------- Handlers ---------- */
-  async onCodeChange(code: string) {
+  onCodeChange(code: string) {
     if (this._hydrating) return;
     const q = this.question; if (!q) return;
     if (this.disablePersistence) {
@@ -372,7 +429,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     if (code === this.editorContent()) return;
 
     this.editorContent.set(code);
-    await this.codeStore.saveJsAsync(storageKey, code, this.jsLang());
+    this.schedulePersist(storageKey, this.jsLang(), code);
     this.codeChange.emit({ lang: this.jsLang(), code });
 
     if (this.viewingSolution()) {
@@ -415,58 +472,142 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       }
 
       /* ---------- LOCAL FALLBACK if sandbox produced no cases ---------- */
-      if ((this.testResults() || []).length === 0 && prepared.trim()) {
-        try {
-          const results: TestResult[] = [];
-          const logs: ConsoleEntry[] = [];
-          const tagOf = (v: any) => Object.prototype.toString.call(v);
-          const formatSpecial = (v: any): string | null => {
-            if (v && (typeof v === 'object' || typeof v === 'function')) {
-              if (tagOf(v) === '[object Promise]') return 'Promise {<pending>}';
+	      if ((this.testResults() || []).length === 0 && prepared.trim()) {
+	        try {
+	          const results: TestResult[] = [];
+	          const logs: ConsoleEntry[] = [];
+	          const MAX_LOGS = 200;
+	          const MAX_LOG_CHARS = 2000;
+	          const MAX_PREVIEW_DEPTH = 4;
+	          const MAX_PREVIEW_KEYS = 20;
+	          const MAX_PREVIEW_ARRAY_ITEMS = 20;
+	          let logLimitHit = false;
+
+	          const clamp = (s: string) => s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
+
+	          const tagOf = (v: any) => Object.prototype.toString.call(v);
+	          const formatSpecial = (v: any): string | null => {
+	            if (v && (typeof v === 'object' || typeof v === 'function')) {
+	              if (tagOf(v) === '[object Promise]') return 'Promise {<pending>}';
               if (v instanceof Error) {
                 const name = v?.name ? String(v.name) : 'Error';
                 const msg = v?.message ? String(v.message) : '';
                 return msg ? `${name}: ${msg}` : name;
               }
-            }
-            return null;
-          };
-          const safeStringify = (v: any) => {
-            try {
-              if (v === null) return 'null';
-              const t = typeof v;
-              if (t === 'string') return v;
-              if (t === 'undefined') return 'undefined';
-              if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
-              if (t === 'symbol') return v.toString();
-              if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
+	            }
+	            return null;
+	          };
+	          const safeStringify = (v: any) => {
+	            try {
+	              if (v === null) return 'null';
+	              const t = typeof v;
+	              if (t === 'string') return v.length > MAX_LOG_CHARS ? `${v.slice(0, MAX_LOG_CHARS)}…` : v;
+	              if (t === 'undefined') return 'undefined';
+	              if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
+	              if (t === 'symbol') return v.toString();
+	              if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
 
-              const special = formatSpecial(v);
-              if (special) return special;
+	              const special = formatSpecial(v);
+	              if (special) return special;
 
-              const seen = new WeakSet();
-              const json = JSON.stringify(v, (_k, val) => {
-                const specialInner = formatSpecial(val);
-                if (specialInner) return specialInner;
+	              const seen = new WeakSet<object>();
+	              const depths = new WeakMap<object, number>();
+	              const json = JSON.stringify(v, function (this: any, key: string, val: any) {
+	                const specialInner = formatSpecial(val);
+	                if (specialInner) return specialInner;
 
-                if (val && typeof val === 'object') {
-                  if (seen.has(val)) return '[Circular]';
-                  seen.add(val);
-                }
-                if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
-                return val;
-              });
-              return typeof json === 'string' ? json : String(v);
-            } catch {
-              try { return String(v); } catch { return '[Unserializable]'; }
-            }
-          };
-          const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
-            const msg = args.map(safeStringify).join(' ');
-            logs.push({ level, message: msg, timestamp: Date.now() });
-          };
-          const consoleProxy = {
-            log: (...a: any[]) => push('log', a),
+	                if (typeof val === 'string') {
+	                  return val.length > MAX_LOG_CHARS ? `${val.slice(0, MAX_LOG_CHARS)}…` : val;
+	                }
+	                if (typeof val === 'symbol') return val.toString();
+	                if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
+
+	                if (!val || (typeof val !== 'object' && typeof val !== 'function')) return val;
+
+	                const holder: any = this;
+	                const holderDepth =
+	                  holder && (typeof holder === 'object' || typeof holder === 'function')
+	                    ? (depths.get(holder) ?? 0)
+	                    : 0;
+	                const nextDepth = key === '' ? 0 : holderDepth + 1;
+	                if (!depths.has(val)) depths.set(val, nextDepth);
+	                const depth = depths.get(val) ?? nextDepth;
+	                if (depth > MAX_PREVIEW_DEPTH) return tagOf(val);
+
+	                if (typeof val === 'object') {
+	                  if (seen.has(val)) return '[Circular]';
+	                  seen.add(val);
+
+	                  if (Array.isArray(val)) {
+	                    if (val.length > MAX_PREVIEW_ARRAY_ITEMS) {
+	                      const head = val.slice(0, MAX_PREVIEW_ARRAY_ITEMS);
+	                      return [...head, `… +${val.length - MAX_PREVIEW_ARRAY_ITEMS} more`];
+	                    }
+	                    return val;
+	                  }
+
+	                  if (val instanceof Map) {
+	                    const entries: any[] = [];
+	                    let i = 0;
+	                    for (const [k, v] of val.entries()) {
+	                      if (i++ >= MAX_PREVIEW_KEYS) { entries.push(['…', '…']); break; }
+	                      entries.push([k, v]);
+	                    }
+	                    return { '[[Map]]': entries, size: val.size };
+	                  }
+
+	                  if (val instanceof Set) {
+	                    const values: any[] = [];
+	                    let i = 0;
+	                    for (const item of val.values()) {
+	                      if (i++ >= MAX_PREVIEW_KEYS) { values.push('…'); break; }
+	                      values.push(item);
+	                    }
+	                    return { '[[Set]]': values, size: val.size };
+	                  }
+
+	                  const proto = Object.getPrototypeOf(val);
+	                  const isPlain = proto === Object.prototype || proto === null;
+	                  if (isPlain) {
+	                    const out: Record<string, any> = {};
+	                    let count = 0;
+	                    for (const k in val as any) {
+	                      if (!Object.prototype.hasOwnProperty.call(val, k)) continue;
+	                      if (count++ >= MAX_PREVIEW_KEYS) { out['…'] = '…'; break; }
+	                      out[k] = (val as any)[k];
+	                    }
+	                    return out;
+	                  }
+	                }
+	                return val;
+	              });
+	              return typeof json === 'string' ? json : String(v);
+	            } catch {
+	              try { return String(v); } catch { return '[Unserializable]'; }
+	            }
+	          };
+	          const formatArgs = (args: any[]) => {
+	            let msg = '';
+	            for (const a of args) {
+	              const part = safeStringify(a);
+	              if (!msg) msg = part;
+	              else msg += ` ${part}`;
+	              if (msg.length > MAX_LOG_CHARS) return clamp(msg);
+	            }
+	            return clamp(msg);
+	          };
+	          const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
+	            if (logs.length >= MAX_LOGS) {
+	              if (!logLimitHit) {
+	                logs.push({ level: 'warn', message: `Log limit reached (${MAX_LOGS})`, timestamp: Date.now() });
+	                logLimitHit = true;
+	              }
+	              return;
+	            }
+	            logs.push({ level, message: formatArgs(args), timestamp: Date.now() });
+	          };
+	          const consoleProxy = {
+	            log: (...a: any[]) => push('log', a),
             info: (...a: any[]) => push('info', a),
             warn: (...a: any[]) => push('warn', a),
             error: (...a: any[]) => push('error', a),
@@ -622,13 +763,32 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   private sanitizeLogs(raw: any[]): ConsoleEntry[] {
     const now = Date.now();
-    const toStr = (v: any) => { try { return typeof v === 'string' ? v : JSON.stringify(v); } catch { return String(v); } };
-    return (raw || []).slice(-500).map((r: any) => {
-      if (r?.level && r?.message) return { level: r.level, message: r.message, timestamp: r.timestamp ?? now };
+    const MAX_LOGS = 200;
+    const MAX_CHARS = 2000;
+    const clamp = (s: string) => s.length > MAX_CHARS ? `${s.slice(0, MAX_CHARS)}…` : s;
+    const toStr = (v: any) => {
+      try {
+        if (v === null) return 'null';
+        if (v === undefined) return 'undefined';
+        const t = typeof v;
+        if (t === 'string') return clamp(v);
+        if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
+        if (t === 'symbol') return v.toString();
+        if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
+        return clamp(String(v));
+      } catch {
+        return '[Unserializable]';
+      }
+    };
+    const toMsg = (parts: any[] | any) => {
+      if (Array.isArray(parts)) return clamp(parts.map(toStr).join(' '));
+      return toStr(parts);
+    };
+    return (raw || []).slice(-MAX_LOGS).map((r: any) => {
+      if (r?.level && r?.message) return { level: r.level, message: clamp(String(r.message)), timestamp: r.timestamp ?? now };
       if (r?.type) {
         const level = (['info', 'warn', 'error'].includes(r.type) ? r.type : 'log') as ConsoleEntry['level'];
-        const msg = Array.isArray(r.args) ? r.args.map(toStr).join(' ') : toStr(r.args);
-        return { level, message: msg, timestamp: now };
+        return { level, message: toMsg(r.args), timestamp: now };
       }
       return { level: 'log', message: toStr(r), timestamp: now };
     });
@@ -641,6 +801,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   // inside CodingJsPanelComponent
   public async setCode(code: string) {
+    this.cancelPendingPersist();
     this.editorContent.set(code);
     const q = this.question;
     const storageKey = this.storageKeyFor(q);

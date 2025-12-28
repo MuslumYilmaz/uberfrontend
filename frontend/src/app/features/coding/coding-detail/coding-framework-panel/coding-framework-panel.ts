@@ -76,6 +76,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   // drag state (for future extensibility; currently only simple layout)
   private rebuildTimer: any = null;
+  private persistTimer: any = null;
+  private pendingPersist: { key: string; tech: Tech; path: string; code: string } | null = null;
   private userFilesBackup: Record<string, string> | null = null;
   private destroy = false;
 
@@ -119,6 +121,38 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     private zone: NgZone
   ) { }
 
+  private cancelPendingPersist() {
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    this.pendingPersist = null;
+  }
+
+  private flushPendingPersist() {
+    if (!this.pendingPersist) return;
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    const p = this.pendingPersist;
+    this.pendingPersist = null;
+    if (this.disablePersistence) return;
+    void this.codeStore.saveFrameworkFileAsync(p.key, p.tech as any, p.path, p.code);
+  }
+
+  private schedulePersist(path: string, code: string) {
+    if (this.disablePersistence) return;
+    const q = this.question;
+    if (!q || !this.isFrameworkTech()) return;
+    this.pendingPersist = { key: this.storageKey(q), tech: this.tech, path, code };
+
+    if (this.persistTimer) clearTimeout(this.persistTimer);
+    this.persistTimer = setTimeout(() => {
+      this.flushPendingPersist();
+    }, 250);
+  }
+
   // ---------- lifecycle ----------
   ngOnInit(): void {
     if (this.question && this.tech && this.isFrameworkTech()) {
@@ -150,6 +184,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   ngOnDestroy(): void {
     this.destroy = true;
+    this.flushPendingPersist();
+    if (this.persistTimer) clearTimeout(this.persistTimer);
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
     try {
       const frameEl = this.previewFrame?.nativeElement;
@@ -166,6 +202,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   /** Called by parent after question changes (also auto-called on input changes). */
   initFromQuestion(): void {
+    this.flushPendingPersist();
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
 
@@ -183,6 +220,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
   /** Parent: "Load solution into editor" button from Solution panel. */
   applySolutionFiles(preferredOpenPath?: string): void {
+    this.cancelPendingPersist();
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
 
@@ -297,6 +335,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
 
+    this.cancelPendingPersist();
     this.viewingSolution.set(false);
     this.showRestoreBanner.set(false);
     this.showingFrameworkSolutionPreview.set(false);
@@ -405,6 +444,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   openFile(path: string) {
     const files = this.filesMap();
     if (!path || !(path in files)) return;
+    this.flushPendingPersist();
     this.openPath.set(path);
     this.frameworkEntryFile = path;
     this.editorContent.set(files[path] ?? '');
@@ -434,9 +474,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.filesMap.update(m => ({ ...m, [path]: code }));
 
     // persist user changes
-    if (!this.disablePersistence) {
-      void this.codeStore.saveFrameworkFileAsync(this.storageKey(q), this.tech as any, path, code);
-    }
+    this.schedulePersist(path, code);
 
     // If user was viewing the solution, mark it as edited
     // but keep the restore banner visible so they can still revert manually.

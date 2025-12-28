@@ -94,6 +94,36 @@ function hasLocalStorage(): boolean {
 export class CodeStorageService {
   private migrated = false;
 
+  private readonly MAX_BUNDLE_CACHE = 50;
+  private readonly bundleOpQueue = new Map<string, Promise<void>>();
+  private readonly jsBundleCache = new Map<string, JsBundleV2>();
+  private readonly webBundleCache = new Map<string, WebBundleV2>();
+  private readonly fwBundleCache = new Map<string, FrameworkBundleV2>();
+
+  private enqueueBundleOp<T>(key: string, op: () => Promise<T>): Promise<T> {
+    const prev = this.bundleOpQueue.get(key) ?? Promise.resolve();
+    const next = prev.catch(() => {}).then(op);
+    this.bundleOpQueue.set(key, next.then(() => undefined, () => undefined));
+    return next;
+  }
+
+  private cacheGet<V>(cache: Map<string, V>, key: string): V | null {
+    const v = cache.get(key);
+    if (v === undefined) return null;
+    cache.delete(key);
+    cache.set(key, v);
+    return v;
+  }
+
+  private cacheSet<V>(cache: Map<string, V>, key: string, value: V): void {
+    if (cache.has(key)) cache.delete(key);
+    cache.set(key, value);
+    if (cache.size > this.MAX_BUNDLE_CACHE) {
+      const oldest = cache.keys().next().value as string | undefined;
+      if (oldest) cache.delete(oldest);
+    }
+  }
+
   // ---------- PUBLIC: JS (consolidated) ----------
 
   getJs(qidRaw: string | number): JsSave | null {
@@ -341,23 +371,26 @@ export class CodeStorageService {
   ): Promise<void> {
     this.ensureMigrated();
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_JS_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+      const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
-    const jsBaseline = starters?.js ?? cur.js?.baseline ?? '';
-    const tsBaseline = starters?.ts ?? cur.ts?.baseline ?? '';
+      const jsBaseline = starters?.js ?? cur.js?.baseline ?? '';
+      const tsBaseline = starters?.ts ?? cur.ts?.baseline ?? '';
 
-    const next: JsBundleV2 = {
-      ...cur,
-      js: { code: jsBaseline, baseline: jsBaseline, updatedAt: now },
-      ts: { code: tsBaseline, baseline: tsBaseline, updatedAt: now },
-      version: 'v2',
-      updatedAt: now,
-      lastLang: cur.lastLang ?? 'js',
-    };
+      const next: JsBundleV2 = {
+        ...cur,
+        js: { code: jsBaseline, baseline: jsBaseline, updatedAt: now },
+        ts: { code: tsBaseline, baseline: tsBaseline, updatedAt: now },
+        version: 'v2',
+        updatedAt: now,
+        lastLang: cur.lastLang ?? 'js',
+      };
 
-    await this.saveBundlePrimary(qid, next);
+      await this.saveBundlePrimary(qid, next);
+    });
   }
 
 
@@ -367,21 +400,17 @@ export class CodeStorageService {
   async getJsAsync(qidRaw: string | number): Promise<JsSave | null> {
     const qid = String(qidRaw);
 
-    // Try IDB first
-    const raw = await LF_JS.getItem<string>(V2_JS_BUNDLE(qid));
-    if (raw) {
-      try {
-        const b = JSON.parse(raw) as JsBundleV2;
-        const lang: JsLang = (b.lastLang === 'ts' || b.lastLang === 'js') ? b.lastLang : 'js';
-        const code = (b[lang]?.code ?? '') as string;
-        return {
-          code,
-          language: lang,
-          format: lang === 'ts' ? 'typescript' : 'javascript',
-          version: 'v2',
-          updatedAt: b.updatedAt,
-        };
-      } catch { /* fall through */ }
+    const b = await this.getBundleAsync(qid);
+    if (b) {
+      const lang: JsLang = (b.lastLang === 'ts' || b.lastLang === 'js') ? b.lastLang : 'js';
+      const code = (b[lang]?.code ?? '') as string;
+      return {
+        code,
+        language: lang,
+        format: lang === 'ts' ? 'typescript' : 'javascript',
+        version: 'v2',
+        updatedAt: b.updatedAt,
+      };
     }
 
     // Fallback to your existing localStorage bundle (so current users still work)
@@ -397,90 +426,106 @@ export class CodeStorageService {
   ): Promise<void> {
     this.ensureMigrated();
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_JS_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    // Read current bundle (IDB first, then LS)
-    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+      const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
-    const existing = cur[lang]?.code ?? '';
-    const baseline = cur[lang]?.baseline ?? null;
+      const existing = cur[lang]?.code ?? '';
+      const baseline = cur[lang]?.baseline ?? null;
 
-    // Guard 1: don't overwrite non-empty user code with empty value (unless force)
-    if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
-      return;
-    }
+      // Guard 1: don't overwrite non-empty user code with empty value (unless force)
+      if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+        return;
+      }
 
-    // Guard 2: don't "revert" to baseline if user already has custom code (unless force)
-    if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
-      return;
-    }
+      // Guard 2: don't "revert" to baseline if user already has custom code (unless force)
+      if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+        return;
+      }
 
-    const next: JsBundleV2 = {
-      ...cur,
-      [lang]: { ...(cur[lang] || {}), code, updatedAt: now },
-      lastLang: lang,
-      version: 'v2',
-      updatedAt: now,
-    };
+      const next: JsBundleV2 = {
+        ...cur,
+        [lang]: { ...(cur[lang] || {}), code, updatedAt: now },
+        lastLang: lang,
+        version: 'v2',
+        updatedAt: now,
+      };
 
-    await this.saveBundlePrimary(qid, next);
-
+      await this.saveBundlePrimary(qid, next);
+    });
   }
 
   /** Set baseline; write to IDB primarily, LS as fallback */
   async setJsBaselineAsync(qidRaw: string | number, lang: JsLang, baseline: string): Promise<void> {
     this.ensureMigrated();
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_JS_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+      const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
-    const next: JsBundleV2 = {
-      ...cur,
-      [lang]: {
-        code: cur[lang]?.code ?? baseline,
-        baseline,
-        updatedAt: cur[lang]?.updatedAt ?? now,
-      },
-      version: 'v2',
-      updatedAt: now,
-    };
+      const next: JsBundleV2 = {
+        ...cur,
+        [lang]: {
+          code: cur[lang]?.code ?? baseline,
+          baseline,
+          updatedAt: cur[lang]?.updatedAt ?? now,
+        },
+        version: 'v2',
+        updatedAt: now,
+      };
 
-    await this.saveBundlePrimary(qid, next);
+      await this.saveBundlePrimary(qid, next);
+    });
 
   }
 
   /** Strict per-language getter (IDB first, then LS) */
   async getJsForLangAsync(qidRaw: string | number, lang: JsLang): Promise<string | null> {
     const qid = String(qidRaw);
-    const raw = await LF_JS.getItem<string>(V2_JS_BUNDLE(qid));
-    if (raw) {
-      try {
-        const b = JSON.parse(raw) as JsBundleV2;
-        return (b && b[lang]?.code != null) ? (b[lang]!.code as string) : null;
-      } catch { /* fall through */ }
-    }
+    const b = await this.getBundleAsync(qid);
+    if (b) return (b[lang]?.code ?? null) as string | null;
     return this.getJsForLang(qid, lang);
   }
 
   /** Async clear: remove from IDB first, then LS */
   async clearJsAsync(qidRaw: string | number): Promise<void> {
     const qid = String(qidRaw);
-    try { await LF_JS.removeItem(V2_JS_BUNDLE(qid)); } catch { /* ignore */ }
-    if (hasLocalStorage()) {
-      try { localStorage.removeItem(V2_JS_BUNDLE(qid)); } catch { /* ignore */ }
-    }
+    const key = V2_JS_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      this.jsBundleCache.delete(key);
+      try { await LF_JS.removeItem(key); } catch { /* ignore */ }
+      if (hasLocalStorage()) {
+        try { localStorage.removeItem(key); } catch { /* ignore */ }
+      }
+    });
   }
 
   // helper (optional but tidy)
   private async getBundleAsync(qidRaw: string | number): Promise<JsBundleV2 | null> {
     const qid = String(qidRaw);
-    const raw = await LF_JS.getItem<string>(V2_JS_BUNDLE(qid));
-    if (raw) { try { return JSON.parse(raw) as JsBundleV2; } catch { /* ignore */ } }
+    const key = V2_JS_BUNDLE(qid);
+    const cached = this.cacheGet(this.jsBundleCache, key);
+    if (cached) return cached;
+
+    const raw = await LF_JS.getItem<string>(key);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as JsBundleV2;
+        this.cacheSet(this.jsBundleCache, key, parsed);
+        return parsed;
+      } catch { /* ignore */ }
+    }
     // fallback to LS if IDB missing/invalid
     try {
-      const ls = localStorage.getItem(V2_JS_BUNDLE(qid));
-      return ls ? (JSON.parse(ls) as JsBundleV2) : null;
+      const ls = localStorage.getItem(key);
+      if (!ls) return null;
+      const parsed = JSON.parse(ls) as JsBundleV2;
+      this.cacheSet(this.jsBundleCache, key, parsed);
+      return parsed;
     } catch { return null; }
   }
 
@@ -490,10 +535,12 @@ export class CodeStorageService {
     opts?: { silent?: boolean }
   ): Promise<void> {
     const key = V2_JS_BUNDLE(qid);
+    const payload = JSON.stringify(bundle);
 
     try {
       // Primary: IndexedDB
-      await LF_JS.setItem(key, JSON.stringify(bundle));
+      await LF_JS.setItem(key, payload);
+      this.cacheSet(this.jsBundleCache, key, bundle);
       return;
     } catch {
       // Fallback: localStorage (only if available)
@@ -504,7 +551,8 @@ export class CodeStorageService {
         return;
       }
       try {
-        localStorage.setItem(key, JSON.stringify(bundle));
+        localStorage.setItem(key, payload);
+        this.cacheSet(this.jsBundleCache, key, bundle);
       } catch {
         // Out of quota both in IDB/LS → nothing else to do.
       }
@@ -597,35 +645,47 @@ export class CodeStorageService {
 
   async setLastLangAsync(qidRaw: string | number, lang: JsLang): Promise<void> {
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_JS_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    // Reuse existing bundle (IDB first, then LS)
-    const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
+      const cur = (await this.getBundleAsync(qid)) || { version: 'v2', updatedAt: now } as JsBundleV2;
 
-    const next: JsBundleV2 = {
-      ...cur,
-      lastLang: lang,
-      version: 'v2',
-      updatedAt: now,
-    };
+      const next: JsBundleV2 = {
+        ...cur,
+        lastLang: lang,
+        version: 'v2',
+        updatedAt: now,
+      };
 
-    await this.saveBundlePrimary(qid, next, { silent: true });
+      await this.saveBundlePrimary(qid, next, { silent: true });
+    });
   }
 
   private async getWebBundleAsync(qidRaw: string | number): Promise<WebBundleV2 | null> {
     const qid = String(qidRaw);
+    const key = V2_WEB_BUNDLE(qid);
+    const cached = this.cacheGet(this.webBundleCache, key);
+    if (cached) return cached;
 
     // IDB first
-    const raw = await LF_WEB.getItem<string>(V2_WEB_BUNDLE(qid));
+    const raw = await LF_WEB.getItem<string>(key);
     if (raw) {
-      try { return JSON.parse(raw) as WebBundleV2; } catch { /* ignore */ }
+      try {
+        const parsed = JSON.parse(raw) as WebBundleV2;
+        this.cacheSet(this.webBundleCache, key, parsed);
+        return parsed;
+      } catch { /* ignore */ }
     }
 
     // Fallback: localStorage (legacy / migration)
     if (hasLocalStorage()) {
       try {
-        const ls = localStorage.getItem(V2_WEB_BUNDLE(qid));
-        return ls ? (JSON.parse(ls) as WebBundleV2) : null;
+        const ls = localStorage.getItem(key);
+        if (!ls) return null;
+        const parsed = JSON.parse(ls) as WebBundleV2;
+        this.cacheSet(this.webBundleCache, key, parsed);
+        return parsed;
       } catch { /* ignore */ }
     }
 
@@ -638,9 +698,11 @@ export class CodeStorageService {
     opts?: { silent?: boolean }
   ): Promise<void> {
     const key = V2_WEB_BUNDLE(qid);
+    const payload = JSON.stringify(bundle);
 
     try {
-      await LF_WEB.setItem(key, JSON.stringify(bundle));
+      await LF_WEB.setItem(key, payload);
+      this.cacheSet(this.webBundleCache, key, bundle);
       return;
     } catch {
       if (!hasLocalStorage()) {
@@ -650,7 +712,8 @@ export class CodeStorageService {
         return;
       }
       try {
-        localStorage.setItem(key, JSON.stringify(bundle));
+        localStorage.setItem(key, payload);
+        this.cacheSet(this.webBundleCache, key, bundle);
       } catch {
         // both stores failed; nothing else to do
       }
@@ -698,50 +761,53 @@ export class CodeStorageService {
     starters: { html: string; css: string }
   ): Promise<{ html: string; css: string; restored: boolean }> {
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_WEB_BUNDLE(qid);
+    return this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    let bundle = await this.getWebBundleAsync(qid);
+      let bundle = await this.getWebBundleAsync(qid);
 
-    // First-time: create baseline-only bundle
-    if (!bundle) {
-      bundle = {
-        version: 'v2',
-        updatedAt: now,
-        html: { baseline: starters.html, code: '' },
-        css: { baseline: starters.css, code: '' },
-      };
+      // First-time: create baseline-only bundle
+      if (!bundle) {
+        bundle = {
+          version: 'v2',
+          updatedAt: now,
+          html: { baseline: starters.html, code: '' },
+          css: { baseline: starters.css, code: '' },
+        };
+        await this.saveWebBundlePrimary(qid, bundle, { silent: true });
+        return { html: starters.html, css: starters.css, restored: false };
+      }
+
+      // Ensure structure
+      if (!bundle.html) bundle.html = {};
+      if (!bundle.css) bundle.css = {};
+
+      // Seed missing baselines without overwriting code
+      if (!bundle.html.baseline) bundle.html.baseline = starters.html;
+      if (!bundle.css.baseline) bundle.css.baseline = starters.css;
+
+      const rawHtml = bundle.html.code ?? '';
+      const rawCss = bundle.css.code ?? '';
+
+      const htmlBase = bundle.html.baseline || starters.html;
+      const cssBase = bundle.css.baseline || starters.css;
+
+      const htmlHasUser = rawHtml.trim().length > 0;
+      const cssHasUser = rawCss.trim().length > 0;
+
+      const htmlInitial = htmlHasUser ? rawHtml : htmlBase;
+      const cssInitial = cssHasUser ? rawCss : cssBase;
+
+      const restored =
+        (htmlHasUser && rawHtml.trim() !== htmlBase.trim()) ||
+        (cssHasUser && rawCss.trim() !== cssBase.trim());
+
+      bundle.updatedAt = now;
       await this.saveWebBundlePrimary(qid, bundle, { silent: true });
-      return { html: starters.html, css: starters.css, restored: false };
-    }
 
-    // Ensure structure
-    if (!bundle.html) bundle.html = {};
-    if (!bundle.css) bundle.css = {};
-
-    // Seed missing baselines without overwriting code
-    if (!bundle.html.baseline) bundle.html.baseline = starters.html;
-    if (!bundle.css.baseline) bundle.css.baseline = starters.css;
-
-    const rawHtml = bundle.html.code ?? '';
-    const rawCss = bundle.css.code ?? '';
-
-    const htmlBase = bundle.html.baseline || starters.html;
-    const cssBase = bundle.css.baseline || starters.css;
-
-    const htmlHasUser = rawHtml.trim().length > 0;
-    const cssHasUser = rawCss.trim().length > 0;
-
-    const htmlInitial = htmlHasUser ? rawHtml : htmlBase;
-    const cssInitial = cssHasUser ? rawCss : cssBase;
-
-    const restored =
-      (htmlHasUser && rawHtml.trim() !== htmlBase.trim()) ||
-      (cssHasUser && rawCss.trim() !== cssBase.trim());
-
-    bundle.updatedAt = now;
-    await this.saveWebBundlePrimary(qid, bundle, { silent: true });
-
-    return { html: htmlInitial, css: cssInitial, restored };
+      return { html: htmlInitial, css: cssInitial, restored };
+    });
   }
 
   async saveWebAsync(
@@ -751,33 +817,36 @@ export class CodeStorageService {
     opts?: { force?: boolean }
   ): Promise<void> {
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_WEB_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    const cur = (await this.getWebBundleAsync(qid)) || {
-      version: 'v2',
-      updatedAt: now,
-      html: {},
-      css: {},
-    } as WebBundleV2;
+      const cur = (await this.getWebBundleAsync(qid)) || {
+        version: 'v2',
+        updatedAt: now,
+        html: {},
+        css: {},
+      } as WebBundleV2;
 
-    const part = cur[which] || {};
-    const existing = part.code ?? '';
-    const baseline = part.baseline ?? null;
+      const part = cur[which] || {};
+      const existing = part.code ?? '';
+      const baseline = part.baseline ?? null;
 
-    // Guard 1: don't clobber non-empty user code with empty string (unless forced)
-    if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
-      return;
-    }
+      // Guard 1: don't clobber non-empty user code with empty string (unless forced)
+      if (!opts?.force && (code ?? '').length === 0 && existing.trim().length > 0) {
+        return;
+      }
 
-    // Guard 2: don't silently revert to baseline when user already has custom code
-    if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
-      return;
-    }
+      // Guard 2: don't silently revert to baseline when user already has custom code
+      if (!opts?.force && existing.trim().length > 0 && baseline != null && code === baseline) {
+        return;
+      }
 
-    cur[which] = { ...part, code, updatedAt: now };
-    cur.updatedAt = now;
+      cur[which] = { ...part, code, updatedAt: now };
+      cur.updatedAt = now;
 
-    await this.saveWebBundlePrimary(qid, cur);
+      await this.saveWebBundlePrimary(qid, cur);
+    });
   }
 
   async resetWebBothAsync(
@@ -785,29 +854,36 @@ export class CodeStorageService {
     starters?: { html?: string; css?: string }
   ): Promise<void> {
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
-    const cur = (await this.getWebBundleAsync(qid)) || { version: 'v2', updatedAt: now } as WebBundleV2;
+    const key = V2_WEB_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
+      const cur = (await this.getWebBundleAsync(qid)) || { version: 'v2', updatedAt: now } as WebBundleV2;
 
-    const htmlBaseline = starters?.html ?? cur.html?.baseline ?? '';
-    const cssBaseline = starters?.css ?? cur.css?.baseline ?? '';
+      const htmlBaseline = starters?.html ?? cur.html?.baseline ?? '';
+      const cssBaseline = starters?.css ?? cur.css?.baseline ?? '';
 
-    const next: WebBundleV2 = {
-      ...cur,
-      html: { code: htmlBaseline, baseline: htmlBaseline, updatedAt: now },
-      css: { code: cssBaseline, baseline: cssBaseline, updatedAt: now },
-      version: 'v2',
-      updatedAt: now,
-    };
+      const next: WebBundleV2 = {
+        ...cur,
+        html: { code: htmlBaseline, baseline: htmlBaseline, updatedAt: now },
+        css: { code: cssBaseline, baseline: cssBaseline, updatedAt: now },
+        version: 'v2',
+        updatedAt: now,
+      };
 
-    await this.saveWebBundlePrimary(qid, next);
+      await this.saveWebBundlePrimary(qid, next);
+    });
   }
 
   async clearWebAsync(qidRaw: string | number): Promise<void> {
     const qid = String(qidRaw);
-    try { await LF_WEB.removeItem(V2_WEB_BUNDLE(qid)); } catch { /* ignore */ }
-    if (hasLocalStorage()) {
-      try { localStorage.removeItem(V2_WEB_BUNDLE(qid)); } catch { /* ignore */ }
-    }
+    const key = V2_WEB_BUNDLE(qid);
+    await this.enqueueBundleOp(key, async () => {
+      this.webBundleCache.delete(key);
+      try { await LF_WEB.removeItem(key); } catch { /* ignore */ }
+      if (hasLocalStorage()) {
+        try { localStorage.removeItem(key); } catch { /* ignore */ }
+      }
+    });
   }
 
   private async getFrameworkBundleAsync(
@@ -816,18 +892,28 @@ export class CodeStorageService {
   ): Promise<FrameworkBundleV2 | null> {
     const qid = String(qidRaw);
     const key = V2_FW_BUNDLE(tech, qid);
+    const cached = this.cacheGet(this.fwBundleCache, key);
+    if (cached) return cached;
 
     // IDB first
     try {
       const raw = await LF_NG.getItem<string>(key);
-      if (raw) return JSON.parse(raw) as FrameworkBundleV2;
+      if (raw) {
+        const parsed = JSON.parse(raw) as FrameworkBundleV2;
+        this.cacheSet(this.fwBundleCache, key, parsed);
+        return parsed;
+      }
     } catch { /* ignore */ }
 
     // Fallback: localStorage (for migration / legacy)
     if (hasLocalStorage()) {
       try {
         const ls = localStorage.getItem(key);
-        if (ls) return JSON.parse(ls) as FrameworkBundleV2;
+        if (ls) {
+          const parsed = JSON.parse(ls) as FrameworkBundleV2;
+          this.cacheSet(this.fwBundleCache, key, parsed);
+          return parsed;
+        }
       } catch { /* ignore */ }
     }
 
@@ -846,6 +932,7 @@ export class CodeStorageService {
 
     try {
       await LF_NG.setItem(key, payload);
+      this.cacheSet(this.fwBundleCache, key, bundle);
       return;
     } catch {
       if (!hasLocalStorage()) {
@@ -856,6 +943,7 @@ export class CodeStorageService {
       }
       try {
         localStorage.setItem(key, payload);
+        this.cacheSet(this.fwBundleCache, key, bundle);
       } catch {
         // out of quota both places; nothing else to do
       }
@@ -869,86 +957,89 @@ export class CodeStorageService {
     entryHint?: string
   ): Promise<{ files: Record<string, string>; entryFile: string; restored: boolean }> {
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
+    const key = V2_FW_BUNDLE(tech, qid);
+    return this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    let bundle = await this.getFrameworkBundleAsync(tech, qid);
+      let bundle = await this.getFrameworkBundleAsync(tech, qid);
 
-    // First time: seed from starters as baselines, no user code yet.
-    if (!bundle) {
-      const files: Record<string, FrameworkFileState> = {};
-      for (const [path, base] of Object.entries(starters || {})) {
-        const p = path.replace(/^\/+/, '');
-        files[p] = { baseline: base, code: '', updatedAt: now };
+      // First time: seed from starters as baselines, no user code yet.
+      if (!bundle) {
+        const files: Record<string, FrameworkFileState> = {};
+        for (const [path, base] of Object.entries(starters || {})) {
+          const p = path.replace(/^\/+/, '');
+          files[p] = { baseline: base, code: '', updatedAt: now };
+        }
+
+        const entryFile =
+          (entryHint && files[entryHint.replace(/^\/+/, '')])
+            ? entryHint.replace(/^\/+/, '')
+            : Object.keys(files)[0] || '';
+
+        bundle = { files, entryFile, version: 'v2', updatedAt: now };
+        await this.saveFrameworkBundlePrimary(tech, qid, bundle, { silent: true });
+
+        const initialFiles: Record<string, string> = {};
+        for (const [p, st] of Object.entries(files)) {
+          initialFiles[p] = st.baseline || '';
+        }
+
+        return { files: initialFiles, entryFile, restored: false };
       }
 
-      const entryFile =
-        (entryHint && files[entryHint.replace(/^\/+/, '')])
-          ? entryHint.replace(/^\/+/, '')
-          : Object.keys(files)[0] || '';
+      // Existing bundle: ensure all starter baselines exist, detect restore.
+      let restored = false;
+      const out: Record<string, string> = {};
+      const mergedPaths = new Set([
+        ...Object.keys(bundle.files || {}),
+        ...Object.keys(starters || {}),
+      ]);
 
-      bundle = { files, entryFile, version: 'v2', updatedAt: now };
+      for (const rawPath of mergedPaths) {
+        const path = rawPath.replace(/^\/+/, '');
+        const cur = bundle.files[path] || {};
+        const starterBase = starters[path];
+
+        // Seed baseline from starters if missing
+        const baseline = cur.baseline ?? starterBase ?? '';
+        const code = cur.code ?? '';
+
+        if (!cur.baseline && baseline) {
+          cur.baseline = baseline;
+        }
+
+        // Compute visible content: user code if any, else baseline
+        const visible = code || baseline || '';
+        out[path] = visible;
+
+        // Mark restored if user code diverged from baseline
+        if (code && baseline && code.trim() !== baseline.trim()) {
+          restored = true;
+        }
+
+        // Ensure we write back the updated file state
+        cur.updatedAt = cur.updatedAt ?? now;
+        bundle.files[path] = cur;
+      }
+
+      // Ensure entry file
+      if (!bundle.entryFile || !out[bundle.entryFile]) {
+        const guess =
+          (entryHint && out[entryHint.replace(/^\/+/, '')])
+            ? entryHint.replace(/^\/+/, '')
+            : Object.keys(out)[0] || '';
+        bundle.entryFile = guess;
+      }
+
+      bundle.updatedAt = now;
       await this.saveFrameworkBundlePrimary(tech, qid, bundle, { silent: true });
 
-      const initialFiles: Record<string, string> = {};
-      for (const [p, st] of Object.entries(files)) {
-        initialFiles[p] = st.baseline || '';
-      }
-
-      return { files: initialFiles, entryFile, restored: false };
-    }
-
-    // Existing bundle: ensure all starter baselines exist, detect restore.
-    let restored = false;
-    const out: Record<string, string> = {};
-    const mergedPaths = new Set([
-      ...Object.keys(bundle.files || {}),
-      ...Object.keys(starters || {}),
-    ]);
-
-    for (const rawPath of mergedPaths) {
-      const path = rawPath.replace(/^\/+/, '');
-      const cur = bundle.files[path] || {};
-      const starterBase = starters[path];
-
-      // Seed baseline from starters if missing
-      const baseline = cur.baseline ?? starterBase ?? '';
-      const code = cur.code ?? '';
-
-      if (!cur.baseline && baseline) {
-        cur.baseline = baseline;
-      }
-
-      // Compute visible content: user code if any, else baseline
-      const visible = code || baseline || '';
-      out[path] = visible;
-
-      // Mark restored if user code diverged from baseline
-      if (code && baseline && code.trim() !== baseline.trim()) {
-        restored = true;
-      }
-
-      // Ensure we write back the updated file state
-      cur.updatedAt = cur.updatedAt ?? now;
-      bundle.files[path] = cur;
-    }
-
-    // Ensure entry file
-    if (!bundle.entryFile || !out[bundle.entryFile]) {
-      const guess =
-        (entryHint && out[entryHint.replace(/^\/+/, '')])
-          ? entryHint.replace(/^\/+/, '')
-          : Object.keys(out)[0] || '';
-      bundle.entryFile = guess;
-    }
-
-    bundle.updatedAt = now;
-    await this.saveFrameworkBundlePrimary(tech, qid, bundle, { silent: true });
-
-    return {
-      files: out,
-      entryFile: bundle.entryFile!,
-      restored,
-    };
+      return {
+        files: out,
+        entryFile: bundle.entryFile!,
+        restored,
+      };
+    });
   }
 
   async saveFrameworkFileAsync(
@@ -960,41 +1051,44 @@ export class CodeStorageService {
   ): Promise<void> {
     const qid = String(qidRaw);
     const path = pathRaw.replace(/^\/+/, '');
-    const now = new Date().toISOString();
+    const key = V2_FW_BUNDLE(tech, qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
 
-    const cur = (await this.getFrameworkBundleAsync(tech, qid)) || {
-      files: {},
-      version: 'v2',
-      updatedAt: now,
-    } as FrameworkBundleV2;
+      const cur = (await this.getFrameworkBundleAsync(tech, qid)) || {
+        files: {},
+        version: 'v2',
+        updatedAt: now,
+      } as FrameworkBundleV2;
 
-    const prev = cur.files[path] || {};
-    const existing = prev.code ?? '';
-    const baseline = prev.baseline ?? null;
+      const prev = cur.files[path] || {};
+      const existing = prev.code ?? '';
+      const baseline = prev.baseline ?? null;
 
-    // Guard 1: don't wipe non-empty with empty (unless force)
-    if (!opts?.force && (!code || !code.trim()) && existing.trim()) {
-      return;
-    }
+      // Guard 1: don't wipe non-empty with empty (unless force)
+      if (!opts?.force && (!code || !code.trim()) && existing.trim()) {
+        return;
+      }
 
-    // Guard 2: don't silently revert to baseline if user already diverged (unless force)
-    if (
-      !opts?.force &&
-      existing.trim() &&
-      baseline != null &&
-      code === baseline
-    ) {
-      return;
-    }
+      // Guard 2: don't silently revert to baseline if user already diverged (unless force)
+      if (
+        !opts?.force &&
+        existing.trim() &&
+        baseline != null &&
+        code === baseline
+      ) {
+        return;
+      }
 
-    cur.files[path] = {
-      ...prev,
-      code,
-      updatedAt: now,
-    };
-    cur.updatedAt = now;
+      cur.files[path] = {
+        ...prev,
+        code,
+        updatedAt: now,
+      };
+      cur.updatedAt = now;
 
-    await this.saveFrameworkBundlePrimary(tech, qid, cur);
+      await this.saveFrameworkBundlePrimary(tech, qid, cur);
+    });
   }
 
   async resetFrameworkAsync(
@@ -1004,27 +1098,30 @@ export class CodeStorageService {
     entryHint?: string
   ): Promise<void> {
     const qid = String(qidRaw);
-    const now = new Date().toISOString();
-    const files: Record<string, FrameworkFileState> = {};
+    const key = V2_FW_BUNDLE(tech, qid);
+    await this.enqueueBundleOp(key, async () => {
+      const now = new Date().toISOString();
+      const files: Record<string, FrameworkFileState> = {};
 
-    for (const [pathRaw, base] of Object.entries(starters || {})) {
-      const path = pathRaw.replace(/^\/+/, '');
-      files[path] = { baseline: base, code: base, updatedAt: now };
-    }
+      for (const [pathRaw, base] of Object.entries(starters || {})) {
+        const path = pathRaw.replace(/^\/+/, '');
+        files[path] = { baseline: base, code: base, updatedAt: now };
+      }
 
-    const entryFile =
-      (entryHint && files[entryHint.replace(/^\/+/, '')])
-        ? entryHint.replace(/^\/+/, '')
-        : Object.keys(files)[0] || '';
+      const entryFile =
+        (entryHint && files[entryHint.replace(/^\/+/, '')])
+          ? entryHint.replace(/^\/+/, '')
+          : Object.keys(files)[0] || '';
 
-    const bundle: FrameworkBundleV2 = {
-      files,
-      entryFile,
-      version: 'v2',
-      updatedAt: now,
-    };
+      const bundle: FrameworkBundleV2 = {
+        files,
+        entryFile,
+        version: 'v2',
+        updatedAt: now,
+      };
 
-    await this.saveFrameworkBundlePrimary(tech, qid, bundle);
+      await this.saveFrameworkBundlePrimary(tech, qid, bundle);
+    });
   }
 
   async clearFrameworkAsync(
@@ -1033,10 +1130,13 @@ export class CodeStorageService {
   ): Promise<void> {
     const qid = String(qidRaw);
     const key = V2_FW_BUNDLE(tech, qid);
-    try { await LF_NG.removeItem(key); } catch { /* ignore */ }
-    if (hasLocalStorage()) {
-      try { localStorage.removeItem(key); } catch { /* ignore */ }
-    }
+    await this.enqueueBundleOp(key, async () => {
+      this.fwBundleCache.delete(key);
+      try { await LF_NG.removeItem(key); } catch { /* ignore */ }
+      if (hasLocalStorage()) {
+        try { localStorage.removeItem(key); } catch { /* ignore */ }
+      }
+    });
   }
 
   async setFrameworkBundleAsync(

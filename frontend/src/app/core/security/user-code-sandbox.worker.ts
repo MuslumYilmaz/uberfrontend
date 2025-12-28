@@ -32,6 +32,9 @@ const now = () => Date.now();
 const MAX_CODE_BYTES = 200 * 1024;     // 200 KB per payload
 const MAX_LOGS = 200;
 const MAX_LOG_CHARS = 2000;
+const MAX_PREVIEW_DEPTH = 4;
+const MAX_PREVIEW_KEYS = 20;
+const MAX_PREVIEW_ARRAY_ITEMS = 20;
 
 // ---------- utilities ----------
 const tagOf = (v: unknown) => Object.prototype.toString.call(v);
@@ -58,7 +61,10 @@ const safeStringify = (v: unknown) => {
         if (v === null) return 'null';
 
         const t = typeof v;
-        if (t === 'string') return v as string;
+        if (t === 'string') {
+            const s = v as string;
+            return s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
+        }
         if (t === 'undefined') return 'undefined';
         if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
         if (t === 'symbol') return (v as symbol).toString();
@@ -67,16 +73,75 @@ const safeStringify = (v: unknown) => {
         const special = formatSpecial(v);
         if (special) return special;
 
-        const seen = new WeakSet();
-        const json = JSON.stringify(v, (_k, val) => {
+        const seen = new WeakSet<object>();
+        const depths = new WeakMap<object, number>();
+        const json = JSON.stringify(v, function (this: any, key: string, val: any) {
             const specialInner = formatSpecial(val);
             if (specialInner) return specialInner;
 
-            if (typeof val === 'object' && val !== null) {
+            if (typeof val === 'string') {
+                return val.length > MAX_LOG_CHARS ? `${val.slice(0, MAX_LOG_CHARS)}…` : val;
+            }
+            if (typeof val === 'symbol') return val.toString();
+            if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
+
+            if (!val || (typeof val !== 'object' && typeof val !== 'function')) return val;
+
+            const holder: any = this;
+            const holderDepth =
+                holder && (typeof holder === 'object' || typeof holder === 'function')
+                    ? (depths.get(holder) ?? 0)
+                    : 0;
+            const nextDepth = key === '' ? 0 : holderDepth + 1;
+            if (!depths.has(val)) depths.set(val, nextDepth);
+            const depth = depths.get(val) ?? nextDepth;
+            if (depth > MAX_PREVIEW_DEPTH) return tagOf(val);
+
+            if (typeof val === 'object') {
                 if (seen.has(val)) return '[Circular]';
                 seen.add(val);
+
+                if (Array.isArray(val)) {
+                    if (val.length > MAX_PREVIEW_ARRAY_ITEMS) {
+                        const head = val.slice(0, MAX_PREVIEW_ARRAY_ITEMS);
+                        return [...head, `… +${val.length - MAX_PREVIEW_ARRAY_ITEMS} more`];
+                    }
+                    return val;
+                }
+
+                if (val instanceof Map) {
+                    const entries: any[] = [];
+                    let i = 0;
+                    for (const [k, v] of val.entries()) {
+                        if (i++ >= MAX_PREVIEW_KEYS) { entries.push(['…', '…']); break; }
+                        entries.push([k, v]);
+                    }
+                    return { '[[Map]]': entries, size: val.size };
+                }
+
+                if (val instanceof Set) {
+                    const values: any[] = [];
+                    let i = 0;
+                    for (const item of val.values()) {
+                        if (i++ >= MAX_PREVIEW_KEYS) { values.push('…'); break; }
+                        values.push(item);
+                    }
+                    return { '[[Set]]': values, size: val.size };
+                }
+
+                const proto = Object.getPrototypeOf(val);
+                const isPlain = proto === Object.prototype || proto === null;
+                if (isPlain) {
+                    const out: Record<string, any> = {};
+                    let count = 0;
+                    for (const k in val as any) {
+                        if (!Object.prototype.hasOwnProperty.call(val, k)) continue;
+                        if (count++ >= MAX_PREVIEW_KEYS) { out['…'] = '…'; break; }
+                        out[k] = (val as any)[k];
+                    }
+                    return out;
+                }
             }
-            if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
             return val;
         });
 
@@ -87,6 +152,16 @@ const safeStringify = (v: unknown) => {
     }
 };
 const clamp = (s: string) => s.length > MAX_LOG_CHARS ? `${s.slice(0, MAX_LOG_CHARS)}…` : s;
+const formatArgs = (args: unknown[]) => {
+    let msg = '';
+    for (const a of args) {
+        const part = safeStringify(a);
+        if (!msg) msg = part;
+        else msg += ` ${part}`;
+        if (msg.length > MAX_LOG_CHARS) return clamp(msg);
+    }
+    return clamp(msg);
+};
 const push = (level: LogLevel, ...args: unknown[]) => {
     if (logs.length >= MAX_LOGS) {
         if (!logLimitHit) {
@@ -95,7 +170,7 @@ const push = (level: LogLevel, ...args: unknown[]) => {
         }
         return;
     }
-    logs.push({ level, message: clamp(args.map(safeStringify).join(' ')), timestamp: now() });
+    logs.push({ level, message: formatArgs(args), timestamp: now() });
 };
 
 const cleanErrorMessage = (e: any) =>
