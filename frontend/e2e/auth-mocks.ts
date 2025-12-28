@@ -27,6 +27,8 @@ type AuthMockOptions = {
   validSignup?: { email: string; username: string; password: string };
   forceLoginError?: { status: number; error: string };
   forceSignupError?: { status: number; error: string };
+  loginSequence?: Array<{ status: number; error?: string; token?: string; user?: MockUser }>;
+  signupSequence?: Array<{ status: number; error?: string; token?: string; user?: MockUser }>;
 };
 
 function getCorsHeaders(req: Request) {
@@ -79,6 +81,9 @@ export function buildMockUser(overrides?: Partial<MockUser>): MockUser {
 }
 
 export async function installAuthMock(page: Page, opts: AuthMockOptions) {
+  const loginSequence = Array.isArray(opts.loginSequence) ? [...opts.loginSequence] : [];
+  const signupSequence = Array.isArray(opts.signupSequence) ? [...opts.signupSequence] : [];
+
   await page.route('http://localhost:3001/api/auth/**', async (route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -110,6 +115,17 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
 
     // Login
     if (req.method() === 'POST' && path.endsWith('/login')) {
+      if (loginSequence.length) {
+        const next = loginSequence.shift()!;
+        const token = next.token ?? opts.token;
+        const user = next.user ?? opts.user;
+        if (next.status >= 200 && next.status < 300) {
+          return jsonResponse(route, req, next.status, { token, user });
+        }
+        const message = next.error ?? (next.status === 401 ? 'Invalid credentials' : 'Login failed');
+        return jsonResponse(route, req, next.status, { error: message });
+      }
+
       if (opts.forceLoginError) {
         return jsonResponse(route, req, opts.forceLoginError.status, { error: opts.forceLoginError.error });
       }
@@ -126,6 +142,17 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
 
     // Signup
     if (req.method() === 'POST' && path.endsWith('/signup')) {
+      if (signupSequence.length) {
+        const next = signupSequence.shift()!;
+        const token = next.token ?? opts.token;
+        const user = next.user ?? opts.user;
+        if (next.status >= 200 && next.status < 300) {
+          return jsonResponse(route, req, next.status, { token, user });
+        }
+        const message = next.error ?? (next.status === 409 ? 'Account already exists' : 'Sign up failed');
+        return jsonResponse(route, req, next.status, { error: message });
+      }
+
       if (opts.forceSignupError) {
         return jsonResponse(route, req, opts.forceSignupError.status, { error: opts.forceSignupError.error });
       }
@@ -152,4 +179,3 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
     return jsonResponse(route, req, 404, { error: `Not mocked: ${path}` });
   });
 }
-

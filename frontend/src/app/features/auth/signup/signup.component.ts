@@ -35,10 +35,27 @@ export class SignupComponent {
   }
 
   submit() {
-    if (this.form.invalid) return;
-    const { email, username, passwords } = this.form.value as any;
-    this.loading = true; this.error = '';
-    this.auth.signup({ email, username, password: passwords.password }).subscribe({
+    if (this.loading) return;
+
+    const emailCtrl = this.form.get('email');
+    const usernameCtrl = this.form.get('username');
+    const email = String(emailCtrl?.value ?? '').trim();
+    const username = String(usernameCtrl?.value ?? '').trim();
+
+    if (emailCtrl && emailCtrl.value !== email) emailCtrl.setValue(email);
+    if (usernameCtrl && usernameCtrl.value !== username) usernameCtrl.setValue(username);
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const passwords = this.form.get('passwords')?.value as any;
+    const password = String(passwords?.password ?? '');
+
+    this.loading = true;
+    this.error = '';
+    this.auth.signup({ email, username, password }).subscribe({
       next: () => this.router.navigateByUrl('/'),
       error: (err: any) => { this.error = err.error?.error || 'Sign up failed'; this.loading = false; }
     });

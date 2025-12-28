@@ -42,6 +42,29 @@ test('auth: signup (email/password) logs in', async ({ page }) => {
   await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(token);
 });
 
+test('auth edge: signup trims email/username and still succeeds', async ({ page }) => {
+  const token = `e2e-token-signup-trim-${Date.now()}`;
+  const user = buildMockUser({ _id: 'e2e-user-signup-trim', username: 'trim_user', email: 'trim@example.com' });
+  await installAuthMock(page, {
+    token,
+    user,
+    validSignup: { email: user.email, username: user.username, password: 'secret123' },
+  });
+
+  await page.goto('/auth/signup');
+  await expect(page.getByTestId('signup-page')).toBeVisible();
+
+  await page.getByTestId('signup-email').fill(`  ${user.email} `);
+  await page.getByTestId('signup-username').fill(` ${user.username}  `);
+  await page.getByTestId('signup-password').fill('secret123');
+  await page.getByTestId('signup-confirm').fill('secret123');
+  await page.getByTestId('signup-submit').click();
+
+  await expect(page).toHaveURL('/');
+  await expectLoggedIn(page);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(token);
+});
+
 test('auth: login (email/password) logs in and survives reload', async ({ page }) => {
   const token = `e2e-token-login-${Date.now()}`;
   const user = buildMockUser({ _id: 'e2e-user-login', username: 'login_user', email: 'login@example.com' });
@@ -127,6 +150,82 @@ test.describe('auth edge: invalid login', () => {
     await expect(page).toHaveURL(/\/auth\/login$/);
     await expect(page.getByTestId('login-error')).toContainText('Invalid credentials');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
+  });
+});
+
+test.describe('auth edge: retry flows', () => {
+  test.describe('login can recover after a 401', () => {
+    test.use({
+      // Chromium logs 401s as console.error ("Failed to load resource") — allowlist only for this scenario.
+      consoleErrorAllowlist: ['\\/api\\/auth\\/login'],
+    });
+
+    test('second attempt succeeds after first failure', async ({ page }) => {
+      const token = `e2e-token-login-retry-${Date.now()}`;
+      const user = buildMockUser({ _id: 'e2e-user-login-retry', username: 'retry_user', email: 'retry@example.com' });
+      await installAuthMock(page, {
+        token,
+        user,
+        validLogin: { emailOrUsername: user.email, password: 'secret123' },
+        loginSequence: [
+          { status: 401, error: 'Invalid credentials' },
+          { status: 200 },
+        ],
+      });
+
+      await page.goto('/auth/login');
+      await expect(page.getByTestId('login-page')).toBeVisible();
+
+      await page.getByTestId('login-email').fill(user.email);
+      await page.getByTestId('login-password').fill('secret123');
+      await page.getByTestId('login-submit').click();
+
+      await expect(page).toHaveURL(/\/auth\/login$/);
+      await expect(page.getByTestId('login-error')).toContainText('Invalid credentials');
+      await expect(page.getByTestId('login-submit')).toBeEnabled();
+
+      await page.getByTestId('login-submit').click();
+      await expect(page).toHaveURL('/');
+      await expectLoggedIn(page);
+    });
+  });
+
+  test.describe('signup can recover after a 409', () => {
+    test.use({
+      // Chromium logs 409s as console.error ("Failed to load resource") — allowlist only for this scenario.
+      consoleErrorAllowlist: ['\\/api\\/auth\\/signup'],
+    });
+
+    test('second attempt succeeds after conflict error', async ({ page }) => {
+      const token = `e2e-token-signup-retry-${Date.now()}`;
+      const user = buildMockUser({ _id: 'e2e-user-signup-retry', username: 'retry_signup', email: 'retry-signup@example.com' });
+      await installAuthMock(page, {
+        token,
+        user,
+        validSignup: { email: user.email, username: user.username, password: 'secret123' },
+        signupSequence: [
+          { status: 409, error: 'Account already exists' },
+          { status: 201 },
+        ],
+      });
+
+      await page.goto('/auth/signup');
+      await expect(page.getByTestId('signup-page')).toBeVisible();
+
+      await page.getByTestId('signup-email').fill(user.email);
+      await page.getByTestId('signup-username').fill(user.username);
+      await page.getByTestId('signup-password').fill('secret123');
+      await page.getByTestId('signup-confirm').fill('secret123');
+      await page.getByTestId('signup-submit').click();
+
+      await expect(page).toHaveURL(/\/auth\/signup$/);
+      await expect(page.getByTestId('signup-error')).toContainText('Account already exists');
+      await expect(page.getByTestId('signup-submit')).toBeEnabled();
+
+      await page.getByTestId('signup-submit').click();
+      await expect(page).toHaveURL('/');
+      await expectLoggedIn(page);
+    });
   });
 });
 
