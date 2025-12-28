@@ -240,246 +240,116 @@
     "type": "trivia"
   },
   {
-    "id": "angular-component-definition",
-    "title": "What is a component in Angular?",
-    "technology": "angular",
-    "difficulty": "easy",
-    "importance": 5,
-    "description": "A component in Angular is the fundamental building block of the user interface. It controls a portion of the view, encapsulating HTML, CSS, and TypeScript logic in a cohesive, reusable unit.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Angular, everything revolves around <em>components</em>. A component is a self-contained unit that defines a section of the user interface. Each component consists of three main parts: the HTML template (view), the CSS styles (design), and the TypeScript class (logic). Together, these form the core structure of an Angular application."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Core Responsibilities</strong><br>Components are responsible for rendering data, handling user interactions, and managing UI behavior. They communicate with other components via <em>inputs</em> and <em>outputs</em>, making the architecture modular and scalable."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "// Example of a basic Angular component\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-welcome',           // Defines the custom HTML tag\n  template: `<h1>Welcome, {{ name }}!</h1>`, // Defines the view\n  styles: ['h1 { color: #007ACC; font-family: Arial, sans-serif; }'] // Defines the styles\n})\nexport class WelcomeComponent {\n  name = 'Angular Developer'; // Component property used in the template\n}"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Part",
-            "Description"
-          ],
-          "rows": [
-            [
-              "@Component Decorator",
-              "Marks a class as an Angular component and provides metadata like selector, template, and styles."
-            ],
-            [
-              "Selector",
-              "Specifies the HTML tag where the component will be used (e.g., <app-welcome>)."
-            ],
-            [
-              "Template",
-              "Defines the component’s view — what the user sees on the screen."
-            ],
-            [
-              "Styles",
-              "Contain CSS that applies specifically to this component."
-            ],
-            [
-              "Class",
-              "Holds the component’s data and logic written in TypeScript."
-            ]
-          ],
-          "caption": "Key parts of an Angular component"
-        },
-        {
-          "type": "text",
-          "text": "<strong>How Components Work</strong><br>When Angular starts an application, it bootstraps a root component (commonly <code>AppComponent</code>). This root component contains other child components, forming a hierarchical tree structure. Data and events flow between these components, making the UI dynamic and interactive."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Example usage of a component -->\n<app-welcome></app-welcome>\n<!-- This will render 'Welcome, Angular Developer!' on the page. -->"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Component Lifecycle</strong><br>Each component goes through a lifecycle managed by Angular — from creation to destruction. You can hook into these stages using lifecycle methods such as <code>ngOnInit()</code>, <code>ngOnChanges()</code>, and <code>ngOnDestroy()</code>."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advantages of Using Components</strong><br><ul><li>Encapsulation of logic, view, and styles within a single unit.</li><li>Reusability across different parts of the application.</li><li>Improved maintainability and scalability.</li><li>Easy unit testing and debugging due to isolated scope.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example of Parent-Child Communication</strong><br>Components can exchange data using <code>@Input()</code> and <code>@Output()</code> decorators. This enables flexible and modular app design."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "// child.component.ts\n@Component({ selector: 'app-child', template: `<p>{{ message }}</p>` })\nexport class ChildComponent {\n  @Input() message!: string;\n}\n\n// parent.component.html\n<app-child [message]=\"'Hello from Parent!'\" />"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of components as Lego blocks — each one serves a specific purpose, and when combined, they form the complete structure of your Angular application."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Components are the building blocks of Angular applications.</li><li>They combine template, styles, and logic in a single class.</li><li>They promote modularity, reusability, and cleaner application architecture.</li><li>Angular applications are essentially a tree of interconnected components.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia"
-  },
-  {
-    "id": "angular-component-decorator",
-    "title": "What is the purpose of the @Component decorator?",
-    "technology": "angular",
-    "difficulty": "easy",
-    "importance": 5,
-    "description": "The @Component decorator in Angular marks a class as an Angular component and provides metadata that tells Angular how to process, instantiate, and use that component within the application.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>@Component</code> decorator is a core feature of Angular. It is used to define and configure a component — the fundamental building block of Angular applications. This decorator provides Angular with the necessary metadata to understand how to render the component’s template, apply its styles, and manage its behavior in the application."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-profile',\n  templateUrl: './profile.component.html',\n  styleUrls: ['./profile.component.css']\n})\nexport class ProfileComponent {\n  name = 'John Doe';\n  age = 30;\n}"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Property",
-            "Description"
-          ],
-          "rows": [
-            [
-              "selector",
-              "Defines the custom HTML tag that represents the component in templates (e.g., <app-profile>)."
-            ],
-            [
-              "template or templateUrl",
-              "Specifies the component’s HTML structure. Can be defined inline (template) or in a separate file (templateUrl)."
-            ],
-            [
-              "styles or styleUrls",
-              "Defines the CSS styles for the component, either inline or in an external stylesheet."
-            ],
-            [
-              "providers",
-              "Registers services or dependencies available only to this component and its children."
-            ],
-            [
-              "animations",
-              "Defines animation triggers specific to this component."
-            ]
-          ],
-          "caption": "Common metadata properties used in the @Component decorator"
-        },
-        {
-          "type": "text",
-          "text": "<strong>How It Works</strong><br>The <code>@Component</code> decorator associates metadata with the class it decorates. This metadata guides Angular on how to create and display the component. When Angular compiles the application, it uses this metadata to generate the component’s view and attach it to the DOM."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Using the selector to display the component -->\n<app-profile></app-profile>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example Explained</strong><br>In the example above:<ul><li>The <code>selector</code> defines the component’s tag name (<app-profile>).</li><li>The <code>templateUrl</code> points to an external HTML file that defines the UI.</li><li>The <code>styleUrls</code> property links to external CSS styles.</li><li>The <code>ProfileComponent</code> class contains the logic and data bound to the template.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why @Component Is Essential</strong><br><ul><li>It connects your TypeScript logic to the HTML template and styles.</li><li>It defines how Angular identifies and renders the component.</li><li>It allows encapsulation of behavior, template, and styling.</li><li>It helps in building modular and maintainable applications.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> The @Component decorator is like the blueprint that tells Angular how to construct and display a piece of your user interface."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>The @Component decorator defines an Angular component by attaching metadata.</li><li>It specifies properties such as selector, template, and styles.</li><li>It helps Angular understand how to create, render, and manage the component.</li><li>Every component in Angular must use @Component to function correctly.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia"
-  },
-  {
-    "id": "angular-module-definition",
-    "title": "What is a module in Angular?",
+    "id": "angular-component-vs-service-responsibilities",
+    "title": "What responsibilities belong inside an Angular component vs a service?",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "A module in Angular (represented by a class decorated with @NgModule) is a container that organizes related components, directives, pipes, and services into cohesive blocks of functionality. Modules help structure large applications into manageable sections and enable features like lazy loading.",
+    "description": "Angular components should focus on UI/presentation and user interactions, while services should hold reusable logic, business rules, and side effects (HTTP, caching, state). Clean separation keeps components thin, improves testability, and avoids duplicated logic across the app.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Angular, a <strong>module</strong> is a logical container that groups together related parts of an application — such as components, directives, pipes, and services. Every Angular application has at least one module, the <code>AppModule</code>, which serves as the root module. Modules help organize the codebase and make it more modular, scalable, and maintainable."
-        },
-        {
-          "type": "text",
-          "text": "<strong>What is @NgModule?</strong><br>The <code>@NgModule</code> decorator is used to define an Angular module. It provides metadata that describes how to compile and launch the application, specifying which components belong to the module and what other modules are imported or exported."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { FormsModule } from '@angular/forms';\nimport { AppComponent } from './app.component';\nimport { UserComponent } from './user/user.component';\n\n@NgModule({\n  declarations: [AppComponent, UserComponent], // Components, directives, pipes\n  imports: [BrowserModule, FormsModule],        // Other Angular modules\n  providers: [],                                // Services and dependencies\n  bootstrap: [AppComponent]                     // Root component to start the app\n})\nexport class AppModule {}"
+          "text": "<strong>Overview</strong><br><br>Use <strong>components</strong> for rendering + wiring UI events to actions. Use <strong>services</strong> for reusable logic and side effects (HTTP, caching, state, orchestration). A good component reads like a “view model composer”, not a mini back-end."
         },
         {
           "type": "list",
           "columns": [
-            "Property",
-            "Purpose"
+            "Area",
+            "Component (belongs here)",
+            "Service (belongs here)"
           ],
           "rows": [
             [
-              "declarations",
-              "Lists the components, directives, and pipes that belong to this module."
+              "UI rendering",
+              "Template bindings, UI composition, structural directives, view-only formatting",
+              "No DOM/template concerns"
             ],
             [
-              "imports",
-              "Imports other modules that export components, directives, or services required by this module."
+              "User interaction",
+              "Click handlers, form submit handlers, mapping UI events → intent/actions",
+              "Input validation rules that are reusable across screens"
             ],
             [
-              "providers",
-              "Defines services available for dependency injection within the module."
+              "State",
+              "Ephemeral UI state (open/closed, selected tab, local filters, loading flags for UI)",
+              "Shared/stateful app logic (cache, session data, cross-component state), facades"
             ],
             [
-              "exports",
-              "Makes components, directives, and pipes available to other modules."
+              "Business rules",
+              "Minimal (only what’s needed to connect UI to rules)",
+              "Core rules (pricing logic, permission checks, normalization, mapping DTO→domain)"
             ],
             [
-              "bootstrap",
-              "Specifies the root component that Angular should load when the app starts."
+              "Data access",
+              "Never call low-level APIs directly (avoid HttpClient usage in components)",
+              "HTTP calls, retries, error mapping, caching, request dedupe"
+            ],
+            [
+              "Reusability",
+              "Rare (components can be reusable, but should avoid app-specific business logic)",
+              "High (same service can be used by multiple components)"
+            ],
+            [
+              "Testing",
+              "Shallow: assert template bindings + event wiring + observable usage",
+              "Deep: unit test rules/side effects without rendering"
             ]
           ],
-          "caption": "Key properties of the @NgModule decorator"
+          "caption": "Component vs Service responsibilities"
         },
         {
           "type": "text",
-          "text": "<strong>Types of Angular Modules</strong><br><ul><li><strong>Root Module:</strong> The main module that bootstraps the application (usually AppModule).</li><li><strong>Feature Modules:</strong> Organize specific functionality (e.g., UserModule, ProductModule).</li><li><strong>Shared Modules:</strong> Contain reusable components, directives, and pipes shared across modules.</li><li><strong>Core Module:</strong> Holds singleton services used throughout the app.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Why Modules Matter</strong><br><ul><li>They enable code organization and separation of concerns.</li><li>They improve maintainability and scalability in large applications.</li><li>They support lazy loading, allowing parts of the application to load only when needed, improving performance.</li><li>They control the visibility and scope of components and services within the app.</li></ul>"
+          "text": "<strong>Rule of thumb</strong><br><br>If the code depends on <strong>how something is shown</strong> (DOM, template state, view events) → component. If it depends on <strong>what something means</strong> (rules, data fetching, caching, orchestration) → service."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Example: Feature module for user management\n@NgModule({\n  declarations: [UserListComponent, UserDetailComponent],\n  imports: [CommonModule, FormsModule],\n  exports: [UserListComponent]\n})\nexport class UserModule {}"
+          "code": "// user.service.ts\nimport { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\nimport { Observable, shareReplay } from 'rxjs';\n\nexport interface UserDto { id: string; name: string; }\nexport interface User { id: string; displayName: string; }\n\n@Injectable({ providedIn: 'root' })\nexport class UserService {\n  private users$?: Observable<User[]>;\n\n  constructor(private http: HttpClient) {}\n\n  getUsers(): Observable<User[]> {\n    // Cache + dedupe requests for this session\n    this.users$ ??= this.http.get<UserDto[]>('/api/users').pipe(\n      // Business mapping belongs here (or a dedicated mapper)\n      // so multiple components get consistent data.\n      // Keep mapping pure.\n      // DTO -> domain model:\n      // (If mapping grows, extract to a pure function.)\n      shareReplay({ bufferSize: 1, refCount: true })\n    ) as unknown as Observable<User[]>;\n\n    return this.users$;\n  }\n}"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// user-list.component.ts\nimport { Component, ChangeDetectionStrategy } from '@angular/core';\nimport { Observable, map, startWith } from 'rxjs';\nimport { UserService, User } from './user.service';\n\n@Component({\n  selector: 'app-user-list',\n  templateUrl: './user-list.component.html',\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UserListComponent {\n  // UI state belongs here\n  readonly search = '';\n\n  // Data stream comes from a service\n  readonly users$: Observable<User[]> = this.userService.getUsers();\n\n  // UI-only derived state can be computed in the component\n  // (keep it cheap; heavy transforms should be in a service/facade)\n  readonly viewModel$ = this.users$.pipe(\n    map(users => ({\n      users,\n      total: users.length\n    })),\n    startWith({ users: [], total: 0 })\n  );\n\n  constructor(private userService: UserService) {}\n\n  onRefreshClick(): void {\n    // UI intent: trigger refresh.\n    // If refresh needs side-effects (invalidate cache), expose that from the service.\n    // e.g. this.userService.invalidateUsersCache();\n  }\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common mistake",
+            "Why it hurts",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "HttpClient calls inside components",
+              "Duplicates logic, makes components hard to test and reuse",
+              "Move data access to a service/facade"
+            ],
+            [
+              "Business rules in templates (complex expressions)",
+              "Hard to read, hard to test, runs every CD cycle",
+              "Compute in TS (component for UI-only, service for reusable rules)"
+            ],
+            [
+              "Services manipulating the DOM",
+              "Breaks separation, complicates SSR/testing",
+              "Keep DOM work in components/directives; services stay UI-agnostic"
+            ],
+            [
+              "“God component” that owns everything",
+              "Becomes unmaintainable; PRs become risky",
+              "Extract services + presentational components; keep the container thin"
+            ]
+          ],
+          "caption": "Typical boundary violations"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of a module as a folder or container that keeps all related functionalities together — just like organizing files into folders for better structure."
+          "text": "<strong>Extra nuance: service scope</strong><br><br>Most services are singletons (<code>providedIn: 'root'</code>). If you need per-component instance state (e.g., a wizard session), provide the service at the component level via <code>providers: [WizardStateService]</code> so each component instance gets its own copy."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>An Angular module is a class decorated with @NgModule.</li><li>It groups related components, directives, pipes, and services.</li><li>The root module (AppModule) bootstraps the application.</li><li>Feature, Shared, and Core modules improve organization and reusability.</li><li>Modules make applications scalable, modular, and maintainable.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>Keep components focused on UI + event wiring + lightweight view-model shaping. Put reusable logic, side effects, data access, and business rules into services (or facades). This separation improves testability, reuse, and long-term maintainability."
         }
       ]
     },
@@ -487,77 +357,116 @@
     "type": "trivia"
   },
   {
-    "id": "angular-appmodule-role",
-    "title": "What is the role of AppModule in an Angular application?",
+    "id": "angular-component-metadata",
+    "title": "What metadata does @Component provide, and why does Angular need it?",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The AppModule is the root module of every Angular application. It acts as the main entry point that Angular uses to bootstrap and launch the application. It declares all the root-level components, imports other feature modules, and provides configuration for services used throughout the app.",
+    "description": "The @Component decorator attaches metadata to a TypeScript class so Angular can treat it as a component. This metadata tells Angular how to render the view (template + styles), how to match it in HTML (selector), what dependencies it can use (imports/providers), and how to run it (change detection, encapsulation, host bindings). Angular needs this because a plain class doesn’t contain enough information to compile and instantiate a UI component.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Angular, <code>AppModule</code> serves as the main, or root, module that defines the foundational structure of the application. Every Angular app must have at least one module, and this module is decorated with <code>@NgModule</code>. It acts as the central hub that ties together components, directives, services, and other modules to make the application functional."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Purpose of AppModule</strong><br>The <code>AppModule</code> defines which components will be available throughout the app, what external modules will be imported, and which component should be bootstrapped first when the application starts. Essentially, it provides Angular with the map of how to assemble the application at runtime."
+          "text": "<strong>Overview</strong><br><br><code>@Component({...})</code> is configuration for Angular’s compiler/runtime. It turns a plain class into something Angular can: (1) match in templates, (2) compile into render instructions, and (3) instantiate with the right DI scope and runtime behavior."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { AppRoutingModule } from './app-routing.module';\nimport { AppComponent } from './app.component';\nimport { HeaderComponent } from './components/header/header.component';\n\n@NgModule({\n  declarations: [AppComponent, HeaderComponent],  // Components belonging to this module\n  imports: [BrowserModule, AppRoutingModule],     // External modules used by this module\n  providers: [],                                  // Global services\n  bootstrap: [AppComponent]                       // The root component that starts the app\n})\nexport class AppModule {}"
+          "code": "import { Component, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';\n\n@Component({\n  selector: 'app-user-card',\n  standalone: true,\n  imports: [],\n  template: `\n    <article class=\"card\">\n      <h3>{{ name }}</h3>\n    </article>\n  `,\n  styles: [`.card { padding: 12px; }`],\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  encapsulation: ViewEncapsulation.Emulated,\n  providers: [],\n  host: { '[class.highlight]': 'highlight' }\n})\nexport class UserCardComponent {\n  name = 'Ada';\n  highlight = false;\n}"
         },
         {
           "type": "list",
           "columns": [
-            "Property",
-            "Purpose"
+            "Metadata field",
+            "What it tells Angular",
+            "Why it matters"
           ],
           "rows": [
             [
-              "declarations",
-              "Lists components, directives, and pipes that belong to this module."
+              "<code>selector</code>",
+              "How this component is referenced in templates (e.g. <code>&lt;app-user-card&gt;</code>).",
+              "Without it, Angular can’t match your class to an element in the DOM/template."
             ],
             [
-              "imports",
-              "Brings in other modules that export components or functionalities used here (e.g., FormsModule, HttpClientModule)."
+              "<code>template</code> / <code>templateUrl</code>",
+              "The view structure to compile and render.",
+              "Angular compiles it into efficient render instructions; the class alone has no view."
             ],
             [
-              "providers",
-              "Defines global services or dependencies available across the app."
+              "<code>styles</code> / <code>styleUrls</code>",
+              "The component’s CSS.",
+              "Angular can scope/apply styles according to encapsulation settings."
             ],
             [
-              "bootstrap",
-              "Specifies the root component that Angular loads to launch the app (usually AppComponent)."
+              "<code>standalone</code> + <code>imports</code>",
+              "Which directives/pipes/components are available in this template (standalone world).",
+              "Defines template dependency scope; missing imports means compile/runtime errors."
+            ],
+            [
+              "<code>providers</code>",
+              "DI providers scoped to this component subtree.",
+              "Controls service lifetime/scope (component-level instances vs root singletons)."
+            ],
+            [
+              "<code>changeDetection</code>",
+              "How Angular runs change detection for this component.",
+              "Affects performance + update semantics (e.g., <code>OnPush</code> vs default)."
+            ],
+            [
+              "<code>encapsulation</code>",
+              "How styles are scoped (Emulated/None/ShadowDom).",
+              "Prevents style bleeding (or intentionally allows it)."
+            ],
+            [
+              "<code>host</code> / <code>hostDirectives</code>",
+              "Host bindings/listeners and composition on the host element.",
+              "Lets Angular wire DOM behavior without manual imperative DOM code."
+            ],
+            [
+              "<code>animations</code>",
+              "Animation triggers available for this component.",
+              "Angular needs to register triggers so the runtime can execute them."
             ]
           ],
-          "caption": "Core configuration properties in AppModule"
+          "caption": "Common @Component metadata and what each part configures"
         },
         {
           "type": "text",
-          "text": "<strong>How AppModule Works</strong><br>When the application starts, Angular uses the <code>main.ts</code> file to bootstrap the <code>AppModule</code>. This module, in turn, bootstraps the <code>AppComponent</code>, which serves as the top-level component containing all other components in the UI hierarchy."
+          "text": "<strong>Why Angular needs this metadata</strong><br><br>A component is not “just a class” in Angular. Angular must know: (1) what DOM tag/selector maps to this class, (2) what template to compile, (3) what dependencies are allowed in that template, (4) what DI scope to use, and (5) how to run runtime behaviors like change detection and style scoping. None of that is inferable reliably from TypeScript code alone."
         },
         {
-          "type": "code",
-          "language": "typescript",
-          "code": "// main.ts\nimport { platformBrowserDynamic } from '@angular/platform-browser-dynamic';\nimport { AppModule } from './app/app.module';\n\nplatformBrowserDynamic().bootstrapModule(AppModule)\n  .catch(err => console.error(err));"
+          "type": "list",
+          "columns": [
+            "Angular uses metadata to...",
+            "Concrete outcome"
+          ],
+          "rows": [
+            [
+              "Compile templates (AOT/JIT) into render instructions",
+              "Fast runtime rendering; template errors are caught early in AOT builds."
+            ],
+            [
+              "Create an internal component definition (Ivy)",
+              "Angular generates internal definitions (e.g., the compiled component factory/definition) that drive creation + updates."
+            ],
+            [
+              "Resolve template dependency scope",
+              "Standalone <code>imports</code> (or NgModule declarations/imports) decide what directives/pipes are legal in the template."
+            ],
+            [
+              "Build the DI boundary",
+              "Component-level <code>providers</code> create a scoped injector for the component subtree."
+            ],
+            [
+              "Apply runtime policies",
+              "<code>OnPush</code>, encapsulation, host bindings, animations all change runtime behavior."
+            ]
+          ],
+          "caption": "What Angular actually does with @Component metadata"
         },
         {
           "type": "text",
-          "text": "<strong>Key Responsibilities of AppModule</strong><br><ul><li>Defines the entry point for the Angular application.</li><li>Declares the root component (AppComponent) that acts as the main container for other components.</li><li>Imports feature modules and shared modules.</li><li>Registers global services using the providers array.</li><li>Initializes the Angular application when it boots up.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example Structure of an Angular App</strong><br>\nAppModule (Root Module)\n│\n├── AppComponent (Root Component)\n│   ├── HeaderComponent\n│   ├── SidebarComponent\n│   └── ContentComponent\n│\n├── SharedModule\n└── FeatureModules (e.g., UserModule, ProductModule)\n"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of the <strong>AppModule</strong> as the main conductor of an orchestra — it ensures all parts of the application play in harmony by bringing together different modules, components, and services."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>AppModule</code> is the root module of every Angular application.</li><li>It declares the main component and imports all required feature modules.</li><li>It provides global configurations and dependencies.</li><li>It is bootstrapped first to start the Angular application lifecycle.</li></ul>"
+          "text": "<strong>Summary</strong><br><br><code>@Component</code> metadata is the contract between your class and Angular’s compiler/runtime: how to find it (<code>selector</code>), how to render it (<code>template</code>/<code>styles</code>), what it can use (<code>imports</code>/<code>providers</code>), and how it behaves (<code>changeDetection</code>/<code>encapsulation</code>/<code>host</code>). Angular needs it because the framework must compile and instantiate UI components deterministically."
         }
       ]
     },
@@ -565,51 +474,389 @@
     "type": "trivia"
   },
   {
-    "id": "angular-templates-definition",
-    "title": "What are templates in Angular?",
+    "id": "angular-ngmodules-vs-standalone",
+    "title": "What problems do NgModules solve that standalone components don’t?",
     "technology": "angular",
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "importance": 5,
-    "description": "Templates in Angular define the HTML structure and layout for a component’s view. They combine standard HTML with Angular’s template syntax, such as data binding, directives, and pipes, to dynamically render data and control the UI.",
+    "description": "Standalone components remove the need for NgModules for most app composition, routing, and DI setup. NgModules still solve a few practical problems: packaging legacy (non-standalone) declarations, consuming module-based third-party libraries (forRoot/forChild), and providing a single import/export “bundle” boundary that some teams and libraries still rely on.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Angular, a <strong>template</strong> is the HTML markup that defines what gets displayed in the browser. It represents the view of a component and uses Angular’s special syntax to display data, handle events, and control the rendering of elements dynamically. Templates connect a component’s logic (TypeScript class) to the user interface (HTML)."
+          "text": "<strong>Overview</strong><br><br>Standalone components shift Angular’s \"template dependency scope\" from <code>@NgModule</code> to the component itself (<code>imports</code> on the component). For modern apps, that removes most reasons to create feature/shared modules.<br><br>NgModules still matter mainly as a <strong>packaging + compatibility layer</strong> for legacy declarables and module-based libraries/config APIs."
         },
         {
-          "type": "text",
-          "text": "<strong>Template Structure</strong><br>A template can include plain HTML along with Angular-specific features like:<ul><li><strong>Interpolation ({{ }})</strong> — To display component data.</li><li><strong>Property Binding ([ ])</strong> — To bind DOM element properties to component properties.</li><li><strong>Event Binding (( ))</strong> — To listen for user actions like clicks or input changes.</li><li><strong>Directives</strong> — Such as <code>*ngIf</code>, <code>*ngFor</code>, and <code>[ngClass]</code> to conditionally render or manipulate elements.</li><li><strong>Pipes</strong> — To format and transform displayed data (e.g., dates, currencies).</li></ul>"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Example of an Angular template -->\n<div class=\"user-card\">\n  <h2>{{ user.name }}</h2>\n  <p>Email: {{ user.email }}</p>\n\n  <button (click)=\"sendMessage()\">Send Message</button>\n\n  <p *ngIf=\"user.isActive\" class=\"status active\">Active User</p>\n  <p *ngIf=\"!user.isActive\" class=\"status inactive\">Inactive User</p>\n</div>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Inline vs External Templates</strong><br>Angular allows defining templates in two ways:<ul><li><strong>Inline Template:</strong> Defined directly within the component using the <code>template</code> property.</li><li><strong>External Template:</strong> Stored in a separate HTML file and referenced using the <code>templateUrl</code> property.</li></ul>"
+          "type": "list",
+          "columns": [
+            "Problem / need",
+            "NgModule solves it by...",
+            "Standalone status"
+          ],
+          "rows": [
+            [
+              "Using non-standalone directives/pipes/components (legacy code or older libs)",
+              "Declaring them once and exporting them via a module",
+              "Standalone cannot directly import non-standalone declarables; you import the NgModule that exports them."
+            ],
+            [
+              "Module-style library configuration (forRoot/forChild patterns)",
+              "Returning <code>ModuleWithProviders</code> and wiring providers through module imports",
+              "Standalone supports this mostly via <code>importProvidersFrom(SomeModule.forRoot(...))</code>, but the library still forces the NgModule shape."
+            ],
+            [
+              "Single “bundle import” for a large set of template dependencies",
+              "One <code>SharedModule</code> re-exports many imports/exports so feature code imports one thing",
+              "Standalone can mimic with a shared array/const, but there’s no first-class “export scope” container like NgModule exports."
+            ],
+            [
+              "Gradual migration in an existing NgModule app",
+              "You can convert leaf components to standalone while keeping module boundaries intact",
+              "Standalone is great for incremental migration, but NgModules remain the glue during the transition."
+            ],
+            [
+              "Team convention: explicit public API surface (exports) for a domain",
+              "Exports define what the rest of the app can use from that domain",
+              "Standalone relies on regular TS exports + per-component imports; you lose the explicit “exports list” mechanism."
+            ]
+          ],
+          "caption": "Where NgModules still provide value in a standalone-first Angular world"
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Inline Template Example\n@Component({\n  selector: 'app-greeting',\n  template: `<h1>Hello, {{ name }}!</h1>`\n})\nexport class GreetingComponent {\n  name = 'Angular';\n}\n\n// External Template Example\n@Component({\n  selector: 'app-profile',\n  templateUrl: './profile.component.html'\n})\nexport class ProfileComponent {\n  // Component logic\n}"
+          "code": "// legacy-shared.module.ts\nimport { NgModule } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\nimport { LegacyHighlightDirective } from './legacy-highlight.directive';\nimport { LegacyDatePipe } from './legacy-date.pipe';\n\n@NgModule({\n  declarations: [LegacyHighlightDirective, LegacyDatePipe],\n  imports: [CommonModule],\n  exports: [CommonModule, LegacyHighlightDirective, LegacyDatePipe]\n})\nexport class LegacySharedModule {}\n"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// standalone component consuming legacy declarations via NgModule\nimport { Component } from '@angular/core';\nimport { LegacySharedModule } from './legacy-shared.module';\n\n@Component({\n  standalone: true,\n  selector: 'app-user-card',\n  imports: [LegacySharedModule],\n  template: `\n    <div legacyHighlight>\n      {{ today | legacyDate }}\n    </div>\n  `\n})\nexport class UserCardComponent {\n  today = new Date();\n}\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "If you’re fully standalone, do this instead",
+            "Why it’s the equivalent"
+          ],
+          "rows": [
+            [
+              "Create reusable import bundles as constants (not modules)",
+              "Gives you “one name” to import across many standalone components without an NgModule exports list."
+            ],
+            [
+              "Prefer provider functions (<code>provideRouter</code>, <code>provideHttpClient</code>, etc.)",
+              "Moves app configuration to bootstrap/route providers and reduces NgModule-only configuration patterns."
+            ]
+          ],
+          "caption": "Standalone alternatives to common “SharedModule” patterns"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// shared-imports.ts (standalone-friendly)\nimport { CommonModule } from '@angular/common';\nimport { RouterModule } from '@angular/router';\n\nexport const SHARED_IMPORTS = [CommonModule, RouterModule] as const;\n\n// any.component.ts\nimport { Component } from '@angular/core';\nimport { SHARED_IMPORTS } from './shared-imports';\n\n@Component({\n  standalone: true,\n  imports: [...SHARED_IMPORTS],\n  template: `...`\n})\nexport class AnyComponent {}\n"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// Module-based library config still shows up a lot\nimport { bootstrapApplication, importProvidersFrom } from '@angular/core';\nimport { AppComponent } from './app.component';\nimport { TranslateModule } from 'some-translate-lib';\n\nbootstrapApplication(AppComponent, {\n  providers: [\n    importProvidersFrom(TranslateModule.forRoot({ defaultLang: 'en' }))\n  ]\n});\n"
         },
         {
           "type": "text",
-          "text": "<strong>How Templates Work</strong><br>Templates are compiled by Angular’s template compiler, which converts the HTML and bindings into efficient JavaScript instructions. These instructions update the DOM automatically whenever the underlying data changes, ensuring real-time synchronization between the UI and application logic."
+          "text": "<strong>Summary</strong><br><br>Standalone components cover most of what NgModules were used for (composition, routing, DI setup). NgModules still “win” mainly for <strong>legacy/non-standalone declarations</strong> and <strong>module-shaped third-party APIs</strong> (especially <code>forRoot</code>/<code>forChild</code>). In a greenfield app with modern libs, you usually don’t need to write new NgModules."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-appmodule-standalone-changes",
+    "title": "What changed about AppModule with standalone components?",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Standalone components moved most of what AppModule used to do (declaring components, importing template dependencies, and app-wide setup) into components + bootstrap configuration. In many apps, AppModule disappears entirely and the app boots with bootstrapApplication(AppComponent, { providers: [...] }).",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br>Before standalone, Angular assembled the app through <code>AppModule</code>: you declared components/pipes/directives there, imported modules, and bootstrapped <code>AppComponent</code> via <code>bootstrap: [AppComponent]</code>.<br><br>With standalone, Angular can assemble the app without <code>AppModule</code>. Each standalone component declares its own template dependency scope using <code>imports</code>, and app-wide configuration moves to the bootstrap call (<code>providers</code>) or an <code>ApplicationConfig</code>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Area",
+            "NgModule-era (AppModule)",
+            "Standalone-era (no AppModule)"
+          ],
+          "rows": [
+            [
+              "Bootstrapping",
+              "<code>platformBrowserDynamic().bootstrapModule(AppModule)</code>",
+              "<code>bootstrapApplication(AppComponent, { providers: [...] })</code>"
+            ],
+            [
+              "Template dependencies (CommonModule, Router, Material, etc.)",
+              "Pulled in via <code>imports</code> on NgModules; components rely on module scope",
+              "Declared per component via <code>imports: [...]</code> (or via route-level providers)"
+            ],
+            [
+              "Declaring components/pipes/directives",
+              "<code>declarations: [...]</code> on NgModules",
+              "No declarations; standalone declarables are imported directly where used"
+            ],
+            [
+              "Global providers (HTTP, router, interceptors, etc.)",
+              "Mostly via NgModule imports (<code>HttpClientModule</code>, <code>RouterModule.forRoot</code>) and <code>providers</code>",
+              "Mostly via provider functions (<code>provideHttpClient</code>, <code>provideRouter</code>) + <code>providers</code> array"
+            ],
+            [
+              "Feature modules",
+              "Common pattern for grouping + routing",
+              "Often replaced by standalone routes + lazy-loaded standalone components"
+            ]
+          ],
+          "caption": "AppModule stops being the central assembly point; component imports + bootstrap providers take over."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// NgModule-era\n// main.ts\nimport { platformBrowserDynamic } from '@angular/platform-browser-dynamic';\nimport { AppModule } from './app/app.module';\n\nplatformBrowserDynamic()\n  .bootstrapModule(AppModule)\n  .catch(console.error);\n\n// app.module.ts\nimport { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { HttpClientModule } from '@angular/common/http';\nimport { RouterModule } from '@angular/router';\nimport { AppComponent } from './app.component';\n\n@NgModule({\n  declarations: [AppComponent],\n  imports: [\n    BrowserModule,\n    HttpClientModule,\n    RouterModule.forRoot([])\n  ],\n  bootstrap: [AppComponent]\n})\nexport class AppModule {}"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// Standalone-era\n// main.ts\nimport { bootstrapApplication } from '@angular/platform-browser';\nimport { provideRouter } from '@angular/router';\nimport { provideHttpClient, withInterceptors } from '@angular/common/http';\nimport { importProvidersFrom } from '@angular/core';\nimport { AppComponent } from './app/app.component';\nimport { routes } from './app/app.routes';\n\nbootstrapApplication(AppComponent, {\n  providers: [\n    provideRouter(routes),\n    provideHttpClient(\n      withInterceptors([\n        // (req, next) => next(req)\n      ])\n    ),\n\n    // Compatibility: module-shaped libraries can still be used\n    // importProvidersFrom(SomeLibModule.forRoot(...))\n    // importProvidersFrom(BrowserAnimationsModule)\n  ]\n}).catch(console.error);"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// app.component.ts (standalone)\nimport { Component } from '@angular/core';\nimport { RouterOutlet } from '@angular/router';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [RouterOutlet],\n  template: `<router-outlet />`\n})\nexport class AppComponent {}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "So... do you still need AppModule?",
+            "Answer"
+          ],
+          "rows": [
+            [
+              "Greenfield standalone app",
+              "Usually no. AppModule can be removed entirely."
+            ],
+            [
+              "Migrating an existing NgModule app",
+              "Often yes (temporarily). You can convert leaf components/routes to standalone while keeping AppModule during the transition."
+            ],
+            [
+              "Using a library that only exposes NgModules / forRoot APIs",
+              "You might not need AppModule, but you’ll still consume NgModules via <code>importProvidersFrom(...)</code> (or keep AppModule if that’s simpler)."
+            ],
+            [
+              "Legacy non-standalone declarables (directives/pipes/components)",
+              "You can’t import them directly into a standalone component; you import the NgModule that declares/exports them."
+            ]
+          ],
+          "caption": "AppModule becomes optional, but NgModules still exist as a compatibility/container mechanism."
         },
         {
           "type": "text",
-          "text": "<strong>Why Templates Are Important</strong><br><ul><li>They define how the user interface looks and behaves.</li><li>They enable dynamic content rendering through bindings and directives.</li><li>They bridge the gap between the data model and the visual presentation.</li><li>They make components reusable and maintainable by keeping structure and logic separate.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>Standalone shifts the “assembly” responsibility away from <code>AppModule</code>:<br>• Template scope moves to <code>imports</code> on components.<br>• App-wide setup moves to <code>bootstrapApplication(...)</code> providers (or <code>ApplicationConfig</code>).<br>• AppModule often disappears, but NgModules may remain for legacy code and module-shaped libraries."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-template-compilation-and-binding",
+    "title": "How does Angular compile templates and bind them to component state?",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with the component instance (state).",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br>Angular does <strong>two big jobs</strong>:<br>1) <strong>Compile</strong> the template into efficient instructions (Ivy) + type-check it.<br>2) <strong>Run change detection</strong> to execute the template’s <em>update</em> instructions, keeping the DOM synced with the component instance."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "What happens",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Template parse",
+              "HTML + Angular syntax become an internal AST (elements, bindings, directives, pipes).",
+              "Angular understands what must be created vs updated."
+            ],
+            [
+              "Template scope resolution",
+              "Figure out which directives/pipes/components are legal (standalone <code>imports</code> or NgModule scope).",
+              "Missing imports become compile errors."
+            ],
+            [
+              "Template type-checking",
+              "Angular generates TS type-check blocks so your bindings are checked by TypeScript.",
+              "Catches <code>user.nmae</code> / wrong input types at build time (AOT)."
+            ],
+            [
+              "Code generation (Ivy)",
+              "Compiler emits a template function with <em>create</em> and <em>update</em> phases (instructions).",
+              "Runtime is fast: no string templates, no regex, minimal DOM work."
+            ],
+            [
+              "Bundling (AOT) or runtime compile (JIT)",
+              "AOT ships generated JS; JIT compiles in the browser (dev-style).",
+              "AOT = smaller/faster startup + earlier errors."
+            ]
+          ],
+          "caption": "What “compiling an Angular template” actually means"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-counter',\n  standalone: true,\n  template: `\n    <h3>Hello, {{ name }}</h3>\n    <button [disabled]=\"count() >= 3\" (click)=\"inc()\">\n      Count: {{ count() }}\n    </button>\n  `\n})\nexport class CounterComponent {\n  name = 'Ada';\n  count = signal(0);\n\n  inc() {\n    this.count.update(v => v + 1);\n  }\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of a template as the 'face' of your component — it’s where your logic meets the user, translating data into a visual interface."
+          "text": "<strong>What the compiler roughly generates (simplified)</strong><br><br>Angular creates a <code>template(rf, ctx)</code> function. <code>rf</code> is a flag: create vs update. <code>ctx</code> is the component instance."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "function CounterComponent_Template(rf: number, ctx: CounterComponent) {\n  if (rf & 1) {\n    // CREATE phase: create DOM nodes + wire listeners once\n    // ɵɵelementStart(0, 'h3');\n    // ɵɵtext(1);\n    // ɵɵelementEnd();\n    // ɵɵelementStart(2, 'button');\n    // ɵɵlistener('click', () => ctx.inc());\n    // ɵɵtext(3);\n    // ɵɵelementEnd();\n  }\n\n  if (rf & 2) {\n    // UPDATE phase: re-evaluate bindings and patch DOM as needed\n    // ɵɵtextInterpolate1('Hello, ', ctx.name, '');\n    // ɵɵproperty('disabled', ctx.count() >= 3);\n    // ɵɵtextInterpolate1('Count: ', ctx.count(), '');\n  }\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Binding in template",
+            "Compiled into",
+            "When it runs"
+          ],
+          "rows": [
+            [
+              "Interpolation <code>{{ x }}</code>",
+              "Text update instruction (set text node value).",
+              "Every change detection update pass."
+            ],
+            [
+              "Property binding <code>[disabled]=\"expr\"</code>",
+              "Property update instruction (set DOM property).",
+              "Every update pass; only patches if value changed."
+            ],
+            [
+              "Attribute/class/style bindings",
+              "Dedicated attribute/class/style instructions.",
+              "Every update pass; optimized diffs."
+            ],
+            [
+              "Event binding <code>(click)=\"fn()\"</code>",
+              "Listener instruction storing a callback referencing <code>ctx</code>.",
+              "Listener is created once; runs on events."
+            ],
+            [
+              "Directive/component inputs",
+              "Input set instructions calling directive/component input setters.",
+              "Every update pass when values change."
+            ]
+          ],
+          "caption": "How template syntax becomes runtime work"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Templates define the structure and layout of a component’s view.</li><li>They combine HTML with Angular syntax like bindings and directives.</li><li>They can be inline (in the component) or external (in a separate HTML file).</li><li>Templates dynamically update the DOM based on data changes in the component.</li></ul>"
+          "text": "<strong>How the template “binds to component state”</strong><br><br>Bindings read from the component instance (<code>ctx</code>). When state changes, Angular runs change detection and re-executes the template’s <em>update</em> phase, re-reading <code>ctx</code> and patching the DOM."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What triggers an update pass",
+            "Typical examples"
+          ],
+          "rows": [
+            [
+              "User events",
+              "click/input/submit handlers run, state changes, Angular checks affected views."
+            ],
+            [
+              "Async completion",
+              "timers, HTTP responses, observable emissions, promise resolution (via zone or explicit scheduling)."
+            ],
+            [
+              "Manual signals / APIs",
+              "signals update, <code>markForCheck()</code>, <code>detectChanges()</code> (advanced cases)."
+            ],
+            [
+              "Input changes from parent",
+              "Parent updates child input binding; child updates in the next pass."
+            ]
+          ],
+          "caption": "Change detection is the bridge between state changes and DOM updates"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "AOT vs JIT",
+            "AOT (build-time)",
+            "JIT (runtime)"
+          ],
+          "rows": [
+            [
+              "When compiled",
+              "During build; ships compiled instructions.",
+              "In the browser; compiles templates at runtime."
+            ],
+            [
+              "Startup performance",
+              "Better (no runtime compilation cost).",
+              "Worse (extra work at runtime)."
+            ],
+            [
+              "Error timing",
+              "More errors caught earlier (type-check + template checks).",
+              "Some errors appear later (at runtime)."
+            ],
+            [
+              "Typical usage",
+              "Production builds.",
+              "Dev workflows / special cases."
+            ]
+          ],
+          "caption": "Both end up with the same Ivy-style instructions; the main difference is when they’re produced"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Practical implications (interview-relevant)",
+            "What to say"
+          ],
+          "rows": [
+            [
+              "Templates are not “magic strings”",
+              "They compile to create/update instructions; update phase re-runs on CD."
+            ],
+            [
+              "Keep templates cheap",
+              "Avoid heavy computations in bindings; move to component and cache/derive."
+            ],
+            [
+              "OnPush changes behavior",
+              "OnPush reduces checks; updates happen on input reference change, events, async, or explicit marking."
+            ],
+            [
+              "Structural directives change the tree",
+              "<code>*ngIf</code>/<code>*ngFor</code> compile into embedded views; creation/destruction is real DOM work."
+            ]
+          ],
+          "caption": "What this means for performance and architecture"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Angular compiles templates into Ivy render instructions with a <em>create</em> and <em>update</em> phase. The <em>update</em> phase re-reads values from the component instance and patches the DOM during change detection, which is how bindings stay synced with component state."
         }
       ]
     },
@@ -1004,51 +1251,153 @@
     "type": "trivia"
   },
   {
-    "id": "angular-ngif-directive",
-    "title": "What does ngIf do in Angular templates?",
+    "id": "angular-ngif-dom-lifecycle",
+    "title": "How does *ngIf affect the DOM and component lifecycle?",
     "technology": "angular",
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "importance": 5,
-    "description": "The *ngIf directive in Angular is a structural directive that conditionally adds or removes elements from the DOM based on a Boolean expression. It helps display or hide elements dynamically depending on the state of the component’s data.",
+    "description": "*ngIf is a structural directive that conditionally creates and destroys an embedded view. That means DOM nodes, component instances, directives, listeners, and template bindings inside the *ngIf block are actually created when the condition becomes true and destroyed when it becomes false.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>*ngIf</code> directive in Angular controls whether a portion of the DOM should be rendered or not, based on the truthiness of an expression. When the condition evaluates to true, Angular creates the element and its children; when false, Angular removes them entirely from the DOM."
-        },
-        {
-          "type": "text",
-          "text": "<strong>How It Works</strong><br>Unlike simply hiding an element with CSS, <code>*ngIf</code> completely adds or removes the element from the DOM. This means the component and its bindings inside the element are destroyed when the condition becomes false and recreated when it becomes true again."
+          "text": "<strong>Overview</strong><br><br><code>*ngIf</code> does not “hide” elements. It <strong>adds/removes</strong> a chunk of template by creating/destroying an <em>embedded view</em> (<code>EmbeddedViewRef</code>) in a <code>ViewContainerRef</code>. When the view is removed, Angular destroys everything inside it (components, directives, pipes, listeners) and runs <code>ngOnDestroy</code>."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- Basic Example -->\n<div *ngIf=\"isLoggedIn\">\n  <h2>Welcome back, {{ username }}!</h2>\n</div>\n<div *ngIf=\"!isLoggedIn\">\n  <p>Please log in to continue.</p>\n</div>"
+          "code": "<!-- Shorthand -->\n<app-child *ngIf=\"show\"></app-child>\n\n<!-- Roughly equivalent to -->\n<ng-template [ngIf]=\"show\">\n  <app-child></app-child>\n</ng-template>"
         },
         {
-          "type": "text",
-          "text": "<strong>Using ngIf with else</strong><br><code>*ngIf</code> can also be combined with the <code>else</code> clause to define an alternative template to render when the condition is false."
+          "type": "list",
+          "columns": [
+            "When condition flips",
+            "DOM result",
+            "Instance result",
+            "Lifecycle impact"
+          ],
+          "rows": [
+            [
+              "false → true",
+              "Nodes are inserted into the DOM",
+              "New component/directive instances are created",
+              "constructor → (ngOnChanges) → ngOnInit → view/content hooks"
+            ],
+            [
+              "true → false",
+              "Nodes are removed from the DOM",
+              "Instances are destroyed",
+              "ngOnDestroy runs; subscriptions/cleanup should happen here"
+            ],
+            [
+              "true → true (condition stays true)",
+              "DOM stays",
+              "Same instances stay",
+              "Normal change detection updates bindings"
+            ]
+          ],
+          "caption": "What *ngIf actually changes"
         },
         {
           "type": "code",
-          "language": "html",
-          "code": "<!-- ngIf with else clause -->\n<div *ngIf=\"isAdmin; else notAdmin\">\n  <p>Welcome, Admin! You have full access.</p>\n</div>\n<ng-template #notAdmin>\n  <p>Access restricted. Please contact your administrator.</p>\n</ng-template>"
+          "language": "typescript",
+          "code": "// child.component.ts\nimport { Component, OnDestroy, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-child',\n  template: `Child is alive`\n})\nexport class ChildComponent implements OnInit, OnDestroy {\n  constructor() {\n    console.log('child: constructor');\n  }\n\n  ngOnInit(): void {\n    console.log('child: ngOnInit');\n  }\n\n  ngOnDestroy(): void {\n    console.log('child: ngOnDestroy');\n  }\n}\n\n// parent template\n// <button (click)=\"show = !show\">toggle</button>\n// <app-child *ngIf=\"show\"></app-child>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Topic",
+            "*ngIf behavior",
+            "Practical consequence"
+          ],
+          "rows": [
+            [
+              "Component state",
+              "Reset on every re-create",
+              "Local fields, form state, and child component state are lost on hide/show"
+            ],
+            [
+              "Subscriptions/listeners",
+              "Destroyed view stops emitting into template",
+              "If you subscribe manually, you must unsubscribe in ngOnDestroy (or use async pipe / takeUntilDestroyed)"
+            ],
+            [
+              "DI scope",
+              "Component-level providers are torn down with the view",
+              "A service provided in the component gets a fresh instance on next show"
+            ],
+            [
+              "View queries",
+              "ViewChild/ContentChild inside the block disappear",
+              "References become undefined when view is destroyed; guard access"
+            ],
+            [
+              "Change detection cost",
+              "Removed subtree is not checked",
+              "Hiding heavy UI with *ngIf can reduce CD + DOM updates"
+            ]
+          ],
+          "caption": "Key implications interviewers care about"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Technique",
+            "Does it remove from DOM?",
+            "Does it destroy component instances?",
+            "When to prefer"
+          ],
+          "rows": [
+            [
+              "*ngIf",
+              "Yes",
+              "Yes",
+              "When you want real teardown (free resources, remove listeners, skip CD)"
+            ],
+            [
+              "[hidden] / CSS (display:none)",
+              "No",
+              "No",
+              "When you need to preserve state and avoid re-creation cost"
+            ],
+            [
+              "ng-container + else template",
+              "Same as *ngIf",
+              "Same as *ngIf",
+              "When you want clean conditional branching without extra wrapper DOM"
+            ]
+          ],
+          "caption": "*ngIf vs hiding"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common gotcha",
+            "What happens",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Toggling a form with *ngIf",
+              "User input resets on every hide/show",
+              "Use [hidden] if you must preserve state, or persist the form model outside the child"
+            ],
+            [
+              "Expensive init in ngOnInit",
+              "Runs every time the view is recreated",
+              "Cache in a service/facade, or keep component alive and just hide it"
+            ],
+            [
+              "Memory leaks",
+              "Manual subscriptions keep running if not cleaned up",
+              "Use async pipe, takeUntilDestroyed(), or ngOnDestroy cleanup"
+            ]
+          ],
+          "caption": "Practical pitfalls"
         },
         {
           "type": "text",
-          "text": "<strong>Key Characteristics</strong><br><ul><li>It removes or inserts elements in the DOM depending on the expression’s result.</li><li>It helps manage conditional content efficiently.</li><li>When an element is removed, its data bindings and event listeners are destroyed.</li><li>It improves performance by not rendering unnecessary DOM nodes.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>When to Use</strong><br>Use <code>*ngIf</code> when the visibility of an element depends on a logical condition, such as user authentication, feature toggles, or conditional rendering based on user roles or data availability."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <strong>*ngIf</strong> as a gatekeeper — it decides whether a piece of the template should exist at all based on the condition you provide."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>*ngIf</code> is a structural directive that conditionally adds or removes elements from the DOM.</li><li>It evaluates a Boolean expression and creates/destroys DOM nodes accordingly.</li><li>It supports <code>else</code> templates for alternative rendering.</li><li>It helps improve performance by avoiding unnecessary rendering of hidden elements.</li></ul>"
+          "text": "<strong>Summary</strong><br><br><code>*ngIf</code> creates/destroys an embedded view. True = build DOM + instantiate components/directives and run init hooks. False = remove DOM + destroy instances and run <code>ngOnDestroy</code>. Use it when you want real teardown and to skip change detection for that subtree; use hiding when you need to keep state alive."
         }
       ]
     },
@@ -1056,66 +1405,133 @@
     "type": "trivia"
   },
   {
-    "id": "angular-ngfor-directive",
-    "title": "What is the purpose of ngFor?",
+    "id": "angular-ngfor-trackby",
+    "title": "Why is trackBy important in *ngFor, and what breaks without it?",
     "technology": "angular",
-    "difficulty": "easy",
+    "difficulty": "intermediate",
     "importance": 5,
-    "description": "The *ngFor directive in Angular is a structural directive used to loop over collections such as arrays or lists and render a template for each item dynamically. It simplifies the process of creating repeated elements in a template.",
+    "description": "trackBy tells Angular how to uniquely identify items in an *ngFor list so it can reuse existing DOM nodes and component instances when the array changes. Without it (or with a bad trackBy), Angular may destroy and recreate rows unnecessarily, which hurts performance and can reset UI state like input values, focus, and child component state.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>*ngFor</code> directive allows you to iterate over an array or iterable object and repeat a block of HTML for each item in the collection. It’s similar to a 'for' loop in JavaScript but written declaratively in the template."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Basic Syntax</strong><br>The general syntax is:<br><code>*ngFor=\"let item of items\"</code><br>Here, <code>item</code> represents the current element in the iteration, and <code>items</code> is the array or collection being iterated over."
+          "text": "<strong>Overview</strong><br><br><code>*ngFor</code> maintains a list of embedded views (DOM + directives + child components). <code>trackBy</code> defines each item's identity so Angular can do efficient diffs: <strong>move/update</strong> existing views instead of <strong>destroy/recreate</strong> them."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- Example: Basic ngFor usage -->\n<ul>\n  <li *ngFor=\"let fruit of fruits\">{{ fruit }}</li>\n</ul>"
+          "code": "<ul>\n  <li *ngFor=\"let user of users; trackBy: trackByUserId\">\n    <app-user-row [user]=\"user\"></app-user-row>\n  </li>\n</ul>"
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Component\nexport class FruitListComponent {\n  fruits = ['Apple', 'Banana', 'Orange', 'Grapes'];\n}"
+          "code": "type User = { id: string; name: string };\n\nexport class UsersComponent {\n  users: User[] = [\n    { id: 'u1', name: 'Ada' },\n    { id: 'u2', name: 'Linus' }\n  ];\n\n  trackByUserId(index: number, user: User): string {\n    return user.id;\n  }\n\n  // Common real-world cause of problems: new object references on refresh\n  refreshFromApiLike(): void {\n    // Same ids, but NEW objects => without trackBy, Angular treats them as new items\n    this.users = this.users.map(u => ({ ...u }));\n  }\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What trackBy controls",
+            "What Angular can do",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Item identity",
+              "Match old items to new items across changes",
+              "Prevents treating “same logical item” as a brand-new row"
+            ],
+            [
+              "DOM reuse",
+              "Reuse existing DOM nodes and directives",
+              "Avoids heavy DOM churn and layout/repaint work"
+            ],
+            [
+              "Component instance reuse",
+              "Keep child component instances for the same logical item",
+              "Preserves child state and avoids repeated ngOnInit/ngOnDestroy"
+            ],
+            [
+              "Row movement",
+              "Move existing views when sorting/reordering",
+              "Keeps UI stable instead of flickering or re-initializing"
+            ]
+          ],
+          "caption": "trackBy lets Angular perform a stable, minimal update of the rendered list"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Without trackBy (or with unstable identity)",
+            "What breaks / degrades",
+            "Typical symptom"
+          ],
+          "rows": [
+            [
+              "Array recreated with new object references",
+              "Rows are destroyed + recreated even if ids are the same",
+              "Inputs reset, focus/caret jumps, child state resets"
+            ],
+            [
+              "Expensive child rows (components, heavy templates)",
+              "More DOM work + more lifecycle work",
+              "Scroll jank, CPU spikes, visible flicker on updates"
+            ],
+            [
+              "UI state stored in the DOM (focus, selection, <input> value while typing)",
+              "DOM state is lost on re-create",
+              "User is typing and the caret jumps / typed text disappears"
+            ],
+            [
+              "3rd-party widgets inside rows (charts, editors)",
+              "Widgets get torn down and rebuilt",
+              "Re-initialization costs + lost internal widget state"
+            ],
+            [
+              "Bad trackBy (random, Date.now, returning a new object)",
+              "Identity changes every check => Angular rebuilds everything",
+              "Worst-case: every CD cycle behaves like a full rerender"
+            ]
+          ],
+          "caption": "Most “trackBy bugs” show up when you refresh data or rebuild arrays (common with immutability patterns)"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "TrackBy choice",
+            "When it's correct",
+            "When it causes bugs"
+          ],
+          "rows": [
+            [
+              "Stable unique id (recommended)",
+              "Items have a real unique key (id, uuid, slug)",
+              "Rarely; only if the id is not actually unique/stable"
+            ],
+            [
+              "Composite key (e.g., `${type}:${id}`)",
+              "Multiple item types share the same id space",
+              "If any part of the composite can change over time"
+            ],
+            [
+              "Value itself (primitives)",
+              "List is strings/numbers and values are unique/stable",
+              "If values can repeat (duplicates) => identity collisions"
+            ],
+            [
+              "Index (avoid unless list is static)",
+              "List never reorders/inserts/removes, only updates values in-place",
+              "On insert/reorder, state sticks to the wrong row (wrong input value on wrong item)"
+            ]
+          ],
+          "caption": "Key rule: identity must represent the logical item, not its current position"
         },
         {
           "type": "text",
-          "text": "<strong>Accessing Index and Other Local Variables</strong><br>Angular provides local variables that can be accessed inside <code>*ngFor</code> for additional control:<ul><li><code>index</code> — current loop index (starting at 0)</li><li><code>first</code> — true if the current item is the first</li><li><code>last</code> — true if the current item is the last</li><li><code>even</code> — true if the index is even</li><li><code>odd</code> — true if the index is odd</li></ul>"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Example with local variables -->\n<ul>\n  <li *ngFor=\"let fruit of fruits; let i = index; let odd = odd\">\n    {{ i + 1 }}. {{ fruit }} <span *ngIf=\"odd\">(odd item)</span>\n  </li>\n</ul>"
+          "text": "<strong>Extra note</strong><br><br>Modern Angular also has <code>@for</code> with a <code>track</code> expression (same concept): <code>@for (user of users; track user.id) { ... }</code>. The principle is identical: stable identity => stable DOM + preserved state."
         },
         {
           "type": "text",
-          "text": "<strong>Optimizing with trackBy</strong><br>By default, Angular re-renders the entire list if any change occurs in the array. To improve performance, you can use the <code>trackBy</code> function, which helps Angular identify items by a unique property (like an ID), minimizing unnecessary re-renders."
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "// Using trackBy for better performance\nexport class ProductListComponent {\n  products = [\n    { id: 1, name: 'Laptop' },\n    { id: 2, name: 'Phone' },\n    { id: 3, name: 'Tablet' }\n  ];\n\n  trackById(index: number, product: any): number {\n    return product.id;\n  }\n}"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Applying trackBy -->\n<ul>\n  <li *ngFor=\"let product of products; trackBy: trackById\">{{ product.name }}</li>\n</ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>When to Use</strong><br>Use <code>*ngFor</code> whenever you need to render a list of items dynamically — for example, displaying a list of products, users, messages, or table rows fetched from an API."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <strong>*ngFor</strong> as a loop that runs directly in your template — it repeats the HTML block for every item in a data collection, keeping your UI in sync with your data."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>*ngFor</code> is a structural directive used to repeat elements for each item in a collection.</li><li>It provides local variables like index, first, last, even, and odd.</li><li>It supports <code>trackBy</code> for performance optimization.</li><li>It simplifies creating dynamic lists directly in templates.</li></ul>"
+          "text": "<strong>Summary</strong><br><br><code>trackBy</code> is important because it gives Angular a stable key per item so it can reuse and move existing rows instead of recreating them. Without it (especially when data refresh creates new object references), you pay in performance and you lose UI state (inputs, focus, child component state). Use a stable unique id; avoid index unless the list is truly static."
         }
       ]
     },
