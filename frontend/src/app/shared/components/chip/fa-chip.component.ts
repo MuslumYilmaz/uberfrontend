@@ -15,6 +15,7 @@ import { Params, RouterLinkActive, RouterModule } from '@angular/router';
          [routerLinkActiveOptions]="routerLinkActiveOptions || { exact: false }"
          [ngClass]="chipClasses"
          [class.fa-chip--selected]="selected || rla?.isActive"
+         [attr.data-testid]="testId || null"
          [routerLink]="routerLink"
          [queryParams]="queryParams"
          [fragment]="fragment"
@@ -37,6 +38,7 @@ import { Params, RouterLinkActive, RouterModule } from '@angular/router';
               class="fa-chip"
               [ngClass]="chipClasses"
               [disabled]="disabled"
+              [attr.data-testid]="testId || null"
               [attr.aria-pressed]="toggle ? selected : null"
               (click)="handleClick($event)">
         <span class="fa-chip__content">
@@ -59,6 +61,7 @@ export class FaChipComponent {
   @Input() selected = false;
   @Input() disabled = false;
   @Input() toggle = true;
+  @Input() testId?: string;
 
   @Input() routerLink?: string | any[] | null;
   @Input() queryParams?: Params | null;

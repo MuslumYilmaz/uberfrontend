@@ -2,7 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AccessLevel, Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
@@ -17,6 +17,7 @@ export class QuestionService {
   private readonly cachePrefix = 'qcache:';          // normalized cache
   private readonly overridePrefix = 'qoverride:';    // manual/local overrides
   private readonly dvKey = `${this.cachePrefix}dv`;
+  private readonly inflightLoads = new Map<string, Observable<Question[]>>();
 
   // NEW: CDN / LocalStorage switcher flag
   private readonly cdnFlagKey = 'fa:cdn:enabled';
@@ -63,7 +64,11 @@ export class QuestionService {
    * 4. Assets JSON under assets/questions/<tech>/<kind>.json
    */
   loadQuestions(technology: Tech, kind: Kind): Observable<Question[]> {
-    return this.getVersion().pipe(
+    const inflightKey = `${technology}:${kind}:${this.cdnEnabled ? 'cdn' : 'assets'}`;
+    const existing = this.inflightLoads.get(inflightKey);
+    if (existing) return existing;
+
+    const request$ = this.getVersion().pipe(
       switchMap(() => {
         const oKey = this.overrideKey(technology, kind);
         const cKey = this.key(technology, kind);
@@ -105,7 +110,13 @@ export class QuestionService {
           })
         );
       })
+    ).pipe(
+      finalize(() => this.inflightLoads.delete(inflightKey)),
+      shareReplay(1),
     );
+
+    this.inflightLoads.set(inflightKey, request$);
+    return request$;
   }
 
 

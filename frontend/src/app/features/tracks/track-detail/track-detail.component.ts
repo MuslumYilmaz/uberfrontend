@@ -280,28 +280,29 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     const imp = Array.from(this.impFilter$.value);
     const sort = this.sort$.value;
 
-    const tree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: {
-        q: q || null,
-        kind: kind === 'all' ? null : kind,
-        tech: tech === 'all' ? null : tech,
-        // hiç seçili yoksa param yok
-        diff: diff.length === 0
-          ? null
-          : diff.length === 3
-            ? null
-            : diff.join(','),
-        imp: imp.length === 0
-          ? null
-          : imp.length === 3
-            ? null
-            : imp.join(','),
-        sort: sort === 'diff-asc' ? null : sort,
-      },
-      queryParamsHandling: 'merge',
-    });
-    this.location.replaceState(this.router.serializeUrl(tree));
+    // We intentionally use `Location.replaceState()` (no navigation / no history pollution).
+    // Merge against the *actual* current URL to avoid dropping previously-set params.
+    const url = new URL(window.location.href);
+
+    const setOrDelete = (key: string, value: string | null) => {
+      if (!value) url.searchParams.delete(key);
+      else url.searchParams.set(key, value);
+    };
+
+    setOrDelete('q', q || null);
+    setOrDelete('kind', kind === 'all' ? null : kind);
+    setOrDelete('tech', tech === 'all' ? null : tech);
+
+    const diffParam = diff.length === 0 || diff.length === 3 ? null : diff.join(',');
+    setOrDelete('diff', diffParam);
+
+    const impParam = imp.length === 0 || imp.length === 3 ? null : imp.join(',');
+    setOrDelete('imp', impParam);
+
+    setOrDelete('sort', sort === 'diff-asc' ? null : sort);
+
+    const qs = url.searchParams.toString();
+    this.location.replaceState(`${url.pathname}${qs ? `?${qs}` : ''}${url.hash}`);
   }
 
   startPractice(items: TrackItem[]): void {

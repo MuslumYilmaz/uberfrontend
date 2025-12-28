@@ -38,21 +38,73 @@ export interface GlobalCodingViewState {
 
 @Injectable({ providedIn: 'root' })
 export class CodingListStateService {
-  // 1) 🔹 Instance sayacı (debug için)
   private static _counter = 0;
   readonly instanceId = ++CodingListStateService._counter;
 
-  // 2) 🔹 Asıl state aynen kalsın
+  private readonly storageKey = 'fa:coding:list-state:v1';
+
   private _globalCodingState: GlobalCodingViewState = {
     tech: null,
     formats: null,
   };
+
+  constructor() {
+    const restored = this.readFromStorage();
+    if (restored) {
+      this._globalCodingState = restored;
+    }
+  }
 
   get globalCodingState(): GlobalCodingViewState {
     return this._globalCodingState;
   }
 
   set globalCodingState(val: GlobalCodingViewState) {
-    this._globalCodingState = val;
+    this._globalCodingState = this.normalize(val);
+    this.writeToStorage(this._globalCodingState);
+  }
+
+  private normalize(input: any): GlobalCodingViewState {
+    const tech = input?.tech ?? null;
+    const formats = input?.formats ?? null;
+    return {
+      tech: this.isFilterState(tech) ? tech : null,
+      formats: this.isFilterState(formats) ? formats : null,
+    };
+  }
+
+  private isFilterState(val: any): val is CodingListFilterState {
+    return !!val && typeof val === 'object' && typeof val.searchTerm === 'string';
+  }
+
+  private hasLocalStorage(): boolean {
+    try {
+      const k = '__fa_coding_list_probe__';
+      localStorage.setItem(k, '1');
+      localStorage.removeItem(k);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private readFromStorage(): GlobalCodingViewState | null {
+    if (!this.hasLocalStorage()) return null;
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) return null;
+      return this.normalize(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  }
+
+  private writeToStorage(state: GlobalCodingViewState): void {
+    if (!this.hasLocalStorage()) return;
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(state));
+    } catch {
+      // ignore quota / privacy mode issues
+    }
   }
 }

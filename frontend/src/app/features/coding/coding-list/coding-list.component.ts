@@ -509,7 +509,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
   toggleSort() { this.sortOpen = !this.sortOpen; }
   closeSort() { this.sortOpen = false; }
-  setSort(k: SortKey) { this.sort$.next(k); this.closeSort(); }
+  setSort(k: SortKey) {
+    this.sort$.next(k);
+    this.closeSort();
+    this.saveFiltersTo(this.getActiveViewKey());
+  }
 
   isSolved(id: string): boolean {
     return this.solvedSet().has(id);
@@ -758,6 +762,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
         }
       });
 
+      this.saveFiltersTo(viewKey);
       return;
     }
 
@@ -848,27 +853,36 @@ export class CodingListComponent implements OnInit, OnDestroy {
       }
     });
 
-    // URL'de tech/kind yok ama state'ten restore ettiysek, bir kez URL'ye sync et
+    // If we restored from persisted state and the URL is "plain /coding",
+    // sync the full filter set into the URL once (replaceUrl) so refresh/share works.
     if (this.source === 'global-coding' && viewKey === 'tech' && restoredFromState) {
-      const qpTech = qp.get('tech');
-      const qpKind = qp.get('kind');
+      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'category']
+        .some((k) => qp.get(k) !== null);
 
       const tech = this.selectedTech$.value;
       const kind = this.selectedKind$.value;
+      const q = (this.searchTerm || '').trim();
+      const diffs = this.diffs$.value;
+      const imps = this.impTiers$.value;
 
-      // Hiçbiri yoksa URL'yi filtrelere göre güncelle
-      if (!qpTech && !qpKind && (tech || (kind && kind !== 'all'))) {
+      if (!hasAnyExplicitFilter) {
+        const queryParams: Record<string, any> = {
+          tech: tech ?? null,
+          kind: kind && kind !== 'all' ? kind : null,
+          q: q || null,
+          diff: diffs.length ? diffs.join(',') : null,
+          imp: imps.length ? imps.join(',') : null,
+        };
         this.router.navigate([], {
           relativeTo: this.route,
-          queryParams: {
-            tech: tech ?? null,
-            kind: kind && kind !== 'all' ? kind : null,
-          },
+          queryParams,
           queryParamsHandling: 'merge',
           replaceUrl: true,
         });
       }
     }
+
+    this.saveFiltersTo(viewKey);
   }
 
   // ---------- helpers used by template ----------
@@ -1007,12 +1021,20 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   private replaceQueryParams(params: Record<string, any>) {
-    const tree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: params,
-      queryParamsHandling: 'merge',
-    });
-    this.location.replaceState(this.router.serializeUrl(tree));
+    // NOTE: We intentionally use `Location.replaceState()` (no navigation / no history pollution),
+    // so Angular Router's internal `ActivatedRoute` query state can be stale.
+    // Merge against the *actual* current URL to avoid dropping previously-set params.
+    const url = new URL(window.location.href);
+    for (const [key, value] of Object.entries(params)) {
+      if (value === null || value === undefined || value === '') {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, String(value));
+      }
+    }
+
+    const qs = url.searchParams.toString();
+    this.location.replaceState(`${url.pathname}${qs ? `?${qs}` : ''}${url.hash}`);
   }
 
   tabsQueryParams(): Record<string, any> {
@@ -1038,6 +1060,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding' && !this.isFormatsMode()) {
       this.replaceQueryParams({ tech: next ?? null });
     }
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   selectKind(k: Kind) {
@@ -1046,6 +1069,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedKind$.next(k);
 
       this.replaceQueryParams({ kind: k === 'all' ? null : k });
+      this.saveFiltersTo(this.getActiveViewKey());
     } else {
       this.kind = k as any;
     }
@@ -1071,6 +1095,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (next === 'system') {
       this.selectedKind$.next('coding');
     }
+
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   private loadSystemDesignRows$() {
@@ -1126,6 +1152,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const next = Array.from(curr);
     this.diffs$.next(next);
     this.syncDiffsToQuery(next);
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   onImpChange(tier: ImportanceTier, ev: Event) {
@@ -1135,6 +1162,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const next = Array.from(curr);
     this.impTiers$.next(next);
     this.syncImpToQuery(next);
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   impLabel(q: Row): ImportanceTier {
@@ -1148,12 +1176,19 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const curr = new Set(this.selectedTags$.value);
     curr.has(tag) ? curr.delete(tag) : curr.add(tag);
     this.selectedTags$.next(Array.from(curr));
+    this.saveFiltersTo(this.getActiveViewKey());
   }
   clearTag(tag: string) {
     const curr = new Set(this.selectedTags$.value);
-    if (curr.delete(tag)) this.selectedTags$.next(Array.from(curr));
+    if (curr.delete(tag)) {
+      this.selectedTags$.next(Array.from(curr));
+      this.saveFiltersTo(this.getActiveViewKey());
+    }
   }
-  clearAllTags() { this.selectedTags$.next([]); }
+  clearAllTags() {
+    this.selectedTags$.next([]);
+    this.saveFiltersTo(this.getActiveViewKey());
+  }
 
   resetAllFilters() {
     if (this.source === 'global-coding') {
@@ -1190,6 +1225,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   toggleTagMatchMode() {
     this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   private difficultyRank(d: Difficulty | string | undefined): number {
@@ -1368,6 +1404,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.search$.next(term);
 
     this.replaceQueryParams({ q: term || null });
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   onDifficultyToggleFromChild(evt: { difficulty: Difficulty; checked: boolean }) {
@@ -1380,6 +1417,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     const next = Array.from(curr);
     this.impTiers$.next(next);
     this.syncImpToQuery(next);
+    this.saveFiltersTo(this.getActiveViewKey());
   }
 
   private syncDiffsToQuery(next: Difficulty[]) {

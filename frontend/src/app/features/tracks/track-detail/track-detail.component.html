@@ -1,5 +1,5 @@
 <ng-container *ngIf="track as t; else missing">
-  <div class="track">
+  <div class="track" data-testid="track-detail-page">
     <div class="container">
       <nav class="breadcrumb">
         <a routerLink="/tracks">Tracks</a>
@@ -32,18 +32,22 @@
               <div class="filter-label fa-meta-label">Type</div>
               <div class="chip-row">
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="All"
+                         testId="track-filter-kind-all"
                          [selected]="kindFilter$.value === 'all'"
                          (selectedChange)="onKindChange('all')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Coding"
+                         testId="track-filter-kind-coding"
                          [selected]="kindFilter$.value === 'coding'"
                          (selectedChange)="onKindChange('coding')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Trivia"
+                         testId="track-filter-kind-trivia"
                          [selected]="kindFilter$.value === 'trivia'"
                          (selectedChange)="onKindChange('trivia')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="System design"
+                         testId="track-filter-kind-system-design"
                          [selected]="kindFilter$.value === 'system-design'"
                          (selectedChange)="onKindChange('system-design')">
                 </fa-chip>
@@ -54,22 +58,27 @@
               <div class="filter-label fa-meta-label">Tech</div>
               <div class="chip-row">
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="All tech"
+                         testId="track-filter-tech-all"
                          [selected]="techFilter$.value === 'all'"
                          (selectedChange)="onTechChange('all')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="JavaScript"
+                         testId="track-filter-tech-javascript"
                          [selected]="techFilter$.value === 'javascript'"
                          (selectedChange)="onTechChange('javascript')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="User interface"
+                         testId="track-filter-tech-ui"
                          [selected]="techFilter$.value === 'ui'"
                          (selectedChange)="onTechChange('ui')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="HTML"
+                         testId="track-filter-tech-html"
                          [selected]="techFilter$.value === 'html'"
                          (selectedChange)="onTechChange('html')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="CSS"
+                         testId="track-filter-tech-css"
                          [selected]="techFilter$.value === 'css'"
                          (selectedChange)="onTechChange('css')">
                 </fa-chip>
@@ -80,14 +89,17 @@
               <div class="filter-label fa-meta-label">Difficulty</div>
               <div class="chip-row">
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Easy"
+                         testId="track-filter-diff-easy"
                          [selected]="diffFilter$.value.has('easy')"
                          (selectedChange)="onDiffToggle('easy')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Intermediate"
+                         testId="track-filter-diff-intermediate"
                          [selected]="diffFilter$.value.has('intermediate')"
                          (selectedChange)="onDiffToggle('intermediate')">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Hard"
+                         testId="track-filter-diff-hard"
                          [selected]="diffFilter$.value.has('hard')"
                          (selectedChange)="onDiffToggle('hard')">
                 </fa-chip>
@@ -98,14 +110,17 @@
               <div class="filter-label fa-meta-label">Importance</div>
               <div class="chip-row">
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Low"
+                         testId="track-filter-imp-low"
                          [selected]="impFilter$.value.has('low')"
                          (selectedChange)="onImportanceChange({ tier: 'low', checked: $event })">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="Medium"
+                         testId="track-filter-imp-medium"
                          [selected]="impFilter$.value.has('medium')"
                          (selectedChange)="onImportanceChange({ tier: 'medium', checked: $event })">
                 </fa-chip>
                 <fa-chip size="md" class="filter-chip fa-chip--label" label="High"
+                         testId="track-filter-imp-high"
                          [selected]="impFilter$.value.has('high')"
                          (selectedChange)="onImportanceChange({ tier: 'high', checked: $event })">
                 </fa-chip>
@@ -120,6 +135,7 @@
                   type="text"
                   pInputText
                   placeholder="Search in this track"
+                  data-testid="track-filter-search"
                   [(ngModel)]="searchTerm"
                   (ngModelChange)="onSearch($event)"
                   [ngModelOptions]="{ standalone: true }" />
@@ -129,7 +145,7 @@
             <div class="filter-group">
               <div class="filter-label fa-meta-label">Sort</div>
               <div class="fa-input sort-select">
-                <select [ngModel]="sort$.value" (ngModelChange)="setSort($event)">
+                <select data-testid="track-filter-sort" [ngModel]="sort$.value" (ngModelChange)="setSort($event)">
                   <option *ngFor="let opt of sortOptions" [value]="opt.key">{{ opt.label }}</option>
                 </select>
               </div>
@@ -141,7 +157,7 @@
           <div class="list-head">
             <div class="list-title">
               <span class="list-kicker fa-meta-label">Track questions</span>
-              <span class="count">{{ questions.length }}</span>
+              <span class="count" data-testid="track-filtered-count">{{ questions.length }}</span>
             </div>
             <div class="note">Pace yourself — no daily check-ins.</div>
           </div>
@@ -149,6 +165,7 @@
           <a
             class="fa-card fa-card--interactive fa-question-card fa-question-card--compact"
             *ngFor="let item of questions; let idx = index"
+            [attr.data-testid]="'track-question-card-' + item.id"
             [routerLink]="linkFor(item)"
             [state]="navState(questions, item)">
             <div class="fa-question-card__grid">
