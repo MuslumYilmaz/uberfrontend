@@ -55,31 +55,31 @@ type VisibleEntry = {
         <a class="fah-btn" routerLink="/pricing">Pricing</a>
 
         <div class="fah-profile fah-profile-right">
-          <button class="fah-avatar"
+          <button class="fah-avatar" data-testid="header-profile-button"
                   (click)="toggleProfileMenu()"
                   aria-haspopup="menu"
                   [attr.aria-expanded]="profileOpen()">
             <i class="pi pi-user"></i>
           </button>
-          <div *ngIf="profileOpen()" class="fah-menu" role="menu">
+          <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu">
             <div class="fah-menu-section">Account</div>
 
             <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
-              <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()">
+              <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()" data-testid="header-menu-profile">
                 <i class="pi pi-user"></i> My profile
               </a>
-              <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()">
+              <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-menu-admin-users">
                 <i class="pi pi-shield"></i> Admin: Users
               </a>
               <div class="fah-divider"></div>
-              <button class="fah-menu-item" (click)="logout()"><i class="pi pi-sign-out"></i> Log out</button>
+              <button class="fah-menu-item" (click)="logout()" data-testid="header-menu-logout"><i class="pi pi-sign-out"></i> Log out</button>
             </ng-container>
 
             <ng-template #profileDisabled>
-              <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()">
+              <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-menu-signup">
                 <i class="pi pi-user-plus"></i> Sign up
               </button>
-              <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()">
+              <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-menu-login">
                 <i class="pi pi-sign-in"></i> Log in
               </button>
             </ng-template>

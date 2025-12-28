@@ -1,14 +1,14 @@
-<div class="auth-page">
+<div class="auth-page" data-testid="signup-page">
   <section class="auth-left">
     <div class="auth-card">
       <h1 class="auth-title">Create a new account</h1>
 
       <div class="auth-socials">
-        <button type="button" class="btn-surface" (click)="auth.oauthStart('google','signup')">
+        <button type="button" class="btn-surface" data-testid="signup-google" (click)="auth.oauthStart('google','signup')">
           <i class="fa-brands fa-google social-icon" aria-hidden="true"></i>
           Continue with Google
         </button>
-        <button type="button" class="btn-surface" (click)="auth.oauthStart('github','signup')">
+        <button type="button" class="btn-surface" data-testid="signup-github" (click)="auth.oauthStart('github','signup')">
           <i class="fa-brands fa-github social-icon" aria-hidden="true"></i>
           Continue with GitHub
         </button>
@@ -23,40 +23,40 @@
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         <label class="field">
           <span>Email</span>
-          <input formControlName="email" type="email" placeholder="you@example.com" />
+          <input data-testid="signup-email" formControlName="email" type="email" placeholder="you@example.com" />
         </label>
 
         <label class="field">
           <span>Username</span>
-          <input formControlName="username" type="text" placeholder="jane_doe" />
+          <input data-testid="signup-username" formControlName="username" type="text" placeholder="jane_doe" />
         </label>
 
         <div formGroupName="passwords" class="auth-form">
           <label class="field">
             <span>Password</span>
-            <input formControlName="password" type="password" placeholder="••••••••" />
+            <input data-testid="signup-password" formControlName="password" type="password" placeholder="••••••••" />
           </label>
 
           <label class="field">
             <span>Confirm Password</span>
-            <input formControlName="confirmPassword" type="password" placeholder="••••••••" />
+            <input data-testid="signup-confirm" formControlName="confirmPassword" type="password" placeholder="••••••••" />
           </label>
 
-          <div *ngIf="form.get('passwords')?.hasError('mismatch') && confirmCtrl?.touched" class="error">
+          <div *ngIf="form.hasError('mismatch') && confirmCtrl?.touched" class="error" data-testid="signup-mismatch">
             Passwords do not match
           </div>
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="loading">
+        <button type="submit" class="btn-primary" data-testid="signup-submit" [disabled]="loading">
           {{ loading ? 'Creating account…' : 'Sign Up' }}
         </button>
 
-        <div *ngIf="error" class="error">{{ error }}</div>
+        <div *ngIf="error" class="error" data-testid="signup-error">{{ error }}</div>
       </form>
 
       <p class="meta">
         Already have an account?
-        <a routerLink="/auth/login">Sign in</a>
+        <a routerLink="/auth/login" data-testid="signup-link-login">Sign in</a>
       </p>
     </div>
   </section>

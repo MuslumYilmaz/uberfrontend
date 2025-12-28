@@ -8,11 +8,11 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-oauth-callback',
   imports: [CommonModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-neutral-900 text-gray-100 p-6">
+    <div class="min-h-screen flex items-center justify-center bg-neutral-900 text-gray-100 p-6" data-testid="oauth-callback-page">
       <div class="max-w-md w-full text-center">
         <h1 class="text-xl font-semibold mb-3">Signing you in…</h1>
         <p class="text-white/70">Completing Google authentication.</p>
-        <p *ngIf="error" class="mt-4 text-red-400">{{ error }}</p>
+        <p *ngIf="error" class="mt-4 text-red-400" data-testid="oauth-callback-error">{{ error }}</p>
       </div>
     </div>
   `

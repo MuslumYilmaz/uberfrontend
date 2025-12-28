@@ -1,14 +1,14 @@
-<div class="auth-page">
+<div class="auth-page" data-testid="login-page">
   <section class="auth-left">
     <div class="auth-card">
       <h1 class="auth-title">Sign in to your account</h1>
 
       <div class="auth-socials">
-        <button type="button" class="btn-surface" (click)="auth.oauthStart('google','login')">
+        <button type="button" class="btn-surface" data-testid="login-google" (click)="auth.oauthStart('google','login')">
           <i class="fa-brands fa-google social-icon" aria-hidden="true"></i>
           Continue with Google
         </button>
-        <button type="button" class="btn-surface" (click)="auth.oauthStart('github','login')">
+        <button type="button" class="btn-surface" data-testid="login-github" (click)="auth.oauthStart('github','login')">
           <i class="fa-brands fa-github social-icon" aria-hidden="true"></i>
           Continue with GitHub
         </button>
@@ -23,24 +23,24 @@
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         <label class="field">
           <span>Email</span>
-          <input formControlName="email" type="email" placeholder="you@example.com" />
+          <input data-testid="login-email" formControlName="email" type="email" placeholder="you@example.com" />
         </label>
 
         <label class="field">
           <span>Password</span>
-          <input formControlName="password" type="password" placeholder="••••••••" />
+          <input data-testid="login-password" formControlName="password" type="password" placeholder="••••••••" />
         </label>
 
-        <button type="submit" class="btn-primary" [disabled]="loading">
+        <button type="submit" class="btn-primary" data-testid="login-submit" [disabled]="loading">
           {{ loading ? 'Signing in…' : 'Sign In' }}
         </button>
 
-        <div *ngIf="error" class="error">{{ error }}</div>
+        <div *ngIf="error" class="error" data-testid="login-error">{{ error }}</div>
       </form>
 
       <p class="meta">
         Don’t have an account?
-        <a routerLink="/auth/signup">Sign up</a>
+        <a routerLink="/auth/signup" data-testid="login-link-signup">Sign up</a>
       </p>
     </div>
   </section>
