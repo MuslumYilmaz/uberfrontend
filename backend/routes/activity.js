@@ -7,6 +7,17 @@ const XpCredit = require('../models/XpCredit');
 const { requireAuth } = require('../middleware/Auth');
 
 const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
+const XP_BY_KIND = {
+    coding: 20,
+    trivia: 10,
+    debug: 15,
+};
+
+function xpForKind(kind) {
+    const raw = XP_BY_KIND[kind];
+    const xp = Number.isFinite(raw) ? raw : 0;
+    return Math.max(0, Math.min(100, Math.round(xp)));
+}
 
 // ---------- date helpers ----------
 function utcDayStr(d = new Date()) {
@@ -58,10 +69,13 @@ router.post('/complete', requireAuth, async (req, res) => {
         const user = await User.findById(req.auth.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const { kind, tech, itemId, source = 'tech', durationMin = 0, xp = 0 } = req.body || {};
+        const { kind, tech, itemId, source = 'tech', durationMin = 0 } = req.body || {};
         if (!kind || !tech) return res.status(400).json({ error: 'Missing kind or tech' });
         if (!['coding', 'trivia', 'debug'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' });
         if (!VALID_TECHS.includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
+
+        const durationMinSafe = Math.min(Math.max(Number(durationMin) || 0, 0), 24 * 60);
+        const baseXp = xpForKind(kind);
 
         const completedAt = new Date();
         const dayUTC = utcDayStr(completedAt);
@@ -70,7 +84,7 @@ router.post('/complete', requireAuth, async (req, res) => {
         let awardedXp = 0;
         try {
             await XpCredit.create({ userId: String(user._id), dayUTC, kind });
-            awardedXp = Number(xp) || 0;
+            awardedXp = baseXp;
         } catch (e) {
             // Duplicate credit => 0 XP; keep logging the event
             if (!(e && e.code === 11000)) throw e;
@@ -84,7 +98,7 @@ router.post('/complete', requireAuth, async (req, res) => {
             tech,
             itemId,
             source,
-            durationMin,
+            durationMin: durationMinSafe,
             xp: awardedXp,
             completedAt,
             dayUTC,

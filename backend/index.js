@@ -4,15 +4,24 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { requireAuth } = require('./middleware/Auth');
+const { getJwtSecret } = require('./config/jwt');
 const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
+const { rateLimit } = require('./middleware/rateLimit');
 
 const app = express();
 
 // ---- Config ----
 const PORT = process.env.PORT || 3001;
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/myapp';
+const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h
+const BUG_REPORT_MAX = Number(process.env.BUG_REPORT_MAX || 5);
+const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
+const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 2000);
+
+// Validate critical secrets early (fail-fast in production)
+getJwtSecret();
 
 // ---- DB ----
 mongoose.connect(MONGO_URL);
@@ -45,11 +54,24 @@ app.get('/api/hello', (_, res) => res.json({ message: 'Hello from backend 👋' 
  * body: { note: string, url?: string }
  * Sends an email to mslmyilmaz34@gmail.com
  */
-app.post('/api/bug-report', async (req, res) => {
+app.post(
+    '/api/bug-report',
+    rateLimit({
+        windowMs: BUG_REPORT_WINDOW_MS,
+        max: BUG_REPORT_MAX,
+        message: 'Too many bug reports, please try again later.',
+    }),
+    async (req, res) => {
     try {
         const { note, url } = req.body || {};
         if (!note || typeof note !== 'string' || !note.trim()) {
             return res.status(400).json({ error: 'Missing "note"' });
+        }
+        if (note.length > BUG_REPORT_MAX_NOTE_CHARS) {
+            return res.status(413).json({ error: 'Bug report note too long' });
+        }
+        if (url && typeof url === 'string' && url.length > BUG_REPORT_MAX_URL_CHARS) {
+            return res.status(413).json({ error: 'Bug report url too long' });
         }
 
         // Create transporter (Gmail SMTP with App Password, or any SMTP creds)

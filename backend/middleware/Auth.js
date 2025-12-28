@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
+const { getJwtSecret, getJwtVerifyOptions } = require('../config/jwt');
 
 function getBearerToken(req) {
     const h = req.headers.authorization || '';
@@ -12,7 +12,7 @@ function requireAuth(req, res, next) {
     try {
         const token = getBearerToken(req);
         if (!token) return res.status(401).json({ error: 'Missing token' });
-        const payload = jwt.verify(token, JWT_SECRET);
+        const payload = jwt.verify(token, getJwtSecret(), getJwtVerifyOptions());
         req.auth = { userId: payload.sub, role: payload.role || 'user' };
         next();
     } catch (e) {

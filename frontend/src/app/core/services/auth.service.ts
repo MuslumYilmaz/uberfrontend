@@ -243,6 +243,8 @@ export class AuthService {
     }
 
     this.setToken(token);
+    // Remove sensitive tokens from the URL (query/hash) to avoid leaks via copy/paste or screenshots.
+    this.scrubOAuthCallbackUrl();
     return this.fetchMe().pipe(
       catchError((e) => {
         // if /me fails, invalidate token so UI doesn’t think we’re logged in
@@ -250,6 +252,18 @@ export class AuthService {
         return throwError(() => e);
       })
     );
+  }
+
+  private scrubOAuthCallbackUrl() {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('token');
+      url.searchParams.delete('access_token');
+      url.searchParams.delete('state');
+      url.searchParams.delete('mode');
+      url.hash = '';
+      window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
+    } catch { }
   }
 
 }
