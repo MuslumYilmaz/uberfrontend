@@ -1,138 +1,98 @@
 [
   {
-    "id": "angular-cli-component-generation",
-    "title": "What does Angular CLI generate when you create a component, and why does that structure matter?",
+    "id": "angular-lifecycle-constructor-oninit-afterviewinit-dom",
+    "title": "What’s the difference between constructor, ngOnInit, and ngAfterViewInit, and which one is correct for DOM/ViewChild access?",
     "technology": "angular",
-    "difficulty": "easy",
-    "importance": 4,
-    "description": "Angular CLI generates a ready-to-use component folder (class, template, styles, tests) and wires it into your app (module-based or standalone). This standard structure matters because it enforces consistency, separation of concerns, and predictable wiring in large codebases.",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). For DOM/ViewChild access, ngAfterViewInit is usually correct—except @ViewChild({ static: true }) cases which are available earlier.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When you run <code>ng generate component</code> (or <code>ng g c</code>), Angular CLI scaffolds a component as a small, self-contained unit: TypeScript class + HTML template + styles + tests. Depending on your project setup, it also wires the component into an NgModule or generates it as a standalone component."
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "code": "# Basic\nng g c user-profile\n\n# With a path (creates folders as needed)\nng g c features/account/user-profile"
+          "text": "<strong>Core idea</strong><br><br>These run at different moments in the component lifecycle. The right hook depends on what you need: DI only (constructor), inputs/bindings (ngOnInit), or the rendered view / ViewChild / DOM (ngAfterViewInit)."
         },
         {
           "type": "list",
           "columns": [
-            "Generated file",
-            "What it contains",
-            "Why it exists"
+            "Hook",
+            "When it runs",
+            "What it’s for",
+            "DOM / ViewChild availability"
           ],
           "rows": [
             [
-              "user-profile.component.ts",
-              "The component class + @Component metadata",
-              "Encapsulates UI logic and declares how the component is composed (template/styles/imports)."
+              "<code>constructor</code>",
+              "When the class instance is created (before Angular initializes bindings).",
+              "Dependency injection + minimal field initialization (no Angular-dependent logic).",
+              "❌ Not safe for DOM. View is not created. ViewChild not resolved."
             ],
             [
-              "user-profile.component.html",
-              "The template",
-              "Keeps markup separate from logic; easier to read, review, and test."
+              "<code>ngOnInit()</code>",
+              "Once, after Angular sets data-bound inputs (after first <code>ngOnChanges</code>).",
+              "Initialization that depends on inputs, services, starting streams, fetching data.",
+              "⚠️ Usually not for DOM. ViewChild only if <code>@ViewChild({ static: true })</code>."
             ],
             [
-              "user-profile.component.css / .scss",
-              "Component styles",
-              "Scoped styling by default (ViewEncapsulation) and predictable styling location."
-            ],
-            [
-              "user-profile.component.spec.ts",
-              "Unit tests",
-              "Encourages testability and regression safety from day one."
+              "<code>ngAfterViewInit()</code>",
+              "Once, after Angular finishes creating the component’s view + child views.",
+              "Work that needs the rendered view: <code>@ViewChild</code>, DOM measurements, focus, 3rd-party widgets init.",
+              "✅ Safe for DOM/ViewChild (default <code>static: false</code>)."
             ]
           ],
-          "caption": "Typical files created by Angular CLI for a component"
+          "caption": "Constructor vs ngOnInit vs ngAfterViewInit"
         },
         {
-          "type": "list",
-          "columns": [
-            "Project style",
-            "What CLI wires/updates"
-          ],
-          "rows": [
-            [
-              "Standalone (modern default in many setups)",
-              "Generates the component with <code>standalone: true</code> and an <code>imports</code> array inside the component metadata. No NgModule declaration update is needed."
-            ],
-            [
-              "NgModule-based",
-              "Updates the nearest module (or the one you specify) by adding the component to <code>declarations</code> (and sometimes adjusting imports if needed)."
-            ]
-          ],
-          "caption": "The “wiring” step depends on whether your app uses standalone components or NgModules"
+          "type": "text",
+          "text": "<strong>Which one is correct for DOM / ViewChild?</strong><br><br><strong>Use <code>ngAfterViewInit()</code> for DOM/ViewChild access in most cases.</strong> That’s when Angular guarantees the view exists and view queries (default <code>static: false</code>) are resolved."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important nuance: <code>@ViewChild</code> static option</strong><br><br><code>@ViewChild(..., { static: true })</code> resolves earlier (before/at init), so it can be used in <code>ngOnInit()</code> <em>if</em> the element is always present (not inside <code>*ngIf</code>/<code>*ngFor</code>). Default is <code>static: false</code>, which is available in <code>ngAfterViewInit()</code>."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-user-profile',\n  templateUrl: './user-profile.component.html',\n  styleUrls: ['./user-profile.component.css']\n  // In standalone projects you may also see:\n  // standalone: true,\n  // imports: [...]\n})\nexport class UserProfileComponent {}"
+          "code": "import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';\n\n@Component({\n  selector: 'app-demo',\n  template: `\n    <input #nameInput />\n    <!-- If this input were under *ngIf, static:true would be wrong -->\n  `\n})\nexport class DemoComponent implements OnInit, AfterViewInit {\n  // Case A (common): default static:false => available in ngAfterViewInit\n  @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;\n\n  // Case B: static:true => available in ngOnInit (ONLY if always present)\n  // @ViewChild('nameInput', { static: true }) nameInput!: ElementRef<HTMLInputElement>;\n\n  constructor(/* inject services here */) {\n    // DI only. No DOM.\n  }\n\n  ngOnInit(): void {\n    // Good: init that depends on @Input() or services.\n    // If using static:true, you *can* access nameInput here.\n  }\n\n  ngAfterViewInit(): void {\n    // Safe place for DOM/ViewChild\n    this.nameInput?.nativeElement.focus();\n  }\n}"
         },
         {
           "type": "list",
           "columns": [
-            "Why the structure matters",
-            "Practical impact"
+            "Scenario",
+            "Correct hook",
+            "Why"
           ],
           "rows": [
             [
-              "Separation of concerns (TS / HTML / CSS / tests)",
-              "PRs are clearer; changes are easier to review and reason about."
+              "Read <code>@Input()</code> values, set up streams, start API calls",
+              "<code>ngOnInit</code>",
+              "Inputs are set; component is initialized."
             ],
             [
-              "Predictable conventions (naming, folder layout, selector prefix)",
-              "Faster onboarding and less “where is this defined?” friction in large teams."
+              "Access <code>@ViewChild</code> / measure DOM / focus element",
+              "<code>ngAfterViewInit</code>",
+              "View is created; queries are resolved."
             ],
             [
-              "Encapsulation",
-              "Component is a stable unit for refactors, reuse, and isolated testing."
+              "ViewChild element is always present (not under *ngIf/*ngFor) and you need it early",
+              "<code>ngOnInit</code> + <code>@ViewChild({ static: true })</code>",
+              "Static query resolves before init."
             ],
             [
-              "Tooling + builds (AOT, linting, test runners)",
-              "Generated files match Angular tooling expectations; fewer setup mistakes."
-            ],
-            [
-              "Scalability",
-              "As the app grows, consistent component boundaries prevent “everything in one file” chaos."
+              "Access projected content via <code>@ContentChild</code>",
+              "<code>ngAfterContentInit</code>",
+              "Projected content is initialized (different from the view)."
             ]
           ],
-          "caption": "Why CLI scaffolding is more than “boilerplate”"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Common flags",
-            "What they change"
-          ],
-          "rows": [
-            [
-              "--skip-tests",
-              "Doesn’t generate the <code>.spec.ts</code> file."
-            ],
-            [
-              "--inline-template / --inline-style",
-              "Puts template/styles directly into the <code>.ts</code> file (often discouraged for real apps)."
-            ],
-            [
-              "--style=scss",
-              "Generates <code>.scss</code> instead of <code>.css</code>."
-            ],
-            [
-              "--standalone",
-              "Forces generating a standalone component (if your workspace supports both styles)."
-            ],
-            [
-              "--module=feature",
-              "In NgModule projects, declares the component in a specific module."
-            ]
-          ]
+          "caption": "Picking the right lifecycle hook"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Angular CLI generates a component as a consistent mini-package (logic/template/styles/tests) and wires it correctly (standalone vs NgModule). That structure is what keeps Angular apps maintainable when the codebase and team size grow."
+          "text": "<strong>Common pitfall</strong><br><br>If you change a bound value inside <code>ngAfterViewInit</code>, you can trigger <code>ExpressionChangedAfterItHasBeenCheckedError</code> in dev mode. Fix by avoiding sync bound mutations there, or scheduling them (microtask) / triggering a follow-up change detection deliberately (advanced)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br><code>constructor</code> = DI + minimal setup. <code>ngOnInit</code> = initialization that depends on inputs/bindings. <code>ngAfterViewInit</code> = anything that needs the rendered view (DOM, <code>ViewChild</code>). For DOM/ViewChild access, <strong>ngAfterViewInit is the default correct choice</strong>, with the exception of <code>@ViewChild({ static: true })</code> when the element is guaranteed to exist."
         }
       ]
     },
@@ -1539,105 +1499,6 @@
     "type": "trivia"
   },
   {
-    "id": "angular-create-component-cli",
-    "title": "How do you create a new Angular component using the CLI?",
-    "technology": "angular",
-    "difficulty": "easy",
-    "importance": 5,
-    "description": "You can create a new Angular component using the Angular CLI command `ng generate component` (or its shorthand `ng g c`). The CLI automatically creates the necessary files, updates the module declarations, and sets up the component structure for you.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>The Angular CLI (Command Line Interface) provides an easy and standardized way to create new components. Instead of manually creating files, you can use a single command that automatically generates all the required files and updates your project structure accordingly."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Basic Command</strong><br>To create a new component, use the following command in your terminal or command prompt inside your Angular project directory:<br><br><code>ng generate component component-name</code><br><br>or, using the shorthand version:<br><br><code>ng g c component-name</code>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Example</strong><br>Let’s say you want to create a new component called <code>user-profile</code>:"
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "code": "ng generate component user-profile"
-        },
-        {
-          "type": "text",
-          "text": "<strong>What Happens When You Run the Command</strong><br>The Angular CLI automatically performs several tasks for you:<ul><li>Creates a new folder named <code>user-profile</code> inside the <code>src/app</code> directory.</li><li>Generates four files for the component:</li></ul>"
-        },
-        {
-          "type": "list",
-          "columns": [
-            "File",
-            "Purpose"
-          ],
-          "rows": [
-            [
-              "user-profile.component.ts",
-              "Contains the component’s logic and metadata (TypeScript class)."
-            ],
-            [
-              "user-profile.component.html",
-              "Defines the component’s template (HTML structure)."
-            ],
-            [
-              "user-profile.component.css",
-              "Contains styles specific to this component."
-            ],
-            [
-              "user-profile.component.spec.ts",
-              "Includes unit tests for the component."
-            ]
-          ],
-          "caption": "Files generated by the Angular CLI when creating a component"
-        },
-        {
-          "type": "text",
-          "text": "Additionally, the CLI automatically updates the <code>AppModule</code> (or the relevant feature module) to include the new component in the <code>declarations</code> array, making it ready to use in your application."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Specifying a Custom Path</strong><br>You can also create components in subfolders or specific modules by specifying a path:<br><code>ng g c features/admin/dashboard</code><br>This command will create a <code>dashboard</code> component inside <code>src/app/features/admin</code> and update the module accordingly."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Additional CLI Options</strong><br>The CLI supports several useful options when generating components:<ul><li><code>--inline-style</code> or <code>-s</code>: Includes styles directly in the component TypeScript file.</li><li><code>--inline-template</code> or <code>-t</code>: Includes HTML inline instead of creating a separate template file.</li><li><code>--skip-tests</code>: Skips creating the test file (<code>.spec.ts</code>).</li><li><code>--module=app</code>: Specifies which module to declare the component in (useful for feature modules).</li></ul>"
-        },
-        {
-          "type": "code",
-          "language": "bash",
-          "code": "# Example with options\nng g c products/product-list --skip-tests --inline-style --module=app"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Verifying the Component</strong><br>After creation, you can find your component files in the specified directory. You can start using it in other templates by referencing its selector (defined in the <code>@Component</code> decorator):"
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Example usage of the generated component -->\n<app-user-profile></app-user-profile>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advantages of Using the CLI</strong><br><ul><li>Ensures consistent project structure and naming conventions.</li><li>Reduces human error by automatically updating module declarations.</li><li>Speeds up development by generating boilerplate code instantly.</li><li>Supports automation for large projects with many components.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Angular CLI as your personal scaffolding tool — it builds the foundation of your components so you can focus on implementing logic and design."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>ng generate component component-name</code> or <code>ng g c component-name</code> to create new components.</li><li>The CLI generates four files: TypeScript, HTML, CSS, and a test file.</li><li>It automatically updates your module’s <code>declarations</code> array.</li><li>You can customize component creation with various flags and options.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia"
-  },
-  {
     "id": "angular-services",
     "title": "What are services in Angular and why are they used?",
     "technology": "angular",
@@ -1905,60 +1766,86 @@
     "type": "trivia"
   },
   {
-    "id": "angular-two-way-data-binding",
-    "title": "What is two-way data binding and how is it achieved in Angular?",
+    "id": "angular-custom-two-way-binding",
+    "title": "How would you implement two-way binding for a custom component (Input/Output naming convention), and what can go wrong?",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Two-way data binding in Angular creates a connection between the component’s data and the template’s input fields, ensuring that any change in one immediately reflects in the other. It is primarily achieved using the ngModel directive from the FormsModule.",
+    "description": "Angular supports two-way binding on custom components via [(...)] when the component exposes a matching @Input/@Output pair: <prop> and <prop>Change. It’s syntactic sugar for [prop] plus (propChange).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Two-way data binding in Angular allows synchronization between the component class (TypeScript) and the template (HTML). This means that when a user updates the value in an input field, the component property automatically updates — and vice versa. It provides a dynamic and interactive connection between the view and the model."
-        },
-        {
-          "type": "text",
-          "text": "<strong>How It Works</strong><br>Two-way data binding combines <strong>property binding</strong> (for setting a value) and <strong>event binding</strong> (for listening to changes). Angular provides the <code>ngModel</code> directive from the <code>FormsModule</code> to achieve this functionality seamlessly."
+          "text": "<strong>Core idea</strong><br><br><code>[(x)]</code> works only if Angular can find:<br>• <code>@Input() x</code><br>• <code>@Output() xChange</code><br><br>Then this:<br><code>&lt;app-cmp [(x)]=&quot;state&quot;&gt;&lt;/app-cmp&gt;</code><br>is equivalent to:<br><code>&lt;app-cmp [x]=&quot;state&quot; (xChange)=&quot;state = $event&quot;&gt;&lt;/app-cmp&gt;</code>"
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "// Import FormsModule in your module\nimport { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { FormsModule } from '@angular/forms';\nimport { AppComponent } from './app.component';\n\n@NgModule({\n  declarations: [AppComponent],\n  imports: [BrowserModule, FormsModule],\n  bootstrap: [AppComponent]\n})\nexport class AppModule {}"
-        },
-        {
-          "type": "code",
-          "language": "typescript",
-          "code": "// Component\nimport { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-user-input',\n  templateUrl: './user-input.component.html'\n})\nexport class UserInputComponent {\n  username: string = '';\n}"
+          "code": "import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';\n\n@Component({\n  selector: 'app-text-input',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <label>\n      <span class=\"sr-only\">Name</span>\n      <input\n        [value]=\"value\"\n        (input)=\"onInput(($event.target as HTMLInputElement).value)\"\n      />\n    </label>\n  `\n})\nexport class TextInputComponent {\n  @Input() value = '';\n  @Output() valueChange = new EventEmitter<string>();\n\n  onInput(next: string): void {\n    // Do NOT rely on mutating @Input() to update parent.\n    // Always emit the change.\n    this.valueChange.emit(next);\n  }\n}"
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- Template using two-way data binding -->\n<input [(ngModel)]=\"username\" placeholder=\"Enter your name\">\n<p>Hello, {{ username }}!</p>"
+          "code": "<!-- parent.component.html -->\n<app-text-input [(value)]=\"name\"></app-text-input>\n\n<p>Preview: {{ name }}</p>"
         },
         {
           "type": "text",
-          "text": "In this example:<ul><li><code>[(ngModel)]</code> binds the <code>username</code> property to the input element.</li><li>Changes in the input immediately update the <code>username</code> variable.</li><li>Any programmatic change to <code>username</code> automatically reflects in the input field.</li></ul>"
+          "text": "<strong>Aliasing still works (but names must still match)</strong><br><br>If you alias the input name, the output alias must be <em>that alias</em> + <code>Change</code>."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, EventEmitter, Input, Output } from '@angular/core';\n\n@Component({\n  selector: 'app-toggle',\n  template: `\n    <button type=\"button\" (click)=\"toggle()\">\n      {{ checked ? 'ON' : 'OFF' }}\n    </button>\n  `\n})\nexport class ToggleComponent {\n  @Input('checked') checked = false;\n  @Output('checkedChange') checkedChange = new EventEmitter<boolean>();\n\n  toggle(): void {\n    this.checkedChange.emit(!this.checked);\n  }\n}\n\n// usage:\n// <app-toggle [(checked)]=\"isEnabled\"></app-toggle>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What can go wrong",
+            "Symptom",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Naming mismatch (e.g., @Output() valueChanged instead of valueChange)",
+              "[(value)] fails to compile / template error",
+              "Use exact convention: input <prop> + output <prop>Change (or matching aliases)"
+            ],
+            [
+              "You mutate the @Input() and forget to emit",
+              "Child UI updates, parent state does not",
+              "Treat @Input as read-only; emit through the Output for parent updates"
+            ],
+            [
+              "Emitting at the wrong time (during init hooks)",
+              "ExpressionChangedAfterItHasBeenCheckedError / flicker",
+              "Emit from user actions or schedule (e.g., queueMicrotask/setTimeout) if you must emit after init"
+            ],
+            [
+              "Two sources of truth (internal state diverges from input)",
+              "UI shows stale value or “snaps back”",
+              "Render from the @Input; if you keep local state, sync it carefully in ngOnChanges"
+            ],
+            [
+              "Using [(...)] with a non-assignable expression",
+              "Template error: can't assign to expression",
+              "Bind to a writable field: [(value)]=\"name\" (not \"getName()\" / pipes / literals)"
+            ],
+            [
+              "Objects/arrays are mutated instead of replaced (especially with OnPush patterns)",
+              "Hard-to-debug stale UI / shared state side effects",
+              "Emit new references (immutable updates) or clearly own mutation boundaries"
+            ],
+            [
+              "Using custom two-way binding for form controls when you really need Angular Forms integration",
+              "ngModel / reactive forms don’t work properly (touched/dirty/validation)",
+              "Implement ControlValueAccessor for true form controls"
+            ]
+          ],
+          "caption": "Common pitfalls with custom two-way binding"
         },
         {
           "type": "text",
-          "text": "<strong>Underlying Mechanism</strong><br>Internally, <code>[(ngModel)]</code> is syntactic sugar for combining property and event bindings:<br><br><code>[value]=\"username\" (input)=\"username=$event.target.value\"</code><br>This means Angular binds the input’s <code>value</code> property and listens to the <code>input</code> event to update the component property."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advantages of Two-Way Data Binding</strong><br><ul><li>Reduces boilerplate code for synchronizing data between UI and logic.</li><li>Improves interactivity and responsiveness.</li><li>Makes forms and user input handling much simpler.</li><li>Ideal for smaller or medium-sized forms and data entry applications.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>When to Use</strong><br>Two-way binding is perfect when you need live synchronization between the UI and the component. However, in large-scale applications, one-way binding is often preferred for better control and performance optimization."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>[(ngModel)]</code> as a 'two-way street' between your TypeScript code and HTML — changes in one direction instantly reflect in the other."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Two-way data binding connects the component and view in real-time.</li><li>It is achieved with the <code>[(ngModel)]</code> directive from the <code>FormsModule</code>.</li><li>Combines property and event binding internally.</li><li>Useful for interactive forms and live-updating interfaces.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>Custom two-way binding is just <code>[prop]</code> + <code>(propChange)</code>. Implement <code>@Input() prop</code> and <code>@Output() propChange</code>, emit on user interaction, avoid mutating inputs as your update mechanism, and use ControlValueAccessor when the component is a real form control."
         }
       ]
     },

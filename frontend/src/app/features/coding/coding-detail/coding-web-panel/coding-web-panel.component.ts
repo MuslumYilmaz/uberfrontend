@@ -742,12 +742,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	    try { if (window.location.hash !== hash) window.location.hash = hash; } catch (_e) {}
 	  };
 
-	  // srcdoc inherits the parent document base URL, so fragment-only links like '#about'
-	  // can unexpectedly navigate the iframe to the host app URL. Force in-document
-	  // hash navigation to stay within the preview without polluting browser history.
-	  const handleHashNav = (ev) => {
-	    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
-	    if (!el) return;
+		  // Keep fragment-only links like '#about' inside the preview document and
+		  // avoid polluting the browser history while users are editing.
+		  const handleHashNav = (ev) => {
+		    const el = ev.target instanceof Element ? ev.target.closest('a[href]') : null;
+		    if (!el) return;
 	    const rawHref = (el.getAttribute && el.getAttribute('href')) || '';
 	    if (!rawHref || rawHref[0] !== '#') return;
 	    try { if (typeof ev.preventDefault === 'function') ev.preventDefault(); } catch {}
@@ -1053,56 +1052,49 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.consoleEntries.update((list) => [...list.slice(-499), entry]);
   }
 
-  private setPreviewHtml(html: string | null) {
-    this.lastPreviewHtml = html;
+	  private setPreviewHtml(html: string | null) {
+	    this.lastPreviewHtml = html;
 
-    try {
-      if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl);
-    } catch { }
-    this.previewObjectUrl = null;
+	    try {
+	      if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl);
+	    } catch { }
+	    this.previewObjectUrl = null;
 
-    const frameEl = this.previewFrame?.nativeElement;
-    if (!frameEl) {
-      requestAnimationFrame(() => {
-        const f = this.previewFrame?.nativeElement;
-        if (f) this.setPreviewHtml(html);
-      });
-      return;
-    }
+	    const frameEl = this.previewFrame?.nativeElement;
+	    if (!frameEl) {
+	      requestAnimationFrame(() => {
+	        const f = this.previewFrame?.nativeElement;
+	        if (f) this.setPreviewHtml(html);
+	      });
+	      return;
+	    }
 
-    if (!html) {
-      this.previewContentWindow = null;
-      try {
-        // Avoid touching `contentDocument` (cross-origin when sandboxed without allow-same-origin).
-        (frameEl as any).srcdoc = '<!doctype html><meta charset="utf-8">';
-      } catch { }
-      // important: clear url so the "Building preview…" condition is correct
-      this._previewUrl.set(null);
-      return;
-    }
+	    if (!html) {
+	      this.previewContentWindow = null;
+	      try {
+	        // Avoid touching `contentDocument` (cross-origin when sandboxed without allow-same-origin).
+	        // Use replace() to avoid adding a joint-history entry.
+	        frameEl.contentWindow?.location.replace('about:blank');
+	      } catch { }
+	      // important: clear url so the "Building preview…" condition is correct
+	      this._previewUrl.set(null);
+	      return;
+	    }
 
-    this.previewContentWindow = this.previewFrame?.nativeElement.contentWindow ?? this.previewContentWindow;
+	    this.previewContentWindow = this.previewFrame?.nativeElement.contentWindow ?? this.previewContentWindow;
 
-    // Prefer srcdoc to avoid blob: URL navigation issues in sandboxed iframes (hash links, history).
-    try {
-      (frameEl as any).srcdoc = html;
-      // 👇 update the reactive url used by the template (truthy => hide placeholder)
-      this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl('about:srcdoc'));
-      return;
-    } catch { }
-
-    // Fallback: blob URL (older browsers / unexpected failures)
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    this.previewObjectUrl = url;
-    try {
-      // Avoid polluting the browser's joint session history on every live-preview update.
-      frameEl.contentWindow?.location.replace(url);
-    } catch {
-      frameEl.src = url;
-    }
-    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
-  }
+	    // Use blob URLs + location.replace() so live-preview updates don't pollute
+	    // the browser's joint session history (Back button should leave the page).
+	    const blob = new Blob([html], { type: 'text/html' });
+	    const url = URL.createObjectURL(blob);
+	    this.previewObjectUrl = url;
+	    try {
+	      frameEl.contentWindow?.location.replace(url);
+	    } catch {
+	      frameEl.src = url;
+	    }
+	    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+	  }
 
   /** Apply solution into editors, persist, and rebuild preview (invoked by parent). */
   public async applySolution(payload: { html?: string; css?: string } | string): Promise<void> {

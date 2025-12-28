@@ -80,13 +80,6 @@ test('web preview does not execute injected <script> tags from content', async (
   await expect(page.getByTestId('web-panel')).toBeVisible();
 
   await expect(page.getByTestId('web-preview-placeholder')).toBeHidden();
-  const previewFrame = page.getByTestId('web-preview-iframe');
-  await expect.poll(async () => {
-    const srcdoc = await previewFrame.getAttribute('srcdoc');
-    if (srcdoc && srcdoc.trim()) return true;
-    const src = await previewFrame.getAttribute('src');
-    return !!src && /(unsafe:)?blob:/.test(src);
-  }).toBeTruthy();
   await waitForIframeReady(page, 'web-preview-iframe');
 
   const probeText = `e2e-probe-${Date.now()}`;
@@ -101,4 +94,28 @@ test('web preview does not execute injected <script> tags from content', async (
   const frame = page.frameLocator('[data-testid="web-preview-iframe"]');
   await expect(frame.locator('#probe')).toHaveText(probeText);
   await expect(frame.locator('body')).not.toHaveAttribute('data-e2e-script-ran', '1');
+});
+
+test('web preview live updates do not pollute browser history (Back leaves the page)', async ({ page }) => {
+  await page.goto('/coding');
+  await expect(page.getByTestId('coding-list-page')).toBeVisible();
+
+  await page.goto(`/${WEB_QUESTION.tech}/coding/${WEB_QUESTION.id}`);
+  await expect(page.getByTestId('web-panel')).toBeVisible();
+  await expect(page.getByTestId('web-preview-placeholder')).toBeHidden();
+
+  const frame = page.frameLocator('[data-testid="web-preview-iframe"]');
+  const htmlModelKey = `q-${WEB_QUESTION.id}-html`;
+  const runId = Date.now();
+
+  // Force multiple preview rebuilds (previously this would add multiple history entries).
+  for (let i = 0; i < 3; i++) {
+    const marker = `e2e-history-${runId}-${i}`;
+    await setMonacoModelValue(page, htmlModelKey, `<div id="probe">${marker}</div>`);
+    await expect(frame.locator('#probe')).toHaveText(marker);
+  }
+
+  await page.goBack();
+  await expect(page).toHaveURL('/coding');
+  await expect(page.getByTestId('coding-list-page')).toBeVisible();
 });

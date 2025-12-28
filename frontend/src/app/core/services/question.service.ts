@@ -10,7 +10,7 @@ import { Tech } from '../models/user.model';
 type Kind = 'coding' | 'trivia' | 'debug';
 export type MixedQuestion = Question & { tech: Tech };
 
-type DataVersion = { version: string };
+type DataVersion = { dataVersion?: string; version?: string };
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
@@ -322,12 +322,16 @@ export class QuestionService {
   /** Fetch data-version once; invalidate normalized cache when it changes. */
   private getVersion(): Observable<string> {
     if (!this.version$) {
-      this.version$ = this.http.get<DataVersion>('assets/data-version.json').pipe(
-        map((v) => String((v as any)?.version ?? '0')),
-        catchError(() => of('0')),
-        tap((ver) => this.ensureCacheVersion(ver)),
-        shareReplay(1)
-      );
+      this.version$ = this.http
+        .get<DataVersion>('assets/data-version.json', {
+          headers: { 'cache-control': 'no-cache' },
+        })
+        .pipe(
+          map((v) => String(v?.dataVersion ?? v?.version ?? '0')),
+          catchError(() => of('0')),
+          tap((ver) => this.ensureCacheVersion(ver)),
+          shareReplay(1)
+        );
     }
     return this.version$;
   }
