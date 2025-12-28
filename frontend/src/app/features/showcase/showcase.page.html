@@ -318,9 +318,15 @@
       eyebrow="FAQ"
       title="Common questions, answered."
       subtitle="Short, direct answers. If you still have questions, you can link to /guides or /contact."
-      [items]="faqItems"
+      [groups]="faqGroups"
       [singleOpen]="true">
     </app-faq-section>
+
+    <div class="faq-cta">
+      <a class="sk-btn sk-btn-ghost tiny" routerLink="/pricing" aria-label="View the full FAQ">
+        View full FAQ
+      </a>
+    </div>
   </div>
 </section>
 

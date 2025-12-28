@@ -98,7 +98,7 @@ type CtaMode = 'emit' | 'navigatePricing';
       <section class="pr-faq" *ngIf="variant === 'full'">
         <app-faq-section
           title="FAQ"
-          [items]="faqs"
+          [groups]="faqGroups"
           [singleOpen]="false">
         </app-faq-section>
       </section>
@@ -168,12 +168,117 @@ export class PricingPlansSectionComponent {
     { icon: 'fa-solid fa-rotate', title: 'Continuous updates', desc: 'New content and improvements shipped regularly.' },
   ];
 
-  faqs = [
-    { q: 'What do I get with Premium?', a: 'Access to premium content and features included in the plan you choose. New content is added over time.' },
-    { q: 'Can I cancel anytime?', a: 'For subscription plans, yes — you can cancel and keep access until the end of the billing period.' },
-    { q: 'Does Lifetime include everything forever?', a: 'Lifetime covers the FrontendAtlas core library. Separate premium products (if any) may be priced independently.' },
-    { q: 'Do you offer refunds?', a: 'If you plan to offer them: add your policy here. Keep it short and explicit.' },
-    { q: 'Is this for beginners or seniors?', a: 'Mostly for interview-focused practice. You can start at any level, but it’s strongest for real-world front-end workflows.' },
+  faqGroups = [
+    {
+      id: 'getting-started',
+      title: 'Getting Started',
+      items: [
+        {
+          id: 'what-is-frontendatlas',
+          q: 'What is FrontendAtlas?',
+          a: 'FrontendAtlas is a hands-on interview practice workspace. You solve coding tasks, review concepts, and practice front-end system design in the same flow — with a real editor, preview, and validation where available.',
+        },
+        {
+          id: 'install-anything',
+          q: 'Do I need to install anything, or is it all in the browser?',
+          a: 'No install required. FrontendAtlas runs in the browser; just open the app and start practicing. For the best experience, use a desktop/laptop with a keyboard.',
+        },
+        {
+          id: 'supported-browsers-devices',
+          q: 'Which browsers/devices are supported?',
+          a: 'FrontendAtlas works best on recent desktop versions of Chrome/Edge, Safari, and Firefox. Mobile/tablet can browse, but the full editor + split-pane workflow is optimized for desktop.',
+        },
+      ],
+    },
+    {
+      id: 'content-learning',
+      title: 'Content & Learning',
+      items: [
+        {
+          id: 'exercise-types',
+          q: 'What kinds of exercises are included (coding tasks vs concepts)?',
+          a: 'You’ll find UI-first coding tasks (with starter code), concept/trivia questions (for interview reasoning), and front-end system design prompts (tradeoffs, caching, architecture).',
+        },
+        {
+          id: 'tech-coverage',
+          q: 'Which technologies are covered (JS/TS, HTML/CSS, React/Angular/Vue)?',
+          a: 'Content is organized by JavaScript/TypeScript, HTML/CSS, Angular, React, Vue — plus a dedicated front-end system design library.',
+        },
+        {
+          id: 'difficulty-and-tags',
+          q: 'How are difficulty levels and tags organized?',
+          a: 'Questions are labeled by difficulty and importance, and you can filter/sort by technology and difficulty. Search is built around quick narrowing: “what should I practice next?”',
+        },
+        {
+          id: 'solutions-and-explanations',
+          q: 'Do exercises include solutions and explanations?',
+          a: 'Many exercises include solutions and explanations, and more are added over time. Some prompts are intentionally open-ended (multiple valid approaches) to reflect real interview discussions.',
+        },
+      ],
+    },
+    {
+      id: 'coding-experience',
+      title: 'Coding Experience',
+      items: [
+        {
+          id: 'live-preview',
+          q: 'Do tasks have a live preview (rendered output) while I code?',
+          a: 'Yes — many tasks provide a live preview that updates as you type. Where a visual preview isn’t the best signal (e.g., pure JS logic), validation is done via checks instead.',
+        },
+        {
+          id: 'run-tests',
+          q: 'Can I run tests / validate my solution inside the app?',
+          a: 'Yes for tasks that ship with deterministic checks (especially JavaScript/TypeScript). For HTML/CSS tasks, the primary feedback loop is live preview.',
+        },
+        {
+          id: 'save-progress',
+          q: 'Does FrontendAtlas save my code and progress between sessions?',
+          a: 'Yes. Your code is saved locally in your browser to prevent accidental loss, and signed-in users can also track solved status. You can always use the Reset action to return to the starter.',
+        },
+      ],
+    },
+    {
+      id: 'plans-billing',
+      title: 'Plans & Billing',
+      items: [
+        {
+          id: 'premium-includes',
+          q: 'What’s included in Premium?',
+          a: 'Premium unlocks premium question sets and features for your plan, plus ongoing content updates while your plan is active.',
+        },
+        {
+          id: 'subscription-vs-lifetime',
+          q: 'What’s the difference between Subscription and Lifetime?',
+          a: 'Subscriptions include access while active (and renew automatically unless canceled). Lifetime is a one-time purchase for FrontendAtlas core content; future separate premium products (if any) may be priced independently.',
+        },
+        {
+          id: 'cancel-anytime',
+          q: 'Can I cancel a subscription anytime?',
+          a: 'Yes. You can cancel at any time and keep access until the end of your current billing period.',
+        },
+        {
+          id: 'refunds',
+          q: 'Do you offer refunds?',
+          a: 'Refund requests may be approved within 7 days of the initial purchase for accounts with limited usage. Subscription renewals are not refundable. See /legal/refund for full details or contact support@frontendatlas.com.',
+        },
+      ],
+    },
+    {
+      id: 'support',
+      title: 'Support',
+      items: [
+        {
+          id: 'report-bug',
+          q: 'How do I report a bug or get help?',
+          a: 'Email support@frontendatlas.com with steps to reproduce, your browser/OS, and the question URL or id. Screenshots or a short screen recording help a lot.',
+        },
+        {
+          id: 'payment-declined',
+          q: 'Checkout failed / payment was declined — what should I try first?',
+          a: 'Try again, verify billing details, and consider a different card. Disable ad blockers/VPNs that can break checkout, and ensure your bank allows online/international payments. If it still fails, contact support@frontendatlas.com with the time of the attempt and your account email.',
+        },
+      ],
+    },
   ];
 
   get ctaText(): string {

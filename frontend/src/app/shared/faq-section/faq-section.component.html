@@ -8,24 +8,53 @@
   </div>
 
   <div class="faq-card glass" role="region" aria-label="Frequently asked questions">
-    <div class="faq-item" *ngFor="let item of items; let i = index; trackBy: trackById">
-      <button
-        type="button"
-        class="faq-q"
-        (click)="toggle(getId(item, i))"
-        [attr.aria-expanded]="isOpen(getId(item, i))"
-        [attr.aria-controls]="'faq-a-' + getId(item, i)">
-        <span class="faq-q-text">{{ item.q }}</span>
-        <i class="pi pi-chevron-down faq-icon" aria-hidden="true" [class.open]="isOpen(getId(item, i))"></i>
-      </button>
+    <ng-container *ngIf="groups?.length; else flatFaq">
+      <div class="faq-group" *ngFor="let group of groups; let gi = index; trackBy: trackByGroup">
+        <div class="faq-group-title">{{ group.title }}</div>
 
-      <div
-        class="faq-a"
-        [class.open]="isOpen(getId(item, i))"
-        [attr.id]="'faq-a-' + getId(item, i)"
-        role="region">
-        <p>{{ item.a }}</p>
+        <div class="faq-item" *ngFor="let item of group.items; let i = index; trackBy: trackById">
+          <button
+            type="button"
+            class="faq-q"
+            (click)="toggle(getId(item, i, getGroupKey(group, gi)))"
+            [attr.aria-expanded]="isOpen(getId(item, i, getGroupKey(group, gi)))"
+            [attr.aria-controls]="'faq-a-' + getId(item, i, getGroupKey(group, gi))">
+            <span class="faq-q-text">{{ item.q }}</span>
+            <i class="pi pi-chevron-down faq-icon" aria-hidden="true"
+              [class.open]="isOpen(getId(item, i, getGroupKey(group, gi)))"></i>
+          </button>
+
+          <div
+            class="faq-a"
+            [class.open]="isOpen(getId(item, i, getGroupKey(group, gi)))"
+            [attr.id]="'faq-a-' + getId(item, i, getGroupKey(group, gi))"
+            role="region">
+            <p>{{ item.a }}</p>
+          </div>
+        </div>
       </div>
-    </div>
+    </ng-container>
+
+    <ng-template #flatFaq>
+      <div class="faq-item" *ngFor="let item of items; let i = index; trackBy: trackById">
+        <button
+          type="button"
+          class="faq-q"
+          (click)="toggle(getId(item, i))"
+          [attr.aria-expanded]="isOpen(getId(item, i))"
+          [attr.aria-controls]="'faq-a-' + getId(item, i)">
+          <span class="faq-q-text">{{ item.q }}</span>
+          <i class="pi pi-chevron-down faq-icon" aria-hidden="true" [class.open]="isOpen(getId(item, i))"></i>
+        </button>
+
+        <div
+          class="faq-a"
+          [class.open]="isOpen(getId(item, i))"
+          [attr.id]="'faq-a-' + getId(item, i)"
+          role="region">
+          <p>{{ item.a }}</p>
+        </div>
+      </div>
+    </ng-template>
   </div>
 </section>

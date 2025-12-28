@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 type FaqItem = { q: string; a: string; id?: string };
+type FaqGroup = { title: string; items: FaqItem[]; id?: string };
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ export class FaqSectionComponent {
   @Input() subtitle?: string;
   @Input() eyebrow?: string;
   @Input() items: FaqItem[] = [];
+  @Input() groups: FaqGroup[] = [];
   @Input() initialOpenId?: string;
   @Input() singleOpen = true;
 
@@ -29,9 +31,14 @@ export class FaqSectionComponent {
   }
 
   trackById = (index: number, item: FaqItem) => item.id || `faq-${index}`;
+  trackByGroup = (index: number, group: FaqGroup) => group.id || `faq-group-${index}`;
 
-  getId(item: FaqItem, index: number): string {
-    return item.id || `faq-${index}`;
+  getId(item: FaqItem, index: number, groupKey?: string): string {
+    return item.id || (groupKey ? `faq-${groupKey}-${index}` : `faq-${index}`);
+  }
+
+  getGroupKey(group: FaqGroup, index: number): string {
+    return group.id || `group-${index}`;
   }
 
   toggle(id: string) {

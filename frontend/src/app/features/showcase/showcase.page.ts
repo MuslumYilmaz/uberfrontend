@@ -227,57 +227,76 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
 
-  faqItems: Array<{
-    key: string;
-    q: string;
-    a: string;
-  }> = [
-      {
-        key: 'what-is',
-        q: 'What is FrontendAtlas?',
-        a: `FrontendAtlas is a hands-on interview practice workspace. You solve UI and frontend problems in a real editor, run deterministic checks, and review results in the same flow — not just read explanations.`,
-      },
-      {
-        key: 'who-for',
-        q: 'Who is it for?',
-        a: `Front-end engineers preparing for interviews (junior to senior), or anyone who wants structured practice across UI coding, JavaScript fundamentals, and front-end system design.`,
-      },
-      {
-        key: 'how-different',
-        q: 'How is this different from watching videos or reading solutions?',
-        a: `You practice by doing: edit real files, see UI output, run checks, and iterate. The goal: build the muscle memory you need in real interviews (constraints, edge cases, and feedback loops).`,
-      },
-      {
-        key: 'tech-supported',
-        q: 'Which technologies are supported?',
-        a: `Challenges and content are organized by tech (JavaScript/TypeScript, HTML/CSS, Angular, React, Vue) and by problem type (UI coding, trivia, and system design).`,
-      },
-      {
-        key: 'tests',
-        q: 'How do the checks work?',
-        a: `Each coding question can ship with deterministic checks. You run them to validate behavior and catch edge cases early. The feedback is designed to be actionable and fast.`,
-      },
-      {
-        key: 'persistence',
-        q: 'Why does my code sometimes restore after refresh?',
-        a: `Because the workspace can persist your progress locally (IndexedDB). If you want a clean slate, use the in-app reset controls instead of only clearing localStorage.`,
-      },
-      {
-        key: 'offline',
-        q: 'Can I use it with a flaky connection?',
-        a: `Yes — the platform is built with a local-first mindset. Some features may still require network access, but core practice flows are designed to stay usable even when the connection isn’t perfect.`,
-      },
-      {
-        key: 'pricing',
-        q: 'What do I get on the free tier vs paid?',
-        a: `Free gives you a preview of the workflow and selected content. Paid unlocks the full library and premium sets. (You can keep this answer intentionally high-level and let the pricing table do the details.)`,
-      },
-      {
-        key: 'updates',
-        q: 'Do I get new content over time?',
-        a: `Yes. New questions and improvements are shipped continuously. The goal is to keep the library current with real interview patterns and modern frontend practices.`,
-      },
-    ];
+  faqGroups = [
+    {
+      id: 'getting-started',
+      title: 'Getting Started',
+      items: [
+        {
+          id: 'what-is-frontendatlas',
+          q: 'What is FrontendAtlas?',
+          a: 'FrontendAtlas is a hands-on interview practice workspace. You solve coding tasks, learn core concepts, and practice front-end system design with a real editor and fast feedback loops.',
+        },
+        {
+          id: 'install-anything',
+          q: 'Do I need to install anything, or is it all in the browser?',
+          a: 'It’s all in the browser — no install. Just open the app and start. A desktop/laptop is recommended for the best editor experience.',
+        },
+        {
+          id: 'supported-browsers-devices',
+          q: 'Which browsers/devices are supported?',
+          a: 'Best on recent desktop Chrome/Edge, Safari, and Firefox. Mobile/tablet can browse, but the editor workflow is optimized for desktop.',
+        },
+      ],
+    },
+    {
+      id: 'content-learning',
+      title: 'Content & Learning',
+      items: [
+        {
+          id: 'exercise-types',
+          q: 'What kinds of exercises are included (coding tasks vs concepts)?',
+          a: 'UI-first coding tasks (with starter code), concept/trivia questions, and front-end system design prompts focused on tradeoffs and architecture.',
+        },
+        {
+          id: 'tech-coverage',
+          q: 'Which technologies are covered (JS/TS, HTML/CSS, React/Angular/Vue)?',
+          a: 'JavaScript/TypeScript, HTML/CSS, Angular, React, Vue, plus a dedicated front-end system design track.',
+        },
+        {
+          id: 'difficulty-and-tags',
+          q: 'How are difficulty levels and tags organized?',
+          a: 'You can filter and sort by technology and difficulty to quickly narrow down what to practice next.',
+        },
+        {
+          id: 'solutions-and-explanations',
+          q: 'Do exercises include solutions and explanations?',
+          a: 'Many do — and more are added over time. Some questions are intentionally open-ended to reflect real interview discussions.',
+        },
+      ],
+    },
+    {
+      id: 'coding-experience',
+      title: 'Coding Experience',
+      items: [
+        {
+          id: 'live-preview',
+          q: 'Do tasks have a live preview (rendered output) while I code?',
+          a: 'Yes for many tasks. Where a visual preview isn’t the right signal, validation is done via checks instead.',
+        },
+        {
+          id: 'run-tests',
+          q: 'Can I run tests / validate my solution inside the app?',
+          a: 'Yes for tasks that include deterministic checks (especially JavaScript/TypeScript). HTML/CSS tasks primarily use live preview.',
+        },
+        {
+          id: 'save-progress',
+          q: 'Does FrontendAtlas save my code and progress between sessions?',
+          a: 'Yes — your work is saved locally in the browser to prevent accidental loss. You can reset any task to return to the starter.',
+        },
+      ],
+    },
+  ];
 
   libraryLanes: Array<{
     key: LibraryLane;

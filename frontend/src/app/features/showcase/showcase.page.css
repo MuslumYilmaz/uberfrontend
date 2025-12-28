@@ -1255,6 +1255,12 @@
   font-family: var(--uf-font-body, system-ui, -apple-system, "Segoe UI", sans-serif);
 }
 
+.faq-cta{
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .contact-card{
   padding: 18px;
   display: grid;

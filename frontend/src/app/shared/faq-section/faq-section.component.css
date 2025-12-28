@@ -3,6 +3,21 @@
   border-radius: 16px;
 }
 
+.faq-group + .faq-group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--uf-border-subtle);
+}
+
+.faq-group-title {
+  padding: 6px 12px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 85%, transparent);
+}
+
 .faq-item + .faq-item {
   border-top: 1px solid var(--uf-border-subtle);
 }
