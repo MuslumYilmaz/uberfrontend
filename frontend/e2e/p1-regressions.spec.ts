@@ -124,6 +124,7 @@ test('js runner console output resets on re-run (no stale logs)', async ({ page 
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   const jsPanel = page.getByTestId('js-panel');
   await expect(jsPanel).toBeVisible();
+  await expect(jsPanel.getByTestId('js-run-tests')).toBeEnabled();
 
   const codeModelKey = `q-${JS_QUESTION.id}-code`;
   const marker1 = `e2e-console-${Date.now()}-a`;
