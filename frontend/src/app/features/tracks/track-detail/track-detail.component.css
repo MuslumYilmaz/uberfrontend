@@ -121,6 +121,36 @@
   align-items: center;
 }
 
+.filters-row--bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.filters-row--bottom .filter-group {
+  width: 100%;
+}
+
+.filters-row--bottom .filter-group--sort {
+  justify-content: flex-end;
+}
+
+.filters-row--bottom .filter-group--sort .sort-select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .filters-row--bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-row--bottom .filter-group--sort {
+    justify-content: flex-start;
+  }
+}
+
 .filter-group {
   display: flex;
   align-items: center;

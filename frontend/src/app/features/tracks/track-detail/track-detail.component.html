@@ -126,8 +126,10 @@
                 </fa-chip>
               </div>
             </div>
+          </div>
 
-            <div class="filter-group stretch">
+          <div class="filters-row filters-row--bottom">
+            <div class="filter-group filter-group--search">
               <div class="filter-label fa-meta-label">Search</div>
               <div class="search-box fa-input">
                 <i class="pi pi-search"></i>
@@ -142,7 +144,7 @@
               </div>
             </div>
 
-            <div class="filter-group">
+            <div class="filter-group filter-group--sort">
               <div class="filter-label fa-meta-label">Sort</div>
               <div class="fa-input sort-select">
                 <select data-testid="track-filter-sort" [ngModel]="sort$.value" (ngModelChange)="setSort($event)">
