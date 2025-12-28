@@ -124,3 +124,40 @@ test('coding list keeps last filters after reloading another route', async ({ pa
   await expect(page.getByTestId('filter-importance-low').locator('input')).toBeChecked();
   await expect(page.getByTestId(`question-card-${JS_QUESTION.id}`)).toBeVisible();
 });
+
+test('track keeps last filters after reloading another route', async ({ page }) => {
+  const trackSlug = 'foundations-30d';
+  const targetId = 'js-equality-vs-strict-equality';
+
+  await page.goto(`/tracks/${trackSlug}?tech=javascript&kind=trivia&diff=easy&q=javascript`);
+  await expect(page.getByTestId('track-detail-page')).toBeVisible();
+
+  await expect(page.getByTestId('track-filter-search')).toHaveValue('javascript');
+  await expect(page.getByTestId('track-filter-kind-trivia')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId('track-filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId('track-filter-diff-easy')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-question-card-${targetId}`)).toBeVisible();
+
+  // Leave the track, reload elsewhere, then come back without params.
+  await page.getByTestId(`track-question-card-${targetId}`).click();
+  await expect(page).toHaveURL(new RegExp(`/javascript/trivia/${targetId}$`));
+
+  await page.goto('/');
+  await expect(page.getByTestId('dashboard-page')).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId('dashboard-page')).toBeVisible();
+
+  await page.goto(`/tracks/${trackSlug}`);
+  await expect(page.getByTestId('track-detail-page')).toBeVisible();
+
+  await expect(page).toHaveURL(/tech=javascript/);
+  await expect(page).toHaveURL(/kind=trivia/);
+  await expect(page).toHaveURL(/diff=easy/);
+  await expect(page).toHaveURL(/q=javascript/i);
+
+  await expect(page.getByTestId('track-filter-search')).toHaveValue('javascript');
+  await expect(page.getByTestId('track-filter-kind-trivia')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId('track-filter-tech-javascript')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId('track-filter-diff-easy')).toHaveClass(/fa-chip--selected/);
+  await expect(page.getByTestId(`track-question-card-${targetId}`)).toBeVisible();
+});

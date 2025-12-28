@@ -8,6 +8,7 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { TrackDetailStateService } from '../../../core/services/track-detail-state';
 import {
   FRAMEWORK_FAMILY_BY_ID,
   frameworkLabel,
@@ -46,6 +47,8 @@ type NarrowSortKey = 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' 
 type TrackTechFilter = 'all' | 'javascript' | 'html' | 'css' | 'ui';
 
 const UI_TECHS: ReadonlySet<Tech> = new Set<Tech>(['react', 'angular', 'vue']);
+const DIFF_ORDER: ReadonlyArray<'easy' | 'intermediate' | 'hard'> = ['easy', 'intermediate', 'hard'];
+const IMP_ORDER: ReadonlyArray<ImportanceTier> = ['low', 'medium', 'high'];
 
 @Component({
   selector: 'app-track-detail',
@@ -85,6 +88,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     private qs: QuestionService,
     private seo: SeoService,
     private location: Location,
+    private trackState: TrackDetailStateService,
     public progress: UserProgressService,
   ) { }
 
@@ -116,39 +120,61 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
     }
 
     const qp = this.route.snapshot.queryParamMap;
-    const qInit = qp.get('q') || '';
-    const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
-    const techInit = qp.get('tech');
-    const diffInit = qp.get('diff') ?? null;
-    const impInit = qp.get('imp') ?? null;
-    const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
-
-    const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
-    const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
-
-    // Reset/hydrate filter state from URL every time the track changes.
-    this.searchTerm = qInit;
-    this.search$.next(qInit);
-    this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
-    this.techFilter$.next(this.normalizeTechFilter(techInit));
-
-    const parsedDiffs = (diffInit || '')
-      .split(',')
-      .map((d) => d.trim())
-      .filter((d) => !!d)
-      .map((d) => this.normalizeDifficulty(d)) as Array<'easy' | 'intermediate' | 'hard'>;
-    this.diffFilter$.next(new Set(parsedDiffs));
-
-    const parsedImps = (impInit || '')
-      .split(',')
-      .map((d) => d.trim().toLowerCase())
-      .filter((d) => d === 'low' || d === 'medium' || d === 'high') as ImportanceTier[];
-    this.impFilter$.next(new Set(parsedImps));
-
-    this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
-    this.sortOpen = false;
 
     this.track = track;
+
+    const hasAnyExplicitFilter = ['q', 'kind', 'tech', 'diff', 'imp', 'sort']
+      .some((k) => qp.get(k) !== null);
+    const saved = !hasAnyExplicitFilter ? this.trackState.get(track.slug) : null;
+
+    if (saved) {
+      this.searchTerm = saved.q || '';
+      this.search$.next(this.searchTerm);
+      this.kindFilter$.next(saved.kind);
+      this.techFilter$.next(saved.tech);
+      this.diffFilter$.next(new Set(saved.diffs || []));
+      this.impFilter$.next(new Set(saved.imps || []));
+      this.sort$.next(saved.sort);
+      this.sortOpen = false;
+
+      // Keep URL shareable when user lands on a plain /tracks/:slug.
+      this.syncQueryParams();
+    } else {
+      const qInit = qp.get('q') || '';
+      const kindInit = (qp.get('kind') as TrackQuestionKind | 'all') || 'all';
+      const techInit = qp.get('tech');
+      const diffInit = qp.get('diff') ?? null;
+      const impInit = qp.get('imp') ?? null;
+      const sortInit = (qp.get('sort') as 'diff-asc' | 'diff-desc' | 'importance-desc' | 'title-asc' | null) || null;
+
+      const allowedKinds = new Set<TrackQuestionKind | 'all'>(['all', 'coding', 'trivia', 'system-design']);
+      const allowedSorts = new Set(['diff-asc', 'diff-desc', 'importance-desc', 'title-asc']);
+
+      // Reset/hydrate filter state from URL every time the track changes.
+      this.searchTerm = qInit;
+      this.search$.next(qInit);
+      this.kindFilter$.next(allowedKinds.has(kindInit) ? kindInit : 'all');
+      this.techFilter$.next(this.normalizeTechFilter(techInit));
+
+      const parsedDiffs = (diffInit || '')
+        .split(',')
+        .map((d) => d.trim())
+        .filter((d) => !!d)
+        .map((d) => this.normalizeDifficulty(d)) as Array<'easy' | 'intermediate' | 'hard'>;
+      this.diffFilter$.next(new Set(parsedDiffs));
+
+      const parsedImps = (impInit || '')
+        .split(',')
+        .map((d) => d.trim().toLowerCase())
+        .filter((d) => d === 'low' || d === 'medium' || d === 'high') as ImportanceTier[];
+      this.impFilter$.next(new Set(parsedImps));
+
+      this.sort$.next(sortInit && allowedSorts.has(sortInit) ? sortInit : 'diff-asc');
+      this.sortOpen = false;
+
+      this.persistFilters();
+    }
+
     this.featured$ = this.loadFeatured(track).pipe(shareReplay(1));
     this.filtered$ = combineLatest([
       this.featured$,
@@ -192,6 +218,26 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
       description: track.subtitle,
       keywords: [track.title, 'front end interview track', 'coding practice', 'system design'],
       canonical: undefined,
+    });
+  }
+
+  private persistFilters() {
+    const slug = this.track?.slug;
+    if (!slug) return;
+
+    const diffs = Array.from(this.diffFilter$.value);
+    diffs.sort((a, b) => DIFF_ORDER.indexOf(a) - DIFF_ORDER.indexOf(b));
+
+    const imps = Array.from(this.impFilter$.value);
+    imps.sort((a, b) => IMP_ORDER.indexOf(a) - IMP_ORDER.indexOf(b));
+
+    this.trackState.set(slug, {
+      q: (this.searchTerm || '').trim(),
+      kind: this.kindFilter$.value,
+      tech: this.techFilter$.value,
+      diffs,
+      imps,
+      sort: this.sort$.value,
     });
   }
 
@@ -303,6 +349,7 @@ export class TrackDetailComponent implements OnInit, OnDestroy {
 
     const qs = url.searchParams.toString();
     this.location.replaceState(`${url.pathname}${qs ? `?${qs}` : ''}${url.hash}`);
+    this.persistFilters();
   }
 
   startPractice(items: TrackItem[]): void {
