@@ -36,6 +36,6 @@ const dataVersion = h.digest("hex").slice(0, 12);
 // write to the **correct** location in THIS app
 const dest = path.join(projectRoot, "src", "assets", "data-version.json");
 await fs.mkdir(path.dirname(dest), { recursive: true });
-await fs.writeFile(dest, JSON.stringify({ dataVersion }, null, 2));
+await fs.writeFile(dest, JSON.stringify({ dataVersion }, null, 2) + "\n");
 
 console.log(`[gen-data] wrote ${path.relative(projectRoot, dest)} = ${dataVersion}`);

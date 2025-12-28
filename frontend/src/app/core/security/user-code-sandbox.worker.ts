@@ -34,11 +34,44 @@ const MAX_LOGS = 200;
 const MAX_LOG_CHARS = 2000;
 
 // ---------- utilities ----------
+const tagOf = (v: unknown) => Object.prototype.toString.call(v);
+
+const formatSpecial = (v: unknown): string | null => {
+    if (!v) return null;
+    if (typeof v !== 'object' && typeof v !== 'function') return null;
+
+    // Promise objects stringify to "{}" but the real console shows "Promise {<pending>}".
+    const tag = tagOf(v);
+    if (tag === '[object Promise]') return 'Promise {<pending>}';
+
+    if (v instanceof Error) {
+        const name = (v as any).name ? String((v as any).name) : 'Error';
+        const msg = (v as any).message ? String((v as any).message) : '';
+        return msg ? `${name}: ${msg}` : name;
+    }
+
+    return null;
+};
+
 const safeStringify = (v: unknown) => {
     try {
-        if (typeof v === 'string') return v;
+        if (v === null) return 'null';
+
+        const t = typeof v;
+        if (t === 'string') return v as string;
+        if (t === 'undefined') return 'undefined';
+        if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
+        if (t === 'symbol') return (v as symbol).toString();
+        if (t === 'function') return `[Function ${(v as any).name || 'anonymous'}]`;
+
+        const special = formatSpecial(v);
+        if (special) return special;
+
         const seen = new WeakSet();
-        return JSON.stringify(v, (k, val) => {
+        const json = JSON.stringify(v, (_k, val) => {
+            const specialInner = formatSpecial(val);
+            if (specialInner) return specialInner;
+
             if (typeof val === 'object' && val !== null) {
                 if (seen.has(val)) return '[Circular]';
                 seen.add(val);
@@ -46,6 +79,9 @@ const safeStringify = (v: unknown) => {
             if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
             return val;
         });
+
+        // JSON.stringify can return undefined for unsupported top-level types; fall back.
+        return typeof json === 'string' ? json : String(v);
     } catch {
         try { return String(v); } catch { return '[Unserializable]'; }
     }

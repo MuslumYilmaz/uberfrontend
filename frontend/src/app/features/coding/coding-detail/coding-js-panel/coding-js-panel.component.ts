@@ -419,8 +419,50 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
         try {
           const results: TestResult[] = [];
           const logs: ConsoleEntry[] = [];
+          const tagOf = (v: any) => Object.prototype.toString.call(v);
+          const formatSpecial = (v: any): string | null => {
+            if (v && (typeof v === 'object' || typeof v === 'function')) {
+              if (tagOf(v) === '[object Promise]') return 'Promise {<pending>}';
+              if (v instanceof Error) {
+                const name = v?.name ? String(v.name) : 'Error';
+                const msg = v?.message ? String(v.message) : '';
+                return msg ? `${name}: ${msg}` : name;
+              }
+            }
+            return null;
+          };
+          const safeStringify = (v: any) => {
+            try {
+              if (v === null) return 'null';
+              const t = typeof v;
+              if (t === 'string') return v;
+              if (t === 'undefined') return 'undefined';
+              if (t === 'number' || t === 'boolean' || t === 'bigint') return String(v);
+              if (t === 'symbol') return v.toString();
+              if (t === 'function') return `[Function ${v.name || 'anonymous'}]`;
+
+              const special = formatSpecial(v);
+              if (special) return special;
+
+              const seen = new WeakSet();
+              const json = JSON.stringify(v, (_k, val) => {
+                const specialInner = formatSpecial(val);
+                if (specialInner) return specialInner;
+
+                if (val && typeof val === 'object') {
+                  if (seen.has(val)) return '[Circular]';
+                  seen.add(val);
+                }
+                if (typeof val === 'function') return `[Function ${val.name || 'anonymous'}]`;
+                return val;
+              });
+              return typeof json === 'string' ? json : String(v);
+            } catch {
+              try { return String(v); } catch { return '[Unserializable]'; }
+            }
+          };
           const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
-            const msg = args.map(a => { try { return typeof a === 'string' ? a : JSON.stringify(a); } catch { return String(a); } }).join(' ');
+            const msg = args.map(safeStringify).join(' ');
             logs.push({ level, message: msg, timestamp: Date.now() });
           };
           const consoleProxy = {
