@@ -60,6 +60,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   editorContent = signal<string>('');                  // user code
   testCode = signal<string>('');                       // test code
   hasRunTests = signal(false);
+  isRunningTests = signal(false);
   testResults = signal<TestResult[]>([]);
   consoleEntries = signal<ConsoleEntry[]>([]);
   editorRatio = signal(0.65); // top editors take 65% of the vertical space
@@ -67,6 +68,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   isDraggingSplit = this._draggingSplit.asReadonly();
   private _hydrating = true;
   private volatileBuffers: Record<JsLang, string> = { js: '', ts: '' };
+  private _runSeq = 0;
 
   ngOnInit() {
     window.addEventListener('beforeunload', this._persistLangOnUnload);
@@ -384,92 +386,106 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   // Run tests
   async runTests() {
-    this.subTab.set('console');
+    const q = this.question; if (!q) return;
+
+    const runId = ++this._runSeq;
+    this.isRunningTests.set(true);
     this.hasRunTests.set(false);
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
-    const q = this.question; if (!q) return;
-
-    const userSrc = await this.ensureJs(this.editorContent(), `${q.id}.ts`);
-    const testsSrc = await this.ensureJs(this.testCode(), `${q.id}.tests.ts`);
-    const wrapped = this.wrapExportDefault(userSrc);
-    const prepared = this.transformTestCode(testsSrc);
-
     try {
-      const out = await this.runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
-      this.consoleEntries.set(this.sanitizeLogs(out?.entries));
-      this.testResults.set(out?.results || []);
-    } catch (e: any) {
-      this.testResults.set([{ name: 'Test runner error', passed: false, error: this.short(e) }]);
-    }
+      const userSrc = await this.ensureJs(this.editorContent(), `${q.id}.ts`);
+      if (runId !== this._runSeq) return;
 
-    /* ---------- LOCAL FALLBACK if sandbox produced no cases ---------- */
-    if ((this.testResults() || []).length === 0 && prepared.trim()) {
+      const testsSrc = await this.ensureJs(this.testCode(), `${q.id}.tests.ts`);
+      if (runId !== this._runSeq) return;
+
+      const wrapped = this.wrapExportDefault(userSrc);
+      const prepared = this.transformTestCode(testsSrc);
+
       try {
-        const results: TestResult[] = [];
-        const logs: ConsoleEntry[] = [];
-        const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
-          const msg = args.map(a => { try { return typeof a === 'string' ? a : JSON.stringify(a); } catch { return String(a); } }).join(' ');
-          logs.push({ level, message: msg, timestamp: Date.now() });
-        };
-        const consoleProxy = {
-          log: (...a: any[]) => push('log', a),
-          info: (...a: any[]) => push('info', a),
-          warn: (...a: any[]) => push('warn', a),
-          error: (...a: any[]) => push('error', a),
-        };
-
-        const isObj = (v: any) => v !== null && typeof v === 'object';
-        const deepEqual = (a: any, b: any): boolean => {
-          if (Object.is(a, b)) return true;
-          if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
-          if (isObj(a) && isObj(b)) {
-            const ka = Object.keys(a), kb = Object.keys(b);
-            if (ka.length !== kb.length) return false;
-            for (const k of ka) if (!deepEqual(a[k], b[k])) return false;
-            return true;
-          }
-          return false;
-        };
-        const expect = (received: any) => ({
-          toBe: (exp: any) => { if (!Object.is(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to be ${JSON.stringify(exp)}`); },
-          toEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to equal ${JSON.stringify(exp)}`); },
-          toStrictEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to strictly equal ${JSON.stringify(exp)}`); },
-        });
-
-        const it = async (name: string, fn: () => any | Promise<any>) => {
-          try { await fn(); results.push({ name, passed: true }); }
-          catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
-        };
-        const test = it;
-        const describe = (_: string, fn: () => void) => { try { fn(); } catch { } };
-
-        const prevConsole = (globalThis as any).console;
-        (globalThis as any).console = consoleProxy;
-        try {
-          new Function(wrapped)(); // define user default on global
-          await new Function('describe', 'test', 'it', 'expect', 'console', prepared)(
-            describe as any, test as any, it as any, expect as any, consoleProxy as any
-          );
-        } finally {
-          (globalThis as any).console = prevConsole;
-        }
-
-        this.consoleEntries.set(this.sanitizeLogs(logs));
-        this.testResults.set(results);
+        const out = await this.runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
+        if (runId !== this._runSeq) return;
+        this.consoleEntries.set(this.sanitizeLogs(out?.entries));
+        this.testResults.set(out?.results || []);
       } catch (e: any) {
-        this.testResults.set([{ name: 'Local runner error', passed: false, error: this.short(e) }]);
+        if (runId !== this._runSeq) return;
+        this.testResults.set([{ name: 'Test runner error', passed: false, error: this.short(e) }]);
       }
-    }
-    /* ---------- end fallback ---------- */
 
-    this.hasRunTests.set(true);
-    const passing = this.allPassing();
-    this.solvedChange.emit(passing);
-    this.testResultsChange.emit(this.testResults());
-    this.consoleEntriesChange.emit(this.consoleEntries());
-    this.subTab.set('tests');
+      /* ---------- LOCAL FALLBACK if sandbox produced no cases ---------- */
+      if ((this.testResults() || []).length === 0 && prepared.trim()) {
+        try {
+          const results: TestResult[] = [];
+          const logs: ConsoleEntry[] = [];
+          const push = (level: 'log' | 'info' | 'warn' | 'error', args: any[]) => {
+            const msg = args.map(a => { try { return typeof a === 'string' ? a : JSON.stringify(a); } catch { return String(a); } }).join(' ');
+            logs.push({ level, message: msg, timestamp: Date.now() });
+          };
+          const consoleProxy = {
+            log: (...a: any[]) => push('log', a),
+            info: (...a: any[]) => push('info', a),
+            warn: (...a: any[]) => push('warn', a),
+            error: (...a: any[]) => push('error', a),
+          };
+
+          const isObj = (v: any) => v !== null && typeof v === 'object';
+          const deepEqual = (a: any, b: any): boolean => {
+            if (Object.is(a, b)) return true;
+            if (Array.isArray(a) && Array.isArray(b)) return a.length === b.length && a.every((v, i) => deepEqual(v, b[i]));
+            if (isObj(a) && isObj(b)) {
+              const ka = Object.keys(a), kb = Object.keys(b);
+              if (ka.length !== kb.length) return false;
+              for (const k of ka) if (!deepEqual(a[k], b[k])) return false;
+              return true;
+            }
+            return false;
+          };
+          const expect = (received: any) => ({
+            toBe: (exp: any) => { if (!Object.is(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to be ${JSON.stringify(exp)}`); },
+            toEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to equal ${JSON.stringify(exp)}`); },
+            toStrictEqual: (exp: any) => { if (!deepEqual(received, exp)) throw new Error(`Expected ${JSON.stringify(received)} to strictly equal ${JSON.stringify(exp)}`); },
+          });
+
+          const it = async (name: string, fn: () => any | Promise<any>) => {
+            try { await fn(); results.push({ name, passed: true }); }
+            catch (e: any) { results.push({ name, passed: false, error: String(e?.message ?? e) }); }
+          };
+          const test = it;
+          const describe = (_: string, fn: () => void) => { try { fn(); } catch { } };
+
+          const prevConsole = (globalThis as any).console;
+          (globalThis as any).console = consoleProxy;
+          try {
+            new Function(wrapped)(); // define user default on global
+            await new Function('describe', 'test', 'it', 'expect', 'console', prepared)(
+              describe as any, test as any, it as any, expect as any, consoleProxy as any
+            );
+          } finally {
+            (globalThis as any).console = prevConsole;
+          }
+
+          if (runId !== this._runSeq) return;
+          this.consoleEntries.set(this.sanitizeLogs(logs));
+          this.testResults.set(results);
+        } catch (e: any) {
+          if (runId !== this._runSeq) return;
+          this.testResults.set([{ name: 'Local runner error', passed: false, error: this.short(e) }]);
+        }
+      }
+      /* ---------- end fallback ---------- */
+
+      if (runId !== this._runSeq) return;
+      this.hasRunTests.set(true);
+      const passing = this.allPassing();
+      this.solvedChange.emit(passing);
+      this.testResultsChange.emit(this.testResults());
+      this.consoleEntriesChange.emit(this.consoleEntries());
+      this.subTab.set('tests');
+    } finally {
+      if (runId === this._runSeq) this.isRunningTests.set(false);
+    }
   }
 
   /* ---------- Helpers (trimmed copies of your originals) ---------- */

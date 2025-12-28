@@ -119,3 +119,37 @@ test('web preview live updates do not pollute browser history (Back leaves the p
   await expect(page).toHaveURL('/coding');
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
 });
+
+test('js runner console output resets on re-run (no stale logs)', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  const jsPanel = page.getByTestId('js-panel');
+  await expect(jsPanel).toBeVisible();
+
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  const marker1 = `e2e-console-${Date.now()}-a`;
+  const marker2 = `e2e-console-${Date.now()}-b`;
+
+  const codeWithLog = (marker: string) => [
+    `console.log("${marker}")`,
+    'export default function clamp(value, lower, upper) {',
+    '  return Math.min(Math.max(value, lower), upper);',
+    '}',
+    '',
+  ].join('\n');
+
+  await setMonacoModelValue(page, codeModelKey, codeWithLog(marker1));
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.locator('[data-testid="test-result"]')).not.toHaveCount(0);
+
+  await jsPanel.getByRole('button', { name: 'Console' }).click();
+  await expect(jsPanel.locator('app-console-logger')).toContainText(marker1);
+
+  await setMonacoModelValue(page, codeModelKey, codeWithLog(marker2));
+  await jsPanel.getByTestId('js-run-tests').click();
+  await expect(jsPanel.locator('[data-testid="test-result"]')).not.toHaveCount(0);
+
+  await jsPanel.getByRole('button', { name: 'Console' }).click();
+  const consoleOut = jsPanel.locator('app-console-logger');
+  await expect(consoleOut).toContainText(marker2);
+  await expect(consoleOut).not.toContainText(marker1);
+});

@@ -55,21 +55,21 @@
         <!-- BOTTOM: Actions + Results/Console -->
         <div class="flex-1 min-h-0 flex flex-col fa-runner-shell">
             <div class="fa-runner-topbar">
-                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()" [disabled]="!(testCode()||'').trim()">▶ Run
-                    tests</button>
+                <button class="fa-runner-run-btn" data-testid="js-run-tests" (click)="runTests()"
+                    [disabled]="!(testCode()||'').trim() || isRunningTests()">▶ Run tests</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='tests'"
                     (click)="subTab.set('tests')">Results</button>
                 <button class="fa-runner-tab-btn" [class.active]="subTab()==='console'"
                     (click)="subTab.set('console')">Console</button>
-                <span class="fa-runner-summary" *ngIf="hasRunTests()">{{ passedCount() }}/{{ totalCount() }}
-                    passed</span>
+                <span class="fa-runner-summary" *ngIf="isRunningTests()">Running…</span>
+                <span class="fa-runner-summary" *ngIf="!isRunningTests() && hasRunTests()">{{ passedCount() }}/{{ totalCount() }} passed</span>
             </div>
 
             <div class="flex-1 min-h-0 overflow-hidden">
                 <!-- Results -->
                 <div *ngIf="subTab()==='tests'" class="h-full overflow-auto p-4 results-panel fa-results" data-testid="js-results-panel">
                     <div *ngIf="!hasRunTests()" class="h-full grid place-items-center text-[11px] text-gray-400 empty-state">
-                        Run tests to see results.
+                        {{ isRunningTests() ? 'Running tests…' : 'Run tests to see results.' }}
                     </div>
 
                     <div *ngIf="hasRunTests()" class="space-y-2">
