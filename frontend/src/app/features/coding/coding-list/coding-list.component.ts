@@ -25,6 +25,7 @@ import { FRAMEWORK_FAMILY_BY_ID, frameworkLabel, FrameworkVariant } from '../../
 import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/coding-filter-panel';
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -201,6 +202,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private viewModeSub?: Subscription;
   private navSub?: Subscription;
   private hydrated = false;
+  private lastScopedFilter: { topic: string | null; focus: string | null } = { topic: null, focus: null };
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -656,6 +658,46 @@ export class CodingListComponent implements OnInit, OnDestroy {
     });
 
     const qp = this.route.snapshot.queryParamMap;
+    this.lastScopedFilter = { topic: qp.get('topic'), focus: qp.get('focus') };
+
+    // If we navigate from a scoped focus/topic URL back to plain /coding (same component instance),
+    // the in-memory tag filters would otherwise "stick". Treat leaving a scoped URL as a reset.
+    if (this.source === 'global-coding') {
+      this.route.queryParamMap
+        .pipe(
+          takeUntil(this.destroy$),
+          map((nextQp) => ({ topic: nextQp.get('topic'), focus: nextQp.get('focus') })),
+          distinctUntilChanged((a, b) => a.topic === b.topic && a.focus === b.focus),
+          tap((next) => {
+            const wasScoped = !!(this.lastScopedFilter.topic || this.lastScopedFilter.focus);
+            const isScoped = !!(next.topic || next.focus);
+
+            if (wasScoped && !isScoped) {
+              this.lastScopedFilter = next;
+              this.resetAllFilters();
+              return;
+            }
+
+            // Support in-place navigation between scoped URLs.
+            if (next.topic && next.topic !== this.lastScopedFilter.topic) {
+              this.lastScopedFilter = next;
+              this.applyTopic(next.topic);
+              return;
+            }
+
+            const focus = next.focus as FocusSlug | null;
+            if (focus && focus !== this.lastScopedFilter.focus && FOCUS_SEED_TAGS[focus]) {
+              this.lastScopedFilter = next;
+              this.tagMatchMode = 'any';
+              this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
+              return;
+            }
+
+            this.lastScopedFilter = next;
+          })
+        )
+        .subscribe();
+    }
 
     // Non-global lists still need to hydrate URL-backed filters (q/diff/imp).
     if (this.source !== 'global-coding') {
@@ -743,10 +785,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
         this.search$.next(qFromUrl);
       }
 
-      const focus = qp.get('focus') as FocusSlug | null;
-      if (focus && FOCUS_SEED_TAGS[focus]) {
-        this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
-        this.tagMatchMode = 'any';
+      const topic = qp.get('topic');
+      if (topic) {
+        this.applyTopic(topic);
+      } else {
+        const focus = qp.get('focus') as FocusSlug | null;
+        if (focus && FOCUS_SEED_TAGS[focus]) {
+          this.tagMatchMode = 'any';
+          this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
+        }
       }
 
       this.hydrated = true;
@@ -835,9 +882,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     const focus = qp.get('focus') as FocusSlug | null;
-    if (focus && FOCUS_SEED_TAGS[focus]) {
-      this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
+    const topic = qp.get('topic');
+    if (topic) {
+      this.applyTopic(topic);
+    } else if (focus && FOCUS_SEED_TAGS[focus]) {
       this.tagMatchMode = 'any';
+      this.selectedTags$.next([...FOCUS_SEED_TAGS[focus]]);
     }
 
     this.hydrated = true;
@@ -856,7 +906,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     // If we restored from persisted state and the URL is "plain /coding",
     // sync the full filter set into the URL once (replaceUrl) so refresh/share works.
     if (this.source === 'global-coding' && viewKey === 'tech' && restoredFromState) {
-      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'category']
+      const hasAnyExplicitFilter = ['tech', 'kind', 'q', 'diff', 'imp', 'focus', 'topic', 'category']
         .some((k) => qp.get(k) !== null);
 
       const tech = this.selectedTech$.value;
@@ -883,6 +933,22 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     this.saveFiltersTo(viewKey);
+  }
+
+  private applyTopic(topicId: string) {
+    const id = (topicId || '').trim();
+    if (!id) return;
+
+    loadTopics()
+      .then((registry) => {
+        const tags = expandTopicsToTags([id], registry);
+        if (!tags.length) return;
+        this.tagMatchMode = 'any';
+        this.selectedTags$.next([...tags]);
+      })
+      .catch(() => {
+        // ignore (topic registry is optional at runtime)
+      });
   }
 
   // ---------- helpers used by template ----------
@@ -1219,12 +1285,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
       kind: null,
       category: null,
       focus: null,
+      topic: null,
       reset: null,
     });
   }
 
   toggleTagMatchMode() {
     this.tagMatchMode = this.tagMatchMode === 'all' ? 'any' : 'all';
+    this.selectedTags$.next([...this.selectedTags$.value]);
     this.saveFiltersTo(this.getActiveViewKey());
   }
 
@@ -1469,6 +1537,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source !== 'global-coding') return;
     if (!this.hydrated) {
       this.debug('saveFiltersTo skipped (not hydrated)', { view });
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    const topic = url.searchParams.get('topic');
+    const focus = url.searchParams.get('focus');
+    if (topic || focus) {
+      // URL-scoped focus/topic filters shouldn't leak into persisted state.
       return;
     }
 

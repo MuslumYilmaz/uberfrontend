@@ -88,16 +88,16 @@
 
             <ng-container *ngIf="stats$ | async as stats">
                 <div class="section-grid">
-                    <a *ngFor="let card of focusAreas; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-                        [queryParams]="card.queryParams">
+                    <a *ngFor="let topic of stats.topics; trackBy: trackByTopicId" class="row fa-card fa-card--interactive" [routerLink]="['/coding']"
+                        [queryParams]="{ topic: topic.id, reset: 1 }">
                         <div class="row-main">
                             <div class="row-icon">
-                                <i [ngClass]="piIcon(card.icon)"></i>
+                                <i [ngClass]="piIcon('grid')"></i>
                             </div>
                             <div class="row-body">
-                                <div class="row-title fa-card-title">{{ card.title }}</div>
+                                <div class="row-title fa-card-title">{{ topic.title }}</div>
                                 <div class="row-sub fa-meta-text">
-                                    {{ getFocusSubtitle(card, stats.focusCounts) }}
+                                    {{ stats.topicCounts[topic.id] ?? 0 }} questions
                                 </div>
                             </div>
                         </div>

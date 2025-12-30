@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Params, RouterModule } from '@angular/router';
-import { forkJoin, map, Observable, shareReplay } from 'rxjs';
+import { forkJoin, from, map, Observable, shareReplay } from 'rxjs';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
+import { deriveTopicIdsFromTags, loadTopics, TopicDefinition } from '../../core/utils/topics.util';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
 import { TRACKS } from '../tracks/track.data';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
 
 type FormatCounts = Record<CategoryKeyInternal, number>;
-type FocusCounts = Record<FocusKey, number>;
+type TopicCounts = Record<string, number>;
 
 type Stats = {
   companyCounts: Record<string, number>;
@@ -17,21 +18,10 @@ type Stats = {
   formatCounts: FormatCounts;
   triviaTotal: number;
   systemDesignTotal: number;
-  focusCounts: FocusCounts;
+  topics: TopicDefinition[];
+  topicCounts: TopicCounts;
 };
 type CategoryKeyInternal = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
-
-type FocusKey =
-  | 'accessibility'
-  | 'async'
-  | 'design-system'
-  | 'dom'
-  | 'forms'
-  | 'polyfills'
-  | 'lodash'
-  | 'react-hooks'
-  | 'promise'
-  | 'state-management';
 
 type Card = {
   title: string;
@@ -47,7 +37,6 @@ type Card = {
   techKey?: 'javascript' | 'react' | 'angular' | 'vue' | 'css' | 'html';
   formatKey?: CategoryKeyInternal;
   kindKey?: 'coding' | 'trivia' | 'system-design' | 'behavioral';
-  focusKey?: FocusKey;
 };
 
 @Component({
@@ -108,13 +97,14 @@ export class DashboardComponent {
     return ['pi', `pi-${name}`];
   }
 
-  // ---- STATS: company + framework + formats + focus counts ----
+  // ---- STATS: company + framework + formats + topic counts ----
   stats$: Observable<Stats> = forkJoin({
     coding: this.questions.loadAllQuestions('coding'),
     trivia: this.questions.loadAllQuestions('trivia'),
     system: this.questions.loadSystemDesign(),
+    topics: from(loadTopics()),
   }).pipe(
-    map(({ coding, trivia, system }) => {
+    map(({ coding, trivia, system, topics }) => {
       const companyCounts: Record<string, number> = {};
       const techCounts: Record<string, number> = {};
       const formatCounts: FormatCounts = {
@@ -125,22 +115,17 @@ export class DashboardComponent {
         system: 0,
       };
 
-      const focusCounts: FocusCounts = {
-        accessibility: 0,
-        async: 0,
-        'design-system': 0,
-        dom: 0,
-        forms: 0,
-        polyfills: 0,
-        lodash: 0,
-        'react-hooks': 0,
-        promise: 0,
-        'state-management': 0,
-      };
+      const topicCounts: TopicCounts = {};
+      for (const t of topics.topics ?? []) {
+        if (t?.id) topicCounts[t.id] = 0;
+      }
 
-      const bumpFocus = (q: MixedQuestion) => {
-        for (const key of this.focusBucketsForQuestion(q)) {
-          focusCounts[key] = (focusCounts[key] ?? 0) + 1;
+      const bumpTopics = (q: MixedQuestion) => {
+        const tags: string[] = ((q as any).tags ?? []).map((t: any) =>
+          String(t || '').toLowerCase()
+        );
+        for (const id of deriveTopicIdsFromTags(tags, topics)) {
+          topicCounts[id] = (topicCounts[id] ?? 0) + 1;
         }
       };
 
@@ -161,7 +146,7 @@ export class DashboardComponent {
           companyCounts[c] = (companyCounts[c] ?? 0) + 1;
         }
 
-        bumpFocus(q);
+        bumpTopics(q);
       }
 
       // TRIVIA
@@ -181,7 +166,7 @@ export class DashboardComponent {
           companyCounts[c] = (companyCounts[c] ?? 0) + 1;
         }
 
-        bumpFocus(q);
+        bumpTopics(q);
       }
 
       const systemDesignTotal = Array.isArray(system) ? system.length : 0;
@@ -195,7 +180,8 @@ export class DashboardComponent {
         formatCounts,
         triviaTotal,
         systemDesignTotal,
-        focusCounts,
+        topics: topics.topics ?? [],
+        topicCounts,
       };
     }),
     shareReplay(1)
@@ -241,66 +227,6 @@ export class DashboardComponent {
     { title: 'ByteDance', icon: 'building', route: ['/companies', 'bytedance'], companyKey: 'bytedance' },
     { title: 'Apple', icon: 'building', route: ['/companies', 'apple'], companyKey: 'apple' },
     { title: 'OpenAI', icon: 'building', route: ['/companies', 'openai'], companyKey: 'openai' },
-  ];
-
-  /** ===== Focus areas ===== */
-  focusAreas: Card[] = [
-    {
-      title: 'Accessibility',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { focus: 'accessibility', reset: 1 },   // 👈
-      focusKey: 'accessibility',
-    },
-    {
-      title: 'Async Operations',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { focus: 'async', reset: 1 },           // 👈
-      focusKey: 'async',
-    },
-    {
-      title: 'DOM Manipulation',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { focus: 'dom', reset: 1 },             // 👈
-      focusKey: 'dom',
-    },
-    {
-      title: 'Forms',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { focus: 'forms', reset: 1 },           // 👈
-      focusKey: 'forms',
-    },
-    {
-      title: 'JavaScript Promises',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { tech: 'javascript', focus: 'promise', reset: 1 }, // 👈
-      focusKey: 'promise',
-    },
-    {
-      title: 'JavaScript Polyfills',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { tech: 'javascript', focus: 'polyfills', reset: 1 }, // 👈
-      focusKey: 'polyfills',
-    },
-    {
-      title: 'State Management',
-      subtitle: '0 questions',
-      icon: 'grid',
-      route: ['/coding'],
-      queryParams: { tech: 'react', focus: 'state-management', reset: 1 }, // 👈
-      focusKey: 'state-management',
-    },
   ];
 
 
@@ -407,6 +333,7 @@ export class DashboardComponent {
   ];
 
   trackByTitle = (_: number, it: Card) => it.title;
+  trackByTopicId = (_: number, it: TopicDefinition) => it.id;
 
   getCompanySubtitle(card: Card, counts: Record<string, number> | null | undefined): string {
     if (!card.companyKey || !counts) {
@@ -451,71 +378,4 @@ export class DashboardComponent {
     return card.subtitle ?? '';
   }
 
-  private focusBucketsForQuestion(q: MixedQuestion): FocusKey[] {
-    const keys: FocusKey[] = [];
-
-    const tech = String(
-      (q as any).tech ?? (q as any).technology ?? ''
-    ).toLowerCase();
-    const title = String((q as any).title ?? '').toLowerCase();
-    const tags: string[] = ((q as any).tags ?? []).map((t: any) =>
-      String(t || '').toLowerCase()
-    );
-
-    const hasTag = (...candidates: string[]) =>
-      tags.some(t => candidates.includes(t));
-
-    if (hasTag('accessibility', 'a11y')) {
-      keys.push('accessibility');
-    }
-
-    if (hasTag('async', 'promise', 'async-await', 'concurrency', 'xhr', 'fetch')) {
-      keys.push('async');
-    }
-
-    if (hasTag('design-system', 'design-system-components', 'component-library')) {
-      keys.push('design-system');
-    }
-
-    if (hasTag('dom', 'dom-manipulation', 'events')) {
-      keys.push('dom');
-    }
-
-    if (
-      tech === 'angular' &&
-      (hasTag('forms', 'reactive-forms', 'template-forms') || title.includes('form'))
-    ) {
-      keys.push('forms');
-    }
-
-    if (hasTag('polyfill', 'polyfills')) {
-      keys.push('polyfills');
-    }
-
-    if (hasTag('lodash') || title.includes('lodash')) {
-      keys.push('lodash');
-    }
-
-    if (tech === 'react' && (hasTag('hooks', 'react-hooks') || title.includes('hook'))) {
-      keys.push('react-hooks');
-    }
-
-    if (hasTag('promise', 'promises', 'async-await')) {
-      keys.push('promise');
-    }
-
-    if (hasTag('state-management', 'redux', 'context', 'zustand', 'mobx')) {
-      keys.push('state-management');
-    }
-
-    return keys;
-  }
-
-  getFocusSubtitle(card: Card, focusCounts: FocusCounts | null | undefined): string {
-    if (!card.focusKey || !focusCounts) {
-      return card.subtitle ?? '';
-    }
-    const total = focusCounts[card.focusKey] ?? 0;
-    return `${total} questions`;
-  }
 }
