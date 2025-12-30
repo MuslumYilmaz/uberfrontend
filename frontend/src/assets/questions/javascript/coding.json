@@ -265,7 +265,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "array"
+      "arrays"
     ],
     "description": {
       "summary": "Implement a function `flattenOnce(arr)` that shallow-flattens a nested array by **one level only**. Only arrays that are direct elements of `arr` are unpacked; deeper arrays stay nested and non-array elements are copied as-is.",
@@ -347,7 +347,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "array"
+      "arrays"
     ],
     "description": {
       "summary": "Implement a function `unique(arr)` that returns a new array with duplicate values removed. The **original order** of elements must be preserved.",
@@ -602,7 +602,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "array"
+      "arrays"
     ],
     "description": {
       "summary": "Implement a function `sum(arr)` that returns the total of all numeric elements in the array, ignoring non-numeric values (including numeric strings). For an empty array, return `0`.",
@@ -696,7 +696,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "array"
+      "arrays"
     ],
     "description": {
       "summary": "Implement a function `compact(arr)` that removes all falsy values (`false`, `0`, `''`, `null`, `undefined`, `NaN`) from an array.",
@@ -778,7 +778,7 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "array"
+      "arrays"
     ],
     "description": {
       "summary": "Implement a function `arraysEqual(a, b)` that returns `true` if both arrays contain the same elements in the same order.",
@@ -880,8 +880,8 @@
     "difficulty": "intermediate",
     "tags": [
       "async",
-      "timing",
-      "function"
+      "functions",
+      "timing"
     ],
     "description": {
       "summary": "Implement a function `debounce(fn, delay)` that delays the execution of `fn` until a specified time (`delay` ms) has passed since the last invocation.",
@@ -979,8 +979,8 @@
     "difficulty": "intermediate",
     "tags": [
       "async",
-      "timing",
-      "function"
+      "functions",
+      "timing"
     ],
     "description": {
       "summary": "Implement a function `throttle(fn, interval)` that ensures `fn` is executed at most once during every `interval` milliseconds, no matter how many times it's triggered. In this exercise we use a leading-only throttle: the first call in each interval runs immediately; subsequent calls within that window are ignored.",
@@ -1070,10 +1070,10 @@
     ],
     "difficulty": "hard",
     "tags": [
-      "object",
-      "recursion",
       "clone",
-      "deep-copy"
+      "deep-copy",
+      "objects",
+      "recursion"
     ],
     "description": {
       "summary": "Implement a function `deepClone(value)` that creates a deep copy of the provided value, including nested objects, arrays, Dates, and RegExps.",
@@ -1170,10 +1170,10 @@
     "difficulty": "hard",
     "importance": 5,
     "tags": [
-      "object",
-      "recursion",
+      "comparison",
       "equality",
-      "comparison"
+      "objects",
+      "recursion"
     ],
     "description": {
       "summary": "Implement a function `deepEqual(a, b)` that returns `true` when two values are deeply equal — primitives by value and objects/arrays by recursively comparing their properties. Handle Dates, RegExps, and `NaN`.",
@@ -1278,10 +1278,10 @@
     "difficulty": "intermediate",
     "importance": 4,
     "tags": [
-      "array",
-      "recursion",
+      "arrays",
       "depth",
-      "flatten"
+      "flatten",
+      "recursion"
     ],
     "description": {
       "summary": "Implement `flatten(arr, depth)` that flattens a nested array up to a given depth.",
@@ -1369,10 +1369,10 @@
     "importance": 5,
     "difficulty": "hard",
     "tags": [
-      "function",
       "closure",
-      "higher-order",
-      "currying"
+      "currying",
+      "functions",
+      "higher-order"
     ],
     "description": {
       "summary": "Implement a function `curry(fn)` that transforms a multi-argument function into a function that can be called in a chain, supplying arguments one or more at a time.",
@@ -1458,10 +1458,10 @@
     "importance": 5,
     "difficulty": "intermediate",
     "tags": [
-      "function",
-      "performance",
       "caching",
-      "optimization"
+      "functions",
+      "optimization",
+      "performance"
     ],
     "description": {
       "summary": "Implement a function `memoize(fn)` that caches results of previous function calls based on their input arguments to avoid recomputation.",
@@ -1547,10 +1547,10 @@
     "difficulty": "intermediate",
     "importance": 4,
     "tags": [
-      "function",
       "composition",
+      "functions",
       "higher-order",
-      "utility"
+      "utilities"
     ],
     "description": {
       "summary": "Implement `compose(...fns)` that returns a new function applying the provided functions from **right to left**. The rightmost function may accept multiple arguments; every other function is unary and receives the previous result. If no functions are provided, return an identity function `(x) => x`.",
@@ -1651,9 +1651,9 @@
     "difficulty": "intermediate",
     "importance": 4,
     "tags": [
-      "array",
-      "object",
+      "arrays",
       "grouping",
+      "objects",
       "reduction"
     ],
     "description": {
@@ -1748,9 +1748,9 @@
     "difficulty": "intermediate",
     "importance": 4,
     "tags": [
-      "OOP",
-      "Async",
-      "Design Patterns"
+      "async",
+      "design-patterns",
+      "oop"
     ],
     "description": {
       "summary": "Implement a simple `Emitter` class that allows subscribing to events with `.on()`, unsubscribing with `.off()`, and triggering events with `.emit()`.",
@@ -1929,8 +1929,8 @@
     "importance": 5,
     "difficulty": "hard",
     "tags": [
+      "abort-controller",
       "async",
-      "abortController",
       "cancellation",
       "promise",
       "utilities"
@@ -2031,11 +2031,11 @@
     "importance": 5,
     "difficulty": "hard",
     "tags": [
-      "streams",
-      "textDecoder",
       "backpressure",
+      "ndjson",
       "parsing",
-      "ndjson"
+      "streams",
+      "text-decoder"
     ],
     "description": {
       "summary": "Implement a **streaming** parser for NDJSON (newline-delimited JSON). Read from a `ReadableStream<Uint8Array>`, decode incrementally, split on newlines, parse each line into an object, and recover from malformed lines via a callback without stopping the stream.",
@@ -2547,7 +2547,7 @@
     "importance": 3,
     "difficulty": "easy",
     "tags": [
-      "array",
+      "arrays",
       "sorting"
     ],
     "description": {
@@ -2640,10 +2640,10 @@
     "importance": 3,
     "difficulty": "easy",
     "tags": [
-      "closures",
+      "closure",
       "functions",
-      "state",
-      "increment"
+      "increment",
+      "state"
     ],
     "description": {
       "summary": "Implement `createCounter(n)` that returns a counter function. The **first** call should return `n`, the next call `n + 1`, then `n + 2`, and so on. Each counter instance must keep its own state via a closure. This tests closure scope and persistent state handling.",
@@ -2804,7 +2804,8 @@
       "promise",
       "async",
       "functions",
-      "basics"
+      "basics",
+      "async-await"
     ],
     "description": {
       "summary": "Implement a function that takes two promises resolving to numbers and returns a new promise that resolves to their sum. Tests async/await usage and Promise handling.",

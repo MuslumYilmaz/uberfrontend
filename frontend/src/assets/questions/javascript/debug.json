@@ -47,7 +47,7 @@
         "tags": [
             "async",
             "cache",
-            "promises"
+            "promise"
         ],
         "description": {
             "text": "Multiple simultaneous calls with the same key should share the same in-flight request. Fix the race so only one network call happens per key until it resolves."

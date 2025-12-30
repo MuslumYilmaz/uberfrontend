@@ -517,11 +517,11 @@
     "technology": "html",
     "difficulty": "intermediate",
     "tags": [
-      "html",
-      "image",
       "accessibility",
-      "seo",
-      "attributes"
+      "attributes",
+      "html",
+      "images",
+      "seo"
     ],
     "importance": 5,
     "companies": [],
@@ -607,9 +607,9 @@
     "technology": "html",
     "difficulty": "intermediate",
     "tags": [
-      "html",
-      "semantic",
       "accessibility",
+      "html",
+      "semantics",
       "seo",
       "structure"
     ],

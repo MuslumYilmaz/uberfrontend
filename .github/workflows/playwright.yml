@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint question tags
+        run: npm run lint:tags
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
@@ -50,4 +53,3 @@ jobs:
             frontend/playwright-report
             frontend/test-results
           retention-days: 7
-

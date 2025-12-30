@@ -9,7 +9,9 @@
     "tags": [
       "event-loop",
       "async",
-      "microtasks"
+      "microtasks",
+      "promise",
+      "timers"
     ],
     "importance": 5,
     "companies": [],
@@ -134,9 +136,9 @@
     "difficulty": "hard",
     "tags": [
       "closure",
-      "scope",
+      "functions",
       "lexical-environment",
-      "function"
+      "scope"
     ],
     "importance": 5,
     "companies": [
@@ -207,10 +209,10 @@
     "technology": "javascript",
     "difficulty": "hard",
     "tags": [
-      "this",
-      "context",
       "binding",
-      "function"
+      "context",
+      "functions",
+      "this"
     ],
     "importance": 5,
     "companies": [
@@ -509,11 +511,11 @@
     "technology": "javascript",
     "difficulty": "hard",
     "tags": [
-      "promises",
       "async-await",
-      "microtasks",
+      "concurrency",
       "error-handling",
-      "concurrency"
+      "microtasks",
+      "promise"
     ],
     "importance": 5,
     "companies": [],
@@ -1049,10 +1051,10 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
-      "functions",
-      "functional-programming",
       "callbacks",
-      "closures"
+      "closure",
+      "functional-programming",
+      "functions"
     ],
     "importance": 4,
     "companies": [],
@@ -1435,10 +1437,10 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
-      "storage",
       "cookies",
-      "localstorage",
+      "local-storage",
       "sessionstorage",
+      "storage",
       "web-apis"
     ],
     "importance": 4,
@@ -1765,10 +1767,10 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "nan",
-      "number",
       "global-object",
       "isnan",
+      "nan",
+      "numbers",
       "type-coercion"
     ],
     "importance": 2,
@@ -1909,10 +1911,10 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "callback",
-      "functions",
-      "asynchronous",
+      "async",
+      "callbacks",
       "event-loop",
+      "functions",
       "higher-order-functions"
     ],
     "importance": 4,

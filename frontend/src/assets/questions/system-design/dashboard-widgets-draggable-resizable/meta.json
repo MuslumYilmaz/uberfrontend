@@ -5,7 +5,8 @@
     "tags": [
         "dashboard",
         "drag-drop",
-        "performance"
+        "performance",
+        "local-storage"
     ],
     "type": "system-design",
     "sections": [

@@ -5,7 +5,8 @@
     "tags": [
         "forms",
         "autosave",
-        "validation"
+        "validation",
+        "local-storage"
     ],
     "type": "system-design",
     "sections": [

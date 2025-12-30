@@ -163,10 +163,10 @@
     "importance": 4,
     "tags": [
       "components",
-      "state",
+      "forms",
       "lists",
-      "ngFor",
-      "forms"
+      "ng-for",
+      "state"
     ],
     "description": {
       "summary": "Build a small todo list using an Angular standalone component. Allow users to add tasks, mark them as completed, and remove them. Use `*ngFor` to render the list and simple component state to drive the UI.",
@@ -245,9 +245,9 @@
     "importance": 4,
     "tags": [
       "components",
-      "state",
       "event-binding",
-      "ngFor",
+      "ng-for",
+      "state",
       "ui"
     ],
     "description": {
@@ -1062,11 +1062,11 @@
     "importance": 3,
     "tags": [
       "components",
-      "template-syntax",
+      "dynamic-ui",
       "forms",
+      "ng-for",
       "structural-directives",
-      "*ngFor",
-      "dynamic-ui"
+      "template-syntax"
     ],
     "description": {
       "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and `*ngFor` loops to generate the table structure.",

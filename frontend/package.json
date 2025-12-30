@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "gen:data": "node scripts/gen-data-version.mjs",
+    "lint:tags": "node scripts/lint-tags.mjs",
+    "lint:tags:fix": "node scripts/lint-tags.mjs --fix",
     "start:e2e": "npm run gen:data && ng serve --configuration development --port 4200 --host 127.0.0.1",
     "start:prod": "npm run gen:data && ng serve --configuration production",
     "build": "npm run gen:data && ng build --configuration production",

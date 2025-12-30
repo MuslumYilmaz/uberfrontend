@@ -577,13 +577,12 @@
     "difficulty": "easy",
     "importance": 1,
     "tags": [
-      "html",
-      "forms",
-      "a11y",
-      "labels",
-      "inputs",
       "accessibility",
-      "beginner"
+      "beginner",
+      "forms",
+      "html",
+      "inputs",
+      "labels"
     ],
     "description": {
       "summary": "A support page needs a contact form. Write HTML that works well with keyboard and screen readers: use real <label> elements paired via for/id, correct input types, and required fields. Show an on-page success message only after a VALID submit (HTML validation must run; no JavaScript). You do NOT need to touch the CSS.",
@@ -867,12 +866,12 @@
     "difficulty": "hard",
     "importance": 3,
     "tags": [
-      "html",
-      "dialog",
-      "a11y",
-      "aria-labelledby",
+      "accessibility",
       "aria-describedby",
-      "forms"
+      "aria-labelledby",
+      "dialog",
+      "forms",
+      "html"
     ],
     "description": {
       "summary": "Build a native confirm dialog for deleting a project using the HTML <dialog> element. The dialog must be accessible (proper name + description) and must be visible in the preview without JavaScript. Only edit HTML. Do not change CSS.",
