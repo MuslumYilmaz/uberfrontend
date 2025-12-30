@@ -5,6 +5,8 @@
     "gen:data": "node scripts/gen-data-version.mjs",
     "lint:tags": "node scripts/lint-tags.mjs",
     "lint:tags:fix": "node scripts/lint-tags.mjs --fix",
+    "lint:topics": "node scripts/lint-topics.mjs",
+    "lint:topics:fix": "node scripts/lint-topics.mjs --fix",
     "start:e2e": "npm run gen:data && ng serve --configuration development --port 4200 --host 127.0.0.1",
     "start:prod": "npm run gen:data && ng serve --configuration production",
     "build": "npm run gen:data && ng build --configuration production",

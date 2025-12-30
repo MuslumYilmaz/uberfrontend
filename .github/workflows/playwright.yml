@@ -30,6 +30,9 @@ jobs:
       - name: Lint question tags
         run: npm run lint:tags
 
+      - name: Lint question topics
+        run: npm run lint:topics
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:

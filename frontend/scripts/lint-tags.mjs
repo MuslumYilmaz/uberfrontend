@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 const questionsRoot = path.join(projectRoot, "src", "assets", "questions");
 const registryPath = path.join(questionsRoot, "tag-registry.json");
+const topicRegistryPath = path.join(questionsRoot, "topic-registry.json");
 
 const args = process.argv.slice(2);
 const FIX = args.includes("--fix");
@@ -379,7 +380,9 @@ if (registryErrors.length) {
 }
 
 const jsonFiles = (await listJsonFiles(questionsRoot)).filter(
-  (file) => path.resolve(file) !== path.resolve(registryPath),
+  (file) =>
+    path.resolve(file) !== path.resolve(registryPath) &&
+    path.resolve(file) !== path.resolve(topicRegistryPath),
 );
 
 const issues = [];
