@@ -122,109 +122,6 @@
     "type": "trivia"
   },
   {
-    "id": "vue-vs-react",
-    "title": "What is the difference between Vue.js and React?",
-    "technology": "vue",
-    "difficulty": "intermediate",
-    "importance": 5,
-    "description": "Vue.js and React are both popular JavaScript frameworks for building user interfaces, but they differ in design philosophy, syntax, reactivity handling, and learning curve. Vue is more opinionated and template-based, while React emphasizes JavaScript-driven, declarative UI creation using JSX.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue.js and React are two of the most widely used front-end frameworks in modern web development. Both aim to make building user interfaces more efficient, but they differ in structure, syntax, and design philosophy. While Vue is a full-featured framework with a focus on simplicity and declarative templates, React is a flexible library centered around JSX and functional programming."
-        },
-        {
-          "type": "list",
-          "columns": [
-            "Feature",
-            "Vue.js",
-            "React"
-          ],
-          "rows": [
-            [
-              "Design Philosophy",
-              "A progressive framework focusing on simplicity and integration.",
-              "A library for building UIs emphasizing flexibility and JavaScript control."
-            ],
-            [
-              "Syntax",
-              "Uses HTML-based templates with directives (like v-if, v-for).",
-              "Uses JSX — a syntax extension allowing HTML inside JavaScript."
-            ],
-            [
-              "Reactivity",
-              "Built-in reactivity system using proxies and dependency tracking.",
-              "Uses a virtual DOM and state updates through hooks like useState()."
-            ],
-            [
-              "Learning Curve",
-              "Gentle — easy for beginners to pick up with existing HTML/CSS knowledge.",
-              "Moderate — requires understanding of JSX, props, and functional components."
-            ],
-            [
-              "State Management",
-              "Uses Vuex (v2) or Pinia (v3+) as official state libraries.",
-              "Uses Redux, Zustand, or React Context API for global state management."
-            ],
-            [
-              "Routing",
-              "Official router: Vue Router, tightly integrated.",
-              "React Router is community-driven and separately maintained."
-            ],
-            [
-              "Performance",
-              "Excellent due to dependency tracking and efficient updates.",
-              "Excellent due to virtual DOM and optimized diffing algorithm."
-            ],
-            [
-              "Community",
-              "Smaller but highly dedicated and documentation-focused.",
-              "Larger ecosystem with extensive community support and third-party tools."
-            ]
-          ],
-          "caption": "Comparison Between Vue.js and React"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Vue.js Approach</strong><br>Vue focuses on simplicity and separation of concerns. It allows developers to use declarative templates (HTML) while maintaining reactivity through its internal system. Vue offers official libraries for routing, state management, and animation, ensuring consistency across projects."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<template>\n  <div>\n    <p>{{ message }}</p>\n    <button @click=\"changeMessage\">Change</button>\n  </div>\n</template>\n\n<script>\nexport default {\n  data() {\n    return { message: 'Hello Vue!' };\n  },\n  methods: {\n    changeMessage() {\n      this.message = 'Message Updated!';\n    }\n  }\n};\n</script>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>React Approach</strong><br>React promotes a JavaScript-first design. The UI is defined using JSX and controlled entirely through component state and props. This gives developers greater flexibility and control, but also requires a deeper understanding of JavaScript and rendering flow."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "import React, { useState } from 'react';\n\nfunction App() {\n  const [message, setMessage] = useState('Hello React!');\n\n  return (\n    <div>\n      <p>{message}</p>\n      <button onClick={() => setMessage('Message Updated!')}>Change</button>\n    </div>\n  );\n}\n\nexport default App;"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Performance Comparison</strong><br>Both frameworks use a virtual DOM for efficient rendering. Vue’s advantage lies in its fine-grained reactivity system that tracks dependencies automatically, while React relies on re-rendering virtual nodes and reconciling them efficiently through its diffing algorithm."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Use Cases</strong><br><ul><li><strong>Vue.js:</strong> Best for teams looking for simplicity, quick prototyping, and clear separation between logic and template.</li><li><strong>React:</strong> Ideal for complex UIs, large-scale apps, and teams familiar with JavaScript-first development.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue.js as a structured painter’s canvas — HTML templates define the layout, and reactivity adds life. React, on the other hand, is a sculptor’s tool — everything is carved directly with JavaScript."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Vue.js offers simplicity with HTML templates and built-in reactivity.</li><li>React offers flexibility with JSX and a functional, JavaScript-driven approach.</li><li>Both provide high performance, strong ecosystems, and component-based architecture.</li><li>Choice depends on team preference, project scale, and developer experience.</li></ul>"
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia"
-  },
-  {
     "id": "vue-internal-rendering-pipeline",
     "title": "How does Vue track state changes and trigger re-renders internally?",
     "technology": "vue",
@@ -1545,85 +1442,83 @@
   },
   {
     "id": "vue-computed-vs-watchers",
-    "title": "What is the difference between computed properties and watchers in Vue?",
+    "title": "Computed vs watch in Vue: derived state (cached) vs side effects (imperative)",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Computed properties and watchers in Vue both respond to changes in reactive data, but they serve different purposes. Computed properties are used to derive and cache data, while watchers are used to perform side effects or execute logic when data changes.",
+    "description": "Computed properties and watchers both react to reactive changes, but they solve different problems: <strong>computed</strong> is for <strong>derived state</strong> (cached, declarative), while <strong>watch</strong> is for <strong>side effects</strong> (async/imperative work triggered by changes).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Both computed properties and watchers in Vue observe reactive data and react to changes, but they are designed for different use cases. Computed properties are ideal for deriving values based on other data, whereas watchers are useful for performing side effects like API calls, logging, or manual data updates."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Computed Properties</strong><br>Computed properties automatically update when their reactive dependencies change. They are **cached** until a dependency changes again, making them ideal for data transformation or calculated outputs."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "export default {\n  data() {\n    return {\n      firstName: 'Mina',\n      lastName: 'Yilmaz'\n    };\n  },\n  computed: {\n    fullName() {\n      return this.firstName + ' ' + this.lastName;\n    }\n  }\n};"
-        },
-        {
-          "type": "text",
-          "text": "Here, <code>fullName</code> automatically re-calculates whenever <code>firstName</code> or <code>lastName</code> changes, but Vue caches the result for performance until those dependencies update."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Watchers</strong><br>Watchers allow you to 'watch' specific data sources and execute a function whenever that data changes. They are useful for performing asynchronous or imperative tasks — for example, calling an API when a value changes."
-        },
-        {
-          "type": "code",
-          "language": "javascript",
-          "code": "export default {\n  data() {\n    return {\n      searchQuery: ''\n    };\n  },\n  watch: {\n    searchQuery(newValue, oldValue) {\n      console.log(`Search changed from ${oldValue} to ${newValue}`);\n      this.fetchResults(newValue);\n    }\n  },\n  methods: {\n    fetchResults(query) {\n      // Example API call\n      console.log('Fetching data for', query);\n    }\n  }\n};"
-        },
-        {
-          "type": "text",
-          "text": "In this example, the watcher tracks <code>searchQuery</code> and triggers an API call whenever the value changes. Unlike computed properties, watchers do not return a value — they perform side effects."
+          "text": "<strong>Core idea</strong><br><br><strong>Computed</strong> = a derived value (like a formula). Vue tracks its dependencies and <strong>caches</strong> the result until one of them changes.<br><strong>Watch</strong> = run code when something changes. It’s meant for <strong>side effects</strong> (fetching, logging, syncing, timers), not for producing values for the template."
         },
         {
           "type": "list",
           "columns": [
-            "Feature",
-            "Computed Properties",
-            "Watchers"
+            "Aspect",
+            "computed",
+            "watch / watchEffect"
           ],
           "rows": [
             [
-              "Purpose",
-              "Derive or calculate new data",
-              "Perform side effects when data changes"
+              "Primary purpose",
+              "Derived state (calculate a value from other reactive state)",
+              "Side effects (do something when state changes)"
             ],
             [
               "Caching",
-              "Yes – cached until dependencies change",
-              "No – runs every time data changes"
+              "Yes (cached until deps change)",
+              "No (runs when triggered)"
             ],
             [
-              "Return Value",
-              "Returns a computed value",
-              "Executes a function, no return value"
+              "Evaluation model",
+              "Lazy: recomputes when accessed after being invalidated",
+              "Eager: runs callback when source changes (timing configurable via flush)"
             ],
             [
-              "Use Case",
-              "Display reactive derived data",
-              "API calls, logging, manual data synchronization"
+              "Return value",
+              "Yes (you read it like a value)",
+              "No (callback-driven; produces effects, not a value)"
+            ],
+            [
+              "Async work",
+              "Avoid (keep it pure)",
+              "Yes (common: API calls + cancellation)"
+            ],
+            [
+              "Common mistake",
+              "Putting side effects in computed",
+              "Using watch to keep derived state in sync (duplicate state)"
             ]
           ],
-          "caption": "Comparison Between Computed Properties and Watchers"
+          "caption": "Computed is for values; watch is for effects."
         },
         {
           "type": "text",
-          "text": "<strong>When to Use Each</strong><ul><li>Use <code>computed</code> for declarative data transformations that are displayed in the template.</li><li>Use <code>watch</code> for imperative logic, like fetching data or reacting to user input changes.</li></ul>"
+          "text": "<strong>Anti-pattern (common in interviews): using watch for derived state</strong><br><br>This duplicates state and can drift out of sync. Prefer <code>computed</code> unless you truly need an effect."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- BAD: derived state via watch (duplicate state) -->\n<script setup>\nimport { ref, watch, computed } from 'vue';\n\nconst first = ref('Mina');\nconst last = ref('Yilmaz');\n\nconst fullNameViaWatch = ref('');\nwatch([first, last], ([f, l]) => {\n  fullNameViaWatch.value = `${f} ${l}`;\n}, { immediate: true });\n\n// GOOD: derived state via computed (cached, always in sync)\nconst fullName = computed(() => `${first.value} ${last.value}`);\n</script>\n\n<template>\n  <p>watch-derived: {{ fullNameViaWatch }}</p>\n  <p>computed: {{ fullName }}</p>\n</template>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of computed properties as <em>smart derived variables</em> and watchers as <em>reactive observers</em> that perform tasks when data changes."
+          "text": "<strong>Watchers (the right use): side effects + async + cancellation</strong><br><br>When a value changes and you need to <em>do</em> something (fetch, analytics, sync URL, write to storage), use <code>watch</code>. Use cleanup to avoid race conditions (old request finishing after a new one)."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<script setup>\nimport { ref, watch } from 'vue';\n\nconst query = ref('');\nconst results = ref([]);\nconst error = ref(null);\n\nwatch(query, async (q, _prev, onCleanup) => {\n  if (!q.trim()) {\n    results.value = [];\n    error.value = null;\n    return;\n  }\n\n  const ctrl = new AbortController();\n  onCleanup(() => ctrl.abort());\n\n  try {\n    error.value = null;\n    const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });\n    results.value = await res.json();\n  } catch (e) {\n    // Ignore abort; handle real errors\n    if (e?.name !== 'AbortError') error.value = e;\n  }\n}, { flush: 'post' });\n</script>\n\n<template>\n  <input v-model=\"query\" placeholder=\"Search...\" />\n  <pre v-if=\"error\">{{ error }}</pre>\n  <ul>\n    <li v-for=\"r in results\" :key=\"r.id\">{{ r.title }}</li>\n  </ul>\n</template>"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Computed properties are used for data derivation and are cached for performance.</li><li>Watchers are used for running code or side effects when data changes.</li><li>Computed = declarative; Watch = imperative.</li></ul>"
+          "text": "<strong>Key options you should know (interview-level)</strong><ul>\n<li><code>immediate: true</code> runs the watcher once on setup (useful for initial fetch).</li>\n<li><code>deep: true</code> watches nested mutations (use sparingly; can be expensive). Prefer watching a specific getter like <code>() =&gt; obj.a.b</code>.</li>\n<li><code>flush</code>: <code>'pre'</code> (default), <code>'post'</code> (after DOM updates), <code>'sync'</code> (runs immediately; use carefully).</li>\n<li><code>watchEffect()</code>: tracks dependencies automatically (great for effects that depend on many reactive reads), but use it only for effects (same rule: not for derived display values).</li>\n</ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><br>If the result is a <em>value you want to render</em> (filtering, formatting, totals) → <strong>computed</strong>.<br>If you need to <em>do something</em> when it changes (fetch, sync, log, imperative updates) → <strong>watch</strong>."
         }
       ]
     },
@@ -2026,80 +1921,6 @@
         {
           "type": "text",
           "text": "<strong>Interview-ready takeaway</strong><br><br>Mutating props breaks one-way data flow: the parent is no longer the single source of truth, updates become non-deterministic to trace, and nested object/array props can mutate parent state by reference. Correct approach: child <em>emits intent</em> (update events / v-model) and the parent owns the actual state mutation."
-        }
-      ]
-    },
-    "access": "free",
-    "type": "trivia"
-  },
-  {
-    "id": "vue-child-to-parent",
-    "title": "How does Vue handle component communication (child to parent)?",
-    "technology": "vue",
-    "difficulty": "intermediate",
-    "importance": 5,
-    "description": "In Vue, child components communicate with parent components using custom events. The child emits an event with optional data using $emit(), and the parent listens for that event using v-on or the @ shorthand.",
-    "answer": {
-      "blocks": [
-        {
-          "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue’s event system allows child components to send messages to their parent components. This is done using the <code>$emit()</code> method, which emits a custom event that the parent can listen for. This keeps data flow structured — from parent to child via props, and from child to parent via events."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Step 1: Emit an Event from the Child Component</strong><br>The child component uses the <code>$emit()</code> method to trigger an event, optionally passing data as an argument."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Child.vue -->\n<template>\n  <button @click=\"$emit('increment', 1)\">Add 1</button>\n</template>"
-        },
-        {
-          "type": "text",
-          "text": "In this example, when the button is clicked, the child component emits an event called <code>increment</code> and passes a value of <code>1</code> as data."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Step 2: Listen for the Event in the Parent Component</strong><br>The parent component listens for the event using <code>v-on</code> or the shorthand <code>@</code> syntax and executes a corresponding method."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Parent.vue -->\n<template>\n  <div>\n    <p>Count: {{ count }}</p>\n    <Child @increment=\"increaseCount\" />\n  </div>\n</template>\n\n<script>\nimport Child from './Child.vue';\n\nexport default {\n  components: { Child },\n  data() {\n    return { count: 0 };\n  },\n  methods: {\n    increaseCount(amount) {\n      this.count += amount;\n    }\n  }\n};\n</script>"
-        },
-        {
-          "type": "text",
-          "text": "The parent listens for the <code>increment</code> event and runs <code>increaseCount()</code> when it occurs, updating the <code>count</code> value accordingly."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Step 3: Emitting Custom Events with Data</strong><br>You can emit complex data like objects or arrays, not just numbers or strings."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<!-- Child.vue -->\n<button @click=\"$emit('send-user', { name: 'Mina', age: 28 })\">\n  Send User Data\n</button>\n\n<!-- Parent.vue -->\n<Child @send-user=\"handleUserData\" />\n\n<script>\nexport default {\n  methods: {\n    handleUserData(user) {\n      console.log('Received user:', user);\n    }\n  }\n};\n</script>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>One-Way Communication Rule</strong><br>Vue enforces a clear, one-way communication structure:<ul><li><strong>Parent → Child:</strong> via props</li><li><strong>Child → Parent:</strong> via custom events</li></ul>This makes applications more predictable and easier to debug."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Event Names</strong><br>Event names are typically written in kebab-case (e.g., <code>user-selected</code>). The parent must use the same case when listening for the event."
-        },
-        {
-          "type": "code",
-          "language": "html",
-          "code": "<Child @user-selected=\"onUserSelected\" />"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>$emit</code> as the child’s voice — it notifies the parent that something happened, while the parent decides how to respond."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Child components communicate with parents using <code>$emit()</code>.</li><li>Parents listen for events with <code>v-on</code> or <code>@</code>.</li><li>Data can be passed upward as event arguments.</li><li>Combining props and events ensures a clean, one-way data flow between components.</li></ul>"
         }
       ]
     },
