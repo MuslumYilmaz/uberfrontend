@@ -210,82 +210,141 @@
   },
   {
     "id": "react-functional-vs-class-components",
-    "title": "What is the difference between functional and class components?",
+    "title": "Functional vs class components in React: what actually differs?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Functional and class components are two ways to define React components. While both produce UI, functional components are simpler, rely on hooks, and are preferred in modern React, whereas class components use ES6 classes and lifecycle methods for state and behavior.",
+    "description": "Compare function components (Hooks) vs class components (this + lifecycle). Cover state, side effects, code reuse, and what modern React recommends.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>React offers two ways to create components — <em>functional</em> and <em>class-based</em>. Functional components are lightweight and use React Hooks to manage state and lifecycle behavior. Class components are older and use ES6 class syntax with built-in lifecycle methods like <code>componentDidMount</code> and <code>componentWillUnmount</code>."
+          "text": "<strong>Core idea</strong><br><br>Both function and class components can render the same UI. The difference is <em>how</em> they express state, side effects, and reuse.<br><br><strong>Function components</strong> use Hooks (<code>useState</code>, <code>useEffect</code>, etc.). <strong>Class components</strong> use instance state (<code>this.state</code>) and lifecycle methods (<code>componentDidMount</code>, <code>componentDidUpdate</code>, <code>componentWillUnmount</code>)."
         },
         {
           "type": "list",
           "columns": [
             "Aspect",
-            "Functional Components",
-            "Class Components"
+            "Functional (Hooks)",
+            "Class"
           ],
           "rows": [
             [
               "Definition",
-              "Functions that return JSX",
-              "ES6 classes extending <code>React.Component</code>"
+              "A function that returns a ReactNode (JSX, string/number, fragment, null, etc.)",
+              "An ES6 class extending <code>React.Component</code> with a <code>render()</code> method"
             ],
             [
-              "State Management",
-              "Use <code>useState</code> and other hooks",
-              "Use <code>this.state</code> and <code>setState()</code>"
+              "State",
+              "<code>useState</code> / <code>useReducer</code>",
+              "<code>this.state</code> + <code>this.setState()</code>"
             ],
             [
-              "Lifecycle Methods",
-              "Use <code>useEffect</code>",
-              "Use methods like <code>componentDidMount</code>"
+              "Side effects / lifecycle",
+              "<code>useEffect</code> / <code>useLayoutEffect</code> (+ cleanup)",
+              "Lifecycle methods (<code>componentDidMount/Update/WillUnmount</code>)"
             ],
             [
-              "Performance",
-              "Faster and simpler due to fewer abstractions",
-              "Slightly heavier and more verbose"
+              "Code reuse",
+              "Custom Hooks (share stateful logic without wrappers)",
+              "HOCs / render props / mixins (older patterns)"
             ],
             [
-              "Syntax",
-              "Functional and declarative",
-              "Object-oriented with 'this' keyword"
+              "Mental model",
+              "Render is a pure calculation; hooks add state/effects tied to render order",
+              "Instance methods + <code>this</code>, lifecycle phases"
             ],
             [
-              "Hooks Support",
-              "Fully supported",
-              "Not applicable (pre-Hooks era)"
+              "Interop",
+              "Can’t use class lifecycles; but can wrap classes / call into legacy libs via effects/refs",
+              "Can’t use Hooks inside classes"
+            ],
+            [
+              "Modern React direction",
+              "Primary model; new patterns and ecosystem examples are hook-first",
+              "Supported but mostly for legacy codebases"
             ]
           ],
-          "caption": "Differences between functional and class components"
+          "caption": "High-level differences that matter in real code"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Lifecycle mapping (common interview ask)</strong><br><br>Hooks are not “magic faster”. They’re a different API that can express the same lifecycle behaviors with explicit dependencies + cleanup."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Goal",
+            "Hooks",
+            "Class lifecycle"
+          ],
+          "rows": [
+            [
+              "Run once on mount",
+              "<code>useEffect(() => { ... }, [])</code>",
+              "<code>componentDidMount()</code>"
+            ],
+            [
+              "Run on specific changes",
+              "<code>useEffect(() => { ... }, [a, b])</code>",
+              "<code>componentDidUpdate(prevProps, prevState)</code> + comparisons"
+            ],
+            [
+              "Cleanup on unmount",
+              "<code>return () => cleanup()</code> inside effect",
+              "<code>componentWillUnmount()</code>"
+            ],
+            [
+              "Sync DOM measurements before paint",
+              "<code>useLayoutEffect</code>",
+              "<code>componentDidMount/Update</code> (but timing differs; layout effect is the closer analogue)"
+            ]
+          ],
+          "caption": "How to translate between the two styles"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// Functional Component with Hooks\nimport { useState, useEffect } from 'react';\n\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    document.title = `Count: ${count}`;\n  }, [count]);\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>Click me</button>\n    </div>\n  );\n}\n\n// Class Component Equivalent\nclass CounterClass extends React.Component {\n  state = { count: 0 };\n\n  componentDidUpdate() {\n    document.title = `Count: ${this.state.count}`;\n  }\n\n  render() {\n    return (\n      <div>\n        <p>You clicked {this.state.count} times</p>\n        <button onClick={() => this.setState({ count: this.state.count + 1 })}>\n          Click me\n        </button>\n      </div>\n    );\n  }\n}"
+          "code": "// Functional component (Hooks)\nimport React from 'react';\n\nexport function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  // effect: run after commit; cleanup on unmount\n  React.useEffect(() => {\n    document.title = `Count: ${count}`;\n\n    const id = setInterval(() => {\n      // functional update avoids stale reads\n      setCount((c) => c + 1);\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []);\n\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>\n      Count: {count}\n    </button>\n  );\n}\n\n// Class component equivalent\nexport class CounterClass extends React.Component {\n  state = { count: 0 };\n  _id = null;\n\n  componentDidMount() {\n    document.title = `Count: ${this.state.count}`;\n    this._id = setInterval(() => {\n      this.setState((s) => ({ count: s.count + 1 }));\n    }, 1000);\n  }\n\n  componentDidUpdate() {\n    document.title = `Count: ${this.state.count}`;\n  }\n\n  componentWillUnmount() {\n    clearInterval(this._id);\n  }\n\n  render() {\n    return (\n      <button onClick={() => this.setState((s) => ({ count: s.count + 1 }))}>\n        Count: {this.state.count}\n      </button>\n    );\n  }\n}\n"
         },
         {
           "type": "text",
-          "text": "Both examples produce the same output, but the functional version uses hooks, which provide more flexibility and cleaner syntax without relying on class structure or the <code>this</code> keyword."
+          "text": "<strong>Important nuance (don’t claim “functional is faster”)</strong><br><br>There’s no inherent “function components are faster” rule. Performance depends on update patterns, memoization boundaries, and avoiding unnecessary work. Functions are preferred because Hooks give a simpler composition model for stateful logic and align with modern React features and patterns."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "When to pick",
+            "Functional (recommended)",
+            "Class (still valid)"
+          ],
+          "rows": [
+            [
+              "New code",
+              "Default choice",
+              "Avoid unless you have a specific reason"
+            ],
+            [
+              "Legacy codebase",
+              "Incremental migration is common (mixing is fine)",
+              "Keep existing classes; rewrite opportunistically"
+            ],
+            [
+              "Reusable stateful logic",
+              "Custom hooks are the standard approach",
+              "Older patterns (HOC/render props) still exist but are heavier"
+            ],
+            [
+              "Very old React (< 16.8)",
+              "Hooks unavailable",
+              "Classes required"
+            ]
+          ],
+          "caption": "Practical selection guidance"
         },
         {
           "type": "text",
-          "text": "<strong>When to Use Each</strong><br><ul><li><strong>Functional Components:</strong> Default choice for new React projects — simpler, faster, and compatible with hooks.</li><li><strong>Class Components:</strong> Useful in legacy codebases or when using older React versions (<16.8).</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Migration Tip</strong><br>Modern React applications should use functional components exclusively. Hooks can now replicate every class lifecycle and state feature, and provide additional power such as <code>useContext</code> and <code>useReducer</code>."
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of functional components as the ‘modern React way’ — concise, powerful, and hook-driven."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Functional components use hooks and are the current React standard.</li><li>Class components rely on lifecycle methods and <code>this.state</code>.</li><li>Hooks eliminate the need for most class-based code.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>Function components are the modern default: state and lifecycle behavior are expressed with Hooks (especially <code>useState</code>/<code>useEffect</code>) and logic reuse is done via custom hooks. Class components express the same ideas via <code>this</code>, <code>this.state</code>/<code>setState</code>, and lifecycle methods. React still supports classes, but new React code is typically hook-first."
         }
       ]
     },
@@ -984,68 +1043,100 @@
   },
   {
     "id": "react-usestate-purpose",
-    "title": "What is the purpose of useState() in React?",
+    "title": "Why useState() exists in React (and what it actually guarantees)",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The useState() Hook in React allows functional components to store and update internal state. It lets you make components dynamic and interactive by re-rendering them whenever the state changes.",
+    "description": "Explain what useState() is for (local component state), what it returns, how updates trigger re-renders, and the key mental models interviewers expect: initial state (including lazy init), functional updates, batching, Object.is bailout, and why you must treat state as immutable.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>useState()</code> is a built-in React Hook that allows functional components to maintain internal state — data that changes over time and triggers UI updates. Before hooks, only class components could manage state. Now, functional components can handle both logic and state cleanly within the same function."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "import { useState } from 'react';\n\nfunction Counter() {\n  const [count, setCount] = useState(0); // initialize state\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>Click me</button>\n    </div>\n  );\n}"
+          "text": "<strong>Core idea</strong><br><br><code>useState()</code> gives a function component <em>persistent local state</em> across renders. When you call its setter, React schedules a re-render of that component so the UI can be recalculated from the new state. The key model is: <code>UI = f(props, state)</code> — you don’t manually update the DOM."
         },
         {
           "type": "list",
           "columns": [
-            "Concept",
-            "Explanation"
+            "What you get",
+            "What it means",
+            "Why it matters"
           ],
           "rows": [
             [
-              "State Variable",
-              "The first value (<code>count</code>) holds the current state."
+              "A state value",
+              "The current snapshot for this render",
+              "Rendering reads state; it does not mutate it"
             ],
             [
-              "State Setter",
-              "The second value (<code>setCount</code>) updates the state."
+              "A setter function",
+              "Schedules an update (it does not instantly change the variable)",
+              "React decides when to render/commit; avoids inconsistent UI"
             ],
             [
-              "Initial Value",
-              "Passed as an argument to <code>useState()</code> — here, <code>0</code>."
-            ],
-            [
-              "Re-render",
-              "Whenever <code>setCount()</code> is called, React re-renders the component with the new value."
+              "State is tied to position in the tree",
+              "State is preserved across renders while the component stays mounted",
+              "Unmount/remount (or key changes) resets state"
             ]
           ],
-          "caption": "Core concepts of useState()"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Multiple States Example</strong><br>You can use multiple <code>useState()</code> calls in the same component to manage different pieces of data."
+          "caption": "What useState actually provides"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Form() {\n  const [name, setName] = useState('');\n  const [age, setAge] = useState(0);\n\n  return (\n    <form>\n      <input value={name} onChange={(e) => setName(e.target.value)} />\n      <input type=\"number\" value={age} onChange={(e) => setAge(e.target.value)} />\n      <p>{name} is {age} years old.</p>\n    </form>\n  );\n}"
+          "code": "import React from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>\n      Count: {count}\n    </button>\n  );\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Group related state in objects for clarity (use <code>useReducer()</code> for complex logic).</li><li>Avoid mutating state directly; always use the setter function.</li><li>Initialize from props or localStorage only when necessary.</li><li>Remember: state updates are asynchronous, so don’t rely on immediate values after calling <code>setState</code>.</li></ul>"
+          "text": "<strong>Why the functional update form matters</strong><br><br>If the next state depends on the previous state, use <code>setX(prev =&gt; next)</code>. This avoids stale reads when multiple updates happen close together or are batched."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Bad() {\n  const [n, setN] = React.useState(0);\n\n  // ❌ can be stale if called multiple times in one tick\n  const incTwice = () => {\n    setN(n + 1);\n    setN(n + 1);\n  };\n\n  return <button onClick={incTwice}>{n}</button>;\n}\n\nfunction Good() {\n  const [n, setN] = React.useState(0);\n\n  // ✅ each update reads the latest queued value\n  const incTwice = () => {\n    setN((x) => x + 1);\n    setN((x) => x + 1);\n  };\n\n  return <button onClick={incTwice}>{n}</button>;\n}\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Interview-level detail",
+            "Correct statement",
+            "Practical takeaway"
+          ],
+          "rows": [
+            [
+              "Initial state",
+              "<code>useState(initial)</code> uses the initial value only on the first mount",
+              "If you need expensive computation, use lazy init: <code>useState(() =&gt; compute())</code>"
+            ],
+            [
+              "Bailout",
+              "If the new state is <code>Object.is</code>-equal to the old state, React can skip re-rendering",
+              "Don’t create new objects/arrays unless something actually changed"
+            ],
+            [
+              "Batching",
+              "React may batch multiple state updates into one render",
+              "Don’t rely on “immediate” state after calling the setter"
+            ],
+            [
+              "Immutability",
+              "Mutating state in place breaks React’s change detection assumptions",
+              "Always create new references when updating objects/arrays"
+            ]
+          ],
+          "caption": "The key guarantees and caveats around useState"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function TodoApp() {\n  // ✅ Lazy init (runs only once on mount)\n  const [todos, setTodos] = React.useState(() => {\n    const raw = localStorage.getItem('todos');\n    return raw ? JSON.parse(raw) : [];\n  });\n\n  // ✅ Immutable update (new array)\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: crypto.randomUUID(), text }]);\n  }\n\n  // ❌ Bad: mutating state\n  function badAdd(text) {\n    todos.push({ id: 'x', text });\n    setTodos(todos); // same reference -> may not re-render\n  }\n\n  return (\n    <div>\n      <button onClick={() => addTodo('Learn useState')}>Add</button>\n      <ul>{todos.map((t) => <li key={t.id}>{t.text}</li>)}</ul>\n    </div>\n  );\n}\n"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>useState()</code> as a variable that ‘remembers’ its value between renders — changing it causes React to rebuild the UI with the new data."
+          "text": "<strong>When useState is the wrong tool</strong><br><br><code>useState</code> is for <em>local UI state</em> (toggles, inputs, selected tabs). If updates become complex (many transitions, derived actions), <code>useReducer</code> often reads better. If the state is global/shared across many branches, you typically lift it up, use Context carefully, or use a store."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>useState()</code> adds state to functional components.</li><li>It returns a state variable and a setter function.</li><li>Calling the setter triggers a re-render with the new state.</li></ul>"
+          "text": "<strong>Summary</strong><br><br><code>useState()</code> adds persistent local state to function components. It returns <em>[state, setState]</em>; calling the setter schedules a re-render so React can recompute the UI. Use functional updates when the next state depends on the previous state, update objects/arrays immutably, and remember that React may batch updates and can bail out when the new state is <code>Object.is</code>-equal to the old state."
         }
       ]
     },
@@ -1396,78 +1487,155 @@
   },
   {
     "id": "react-conditional-rendering",
-    "title": "How do you conditionally render elements in React?",
+    "title": "Conditional rendering in React: patterns, trade-offs, and gotchas",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Conditional rendering in React means displaying different components or elements based on certain conditions, such as user actions or application state. It’s typically done using JavaScript operators like if-else, ternary (?:), or logical AND (&&).",
+    "description": "Explain how React conditionally renders UI by returning different ReactNodes based on state/props, and how common patterns (early returns, ternary, &&, mapping) affect readability and component mounting (state preservation vs reset).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Conditional rendering allows React components to decide what to render based on state, props, or logic. Since React is just JavaScript, you can use standard conditional statements to control UI output dynamically."
+          "text": "<strong>Core idea</strong><br><br>Conditional rendering in React is just JavaScript: your component returns different <code>ReactNode</code> values depending on conditions (state/props/context). React renders whatever you return. Returning <code>null</code> (or <code>false</code>) means “render nothing”."
         },
         {
           "type": "list",
           "columns": [
-            "Method",
-            "Syntax Example",
-            "Use Case"
+            "Pattern",
+            "What you write",
+            "Best when"
           ],
           "rows": [
             [
-              "if / else",
-              "Use normal conditional blocks before return.",
-              "When logic is too complex for inline rendering."
+              "Guard clause (early return)",
+              "<code>if (cond) return A; return B;</code>",
+              "One branch is a clear gate (loading/auth/empty/error)"
             ],
             [
-              "Ternary Operator",
-              "<code>{isLoggedIn ? <Dashboard /> : <Login />}</code>",
-              "Common for inline conditions."
+              "Inline ternary",
+              "<code>{cond ? A : B}</code>",
+              "Two short alternatives in JSX"
             ],
             [
-              "Logical AND (&&)",
-              "<code>{messages.length > 0 && <MessageList />}</code>",
-              "Render something only when a condition is true."
+              "Render-only-when-true (&&)",
+              "<code>{cond && A}</code>",
+              "You only need the “true” branch (else = nothing)"
+            ],
+            [
+              "Switch / mapping",
+              "<code>views[state] ?? fallback</code>",
+              "Multiple states (idle/loading/error/success)"
+            ],
+            [
+              "Extract to variable/function",
+              "<code>const content = ...</code>",
+              "JSX gets messy; want readability + testability"
             ]
           ],
-          "caption": "Common conditional rendering techniques in React"
+          "caption": "Common conditional rendering patterns"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// Example using if/else\nfunction Greeting({ isLoggedIn }) {\n  if (isLoggedIn) {\n    return <h1>Welcome back!</h1>;\n  }\n  return <h1>Please sign in.</h1>;\n}"
+          "code": "// 1) Guard clause (early return)\nfunction UserView({ user, isLoading, error }) {\n  if (isLoading) return <Spinner />;\n  if (error) return <ErrorBanner message={error.message} />;\n  if (!user) return null; // render nothing\n\n  return <Profile user={user} />;\n}\n"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// Example using ternary operator\nfunction StatusMessage({ status }) {\n  return <p>{status ? 'Online ✅' : 'Offline ❌'}</p>;\n}"
+          "code": "// 2) Inline ternary\nfunction Greeting({ isLoggedIn }) {\n  return (\n    <h1>\n      {isLoggedIn ? 'Welcome back!' : 'Please sign in.'}\n    </h1>\n  );\n}\n"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// Example using && operator\nfunction Notifications({ messages }) {\n  return <>{messages.length > 0 && <p>You have {messages.length} new messages.</p>}</>;\n}"
-        },
-        {
-          "type": "text",
-          "text": "<strong>Advanced Example: Rendering Components Conditionally</strong><br>You can also store entire components in variables and conditionally assign them:"
+          "code": "// 3) Logical AND (render only when true)\nfunction Notifications({ messages }) {\n  const count = messages.length;\n\n  return (\n    <>\n      {count > 0 && <p>You have {count} new messages.</p>}\n    </>\n  );\n}\n"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function UserPanel({ user }) {\n  let content;\n  if (user.isAdmin) {\n    content = <AdminPanel />;\n  } else {\n    content = <UserDashboard />;\n  }\n  return <div>{content}</div>;\n}"
+          "code": "// 4) Switch / mapping (multiple UI states)\nfunction Page({ status }) {\n  const views = {\n    idle: <p>Ready</p>,\n    loading: <Spinner />,\n    error: <ErrorBanner message=\"Something failed\" />,\n    success: <DataView />\n  };\n\n  return views[status] ?? <p>Unknown status</p>;\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Keep conditional logic outside JSX when complex.</li><li>Use fragments (</>) to avoid unnecessary wrappers.</li><li>Combine with hooks (e.g., state from <code>useState()</code> or <code>useContext()</code>) for dynamic rendering.</li></ul>"
+          "text": "<strong>Common gotchas</strong><br><br>Most bugs come from (1) non-boolean values with <code>&&</code>, (2) returning <code>undefined</code> by accident, or (3) unreadable nested conditions."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Gotcha",
+            "What happens",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "<code>{count && <Badge />}</code> with <code>count = 0</code>",
+              "Renders <code>0</code> as text (because 0 is renderable)",
+              "Use <code>count > 0 ? <Badge /> : null</code>"
+            ],
+            [
+              "Arrow function with braces but no return",
+              "Component returns <code>undefined</code> → “Nothing was returned from render”",
+              "Use <code>() => ( ... )</code> or add <code>return</code>"
+            ],
+            [
+              "Nested ternaries",
+              "Hard to read/debug; easy to mis-handle edge cases",
+              "Extract to variable/function or use a mapping"
+            ],
+            [
+              "Inline objects/functions used as conditions/props",
+              "Identity changes can cause extra renders, not a rendering bug but a perf trap",
+              "Stabilize only where it matters (<code>memo</code> boundaries)"
+            ]
+          ],
+          "caption": "Typical conditional rendering pitfalls"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of conditional rendering like ‘if statements’ inside your UI — React just decides what to show based on the current app state."
+          "text": "<strong>Mounting matters: preserve vs reset component state</strong><br><br>Conditional rendering often means <em>mount/unmount</em>. Unmounting resets local state. If you need to preserve internal state, keep the component mounted and hide it instead."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// Unmounts when closed (state resets on reopen)\nfunction App({ open }) {\n  return open ? <Modal /> : null;\n}\n\n// Keeps mounted (state preserved), just hidden\nfunction AppPreserve({ open }) {\n  return <Modal style={{ display: open ? 'block' : 'none' }} />;\n}\n"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// Forcing a reset on purpose: change the key\nfunction ProfileEditor({ userId }) {\n  return <Editor key={userId} userId={userId} />;\n}\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Rule of thumb",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Use guard clauses for gating (loading/error/auth/empty)",
+              "Keeps JSX clean and makes branches obvious"
+            ],
+            [
+              "Use ternary when you truly have two alternatives",
+              "Makes the “else” explicit (vs implicit nothing)"
+            ],
+            [
+              "Use <code>&&</code> only with boolean conditions",
+              "Avoid rendering <code>0</code> / empty strings accidentally"
+            ],
+            [
+              "For 3+ states, use a mapping/switch",
+              "Scales better than nested ternaries"
+            ],
+            [
+              "Be intentional about mount/unmount",
+              "Unmount resets local state; hiding preserves it"
+            ]
+          ],
+          "caption": "Best practices that interviewers expect"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Conditional rendering decides what JSX to display based on logic.</li><li>You can use <code>if</code>, ternary (<code>?:</code>), or <code>&&</code> operators.</li><li>Use ternary for short expressions, and <code>if</code> for complex cases.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>Conditional rendering is simply returning different <code>ReactNode</code> outputs based on conditions. Choose a pattern by complexity: guard clauses for gating, ternaries for two options, and mappings/switches for multiple states. Be careful with <code>&&</code> when the condition might be a non-boolean (especially <code>0</code>). Finally, remember that mount/unmount controls whether local component state is preserved or reset (and <code>key</code> can force a reset when needed)."
         }
       ]
     },
@@ -1476,68 +1644,143 @@
   },
   {
     "id": "react-useeffect-purpose",
-    "title": "What is the purpose of the useEffect() hook in React?",
+    "title": "useEffect() in React: syncing with the outside world (timing, dependencies, cleanup)",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The useEffect() hook in React manages side effects — operations that occur outside the component’s rendering process, such as fetching data, setting up subscriptions, manipulating the DOM, or running timers.",
+    "description": "Explain what useEffect is actually for (synchronizing with external systems), when it runs (after commit), how dependencies control re-running, and how cleanup prevents leaks. Cover common patterns (fetching, subscriptions, timers) and common pitfalls (stale closures, infinite loops, derived state in effects).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>useEffect()</code> is one of React’s most powerful hooks. It lets you perform side effects — tasks that affect something outside of React’s pure rendering cycle — like making API calls, listening for window events, or updating the document title. It replaces lifecycle methods such as <code>componentDidMount</code>, <code>componentDidUpdate</code>, and <code>componentWillUnmount</code> from class components."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "import { useEffect, useState } from 'react';\n\nfunction FetchUser() {\n  const [user, setUser] = useState(null);\n\n  useEffect(() => {\n    fetch('https://api.example.com/user')\n      .then((res) => res.json())\n      .then((data) => setUser(data));\n  }, []); // Empty dependency array = runs only once\n\n  return <div>{user ? user.name : 'Loading...'}</div>;\n}"
+          "text": "<strong>Core idea</strong><br><br><code>useEffect()</code> is React’s API for <em>side effects</em>: code that must run <em>outside</em> rendering to keep your component synchronized with something external (network, subscriptions, browser APIs, timers, logging/analytics).<br><br>Key mental model: <strong>render computes UI</strong> (pure), then React <strong>commits</strong> DOM changes, then <code>useEffect</code> runs to “sync with the world.”"
         },
         {
           "type": "list",
           "columns": [
-            "Dependency Pattern",
-            "When It Runs",
-            "Use Case"
+            "Concept",
+            "What it means",
+            "Why it matters"
           ],
           "rows": [
             [
-              "Empty array (<code>[]</code>)",
-              "Once after the first render",
-              "Initialization (API calls, subscriptions)"
+              "Runs after commit",
+              "Effects run after React has committed updates to the DOM (they don’t run during render).",
+              "You avoid doing real-world work in render (render may run multiple times)."
+            ],
+            [
+              "Cleanup is part of the contract",
+              "An effect can return a cleanup function.",
+              "React runs cleanup before re-running the effect and on unmount (prevents leaks)."
+            ],
+            [
+              "Dependencies define when to re-sync",
+              "The dependency array tells React when your effect’s inputs changed.",
+              "Correct deps prevent stale values and accidental infinite loops."
+            ]
+          ],
+          "caption": "What useEffect is for (interview-grade mental model)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Dependency array rules (what actually happens)</strong><br><br>React decides whether to re-run an effect by comparing dependency values with <code>Object.is</code>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Dependency form",
+            "When it runs",
+            "Typical usage"
+          ],
+          "rows": [
+            [
+              "<code>[]</code>",
+              "Runs on mount; cleanup runs on unmount.",
+              "Set up/tear down a subscription, event listener, timer."
+            ],
+            [
+              "<code>[a, b]</code>",
+              "Runs on mount and whenever <code>a</code> or <code>b</code> changes; cleanup runs before each re-run.",
+              "Re-sync when specific inputs change (e.g., <code>userId</code>, <code>query</code>, <code>enabled</code>)."
             ],
             [
               "No array",
-              "After every render",
-              "When continuous updates are needed"
-            ],
-            [
-              "Specific dependencies",
-              "When any listed dependency changes",
-              "Reacting to state or prop changes"
+              "Runs after every commit; cleanup runs before each re-run.",
+              "Rare; usually a smell (often missing deps)."
             ]
           ],
-          "caption": "How dependency arrays control when effects run"
+          "caption": "How dependencies control re-running + cleanup timing"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// Example with cleanup\nuseEffect(() => {\n  const handleResize = () => console.log(window.innerWidth);\n  window.addEventListener('resize', handleResize);\n\n  return () => {\n    window.removeEventListener('resize', handleResize); // cleanup\n  };\n}, []);"
+          "code": "import React from 'react';\n\nexport default function DocumentTitle({ count }) {\n  // Sync with a browser API (document title)\n  React.useEffect(() => {\n    document.title = `Count: ${count}`;\n  }, [count]);\n\n  return <div>Count: {count}</div>;\n}\n"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\nexport function ResizeLogger() {\n  React.useEffect(() => {\n    const onResize = () => console.log('width:', window.innerWidth);\n    window.addEventListener('resize', onResize);\n\n    // Cleanup prevents leaks + duplicate listeners\n    return () => window.removeEventListener('resize', onResize);\n  }, []);\n\n  return <div>Resize the window</div>;\n}\n"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\nexport function IntervalCounter() {\n  const [n, setN] = React.useState(0);\n\n  React.useEffect(() => {\n    const id = setInterval(() => {\n      // Use functional update to avoid stale state\n      setN((x) => x + 1);\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []);\n\n  return <div>{n}</div>;\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Common Use Cases</strong><br><ul><li>Fetching and updating data from APIs</li><li>Subscribing/unsubscribing to events</li><li>Manipulating the DOM (focus, title, scroll)</li><li>Running animations or timers</li></ul>"
+          "text": "<strong>Data fetching pattern (avoid stale results)</strong><br><br>Fetching is a side effect. The common issue is: the component re-renders with a new <code>userId</code> while an older request is still in flight. You need a cancellation/ignore strategy."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\nexport function UserProfile({ userId }) {\n  const [user, setUser] = React.useState(null);\n  const [error, setError] = React.useState(null);\n\n  React.useEffect(() => {\n    const controller = new AbortController();\n\n    (async () => {\n      try {\n        setError(null);\n        const res = await fetch(`/api/users/${userId}`, { signal: controller.signal });\n        if (!res.ok) throw new Error('Request failed');\n        const data = await res.json();\n        setUser(data);\n      } catch (e) {\n        if (controller.signal.aborted) return; // ignore abort\n        setError(e);\n      }\n    })();\n\n    return () => controller.abort();\n  }, [userId]);\n\n  if (error) return <div>Failed</div>;\n  if (!user) return <div>Loading...</div>;\n  return <div>{user.name}</div>;\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Always clean up event listeners and intervals to prevent memory leaks.</li><li>List all dependencies that your effect uses — React warns about missing ones.</li><li>Avoid unnecessary effects inside the render path; use memoization or derived state when possible.</li></ul>"
+          "text": "<strong>Common pitfalls (what interviewers watch for)</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Pitfall",
+            "What goes wrong",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "Missing dependencies",
+              "Effect reads stale values/props because it captured an old closure.",
+              "Include every value used inside the effect in the dependency list, or restructure (move logic into effect, use refs for mutable non-render state)."
+            ],
+            [
+              "Infinite loop",
+              "Effect sets state that changes a dependency, which re-runs the effect forever.",
+              "Don’t use effects to derive state from state; compute derived values during render or use memoization."
+            ],
+            [
+              "Async effect function directly",
+              "Writing <code>useEffect(async () =&gt; { ... })</code> returns a Promise instead of cleanup.",
+              "Wrap async work inside the effect and return a real cleanup function."
+            ],
+            [
+              "Using useEffect for pure derivations",
+              "Extra renders + harder logic (state duplication).",
+              "If it can be computed from props/state, compute it in render (or <code>useMemo</code> if expensive)."
+            ]
+          ],
+          "caption": "Most real-world bugs come from deps, stale closures, or using effects as “state sync”"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>useEffect()</code> as a way to ‘sync’ your component with the outside world — it reacts to state changes and performs real-world effects safely."
+          "text": "<strong>useEffect vs useLayoutEffect</strong><br><br><code>useEffect</code> is the default. Use <code>useLayoutEffect</code> only when you must read layout or synchronously write to the DOM before the browser paints (measurement, scroll positioning). Overusing <code>useLayoutEffect</code> can hurt performance because it can block paint."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Manages side effects in React functional components.</li><li>Runs after rendering and optionally cleans up resources.</li><li>Replaces class lifecycle methods for simpler logic organization.</li></ul>"
+          "text": "<strong>StrictMode note (dev)</strong><br><br>In development with <code>&lt;React.StrictMode&gt;</code>, React may run an effect’s setup + cleanup twice on mount to surface unsafe side effects. This is why effects must be idempotent and clean up correctly."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><ul><li><code>useEffect</code> is for <em>synchronizing</em> a component with external systems (network, subscriptions, timers, browser APIs) after React commits UI.</li><li>The dependency array defines <em>when</em> React should re-run the effect; cleanup runs before re-run and on unmount.</li><li>Common bugs: missing deps (stale closures), effect-driven derived state (loops), and forgetting cleanup (leaks).</li><li>Default to <code>useEffect</code>; use <code>useLayoutEffect</code> only for layout-sensitive DOM work.</li></ul>"
         }
       ]
     },
@@ -1674,63 +1917,116 @@
   },
   {
     "id": "react-virtual-dom",
-    "title": "What is the virtual DOM and how does React use it?",
+    "title": "What is the Virtual DOM in React, and how does it relate to reconciliation?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The virtual DOM is an in-memory representation of the real DOM used by React to optimize UI rendering. React uses it to determine the minimal set of changes needed to update the UI efficiently.",
+    "description": "Explain what people mean by “Virtual DOM” in React (React element tree in memory), how React re-renders to produce a new tree, how reconciliation (diffing + heuristics + keys) computes changes, and how the commit phase applies DOM mutations. Emphasize: re-render ≠ DOM update.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The Virtual DOM (VDOM) is a lightweight copy of the browser’s actual DOM stored in memory. React uses it to track changes and update only the parts of the UI that have changed, instead of re-rendering everything. This makes UI updates faster and more efficient."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// Example of how React uses the virtual DOM\nfunction Counter() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;\n}\n\n// When state changes:\n// 1. React creates a new virtual DOM tree.\n// 2. It compares it with the previous version (diffing).\n// 3. Only updates the changed parts in the real DOM."
+          "text": "<strong>Core idea</strong><br><br>In React, “Virtual DOM” usually means: <em>an in-memory tree representation of your UI</em> (React elements / fibers), not the browser DOM itself. On each update, React re-runs components to produce a <em>new</em> tree, then <strong>reconciles</strong> it with the previous tree to decide what must change. Only after that, React <strong>commits</strong> the necessary changes to the real DOM."
         },
         {
           "type": "list",
           "columns": [
-            "Step",
-            "Description"
+            "Claim",
+            "Accurate?",
+            "Better wording / why it matters"
           ],
           "rows": [
             [
-              "Render Phase",
-              "React builds a virtual DOM tree based on component structure."
+              "“VDOM is a copy of the real DOM.”",
+              "⚠️ half-true",
+              "It’s a JS representation of the UI (<code>type</code>, <code>props</code>, <code>children</code>). It models what the DOM <em>should</em> look like, not a full DOM clone."
             ],
             [
-              "Diffing",
-              "React compares the new VDOM with the previous one to detect changes."
+              "“React updates the minimal set of DOM changes.”",
+              "⚠️ usually",
+              "React uses reconciliation heuristics. With stable keys/types, it’s very efficient, but it’s not a perfect minimal-edit solver."
+            ],
+            [
+              "“Re-render means the DOM changed.”",
+              "❌",
+              "Re-render means React re-ran components to compute a new UI tree. DOM mutations only happen in the commit phase if something actually differs."
+            ],
+            [
+              "“VDOM makes React fast.”",
+              "⚠️ incomplete",
+              "The win is: predictable re-rendering + efficient diffing + batching. Many perf issues are still JS work, reconciliation work, or browser layout/paint."
+            ]
+          ],
+          "caption": "Common Virtual DOM misconceptions (and the interview-correct framing)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What happens on an update</strong><br><br>When state/props/context change, React schedules work, re-runs the affected components, builds a new tree, then reconciles it against the previous one. If it detects differences, it commits DOM mutations for only those differences."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  // When you click:\n  // 1) React re-runs Counter() to compute a new element tree\n  // 2) Reconciliation compares old vs new children\n  // 3) Commit applies the minimal DOM changes (often just the text node)\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>\n      Count: {count}\n    </button>\n  );\n}\n"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Phase",
+            "What React does",
+            "Rules / why it matters"
+          ],
+          "rows": [
+            [
+              "Render phase",
+              "Runs components to compute the next UI tree",
+              "Should be pure (no subscriptions, network calls, DOM writes). React may re-run renders (especially in dev/StrictMode)."
             ],
             [
               "Reconciliation",
-              "React efficiently updates only the modified nodes in the real DOM."
+              "Matches old vs new elements (type + key + position) and decides what to keep, move, mount, unmount",
+              "Keys are crucial for stable identity in lists; changing element type at a position can cause remount/state loss."
+            ],
+            [
+              "Commit phase",
+              "Mutates the real DOM + runs effects/lifecycles",
+              "This is where DOM changes actually happen; effects run after commit."
             ]
           ],
-          "caption": "How React uses the virtual DOM for efficient updates"
+          "caption": "Virtual DOM is the input to reconciliation; reconciliation decides the DOM commit"
         },
         {
           "type": "text",
-          "text": "<strong>Why It Matters</strong><br><ul><li>The real DOM is slow to manipulate directly — React minimizes direct DOM access.</li><li>The virtual DOM makes UI updates predictable and performant.</li><li>React batches updates and avoids unnecessary reflows and repaints.</li></ul>"
+          "text": "<strong>Keys are a big part of “VDOM performance”</strong><br><br>Reconciliation is fast when React can match previous children to next children reliably. In lists, stable <code>key</code> values give identity; bad keys (like index in reordering lists) can cause unnecessary remounts, DOM churn, and state bugs."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Why React uses this model",
+            "Practical benefit"
+          ],
+          "rows": [
+            [
+              "Declarative UI (UI as a function of data)",
+              "You describe <em>what</em> the UI should be; React computes <em>how</em> to update it."
+            ],
+            [
+              "Batching + scheduling",
+              "Multiple state updates can be grouped; React can prioritize urgent updates."
+            ],
+            [
+              "Efficient updates for dynamic trees",
+              "As the UI shape changes, React can mount/unmount/move nodes without manual DOM bookkeeping."
+            ],
+            [
+              "Tooling + predictability",
+              "The same inputs produce the same tree (when render is pure), which makes behavior easier to reason about and debug."
+            ]
+          ],
+          "caption": "What the “Virtual DOM + reconciliation” architecture buys you"
         },
         {
           "type": "text",
-          "text": "<strong>Analogy</strong><br>Imagine the virtual DOM as a 'draft' of your web page — React edits the draft, compares it with the old one, and only rewrites the parts that changed on the final version."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Benefits</strong><br><ul><li>Improves performance by reducing DOM manipulation.</li><li>Enables declarative programming — React handles updates automatically.</li><li>Enhances consistency and predictability of UI updates.</li></ul>"
-        },
-        {
-          "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> The virtual DOM acts like React’s smart assistant — it figures out what changed and updates the UI for you efficiently."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>The virtual DOM is an in-memory representation of the real DOM.</li><li>React uses it to detect changes and update only affected nodes.</li><li>It enables fast, efficient, and predictable UI rendering.</li></ul>"
+          "text": "<strong>Interview-quality summary</strong><br><br>In React, “Virtual DOM” refers to the in-memory UI tree (React elements/fibers). On updates, React re-renders to produce a new tree, then runs reconciliation (diffing + keys + heuristics) to compute what changed, and finally commits only the necessary DOM mutations. A re-render is just recomputing UI — it does not automatically mean the browser DOM changed."
         }
       ]
     },
@@ -1739,63 +2035,157 @@
   },
   {
     "id": "react-component-rerendering",
-    "title": "How does React handle component re-rendering?",
+    "title": "When does React re-render a component, and when does it actually update the DOM?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "React handles component re-rendering efficiently by using its virtual DOM system. When state or props change, React compares the new virtual DOM with the previous one, finds the differences (diffing), and updates only the necessary parts of the real DOM.",
+    "description": "Explain React’s update pipeline: what a “re-render” really is (re-running component functions to produce a new element tree), what triggers it (state/props/context/parent renders), how reconciliation decides what changed, and why a re-render often results in zero DOM mutations. Include bailouts (Object.is state equality, React.memo/PureComponent), identity pitfalls (inline objects/functions, Context value identity), StrictMode dev behavior, and keys/remount gotchas.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>React re-renders components when their <code>state</code> or <code>props</code> change. Instead of directly updating the real DOM, React builds a virtual DOM representation in memory, compares it with the previous version, and then applies only the minimal updates to the browser DOM. This makes UI updates efficient and fast."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "function Counter() {\n  const [count, setCount] = useState(0);\n\n  console.log('Component re-rendered');\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>Increase</button>\n    </div>\n  );\n}"
+          "text": "<strong>Core idea</strong><br><br>In React, a <strong>re-render</strong> means: React runs your component again to compute the next <em>React element tree</em> (the in-memory UI description).<br><br><strong>Re-render ≠ DOM update</strong>. After rendering, React <strong>reconciles</strong> (matches old vs new trees) and only then <strong>commits</strong> the minimal DOM mutations <em>if anything actually changed</em>."
         },
         {
           "type": "list",
           "columns": [
             "Trigger",
-            "Description"
+            "What happens",
+            "Important nuance"
           ],
           "rows": [
             [
-              "State Changes",
-              "When you call a setter from <code>useState</code>, React re-renders that component."
+              "State update (useState/useReducer)",
+              "Schedules a render for that component",
+              "If the new state is <code>Object.is</code>-equal to the old state, React can bail out (no re-render). New object/array references are always “different”."
             ],
             [
-              "Prop Changes",
-              "If parent components pass new props, React re-renders the child."
+              "Parent re-renders",
+              "Children are rendered by default",
+              "Even if props “look the same”, React will call the child again unless you use <code>React.memo</code>/<code>PureComponent</code> (or a custom comparison)."
             ],
             [
-              "Context Updates",
-              "If context values change, all subscribed components re-render."
+              "Prop identity changes",
+              "Child re-renders",
+              "Inline objects/functions create new references every render → looks like “props changed” to memo/shallow compare."
             ],
             [
-              "Force Updates",
-              "In rare cases, manual re-renders can be triggered using hooks like <code>useReducer</code> or <code>forceUpdate()</code>."
+              "Context Provider value changes",
+              "All consumers may re-render",
+              "Context is identity-based too. <code>value={{...}}</code> created inline changes every render unless memoized."
+            ],
+            [
+              "Key / type changes at a position",
+              "React remounts the subtree",
+              "This is bigger than a re-render: local state resets because React treats it as a different component."
             ]
           ],
-          "caption": "Common triggers for React component re-rendering"
+          "caption": "What typically causes re-renders (and the gotchas)"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Phase",
+            "What React does",
+            "Rule of thumb"
+          ],
+          "rows": [
+            [
+              "Render phase",
+              "Runs component functions / class <code>render()</code> to compute the next tree",
+              "Must be pure (no subscriptions, network calls, DOM writes). React may run it more than once in dev/StrictMode."
+            ],
+            [
+              "Reconciliation",
+              "Compares old vs new elements (type + key + position) and decides what to keep/move/mount/unmount",
+              "Stable keys/types preserve state and reduce work; unstable identity causes extra work and bugs."
+            ],
+            [
+              "Commit phase",
+              "Applies DOM mutations and runs effects/lifecycles",
+              "This is when the browser DOM can actually change; effects run after commit."
+            ]
+          ],
+          "caption": "Render vs reconcile vs commit (the mental model interviewers want)"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\nconst Child = React.memo(function Child({ onInc, config }) {\n  console.log('Child rendered');\n  return <button onClick={onInc}>Inc</button>;\n});\n\nexport default function Parent() {\n  const [count, setCount] = React.useState(0);\n\n  // ❌ NEW function/object every render -> Child sees \"new props\" -> re-renders\n  // const onInc = () => setCount(count + 1);\n  // const config = { step: 1 };\n\n  // ✅ Stable identities -> Child can skip renders via React.memo\n  const onInc = React.useCallback(() => setCount((c) => c + 1), []);\n  const config = React.useMemo(() => ({ step: 1 }), []);\n\n  console.log('Parent rendered');\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <Child onInc={onInc} config={config} />\n    </div>\n  );\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Re-rendering Process</strong><br><ul><li>React detects changes in state or props.</li><li>It rebuilds the virtual DOM for that component subtree.</li><li>React compares it to the previous virtual DOM (diffing).</li><li>It applies minimal updates to the real DOM (reconciliation).</li></ul>"
+          "text": "<strong>What this example proves</strong><br><br>1) Updating <code>count</code> re-renders <code>Parent</code>.<br>2) By default, children render too.<br>3) <code>React.memo</code> lets a child <em>bail out</em> if props are shallow-equal, but only if you keep prop identities stable (callbacks/objects)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common misconception",
+            "Correct framing"
+          ],
+          "rows": [
+            [
+              "“React re-renders the whole app.”",
+              "React schedules work for the affected part of the tree. But parent renders do propagate unless you add bailout boundaries (memo) and keep identities stable."
+            ],
+            [
+              "“Virtual DOM diff always computes the minimal edit.”",
+              "Reconciliation is heuristic and optimized for common UI patterns. With good keys/types, it’s very efficient; with bad keys/identity churn, it can do extra work."
+            ],
+            [
+              "“If a component re-rendered, the DOM changed.”",
+              "Not necessarily. If the computed output is the same (or the changed parts don’t affect the DOM), commit can be a no-op."
+            ],
+            [
+              "“useCallback/useMemo always improves performance.”",
+              "They help only when they prevent real work (rerenders of expensive children, expensive computations). Overuse adds complexity and overhead."
+            ]
+          ],
+          "caption": "Interview-grade corrections to typical statements"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Optimization lever",
+            "What it actually reduces",
+            "Best use"
+          ],
+          "rows": [
+            [
+              "Colocate state (move it down)",
+              "The number of components affected by updates",
+              "Keep state as close as possible to where it’s used, so fewer parents re-render."
+            ],
+            [
+              "Split components",
+              "The size of the rerendered subtree",
+              "Separate “fast-changing” parts from “mostly-static” parts."
+            ],
+            [
+              "React.memo / PureComponent",
+              "Re-rendering of child components",
+              "Pure/presentational children with stable props."
+            ],
+            [
+              "Stable prop identities",
+              "False-positive “prop changed” signals",
+              "Avoid inline objects/functions when they’re passed to memoized children."
+            ],
+            [
+              "Memoize Context value",
+              "Broad consumer rerenders",
+              "Wrap provider value creation in <code>useMemo</code> to avoid rerendering all consumers."
+            ]
+          ],
+          "caption": "Practical ways to reduce unnecessary re-renders (in the order that usually matters most)"
         },
         {
           "type": "text",
-          "text": "<strong>Optimization Techniques</strong><br><ul><li>Use <code>React.memo()</code> to prevent unnecessary re-renders for pure components.</li><li>Use <code>useCallback()</code> and <code>useMemo()</code> to stabilize function and object references.</li><li>Split large components into smaller, reusable ones for fine-grained updates.</li></ul>"
+          "text": "<strong>Two important gotchas</strong><br><br>• <strong>StrictMode (dev)</strong>: React may intentionally run render logic more than once to surface unsafe side effects. Don’t treat “double logs” in dev as production behavior.<br>• <strong>Keys/type changes</strong>: Changing a component’s key or swapping wrappers (e.g., Fragment ↔ div) can cause a remount (state reset), not just a re-render."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> React doesn’t re-render the whole app — only the components whose data changed, thanks to its virtual DOM and reconciliation process."
-        },
-        {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>React re-renders when state or props change.</li><li>It uses a virtual DOM to minimize direct DOM manipulation.</li><li>Efficient diffing and reconciliation keep performance high.</li></ul>"
+          "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A re-render is “recompute the next UI tree”, not “mutate the DOM”. React then reconciles and commits only necessary DOM changes. Unnecessary re-renders usually come from unclear state ownership, unstable prop identities (inline objects/functions), broad context updates, or bad keys."
         }
       ]
     },
@@ -1974,59 +2364,159 @@
   },
   {
     "id": "react-higher-order-components",
-    "title": "What are higher-order components (HOCs)?",
+    "title": "Higher-order components (HOCs) in React: what are they and when should you use them?",
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Higher-Order Components (HOCs) are hard React patterns that allow you to reuse component logic by wrapping one component inside another. An HOC takes a component as input and returns an enhanced version of that component with additional functionality or data.",
+    "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They’re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>A Higher-Order Component (HOC) is a function that takes a component as an argument and returns a new component. HOCs enable reusability of logic across multiple components — such as authentication checks, logging, fetching data, or connecting to global state (like Redux)."
-        },
-        {
-          "type": "code",
-          "language": "jsx",
-          "code": "// Basic HOC pattern\nfunction withLogger(WrappedComponent) {\n  return function EnhancedComponent(props) {\n    console.log('Rendering', WrappedComponent.name);\n    return <WrappedComponent {...props} />;\n  };\n}\n\n// Usage\nfunction Hello({ name }) {\n  return <h1>Hello, {name}!</h1>;\n}\n\nconst HelloWithLogger = withLogger(Hello);"
+          "text": "<strong>Core idea</strong><br><br>A <strong>higher-order component (HOC)</strong> is a <strong>function</strong> with the shape <code>(Component) =&gt; Component</code>. It wraps a “base” component and returns a new component that adds behavior around it (inject props, gate rendering, subscribe/unsubscribe, etc.).<br><br>Key rule: an HOC should be <strong>pure</strong> with respect to its input component (don’t mutate the wrapped component; compose by wrapping)."
         },
         {
           "type": "list",
           "columns": [
             "Concept",
-            "Explanation"
+            "What it means",
+            "Why it matters"
           ],
           "rows": [
             [
               "Input",
-              "A component (the Wrapped Component)."
+              "A component (\"WrappedComponent\")",
+              "The HOC enhances behavior around the same UI contract"
             ],
             [
               "Output",
-              "A new component that wraps the original one."
+              "A new component (\"Enhanced\")",
+              "You get reuse without copy-pasting logic"
             ],
             [
-              "Purpose",
-              "To reuse logic and behavior across multiple components."
+              "How it works",
+              "Wrapper renders <code>&lt;WrappedComponent {...props} /&gt;</code>",
+              "Pass-through preserves flexibility and testability"
+            ],
+            [
+              "Composition",
+              "<code>withA(withB(Component))</code>",
+              "Order matters; wrappers layer behavior"
             ]
           ],
-          "caption": "Core structure of a Higher-Order Component"
+          "caption": "What a HOC is (and how to reason about it)"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "// Minimal HOC: adds logging without changing WrappedComponent\nfunction withLogger(WrappedComponent) {\n  function WithLogger(props) {\n    console.log('Rendering', WrappedComponent.displayName || WrappedComponent.name || 'Component');\n    return <WrappedComponent {...props} />;\n  }\n\n  WithLogger.displayName = `withLogger(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;\n  return WithLogger;\n}\n\nfunction Hello({ name }) {\n  return <h1>Hello, {name}!</h1>;\n}\n\nexport const HelloWithLogger = withLogger(Hello);\n"
         },
         {
           "type": "text",
-          "text": "<strong>Common Use Cases</strong><br><ul><li>Injecting props or global data (e.g., authentication, theme).</li><li>Managing subscriptions (like WebSockets or events).</li><li>Logging or performance monitoring.</li><li>Connecting components to global stores (e.g., <code>connect()</code> in Redux).</li></ul>"
+          "text": "<strong>Common use cases (where HOCs still show up)</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Use case",
+            "What the HOC does",
+            "Typical examples"
+          ],
+          "rows": [
+            [
+              "Inject props",
+              "Adds derived/global props to the wrapped component",
+              "<code>connect()</code> (Redux), feature flags, theme injection (older patterns)"
+            ],
+            [
+              "Access control",
+              "Blocks/redirects/returns fallback UI when unauthorized",
+              "withAuth / withRoleGuard"
+            ],
+            [
+              "Side-effect wiring",
+              "Subscribes and cleans up (events, websockets) around the wrapped component",
+              "withSubscription / withWindowListener"
+            ],
+            [
+              "Error boundaries",
+              "Wraps with an error boundary component",
+              "withErrorBoundary (common in codebases without global boundaries)"
+            ]
+          ],
+          "caption": "Real-world places HOCs are used"
         },
         {
           "type": "text",
-          "text": "<strong>Important Notes</strong><br><ul><li>HOCs should be pure — they must not modify the original component.</li><li>Props must always be passed through (<code>{...props}</code>) to ensure component flexibility.</li><li>They can wrap multiple layers deep, so naming and structure should be clear to avoid confusion.</li></ul>"
+          "text": "<strong>Hard parts / interview-level gotchas</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Gotcha",
+            "What can go wrong",
+            "Fix / best practice"
+          ],
+          "rows": [
+            [
+              "Ref forwarding",
+              "Refs don’t automatically pass through wrappers",
+              "Use <code>React.forwardRef</code> and pass <code>ref</code> down"
+            ],
+            [
+              "Static methods lost",
+              "Statics on the wrapped component (e.g., <code>someStatic</code>) aren’t present on the wrapper",
+              "Hoist statics (e.g., <code>hoist-non-react-statics</code>) when needed"
+            ],
+            [
+              "Prop clobbering",
+              "HOC injects a prop name that collides with caller props",
+              "Namespace injected props or document the contract clearly"
+            ],
+            [
+              "Wrapper noise",
+              "DevTools shows extra wrapper layers (“wrapper hell”)",
+              "Set <code>displayName</code>; prefer hooks for new code"
+            ],
+            [
+              "Order sensitivity",
+              "<code>withA(withB(X))</code> vs <code>withB(withA(X))</code> can change behavior",
+              "Be intentional; document composition order"
+            ],
+            [
+              "Creating HOCs in render",
+              "New component type each render → remounts/state loss/perf issues",
+              "Create HOCs once (module scope) or memoize carefully"
+            ]
+          ],
+          "caption": "The parts that make HOCs “hard” in practice"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import React from 'react';\n\n// HOC that forwards refs + sets displayName\nfunction withFocusRing(WrappedComponent) {\n  const WithFocusRing = React.forwardRef(function WithFocusRing(props, ref) {\n    return (\n      <div data-focus-ring>\n        <WrappedComponent ref={ref} {...props} />\n      </div>\n    );\n  });\n\n  WithFocusRing.displayName = `withFocusRing(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;\n  return WithFocusRing;\n}\n"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of HOCs like decorators — they wrap a component to give it extra powers without changing its original implementation."
+          "text": "<strong>Modern guidance</strong><br><br>In modern React, <strong>custom hooks</strong> are usually the first choice for reusing stateful logic because they avoid wrapper nesting and compose more cleanly. HOCs still matter for <strong>legacy code</strong>, <strong>class components</strong>, and <strong>library APIs</strong> built around wrapping (e.g., Redux <code>connect</code> in older setups)."
         },
         {
-          "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>HOCs are functions that take a component and return a new one.</li><li>Used to share logic across multiple components.</li><li>Follow composition principles and avoid mutating inputs.</li></ul>"
+          "type": "list",
+          "columns": [
+            "Summary"
+          ],
+          "rows": [
+            [
+              "An HOC is a function: <code>(WrappedComponent) =&gt; EnhancedComponent</code>."
+            ],
+            [
+              "Prefer custom hooks for new logic reuse; HOCs mostly show up in legacy code and library APIs (e.g., older Redux <code>connect</code>)."
+            ],
+            [
+              "Key gotchas: prop collisions, ref forwarding (<code>forwardRef</code>), hoisting statics, and wrapper nesting (\"wrapper hell\")."
+            ]
+          ],
+          "caption": "Summary"
         }
       ]
     },
