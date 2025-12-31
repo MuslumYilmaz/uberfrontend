@@ -176,17 +176,29 @@ export class PricingPlansSectionComponent {
         {
           id: 'what-is-frontendatlas',
           q: 'What is FrontendAtlas?',
-          a: 'FrontendAtlas is a hands-on interview practice workspace. You solve coding tasks, review concepts, and practice front-end system design in the same flow — with a real editor, preview, and validation where available.',
+          a: `FrontendAtlas is built to make you <strong>interview-ready faster</strong> by turning prep into <strong>repeatable practice loops</strong>.<br><br>
+What you do here:<br>
+- Solve realistic coding tasks with starter code + fast feedback (preview/tests)<br>
+- Learn core concepts in a way you can actually explain in interviews<br>
+- Practice front-end system design by making tradeoffs, not memorizing buzzwords<br><br>
+If you want “less reading, more doing” — this is the workflow.`,
         },
         {
           id: 'install-anything',
           q: 'Do I need to install anything, or is it all in the browser?',
-          a: 'No install required. FrontendAtlas runs in the browser; just open the app and start practicing. For the best experience, use a desktop/laptop with a keyboard.',
+          a: `It’s all in the browser — <strong>no setup tax</strong>.<br><br>
+Open the app → pick a task → code immediately.<br>
+No local project, no dependency hell, no “works on my machine”.<br><br>
+Desktop/laptop is recommended so you can use the editor/preview layout efficiently.`,
         },
         {
           id: 'supported-browsers-devices',
           q: 'Which browsers/devices are supported?',
-          a: 'FrontendAtlas works best on recent desktop versions of Chrome/Edge, Safari, and Firefox. Mobile/tablet can browse, but the full editor + split-pane workflow is optimized for desktop.',
+          a: `Best experience on modern desktop browsers:<br>
+- Chrome / Edge (top pick for speed + compatibility)<br>
+- Safari<br>
+- Firefox<br><br>
+Mobile/tablet works for reading and browsing, but serious practice is designed for desktop (editor + preview + checks).`,
         },
       ],
     },
@@ -197,22 +209,43 @@ export class PricingPlansSectionComponent {
         {
           id: 'exercise-types',
           q: 'What kinds of exercises are included (coding tasks vs concepts)?',
-          a: 'You’ll find UI-first coding tasks (with starter code), concept/trivia questions (for interview reasoning), and front-end system design prompts (tradeoffs, caching, architecture).',
+          a: `You’ll practice the three things interviews actually test:<br><br>
+<strong>1) Coding tasks</strong><br>
+Build/modify real UI and logic with starter code, then validate with preview/tests.<br><br>
+<strong>2) Concept questions</strong><br>
+Short prompts that force clean mental models (the kind you can explain under pressure).<br><br>
+<strong>3) Front-end system design</strong><br>
+Architecture prompts focused on constraints + tradeoffs (how seniors think).`,
         },
         {
           id: 'tech-coverage',
           q: 'Which technologies are covered (JS/TS, HTML/CSS, React/Angular/Vue)?',
-          a: 'Content is organized by JavaScript/TypeScript, HTML/CSS, Angular, React, Vue — plus a dedicated front-end system design library.',
+          a: `Coverage is designed to match real job requirements:<br>
+- JavaScript / TypeScript fundamentals (async, closures, DOM, performance, etc.)<br>
+- HTML / CSS (layout, responsive UI, practical accessibility basics)<br>
+- React / Angular / Vue (component patterns, state, rendering, performance)<br>
+- Front-End System Design track (architecture and tradeoffs)<br><br>
+So you can prep for “framework interview” <em>and</em> “real-world frontend” at the same time.`,
         },
         {
           id: 'difficulty-and-tags',
           q: 'How are difficulty levels and tags organized?',
-          a: 'Questions are labeled by difficulty and importance, and you can filter/sort by technology and difficulty. Search is built around quick narrowing: “what should I practice next?”',
+          a: `Everything is structured to reduce decision fatigue and keep you consistent.<br><br>
+You can filter/sort by:<br>
+- Technology (JS/TS, HTML/CSS, React, Angular, Vue, System Design)<br>
+- Difficulty (ramp up without getting stuck or bored)<br>
+- Tags (the exact skill being tested: event delegation, memoization, layout, state, etc.)<br><br>
+This makes it easy to build a weekly plan: pick a focus → grind a tight set → level up.`,
         },
         {
           id: 'solutions-and-explanations',
           q: 'Do exercises include solutions and explanations?',
-          a: 'Many exercises include solutions and explanations, and more are added over time. Some prompts are intentionally open-ended (multiple valid approaches) to reflect real interview discussions.',
+          a: `Yes — many tasks include solutions and detailed explanations, and more are added over time.<br><br>
+When available, solutions focus on what matters in interviews:<br>
+- a clean baseline implementation<br>
+- edge cases + common mistakes<br>
+- tradeoffs between approaches (when it’s not just “one right answer”)<br><br>
+Some prompts are intentionally open-ended to mirror real interview discussion.`,
         },
       ],
     },
@@ -223,17 +256,26 @@ export class PricingPlansSectionComponent {
         {
           id: 'live-preview',
           q: 'Do tasks have a live preview (rendered output) while I code?',
-          a: 'Yes — many tasks provide a live preview that updates as you type. Where a visual preview isn’t the best signal (e.g., pure JS logic), validation is done via checks instead.',
+          a: `Yes — many tasks have live preview so you can iterate fast and see what you’re building immediately.<br><br>
+This is ideal for HTML/CSS and UI work where “correct” is visual.<br><br>
+If preview isn’t the right signal (pure logic), the task uses checks/tests instead — so you still get clear pass/fail feedback.`,
         },
         {
           id: 'run-tests',
           q: 'Can I run tests / validate my solution inside the app?',
-          a: 'Yes for tasks that ship with deterministic checks (especially JavaScript/TypeScript). For HTML/CSS tasks, the primary feedback loop is live preview.',
+          a: `Yes — tasks that can be validated deterministically include checks/tests (common for JS/TS).<br><br>
+This helps you practice like a professional workflow:<br>
+write → run checks → fix edge cases → ship.<br><br>
+HTML/CSS tasks typically rely on live preview first, because visuals are the primary correctness signal.`,
         },
         {
           id: 'save-progress',
           q: 'Does FrontendAtlas save my code and progress between sessions?',
-          a: 'Yes. Your code is saved locally in your browser to prevent accidental loss, and signed-in users can also track solved status. You can always use the Reset action to return to the starter.',
+          a: `Yes — your work is saved locally in your browser so you don’t lose progress mid-practice.<br><br>
+Why this matters:<br>
+- You can do short sessions (even 15–30 min) and continue later<br>
+- Your drafts stay private on your device by default<br><br>
+You can also reset any task back to the starter whenever you want to re-practice from scratch.`,
         },
       ],
     },
@@ -244,22 +286,36 @@ export class PricingPlansSectionComponent {
         {
           id: 'premium-includes',
           q: 'What’s included in Premium?',
-          a: 'Premium unlocks premium question sets and features for your plan, plus ongoing content updates while your plan is active.',
+          a: `Premium is for people who want the fastest path to results.<br><br>
+Typically, it unlocks:<br>
+- Premium question sets and deeper practice content<br>
+- More guided solutions/explanations where available<br>
+- Ongoing content updates while your plan is active<br><br>
+If you’re practicing consistently, Premium mainly saves you time: less hunting, more reps.`,
         },
         {
           id: 'subscription-vs-lifetime',
           q: 'What’s the difference between Subscription and Lifetime?',
-          a: 'Subscriptions include access while active (and renew automatically unless canceled). Lifetime is a one-time purchase for FrontendAtlas core content; future separate premium products (if any) may be priced independently.',
+          a: `<strong>Subscription</strong> = pay as you go, renews automatically unless canceled.<br>
+Best if you want to ramp up for a specific interview window.<br><br>
+<strong>Lifetime</strong> = one-time purchase for FrontendAtlas core content.<br>
+Best if you prefer a single payment and long-term access.<br><br>
+Note: if separate premium products are introduced in the future, they may be priced independently.`,
         },
         {
           id: 'cancel-anytime',
           q: 'Can I cancel a subscription anytime?',
-          a: 'Yes. You can cancel at any time and keep access until the end of your current billing period.',
+          a: `Yes.<br><br>
+Cancel anytime and you keep access until the end of your current billing period.<br>
+No “gotchas” — you’re just stopping the next renewal.`,
         },
         {
           id: 'refunds',
           q: 'Do you offer refunds?',
-          a: 'Refund requests may be approved within 7 days of the initial purchase for accounts with limited usage. Subscription renewals are not refundable. See /legal/refund for full details or contact support@frontendatlas.com.',
+          a: `We handle refunds fairly and consistently, based on the rules in our Refund Policy.<br><br>
+Eligibility depends on factors like purchase type and usage.<br><br>
+For the exact terms, see <code>/legal/refund</code>.<br>
+If you think you were charged incorrectly or something isn’t working, email <code>support@frontendatlas.com</code> and we’ll help.`,
         },
       ],
     },
@@ -270,12 +326,21 @@ export class PricingPlansSectionComponent {
         {
           id: 'report-bug',
           q: 'How do I report a bug or get help?',
-          a: 'Email support@frontendatlas.com with steps to reproduce, your browser/OS, and the question URL or id. Screenshots or a short screen recording help a lot.',
+          a: `Email <code>support@frontendatlas.com</code> with:<br>
+- steps to reproduce (what you clicked / expected / got)<br>
+- browser + OS version<br>
+- the page URL or question id<br><br>
+A screenshot or short screen recording speeds up fixes a lot.`,
         },
         {
           id: 'payment-declined',
           q: 'Checkout failed / payment was declined — what should I try first?',
-          a: 'Try again, verify billing details, and consider a different card. Disable ad blockers/VPNs that can break checkout, and ensure your bank allows online/international payments. If it still fails, contact support@frontendatlas.com with the time of the attempt and your account email.',
+          a: `Quick checklist (most issues are one of these):<br><br>
+- Re-check billing details (name, address, ZIP/postal code if required)<br>
+- Try a different card (or a virtual card)<br>
+- Disable VPN/ad blockers that can break checkout flows<br>
+- Make sure your bank allows online/international payments<br><br>
+If it still fails: email <code>support@frontendatlas.com</code> with the time of the attempt + your account email.`,
         },
       ],
     },

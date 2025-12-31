@@ -11,15 +11,15 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
-import { of, combineLatest } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
+import { QuestionService } from '../../core/services/question.service';
+import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { CodingDetailComponent } from '../coding/coding-detail/coding-detail.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { SystemDesignDetailComponent } from '../system-design-list/system-design-detail/system-design-detail.component';
 import { TriviaDetailComponent } from '../trivia/trivia-detail/trivia-detail.component';
-import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
-import { QuestionService } from '../../core/services/question.service';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -235,17 +235,29 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           id: 'what-is-frontendatlas',
           q: 'What is FrontendAtlas?',
-          a: 'FrontendAtlas is a hands-on interview practice workspace. You solve coding tasks, learn core concepts, and practice front-end system design with a real editor and fast feedback loops.',
+          a: `FrontendAtlas is built to make you <strong>interview-ready faster</strong> by turning prep into <strong>repeatable practice loops</strong>.<br><br>
+What you do here:<br>
+- Solve realistic coding tasks with starter code + fast feedback (preview/tests)<br>
+- Learn core concepts in a way you can actually explain in interviews<br>
+- Practice front-end system design by making tradeoffs, not memorizing buzzwords<br><br>
+If you want “less reading, more doing” — this is the workflow.`,
         },
         {
           id: 'install-anything',
           q: 'Do I need to install anything, or is it all in the browser?',
-          a: 'It’s all in the browser — no install. Just open the app and start. A desktop/laptop is recommended for the best editor experience.',
+          a: `It’s all in the browser — <strong>no setup tax</strong>.<br><br>
+Open the app → pick a task → code immediately.<br>
+No local project, no dependency hell, no “works on my machine”.<br><br>
+Desktop/laptop is recommended so you can use the editor/preview layout efficiently.`,
         },
         {
           id: 'supported-browsers-devices',
           q: 'Which browsers/devices are supported?',
-          a: 'Best on recent desktop Chrome/Edge, Safari, and Firefox. Mobile/tablet can browse, but the editor workflow is optimized for desktop.',
+          a: `Best experience on modern desktop browsers:<br>
+- Chrome / Edge (top pick for speed + compatibility)<br>
+- Safari<br>
+- Firefox<br><br>
+Mobile/tablet works for reading and browsing, but serious practice is designed for desktop (editor + preview + checks).`,
         },
       ],
     },
@@ -256,22 +268,43 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           id: 'exercise-types',
           q: 'What kinds of exercises are included (coding tasks vs concepts)?',
-          a: 'UI-first coding tasks (with starter code), concept/trivia questions, and front-end system design prompts focused on tradeoffs and architecture.',
+          a: `You’ll practice the three things interviews actually test:<br><br>
+<strong>1) Coding tasks</strong><br>
+Build/modify real UI and logic with starter code, then validate with preview/tests.<br><br>
+<strong>2) Concept questions</strong><br>
+Short prompts that force clean mental models (the kind you can explain under pressure).<br><br>
+<strong>3) Front-end system design</strong><br>
+Architecture prompts focused on constraints + tradeoffs (how seniors think).`,
         },
         {
           id: 'tech-coverage',
           q: 'Which technologies are covered (JS/TS, HTML/CSS, React/Angular/Vue)?',
-          a: 'JavaScript/TypeScript, HTML/CSS, Angular, React, Vue, plus a dedicated front-end system design track.',
+          a: `Coverage is designed to match real job requirements:<br>
+- JavaScript / TypeScript fundamentals (async, closures, DOM, performance, etc.)<br>
+- HTML / CSS (layout, responsive UI, practical accessibility basics)<br>
+- React / Angular / Vue (component patterns, state, rendering, performance)<br>
+- Front-End System Design track (architecture and tradeoffs)<br><br>
+So you can prep for “framework interview” <em>and</em> “real-world frontend” at the same time.`,
         },
         {
           id: 'difficulty-and-tags',
           q: 'How are difficulty levels and tags organized?',
-          a: 'You can filter and sort by technology and difficulty to quickly narrow down what to practice next.',
+          a: `Everything is structured to reduce decision fatigue and keep you consistent.<br><br>
+You can filter/sort by:<br>
+- Technology (JS/TS, HTML/CSS, React, Angular, Vue, System Design)<br>
+- Difficulty (ramp up without getting stuck or bored)<br>
+- Tags (the exact skill being tested: event delegation, memoization, layout, state, etc.)<br><br>
+This makes it easy to build a weekly plan: pick a focus → grind a tight set → level up.`,
         },
         {
           id: 'solutions-and-explanations',
           q: 'Do exercises include solutions and explanations?',
-          a: 'Many do — and more are added over time. Some questions are intentionally open-ended to reflect real interview discussions.',
+          a: `Yes — many tasks include solutions and detailed explanations, and more are added over time.<br><br>
+When available, solutions focus on what matters in interviews:<br>
+- a clean baseline implementation<br>
+- edge cases + common mistakes<br>
+- tradeoffs between approaches (when it’s not just “one right answer”)<br><br>
+Some prompts are intentionally open-ended to mirror real interview discussion.`,
         },
       ],
     },
@@ -282,21 +315,31 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
         {
           id: 'live-preview',
           q: 'Do tasks have a live preview (rendered output) while I code?',
-          a: 'Yes for many tasks. Where a visual preview isn’t the right signal, validation is done via checks instead.',
+          a: `Yes — many tasks have live preview so you can iterate fast and see what you’re building immediately.<br><br>
+This is ideal for HTML/CSS and UI work where “correct” is visual.<br><br>
+If preview isn’t the right signal (pure logic), the task uses checks/tests instead — so you still get clear pass/fail feedback.`,
         },
         {
           id: 'run-tests',
           q: 'Can I run tests / validate my solution inside the app?',
-          a: 'Yes for tasks that include deterministic checks (especially JavaScript/TypeScript). HTML/CSS tasks primarily use live preview.',
+          a: `Yes — tasks that can be validated deterministically include checks/tests (common for JS/TS).<br><br>
+This helps you practice like a professional workflow:<br>
+write → run checks → fix edge cases → ship.<br><br>
+HTML/CSS tasks typically rely on live preview first, because visuals are the primary correctness signal.`,
         },
         {
           id: 'save-progress',
           q: 'Does FrontendAtlas save my code and progress between sessions?',
-          a: 'Yes — your work is saved locally in the browser to prevent accidental loss. You can reset any task to return to the starter.',
+          a: `Yes — your work is saved locally in the browser so you don’t lose progress mid-practice.<br><br>
+Why this matters:<br>
+- You can do short sessions (even 15–30 min) and continue later<br>
+- Your drafts stay private on your device by default<br><br>
+You can also reset any task back to the starter whenever you want to re-practice from scratch.`,
         },
       ],
     },
   ];
+
 
   libraryLanes: Array<{
     key: LibraryLane;

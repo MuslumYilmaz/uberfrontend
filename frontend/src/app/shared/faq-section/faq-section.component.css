@@ -52,6 +52,8 @@
   font-weight: 800;
   letter-spacing: -0.01em;
   line-height: 1.25;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .faq-icon {
@@ -74,7 +76,7 @@
 }
 
 .faq-a.open {
-  max-height: 260px;
+  max-height: 1000px;
   opacity: 1;
   transform: translateY(0);
   padding-bottom: 14px;
@@ -83,6 +85,7 @@
 .faq-a p {
   margin: 0;
   color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
-  line-height: 1.55;
-  font-size: 13.5px;
+  line-height: 1.6;
+  font-size: 15px;
+  overflow-wrap: anywhere;
 }
