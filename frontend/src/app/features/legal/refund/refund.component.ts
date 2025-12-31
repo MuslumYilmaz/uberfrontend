@@ -15,89 +15,106 @@ import { RouterModule } from '@angular/router';
           <span class="pill pill-blue">Billing</span>
         </div>
         <h1 id="doc-title">Refund Policy</h1>
-        <p class="muted">Effective date: {{ today }}</p>
+        <p class="muted">Effective date: {{ effectiveDate }}</p>
       </header>
 
       <p class="lede">
-        FrontendAtlas provides access to digital educational content and software services. By purchasing a
-        plan, you acknowledge and agree to the terms outlined below.
+        FrontendAtlas provides access to digital educational content and software services.
+        This policy explains refunds, cancellations, and your consumer rights where applicable.
       </p>
 
       <section>
-        <h2>1. Nature of the Service (Digital Goods)</h2>
-        <p>FrontendAtlas delivers non-tangible, irrevocable digital services, including but not limited to:</p>
+        <h2>1. Nature of the service (digital goods)</h2>
+        <p>FrontendAtlas delivers non-tangible digital services, including:</p>
         <ul>
           <li>Interactive coding challenges</li>
           <li>Interview preparation content</li>
           <li>Premium learning tools and features</li>
         </ul>
-        <p>Access to paid content is granted immediately after successful payment.</p>
+        <p>Access to paid content is typically granted immediately after successful payment.</p>
       </section>
 
       <section>
-        <h2>2. Refund Eligibility</h2>
-        <p>A refund may be granted if all of the following conditions are met:</p>
+        <h2>2. Consumer right to cancel (14 days) and digital-content exception</h2>
+        <p>
+          If you are a <strong>consumer</strong>, you may have a statutory right to cancel within
+          <strong>14 days</strong> (the period typically starts the day after completion of the transaction),
+          unless a legal exception applies.
+        </p>
+        <p>
+          Because FrontendAtlas is digital content/service delivered immediately, the statutory cancellation right
+          may not apply (or may be lost) once you have started to access, download, stream, or otherwise consume
+          the digital content/service, where permitted by law.
+        </p>
+      </section>
+
+      <section>
+        <h2>3. Refund eligibility (what we consider)</h2>
+        <p>A refund may be granted when all of the following are true:</p>
         <ul>
-          <li>The refund request is submitted within 14 calendar days of the initial purchase; and</li>
-          <li>The account shows limited usage (no substantial consumption of premium content or features).</li>
+          <li>The request is submitted within the applicable legal window (Section 2), where applicable; and</li>
+          <li>
+            The account shows <strong>limited usage</strong> (no substantial consumption of premium content/features); and
+          </li>
+          <li>There is no evidence of fraud, refund abuse, or policy violations.</li>
         </ul>
-        <p>Approval is at FrontendAtlas’s sole discretion.</p>
+        <p class="muted small">
+          This policy does not limit mandatory consumer rights for services that are not as described, faulty,
+          or not fit for purpose.
+        </p>
       </section>
 
       <section>
-        <h2>3. Non-Refundable Situations</h2>
-        <p>Refunds are not provided in the following cases:</p>
+        <h2>4. Subscriptions &amp; automatic renewals</h2>
         <ul>
-          <li>Subscription renewals</li>
-          <li>Partial or full consumption of premium content</li>
-          <li>Failure to cancel a subscription before the renewal date</li>
-          <li>Change of mind after purchase</li>
-          <li>Inactivity or lack of use after purchase</li>
-          <li>Technical issues caused by unsupported browsers, devices, or user environments</li>
-          <li>Violations of our Terms of Service or Acceptable Use Policy</li>
+          <li>Subscriptions renew automatically unless canceled.</li>
+          <li>You can cancel anytime in your account settings; access typically continues until the period ends.</li>
+          <li>
+            To avoid being charged for the next period, cancel ahead of your renewal date
+            (recommended: at least <strong>48 hours</strong> before renewal).
+          </li>
+          <li>Renewal charges are generally non-refundable.</li>
+          <li>No refunds are provided for unused time in a subscription period.</li>
         </ul>
       </section>
 
       <section>
-        <h2>4. Subscriptions &amp; Automatic Renewals</h2>
-        <ul>
-          <li>Subscriptions renew automatically unless canceled before the renewal date.</li>
-          <li>You may cancel your subscription at any time via your account settings.</li>
-          <li>Once a renewal charge has been processed, it is non-refundable.</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>5. Refund Requests &amp; Disputes</h2>
-        <p>To request a refund, contact: <strong>support&#64;frontendatlas.com</strong></p>
+        <h2>5. How to request a refund</h2>
+        <p>
+          Contact: <a href="mailto:support@frontendatlas.com"><strong>support&#64;frontendatlas.com</strong></a>
+        </p>
+        <p class="muted small">
+          (Add a support phone number here if you provide phone support.)
+        </p>
         <p>Please include:</p>
         <ul>
           <li>The email associated with your account</li>
-          <li>Transaction or order ID</li>
+          <li>Transaction / order ID (from your receipt)</li>
           <li>Reason for the request</li>
         </ul>
         <p>We aim to review requests within 3–5 business days.</p>
-        <p class="muted small">Important: Initiating a chargeback without contacting support may result in account suspension.</p>
       </section>
 
       <section>
-        <h2>6. Refund Processing</h2>
+        <h2>6. Refund processing</h2>
         <ul>
           <li>Approved refunds are issued to the original payment method.</li>
-          <li>Processing times vary by payment provider (typically 5–10 business days).</li>
-          <li>FrontendAtlas is not responsible for delays caused by banks or payment networks.</li>
+          <li>Processing times vary by payment method (typically 5–10 business days).</li>
+          <li>We are not responsible for delays caused by banks or payment networks.</li>
         </ul>
       </section>
 
       <section>
-        <h2>7. Payment Providers</h2>
-        <p>Payments are processed by third-party providers such as Paddle and Stripe.</p>
-        <p>Refunds are handled in accordance with both this policy and the applicable provider’s terms.</p>
+        <h2>7. Chargebacks and disputes</h2>
+        <p>
+          If something went wrong, contact support first so we can resolve it quickly. Unresolved chargebacks may
+          result in account access being limited while the dispute is investigated.
+        </p>
       </section>
 
       <section>
-        <h2>8. Policy Modifications</h2>
-        <p>We reserve the right to modify this Refund Policy at any time. Updates take effect immediately upon publication.</p>
+        <h2>8. Policy modifications</h2>
+        <p>We may update this policy from time to time. Changes take effect when published on this page.</p>
       </section>
 
       <footer class="doc-footer">
@@ -168,6 +185,7 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class RefundComponent {
-  readonly today = new Date().toISOString().slice(0, 10);
+  // Don’t use a “moving” legal date.
+  readonly effectiveDate = '2025-12-31';
   readonly year = new Date().getFullYear();
 }
