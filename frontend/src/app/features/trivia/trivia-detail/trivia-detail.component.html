@@ -45,7 +45,7 @@
             <section class="card">
                 <div class="card-head">Quick Answer</div>
                 <div class="card-body">
-                    <div class="content" [innerHTML]="md(descText(q.description))"></div>
+                    <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
                 </div>
             </section>
 
@@ -58,7 +58,7 @@
                             <ng-container *ngFor="let b of answerBlocks(); let i = index">
                                 <!-- TEXT -->
                                 <div *ngIf="b.type === 'text'" class="block b-text">
-                                    <div class="content" [innerHTML]="md($any(b).text)"></div>
+                                    <div class="content" [innerHTML]="md($any(b).text) | safeHtml"></div>
                                 </div>
 
                                 <!-- CODE -->
@@ -96,12 +96,12 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th *ngFor="let col of $any(b).columns" [innerHTML]="md(col)"></th>
+                                                    <th *ngFor="let col of $any(b).columns" [innerHTML]="md(col) | safeHtml"></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr *ngFor="let row of $any(b).rows">
-                                                    <td *ngFor="let cell of row" [innerHTML]="md(cell)"></td>
+                                                    <td *ngFor="let cell of row" [innerHTML]="md(cell) | safeHtml"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -115,7 +115,7 @@
 
                     <!-- Simple string fallback (markdown-rendered) -->
                     <ng-template #simpleAnswer>
-                        <div class="content" *ngIf="q.answer; else noAnswer" [innerHTML]="md(q.answer)"></div>
+                        <div class="content" *ngIf="q.answer; else noAnswer" [innerHTML]="md(q.answer) | safeHtml"></div>
                         <ng-template #noAnswer>
                             <p class="content muted">Answer coming soon.</p>
                         </ng-template>
@@ -127,7 +127,7 @@
             <section class="card" *ngIf="extraHelp()">
                 <div class="card-head">Still so complicated?</div>
                 <div class="card-body tip-body">
-                    <div class="content" [innerHTML]="extraHelp()"></div>
+                    <div class="content" [innerHTML]="extraHelp() | safeHtml"></div>
                 </div>
             </section>
 
@@ -135,7 +135,7 @@
             <section class="card" *ngIf="summaryHelp()">
                 <div class="card-head">Summary</div>
                 <div class="card-body">
-                    <div class="content" [innerHTML]="summaryHelp()"></div>
+                    <div class="content" [innerHTML]="summaryHelp() | safeHtml"></div>
                 </div>
             </section>
             </ng-container>

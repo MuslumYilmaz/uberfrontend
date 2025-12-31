@@ -4,11 +4,88 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
-const { getBearerToken } = require('../middleware/Auth.js');
+const { requireAuth } = require('../middleware/Auth.js');
 const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
 
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
+const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
+
+function getCookieSameSite() {
+    const raw = String(process.env.COOKIE_SAMESITE || 'lax').toLowerCase();
+    if (raw === 'lax' || raw === 'strict' || raw === 'none') return raw;
+    return 'lax';
+}
+
+function getCookieSecure() {
+    const v = String(process.env.COOKIE_SECURE || '').toLowerCase();
+    if (v === 'true') return true;
+    if (v === 'false') return false;
+    return isProd();
+}
+
+function parseExpiresInToMs(expiresIn) {
+    const raw = String(expiresIn || '').trim();
+    if (!raw) return null;
+    if (/^\d+$/.test(raw)) return Number(raw) * 1000; // seconds
+
+    const m = raw.match(/^(\d+)\s*(ms|s|m|h|d)$/i);
+    if (!m) return null;
+    const n = Number(m[1]);
+    const unit = m[2].toLowerCase();
+    if (!Number.isFinite(n) || n <= 0) return null;
+
+    const mult =
+        unit === 'ms' ? 1 :
+            unit === 's' ? 1000 :
+                unit === 'm' ? 60 * 1000 :
+                    unit === 'h' ? 60 * 60 * 1000 :
+                        unit === 'd' ? 24 * 60 * 60 * 1000 :
+                            0;
+    return mult ? n * mult : null;
+}
+
+function authCookieOptions() {
+    const sameSite = getCookieSameSite();
+    const secure = getCookieSecure();
+    const maxAge = parseExpiresInToMs(JWT_EXPIRES_IN);
+
+    return {
+        sameSite,
+        secure,
+        path: '/',
+        ...(maxAge ? { maxAge } : {}),
+    };
+}
+
+function setAuthCookies(res, token) {
+    const base = authCookieOptions();
+    res.cookie(ACCESS_TOKEN_COOKIE, token, { ...base, httpOnly: true });
+
+    // Only needed when SameSite=None (cross-site cookies).
+    if (base.sameSite === 'none') {
+        const csrf = crypto.randomBytes(32).toString('hex');
+        res.cookie(CSRF_COOKIE, csrf, { ...base, httpOnly: false });
+        return csrf;
+    }
+    return null;
+}
+
+function clearAuthCookies(res) {
+    const base = authCookieOptions();
+    res.clearCookie(ACCESS_TOKEN_COOKIE, { ...base, httpOnly: true });
+    res.clearCookie(CSRF_COOKIE, { ...base, httpOnly: false });
+}
+
+function shouldReturnToken(req) {
+    const q = req?.query?.returnToken;
+    if (q === '1' || q === 'true') return true;
+    const h = req?.headers?.['x-return-token'];
+    if (h === '1' || h === 'true') return true;
+    return false;
+}
 
 // --- Google OAuth config ---
 const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
@@ -19,7 +96,10 @@ const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || '';
 
 const SERVER_BASE = (process.env.SERVER_BASE || 'http://localhost:3001').trim();
 const FRONTEND_BASE = (process.env.FRONTEND_BASE || 'http://localhost:4200').trim();
-const FRONTEND_ORIGIN = new URL(FRONTEND_BASE).origin;
+const FRONTEND_ORIGIN = (() => {
+    const raw = String(process.env.FRONTEND_ORIGIN || new URL(FRONTEND_BASE).origin).trim();
+    try { return new URL(raw).origin; } catch { return raw; }
+})();
 
 const GOOGLE_REDIRECT = `${SERVER_BASE}/api/auth/oauth/google/callback`;
 const GITHUB_REDIRECT = `${SERVER_BASE}/api/auth/oauth/github/callback`;
@@ -150,11 +230,12 @@ router.get('/oauth/google/callback', async (req, res) => {
 
         const token = sign(user);
 
-        // Hand JWT back to the frontend callback
+        // Cookie-based auth: set httpOnly cookie and redirect back to the app.
+        setAuthCookies(res, token);
+
         const dest = new URL(r);
         if (s) dest.searchParams.set('state', String(s));
         if (m) dest.searchParams.set('mode', String(m));
-        dest.hash = `token=${encodeURIComponent(token)}`;
         res.clearCookie('g_csrf');
         return res.redirect(dest.toString());
     } catch (e) {
@@ -268,10 +349,10 @@ router.get('/oauth/github/callback', async (req, res) => {
         }
 
         const token = sign(user);
+        setAuthCookies(res, token);
         const dest = new URL(String(r));
         if (s) dest.searchParams.set('state', String(s));
         if (m) dest.searchParams.set('mode', String(m));
-        dest.hash = `token=${encodeURIComponent(token)}`;
         res.clearCookie('gh_csrf');
         return res.redirect(dest.toString());
     } catch (e) {
@@ -303,7 +384,9 @@ router.post('/signup', async (req, res) => {
         user.lastLoginAt = new Date();
         await user.save();
 
-        res.status(201).json({ token: sign(user), user: pick(user) });
+        const token = sign(user);
+        setAuthCookies(res, token);
+        res.status(201).json({ token, user: pick(user) });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
@@ -328,25 +411,29 @@ router.post('/login', async (req, res) => {
         user.lastLoginAt = new Date();
         await user.save();
 
-        res.json({ token: sign(user), user: pick(user) });
+        const token = sign(user);
+        setAuthCookies(res, token);
+        res.json({ token, user: pick(user) });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-// GET /api/auth/me  (expects Authorization: Bearer <token>)
-router.get('/me', async (req, res) => {
-    try {
-        const token = getBearerToken(req);
-        if (!token) return res.status(401).json({ error: 'Missing token' });
+// POST /api/auth/logout
+router.post('/logout', (req, res) => {
+    clearAuthCookies(res);
+    return res.status(200).json({ ok: true });
+});
 
-        const payload = jwt.verify(token, getJwtSecret(), getJwtVerifyOptions());
-        const user = await User.findById(payload.sub).select('-passwordHash');
+// GET /api/auth/me  (cookie auth primary; Authorization header fallback)
+router.get('/me', requireAuth, async (req, res) => {
+    try {
+        const user = await User.findById(req.auth.userId).select('-passwordHash');
         if (!user) return res.status(404).json({ error: 'User not found' });
 
         res.json(pick(user));
     } catch (e) {
-        res.status(401).json({ error: 'Invalid or expired token' });
+        res.status(500).json({ error: 'Failed to load user' });
     }
 });
 

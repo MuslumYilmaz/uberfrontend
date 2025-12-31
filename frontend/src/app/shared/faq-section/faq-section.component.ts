@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { SafeHtmlPipe } from '../../core/pipes/safe-html.pipe';
 
 type FaqItem = { q: string; a: string; id?: string };
 type FaqGroup = { title: string; items: FaqItem[]; id?: string };
@@ -7,7 +8,7 @@ type FaqGroup = { title: string; items: FaqItem[]; id?: string };
 @Component({
   standalone: true,
   selector: 'app-faq-section',
-  imports: [CommonModule],
+  imports: [CommonModule, SafeHtmlPipe],
   templateUrl: './faq-section.component.html',
   styleUrls: ['./faq-section.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

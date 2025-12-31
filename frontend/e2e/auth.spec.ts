@@ -1,6 +1,18 @@
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
 
+async function cookieValue(page: any, name: string): Promise<string | null> {
+  const cookies = await page.context().cookies();
+  const hit = cookies.find((c: any) => c.name === name);
+  return hit ? hit.value : null;
+}
+
+async function expectAccessTokenCookie(page: any, token: string | null) {
+  await expect
+    .poll(() => cookieValue(page, 'access_token'))
+    .toBe(token ? encodeURIComponent(token) : null);
+}
+
 async function expectLoggedIn(page: any) {
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
   await page.getByTestId('header-profile-button').click();
@@ -16,6 +28,7 @@ async function logout(page: any) {
   await expect(page.getByTestId('header-profile-menu')).toBeVisible();
   await page.getByTestId('header-menu-logout').click();
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
+  await expectAccessTokenCookie(page, null);
 }
 
 test('auth: signup (email/password) logs in', async ({ page }) => {
@@ -38,8 +51,8 @@ test('auth: signup (email/password) logs in', async ({ page }) => {
 
   await expect(page).toHaveURL('/');
   await expectLoggedIn(page);
-
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(token);
+  await expectAccessTokenCookie(page, token);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
 });
 
 test('auth edge: signup trims email/username and still succeeds', async ({ page }) => {
@@ -62,7 +75,8 @@ test('auth edge: signup trims email/username and still succeeds', async ({ page 
 
   await expect(page).toHaveURL('/');
   await expectLoggedIn(page);
-  await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(token);
+  await expectAccessTokenCookie(page, token);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
 });
 
 test('auth: login (email/password) logs in and survives reload', async ({ page }) => {
@@ -83,10 +97,13 @@ test('auth: login (email/password) logs in and survives reload', async ({ page }
 
   await expect(page).toHaveURL('/');
   await expectLoggedIn(page);
+  await expectAccessTokenCookie(page, token);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
 
   await page.reload();
   await expect(page).toHaveURL('/');
   await expectLoggedIn(page);
+  await expectAccessTokenCookie(page, token);
 });
 
 test('auth: OAuth login works (Google + GitHub)', async ({ page }) => {
@@ -150,6 +167,7 @@ test.describe('auth edge: invalid login', () => {
     await expect(page).toHaveURL(/\/auth\/login$/);
     await expect(page.getByTestId('login-error')).toContainText('Invalid credentials');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
+    await expectAccessTokenCookie(page, null);
   });
 });
 
@@ -245,6 +263,7 @@ test('auth edge: signup blocks mismatched passwords (no token set)', async ({ pa
   await page.getByTestId('signup-submit').click();
   await expect(page).toHaveURL(/\/auth\/signup$/);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
+  await expectAccessTokenCookie(page, null);
 });
 
 test('auth edge: OAuth callback rejects state mismatch', async ({ page }) => {
@@ -256,4 +275,5 @@ test('auth edge: OAuth callback rejects state mismatch', async ({ page }) => {
   await expect(page.getByTestId('oauth-callback-page')).toBeVisible();
   await expect(page.getByTestId('oauth-callback-error')).toContainText('Invalid OAuth state');
   await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
+  await expectAccessTokenCookie(page, null);
 });

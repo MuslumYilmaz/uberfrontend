@@ -36,8 +36,8 @@ function getCorsHeaders(req: Request) {
   return {
     'access-control-allow-origin': origin,
     'access-control-allow-credentials': 'true',
-    'access-control-allow-headers': 'authorization,content-type',
-    'access-control-allow-methods': 'GET,POST,OPTIONS',
+    'access-control-allow-headers': 'authorization,content-type,x-csrf-token',
+    'access-control-allow-methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'access-control-max-age': '86400',
   } as Record<string, string>;
 }
@@ -58,6 +58,29 @@ function parseJsonBody(req: Request): any {
   const raw = req.postData() || '';
   if (!raw) return null;
   try { return JSON.parse(raw); } catch { return null; }
+}
+
+function cookieValueFromHeader(cookieHeader: string, name: string): string | null {
+  const parts = String(cookieHeader || '')
+    .split(';')
+    .map((p) => p.trim())
+    .filter(Boolean);
+  const hit = parts.find((p) => p.startsWith(`${name}=`));
+  if (!hit) return null;
+  return hit.slice(name.length + 1);
+}
+
+function authCookies(token: string) {
+  // Mimic backend: httpOnly access token cookie, lax by default.
+  return {
+    'set-cookie': `access_token=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax`,
+  } as Record<string, string>;
+}
+
+function clearAuthCookies() {
+  return {
+    'set-cookie': `access_token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax`,
+  } as Record<string, string>;
 }
 
 export function buildMockUser(overrides?: Partial<MockUser>): MockUser {
@@ -103,11 +126,11 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
       const dest = new URL(redirectUri);
       if (state) dest.searchParams.set('state', state);
       if (mode) dest.searchParams.set('mode', mode);
-      dest.hash = `token=${encodeURIComponent(opts.token)}`;
 
       return route.fulfill({
         status: 302,
         headers: {
+          ...authCookies(opts.token),
           location: dest.toString(),
         },
       });
@@ -120,7 +143,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         const token = next.token ?? opts.token;
         const user = next.user ?? opts.user;
         if (next.status >= 200 && next.status < 300) {
-          return jsonResponse(route, req, next.status, { token, user });
+          return jsonResponse(route, req, next.status, { token, user }, authCookies(token));
         }
         const message = next.error ?? (next.status === 401 ? 'Invalid credentials' : 'Login failed');
         return jsonResponse(route, req, next.status, { error: message });
@@ -137,7 +160,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           String(body.password || '') === opts.validLogin.password);
 
       if (!ok) return jsonResponse(route, req, 401, { error: 'Invalid credentials' });
-      return jsonResponse(route, req, 200, { token: opts.token, user: opts.user });
+      return jsonResponse(route, req, 200, { token: opts.token, user: opts.user }, authCookies(opts.token));
     }
 
     // Signup
@@ -147,7 +170,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         const token = next.token ?? opts.token;
         const user = next.user ?? opts.user;
         if (next.status >= 200 && next.status < 300) {
-          return jsonResponse(route, req, next.status, { token, user });
+          return jsonResponse(route, req, next.status, { token, user }, authCookies(token));
         }
         const message = next.error ?? (next.status === 409 ? 'Account already exists' : 'Sign up failed');
         return jsonResponse(route, req, next.status, { error: message });
@@ -165,13 +188,19 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           String(body.password || '') === opts.validSignup.password);
 
       if (!ok) return jsonResponse(route, req, 400, { error: 'Invalid signup payload' });
-      return jsonResponse(route, req, 201, { token: opts.token, user: opts.user });
+      return jsonResponse(route, req, 201, { token: opts.token, user: opts.user }, authCookies(opts.token));
+    }
+
+    // Logout (clears cookie)
+    if (req.method() === 'POST' && path.endsWith('/logout')) {
+      return jsonResponse(route, req, 200, { ok: true }, clearAuthCookies());
     }
 
     // Me
     if (req.method() === 'GET' && path.endsWith('/me')) {
       const auth = req.headers()['authorization'] || '';
-      const ok = auth === `Bearer ${opts.token}`;
+      const cookie = cookieValueFromHeader(req.headers()['cookie'] || '', 'access_token');
+      const ok = cookie === encodeURIComponent(opts.token) || auth === `Bearer ${opts.token}`;
       if (!ok) return jsonResponse(route, req, 401, { error: 'Invalid or expired token' });
       return jsonResponse(route, req, 200, opts.user);
     }

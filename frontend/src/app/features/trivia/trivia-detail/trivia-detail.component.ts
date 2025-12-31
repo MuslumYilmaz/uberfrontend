@@ -1,7 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -18,6 +17,7 @@ import { UserProgressService } from '../../../core/services/user-progress.servic
 import { AuthService } from '../../../core/services/auth.service';
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -56,6 +56,7 @@ type PracticeSession = { items: PracticeItem[]; index: number } | null;
     LoginRequiredDialogComponent,
     FooterComponent,
     PrismHighlightDirective,
+    SafeHtmlPipe,
   ],
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.scss'],
@@ -121,7 +122,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
 
   /** The “Still so complicated?” HTML (or null) */
-  extraHelp = computed<SafeHtml | null>(() => {
+  extraHelp = computed<string | null>(() => {
     if (!this.answerIsRich()) return null;
     const q = this.question();
     const blocks = (q?.answer as RichAnswer)?.blocks ?? [];
@@ -132,7 +133,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   });
 
   /** The “Summary” HTML (or null) */
-  summaryHelp = computed<SafeHtml | null>(() => {
+  summaryHelp = computed<string | null>(() => {
     if (!this.answerIsRich()) return null;
     const q = this.question();
     const blocks = (q?.answer as RichAnswer)?.blocks ?? [];
@@ -154,7 +155,6 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public router: Router,
     private qs: QuestionService,
-    private sanitizer: DomSanitizer,
     private seo: SeoService,
     private progress: UserProgressService,
     public auth: AuthService
@@ -381,7 +381,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
   // ================== Markdown -> HTML with a tiny HTML whitelist ==================
   // 2) Full, corrected md()
-  md(src: unknown): SafeHtml {
+  md(src: unknown): string {
     let raw = typeof src === 'string'
       ? src
       : (src && (src as any).toString ? (src as any).toString() : '');
@@ -486,7 +486,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       )
       .join('');
 
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    return html;
   }
 
 }

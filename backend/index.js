@@ -15,6 +15,10 @@ const app = express();
 // ---- Config ----
 const PORT = process.env.PORT || 3001;
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/myapp';
+const FRONTEND_ORIGIN = (() => {
+    const raw = String(process.env.FRONTEND_ORIGIN || process.env.FRONTEND_BASE || 'http://localhost:4200').trim();
+    try { return new URL(raw).origin; } catch { return raw; }
+})();
 const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h
 const BUG_REPORT_MAX = Number(process.env.BUG_REPORT_MAX || 5);
 const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
@@ -31,7 +35,7 @@ mongoose.connection.on('error', (err) => console.error('❌ MongoDB error:', err
 // ---- Middleware ----
 app.use(
     cors({
-        origin: 'http://localhost:4200', // your Angular dev URL
+        origin: FRONTEND_ORIGIN,
         credentials: true,
     })
 );

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { computed, effect, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Tech } from '../models/user.model';
@@ -62,64 +62,47 @@ export interface User {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private base = `${String(environment.apiBase).replace(/\/+$/, '')}/auth`;
+  private static readonly SESSION_HINT_KEY = 'fa:auth:session';
 
-  /** Reactive token + user */
-  private _token = signal<string | null>(localStorage.getItem('auth_token'));
+  /** Reactive user */
   user = signal<User | null>(null);
 
   /** Reactive auth state */
-  isLoggedIn = computed(() => !!this._token());
+  isLoggedIn = computed(() => !!this.user());
+
+  /** Used to ignore stale in-flight /me responses (e.g., logout during request). */
+  private sessionSeq = 0;
 
   constructor(private http: HttpClient) {
-    // Keep tabs/windows in sync
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'auth_token') {
-        this._token.set(e.newValue);
-        if (e.newValue) {
-          this.fetchMe().subscribe();
-        } else {
-          this.user.set(null);
-        }
-      }
-    });
-
-    // If we already have a token on startup but no user yet, load it
-    effect(() => {
-      if (this._token() && !this.user()) {
-        this.fetchMe().subscribe();
-      }
-    });
-  }
-
-  // ---------- token helpers ----------
-  private setToken(token: string | null) {
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
+    // Avoid an eager /me call for logged-out visitors (prevents noisy 401s in the console).
+    if (this.hasSessionHint()) {
+      this.fetchMe().subscribe();
     }
-    this._token.set(token);
   }
 
-  get token(): string | null {
-    return this._token();
+  private hasSessionHint(): boolean {
+    try { return localStorage.getItem(AuthService.SESSION_HINT_KEY) === '1'; } catch { return false; }
   }
 
-  private authHeaders(token: string | null = this.token): HttpHeaders {
-    return new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {});
+  private setSessionHint(on: boolean) {
+    try {
+      if (on) localStorage.setItem(AuthService.SESSION_HINT_KEY, '1');
+      else localStorage.removeItem(AuthService.SESSION_HINT_KEY);
+    } catch { }
   }
 
   public headers(): HttpHeaders {
-    return this.authHeaders();
+    // Cookie-based auth: no JS-readable token.
+    return new HttpHeaders();
   }
 
   // ---------- API ----------
   signup(data: { email: string; username: string; password: string }) {
     return this.http
-      .post<{ token: string; user?: User }>(`${this.base}/signup`, data)
+      .post<{ token?: string; user?: User }>(`${this.base}/signup`, data, { withCredentials: true })
       .pipe(
         tap((res) => {
-          this.setToken(res.token);
+          this.setSessionHint(true);
           if (res.user) this.user.set(this.cloneUser(res.user));
         }),
         switchMap(() => this.fetchMe()),
@@ -129,11 +112,10 @@ export class AuthService {
 
   login(data: { emailOrUsername: string; password: string }) {
     return this.http
-      .post<{ token: string; user?: User }>(`${this.base}/login`, data)
+      .post<{ token?: string; user?: User }>(`${this.base}/login`, data, { withCredentials: true })
       .pipe(
         tap((res) => {
-          this.setToken(res.token);
-
+          this.setSessionHint(true);
           // optional: keep UI snappy if backend returns user
           if (res.user) this.user.set(this.cloneUser(res.user));
         }),
@@ -144,29 +126,34 @@ export class AuthService {
   }
 
   logout() {
-    // Clear reactive state first so dependents react immediately
+    // Clear reactive state first so dependents react immediately.
+    this.sessionSeq++;
     this.user.set(null);
-    this.setToken(null);
+    this.setSessionHint(false);
+    return this.http
+      .post<void>(`${this.base}/logout`, {}, { withCredentials: true })
+      .pipe(catchError(() => of(void 0)));
   }
 
   /** GET /api/auth/me */
   fetchMe(): Observable<User | null> {
-    const tokenAtCall = this.token;
-    if (!tokenAtCall) return of(null);
+    const seq = ++this.sessionSeq;
 
     return this.http
-      .get<User>(`${this.base}/me`, { headers: this.authHeaders(tokenAtCall) })
+      .get<User>(`${this.base}/me`, { withCredentials: true })
       .pipe(
         tap((u) => {
-          // If user logged out (or token changed) while request was in-flight, ignore it.
-          if (this.token !== tokenAtCall) return;
+          // If user logged out (or another fetch started) while request was in-flight, ignore it.
+          if (this.sessionSeq !== seq) return;
+          this.setSessionHint(true);
           this.user.set(this.cloneUser(u));
         }),
         catchError((err) => {
-          // optional but recommended: if token is invalid, clear it
-          if (this.token === tokenAtCall && (err?.status === 401 || err?.status === 403)) {
+          if (this.sessionSeq !== seq) return of(null);
+          // If session cookie is missing/expired, clear user.
+          if (err?.status === 401 || err?.status === 403) {
             this.user.set(null);
-            this.setToken(null);
+            this.setSessionHint(false);
             return of(null);
           }
           return throwError(() => err);
@@ -194,7 +181,7 @@ export class AuthService {
   /** PUT /api/users/:id */
   updateProfile(id: string, data: Partial<Pick<User, 'username' | 'email' | 'bio' | 'avatarUrl' | 'prefs'>>) {
     return this.http
-      .put<User>(`${String(environment.apiBase).replace(/\/+$/, '')}/users/${id}`, data, { headers: this.authHeaders() })
+      .put<User>(`${String(environment.apiBase).replace(/\/+$/, '')}/users/${id}`, data, { withCredentials: true })
       .pipe(tap((u) => this.user.set(u)));
   }
 
@@ -216,8 +203,8 @@ export class AuthService {
 
   /**
    * Finish OAuth on /auth/callback.
-   * Expects backend to redirect back with ?token=... (or #token=...),
-   * then we fetch /me to populate the user.
+   * Primary: backend sets httpOnly cookie and redirects back to the app.
+   * Legacy: backend may still include ?token=... or #token=... (we do not store it).
    */
   completeOAuthCallback(qp: Record<string, any>): Observable<User | null> {
     const expected = sessionStorage.getItem('oauth:state');
@@ -230,26 +217,32 @@ export class AuthService {
       return throwError(() => new Error(String(qp['error'])));
     }
 
-    // token may be in query OR in the hash
-    let token: string | null =
-      (qp['token'] as string) || (qp['access_token'] as string) || null;
-
+    // token may be in query OR in the hash (legacy)
+    let token: string | null = (qp['token'] as string) || (qp['access_token'] as string) || null;
     if (!token && window.location.hash) {
       const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
       token = hash.get('token') || hash.get('access_token');
     }
 
-    if (!token) {
-      return throwError(() => new Error('No token in OAuth callback'));
-    }
-
-    this.setToken(token);
     // Remove sensitive tokens from the URL (query/hash) to avoid leaks via copy/paste or screenshots.
     this.scrubOAuthCallbackUrl();
-    return this.fetchMe().pipe(
+
+    // Prefer cookie session (backend should set it). If a legacy token exists, use it once.
+    const me$ = token
+      ? this.http.get<User>(`${this.base}/me`, {
+        withCredentials: true,
+        headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+      })
+      : this.http.get<User>(`${this.base}/me`, { withCredentials: true });
+
+    return me$.pipe(
+      tap((u) => {
+        this.setSessionHint(true);
+        this.user.set(this.cloneUser(u));
+      }),
       catchError((e) => {
-        // if /me fails, invalidate token so UI doesn’t think we’re logged in
-        this.setToken(null);
+        this.user.set(null);
+        this.setSessionHint(false);
         return throwError(() => e);
       })
     );

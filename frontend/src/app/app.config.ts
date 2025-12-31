@@ -1,9 +1,10 @@
 // src/app/app.config.ts
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withInMemoryScrolling, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
+import { apiCredentialsInterceptor } from './core/interceptors/api-credentials.interceptor';
 import { StorageVersionService } from './core/services/storage-version.service';
 
 function initStorage(versioner: StorageVersionService) {
@@ -25,7 +26,7 @@ export const appConfig: ApplicationConfig = {
         anchorScrolling: 'enabled',
       }),
     ),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([apiCredentialsInterceptor])),
     provideAnimations(),
     {
       provide: APP_INITIALIZER,

@@ -221,7 +221,7 @@
               <section class="space-y-2 mb-5" *ngIf="structuredSolution().overview">
                 <h3 class="text-sm font-semibold opacity-90">Overview</h3>
                 <div class="solution-prose prose prose-invert max-w-none"
-                  [innerHTML]="md(structuredSolution().overview)"></div>
+                  [innerHTML]="md(structuredSolution().overview) | safeHtml"></div>
               </section>
 
               <!-- Approaches -->
@@ -240,7 +240,7 @@
 
                 <!-- prose stays the same -->
                 <div *ngIf="ap.prose" class="solution-prose prose prose-invert max-w-none mb-3"
-                  [innerHTML]="md(ap.prose)"></div>
+                  [innerHTML]="md(ap.prose) | safeHtml"></div>
 
                 <!-- WEB: show HTML and CSS as separate, nicely labeled blocks -->
                 <ng-container *ngIf="isWebTech(); else nonWebApproach">

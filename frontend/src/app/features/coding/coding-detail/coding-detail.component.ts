@@ -6,7 +6,7 @@ import {
   ElementRef, NgZone,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
-import { DomSanitizer, SafeHtml, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -32,6 +32,7 @@ import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder'
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
+import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
 import { CodingJsPanelComponent, JsLang } from './coding-js-panel/coding-js-panel.component';
 import { CodingWebPanelComponent } from './coding-web-panel/coding-web-panel.component';
@@ -83,7 +84,8 @@ type FASolutionBlock = {
     CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
     MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
     CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
-    LoginRequiredDialogComponent
+    LoginRequiredDialogComponent,
+    SafeHtmlPipe,
   ],
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
@@ -1613,7 +1615,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Render markdown-lite to safe HTML using your existing explanation parser
-  md(s?: string): SafeHtml {
+  md(s?: string): string {
     return this.explanationToHtml(s ?? '');
   }
 
@@ -1658,10 +1660,10 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Turn "### Heading" into bold titles and strip emoji bullets.
-  // Also wrap inline `code` in <code>. Returns SafeHtml for [innerHTML].
-  private explanationToHtml(raw: string): SafeHtml {
+  // Also wrap inline `code` in <code>. Returns a string for [innerHTML] (sanitized in template).
+  private explanationToHtml(raw: string): string {
     if (!raw || !raw.trim()) {
-      return this.sanitizer.bypassSecurityTrustHtml('<p class="sol-p">No explanation provided.</p>');
+      return '<p class="sol-p">No explanation provided.</p>';
     }
 
     // Decode any HTML entities that may have been double-escaped
@@ -1737,7 +1739,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     closeLists();
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    return html;
   }
 
   // Add once in the component (top-level private helper is fine)

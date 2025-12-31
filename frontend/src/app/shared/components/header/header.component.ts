@@ -548,7 +548,7 @@ export class HeaderComponent implements OnInit {
   closeAll() { this.openOnly(null); }
 
   logout() {
-    this.auth.logout();
+    this.auth.logout().subscribe();
     this.closeAll();
     this.router.navigate(['/']);
   }

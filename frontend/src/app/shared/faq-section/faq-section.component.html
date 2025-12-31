@@ -29,7 +29,7 @@
             [class.open]="isOpen(getId(item, i, getGroupKey(group, gi)))"
             [attr.id]="'faq-a-' + getId(item, i, getGroupKey(group, gi))"
             role="region">
-            <p [innerHTML]="item.a"></p>
+            <p [innerHTML]="item.a | safeHtml"></p>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@
           [class.open]="isOpen(getId(item, i))"
           [attr.id]="'faq-a-' + getId(item, i)"
           role="region">
-          <p [innerHTML]="item.a"></p>
+          <p [innerHTML]="item.a | safeHtml"></p>
         </div>
       </div>
     </ng-template>

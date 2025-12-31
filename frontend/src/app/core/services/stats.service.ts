@@ -28,7 +28,7 @@ export class StatsService {
   }
 
   private headers(): HttpHeaders {
-    return new HttpHeaders(this.auth.token ? { Authorization: `Bearer ${this.auth.token}` } : {});
+    return this.auth.headers();
   }
 
   invalidate() { this.cached.clear(); }

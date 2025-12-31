@@ -62,14 +62,12 @@ export class ActivityService {
   }
 
   private isLoggedIn(): boolean {
-    return !!this.auth.token; // or this.auth.isLoggedIn() if you have it
+    return this.auth.isLoggedIn();
   }
 
   // ---------- headers ----------
   private headers(): HttpHeaders {
-    return new HttpHeaders(
-      this.auth.token ? { Authorization: `Bearer ${this.auth.token}` } : {}
-    );
+    return this.auth.headers();
   }
 
   // ---------- invalidation ----------
