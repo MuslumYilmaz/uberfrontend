@@ -1,0 +1,38 @@
+{
+    "id": "component-design-system-architecture",
+    "title": "Component-driven Design",
+    "description": "Design a component-based design system for a mid-to-large scale product: buttons, inputs, tabs, banners, dialogs, and more. Focus on how the system is structured, how teams consume it, and how it evolves safely over time.\n\nKey considerations:\n- Token-driven theming: color/spacing/typography tokens, semantic vs raw tokens, and how themes (light/dark/high-contrast/brand variants) are applied.\n- CSS architecture: using CSS variables, BEM/utility classes, or a utility framework (e.g. Tailwind-style tokens) in a way that stays maintainable as the system grows.\n- Accessibility-first component APIs: keyboard behavior, ARIA attributes, focus management, and how props/events/slots are designed to encourage accessible usage by default.\n- Dark mode, high contrast, and RTL support built into tokens, components, and layout primitives.\n- Versioning and breaking changes: how to ship updates, deprecations, and migrations to multiple consuming apps without chaos.\n\nYou should be ready to talk about: consistent component APIs (props, events, slots), how to organize packages/modules so that tree shaking works well, how to keep bundle size under control (code splitting, on-demand imports, side-effect-free modules), and how to ensure long-term maintainability across many teams and products.",
+    "tags": [
+        "design-system",
+        "theming",
+        "performance"
+    ],
+    "type": "system-design",
+    "sections": [
+        {
+            "key": "R",
+            "title": "Requirements exploration",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}

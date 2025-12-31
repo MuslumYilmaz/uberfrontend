@@ -1,0 +1,126 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this first step, the interviewer wants to see if you truly understand the problem before jumping into solutions. Act like someone who thinks with clarity: restate the goal, identify the core challenge, and ask a few smart clarifying questions."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you're solving:**\nA scrolling list that keeps loading more items when the user reaches the bottom. You need to make it feel smooth, predictable, and easy to recover from errors."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer looks for:**\n- You don't rush into coding.\n- You understand the user experience first.\n- You’re aware of performance concerns early.\n- You identify states: loading, success, empty, end, error.\n- You already think about reuse and component boundaries."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Slow down and frame the problem. Show that you understand: \"We need a list that loads progressively and stays smooth even after many items. Let me clarify a few things first.\" This immediately signals senior-level thinking."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "The user flow you should describe",
+            "steps": [
+                {
+                    "title": "1. First load",
+                    "text": "Show skeletons → fetch first items → render them."
+                },
+                {
+                    "title": "2. Scroll near bottom",
+                    "text": "A sentinel triggers a 'load more' action."
+                },
+                {
+                    "title": "3. Append new items",
+                    "text": "Show loading placeholders → fetch → append."
+                },
+                {
+                    "title": "4. End or error",
+                    "text": "\"End of list\" message or an inline retry button."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "How many items can exist in total?",
+                                "Does the API use page numbers or cursors?",
+                                "Do items have fixed or variable height?",
+                                "Should scroll position be restored?",
+                                "Can items update while the user scrolls?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "What you should explicitly confirm",
+                            "items": [
+                                "Scrolling should stay smooth at all times.",
+                                "Loading states should not jump the layout.",
+                                "The DOM shouldn't grow endlessly.",
+                                "Accessibility must still work.",
+                                "The component should be reusable with different item UIs."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Key UX goal",
+                    "value": "Smooth scrolling",
+                    "helperText": "Your design must avoid jank while loading new items."
+                },
+                {
+                    "label": "Key performance idea",
+                    "value": "Limit DOM size",
+                    "helperText": "Too many nodes = lag. Plan ahead."
+                },
+                {
+                    "label": "Key FE decision",
+                    "value": "When to virtualize?",
+                    "helperText": "Introduce it only if the list grows very large."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Critical trade-off you should highlight",
+            "text": "If you keep too many items in the DOM, scroll slows down. If you virtualize too aggressively, managing scroll position becomes tricky. Good candidates acknowledge this tension early."
+        }
+    ]
+}

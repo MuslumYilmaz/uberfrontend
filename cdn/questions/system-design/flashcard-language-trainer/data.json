@@ -1,0 +1,172 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can describe the shape of the data your flashcard app works with. Show that you understand what a deck looks like, how a single card is represented, and how user progress and session state are modeled on the frontend."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll keep the data model simple: one type for a deck, one for each card, one for per-user progress, and one for the UI/session state (current index, side shown, loading, error). The server might store more, but the frontend only needs a subset to run smooth study sessions.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You clearly separate content (decks/cards) from user-specific state (progress, preferences).\n- You treat session state (current card, side, loading) as first-class data.\n- You don’t design a massive DB schema; you stay UI-oriented.\n- You can explain where each entity lives (server vs client) and how they relate."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name the core entities out loud: `Deck`, `Card`, `UserProgress`, `StudySessionState`, maybe a small `SrsMetadata` or `UserSettings`. Keep fields focused on what the UI needs to render cards, flip them, and display progress."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "Deck",
+                    "id, name, sourceLang, targetLang, description?, cardCount, levelTag?",
+                    "\"A `Deck` represents a collection of cards, like 'Spanish A1 – Food'. It has an `id`, a name, language pair, and maybe a card count and level tag for the UI.\""
+                ],
+                [
+                    "Card",
+                    "id, deckId, frontText, backText, hint?, exampleSentence?, tags[]?",
+                    "\"A `Card` is the unit we show in the viewer: front text in the user's language, back text in the target language, plus optional hint or example sentence.\""
+                ],
+                [
+                    "UserProgress",
+                    "userId, deckId, cardId, lastReviewedAt, successStreak, timesSeen, timesCorrect, bucketOrEase?",
+                    "\"`UserProgress` ties a user to a card: how many times they've seen it, how often they were correct, and maybe which spaced-repetition bucket it's in.\""
+                ],
+                [
+                    "StudySessionState",
+                    "deckId, cards[], currentIndex, side, status, errorMessage?, queuedProgressUpdates[]",
+                    "\"`StudySessionState` is the client-side model: which deck, which cards we loaded, which index we’re on, whether front or back is shown, and any queued progress events waiting to sync.\""
+                ],
+                [
+                    "UserSettings",
+                    "userId, dailyGoalCards, darkMode, flipTrigger (hover|click), showHintsByDefault?",
+                    "\"`UserSettings` stores preferences that affect UI and behavior, like whether flip happens on hover or click and how many cards they aim to review per day.\""
+                ],
+                [
+                    "SrsConfig (optional)",
+                    "algorithm ('leitner'|'simple'), reviewIntervals[], maxNewPerDay",
+                    "\"If the app uses spaced repetition, `SrsConfig` describes the algorithm and intervals so both client and server can agree on scheduling.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly name",
+                            "items": [
+                                "A clear `Card` type with front/back text and optional hint/example.",
+                                "A `Deck` entity that groups cards and carries language pair metadata.",
+                                "A per-user `UserProgress` model that tracks recall quality per card.",
+                                "`StudySessionState` holding current card index, which side is visible, and loading/error flags.",
+                                "Some way to represent queued or unsynced progress updates.",
+                                "Optional `UserSettings` that affect the flip behavior and UI."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid",
+                            "items": [
+                                "Designing a huge relational schema when the question is about frontend data.",
+                                "Mixing UI-only fields (like DOM refs) into `Card` or `Deck`.",
+                                "Hiding session state in local variables instead of a clear state model.",
+                                "Letting 'no data yet' and 'error' both be represented as `cards.length === 0`.",
+                                "Embedding algorithm details everywhere instead of having a small, dedicated SRS config."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How data changes over time",
+            "steps": [
+                {
+                    "title": "1. Session starts",
+                    "text": "`StudySessionState` starts with `status = 'loading'`, `cards = []`, `currentIndex = 0`, `side = 'front'` while the app loads a batch of cards for the chosen deck."
+                },
+                {
+                    "title": "2. Cards loaded",
+                    "text": "Cards fill in from the API, `status = 'ready'`, `currentIndex = 0`, and the first card’s front is shown. `UserProgress` for those cards may be fetched or lazy-loaded."
+                },
+                {
+                    "title": "3. Flip and answer",
+                    "text": "When the user flips and marks 'knew it' or 'didn't know it', a `queuedProgressUpdate` is added with `cardId`, result, and timestamp; local streak/accuracy in `StudySessionState` may be updated."
+                },
+                {
+                    "title": "4. Move to next card",
+                    "text": "`currentIndex` increments, `side` resets to 'front'. If the end of the batch is near, the app may prefetch more cards and append them to `cards`."
+                },
+                {
+                    "title": "5. Sync and update progress",
+                    "text": "Periodically or on session end, `queuedProgressUpdates` are sent to the server. The server updates `UserProgress` and may influence which cards are included in the next session batch."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Must-have entities",
+                    "value": "Deck + Card + UserProgress + SessionState",
+                    "helperText": "These cover content, personalization, and UI behavior."
+                },
+                {
+                    "label": "Key idea",
+                    "value": "Separate content from progress",
+                    "helperText": "Cards are shared; progress is per user and per deck."
+                },
+                {
+                    "label": "Good signal",
+                    "value": "Explicit session model",
+                    "helperText": "Current card, side, and status live in one clear structure instead of scattered flags."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong data model for this app separates what is being learned (cards, decks) from how well the user knows it (progress, SRS) and from what is currently happening on screen (session state). Keeping these layers clean makes both the UI and the sync logic much easier to reason about."
+        }
+    ]
+}

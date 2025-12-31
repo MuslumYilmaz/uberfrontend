@@ -1,0 +1,178 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see if you can describe the design system **as data**: tokens, themes, component metadata, and versioning info. You should show that tokens, themes, and component APIs are all modeled explicitly, not scattered as magic values across the codebase."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll treat the design system as a set of structured objects: token definitions (raw + semantic), theme definitions (mapping semantic tokens → actual values), component metadata (props/events/slots, a11y contracts), and versioning info. Components just read from these data structures instead of hard-coding styles or behaviors.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear separation of **raw tokens**, **semantic tokens**, and **themes**.\n- A **typed model** for component APIs (props/events/slots) and a11y requirements.\n- A way to represent **variants** (size, tone, intent) as data, not `if/else` chaos.\n- A place to track **versioning/deprecation** for tokens & components.\n- Awareness that this data can back docs, Storybook, lint rules, etc."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name the core data structures: token schema, theme schema, component manifest. For each, explain which fields you need and how they relate to behavior (theming, accessibility, versioning, docs)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// 1) Tokens & themes\n\n// Raw tokens: implementation-level values\ninterface RawColorTokens {\n  'blue-500': string;\n  'gray-900': string;\n  // ...\n}\n\n// Semantic tokens: meaning-level names used by components\ninterface SemanticColorTokens {\n  'color-bg-primary': string;   // mapped to a CSS var name\n  'color-text-muted': string;\n  'color-border-danger': string;\n}\n\ninterface TypographyTokens {\n  fontFamilyBase: string;\n  fontSizeSm: string;\n  fontSizeMd: string;\n  fontWeightSemibold: number;\n}\n\ninterface SpacingTokens {\n  'spacing-1': string;\n  'spacing-2': string;\n  'spacing-3': string;\n}\n\ninterface DesignTokens {\n  colors: SemanticColorTokens;\n  typography: TypographyTokens;\n  spacing: SpacingTokens;\n  radius: Record<string, string>;\n  shadow: Record<string, string>;\n}\n\n// A theme maps semantic tokens → actual CSS values (often via CSS vars)\ninterface ThemeDefinition {\n  id: 'light' | 'dark' | 'high-contrast' | string;\n  tokens: DesignTokens;       // semantic names\n  rawOverrides?: RawColorTokens; // optional brand-specific overrides\n  isHighContrast?: boolean;\n}\n"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// 2) Component metadata\n\ntype PropType = 'string' | 'number' | 'boolean' | 'enum' | 'node' | 'slot';\n\ninterface ComponentPropMeta {\n  name: string;\n  type: PropType;\n  required?: boolean;\n  defaultValue?: unknown;\n  values?: string[];          // for enums: ['primary', 'secondary', 'ghost']\n  description: string;\n}\n\ninterface ComponentEventMeta {\n  name: string;               // e.g. 'onClick', 'onChange'\n  description: string;\n}\n\ninterface ComponentSlotMeta {\n  name: string;               // e.g. 'icon', 'label', 'description'\n  description: string;\n}\n\ninterface AccessibilityMeta {\n  role?: string;              // e.g. 'button', 'dialog', 'tablist'\n  requiredAria?: string[];    // e.g. ['aria-label', 'aria-describedby']\n  keyboardSupportNotes: string;\n}\n\ninterface ComponentVariantMeta {\n  name: string;               // e.g. 'size', 'tone'\n  values: string[];           // e.g. ['sm', 'md', 'lg']\n}\n\ninterface ComponentMeta {\n  name: string;               // e.g. 'Button'\n  tags: string[];             // e.g. ['control', 'primary']\n  props: ComponentPropMeta[];\n  events: ComponentEventMeta[];\n  slots: ComponentSlotMeta[];\n  variants: ComponentVariantMeta[];\n  a11y: AccessibilityMeta;\n  sinceVersion: string;       // e.g. '1.0.0'\n  deprecatedSince?: string;   // for deprecations\n}\n\ninterface DesignSystemRegistry {\n  themes: ThemeDefinition[];\n  components: ComponentMeta[];\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define out loud",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "Raw tokens",
+                    "`RawColorTokens`, spacing/typography scales",
+                    "\"Raw tokens are low-level values: specific hex codes, pixel/spacing steps, font sizes. They’re implementation detail and may differ per brand.\""
+                ],
+                [
+                    "Semantic tokens",
+                    "`DesignTokens` with names like `color-bg-primary`",
+                    "\"Semantic tokens express intent (primary background, subtle text). Components use these names, so themes can swap actual colors without changing component code.\""
+                ],
+                [
+                    "ThemeDefinition",
+                    "id, tokens, rawOverrides, isHighContrast",
+                    "\"A `ThemeDefinition` represents one theme (light, dark, HC, brand-X) as a set of token values. Switching theme swaps this object and updates CSS vars.\""
+                ],
+                [
+                    "ComponentMeta",
+                    "name, props, events, slots, variants, a11y, sinceVersion",
+                    "\"`ComponentMeta` describes a component’s public API and accessibility contract. Docs, Storybook, and even linters can use this to ensure consistent usage.\""
+                ],
+                [
+                    "DesignSystemRegistry",
+                    "themes[], components[]",
+                    "\"`DesignSystemRegistry` is a central catalog of all themes and components. It feeds documentation, tooling, and can be used for migrations and audits.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly include",
+                            "items": [
+                                "A **token schema** with clear separation between **raw** and **semantic** tokens.",
+                                "A **theme object** that maps semantic tokens to values for light/dark/high contrast.",
+                                "Metadata describing **component APIs** (props/events/slots) in a structured way.",
+                                "An **accessibility meta** block per component (role, required ARIA, keyboard notes).",
+                                "Versioning fields like `sinceVersion` / `deprecatedSince` for components and maybe tokens.",
+                                "A registry that tools (docs, codemods, linters) can read, not just the runtime components."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Data-model mistakes to avoid",
+                            "items": [
+                                "Hard-coding colors, spacing, or typography directly in component styles.",
+                                "Letting semantic names leak raw values (e.g. `color-blue-500-primary`).",
+                                "Having no central place to see **which components exist** and what props they support.",
+                                "Encoding accessibility rules only in docs, not in a machine-readable meta model.",
+                                "No way to mark tokens/components as **deprecated** and track their usage.",
+                                "Theme logic scattered in many places instead of going through one theme object."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How the data is used over time",
+            "steps": [
+                {
+                    "title": "1. Define tokens & themes",
+                    "text": "Design and frontend agree on raw and semantic tokens, then define one or more ThemeDefinition objects (light, dark, HC, brand variants)."
+                },
+                {
+                    "title": "2. Build components on semantic tokens",
+                    "text": "Components use semantic token names (CSS vars, TS constants) instead of raw colors. Variants (primary/secondary, sizes) are defined as data in `ComponentMeta`."
+                },
+                {
+                    "title": "3. Generate docs & playgrounds",
+                    "text": "Docs site reads `DesignSystemRegistry` to render prop tables, variant examples, and accessibility notes automatically."
+                },
+                {
+                    "title": "4. Evolve tokens & themes",
+                    "text": "When the brand changes, you update `ThemeDefinition` and tokens. Components stay the same; the UI updates through token changes, not refactors everywhere."
+                },
+                {
+                    "title": "5. Handle deprecations & breaking changes",
+                    "text": "When a component prop or token is deprecated, you mark it in `ComponentMeta` or token definitions with `deprecatedSince`. Tooling can flag usages and help with migrations."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Token layers",
+                    "value": "Raw + semantic",
+                    "helperText": "Raw = actual values; semantic = intent names."
+                },
+                {
+                    "label": "Theme unit",
+                    "value": "ThemeDefinition",
+                    "helperText": "Single object to swap light/dark/HC/brand."
+                },
+                {
+                    "label": "API source of truth",
+                    "value": "ComponentMeta[]",
+                    "helperText": "Feeds docs, linting, and consistency checks."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong design-system answer treats everything as data: tokens, themes, component APIs, and accessibility rules. Components just consume that data. That’s how you get theming, documentation, and migrations \"for free\" over the lifetime of the system."
+        }
+    ]
+}

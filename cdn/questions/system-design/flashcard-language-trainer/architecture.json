@@ -1,0 +1,168 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see whether you can convert the idea of a flashcard language-learning app into a clean, modular architecture. You should describe the system in terms of clear components: where cards come from, where progress is stored, how flipping works, and how the client and server communicate."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"At a high level, I’d split this into a Screen (StudySession page), a `FlashcardViewer` component, a data-fetching service, a progress-sync module, and optional offline caching. The viewer handles flip animation; the data layer fetches batches of cards; and the progress module syncs what the user knows.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You avoid mixing animation, fetching, and storage into one giant component.\n- You place state in predictable layers (session state vs UI state).\n- You speak clearly about client–server flows.\n- You consider both desktop (hover) and mobile (tap) interaction.\n- You think about reuse: same flashcard viewer for multiple decks or study modes."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe 3–5 boxes: Screen → FlashcardViewer → CardDataService → ProgressSync / Cache. Keep each box crisp. Too much detail early signals lack of architectural thinking."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "StudySession Screen",
+                    "Chooses deck, manages session-level state, loads initial batch of cards.",
+                    "\"This screen decides which deck to load, fetches the first batch via the data service, and controls the study flow.\""
+                ],
+                [
+                    "FlashcardViewer component",
+                    "Handles flip animation, keyboard/touch controls, and displays front/back content.",
+                    "\"The viewer is purely UI: it flips the card, handles hover/tap, supports accessibility, and allows marking 'knew it / didn't know it'.\""
+                ],
+                [
+                    "CardDataService",
+                    "Fetches batches of cards, preloads next ones, abstracts API details.",
+                    "\"I’d expose simple functions like `loadBatch(deckId)` and `preloadNext()` so the UI never deals with pagination logic.\""
+                ],
+                [
+                    "ProgressSync module",
+                    "Stores recall results, batches updates, syncs with server.",
+                    "\"Instead of sending a network request for every card, I’d batch updates and sync them periodically or on session end.\""
+                ],
+                [
+                    "Client cache (IndexedDB)",
+                    "Keeps decks and recent cards locally for fast reloads and offline sessions.",
+                    "\"Caching lets the app feel instant — even if the network is slow or the user reopens a deck multiple times.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "FlashcardViewer owns UI state only (flip, front/back, animation).",
+                                "StudySession screen owns learning flow state (current card index, batch management).",
+                                "Data service isolates API calls so UI never worries about endpoints.",
+                                "Progress is recorded optimistically and synced in batches.",
+                                "Client caching improves perceived speed and allows partial offline work.",
+                                "Flip animation uses GPU-friendly transforms for smooth performance."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Red flags you should avoid",
+                            "items": [
+                                "Putting fetch logic and animation logic inside the same component.",
+                                "Triggering API calls directly from the flip animation.",
+                                "Keeping each card as separate network request.",
+                                "Not accounting for mobile interactions (tap instead of hover).",
+                                "Relying on hover-only effects that break accessibility.",
+                                "No strategy for batching or syncing progress."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Data flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. User enters StudySession screen",
+                    "text": "Screen requests the first batch of cards from CardDataService using the selected deck."
+                },
+                {
+                    "title": "2. Data loads & viewer renders",
+                    "text": "The FlashcardViewer shows the first card front-side immediately. Meanwhile, next cards are preloaded."
+                },
+                {
+                    "title": "3. User flips and marks recall",
+                    "text": "Viewer flips the card via CSS transforms; user marks 'knew it / didn't know it', which updates local session state."
+                },
+                {
+                    "title": "4. Progress batches accumulate",
+                    "text": "ProgressSync stores recall events locally and queues them for server sync."
+                },
+                {
+                    "title": "5. Sync to server",
+                    "text": "Periodically or on session end, ProgressSync sends a batched update to the server via API."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State ownership",
+                    "value": "Split cleanly",
+                    "helperText": "UI state in components, learning flow in the screen, data logic in services."
+                },
+                {
+                    "label": "Side-effects",
+                    "value": "Isolated",
+                    "helperText": "Fetching, caching, and syncing live in dedicated modules."
+                },
+                {
+                    "label": "Reusability",
+                    "value": "High",
+                    "helperText": "The same FlashcardViewer can power multiple decks and study modes."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Good architecture keeps responsibilities tight: UI flips cards, services fetch data, sync modules handle progress. The moment you mix these responsibilities, performance and maintainability both suffer."
+        }
+    ]
+}

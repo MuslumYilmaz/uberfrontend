@@ -1,0 +1,168 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see if you can represent a dashboard layout as clean data: one layout array, a grid config, and maybe a bit of transient UI state for active drag/resize. You should show that everything boils down to `(x, y, w, h)` in grid units, plus a few flags and metadata."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll keep a `DashboardState` with a grid config and a `layout` array of widgets. Each widget has an `id`, a type, and layout fields `(x, y, w, h)` in grid units plus min/max constraints. Dragging/resizing updates those numbers. For persistence I serialize just the layout snapshot (and maybe widget-specific config) to localStorage.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You treat **layout as data**, not hidden in DOM or random styles.\n- You use **grid units** (cols/rows) instead of absolute pixels.\n- You separate **persistent layout** from **transient drag state**.\n- You have a compact **snapshot format** for saving/restoring.\n- You think about **widget metadata** (type, config) but keep it separate from layout math."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name 3–4 types: `GridConfig`, `WidgetLayout`, `DashboardState`, and `DashboardSnapshot`. Tie each field directly to a behavior: snapping, constraints, persistence, or drag/resize visuals."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type WidgetType = 'chart' | 'table' | 'kpi' | 'text' | string;\n\ninterface GridConfig {\n  cols: number;         // total columns, e.g. 12\n  rowHeight: number;    // px per row\n  margin: number;       // px gap between widgets\n}\n\n// Persistent layout info for one widget\ninterface WidgetLayout {\n  id: string;           // stable id per widget\n  type: WidgetType;\n  x: number;            // column index (0..cols-1)\n  y: number;            // row index (0..n)\n  w: number;            // width in columns\n  h: number;            // height in rows\n  minW?: number;\n  maxW?: number;\n  minH?: number;\n  maxH?: number;\n  // Optional widget-specific configuration (lightweight)\n  config?: Record<string, unknown>;\n}\n\n// In-memory state for the dashboard\ninterface DashboardState {\n  grid: GridConfig;\n  layout: WidgetLayout[];          // single source of truth\n  activeWidgetId: string | null;   // currently dragged/resized widget\n  dragMode: 'none' | 'move' | 'resize';\n}\n\n// What we actually persist (snapshot)\ninterface DashboardSnapshot {\n  version: number;\n  layout: Array<{\n    id: string;\n    type: WidgetType;\n    x: number;\n    y: number;\n    w: number;\n    h: number;\n    config?: Record<string, unknown>;\n  }>;\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "GridConfig",
+                    "cols, rowHeight, margin",
+                    "\"`GridConfig` describes the grid: number of columns, row height, and margin. All pixel positions are derived from this, so we can rescale the dashboard responsively.\""
+                ],
+                [
+                    "WidgetLayout",
+                    "id, type, x, y, w, h, min/max constraints, config",
+                    "\"Each `WidgetLayout` is one widget on the grid: it has a stable `id`, a `type`, and `(x, y, w, h)` in grid units. Optional min/max width/height enforce constraints; `config` holds widget-specific settings like which metric a chart shows.\""
+                ],
+                [
+                    "DashboardState",
+                    "grid, layout[], activeWidgetId, dragMode",
+                    "\"`DashboardState` is the in-memory state for the editor: grid + layout plus a bit of transient UI like which widget is currently being dragged or resized.\""
+                ],
+                [
+                    "DashboardSnapshot",
+                    "version, layout[] subset",
+                    "\"`DashboardSnapshot` is the compact object we save to localStorage or an API. It mainly stores `id`, `type`, and `(x, y, w, h)` so we can reconstruct the same layout on reload, plus a `version` for future migrations.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly include",
+                            "items": [
+                                "A **grid config** so you can recompute pixel positions from `(x, y, w, h)`.",
+                                "Stable **widget ids** so snapshots match the same widgets across sessions.",
+                                "Layout fields in **grid units** (`x`, `y`, `w`, `h`), not raw CSS left/top/width/height.",
+                                "Optional **minW/maxW/minH/maxH** to enforce resize constraints.",
+                                "A **snapshot format** that is a subset of `WidgetLayout` + `version`.",
+                                "Transient UI state (`activeWidgetId`, `dragMode`) separated from the persisted snapshot."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Data-model mistakes to avoid",
+                            "items": [
+                                "Encoding layout only in CSS/DOM without a data representation.",
+                                "Storing per-widget position in many scattered states instead of one `layout` array.",
+                                "Using pixels instead of grid units, making snap/resize rules harder.",
+                                "Mixing heavy widget runtime state (e.g. chart zoom level) into the saved layout if it’s not required.",
+                                "Saving transient flags like `isDragging` into the snapshot.",
+                                "No `version` field on the snapshot, making future migrations painful."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How the data evolves over time",
+            "steps": [
+                {
+                    "title": "1. Initialize from snapshot or defaults",
+                    "text": "On load, the app reads a `DashboardSnapshot` from localStorage. If present and compatible, it maps each snapshot item into a `WidgetLayout` and fills `layout[]`. Otherwise, it uses a default layout."
+                },
+                {
+                    "title": "2. Start drag/resize",
+                    "text": "When a drag or resize begins, the app sets `activeWidgetId` and `dragMode` in `DashboardState`. The underlying `WidgetLayout` is not yet committed; we may work on a temporary copy while moving."
+                },
+                {
+                    "title": "3. Update layout during interaction",
+                    "text": "As the pointer moves, the layout engine updates the relevant `WidgetLayout`’s `(x, y)` or `(w, h)` in grid units (clamped by min/max and collisions). The view reads straight from `layout[]`."
+                },
+                {
+                    "title": "4. Commit and persist",
+                    "text": "On drag/resize end, we clear `activeWidgetId`/`dragMode` and build a new `DashboardSnapshot` from `layout[]`. That snapshot is serialized to JSON and saved to localStorage."
+                },
+                {
+                    "title": "5. Reload",
+                    "text": "On a future visit, the same snapshot is read and hydrated back into `DashboardState`, reconstructing the user’s custom layout."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Layout primitive",
+                    "value": "(x, y, w, h)",
+                    "helperText": "Everything about positioning and size flows from these four fields."
+                },
+                {
+                    "label": "Persistence unit",
+                    "value": "DashboardSnapshot",
+                    "helperText": "Exact structure we write to and read from localStorage/API."
+                },
+                {
+                    "label": "Key separation",
+                    "value": "Layout vs drag state",
+                    "helperText": "Keeps snapshots clean and interactions easy to reason about."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "If you can explain the dashboard as `grid config + layout[] + small UI state + snapshot`, you make drag/drop, resize, and persistence feel like simple transformations on data. That’s exactly the level of thinking the interviewer is looking for."
+        }
+    ]
+}

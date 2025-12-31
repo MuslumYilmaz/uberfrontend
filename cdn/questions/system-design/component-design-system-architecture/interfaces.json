@@ -1,0 +1,173 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see how **other teams actually use your design system**: how they consume tokens, how they render components, how they apply themes, and how the API nudges them toward accessible, consistent UIs. You should talk about a small, predictable surface: tokens API, theming API, and component APIs (props/events/slots)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame the API:**\n\"I’d expose three main entry points: a **tokens API** (for spacing/typography/layout), a **theming API** (ThemeProvider / theme class or data-attribute), and a set of **accessible components** with consistent props and events. From a consumer perspective it feels like: wrap your app in a theme provider, import Button/Input/Dialog, and optionally read tokens when you need custom layout or one-off pieces.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A clear top-level entry like `@acme/ds` plus **deep imports** (`@acme/ds/button`).\n- A **ThemeProvider** or equivalent that switches light/dark/high-contrast/RTL.\n- Component APIs with **consistent props/events/slots**.\n- Accessibility baked into the API (e.g. requiring `aria-label` when no visible label exists).\n- A structure that is **tree-shakable** and easy to code-split."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe the design system like a small library a teammate would install: \"Install the package, wrap your app in `ThemeProvider`, import `Button` or `Dialog` from separate entry points, and optionally read tokens for spacing and typography.\" Keep it concrete and show how the API stays consistent, accessible, and easy to tree-shake."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// Example public API shape (React-flavored, but the idea is generic)\n\n// 1) Theming API\nimport { ThemeProvider, useTheme } from '@acme/ds/theme';\n\n<ThemeProvider\n  theme=\"light\"                // 'light' | 'dark' | 'high-contrast'\n  dir=\"ltr\"                    // 'ltr' | 'rtl'\n>\n  <App />\n</ThemeProvider>;\n\n// 2) Component imports (tree-shakable)\nimport { Button } from '@acme/ds/button';\nimport { TextField } from '@acme/ds/text-field';\nimport { Tabs, TabList, Tab, TabPanel } from '@acme/ds/tabs';\n\n<Button\n  variant=\"primary\"            // semantic variant\n  size=\"md\"\n  leadingIcon=\"plus\"           // slot-like prop\n  onPress={() => { /* ... */ }} // consistent event name\n>\n  Save\n</Button>\n\n// 3) Token helpers (optional)\nimport { tokens } from '@acme/ds/tokens';\n\nconst cardStyle = {\n  padding: tokens.spacing['4'],\n  borderRadius: tokens.radius['md'],\n  backgroundColor: tokens.color['bg-surface']\n};\n"
+        },
+        {
+            "type": "table",
+            "title": "Core API surfaces you should define",
+            "columns": [
+                "Surface",
+                "Example shape",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "Theme API",
+                    "`<ThemeProvider theme=\"light\" dir=\"ltr\" />`",
+                    "\"The theme API controls light/dark/high-contrast and direction (LTR/RTL). It typically wraps the app and sets CSS variables + `dir` so components and custom layout both respect the current theme.\""
+                ],
+                [
+                    "Component entry points",
+                    "`import { Button } from '@acme/ds/button'`",
+                    "\"Each component has its own entry point to allow tree-shaking. There can also be a main barrel (`@acme/ds`), but deep imports are first-class for performance-sensitive apps.\""
+                ],
+                [
+                    "Component props",
+                    "`variant`, `size`, `disabled`, `icon`, `tone`",
+                    "\"All components share consistent prop patterns: `variant`, `size`, `tone`, `disabled`, `onPress`/`onChange`, etc. This reduces cognitive load and makes adoption easier.\""
+                ],
+                [
+                    "Slots / composition",
+                    "props like `startIcon`, `endIcon`, `description`",
+                    "\"Slots allow flexible composition (icons, descriptions, custom content) without breaking accessibility. The API makes common patterns easy but doesn’t block advanced usage.\""
+                ],
+                [
+                    "Tokens API",
+                    "`tokens.spacing['4']`, `tokens.color['bg-primary']`",
+                    "\"Tokens are available in a typed object for advanced layouts and one-off pieces. Most teams use components, but tokens are there when you need custom composition.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Component API rules you should mention",
+                            "items": [
+                                "Use **consistent event names** (e.g. `onPress` or `onClick`, not both).",
+                                "Use **semantic props** (`variant=\"primary\" | \"secondary\"`, `tone=\"info\" | \"danger\"`).",
+                                "Expose **size** in a normalized way (`size=\"sm\" | \"md\" | \"lg\"`).",
+                                "Keep focus/ARIA **inside** components so consumers don’t need to wire low-level accessibility manually.",
+                                "Support **asChild**/`component` overrides (optional) for advanced routing or polymorphism, while keeping default semantics sane.",
+                                "Make API **forward-compatible** by reserving room for future tokens/variants."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Accessibility hooks in the API",
+                            "items": [
+                                "Components with no visible label (icon-only buttons) require an `aria-label` prop.",
+                                "Dialog/Modal components handle **focus trap**, **aria-modal**, and **role=\"dialog\"`** internally.",
+                                "Tabs expose `TabList`, `Tab`, and `TabPanel` in a way that encourages correct relationships (ids/aria-controls wired automatically).",
+                                "Form controls forward `id`, `name`, `aria-describedby` so integration with forms and validation is straightforward.",
+                                "Tooltips/menus respect **keyboard triggers** (Enter, Space, Arrow keys) by default.",
+                                "High-contrast and dark-mode differences are handled by **tokens**, not extra props per component."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How consumers typically use the API",
+            "steps": [
+                {
+                    "title": "1. Wrap app with ThemeProvider",
+                    "text": "At the root, the app wraps its tree with `ThemeProvider` (or applies a theme class/data-attribute). This sets CSS vars and direction (LTR/RTL) globally."
+                },
+                {
+                    "title": "2. Import components on demand",
+                    "text": "Feature teams import only needed components from deep entry points (`@acme/ds/button`, `@acme/ds/dialog`) to keep bundles lean and tree-shakable."
+                },
+                {
+                    "title": "3. Pass semantic props",
+                    "text": "Teams configure components using semantic props (`variant`, `tone`, `size`) instead of raw colors or spacing values, ensuring consistency and easy theming."
+                },
+                {
+                    "title": "4. Use tokens for custom layouts",
+                    "text": "For layouts or low-level elements, teams read from the `tokens` API to align spacing, typography, and colors with the system without creating custom hard-coded styles."
+                },
+                {
+                    "title": "5. Evolve with versions",
+                    "text": "When the library releases new versions, teams see deprecation notices in docs/TS types, and can migrate using clear guides without digging into internals."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main entry points",
+                    "value": "Theme, components, tokens",
+                    "helperText": "Everything else is implementation detail."
+                },
+                {
+                    "label": "Import style",
+                    "value": "Per-component modules",
+                    "helperText": "Enables tree-shaking and code splitting."
+                },
+                {
+                    "label": "API goal",
+                    "value": "Accessible by default",
+                    "helperText": "Props and events encourage good a11y patterns."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "From a consumer’s point of view, a good design system API feels boring and predictable: wrap in a theme, import a Button, pass a few semantic props, and get an accessible, themed component. All the complexity (tokens, dark mode, RTL, a11y wiring, tree-shaking) stays behind that API line."
+        }
+    ]
+}

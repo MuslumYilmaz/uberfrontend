@@ -1,0 +1,40 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Dynamic Table (solution: generated with *ngFor)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/forms": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-dynamic-table-solution\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Dynamic Table (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  rowInput = 3;\n  colInput = 4;\n\n  rows: number[] = [];\n  cols: number[] = [];\n\n  constructor() {\n    this.updateTable();\n  }\n\n  private normalizeCount(raw: number): number {\n    if (!Number.isFinite(raw)) {\n      return 0;\n    }\n    const n = Math.floor(raw);\n    const clamped = Math.max(0, Math.min(n, 20));\n    return clamped;\n  }\n\n  updateTable(): void {\n    const rows = this.normalizeCount(this.rowInput);\n    const cols = this.normalizeCount(this.colInput);\n\n    this.rows = Array.from({ length: rows }, (_, i) => i);\n    this.cols = Array.from({ length: cols }, (_, i) => i);\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main style=\"min-height:100vh; background:#020617; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n  <section style=\"width:100%; max-width:640px; display:grid; gap:16px;\">\n    <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Dynamic Table (Solution)</h1>\n    <p style=\"margin:0; font-size:13px; color:#9ca3af;\">Enter rows & columns, then generate a table grid.</p>\n\n    <div class=\"controls\">\n      <label>\n        <span>Rows</span>\n        <input type=\"number\" min=\"0\" [(ngModel)]=\"rowInput\" />\n      </label>\n      <label>\n        <span>Columns</span>\n        <input type=\"number\" min=\"0\" [(ngModel)]=\"colInput\" />\n      </label>\n      <button (click)=\"updateTable()\">Generate table</button>\n    </div>\n\n    <div class=\"preview\" *ngIf=\"rows.length && cols.length; else emptyState\">\n      <table class=\"grid\" aria-label=\"dynamic table\">\n        <tbody>\n          <tr *ngFor=\"let _ of rows; let rowIndex = index\">\n            <td *ngFor=\"let __ of cols; let colIndex = index\">\n              R{{ rowIndex + 1 }}C{{ colIndex + 1 }}\n            </td>\n          </tr>\n        </tbody>\n      </table>\n    </div>\n\n    <ng-template #emptyState>\n      <p class=\"empty\">Set rows & columns, then generate the table.</p>\n    </ng-template>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:8px;}\n.controls label{display:flex;flex-direction:column;gap:4px;font-size:13px;}\n.controls input{background:#020617;border:1px solid #374151;border-radius:10px;padding:6px 10px;color:#e5e7eb;min-width:80px;}\n.controls button{background:#a3e635;color:#0b1020;border:none;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;}\n.controls button:hover{filter:brightness(1.05);}\n.preview{overflow:auto;border-radius:12px;border:1px solid #1f2937;padding:12px;background:#020617;}\n.grid{width:100%;border-collapse:collapse;}\n.grid td{border:1px solid #1f2937;padding:6px 10px;font-size:13px;text-align:center;}\n.empty{margin:0;font-size:13px;color:#9ca3af;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

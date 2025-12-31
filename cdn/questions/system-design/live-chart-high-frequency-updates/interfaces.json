@@ -1,0 +1,181 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see how other parts of the app would use your live chart module. You should expose a small, clear API: a `<LiveChart />` component and/or a `useLiveChart` hook that hides buffering, requestAnimationFrame, and downsampling, and just takes in data + config."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I’d expose a `LiveChart` component that accepts a series definition and a `pushSample` function or callback. Internally it owns the buffer, windowing, and render loop. Alternatively, a `useLiveChart` hook manages state and rendering, and returns props the chart view can use.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Simple inputs: series ids, config (window length, max points), and a way to feed samples.\n- Simple outputs: a React/Angular/Vue view, or props to pass into a chart component.\n- No leaking of internal details like `requestAnimationFrame`, queues, or downsampling logic.\n- A clear place where **overload behavior** (drop vs queue) is configured."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Think like a library author: \"If my teammate wants to show a live CPU chart, what 3–4 props do I want them to pass?\" Describe those props and the return value, and mention that the hook/component hides buffering and animation details."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type SeriesId = string;\n\ninterface LiveSeriesConfig {\n  id: SeriesId;\n  label: string;\n  color?: string;\n}\n\ninterface LiveChartOptions {\n  windowMs?: number;          // default e.g. 60_000\n  maxPoints?: number;         // default e.g. 1_000\n  maxPendingFrames?: number;  // how much backlog we tolerate\n  overloadStrategy?: 'drop-oldest' | 'drop-newest' | 'downsample';\n}\n\ninterface LiveChartProps {\n  series: LiveSeriesConfig[];\n  options?: LiveChartOptions;\n  height?: number;\n  // Consumers feed samples via callback or via returned API (see hook below)\n}\n\n// Hook API: state + functions for the rest of the app\ninterface UseLiveChartResult {\n  pushSample: (seriesId: SeriesId, sample: { t: number; v: number }) => void;\n  canvasRef: React.RefObject<HTMLCanvasElement>; // or generic element ref\n  isRunning: boolean;\n  start: () => void;\n  stop: () => void;\n}\n\nfunction useLiveChart(\n  series: LiveSeriesConfig[],\n  options?: LiveChartOptions\n): UseLiveChartResult {\n  // implementation: manages buffers, rAF loop, overload strategy\n}\n\n// Component using the hook\nfunction LiveChart(props: LiveChartProps) {\n  const { canvasRef, pushSample, start, stop } = useLiveChart(\n    props.series,\n    props.options\n  );\n  // chart data is drawn onto the canvasRef internally\n  return <canvas ref={canvasRef} height={props.height ?? 200} />;\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / prop",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "LiveSeriesConfig",
+                    "{ id, label, color? }",
+                    "\"`LiveSeriesConfig` lets the caller declare one or more lines by id. The id is used to route incoming samples; label/color are just presentation details.\""
+                ],
+                [
+                    "LiveChartOptions.windowMs",
+                    "number (ms)",
+                    "\"`windowMs` defines how much recent history we keep visible on the chart, e.g. last 60 seconds. Older points are trimmed automatically.\""
+                ],
+                [
+                    "LiveChartOptions.maxPoints",
+                    "number",
+                    "\"`maxPoints` caps the number of points per series in memory and on screen. This is our main memory and performance guardrail.\""
+                ],
+                [
+                    "LiveChartOptions.overloadStrategy",
+                    "'drop-oldest' | 'drop-newest' | 'downsample'",
+                    "\"If data comes in faster than we can render, `overloadStrategy` controls whether we drop oldest points, drop newest batches, or downsample before drawing.\""
+                ],
+                [
+                    "useLiveChart.pushSample",
+                    "(seriesId, { t, v }) => void",
+                    "\"The rest of the app calls `pushSample` whenever a new data point arrives (from WebSocket, polling, etc.). The hook updates its buffers and marks the chart dirty.\""
+                ],
+                [
+                    "useLiveChart.canvasRef",
+                    "Ref to <canvas>",
+                    "\"`canvasRef` is attached to a `<canvas>` element. The hook’s render loop draws onto this canvas using the latest buffered data.\""
+                ],
+                [
+                    "useLiveChart.start/stop",
+                    "() => void",
+                    "\"`start` and `stop` control the render loop and maybe subscriptions. This lets us pause the chart when the tab is hidden or the widget is off-screen.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should expose",
+                            "items": [
+                                "A way to **declare series** (ids + labels).",
+                                "Config for **window**, **maxPoints**, and **overloadStrategy**.",
+                                "A simple **`pushSample(seriesId, sample)`** entry point.",
+                                "A reference/element where the chart will render (canvas or container).",
+                                "Lifecycle controls like **`start()` / `stop()`** for the render loop."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should NOT expose",
+                            "items": [
+                                "Raw `requestAnimationFrame` handles or timer ids.",
+                                "Internal buffers or `points[]` arrays unless there is a clear use case.",
+                                "Chart-library-specific details (ECharts options, Chart.js internals) from the core API.",
+                                "Per-frame callbacks that force consumers to manage drawing themselves, unless this is explicitly a low-level API.",
+                                "Implementation flags like `hasNewDataInternal` that don’t map to real decisions for consumers."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Declare series & config",
+                    "text": "The feature defines the lines it wants to show (e.g. CPU, memory) and passes `series` + `options` into `useLiveChart` or `<LiveChart />`."
+                },
+                {
+                    "title": "2. Wire data source",
+                    "text": "Wherever WebSocket/SSE/polling lives, it calls `pushSample(seriesId, { t, v })` on each new reading."
+                },
+                {
+                    "title": "3. Render chart view",
+                    "text": "The chart component renders a `<canvas>` and attaches `canvasRef`. The hook’s internal loop reads buffers and paints on each animation frame when there is new data."
+                },
+                {
+                    "title": "4. Handle lifecycle",
+                    "text": "On mount, call `start()`. On unmount or when the widget is hidden, call `stop()` to cancel animation frames and optionally unsubscribe from the data source."
+                },
+                {
+                    "title": "5. Tweak behavior",
+                    "text": "If performance or memory is an issue, adjust `windowMs`, `maxPoints`, or `overloadStrategy` without changing integration everywhere."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main inputs",
+                    "value": "series + options",
+                    "helperText": "What to draw and how much history to keep."
+                },
+                {
+                    "label": "Main action",
+                    "value": "pushSample",
+                    "helperText": "Single entry point for all incoming data."
+                },
+                {
+                    "label": "Main abstraction",
+                    "value": "useLiveChart / LiveChart",
+                    "helperText": "Hides buffering & rAF; exposes a simple view."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "From the outside, your live chart should feel like: \"declare series, call pushSample, and get a smooth chart.\" If a teammate never has to think about requestAnimationFrame, buffering, or downsampling, you’ve designed a good API."
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Accordion / FAQ",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-accordion-faq\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Accordion / FAQ</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/faq-item.component.ts": {
+            "code": "import { CommonModule } from '@angular/common';\nimport { Component, EventEmitter, Input, Output } from '@angular/core';\n\n@Component({\n  selector: 'app-faq-item',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './faq-item.component.html',\n  styleUrls: ['./faq-item.component.css']\n})\nexport class FaqItemComponent {\n  @Input() question = '';\n  @Input() answer = '';\n  @Input() isOpen = false;\n  @Output() toggle = new EventEmitter();\n\n  onHeaderClick(): void {\n    // TODO: Emit toggle event when header is clicked\n  }\n}\n"
+        },
+        "/src/app/faq-item.component.html": {
+            "code": "<article class=\"faq-item\" [class.open]=\"isOpen\">\n  <button\n    type=\"button\"\n    class=\"faq-header\"\n    (click)=\"onHeaderClick()\"\n    [attr.aria-expanded]=\"isOpen\">\n    <span class=\"question\">{{ question }}</span>\n    <span class=\"indicator\">{{ isOpen ? '-' : '+' }}</span>\n  </button>\n\n  <div class=\"faq-body\" *ngIf=\"isOpen\">\n    <p>{{ answer }}</p>\n  </div>\n</article>\n"
+        },
+        "/src/app/faq-item.component.css": {
+            "code": ".faq-item{background:#0b1020;border-radius:12px;border:1px solid #1f2937;overflow:hidden;}\n.faq-item + .faq-item{margin-top:8px;}\n.faq-header{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;background:transparent;border:none;color:#e5e7eb;font-size:14px;cursor:pointer;text-align:left;}\n.indicator{font-weight:700;}\n.faq-body{padding:0 14px 12px;font-size:13px;color:#9ca3af;}\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { CommonModule } from '@angular/common';\nimport { Component } from '@angular/core';\nimport { FaqItemComponent } from './faq-item.component';\n\ninterface FaqItem {\n  question: string;\n  answer: string;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FaqItemComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Static FAQ items (use lorem ipsum text)\n  faqItems: FaqItem[] = [\n    {\n      question: 'Lorem ipsum dolor sit amet?',\n      answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n    },\n    {\n      question: 'Curabitur blandit tempus porttitor?',\n      answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n    },\n    {\n      question: 'Aenean lacinia bibendum nulla sed consectetur?',\n      answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n    },\n    {\n      question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n      answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n    }\n  ];\n\n  // When false: only one item should be open at a time\n  // When true: multiple items can be open\n  allowMultiple = false;\n\n  // TODO: track which indexes are currently open\n  // Hint: this can be an array of numbers (indexes)\n  openIndexes: number[] = [];\n\n  // TODO: return true if the item at this index is open\n  isItemOpen(index: number): boolean {\n    return false;\n  }\n\n  // TODO: toggle the item at this index\n  // - In single-open mode, only this index should be open\n  // - In multi-open mode, treat openIndexes like a set\n  onItemToggle(index: number): void {\n  }\n\n  // Optional: when switching modes, you may want to adjust openIndexes\n  onToggleAllowMultiple(): void {\n    this.allowMultiple = !this.allowMultiple;\n    // TODO (optional): normalize openIndexes when switching from multi → single\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"app-root\">\n  <section class=\"card\">\n    <header class=\"header\">\n      <h1>FAQ</h1>\n      <label class=\"mode-toggle\">\n        <input\n          type=\"checkbox\"\n          [checked]=\"allowMultiple\"\n          (change)=\"onToggleAllowMultiple()\" />\n        <span>Allow multiple open</span>\n      </label>\n    </header>\n\n    <div class=\"faq-list\">\n      <app-faq-item\n        *ngFor=\"let item of faqItems; index as i\"\n        [question]=\"item.question\"\n        [answer]=\"item.answer\"\n        [isOpen]=\"isItemOpen(i)\"\n        (toggle)=\"onItemToggle(i)\">\n      </app-faq-item>\n    </div>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".app-root{min-height:100vh;background:#020617;color:#e5e7eb;display:grid;place-items:center;padding:24px;}\n.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px;box-sizing:border-box;}\n.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}\n.header h1{margin:0;font-size:20px;font-weight:700;}\n.mode-toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;}\n.faq-list{margin-top:4px;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#020617; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

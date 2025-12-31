@@ -1,0 +1,42 @@
+{
+    "id": "infinite-scroll-list",
+    "title": "Infinite Scroll List",
+    "description": "Design an infinite scroll list that progressively loads more items from a paginated API as the user scrolls. Focus on smooth scrolling, clear loading/error states, and keeping DOM size under control.\n\nFunctional requirements:\n- Render an initial page of items from a paginated API\n- As the user approaches the bottom, load and append the next page\n- Show loading feedback (e.g. skeletons or spinner) while fetching\n- Handle errors with an inline retry option\n- Show an explicit \"end of list\" state when there is no more data\n- Support pluggable item rendering (rows, cards, etc.)\n\nNon-functional:\n- Scrolling should feel smooth on mid-range devices (no visible jank)\n- UI states (loading, error, empty, end-of-list) must be clearly represented\n- DOM size should remain reasonable even after long sessions\n- Accessible to keyboard and screen readers\n\nData constraints:\n- API exposes either page/limit or cursor-based pagination\n- Typical list can contain tens of thousands of items overall\n- Users may scroll through thousands of items in one session\n- Network latency and throughput may vary (mobile connections included)\n",
+    "tags": [
+        "infinite-scroll",
+        "intersection-observer",
+        "pagination",
+        "virtualization",
+        "performance",
+        "accessibility",
+        "loading-states",
+        "error-handling"
+    ],
+    "sections": [
+        {
+            "key": "R",
+            "title": "Requirements exploration",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}

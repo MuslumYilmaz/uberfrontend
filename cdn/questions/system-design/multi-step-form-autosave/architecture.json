@@ -1,0 +1,183 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can turn a vague \"4-step form with autosave\" idea into a clear set of components and data flows. You should show that you can separate concerns: where form state lives, how steps communicate, and how autosave plugs into the architecture without sprinkling localStorage calls everywhere."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"At a high level, I’d have a `MultiStepForm` container that owns the full form state and current step index, step components that render and validate their own fields, a shared validation layer, and an autosave mechanism that serializes the full form model to localStorage on a debounced schedule.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You don’t let each step manage its own disconnected state.\n- You clearly choose between **flat vs nested** store and justify it.\n- You keep autosave logic centralized instead of scattered.\n- You describe one clear data flow for step transitions and validation.\n- You integrate the progress bar cleanly (derived from step index / completion)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe 3–5 boxes: `MultiStepFormContainer` → `Step components` → `Validation layer` → `Autosave service` → `localStorage`. Keep the story simple: one source of truth for form state, clear step navigation, and a thin autosave layer watching that state."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "MultiStepFormContainer",
+                    "Owns the entire form state, current step index, dirty flag, and orchestrates validation + navigation.",
+                    "\"`MultiStepForm` holds a single form model object and the `currentStep`. It passes each step only the slice of data it needs plus callbacks to update the main model.\""
+                ],
+                [
+                    "Step components (Step1–Step4)",
+                    "Render fields for one step, trigger validation and updates, but do not own global state.",
+                    "\"Each step is a dumb-ish component that receives its values and an `onChange` from the container. It can run field-level validation but writes back into the central store.\""
+                ],
+                [
+                    "Validation layer",
+                    "Encapsulates validation rules per step/field, returns errors in a consistent format.",
+                    "\"I’d keep validation in pure functions like `validateStep1(form)` so it’s reusable on blur, on Next, and on final submit.\""
+                ],
+                [
+                    "Autosave module / hook",
+                    "Observes form state changes, debounces/throttles, serializes JSON, writes to localStorage.",
+                    "\"An autosave hook watches the form model and `currentStep`. After a debounce (e.g. 1s of no changes), it serializes to JSON and writes a single entry to localStorage.\""
+                ],
+                [
+                    "Progress bar",
+                    "Pure view derived from step index and/or completion status.",
+                    "\"The progress bar is derived state: `(currentStep + 1) / totalSteps` or based on which steps pass validation.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "text",
+            "text": "**Option: flat vs nested form store**\nYou should briefly pick one and justify it for a 4-step form:"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// Nested by step (often easier to reason about for multi-step):\ninterface FormModel {\n  step1: { name: string; email: string; };\n  step2: { address: string; city: string; };\n  step3: { preferences: string[]; };\n  step4: { confirmation: boolean; };\n}\n\n// Alternatively, flat with logical grouping:\n// interface FormModel {\n//   name: string;\n//   email: string;\n//   address: string;\n//   city: string;\n//   preferences: string[];\n//   confirmation: boolean;\n// }"
+        },
+        {
+            "type": "text",
+            "text": "You don’t have to be dogmatic. For a 4-step form, nested-by-step is often easier to connect with the UI, but you should show that you’ve thought about it."
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "There is **one central form model** and **one currentStep** state.",
+                                "Each step gets a **slice** of that model and **update callbacks**.",
+                                "Step navigation (Next/Back) is handled in the container, not in random components.",
+                                "Autosave subscribes to the **central model**, not individual inputs.",
+                                "Validation functions are **step-aware** and reusable (inline + on submit).",
+                                "Progress bar is derived from the current step and/or validation state."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags to avoid",
+                            "items": [
+                                "Each step having its **own isolated store** with no single source of truth.",
+                                "Sprinkling `localStorage.setItem` calls in multiple components.",
+                                "Putting heavy validation logic directly inside component render functions.",
+                                "Letting the progress bar reimplement step logic instead of deriving it.",
+                                "Not knowing where \"dirty\" and \"last saved\" timestamps live."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Initialization & draft restore",
+                    "text": "On mount, `MultiStepFormContainer` checks localStorage for a draft key. If found, it parses JSON, validates minimal shape, and either restores `formModel + currentStep` or starts fresh if invalid."
+                },
+                {
+                    "title": "2. Step rendering",
+                    "text": "Based on `currentStep`, the container renders the appropriate Step component, passing that step’s slice of data and `onChange` handlers."
+                },
+                {
+                    "title": "3. Updates & validation",
+                    "text": "When fields change, steps call `onChange`, which updates the central form model and marks the form as `dirty`. Inline validation can run on blur/change using the shared validation layer."
+                },
+                {
+                    "title": "4. Autosave",
+                    "text": "A debounced autosave effect watches `formModel`, `currentStep`, and `dirty`. After a quiet period, it serializes `{ formModel, currentStep, version, updatedAt }` and writes to localStorage, then clears the dirty flag."
+                },
+                {
+                    "title": "5. Navigation & submit",
+                    "text": "On Next, the container validates the current step; if valid, it increments `currentStep`. On Submit, it runs full-form validation, sends the data, and clears the draft key on success."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State ownership",
+                    "value": "Centered in container",
+                    "helperText": "One place owns the full form, step index, and dirty state."
+                },
+                {
+                    "label": "Autosave strategy",
+                    "value": "Observer + debounce",
+                    "helperText": "A single effect watches changes and serializes JSON responsibly."
+                },
+                {
+                    "label": "Extensibility",
+                    "value": "Add steps safely",
+                    "helperText": "New steps mean new slices + validators, no rewrite of core flow."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good architecture here is about one clean form model, clear step navigation, and a dedicated autosave layer. If you can explain how those three pieces fit together, you’re already showing strong system-design skills for complex forms."
+        }
+    ]
+}

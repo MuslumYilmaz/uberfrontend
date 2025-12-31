@@ -1,0 +1,167 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can design clean boundaries between pieces of your UI. You should show that you can define simple, focused interfaces: what props a list component takes, what a fetch function returns, and which callbacks are exposed."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about APIs:**\n\"I’d like to keep a very small surface area: the page passes a `fetchPage` function and an item renderer into the list. The list calls `fetchPage` with pagination info and receives items plus a `hasMore` flag. Optionally, we expose callbacks like `onItemsChange` or `onEndReached`.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Your interfaces are easy to read and reason about.\n- You separate concerns: fetching vs rendering vs state.\n- You think about error and end-of-list in the API, not as afterthoughts.\n- You avoid leaking implementation details (e.g. IntersectionObserver) into external props."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Speak in terms of function signatures and props, but keep them human: \"The list takes a `fetchPage(params)` function and an `ItemComponent`. `fetchPage` returns `{ items, hasMore, nextCursor? }`.\" You don’t need full TypeScript, just clear contracts."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface",
+                "Shape (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "FetchPageParams",
+                    "{ page?: number; pageSize: number; cursor?: string; filters?: Filters; }",
+                    "\"`FetchPageParams` carries pagination info (page or cursor) plus optional filters like search or sort.\""
+                ],
+                [
+                    "FetchPageResult",
+                    "{ items: ListItem[]; hasMore: boolean; nextCursor?: string; }",
+                    "\"`FetchPageResult` returns an array of items, a `hasMore` flag, and optionally a `nextCursor` if we use cursor-based pagination.\""
+                ],
+                [
+                    "FetchPageFn",
+                    "fetchPage(params: FetchPageParams) → Promise<FetchPageResult>",
+                    "\"The list only knows about a `fetchPage(params)` function that returns a promise with items and `hasMore`.\""
+                ],
+                [
+                    "InfiniteScrollListProps",
+                    "{ fetchPage, ItemComponent, pageSize?, initialFilters?, onEndReached?, onError?, onItemsChange? }",
+                    "\"`InfiniteScrollList` receives a `fetchPage` function, an `ItemComponent` for rendering, optional `pageSize` and `initialFilters`, and callbacks for events like end reached or errors.\""
+                ],
+                [
+                    "ItemComponent",
+                    "ItemComponent(props: { item: ListItem; index: number })",
+                    "\"The item renderer is a simple component that receives a `ListItem` and an index and just returns UI.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly expose",
+                            "items": [
+                                "`fetchPage(params)` for pagination-aware data loading.",
+                                "A way to inject the item renderer (component or render function).",
+                                "Optional `pageSize` and filter props.",
+                                "An `onError` callback for logging or toast notifications.",
+                                "An `onEndReached` callback if the parent cares when the list finishes.",
+                                "An `onItemsChange` callback if the parent wants the full list."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid in the API",
+                            "items": [
+                                "Exposing low-level scroll/observer details as props.",
+                                "Forcing the parent to manage many tiny state flags.",
+                                "Returning different shapes depending on the page (hard to reason about).",
+                                "Mixing concerns, e.g. `fetchPageAndRender()` in one function.",
+                                "Using magical string flags instead of clear booleans / fields."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Request lifecycle you should walk through",
+            "steps": [
+                {
+                    "title": "1. Initial call",
+                    "text": "On mount, the list calls `fetchPage({ page: 0, pageSize, filters })`."
+                },
+                {
+                    "title": "2. Response handling",
+                    "text": "The promise resolves to `{ items, hasMore }`. The list stores items, updates pagination meta, and sets its UI state."
+                },
+                {
+                    "title": "3. Load more",
+                    "text": "When the sentinel is visible and `hasMore` is true, the list calls `fetchPage({ page: nextPage, pageSize, filters })` or uses `nextCursor`."
+                },
+                {
+                    "title": "4. Errors",
+                    "text": "If `fetchPage` rejects, the list sets an error state, calls `onError(err)` and shows an inline retry option."
+                },
+                {
+                    "title": "5. End of list",
+                    "text": "When a response comes back with `hasMore = false`, the list stops requesting and can fire `onEndReached()` once."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "API surface",
+                    "value": "Small & clear",
+                    "helperText": "A few well-named props and one fetch function are enough."
+                },
+                {
+                    "label": "Direction of data",
+                    "value": "Top → down, events → up",
+                    "helperText": "Parents pass data/functions down; list emits events up."
+                },
+                {
+                    "label": "Good signal",
+                    "value": "Contracts first",
+                    "helperText": "You explain interfaces before diving into implementation."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong interface makes the list easy to reuse and hard to misuse. If another engineer can use your component just by reading the props and function signatures you described, you’ve designed the API well."
+        }
+    ]
+}

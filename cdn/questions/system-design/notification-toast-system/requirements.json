@@ -1,0 +1,132 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can clearly describe what a global toast system should do before you jump into components or code. You should sound like someone who has used and built these systems before: you talk about triggering toasts from anywhere, stacking, timers, accessibility, and placement."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you’re solving:**\nYou need a global notification system that lets any part of the app call something like `toast.success(\"Saved\")` or `toast.error(\"Failed\")` and shows small non-blocking messages on top of the UI.\n\nIt should support different variants (success, error, warning, info), auto-dismiss after a delay, allow manual close, and stack multiple toasts without breaking the layout."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer looks for:**\n- You understand that this is a **global concern**, not a local component.\n- You talk about **stacking multiple toasts** and what happens when many are fired.\n- You mention **auto-dismiss timers** and how they are cleaned up.\n- You are aware of **z-index / layering** over the rest of the UI.\n- You bring up **accessibility** (ARIA roles, announcements, focus) and **responsive placement**."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Start by restating the problem in your own words: \"We want a global toast API like `toast.success()` that shows short-lived notifications, stacks them nicely, and cleans up timers correctly.\" Then move into clarifying questions instead of jumping straight into implementation details."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "User flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Trigger",
+                    "text": "Some part of the app calls `toast.success(\"Profile saved\")` after an action completes."
+                },
+                {
+                    "title": "2. Show toast",
+                    "text": "A new toast appears in the chosen corner (e.g. top-right), with the correct style and icon for its type."
+                },
+                {
+                    "title": "3. Lifetime",
+                    "text": "A timer starts for auto-dismiss. The user can also close it manually (close button or click)."
+                },
+                {
+                    "title": "4. Stack behavior",
+                    "text": "If more toasts appear, they stack in a consistent order (e.g. newest on top). Old ones disappear as timers finish or the user closes them."
+                },
+                {
+                    "title": "5. Edge cases",
+                    "text": "On small screens, the layout adapts (e.g. full-width at the top/bottom). Screen readers get the message, and timers are cleaned up on unmount or route changes."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "From where can toasts be triggered? Only from React components, or also from plain JS utilities / services?",
+                                "Do we need different variants (success, error, warning, info) with different icons and colors?",
+                                "What is the default auto-dismiss timeout? Can it be customized per toast?",
+                                "How many toasts can be visible at the same time before we start removing or queuing them?",
+                                "Which placements do we need to support (top-right, top-center, bottom-right, bottom-left, mobile full-width)?",
+                                "Do we need actions inside toasts (e.g. an \"Undo\" button) that require focus and keyboard support?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "What you should explicitly confirm",
+                            "items": [
+                                "The toast system is **global** and should not require prop-drilling.",
+                                "Toasts are **non-blocking**: they should not stop the user from interacting with the page.",
+                                "Each toast has a **type**, **message**, and **lifetime** (auto-dismiss + manual close).",
+                                "Multiple toasts can be visible and must **stack predictably**.",
+                                "Timers must be **cleaned up** on unmount or when the toast is removed.",
+                                "We care about **accessibility**: ARIA roles (e.g. `status`, `alert`), screen reader announcements, and sensible focus behavior for interactive toasts."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main concept",
+                    "value": "Global toast layer",
+                    "helperText": "One place in the app renders all toasts."
+                },
+                {
+                    "label": "Key UX goal",
+                    "value": "Non-blocking feedback",
+                    "helperText": "Users keep working while seeing notifications."
+                },
+                {
+                    "label": "Key technical concern",
+                    "value": "Timers & cleanup",
+                    "helperText": "No dangling intervals/timeouts when toasts disappear or routes change."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A toast system is more than just \"show a div\". In requirements, highlight that it must be global, stack correctly, clean up timers reliably, respect z-index layers, and stay accessible and readable on both desktop and mobile."
+        }
+    ]
+}

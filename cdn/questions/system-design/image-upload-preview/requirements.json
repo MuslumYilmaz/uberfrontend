@@ -1,0 +1,173 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to treat the Image Upload & Preview component as a small but real product: clear states, validation rules, UX flow, and accessibility. Your job is to show that you understand all the states this component can be in, how users move between them, and what can go wrong."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "### What you’re designing\nYou’re designing a reusable `ImageUploadPreview` component that:\n\n- Lets the user pick an image from their device.\n- Immediately shows a thumbnail preview if the image is valid.\n- Validates **type** (e.g. JPEG/PNG) and **size** (e.g. ≤ 2 MB).\n- Shows a short **uploading state** (1–2s) with spinner/skeleton.\n- Shows **clear errors** when validation fails.\n- Allows **replacing** or **removing** the image.\n- Works well on mobile (touch, layout, file input UX).\n- Remains accessible (keyboard navigation, ARIA for errors and status)."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "### What the interviewer is testing\n- Can you enumerate **all important UI states** (initial, preview, uploading, uploaded, error)?\n- Do you think about **validation flow** (when and how errors appear)?\n- Do you handle **file APIs** safely (object URLs, cleanup)?\n- Do you consider **mobile UX** (hit targets, layout, text)?\n- Do you build in **accessibility** (focus, roles, keyboard) from the start?\n- Can you add optional extras: drag-and-drop, thumbnail caching, re-try flows?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Walk through the user journey out loud: initial screen → pick file → validate → preview + uploading → uploaded → replace/remove. At each step, mention what the user sees, what state you store, and what happens on error."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "User flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Initial state",
+                    "text": "The user sees a \"Choose image\" button (and/or dropzone). There is no preview yet. If there were previous errors, they are not shown until the next interaction."
+                },
+                {
+                    "title": "2. User selects a file",
+                    "text": "On `change` from the file input (or drop), you read the first file, perform type/size checks, and decide whether to proceed or show an error."
+                },
+                {
+                    "title": "3. Validation step",
+                    "text": "If the file is invalid (type/size), set an error message and keep the component in the initial-like state (no preview). If valid, create an object URL and move to preview + uploading."
+                },
+                {
+                    "title": "4. Preview + fake upload",
+                    "text": "Show the thumbnail preview immediately, plus an \"Uploading…\" indicator (spinner or skeleton). Start a timer (e.g. 1–2s) to simulate upload progress."
+                },
+                {
+                    "title": "5. Uploaded state",
+                    "text": "After the timer, swap \"Uploading…\" to \"Uploaded\" (or a check icon). Show actions like \"Replace\" and \"Remove\". The user can pick a new file or clear everything."
+                },
+                {
+                    "title": "6. Replace / remove",
+                    "text": "\"Replace\" opens the file picker again and repeats the flow; old object URLs are cleaned up. \"Remove\" clears state (preview, error, status) and returns to the initial state."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions you should ask",
+                            "items": [
+                                "What **image types** are allowed? (e.g. `image/jpeg`, `image/png`, maybe WebP?)",
+                                "What is the **max file size** (e.g. 2 MB), and should this be configurable?",
+                                "Is this **single-file only**, or should we support multiple thumbnails?",
+                                "Should the upload simulation always succeed, or do we need an **error/retry** path?",
+                                "Do we need a **drag-and-drop** area, or is a file input enough?",
+                                "Should we support **thumbnail cropping** or just raw preview?",
+                                "How important is **mobile** layout (small screens, tap targets, labels)?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "Component should be **responsive** and work well on phones.",
+                                "Everything should be **keyboard-navigable** (focusable buttons, Enter/Space triggers).",
+                                "Error messages should be **announced** to assistive tech (e.g. `role=\"alert\"`).",
+                                "Image thumbnail should keep **aspect ratio** (no stretching).",
+                                "Object URLs (from `URL.createObjectURL`) should be **revoked** when not needed.",
+                                "Visual states (uploading, uploaded, error) should be **visibly distinguishable**."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Key states you should call out",
+            "columns": [
+                "State",
+                "What the user sees",
+                "What you store in state"
+            ],
+            "rows": [
+                [
+                    "Initial",
+                    "A primary \"Choose image\" button (and optional drag area). No thumbnail, no status.",
+                    "file: null, previewUrl: null, status: 'idle', error: null"
+                ],
+                [
+                    "Validating",
+                    "Short-lived; user just sees their click. Validation happens synchronously before UI update.",
+                    "file: candidate file, status: 'validating' (optional), error: null"
+                ],
+                [
+                    "Uploading",
+                    "Thumbnail preview + \"Uploading…\" label/spinner. Replace/Remove may be disabled.",
+                    "file: file, previewUrl: object URL, status: 'uploading', error: null"
+                ],
+                [
+                    "Uploaded",
+                    "Thumbnail + \"Uploaded\" (check icon). Buttons: \"Replace\" and \"Remove\".",
+                    "file: file, previewUrl: object URL, status: 'uploaded', error: null"
+                ],
+                [
+                    "Error",
+                    "Error message below control (e.g. \"File too large\" or \"Unsupported format\"). No preview.",
+                    "file: null (or previous file cleared), previewUrl: null, status: 'error', error: message"
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Max file size",
+                    "value": "≈ 2 MB",
+                    "helperText": "Configurable, but use a concrete number when you explain."
+                },
+                {
+                    "label": "Fake upload duration",
+                    "value": "1–2 s",
+                    "helperText": "Long enough to see the state, short enough to not annoy."
+                },
+                {
+                    "label": "Supported types",
+                    "value": "JPEG, PNG",
+                    "helperText": "Call out MIME checks, not just file extensions."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Show that you see beyond \"just pick a file\": enumerate all UI states, define validation rules, think about keyboard and screen reader users, and mention how you avoid memory issues with object URLs. That’s what turns a simple component into a solid, interview-ready design."
+        }
+    ]
+}

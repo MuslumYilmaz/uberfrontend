@@ -1,0 +1,172 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can design clean contracts between your UI pieces and between client and server. Show that you can define simple, focused interfaces: what props the flashcard viewer takes, what the data service returns, and how progress updates are sent to the backend."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about APIs:**\n\"I’d keep the surface small: the StudySession screen calls a `loadCards(deckId, options)` API to get a batch, passes those cards into a `FlashcardViewer`, and sends `ProgressUpdate` objects to a `syncProgress` API in batches. The viewer exposes callbacks like `onAnswer(result)` so the screen doesn’t care about flip animation details.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Your interfaces are easy to read and reason about.\n- You separate concerns: viewing vs fetching vs syncing.\n- You include error and offline scenarios in the contracts.\n- You avoid leaking low-level implementation details (e.g. animation internals) into public props."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Speak in terms of function signatures and props, but keep them human: \"The viewer gets `card`, `onFlip`, and `onAnswer`. The data service exposes `loadCards(deckId, cursor?)` and `syncProgress(deckId, updates)` which return promises.\" You don’t need exact TypeScript, just clear contracts."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface",
+                "Shape (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "LoadCardsParams",
+                    "{ deckId: string; batchSize?: number; cursor?: string; includeProgress?: boolean; }",
+                    "\"`LoadCardsParams` tells the backend which deck to load, how many cards we want, and optionally a cursor and flag to include user progress.\""
+                ],
+                [
+                    "CardBatchResult",
+                    "{ cards: Card[]; nextCursor?: string; hasMore: boolean; }",
+                    "\"`CardBatchResult` returns a batch of cards plus `hasMore` and an optional `nextCursor` for subsequent calls.\""
+                ],
+                [
+                    "ProgressUpdate",
+                    "{ cardId: string; deckId: string; result: 'correct' | 'incorrect'; reviewedAt: string; sessionId?: string; }",
+                    "\"A `ProgressUpdate` is what we send back: which card, in which deck, was answered correctly or not, at what time, and optionally which session it belongs to.\""
+                ],
+                [
+                    "SyncProgressPayload / Result",
+                    "Payload: { deckId: string; updates: ProgressUpdate[] }\nResult: { success: boolean; failedIds?: string[] }",
+                    "\"`syncProgress` takes a deck and an array of updates; the server replies with a simple success flag and maybe which ones failed if something went wrong.\""
+                ],
+                [
+                    "FlashcardViewerProps",
+                    "{ card: Card; mode?: 'study' | 'review'; side: 'front' | 'back'; disabled?: boolean; onFlip(nextSide: 'front' | 'back'): void; onAnswer(result: 'correct' | 'incorrect'): void; }",
+                    "\"`FlashcardViewer` receives a `card`, knows which side to show, and emits callbacks when the user flips or answers. It doesn’t know about networking.\""
+                ],
+                [
+                    "StudySessionScreenProps",
+                    "{ deckId: string; loadCards: (params: LoadCardsParams) => Promise<CardBatchResult>; syncProgress: (payload: SyncProgressPayload) => Promise<SyncProgressResult>; }",
+                    "\"The StudySession screen gets injected with `loadCards` and `syncProgress` so it orchestrates the flow but doesn’t hardcode how the backend works.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly expose",
+                            "items": [
+                                "A `loadCards(deckId, ...)` API for fetching a batch with cursor or simple pagination.",
+                                "A `syncProgress(deckId, updates[])` API that accepts multiple updates at once.",
+                                "A `FlashcardViewer` props interface with controlled `side` and `onFlip` / `onAnswer` callbacks.",
+                                "A simple `Card` shape with fields front/back/hint/example.",
+                                "Clear error handling conventions (e.g. rejected promises or `{ error }` in the result).",
+                                "Optional `includeProgress` flag if you want the server to pre-resolve which cards to show based on SRS."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid in the API",
+                            "items": [
+                                "Exposing low-level animation details (e.g. duration, easing) as required props for basic use.",
+                                "Making `FlashcardViewer` call the network directly.",
+                                "Forcing the caller to send one HTTP request per card instead of batched updates.",
+                                "Returning different shapes for the same endpoint depending on random flags.",
+                                "Hiding crucial information like `hasMore` or `nextCursor` inside opaque strings."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Client–server request lifecycle you should walk through",
+            "steps": [
+                {
+                    "title": "1. Start session",
+                    "text": "StudySession screen calls `loadCards({ deckId, batchSize })` to fetch the first batch. On success it updates its state and renders `FlashcardViewer` with the first card."
+                },
+                {
+                    "title": "2. Flip and answer",
+                    "text": "User flips the card; `FlashcardViewer` calls `onFlip('back')`. After seeing the answer, user marks it; viewer calls `onAnswer('correct' | 'incorrect')`, and the screen pushes a `ProgressUpdate` into a local queue."
+                },
+                {
+                    "title": "3. Advance & prefetch",
+                    "text": "The screen advances `currentIndex` and, if near the end of the batch, calls `loadCards({ deckId, cursor })` again to prefetch the next cards."
+                },
+                {
+                    "title": "4. Sync progress",
+                    "text": "Every N answers or on session end, the screen calls `syncProgress({ deckId, updates })`. On success, it clears the local queue; on failure, it retries or stores updates for later."
+                },
+                {
+                    "title": "5. Handle errors",
+                    "text": "If `loadCards` or `syncProgress` rejects, the screen sets an error state, shows a retry option, and does not lose the queued progress updates."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "UI surface",
+                    "value": "Small & focused",
+                    "helperText": "Viewer focuses on rendering and callbacks; screen orchestrates flow."
+                },
+                {
+                    "label": "Backend surface",
+                    "value": "2 main endpoints",
+                    "helperText": "`loadCards` and `syncProgress` cover most of the required behavior."
+                },
+                {
+                    "label": "Good signal",
+                    "value": "Contracts before code",
+                    "helperText": "You can explain props and API signatures clearly without touching implementation details."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong interface here means the flashcard viewer stays dumb and reusable, while the session screen and data service handle networking and progress. If another engineer can plug in a different backend or experiment with a new viewer just by honoring these contracts, you’ve designed the APIs well."
+        }
+    ]
+}

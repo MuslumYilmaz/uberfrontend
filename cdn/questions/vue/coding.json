@@ -4,7 +4,7 @@
     "title": "Counter (Component with Guarded Decrement)",
     "type": "coding",
     "technology": "vue",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "importance": 3,
     "tags": [
       "vue",
@@ -151,12 +151,1051 @@
       "openFile": "/src/App.vue",
       "storageKey": "v1:ui:vue:vue-contact-form-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "airbnb"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-todo-list",
+    "title": "Todo List (Refs + List Rendering)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "lists",
+      "state-management",
+      "event-handlers",
+      "forms"
+    ],
+    "description": {
+      "summary": "Build a small Todo List in Vue 3 using the Composition API and <script setup>. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks.",
+      "specs": {
+        "requirements": [
+          "Render a Todo List as the main UI in App.vue.",
+          "Use a text input and 'Add' button to create new todos.",
+          "Display todos in a list using v-for.",
+          "Each todo should have a checkbox to toggle completion and a 'Remove' button.",
+          "Provide a 'Clear completed' button that removes all completed todos when clicked."
+        ],
+        "expectedBehavior": [
+          "Clicking 'Add' with non-empty trimmed text adds a new todo to the list and clears the input.",
+          "Checking a todo's checkbox toggles its completed state and visually marks it (line-through).",
+          "Clicking 'Remove' deletes that specific todo.",
+          "Clicking 'Clear completed' removes all todos where done === true.",
+          "An empty state message is shown when there are no todos."
+        ],
+        "implementationNotes": [
+          "Use `ref('')` for the controlled input value (newTask).",
+          "Store the list of todos in a `ref<Todo[]>([])` where each todo has `id`, `text`, and `done`.",
+          "Use `computed` for simple derived state like `hasTodos`.",
+          "Implement helpers `addTask`, `toggleTask`, `removeTask`, and `clearCompleted` inside `<script setup>`.",
+          "Keep everything in a single App.vue component."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API with refs and computed",
+          "List rendering with v-for and keys",
+          "Immutable style array updates (map/filter) for clarity",
+          "Basic component-level state management"
+        ]
+      }
+    },
+    "starterCodeHint": "Work only inside `<script setup>` in App.vue. Use `const newTask = ref('')` and `const todos = ref([] as Todo[])`. Implement `addTask`, `toggleTask(id)`, `removeTask(id)`, and `clearCompleted()` and wire them to the template via @click / @change.",
+    "solutionBlock": {
+      "overview": "Use a single Vue 3 SFC with `<script setup>` to manage the todo list. Track the input value in `newTask` and store todos in a `ref` array with `{ id, text, done }`. A `computed` property `hasTodos` drives the empty state and footer visibility. Actions (`addTask`, `toggleTask`, `removeTask`, `clearCompleted`) update the `todos` array, and the template uses `v-for` to render items plus a checkbox and Remove button.\n\n**Key ideas**\n- Keep all state in refs inside `<script setup>`.\n- Use `v-for` + `:key` for list rendering.\n- Use immutable updates (`map` / `filter`) for clear toggling and removal.\n- Drive simple UI states (empty vs list, footer visibility) from computed values.",
+      "approaches": [
+        {
+          "title": "Single component with ref-backed list and immutable updates",
+          "prose": "Define `type Todo = { id: number; text: string; done: boolean }` and create `const newTask = ref('')` plus `const todos = ref([] as Todo[])`. `addTask` trims `newTask.value`, bails on empty, and appends a new todo with a unique `id` (e.g. `Date.now()`). `toggleTask(id)` replaces the array with `todos.value.map(todo => todo.id === id ? { ...todo, done: !todo.done } : todo)`. `removeTask(id)` and `clearCompleted()` use `filter` to drop items. A `hasTodos` computed returns `todos.value.length > 0` and controls whether you show the empty message or the list."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating todos in place without updating the ref value in a way that keeps the code clear.",
+          "Adding empty or whitespace-only tasks by forgetting to trim the input.",
+          "Forgetting to use `:key` in `v-for`, which can lead to odd checkbox behaviour.",
+          "Toggling completion without visually reflecting it (missing the `done` class binding)."
+        ],
+        "techniques": [
+          "Using refs for both scalar and array state.",
+          "Using computed for derived flags such as `hasTodos`.",
+          "Updating arrays immutably to keep logic simple and predictable.",
+          "Binding classes dynamically with `:class` for completed todos."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-todo-list.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-todo-list"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
+    "access": "free"
+  },
+  {
+    "id": "vue-image-slider",
+    "title": "Image Slider (Basic Navigation)",
+    "type": "coding",
+    "technology": "vue",
+    "companies": [
+      "amazon",
+      "google"
+    ],
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "arrays",
+      "event-handlers"
+    ],
+    "description": {
+      "summary": "Build a simple Vue 3 image slider that shows one image at a time and lets the user move between slides with Previous/Next buttons and small dot indicators.",
+      "specs": {
+        "requirements": [
+          "Render the image slider UI as the main component.",
+          "Display exactly one slide at a time with an image and a caption.",
+          "Show the current position as 'Slide X of Y'.",
+          "Provide 'Previous' and 'Next' buttons to move between slides.",
+          "Disable 'Previous' on the first slide and 'Next' on the last slide.",
+          "Render dot indicators for each slide and allow clicking a dot to jump directly to that slide."
+        ],
+        "expectedBehavior": [
+          "Initial slide is the first one in the list.",
+          "Clicking 'Next' moves forward by one slide until the last slide.",
+          "Clicking 'Previous' moves backward by one slide until the first slide.",
+          "The 'Previous' button is disabled on the first slide.",
+          "The 'Next' button is disabled on the last slide.",
+          "Clicking a dot jumps to the corresponding slide and updates the active dot state."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API with `ref` to store the current index.",
+          "Keep the slides in a constant array of objects with `id`, `title`, and `imageUrl`.",
+          "Use `computed` properties for `totalSlides`, `currentSlide`, `canGoPrev`, and `canGoNext`.",
+          "Implement small helper functions: `goTo(index)`, `prev()`, and `next()`.",
+          "Make sure navigation is guarded (do not go before the first slide or after the last slide)."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Derived state for UI (current slide, canGoPrev/canGoNext)",
+          "Event handlers for navigation",
+          "Working with arrays of data in a component"
+        ]
+      }
+    },
+    "starterCodeHint": "Define a `slides` array in `<script setup>` and track the current slide index in a `ref(0)`. Use `computed` values for the current slide, total slide count, and whether previous/next are allowed. Implement `goTo`, `prev`, and `next` to update the index safely.",
+    "solutionBlock": {
+      "overview": "Model the image slider as an array of slide objects and a single reactive index stored in a `ref`. Use `computed` properties to derive the current slide, total slide count, and whether the user can go to the previous or next slide. Expose three handlers: `goTo(index)` for jumping to a specific slide (guarded by bounds), `prev()` for moving one step left when possible, and `next()` for moving one step right when possible.\n\n**Key ideas**\n- Store only the current index as reactive state; everything else is derived.\n- Use `computed` for `currentSlide`, `canGoPrev`, and `canGoNext` so the template stays simple.\n- Guard navigation so the index never goes out of range.",
+      "approaches": [
+        {
+          "title": "Single component slider with derived navigation state",
+          "prose": "Keep all slider logic inside `<script setup>` in `App.vue`. Use a constant `slides` array and a `ref(0)` for `currentIndex`. Derive `totalSlides`, `currentSlide`, `canGoPrev`, and `canGoNext` with `computed` so the template can be mostly declarative. Implement `goTo(index)` with a simple bounds check, and use it from the dot buttons. Implement `prev()` and `next()` to decrement/increment the index only when the corresponding `canGoPrev`/`canGoNext` flags are true. This keeps the component predictable and easy to test."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Letting the index go below 0 or above the last slide index.",
+          "Accessing `slides[currentIndex]` without guarding, which can return `undefined` if the index is wrong.",
+          "Duplicating logic in multiple places instead of using `computed` for derived values."
+        ],
+        "techniques": [
+          "Using `ref` for reactive state in Vue 3.",
+          "Using `computed` to derive booleans and current-entity data from primitive state.",
+          "Driving both the main view and the small dot indicators from the same single source of truth."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-image-slider.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-image-slider"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json",
+    "access": "free"
+  },
+  {
+    "id": "vue-tabs-switcher",
+    "title": "Tabs / Multi-View Switcher",
+    "type": "coding",
+    "technology": "vue",
+    "companies": [
+      "amazon"
+    ],
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "conditional-rendering",
+      "basics"
+    ],
+    "description": {
+      "summary": "Build a simple Vue 3 tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+      "specs": {
+        "requirements": [
+          "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
+          "Track which tab is currently active and visually highlight it.",
+          "Render only the active tab's content at a time."
+        ],
+        "expectedBehavior": [
+          "The initial active tab should be \"Overview\".",
+          "Clicking a tab makes it the active tab.",
+          "Only the active tab's panel is visible at any time.",
+          "The active tab button has a distinct visual style (e.g., filled pill) compared to inactive ones."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API with `ref` to store the currently active tab.",
+          "Model the tab id as a string union (e.g., `'overview' | 'details' | 'settings'`).",
+          "Use a helper function like `isActive(tab)` to drive both active styles and conditional rendering.",
+          "Keep everything in a single `<App.vue>` component for this exercise."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`)",
+          "Basic component structure",
+          "Click event handlers",
+          "Conditional rendering based on reactive state"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement the tab state and handlers inside `<script setup>`. Use `ref('overview')` for the active tab and a small helper like `isActive(tab)` to decide which tab is highlighted and which panel is shown.",
+    "solutionBlock": {
+      "overview": "Use Vue 3's Composition API with a single `ref` holding the active tab id. The tab buttons update that ref when clicked, and a helper like `isActive(tab)` is used in the template for both styling and conditional rendering.\n\n**Key ideas**\n- Store the active tab id in a single `ref`.\n- Drive the active pill style and visible panel from the same source of truth.\n- Keep all logic colocated with the component template using `<script setup>`.",
+      "approaches": [
+        {
+          "title": "Single component with `activeTab` ref and helper function",
+          "prose": "Keep all logic inside `<script setup>` in `App.vue`. Use `const activeTab = ref('overview')` to define the initial tab. Define a helper `const isActive = (tab: TabId) => activeTab.value === tab` and use it both for button classes and for `v-if` panels. Implement `selectTab(tab)` so it sets `activeTab.value = tab` when a tab button is clicked."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using multiple booleans (`isOverview`, `isDetails`, `isSettings`) instead of a single tab id.",
+          "Forgetting to visually differentiate the active tab from inactive ones.",
+          "Rendering all panels at once instead of conditionally rendering only the active one."
+        ],
+        "techniques": [
+          "Using `ref` for local reactive state in Vue 3.",
+          "Using helper functions to keep the template clean.",
+          "Driving both styles and rendering from one reactive value."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-tabs.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-tabs-switcher"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json",
+    "access": "free"
+  },
+  {
+    "id": "vue-filterable-user-list",
+    "title": "Filterable / Searchable User List",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "lists",
+      "forms",
+      "filtering"
+    ],
+    "description": {
+      "summary": "Build a Vue 3 component that renders a user list with a search box, role filter, and \"only active\" checkbox.",
+      "specs": {
+        "requirements": [
+          "Render a filter UI and a list of users as the main component.",
+          "Use a fixed in-memory list of users (name, role, active flag).",
+          "Provide a text input that filters by name (case-insensitive).",
+          "Provide a role dropdown (All, Admin, Editor, Viewer) that filters by role.",
+          "Provide a checkbox that, when checked, shows only active users.",
+          "Render the filtered list below the controls."
+        ],
+        "expectedBehavior": [
+          "Initially, all users are shown.",
+          "Typing in the search box filters users whose name includes the search text (case-insensitive).",
+          "Changing the role dropdown filters by that role (or shows all roles when \"All\" is selected).",
+          "Checking the \"Only active users\" checkbox hides inactive users.",
+          "When no users match the filters, an empty state message is shown instead of an empty list."
+        ],
+        "implementationNotes": [
+          "Keep the user data in a fixed array inside the component (no fetch or API).",
+          "Use Vue 3's Composition API (`ref`, `computed`) in `<script setup>` to store filter state and derive the filtered list.",
+          "Treat the inputs as controlled with `v-model` bound to the reactive state.",
+          "Derive a `filteredUsers` computed from the base list + current filters.",
+          "You can mention memoization or performance considerations in discussion, but the plain computed is enough for this exercise."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Controlled inputs with `v-model`",
+          "Derived state for filtered lists",
+          "Rendering lists with `v-for` and keys"
+        ]
+      }
+    },
+    "starterCodeHint": "Define a constant USERS array with name, role, and active. Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`, and derive `filteredUsers` in a `computed` that applies all three filters.",
+    "solutionBlock": {
+      "overview": "The core of this exercise is combining three filters (search text, role selection, and an \"only active\" toggle) into a single derived list without mutating the original user data.\n\n**Key ideas**\n- Keep the base `USERS` list as a plain constant.\n- Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`.\n- Use a `computed` `filteredUsers` that applies all filters in sequence.\n- Render `filteredUsers` with `v-for`, and show an empty state when it is empty.\n\n**Test cases**\n- Default render shows all users.\n- Typing a partial name filters to matching users.\n- Changing the role filter to `Admin` shows only admins, `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- When filters exclude all users, a \"no users\" message is rendered.",
+      "approaches": [
+        {
+          "title": "Single `<App.vue>` with `ref` state and computed `filteredUsers`",
+          "prose": "Keep everything in `App.vue` using `<script setup>`. Declare a constant `USERS` array for the data. Use `ref('')` for the search term, `ref<'all' | 'admin' | 'editor' | 'viewer'>('all')` for the role filter, and `ref(false)` for the active-only toggle. Derive `filteredUsers` with a `computed` that normalizes the search term to lower-case, optionally filters on role when not `\"all\"`, and optionally filters out inactive users when `showOnlyActive` is true.\n\nUse `v-model` on the text input, select, and checkbox so the UI is fully controlled. In the template, `v-for` over `filteredUsers`, render name, a small badge for the role, and a status pill for active vs inactive. If `filteredUsers.length === 0`, render an `li` with an empty state message.",
+          "proseCode": "The full solution is shown in the SDK solution JSON: it wires `ref` state with `v-model`, computes `filteredUsers`, and renders the list with matching styling."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating the original `USERS` array instead of deriving a filtered list.",
+          "Forgetting to normalize search term and name to the same case.",
+          "Applying only one filter and ignoring role or `showOnlyActive`.",
+          "Trying to update reactive refs without using `.value` inside `<script setup>`."
+        ],
+        "techniques": [
+          "Using `ref` for local component state in Vue 3.",
+          "Using `computed` for derived lists.",
+          "`v-model` on text, select, and checkbox inputs.",
+          "Using `v-for` with `:key` for stable list rendering."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-filterable-user-list.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-filterable-user-list"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-accordion-faq",
+    "title": "Accordion / FAQ Component",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "components",
+      "composition-api",
+      "props",
+      "state-management"
+    ],
+    "description": {
+      "summary": "Build a simple FAQ (accordion) UI in Vue 3 that renders 3–4 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "specs": {
+        "requirements": [
+          "Use Vue 3 with a single <App.vue> root component as the main entry.",
+          "Render a FAQ card with 3–4 FAQ items (question + answer).",
+          "Clicking a question toggles its answer open/closed.",
+          "In the default mode, only one FAQ item can be open at a time.",
+          "Add a control (e.g. a checkbox) to switch to 'allow multiple open' mode.",
+          "In 'allow multiple open' mode, more than one FAQ item can be open at the same time.",
+          "Use a child <FaqItem> component for a single FAQ row."
+        ],
+        "expectedBehavior": [
+          "Initially all FAQ items are closed.",
+          "Clicking a closed question opens its answer.",
+          "In single-open mode: opening one item closes any other open item.",
+          "Switching to multi-open mode keeps currently open items and allows opening more.",
+          "Clicking an open question closes it in both modes."
+        ],
+        "implementationNotes": [
+          "Keep the FAQ data (question + answer) in the parent component using a simple array.",
+          "Use Vue 3's `<script setup>` syntax and Composition API.",
+          "Track open items in the parent via a `ref<number[]>` that stores open indexes.",
+          "Create a child `<FaqItem>` component that takes `question`, `answer`, and `isOpen` as props and emits a `toggle` event when clicked.",
+          "Use `v-for` to render the list of FAQ items."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Lifting state up to the parent",
+          "Child communication via props and emits",
+          "Single vs multi selection using an array of open indexes"
+        ]
+      }
+    },
+    "starterCodeHint": "Keep FAQ data in the parent and use a `ref<number[]>` to store open item indexes. Implement `isItemOpen(index)`, `onItemToggle(index)`, and `onToggleAllowMultiple()` inside `<script setup>` and pass `isOpen` / `@toggle` to a child `<FaqItem>` component.",
+    "solutionBlock": {
+      "overview": "The key to this exercise is to have the parent component fully control which FAQ items are open. The parent stores the FAQ data (question + answer) and an array of open indexes in a `ref<number[]>`. Each child `<FaqItem>` is stateless and only receives `isOpen` plus an `@toggle` callback.\n\nIn single-open mode, the `openIndexes` ref behaves like a radio group: it is either empty or contains a single index. In multi-open mode, it behaves like a set of indexes. Toggling between modes requires normalizing the `openIndexes` array when going back to single-open mode.\n\n**Key ideas**\n- Keep all UI state (which items are open, whether multiple are allowed) in the parent.\n- Represent open items as an array of indexes (`ref<number[]>`).\n- Use a child component that simply renders UI and emits `toggle` when clicked.\n- Derive `isItemOpen(index)` from the `openIndexes` array.",
+      "approaches": [
+        {
+          "title": "Parent-controlled openIndexes with a child <FaqItem> component",
+          "prose": "In `<App.vue>`, define:\n\n- A simple `faqItems` array of `{ question, answer }` objects.\n- `const allowMultiple = ref(false)` to track mode.\n- `const openIndexes = ref<number[]>([])` to store which items are open.\n\nImplement helpers:\n- `const isItemOpen = (index: number) => openIndexes.value.includes(index);`\n- `const onItemToggle = (index: number) => { ... }` that toggles the index depending on `allowMultiple.value`.\n\nIn multi-open mode, treat `openIndexes.value` as a set: remove the index if present, otherwise add it. In single-open mode, either set it to `[index]` or `[]`. Pass these down to `<FaqItem>` via props and `@toggle` to keep the child simple and reusable.\n\n`<FaqItem>` itself uses `defineProps` for `question`, `answer`, and `isOpen`, and `defineEmits` to emit a `toggle` event when its header button is clicked."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Letting each `<FaqItem>` manage its own open state, which makes it hard to enforce the 'only one open' rule.",
+          "Using a single `ref<number | null>` for `openIndex` and then trying to hack multi-open behavior into it.",
+          "Mutating the `openIndexes.value` array in place instead of assigning a new array (harder to reason about)."
+        ],
+        "techniques": [
+          "Using `ref<number[]>` to represent a collection of selected items in Vue 3.",
+          "Using `defineProps` / `defineEmits` in `<script setup>` for clean parent–child communication.",
+          "Deriving `isItemOpen` from an index array to support both single and multi selection with the same state shape."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-accordion-faq.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-accordion-faq"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-pagination-table",
+    "title": "Paginated Data Table",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "pagination",
+      "arrays"
+    ],
+    "description": {
+      "summary": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+      "specs": {
+        "requirements": [
+          "Render the table UI as the main <App.vue> component.",
+          "Use a static list (around 20 users) with id, name, email, and role.",
+          "Show 5 rows per page.",
+          "Add \"Previous\" and \"Next\" buttons to change the current page.",
+          "Display the current page and total pages (for example \"Page 2 of 4\").",
+          "Disable \"Previous\" on the first page and \"Next\" on the last page."
+        ],
+        "expectedBehavior": [
+          "Initial render shows the first 5 users (page 1).",
+          "Clicking \"Next\" advances by 5 users until the last page.",
+          "Clicking \"Previous\" moves back by 5 users until the first page.",
+          "On the first page, \"Previous\" is disabled and does nothing when clicked.",
+          "On the last page, \"Next\" is disabled and does nothing when clicked.",
+          "The label \"Page X of Y\" always matches the current page."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API with `ref` and `computed` in `<script setup>`.",
+          "Store the current page index in a `ref` (0-based).",
+          "Keep a constant `PAGE_SIZE = 5` and derive start/end indices from the current page.",
+          "Use a `computed` for the current slice of users and for the \"first/last page\" flags."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Derived state from minimal source of truth",
+          "Array slicing with `slice(start, end)`",
+          "Handling UI edge cases for first/last pages"
+        ]
+      }
+    },
+    "starterCodeHint": "Keep all logic inside `<script setup lang=\"ts\">`. Use `const currentPage = ref(0)` for page state, a constant `PAGE_SIZE = 5`, and `computed` properties to derive the current page slice, total pages, and button disabled state.",
+    "solutionBlock": {
+      "overview": "This exercise is about managing a single piece of state: the current page. The full users array stays static in the component. From that, you derive the paged slice, total page count, and booleans indicating when you are on the first or last page.\n\n**Core ideas**\n- `currentPage` is a `ref(0)` and represents a 0-based index.\n- `PAGE_SIZE` is a constant (5 rows per page).\n- `totalPages` is a `computed` that uses `Math.ceil(USERS.length / PAGE_SIZE)`.\n- A `computed` for `pagedUsers` uses `slice(start, end)` where `start = currentPage.value * PAGE_SIZE`.\n- `isFirstPage` and `isLastPage` are `computed` booleans used to disable navigation buttons and guard the handlers.\n\n**Test cases**\n- Initial render → first 5 users, label shows `Page 1 of N`, Previous disabled.\n- Clicking Next repeatedly walks through the list and disables Next on the last page.\n- Clicking Previous repeatedly walks back and disables Previous on the first page.\n- The page label always matches the current page index.",
+      "approaches": [
+        {
+          "title": "Single component with derived pagination slice",
+          "prose": "Keep everything in `App.vue` using `<script setup lang=\"ts\">`. Define the users array and `PAGE_SIZE` as constants. Store `currentPage` in a `ref(0)`. Then create `computed` properties for `totalPages`, `pagedUsers`, `isFirstPage`, and `isLastPage`. The `goPrevious` and `goNext` handlers simply adjust `currentPage.value` within bounds. The template renders the table rows from `pagedUsers` and binds disabled state and click handlers on the Previous / Next buttons."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Treating `currentPage` as 1-based while doing `slice` calculations, causing off-by-one bugs.",
+          "Letting `currentPage` go below 0 or above `totalPages - 1` because handlers aren’t guarded.",
+          "Deriving the slice inline in the template instead of a named `computed`, which makes the code harder to read.",
+          "Forgetting to use `.value` when reading/writing `ref`s inside `<script setup>`."
+        ],
+        "techniques": [
+          "Using `ref` and `computed` to derive view state from minimal data.",
+          "Using array `slice(start, end)` for pagination.",
+          "Co-locating state and logic with the template in a single file component."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-pagination-table.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-pagination-table"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-theme-toggle",
+    "title": "Theme Toggle with Persisted Light/Dark Mode",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "composition-api",
+      "state-management",
+      "local-storage",
+      "theming"
+    ],
+    "description": {
+      "summary": "Add a global light/dark theme toggle in the top-right of the page using Vue 3. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "specs": {
+        "requirements": [
+          "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
+          "Support two themes: \"light\" and \"dark\".",
+          "Store the current theme in a single source of truth (e.g. a module-level ref / small theme composable).",
+          "Persist the selected theme in localStorage under a stable key.",
+          "On initial load, read the theme from localStorage and apply it before the user interacts.",
+          "Apply the theme at the document level by setting `data-theme` on `<html>`, so that the existing CSS can react to it.",
+          "You only need to edit `/src/App.vue` (the template and `<script setup>`). The CSS files are already wired to respond to `data-theme` and should be left as-is."
+        ],
+        "expectedBehavior": [
+          "By default, the app starts in light mode if there is no previous theme stored.",
+          "If the user toggles to dark mode, the page background, text, and card colors change.",
+          "Reloading the page keeps the user’s last theme selection (light or dark).",
+          "The toggle UI (label or icon) always reflects the actual current theme.",
+          "Switching themes is instant and does not require a full reload."
+        ],
+        "implementationNotes": [
+          "Use Vue 3’s Composition API with a `ref<'light' | 'dark'>` to hold the current theme.",
+          "Read from `window.localStorage` using a stable key (for example `uf-theme`) and validate the stored value.",
+          "Apply the theme to `document.documentElement` via `setAttribute('data-theme', theme)` so the CSS can use `:root[data-theme='dark']` / `html[data-theme='dark'] ...` selectors.",
+          "Encapsulate the side-effects (localStorage read/write + DOM attribute update) in a couple of helper functions instead of scattering them across the component.",
+          "Avoid duplicating theme logic in multiple places; treat the theme ref as the single source of truth and derive `isDark` from it via `computed`."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Simple global-ish state via a module-level ref or mini composable",
+          "Side-effects and initialization logic in `<script setup>`",
+          "Using localStorage safely in a browser environment",
+          "Simple theming by driving `data-theme` on `<html>` and letting existing CSS respond"
+        ]
+      }
+    },
+    "starterCodeHint": "Create a `Theme` type (`'light' | 'dark'`) and a `ref<Theme>('light')` that holds the current theme. On startup, read a stored value from `localStorage` (if running in the browser), validate it, and call a helper that sets `document.documentElement.dataset.theme`. Derive an `isDark` computed from the theme and wire the toggle button to a `toggleTheme()` function that flips between `'light'` and `'dark'` and persists the result.",
+    "solutionBlock": {
+      "overview": "This exercise is about lifting theme state into a small global-ish store in Vue (a module-level `ref` + helpers) and wiring it to both the UI and the DOM. You store the current theme (`'light'` or `'dark'`) in a reactive `ref`, read an initial value from `localStorage` when the module is evaluated, and apply that value to the `<html>` element via a `data-theme` attribute. The root `App.vue` template shows a toggle in the top-right corner and delegates all theme changes to `toggleTheme()`. The provided CSS (`styles.css` + `App.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `html[data-theme='dark'] .app-shell` rules, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+      "approaches": [
+        {
+          "title": "Module-level theme store with `data-theme` on `<html>`",
+          "prose": "Use a tiny theme store built directly in `<script setup>`.\n\n1. Define a `Theme` type alias (`'light' | 'dark'`) and a stable localStorage key.\n2. Create `const theme = ref<Theme>('light')` as the single source of truth.\n3. Add `applyTheme(theme)` that sets `document.documentElement.setAttribute('data-theme', theme)`.\n4. Run an `initTheme()` function at module evaluation time: it reads from localStorage, validates `'light'` / `'dark'`, falls back to `'light'`, assigns to `theme.value`, and calls `applyTheme`.\n5. Implement `setTheme(theme)` to update the ref, write to localStorage, and call `applyTheme`.\n6. Implement `toggleTheme()` to flip between `'light'` and `'dark'` using `setTheme`.\n7. Expose `const isDark = computed(() => theme.value === 'dark')` and an `onToggleClick()` handler that calls `toggleTheme()`.\n\nThe template stays very simple: it just binds the button to `onToggleClick` and shows `🌙 / ☀️` and `Dark / Light` labels based on `isDark`. All the persistence and DOM side-effects live in a few small helpers, keeping the component easy to reason about."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Reading from localStorage too late (e.g. only in a `mounted` hook) and causing a visible flash from light to dark.",
+          "Forgetting to actually apply the theme to `<html>` and only updating a label in the UI.",
+          "Using multiple sources of truth for the theme (for example, having separate `isDark` and `theme` refs that can drift apart).",
+          "Not guarding access to `window` / `localStorage` when running in non-browser environments."
+        ],
+        "techniques": [
+          "Using a module-level `ref` as a simple global store in Vue 3.",
+          "Using `computed` to derive booleans (`isDark`) from core state.",
+          "Encapsulating all side-effects (DOM + localStorage) in small helpers called from state-changing functions.",
+          "Letting preconfigured CSS (`:root[data-theme='dark']` and `html[data-theme='dark'] .app-shell`) handle visual changes while the script only controls `data-theme`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-theme-toggle.v2.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v2:ui:vue:vue-theme-toggle"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-multi-step-form",
+    "title": "Multi-step Signup Form (3-step Wizard)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "forms",
+      "validation",
+      "wizard",
+      "state-management",
+      "composition-api"
+    ],
+    "description": {
+      "summary": "Build a 3-step signup flow in Vue 3 that collects basic info, address info, and shows a summary with a final submit action. Each step should be validated before the user can proceed.",
+      "specs": {
+        "requirements": [
+          "Render a 3-step signup form as a small wizard-style UI.",
+          "Step 1: Basic info (name, email).",
+          "Step 2: Address info (street, city, country, optional postal code).",
+          "Step 3: Summary + Submit (show all collected data and allow submission).",
+          "Provide a \"Next\" button to advance to the next step.",
+          "\"Next\" must only be enabled when the current step is valid.",
+          "Provide an optional \"Back\" button to navigate to the previous step (except on the first step).",
+          "On the summary step, show a read-only overview of all data entered so far.",
+          "On the last step, show a \"Submit\" button that submits the aggregated data."
+        ],
+        "expectedBehavior": [
+          "Initial render shows Step 1 (Basic info) with empty fields.",
+          "Typing in inputs updates the internal form state in real time.",
+          "If required fields on the current step are invalid or empty, the \"Next\" button is disabled (or clicking it shows validation errors and does not advance).",
+          "When the current step is valid, the \"Next\" button becomes enabled and moves to the next step when clicked.",
+          "The \"Back\" button moves to the previous step and preserves already-entered values.",
+          "The summary step reflects the latest values from the previous steps.",
+          "Clicking \"Submit\" on the summary step validates all data and then performs a final action (e.g. logs the payload to the console)."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API in `<script setup>`.",
+          "Store the entire form data (basic + address) in a single `reactive` object or equivalent structure.",
+          "Use one `ref` for the current step index (e.g. `currentStep = ref(0)`).",
+          "Use `computed` properties to derive booleans like `isFirstStep`, `isLastStep`, `canGoNext`, and `canSubmit` based on current step and validation rules.",
+          "Implement simple per-step validation functions or computed objects (e.g. `basicErrors`, `addressErrors`) and drive both error messages and disabled states from them.",
+          "Use `v-model` bindings for input elements so the form state stays in sync with user input.",
+          "Use conditional rendering (`v-if` / `v-else-if` / `v-else`) to show the relevant step content based on `currentStep`."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `reactive`, `computed`)",
+          "Multi-step form / wizard patterns",
+          "Form validation + disabled states",
+          "Centralized form state management",
+          "Conditional rendering and navigation between steps"
+        ]
+      }
+    },
+    "starterCodeHint": "Use `<script setup>` with a `ref` for `currentStep` and a `reactive` object for the combined form state (basic + address). Derive `isFirstStep`, `isLastStep`, and `canGoNext` as `computed` properties based on simple validation rules. Drive `Next` button disabled state and error messages from these computed values.",
+    "solutionBlock": {
+      "overview": "Implement a 3-step signup wizard using Vue 3's Composition API. Keep all form state in a single `reactive` object with nested `basic` and `address` sections, and track the current step with a `ref`. Use `computed` properties to derive validation flags and control when the user can move forward or submit the form.\n\n**Key ideas**\n- Centralize all form fields inside one `reactive` object so you can easily show a summary view.\n- Track the current step with `currentStep = ref(0)` and use conditional rendering in the template to show the correct step content.\n- Implement per-step validation (e.g. `basicErrors`, `addressErrors`) as `computed` objects that inspect the reactive form fields.\n- Derive `canGoNext` and `canSubmit` from these validation results so buttons stay disabled until the current step is valid.\n- Preserve form values when navigating between steps, and have the summary step render directly from the same reactive data.",
+      "approaches": [
+        {
+          "title": "Single `<App.vue>` wizard with reactive form state and computed validation",
+          "prose": "Keep everything inside `App.vue` using `<script setup>`. Define a `reactive` `form` object to hold `basic` (name, email) and `address` (street, city, country, postalCode) data. Use a `ref` for `currentStep` and drive the view with `v-if`/`v-else-if` blocks for each step. For validation, create `computed` objects like `basicErrors` and `addressErrors` that return booleans based on whether fields are empty or invalid. Then derive `isBasicValid`, `isAddressValid`, `canGoNext`, and `canSubmit` as additional `computed` values. The `next()` handler should check `canGoNext` before incrementing `currentStep`, while `prev()` decrements it when possible. The summary step simply displays the same reactive `form` data, and the `submit()` handler validates everything one last time before logging or sending the payload."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Scattering form state across multiple refs instead of keeping it in a single structured `reactive` object, which makes the summary and submit step harder to implement.",
+          "Implementing validation only in the click handlers and not deriving it from `computed` properties, which can lead to duplicated logic and inconsistent UI states.",
+          "Allowing navigation to the next step even when required fields are empty, or forgetting to disable the \"Next\" button until the step is valid.",
+          "Resetting or recreating the form object when changing steps, which causes entered values to be lost."
+        ],
+        "techniques": [
+          "Using `reactive` for grouped form data (with nested objects) so all steps share the same source of truth.",
+          "Using `computed` properties to derive validation flags and navigation booleans (`canGoNext`, `canSubmit`, `isFirstStep`, `isLastStep`).",
+          "Driving button disabled states and inline error messages entirely from validation `computed`s.",
+          "Using `v-model` for input fields so changes automatically update the underlying reactive form object."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-multi-step-form.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-multi-step-form"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-shopping-cart",
+    "title": "Shopping Cart Mini",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "hard",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "arrays",
+      "derived-state",
+      "immutability",
+      "ecommerce"
+    ],
+    "description": {
+      "summary": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price.",
+      "specs": {
+        "requirements": [
+          "Render a list of products with name, price, and an \"Add to cart\" button for each.",
+          "Maintain a `cartItems` collection where each item has `id`, `name`, `price`, and `quantity`.",
+          "In the cart, show each item's name, unit price, quantity, and line total (`price * quantity`).",
+          "Provide controls to increase and decrease quantity for each cart item.",
+          "Allow removing an item from the cart entirely.",
+          "Display derived values: total item count and total cart price.",
+          "Visually stack the cart card under the products card (single-column layout)."
+        ],
+        "expectedBehavior": [
+          "Clicking \"Add to cart\" for a product that is not yet in the cart adds it with quantity `1`.",
+          "Clicking \"Add to cart\" again for the same product increases its quantity by `1`.",
+          "Clicking the \"+\" button in the cart increases that item's quantity by `1`.",
+          "Clicking the \"−\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart.",
+          "Clicking \"Remove\" immediately removes that item from the cart.",
+          "Total item count and total price update correctly whenever the cart changes."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API with `ref` to hold `cartItems` as an array.",
+          "Treat `cartItems` as immutable for updates: create new arrays with `map`, `filter`, and spreads instead of mutating in place.",
+          "Derive `totalQty` and `totalPrice` from `cartItems` using `computed` + `Array.prototype.reduce`.",
+          "Keep everything in a single `<App.vue>` component for this exercise; no Vuex or global store is required.",
+          "Match the given UI: products card on top, cart card below, same styling as Angular/React versions."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Array-based state and immutable-style updates",
+          "Derived state (total quantity, total price)",
+          "List rendering with `v-for` and `:key`",
+          "Click handlers for add / increase / decrease / remove"
+        ]
+      }
+    },
+    "starterCodeHint": "Store products in a constant array and `cartItems` in a `ref<CartItem[]>([])`. Use `computed` for `totalQty` and `totalPrice`, and update `cartItems.value` immutably with `map`, `filter`, and `[...prev, newItem]` when handling cart actions.",
+    "solutionBlock": {
+      "overview": "This exercise focuses on nested, array-based cart state and derived values in Vue 3. Keep `cartItems` in a single `ref` and update it immutably when adding, increasing, decreasing, or removing items. `totalQty` and `totalPrice` are derived via `computed` + `reduce`, so they always stay in sync with the cart.\n\nThe UI is a single column: a \"Products\" card on top and a \"Cart\" card below, with identical layout across Angular, React, and Vue.\n\n**Key ideas**\n- Use `ref` for the cart array and `computed` for totals.\n- Update cart items immutably with `map`/`filter`/spreads.\n- Derive totals instead of storing them separately.\n- Keep all logic inside a single `<App.vue>` using `<script setup>`.",
+      "approaches": [
+        {
+          "title": "Single component with immutable cart array (Composition API)",
+          "prose": "Define `PRODUCTS` as a constant array and keep `const cartItems = ref<CartItem[]>([])`. Use `const totalQty = computed(() => ...)` and `const totalPrice = computed(() => ...)` to derive totals from `cartItems.value`. For `addToCart`, `increaseQty`, `decreaseQty`, and `removeItem`, always create a new array rather than mutating the existing one. This keeps updates predictable and mirrors immutable patterns used in React while still playing nicely with Vue's reactivity."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating `cartItems.value` in place (e.g. pushing or incrementing `item.quantity` directly) instead of replacing it with a new array.",
+          "Computing `totalQty` and `totalPrice` in methods instead of `computed` properties, leading to duplicated logic.",
+          "Using the loop index as `:key` instead of a stable `id`, which can cause odd re-render behavior.",
+          "Letting items stay in the cart with `quantity` 0 instead of removing them."
+        ],
+        "techniques": [
+          "Composition API with `<script setup>`.",
+          "Immutable-style array updates with `map` and `filter` in Vue.",
+          "Derived state with `computed` and `reduce`.",
+          "Consistent UI parity across Angular, React, and Vue implementations."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-shopping-cart.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-shopping-cart"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-debounced-search",
+    "title": "Debounced Search with Fake API",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "hard",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "composition-api",
+      "watch",
+      "async",
+      "debounce",
+      "api-calls"
+    ],
+    "description": {
+      "summary": "Build a debounced search box in Vue 3 that calls a fake API 500ms after the user stops typing and shows loading, results, empty, and error states.",
+      "specs": {
+        "requirements": [
+          "Render a search input as the main UI.",
+          "Hold the current query, loading flag, error message, and results list using Vue's Composition API.",
+          "Trigger the search 500ms after the user stops typing (debounced).",
+          "Call a provided fake API function that returns a filtered list of users.",
+          "Show a loading message while the debounced request is in-flight.",
+          "Show a friendly error message when the fake API rejects.",
+          "Show result rows with user name and email on success.",
+          "Show an empty state when there are no results for a non-empty query."
+        ],
+        "expectedBehavior": [
+          "Typing in the input updates the query immediately.",
+          "No API calls happen while the user is still typing quickly.",
+          "500ms after the user stops typing, a search request is fired.",
+          "While the debounced request is running, a loading state is visible.",
+          "If the query is cleared, results are cleared and no request is fired.",
+          "If the query is \"error\", the fake API rejects and an error message is displayed.",
+          "On success, the list shows matching users by name or email.",
+          "When there are no matches, an explicit 'no results' message is shown."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API (`ref`) to store `query`, `results`, `isLoading`, and `error`.",
+          "Use `watch(query, ...)` with `setTimeout` and the `onInvalidate` cleanup callback to implement debouncing and cancel stale requests.",
+          "Guard the empty-query case by clearing results and skipping the API call.",
+          "Handle both success and error paths to keep loading and error state in sync."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `watch`)",
+          "Effect-style logic with `watch` and cleanup",
+          "Debounced async calls",
+          "Error and loading state management"
+        ]
+      }
+    },
+    "starterCodeHint": "Use `ref('')` for `query`, `ref([])` for `results`, and a `watch(query, ...)` that starts a 500ms `setTimeout` and clears it in `onInvalidate`. Inside the timeout, call `fakeApiSearch(trimmedQuery)` and update loading, error, and results accordingly.",
+    "solutionBlock": {
+      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown.",
+      "approaches": [
+        {
+          "title": "Single component with `watch` and debounced API call",
+          "prose": "Use Composition API state (`ref`) inside `<script setup>`. Implement a `watch(query, ...)` that debounces the search.\n\n1. Declare `query`, `results`, `isLoading`, and `error` as refs.\n2. Inside `watch(query, (value, _old, onInvalidate) => { ... })`:\n   - Clear any previous timeout.\n   - If `value.trim()` is empty: reset results, `isLoading`, and `error`, then return.\n   - Otherwise, set `isLoading` and clear `error`, then start a 500ms timeout.\n   - In the timeout, call `fakeApiSearch(trimmed)` and update `results` / `error` / `isLoading`.\n3. Use `onInvalidate` to clear the timeout so that intermediate keystrokes don't leak timeouts and stale responses.\n\nThis mirrors how you might use `useEffect` + cleanup in React, but using Vue's `watch` API.",
+          "codeJs": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching…</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { ref, watch } from 'vue';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref([]);\nconst isLoading = ref(false);\nconst error = ref(null);\n\nlet timeoutId;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId != null) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    timeoutId = setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      if (timeoutId != null) {\n        clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event) => {\n  query.value = event.target.value;\n};\n</script>\n\n<style scoped>\n/* same UI styles as React / Angular debounced search */\n</style>\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to clear the timeout in `onInvalidate`, causing multiple stale requests.",
+          "Calling the API even when the query is empty, which creates confusing loading states.",
+          "Not resetting `error` when a new search starts, leaving old error messages visible.",
+          "Letting older responses overwrite newer ones if you don't cancel the timeout or ignore stale results."
+        ],
+        "techniques": [
+          "Using `watch` for effect-style logic in Vue 3.",
+          "Combining `setTimeout` with `onInvalidate` for debouncing.",
+          "Managing loading, error, and results state together for a consistent UX.",
+          "Deriving UI states (status text, empty message) from a small, well-structured state shape."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-debounced-search.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v2:ui:vue:vue-debounced-search"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-star-rating",
+    "title": "Star Rating Widget",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "event-handlers",
+      "basics"
+    ],
+    "description": {
+      "summary": "Implement a reusable Vue 3 star-rating widget that renders a row of clickable stars, allows the user to select a rating, and displays the current rating value.",
+      "specs": {
+        "requirements": [
+          "Render the star rating UI as the main component.",
+          "Display a row of stars (e.g. 5 by default).",
+          "Allow the user to select a rating by clicking a star.",
+          "Visually fill all stars up to the selected rating.",
+          "Display the current rating value below the stars (e.g. \"Current rating: 3 / 5\")."
+        ],
+        "expectedBehavior": [
+          "Stars render from 1 up to the configured max (default 5).",
+          "Clicking the 3rd star sets the rating to 3 and fills 3 stars.",
+          "Clicking the 5th star sets the rating to 5 and fills 5 stars.",
+          "Initial rating starts at 0 (no filled stars)."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's `<script setup>` syntax in `App.vue`.",
+          "Store the current rating in a `ref` (e.g. `const rating = ref(0)`).",
+          "Optionally store `max` in a `ref` and derive a stars list with `computed` or an inline array.",
+          "Use class binding (e.g. `:class=\"{ filled: star <= rating }\"`) to style selected stars.",
+          "Render a small text block under the stars to show the numeric rating."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Basic component structure with `<script setup>`",
+          "Click event handlers",
+          "Deriving UI from reactive state"
+        ]
+      }
+    },
+    "starterCodeHint": "Inside `<script setup>`, use a `ref(0)` for the current rating and a `computed` list of stars. Implement a `handleRate` function that updates the rating when a star is clicked.",
+    "solutionBlock": {
+      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars.",
+      "approaches": [
+        {
+          "title": "Single component with reactive rating and computed stars",
+          "prose": "Keep the star-rating logic in a single `App.vue` component. Use `const rating = ref(0)` to hold the value, and `const max = ref(5)` for the number of stars. A `computed` property `stars` returns an array `[1, 2, ..., max]` used in a `v-for` loop. Each star is a button that calls `handleRate(star)` on click. `handleRate` updates `rating.value` to the clicked index. The template binds a `filled` class when `star <= rating` and shows the numeric rating in a `<p>` below the stars."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Hardcoding stars in the template instead of generating them from data, which makes `max` harder to change.",
+          "Forgetting to use `.value` when updating refs in `<script setup>`.",
+          "Not visually differentiating selected vs unselected stars, making the rating unclear."
+        ],
+        "techniques": [
+          "Using `ref` for reactive primitives.",
+          "Using `computed` to derive arrays for `v-for`.",
+          "Using class binding for visual state (`filled` vs default)."
+        ]
+      }
+    },
+    "companies": [
+      "amazon"
+    ],
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-star-rating.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-star-rating"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-dynamic-table",
+    "title": "Dynamic Table (Rows × Columns)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "lists",
+      "dynamic-ui",
+      "basics"
+    ],
+    "description": {
+      "summary": "Given user input for the number of rows and columns, build a Vue 3 component that renders an HTML table grid accordingly.",
+      "specs": {
+        "requirements": [
+          "Render the dynamic table UI as the main component.",
+          "Provide two numeric inputs: one for the number of rows and one for the number of columns.",
+          "Provide a button (e.g. \"Generate table\") that rebuilds the table when clicked.",
+          "Render an HTML table whose number of rows and columns matches the current input values.",
+          "Each cell should display something simple and visible, such as its row/column indices (e.g. R1C1)."
+        ],
+        "expectedBehavior": [
+          "Initially, it is fine to show an empty state or no table. After clicking the generate button, a table appears.",
+          "Changing the row or column values and clicking the button updates the table dimensions.",
+          "If the user enters non-positive values (0 or negative), the implementation may render no rows/columns or clamp the value to a minimum of 1, as long as the behavior is consistent."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API inside `<script setup>`.",
+          "Use `ref` to store the numeric inputs and the `rows`/`cols` arrays that drive rendering.",
+          "Implement a helper (e.g. `normalizeCount`) to clamp user input to a safe range (such as 0–20).",
+          "Use `Array.from` or a similar approach to build arrays for `v-for` loops.",
+          "Use a `computed` value for simple derived state like `hasGrid` (whether there is anything to render)."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Two-way binding with `v-model.number`",
+          "Dynamic UI generation with `v-for`",
+          "Basic input normalization and guarded rendering"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement the logic inside `<script setup>`. Use `ref(3)` and `ref(4)` for the initial row/column inputs, keep `rows` and `cols` in refs that you rebuild in an `updateTable()` function, and drive the table with nested `v-for` loops over those arrays.",
+    "solutionBlock": {
+      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0–20) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts.",
+      "approaches": [
+        {
+          "title": "Single component with reactive inputs and `v-for`-driven grid",
+          "prose": "Keep everything inside `<script setup>` in `App.vue`. Use `const rowInput = ref(3)` and `const colInput = ref(4)` for the initial inputs, and `rows` / `cols` as `ref<number[]>([])` to drive the table. Implement `normalizeCount` to clamp and sanitize user-provided numbers, then in `updateTable()` call it for both dimensions and build `rows.value` and `cols.value` with `Array.from({ length: n }, (_, i) => i)`. In the template, bind the inputs with `v-model.number` and use nested `v-for` loops over `rows` and `cols` to render `<tr>` and `<td>`, printing labels like `R{{ r + 1 }}C{{ c + 1 }}` inside each cell.",
+          "notes": {}
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Trying to iterate directly over a number in `v-for` instead of over an array.",
+          "Not normalizing the input and letting negative, NaN, or very large values break the UI.",
+          "Forgetting to use `.value` when reading and writing refs inside `<script setup>`."
+        ],
+        "techniques": [
+          "Using `ref` for local state and rebuilding arrays reactively.",
+          "Using `computed` to derive `hasGrid` so the empty state is handled cleanly.",
+          "Using `Array.from({ length: n })` as a simple way to create ranges for `v-for`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-dynamic-table.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-dynamic-table"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-dynamic-table-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-nested-checkboxes",
+    "title": "Nested Checkbox Tree (Parent–Child Sync)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "event-handlers",
+      "basics",
+      "dom"
+    ],
+    "description": {
+      "summary": "Build a small Vue 3 UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate).",
+      "specs": {
+        "requirements": [
+          "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
+          "Checking the parent selects all children.",
+          "Unchecking the parent clears all children.",
+          "When children are toggled individually:",
+          "- If all are checked → parent is checked.",
+          "- If none are checked → parent is unchecked.",
+          "- If some are checked → parent is indeterminate.",
+          "Keep everything in a single <App.vue> component."
+        ],
+        "expectedBehavior": [
+          "Each child checkbox toggles independently.",
+          "The parent reflects the aggregate state of the children.",
+          "The parent’s visual state shows indeterminate when selection is mixed.",
+          "No external component libraries are required."
+        ],
+        "implementationNotes": [
+          "Use Vue 3's Composition API in <script setup> with `ref` to store the children list.",
+          "Derive the parent’s checked/indeterminate state from the children and apply `indeterminate` via a template ref.",
+          "Use standard `@change` handlers to wire parent and child events."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `watch`)",
+          "Derived state from a list of items",
+          "Click/event handlers",
+          "Working with DOM-only properties via `ref` (indeterminate)"
+        ]
+      }
+    },
+    "starterCodeHint": "Keep the children as an array of `{ id, label, checked }` in a `ref`. Use a template `ref` on the parent `<input>` so you can assign `el.indeterminate = true` when some but not all children are checked.",
+    "solutionBlock": {
+      "overview": "The core idea is to store the children as a reactive array and derive the parent state from it. The parent checkbox never has its own independent state; instead, a watcher looks at how many children are checked and sets `checked` and `indeterminate` on the DOM node via a template ref. Toggling the parent sets all children to the same value; toggling a child flips just that one and lets the watcher recompute the parent.",
+      "approaches": [
+        {
+          "title": "Children in a `ref` + parent derived in a watcher",
+          "prose": "Inside `<script setup>`, store the children in `const children = ref([...])`. Attach `ref=\"parentRef\"` to the parent checkbox and use `watch(children, ..., { deep: true, immediate: true })` to update `parentRef.value.checked` and `parentRef.value.indeterminate` whenever the list changes. The parent handler maps all children to the new checked value; the child handler toggles one element by id and reuses the same watcher logic."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Trying to bind `indeterminate` as a normal prop (e.g. `:indeterminate=\"...\"`) instead of assigning it on the DOM element via `ref`.",
+          "Giving the parent its own `ref`-based boolean state instead of deriving from children, which risks desync.",
+          "Forgetting to use `{ deep: true }` in the watcher, so changes inside the array objects are not observed."
+        ],
+        "techniques": [
+          "Using `ref` for local reactive arrays.",
+          "Using `watch` with `{ deep: true, immediate: true }` to derive and keep DOM state in sync.",
+          "Keeping all state and handlers colocated in `<App.vue>` for a focused exercise."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-nested-checkboxes.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-nested-checkboxes"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
     "access": "premium"
   }
 ]

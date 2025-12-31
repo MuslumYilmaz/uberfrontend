@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "topics": [
+    {
+      "id": "css-layout",
+      "title": "CSS Layout",
+      "tags": [
+        "border",
+        "box-model",
+        "centering",
+        "css",
+        "flexbox",
+        "grid",
+        "layout",
+        "margin",
+        "padding",
+        "positioning",
+        "responsive",
+        "spacing",
+        "z-index"
+      ]
+    },
+    {
+      "id": "js-async",
+      "title": "Async & Concurrency",
+      "tags": [
+        "async-await",
+        "cancellation",
+        "event-loop",
+        "microtasks",
+        "promise"
+      ]
+    },
+    {
+      "id": "state-reactivity",
+      "title": "State & Reactivity",
+      "tags": [
+        "derived-state",
+        "global-state",
+        "immutability",
+        "lifting-state",
+        "reactivity",
+        "rxjs",
+        "signals",
+        "state",
+        "state-management"
+      ]
+    },
+    {
+      "id": "web-accessibility",
+      "title": "Accessibility & Semantics",
+      "tags": [
+        "accessibility",
+        "aria-describedby",
+        "aria-labelledby",
+        "labels",
+        "semantics"
+      ]
+    },
+    {
+      "id": "web-dom-events",
+      "title": "DOM & Events",
+      "tags": [
+        "bubbling",
+        "capturing",
+        "dom",
+        "event-delegation",
+        "event-handlers",
+        "event-propagation",
+        "events"
+      ]
+    },
+    {
+      "id": "web-forms-validation",
+      "title": "Forms & Validation",
+      "tags": [
+        "autosave",
+        "controlled-inputs",
+        "forms",
+        "inputs",
+        "labels",
+        "local-storage",
+        "reactive-forms",
+        "required",
+        "user-input",
+        "validation"
+      ]
+    },
+    {
+      "id": "web-performance",
+      "title": "Performance",
+      "tags": [
+        "backpressure",
+        "cache",
+        "caching",
+        "debounce",
+        "intersection-observer",
+        "loading-states",
+        "optimization",
+        "pagination",
+        "performance",
+        "virtualization"
+      ]
+    }
+  ]
+}

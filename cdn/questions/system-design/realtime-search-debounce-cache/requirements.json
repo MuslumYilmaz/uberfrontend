@@ -1,0 +1,153 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to clarify what a real-time search box should actually do from the frontend side: how it reacts to typing, when it calls the search function, how it caches results, and how it avoids showing stale data. You should sound like someone who has built autocomplete / search UIs before, not just someone who knows the word \"debounce\"."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you’re solving:**\nA search input that calls an async search function as the user types. You design the **state, debouncing and caching** on the frontend. Network details are abstracted away.\n\nThe goal: smooth UX for both slow typers and fast typers, good caching for repeated queries, and no flickering or stale results when responses arrive out of order."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Understanding of **debounce vs throttle** and why debounce fits search.\n- Ability to design a **query → results cache** on the client.\n- Handling **slow** vs **fast** typing patterns.\n- Simulating **cancellation**: ignoring late responses for outdated queries.\n- Basic **cache invalidation** thinking (when to expire entries).\n- UX states: empty query, loading, no results, error."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Start by restating the problem in your own words: \"We have a search input that calls an async search function as the user types. I need to debounce calls, cache results per query, and ignore outdated responses so the UI always matches the latest input value.\" Then move into clarifying questions about UX, latency, and cache behavior."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. Empty state",
+                    "text": "User sees an empty input and some neutral UI: maybe a hint text, popular searches, or just an \"Type to search\" state. No request is running."
+                },
+                {
+                    "title": "2. User starts typing",
+                    "text": "As the user types, the raw input updates immediately. A debounced handler waits for a short pause before triggering a search for the current query."
+                },
+                {
+                    "title": "3. Debounced search + cache check",
+                    "text": "When the debounce fires, the system first checks the **cache**. If we already have results for this query, show them instantly. If not, mark the state as `loading` and call the async search function."
+                },
+                {
+                    "title": "4. Handling responses & pseudo-cancel",
+                    "text": "Each search call is tagged with a request id or the query that triggered it. When a response arrives, the system only applies it if it matches the **current** query; older responses are ignored (simulated cancellation)."
+                },
+                {
+                    "title": "5. UX for no results / errors",
+                    "text": "If results are empty, show a clear \"No results\" state. If the search function rejects or times out, show a small inline error with an option to retry, without breaking the input."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "What is the typical **latency** of the search function (tens vs hundreds of ms)?",
+                                "Do we expect users to type short queries (2–3 chars) or longer phrases?",
+                                "Should we **avoid searching** for very short queries (e.g. fewer than 2–3 characters)?",
+                                "Do we need to show suggestions for the **empty query** (popular items, history)?",
+                                "How long can a cache entry stay valid before we consider it stale?",
+                                "Do we need to distinguish between **\"no results\"** and **\"request failed\"** in the UI?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "Typing should feel **instant**; debouncing should not block input updates.",
+                                "We should avoid **spamming the search function** on every keystroke.",
+                                "Repeated queries should feel **instant** thanks to caching.",
+                                "Out-of-order responses must not overwrite newer results.",
+                                "Empty query should not show stale results from previous searches.",
+                                "Error states should be **subtle** (inline) and allow retry without losing the query."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Debounce vs throttle (how you should explain it)",
+            "columns": [
+                "Concept",
+                "What it does",
+                "How you position it for this problem"
+            ],
+            "rows": [
+                [
+                    "Debounce",
+                    "Waits for the user to stop typing for X ms, then fires once.",
+                    "\"For search, debounce is usually better: we only call the search function after a short pause, so we don’t fire on every keystroke and the query is closer to what the user actually wants.\""
+                ],
+                [
+                    "Throttle",
+                    "Fires at most once every X ms, ignoring extra calls between intervals.",
+                    "\"Throttle could be used if we needed continuous updates (e.g. scrolling analytics), but for text search it can send requests for intermediate states the user never cares about.\""
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Typical debounce delay",
+                    "value": "300–500ms",
+                    "helperText": "Fast enough to feel responsive, slow enough to avoid spam."
+                },
+                {
+                    "label": "Cache key",
+                    "value": "Normalized query",
+                    "helperText": "Usually a lowercased, trimmed string."
+                },
+                {
+                    "label": "Key safety rule",
+                    "value": "Ignore stale responses",
+                    "helperText": "Only apply results if they match the latest query/request id."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Real-time search is less about \"just call search() on change\" and more about controlling when you call it (debounce), reusing work (cache), and protecting the UI from stale or failed responses. If you emphasize those points in the requirements phase, you’re already ahead of most candidates."
+        }
+    ]
+}

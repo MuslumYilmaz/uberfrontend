@@ -1,0 +1,39 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Debounced Search",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-debounced-search\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Debounced Search</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { Subject, of, timer, throwError } from 'rxjs';\nimport { catchError, debounceTime, delay, distinctUntilChanged, switchMap, tap, takeUntil } from 'rxjs/operators';\n\ninterface Result {\n  id: number;\n  name: string;\n  email: string;\n}\n\nconst FAKE_DATA: Result[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Raw input value (for displaying in the header / status text)\n  query = '';\n\n  // Results, loading and error state used in the template\n  results: Result[] = [];\n  isLoading = false;\n  error: string | null = null;\n\n  // Stream of search terms coming from the input\n  private searchTerm$ = new Subject();\n\n  // Used to clean up the subscription\n  private destroy$ = new Subject();\n\n  constructor() {\n    // TODO: Wire up the debounced search stream here\n    // - debounceTime(500)\n    // - distinctUntilChanged()\n    // - handle empty queries by clearing results & skipping API\n    // - toggle isLoading and error state\n    // - switchMap into fakeApiSearch\n    // - catch errors and recover with []\n    this.setupSearchStream();\n  }\n\n  // Called from the template on every input event\n  onQueryChange(value: string): void {\n    this.query = value;\n    // TODO: push the latest value into the searchTerm$ stream\n    // this.searchTerm$.next(value);\n  }\n\n  ngOnDestroy(): void {\n    this.destroy$.next(null);\n    this.destroy$.complete();\n  }\n\n  private setupSearchStream(): void {\n    // TODO: Build the RxJS pipeline here using searchTerm$\n    // Example operators: debounceTime, distinctUntilChanged, tap, switchMap, catchError, takeUntil\n  }\n\n  // Fake API: filters the in-memory array and responds after a delay.\n  // You can treat this as given and focus on the RxJS wiring.\n  private fakeApiSearch(term: string) {\n    const trimmed = term.trim().toLowerCase();\n    const delayMs = 600;\n\n    if (!trimmed) {\n      return of([]).pipe(delay(delayMs));\n    }\n\n    const filtered = FAKE_DATA.filter((item) => {\n      const name = item.name.toLowerCase();\n      const email = item.email.toLowerCase();\n      return name.includes(trimmed) || email.includes(trimmed);\n    });\n\n    // Deliberately fail for the query \"error\" so students can see error handling.\n    if (trimmed === 'error') {\n      return timer(delayMs).pipe(\n        switchMap(() => throwError(() => new Error('Fake API error')))\n      );\n    }\n\n    return of(filtered).pipe(delay(delayMs));\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"app\">\n  <section class=\"card\">\n    <header class=\"header\">\n      <h1 class=\"title\">Debounced Search</h1>\n      <p class=\"subtitle\">Type to search a fake user directory. Search runs 500ms after you stop typing.</p>\n    </header>\n\n    <div class=\"field\">\n      <label class=\"label\" for=\"search-input\">Search</label>\n      <input\n        id=\"search-input\"\n        class=\"input\"\n        type=\"text\"\n        [value]=\"query\"\n        (input)=\"onQueryChange($any($event.target).value)\"\n        placeholder=\"Start typing a name or email...\"\n        autocomplete=\"off\"\n      />\n    </div>\n\n    <div class=\"status-row\">\n      <span *ngIf=\"isLoading\" class=\"status status--loading\">Searching…</span>\n      <span *ngIf=\"!isLoading && !error && query\" class=\"status\">Showing {{ results.length }} result(s) for \"{{ query }}\"</span>\n      <span *ngIf=\"!isLoading && !error && !query\" class=\"status status--muted\">Start typing to search.</span>\n      <span *ngIf=\"error\" class=\"status status--error\">{{ error }}</span>\n    </div>\n\n    <ul class=\"results\" *ngIf=\"results.length\">\n      <li class=\"result-row\" *ngFor=\"let r of results\">\n        <div class=\"result-name\">{{ r.name }}</div>\n        <div class=\"result-email\">{{ r.email }}</div>\n      </li>\n    </ul>\n\n    <p class=\"empty\" *ngIf=\"!results.length && !isLoading && query && !error\">\n      No results found for \"{{ query }}\".\n    </p>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}\n.card{width:100%;max-width:640px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:18px 18px 16px;display:grid;gap:16px;}\n.header{display:grid;gap:4px;}\n.title{margin:0;font-size:20px;font-weight:700;}\n.subtitle{margin:0;font-size:13px;color:#9ca3af;}\n.field{display:grid;gap:6px;}\n.label{font-size:13px;color:#9ca3af;}\n.input{width:100%;border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 12px;font-size:14px;outline:none;}\n.input:focus{border-color:#a3e635;box-shadow:0 0 0 1px #a3e63533;}\n.status-row{min-height:18px;font-size:12px;display:flex;align-items:center;}\n.status{color:#9ca3af;}\n.status--loading{color:#e5e7eb;}\n.status--muted{color:#6b7280;}\n.status--error{color:#f97316;}\n.results{list-style:none;margin:0;padding:0;display:grid;gap:8px;}\n.result-row{padding:8px 10px;border-radius:10px;border:1px solid #1f2937;background:#020617;display:grid;gap:2px;}\n.result-name{font-size:14px;font-weight:600;}\n.result-email{font-size:12px;color:#9ca3af;font-variant-numeric:tabular-nums;}\n.empty{margin:0;font-size:13px;color:#6b7280;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#020617;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

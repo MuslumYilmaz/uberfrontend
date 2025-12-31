@@ -1,0 +1,162 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can design a clean data model for a 4-step form with autosave. You should show that you understand how to represent the full form as JSON, how to track dirty state, and how to serialize/restore drafts safely from localStorage."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about data:**\n\"I’ll keep one `FormModel` object for all steps, plus a `FormUiState` for things like current step, dirty flag and validation errors. For autosave I’ll use a separate `FormDraft` structure: `{ version, form, currentStep, updatedAt }` that is serialized into localStorage as JSON.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You model the **entire form** as a single object (flat or nested-by-step).\n- You treat **dirty state** and **validation errors** as first-class data.\n- You define a stable shape for the autosave draft.\n- You think about **versioning** and large JSON (size, future changes)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Name 3–4 types: `FormModel`, `FormUiState`, `FormDraft`, and `ValidationErrors`. Keep them focused on what the UI actually needs: field values, which step we’re on, what’s invalid, and what should be written to/loaded from localStorage."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "interface Step1Data {\n  name: string;\n  email: string;\n}\n\ninterface Step2Data {\n  address: string;\n  city: string;\n}\n\ninterface Step3Data {\n  preferences: string[];\n}\n\ninterface Step4Data {\n  acceptTerms: boolean;\n}\n\n// Main form model (nested by step for clarity)\ninterface FormModel {\n  step1: Step1Data;\n  step2: Step2Data;\n  step3: Step3Data;\n  step4: Step4Data;\n}\n\n// UI-specific state that we do NOT necessarily send to backend\ninterface FormUiState {\n  currentStep: 0 | 1 | 2 | 3;\n  dirty: boolean;                 // form changed since last autosave\n  lastSavedAt?: number;           // timestamp (ms)\n  validationErrors: ValidationErrors;\n}\n\n// Simple error map: per step, per field\ntype ValidationErrors = {\n  [K in keyof FormModel]?: Partial<Record<keyof FormModel[K], string>>;\n};\n\n// What goes into localStorage\ninterface FormDraft {\n  version: number;                // for schema migrations\n  form: FormModel;\n  currentStep: number;\n  updatedAt: number;              // timestamp (ms)\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "Fields (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "FormModel",
+                    "step1, step2, step3, step4 (each with its own fields)",
+                    "\"`FormModel` holds all user-entered data. I group fields by step so each step component can receive its own slice cleanly.\""
+                ],
+                [
+                    "FormUiState",
+                    "currentStep, dirty, lastSavedAt, validationErrors",
+                    "\"`FormUiState` tracks which step we’re on, whether the form is dirty relative to the last autosave, when it was last saved, and any validation errors per step/field.\""
+                ],
+                [
+                    "ValidationErrors",
+                    "map of step → field → error message",
+                    "\"Errors are a simple nested map: for each step, each field can have a string error. This format works for inline validation and submit-time validation.\""
+                ],
+                [
+                    "FormDraft",
+                    "version, form, currentStep, updatedAt",
+                    "\"`FormDraft` is the serialized snapshot in localStorage. It includes a `version` for schema changes, the full `form` data, the `currentStep`, and a timestamp so we can show 'Last saved at…'.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly include",
+                            "items": [
+                                "A **single FormModel** representing all 4 steps.",
+                                "A **currentStep** value in UI state.",
+                                "A **dirty** flag that flips to true on change and back to false after autosave.",
+                                "A **validationErrors** structure, not ad-hoc booleans everywhere.",
+                                "A **FormDraft** shape for localStorage with `version`, `form`, `currentStep`, `updatedAt`."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Data-model mistakes to avoid",
+                            "items": [
+                                "Scattering field values into many unrelated states instead of one model.",
+                                "Encoding dirty state only implicitly (e.g. comparing JSON each time) instead of tracking it.",
+                                "Storing huge, unstructured blobs in localStorage without a version field.",
+                                "Mixing transient UI flags (loading spinners, focus) into the persisted draft.",
+                                "Making the draft format inconsistent with the in-memory `FormModel`."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "How the data typically evolves over time",
+            "steps": [
+                {
+                    "title": "1. Initial state",
+                    "text": "Form starts with a default `FormModel` (empty strings, defaults, etc.) and `FormUiState` with `currentStep = 0`, `dirty = false`, `validationErrors = {}`."
+                },
+                {
+                    "title": "2. User edits",
+                    "text": "On change/blur, relevant fields in `FormModel` are updated and `dirty` is set to true. Inline validation may add entries into `validationErrors`."
+                },
+                {
+                    "title": "3. Autosave snapshot",
+                    "text": "The autosave layer reads `{ form, currentStep }`, wraps it into a `FormDraft` with `version` and `updatedAt`, `JSON.stringify`s it, and writes it to localStorage. After a successful write, `dirty` is set to false and `lastSavedAt` is updated."
+                },
+                {
+                    "title": "4. Resume from draft",
+                    "text": "On a later visit, the app reads the draft key, parses JSON into a `FormDraft`, checks `version` and shape, and if valid, uses `draft.form` and `draft.currentStep` to hydrate `FormModel` and `FormUiState`."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Core model",
+                    "value": "FormModel + FormUiState",
+                    "helperText": "Keeps user data and UI metadata clearly separated."
+                },
+                {
+                    "label": "Persistence unit",
+                    "value": "FormDraft JSON",
+                    "helperText": "Exactly what is written to and read from localStorage."
+                },
+                {
+                    "label": "Key concept",
+                    "value": "Dirty vs saved snapshot",
+                    "helperText": "You always know whether the in-memory form matches the last persisted draft."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong data model for this problem makes autosave almost trivial: one normalized form object, a small UI state wrapper, and a well-defined draft snapshot. If your types are clear, validation, dirty detection and serialization all fall into place."
+        }
+    ]
+}

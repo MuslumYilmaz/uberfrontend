@@ -1,0 +1,163 @@
+{
+    "key": "O",
+    "title": "Optimizations & Deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this last step, the interviewer wants to see if you know where this design can break under real-world load and how you would improve it without over-engineering. You should talk about: performance, memory, UX on slow devices, and how you’d iterate based on measurements."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First, I’d ship a clean, straightforward implementation. Then I’d measure how it behaves with large data sets on mid-range devices. Based on that, I’d add targeted optimizations like virtualization, smarter rendering, and better loading states.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You start from a baseline and then optimize, not the other way around.\n- You know the main bottlenecks: DOM size, unnecessary renders, layout thrashing.\n- You can explain trade-offs, not just list buzzwords.\n- You’re able to go deeper if they zoom in on one area."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Pick 2–3 realistic pain points (huge lists, slow phones, flaky networks) and walk through how you’d detect issues and improve them. Talk like someone who has actually debugged janky UIs, not like a cheat sheet of random tricks."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Baseline hygiene you should mention",
+                            "items": [
+                                "Use IntersectionObserver instead of scroll events for load-more triggers.",
+                                "Avoid expensive work on every scroll; let the browser handle scrolling.",
+                                "Keep list items as lightweight components with stable keys.",
+                                "Avoid unnecessary re-renders by memoizing heavy item subtrees where needed.",
+                                "Lazy-load images and heavy assets as items enter the viewport.",
+                                "Batch state updates so loading states don’t cause multiple reflows."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "When the list becomes really large",
+                            "items": [
+                                "Introduce list virtualization/windowing so only visible items are mounted.",
+                                "Consider a small overscan buffer to keep scrolling smooth while not bloating the DOM.",
+                                "Be careful with variable-height items: measure heights or accept a simple approximation.",
+                                "Reuse DOM nodes where possible instead of constantly creating/destroying elements.",
+                                "Persist filters and scroll position so users can come back without re-loading everything."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Deep-dive topics you can offer",
+            "columns": [
+                "Topic",
+                "Angle",
+                "How you talk about it"
+            ],
+            "rows": [
+                [
+                    "Virtualization vs simple list",
+                    "Perf vs complexity",
+                    "\"I’d start with a simple list. If profiling shows too many nodes in the DOM, I’d add virtualization. That adds complexity around scroll position and accessibility, so I’d only introduce it when the data size justifies it.\""
+                ],
+                [
+                    "Preserving scroll & filters",
+                    "UX continuity",
+                    "\"If the user navigates away and comes back, I’d store filters and the current scroll offset (or item index) in a store or route state so they don’t lose context.\""
+                ],
+                [
+                    "Caching & prefetch",
+                    "Fewer network calls",
+                    "\"When users often scroll back and forth, I’d keep previous pages in memory and maybe prefetch the next page when we see fast scrolling.\""
+                ],
+                [
+                    "Accessibility under virtualization",
+                    "Keyboard & screen readers",
+                    "\"With virtualization, I’d verify that keyboard navigation and screen readers can still reach items, and that announcements for loading states are clear.\""
+                ],
+                [
+                    "Error & retry strategy",
+                    "Resilience",
+                    "\"Instead of a blocking modal, I’d show inline errors with a Retry button at the bottom of the list and maybe exponential backoff behind the scenes.\""
+                ]
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Optimization path you should describe",
+            "steps": [
+                {
+                    "title": "1. Build the simple version",
+                    "text": "Clean list, IntersectionObserver sentinel, good loading/error states, no premature micro-optimizations."
+                },
+                {
+                    "title": "2. Measure",
+                    "text": "Test with large datasets and mid-range devices. Use browser devtools to watch DOM node count, frame rate, and long tasks."
+                },
+                {
+                    "title": "3. Fix obvious bottlenecks",
+                    "text": "Reduce unnecessary renders, lazy-load images, simplify item layout, and avoid heavy work inside render cycles."
+                },
+                {
+                    "title": "4. Add virtualization if needed",
+                    "text": "When DOM size becomes the main issue, introduce windowing, handle scroll/keyboard/accessibility carefully, and re-measure."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Biggest perf win",
+                    "value": "Control DOM size",
+                    "helperText": "Most problems come from too many mounted nodes."
+                },
+                {
+                    "label": "Most common issue",
+                    "value": "Janky scroll",
+                    "helperText": "Caused by heavy work or layout thrash while scrolling."
+                },
+                {
+                    "label": "Strong senior signal",
+                    "value": "Measure → then optimize",
+                    "helperText": "You talk about profiling and trade-offs, not random tweaks."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Great candidates don’t just say \"I’d use virtualization\". They explain when it’s needed, what it breaks if done carelessly (scroll position, accessibility), and how they’d validate that the final experience is both fast and pleasant to use."
+        }
+    ]
+}

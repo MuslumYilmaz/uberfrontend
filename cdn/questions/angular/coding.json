@@ -4,7 +4,7 @@
     "title": "Counter (Standalone Component)",
     "type": "coding",
     "technology": "angular",
-    "difficulty": "beginner",
+    "difficulty": "easy",
     "importance": 3,
     "tags": [
       "components",
@@ -64,11 +64,7 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-counter-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "uber"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
     "access": "free"
   },
@@ -154,12 +150,1062 @@
       "openFile": "/src/app/app.component.ts",
       "storageKey": "v2:ui:angular:angular-contact-form-starter"
     },
-    "companies": [
-      "google",
-      "meta",
-      "airbnb"
-    ],
+    "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-todo-list-starter",
+    "title": "Todo List (Standalone Component with ngFor)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "forms",
+      "lists",
+      "ng-for",
+      "state"
+    ],
+    "description": {
+      "summary": "Build a small todo list using an Angular standalone component. Allow users to add tasks, mark them as completed, and remove them. Use `*ngFor` to render the list and simple component state to drive the UI.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Display a text input and an \"Add\" button for creating new todos.",
+          "Render the todo items in a list using `*ngFor`.",
+          "Each todo item should show a label and a checkbox to toggle completion.",
+          "Allow removing a single todo item from the list.",
+          "Optionally provide a \"Clear completed\" action to remove all completed todos."
+        ],
+        "expectedBehavior": [
+          "Typing a non-empty value and clicking \"Add\" appends a new todo to the list and clears the input.",
+          "Empty or whitespace-only values are ignored (no item is added).",
+          "Clicking a todo’s checkbox toggles its completed state.",
+          "Completed todos are visually distinguished (e.g. line-through).",
+          "Clicking a remove button deletes that specific todo.",
+          "If you implement \"Clear completed\", it removes only the completed todos."
+        ],
+        "implementationNotes": [
+          "Keep everything in `AppComponent` (`src/app/app.component.ts` and `app.component.html`). No extra services or components are required.",
+          "Use a simple array of objects (e.g. `{ id, text, done }`) to store todos.",
+          "Use `*ngFor` to loop over the todo array in the template.",
+          "Use `[(ngModel)]` for the input binding and checkbox bindings (remember to import `FormsModule`).",
+          "Use click handlers like `(click)=\"addTask()\"` and `(click)=\"removeTask(task)\"` to modify the array."
+        ],
+        "techFocus": [
+          "Standalone component setup with `standalone: true`",
+          "Managing in-memory state in a component",
+          "Rendering lists with `*ngFor`",
+          "Using `[(ngModel)]` for simple form input binding",
+          "Basic UX for add / toggle / remove actions"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise models a classic todo list with a single standalone component. You keep all state inside the component: a `newTask` string for the input and a `todos` array (e.g. `{ id, text, done }`). The template binds `newTask` with `[(ngModel)]`, renders `todos` with `*ngFor`, and wires up click handlers to add, toggle, and remove items.\n\nTypical flow:\n- User types into the input; `newTask` is updated via `[(ngModel)]`.\n- Clicking **Add** (or pressing Enter, if you implement it) calls `addTask()`, which trims the text, ignores empties, pushes a new todo into the array, and resets `newTask`.\n- Each todo row shows a checkbox bound to `todo.done` and maybe styled with a `.done` CSS class when complete.\n- Clicking the remove button calls `removeTask(todo)`, which filters that item out.\n- Optionally, a \"Clear completed\" button calls `clearCompleted()` to remove all completed todos.\n\n**Test cases**\n- With an empty input, clicking **Add** does nothing.\n- Typing \"Buy milk\" and clicking **Add** shows a single todo row with that text.\n- Toggling the checkbox marks the item as completed and applies the completed styling.\n- Clicking the remove button deletes that specific row.\n- After completing multiple todos, clicking \"Clear completed\" (if implemented) removes only the completed ones.",
+      "approaches": [
+        {
+          "title": "Standalone component with a local array of todos",
+          "prose": "Represent todos as `{ id, text, done }` objects stored in a `todos` array property. Use a simple incremental `nextId` counter for unique ids. The input is bound via `[(ngModel)]=\"newTask\"`. In `addTask()`, trim `newTask`, ignore empties, then push a new object. In the template, use `*ngFor=\"let todo of todos; trackBy: trackById\"` to render each row with a checkbox bound to `todo.done` and a remove button.\n\n`toggleTask(todo)` can simply flip `todo.done = !todo.done`, or you can rely entirely on `[(ngModel)]` on the checkbox and only use handlers for extra behavior. `removeTask(todo)` filters `todos` to drop the item by id. `clearCompleted()` sets `todos` to `todos.filter(t => !t.done)`. This keeps all list and input logic colocated in the root standalone component.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface Todo {\n  id: number;\n  text: string;\n  done: boolean;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  newTask = '';\n  todos: Todo[] = [];\n  private nextId = 1;\n\n  get hasTodos(): boolean {\n    return this.todos.length > 0;\n  }\n\n  addTask(): void {\n    const text = this.newTask.trim();\n    if (!text) {\n      return;\n    }\n\n    this.todos = [\n      ...this.todos,\n      { id: this.nextId++, text, done: false }\n    ];\n\n    this.newTask = '';\n  }\n\n  toggleTask(todo: Todo): void {\n    todo.done = !todo.done;\n  }\n\n  removeTask(todo: Todo): void {\n    this.todos = this.todos.filter(t => t.id !== todo.id);\n  }\n\n  clearCompleted(): void {\n    this.todos = this.todos.filter(t => !t.done);\n  }\n\n  trackById(_index: number, todo: Todo): number {\n    return todo.id;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing empty or whitespace-only todos to be added.",
+          "Mutating the `todos` array in a way that loses track of identity (e.g. reusing the same id for all items).",
+          "Forgetting to import `FormsModule`, which breaks `[(ngModel)]` bindings.",
+          "Handling toggle logic only in a click handler but not binding the checkbox correctly."
+        ],
+        "techniques": [
+          "Modeling UI items as simple objects inside a component.",
+          "Using `[(ngModel)]` for a controlled input and checkbox bindings.",
+          "Rendering lists with `*ngFor` and `trackBy` for better identity handling.",
+          "Using pure functions (`filter`, `map`) to derive new arrays when removing or clearing items."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-todo-list.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-todo-list-starter"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
     "access": "free"
+  },
+  {
+    "id": "angular-image-slider-starter",
+    "title": "Image Slider (Standalone Component)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "event-binding",
+      "ng-for",
+      "state",
+      "ui"
+    ],
+    "description": {
+      "summary": "Build an image slider in an Angular standalone component. Show one slide at a time with next/previous buttons and clickable dot indicators.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Keep an in-memory list of slides (each with at least a title and image URL).",
+          "Display the currently active slide (image and title).",
+          "Provide \"Previous\" and \"Next\" buttons to move between slides.",
+          "Disable the \"Previous\" button on the first slide and the \"Next\" button on the last slide.",
+          "Render dot indicators for each slide; clicking a dot should jump to that slide.",
+          "Display a small \"Slide X of N\" helper text."
+        ],
+        "expectedBehavior": [
+          "Initial view shows the first slide.",
+          "Clicking \"Next\" advances to the next slide until the last one; afterwards it stays on the last slide and \"Next\" becomes disabled.",
+          "Clicking \"Previous\" moves backwards until the first slide; on the first slide it stays there and \"Previous\" is disabled.",
+          "Clicking a dot activates the corresponding slide, updates the main image and title, and updates the \"Slide X of N\" text.",
+          "The active slide's dot is visually highlighted."
+        ],
+        "implementationNotes": [
+          "Store slides in a readonly array on the component (e.g. `slides = [...]`).",
+          "Track the active slide with a simple numeric index (e.g. `currentIndex = 0`).",
+          "Derive the current slide with a getter (e.g. `currentSlide`), and flags like `canGoPrev` / `canGoNext` from the index.",
+          "Use template bindings (`(click)`, `[disabled]`, `*ngFor`, `[class.active]`) to wire up the controls and indicators.",
+          "No need for routing, services, or external state management; keep everything in the root component."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "View model with derived state (current slide, canGoPrev/canGoNext)",
+          "Template control flow with *ngFor and event bindings",
+          "Basic UI state + styling for active / disabled controls"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Model the slider as a small view model on the component: a readonly `slides` array and a `currentIndex` number. Use getters to derive `currentSlide`, `totalSlides`, and convenience flags like `canGoPrev` and `canGoNext`. The template shows the active slide and wires buttons and dot indicators to simple methods that update `currentIndex`.\n\n**Test cases**\n- Initial render shows the first slide, with \"Previous\" disabled and the first dot highlighted.\n- Clicking \"Next\" repeatedly walks through the slides and disables itself on the last slide.\n- Clicking \"Previous\" from the middle moves backward one slide at a time.\n- Clicking a dot jumps directly to that slide and updates the heading, image, and helper text.\n- The slider never goes out of range (no index smaller than 0 or greater than `slides.length - 1`).",
+      "approaches": [
+        {
+          "title": "Standalone component with index-based navigation",
+          "prose": "Use a single standalone `AppComponent` that owns the slider state.\n\n1. Define a `Slide` interface (`id`, `title`, `imageUrl`, optional `description`). Keep a `readonly slides: Slide[]` array.\n2. Track the active slide with `currentIndex = 0`.\n3. Expose getters like `currentSlide`, `totalSlides`, `canGoPrev`, and `canGoNext`.\n4. Implement `goTo(index: number)`, `prev()`, and `next()` to clamp `currentIndex` inside `[0, totalSlides - 1]`.\n5. In the template, show the current slide image and title, wire buttons to `prev()` / `next()`, use `[disabled]` for edge cases, and render dot buttons with `*ngFor` and `[class.active]` to highlight the current slide.\n\nThis keeps the logic small and testable while exercising Angular's template bindings and derived state.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface Slide {\n  id: number;\n  title: string;\n  imageUrl: string;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Image Slider</h1>\n\n        <figure class=\"frame\" *ngIf=\"currentSlide as slide\">\n          <img class=\"image\" [src]=\"slide.imageUrl\" [alt]=\"slide.title\" />\n          <figcaption class=\"caption\">{{ slide.title }}</figcaption>\n        </figure>\n\n        <div class=\"meta\">\n          Slide {{ currentIndex + 1 }} of {{ totalSlides }}\n        </div>\n\n        <div class=\"actions\">\n          <button (click)=\"prev()\" [disabled]=\"!canGoPrev\">Previous</button>\n          <button (click)=\"next()\" [disabled]=\"!canGoNext\">Next</button>\n        </div>\n\n        <div class=\"dots\">\n          <button\n            *ngFor=\"let slide of slides; let i = index\"\n            type=\"button\"\n            class=\"dot\"\n            [class.active]=\"i === currentIndex\"\n            (click)=\"goTo(i)\"\n            aria-label=\"Go to slide {{ i + 1 }}\"\n          ></button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#e5e7eb;}`,\n    `.card{width:100%;max-width:520px;padding:16px 20px;background:#0b1020;border-radius:12px;border:1px solid #1f2937;display:grid;gap:12px;}`,\n    `.frame{margin:0;border-radius:12px;overflow:hidden;border:1px solid #1f2937;background:#020617;}`,\n    `.image{display:block;width:100%;height:240px;object-fit:cover;}`,\n    `.caption{padding:8px 12px;font-size:14px;color:#e5e7eb;background:rgba(15,23,42,.9);}`,\n    `.meta{font-size:12px;color:#9ca3af;text-align:center;}`,\n    `.actions{display:flex;gap:8px;justify-content:center;}`,\n    `button{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:#a3e635;color:#111;}`,\n    `button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.dots{display:flex;justify-content:center;gap:6px;margin-top:4px;}`,\n    `.dot{width:8px;height:8px;border-radius:999px;border:none;background:#374151;cursor:pointer;}`,\n    `.dot.active{background:#a3e635;}`\n  ]\n})\nexport class AppComponent {\n  readonly slides: Slide[] = [\n    {\n      id: 1,\n      title: 'Snowflakes glowing under city lights',\n      imageUrl: 'https://images.pexels.com/photos/46253/pexels-photo-46253.jpeg'\n    },\n    {\n      id: 2,\n      title: 'Forest trail in the morning',\n      imageUrl: 'https://images.pexels.com/photos/1563604/pexels-photo-1563604.jpeg'\n    },\n    {\n      id: 3,\n      title: 'City lights at night',\n      imageUrl: 'https://images.pexels.com/photos/220067/pexels-photo-220067.jpeg'\n    }\n  ];\n\n  currentIndex = 0;\n\n  get totalSlides(): number {\n    return this.slides.length;\n  }\n\n  get currentSlide(): Slide | null {\n    return this.slides[this.currentIndex] ?? null;\n  }\n\n  get canGoPrev(): boolean {\n    return this.currentIndex > 0;\n  }\n\n  get canGoNext(): boolean {\n    return this.currentIndex < this.totalSlides - 1;\n  }\n\n  goTo(index: number): void {\n    if (index < 0 || index >= this.totalSlides) return;\n    this.currentIndex = index;\n  }\n\n  prev(): void {\n    if (this.canGoPrev) {\n      this.currentIndex--;\n    }\n  }\n\n  next(): void {\n    if (this.canGoNext) {\n      this.currentIndex++;\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing `currentIndex` to go out of range (negative or >= slides.length).",
+          "Duplicating `slides[currentIndex]` access all over the template instead of using a getter.",
+          "Not disabling buttons at the edges, making the UX feel broken."
+        ],
+        "techniques": [
+          "Using a simple numeric index to represent view state.",
+          "Deriving convenience getters for current slide and navigation flags.",
+          "Using `[class.active]` and `[disabled]` to reflect state in the UI."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-image-slider.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-image-slider-starter"
+    },
+    "companies": [
+      "amazon",
+      "google"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
+    "access": "free"
+  },
+  {
+    "id": "angular-tabs-switcher",
+    "title": "Tabs / Multi-View Switcher",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "components",
+      "state",
+      "conditional-rendering",
+      "tabs"
+    ],
+    "description": {
+      "summary": "Build a simple tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
+          "Track which tab is currently active and visually highlight it.",
+          "Render only the active tab's content at a time."
+        ],
+        "expectedBehavior": [
+          "The initial active tab should be \"Overview\".",
+          "Clicking a tab makes it the active tab.",
+          "Only the active tab's panel is visible at any time.",
+          "The active tab button has a distinct visual style (e.g. underline or background)."
+        ],
+        "implementationNotes": [
+          "Store the currently active tab in a component property.",
+          "Use template bindings and event handlers (e.g. `(click)`) to switch tabs.",
+          "Use conditional rendering (e.g. `*ngIf`) to show/hide each panel.",
+          "You can model the active tab as a union type like `'overview' | 'details' | 'settings'` for extra type safety."
+        ],
+        "techFocus": [
+          "Basic state management in a component",
+          "Conditional rendering with `*ngIf`",
+          "Simple component composition and layout for tabs"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about modeling a small piece of UI state (which tab is active) and using that state to drive both styles and conditional rendering. Use a single standalone Angular component that owns an `activeTab` property. The tab buttons call a `selectTab(tab)` method, and helper logic like `isActive(tab)` feeds CSS classes and `*ngIf` checks for the content panels.\n\n**Test cases**\n- Initial render shows the Overview panel and its tab appears active.\n- Clicking Details switches the active tab and hides Overview content.\n- Clicking Settings switches again and only the Settings content is visible.\n- Re-clicking an already active tab keeps the same content and styles.",
+      "approaches": [
+        {
+          "title": "Single standalone component with `activeTab` state",
+          "prose": "Keep everything in a single `AppComponent` to emphasise basic state management and conditional rendering.\n\n1. Define a `TabId` union type: `'overview' | 'details' | 'settings'`.\n2. Add an `activeTab: TabId = 'overview';` property.\n3. Implement a `selectTab(tab: TabId)` method that simply assigns `this.activeTab = tab;`.\n4. Add a helper `isActive(tab: TabId)` that returns `this.activeTab === tab` and use it in `[class.active]` and `*ngIf` checks.\n5. Structure the template with a header row of buttons for the tabs and three conditional sections for the panels.\n\nThis mirrors real-world tab patterns but stays small enough for a beginner exercise.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype TabId = 'overview' | 'details' | 'settings';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"shell\">\n      <section class=\"card\">\n        <h1>Tabs / Multi-View Switcher</h1>\n\n        <nav class=\"tabs\">\n          <button\n            class=\"tab\"\n            [class.active]=\"isActive('overview')\"\n            (click)=\"selectTab('overview')\">Overview</button>\n          <button\n            class=\"tab\"\n            [class.active]=\"isActive('details')\"\n            (click)=\"selectTab('details')\">Details</button>\n          <button\n            class=\"tab\"\n            [class.active]=\"isActive('settings')\"\n            (click)=\"selectTab('settings')\">Settings</button>\n        </nav>\n\n        <section class=\"panel\" *ngIf=\"isActive('overview')\">\n          <h2>Overview</h2>\n          <p>Show a short summary or welcome message here.</p>\n        </section>\n\n        <section class=\"panel\" *ngIf=\"isActive('details')\">\n          <h2>Details</h2>\n          <p>Display more detailed information in this panel.</p>\n        </section>\n\n        <section class=\"panel\" *ngIf=\"isActive('settings')\">\n          <h2>Settings</h2>\n          <p>Render some simple settings-like content here.</p>\n        </section>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.shell{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:560px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 24px;box-shadow:0 18px 45px rgba(15,23,42,0.8);display:grid;gap:16px;}`,\n    `.card h1{margin:0 0 4px;font-size:20px;font-weight:700;}`,\n    `.tabs{display:flex;gap:8px;padding:4px;background:#020617;border-radius:999px;border:1px solid #1f2937;}`,\n    `.tab{flex:1;padding:8px 10px;border-radius:999px;border:none;background:transparent;color:#9ca3af;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s, color .15s;}`,\n    `.tab.active{background:#e5e7eb;color:#020617;}`,\n    `.panel{margin-top:4px;border-radius:12px;border:1px solid #111827;background:radial-gradient(circle at top left,#111827,#020617);padding:14px 16px;display:grid;gap:4px;}`,\n    `.panel h2{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.panel p{margin:0;font-size:13px;color:#d1d5db;line-height:1.5;}`\n  ]\n})\nexport class AppComponent {\n  activeTab: TabId = 'overview';\n\n  isActive(tab: TabId): boolean {\n    return this.activeTab === tab;\n  }\n\n  selectTab(tab: TabId): void {\n    this.activeTab = tab;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Hard-coding panel visibility without tying it to a single source of truth for the active tab.",
+          "Forgetting to visually differentiate the active tab from inactive ones.",
+          "Using separate booleans for each tab instead of a single `activeTab` value, which quickly becomes harder to manage."
+        ],
+        "techniques": [
+          "Modeling view state with a union type for clearer intent.",
+          "Using helper methods like `isActive` to keep the template clean.",
+          "Applying classes conditionally with `[class.active]` to style the active tab."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-tabs.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-tabs-starter"
+    },
+    "companies": [
+      "amazon"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
+    "access": "free"
+  },
+  {
+    "id": "angular-filterable-user-list",
+    "title": "Filterable / Searchable User List",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "lists",
+      "filtering",
+      "forms"
+    ],
+    "description": {
+      "summary": "Build an Angular standalone component that renders a list of users with a search box, role filter, and \"only active\" checkbox.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Define a fixed in-memory list of users (name, role, active flag).",
+          "Render a search input that filters by name (case-insensitive).",
+          "Render a role dropdown (e.g. All, Admin, Editor, Viewer) that filters by role.",
+          "Render a checkbox that, when checked, shows only active users.",
+          "Render the filtered list below the controls."
+        ],
+        "expectedBehavior": [
+          "Initially, all users are shown.",
+          "Typing in the search box filters users whose name includes the search text (case-insensitive).",
+          "Changing the role dropdown filters by that role (or shows all roles when \"All\" is selected).",
+          "Checking the \"Only active\" checkbox hides inactive users.",
+          "When no users match the filters, an empty state message is shown."
+        ],
+        "implementationNotes": [
+          "Keep a static `users` array in the component (no HTTP or services needed).",
+          "Store `searchTerm`, `selectedRole`, and `showOnlyActive` as component properties.",
+          "Expose a derived `filteredUsers` getter that applies all filters based on the current state.",
+          "Use template bindings like `[(ngModel)]` to keep inputs in sync with component state.",
+          "For a small list, client-side filtering on each render is fine; you can mention this trade-off in discussion."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Basic state management for multiple controls",
+          "Derived state from a static data source",
+          "Template-driven forms (`ngModel`) and list rendering with `*ngFor`"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about maintaining several pieces of UI state (search text, selected role, and an \"only active\" toggle) and deriving a filtered list from them. The original user list never changes; instead, a `filteredUsers` getter applies all filters on top of the static array.\n\n**Test cases**\n- With default state, all users are shown.\n- Typing part of a user's name (case-insensitive) narrows the list to matching users.\n- Selecting a role shows only users with that role, unless \"All\" is selected.\n- Checking \"Only active\" hides inactive users.\n- Combining search, role filter, and active filter works as expected.\n- When filters exclude everything, an empty state row appears.",
+      "approaches": [
+        {
+          "title": "Standalone component with derived `filteredUsers` getter",
+          "prose": "Use a single `AppComponent` that is declared as `standalone: true` and imports `CommonModule` and `FormsModule`. Define a static `users` array with a few objects like `{ id, name, role, active }` and keep your UI state in properties such as `searchTerm`, `selectedRole`, and `showOnlyActive`.\n\nImplement a `filteredUsers` getter that:\n1. Normalizes the search term to lower-case.\n2. Filters users whose names contain that term (if any is entered).\n3. Filters by `selectedRole` when a specific role is chosen.\n4. Removes inactive users when `showOnlyActive` is true.\n\nBind the inputs using `[(ngModel)]` so the component state updates as the user types or toggles controls. Use `*ngFor` to render the filtered list, and show a fallback row when `filteredUsers.length === 0`. For a minor performance touch, you can add a `trackByUserId` function to the `*ngFor`.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ninterface User {\n  id: number;\n  name: string;\n  role: Role;\n  active: boolean;\n}\n\ntype Role = 'admin' | 'editor' | 'viewer';\n\ntype RoleFilter = 'all' | Role;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  searchTerm = '';\n  selectedRole: RoleFilter = 'all';\n  showOnlyActive = false;\n\n  readonly users: User[] = [\n    { id: 1, name: 'Alice Johnson', role: 'admin', active: true },\n    { id: 2, name: 'Bob Smith', role: 'editor', active: false },\n    { id: 3, name: 'Charlie Kim', role: 'viewer', active: true },\n    { id: 4, name: 'Dana Patel', role: 'editor', active: true },\n    { id: 5, name: 'Elliot Brown', role: 'viewer', active: false }\n  ];\n\n  get filteredUsers(): User[] {\n    const term = this.searchTerm.trim().toLowerCase();\n\n    return this.users.filter(user => {\n      if (term && !user.name.toLowerCase().includes(term)) {\n        return false;\n      }\n\n      if (this.selectedRole !== 'all' && user.role !== this.selectedRole) {\n        return false;\n      }\n\n      if (this.showOnlyActive && !user.active) {\n        return false;\n      }\n\n      return true;\n    });\n  }\n\n  trackByUserId(_: number, user: User): number {\n    return user.id;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating the original `users` array instead of deriving a filtered view.",
+          "Forgetting to normalize case when comparing the search term to names.",
+          "Applying only one of the filters instead of combining all three.",
+          "Doing heavy work directly in the template instead of in a getter or method."
+        ],
+        "techniques": [
+          "Using a standalone component with `CommonModule` and `FormsModule`.",
+          "Keeping original data immutable and deriving filtered views.",
+          "Using `[(ngModel)]` for simple controlled inputs in Angular.",
+          "Using `trackBy` with `*ngFor` for a minor performance improvement."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-filterable-user-list.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-filterable-user-list"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-faq-accordion",
+    "title": "Accordion / FAQ Component",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "inputs",
+      "outputs",
+      "state",
+      "interactivity"
+    ],
+    "description": {
+      "summary": "Build a simple FAQ (accordion) component in Angular that renders 3–4 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "specs": {
+        "requirements": [
+          "Use a standalone root component and at least one child component for a single FAQ item.",
+          "Render a list of 3–4 FAQ items (question + answer) from an in-memory array.",
+          "Clicking on a question toggles its answer open/closed.",
+          "In the default mode, only one FAQ item can be open at a time.",
+          "Add a simple control (e.g. a toggle or checkbox) to switch to 'allow multiple open' mode.",
+          "In 'allow multiple open' mode, the user should be able to open more than one FAQ item at once."
+        ],
+        "expectedBehavior": [
+          "Initially all FAQ items are closed.",
+          "Clicking a closed question opens its answer.",
+          "In single-open mode: opening one item automatically closes any other open item.",
+          "Switching to multi-open mode keeps already open items and allows opening others.",
+          "Clicking an open question closes its answer in both modes."
+        ],
+        "implementationNotes": [
+          "Keep the data (questions/answers and open state) in the parent component.",
+          "Create a child component (e.g. `FaqItemComponent`) that receives `question`, `answer`, and `isOpen` as inputs and emits a `toggle` event when its header is clicked.",
+          "Use `*ngFor` in the parent template to render FAQ items.",
+          "You can use simple CSS transitions (e.g. `max-height` or `opacity`) for a smooth open/close animation, but this is optional."
+        ],
+        "techFocus": [
+          "Parent → child data flow with `@Input` and `@Output`",
+          "Controlled vs uncontrolled state (parent controlling which index is open)",
+          "Conditional rendering with `*ngIf` or `ngClass`",
+          "Basic UI state toggling and list rendering"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question → its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode → currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes.",
+      "approaches": [
+        {
+          "title": "Parent-controlled open indexes with a child FAQ item component",
+          "prose": "Use a standalone `AppComponent` as the parent that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` flag controlled by a checkbox or toggle in the UI.\n3. An array `openIndexes: number[]` that stores the indexes of currently open FAQ items.\n\nImplement two methods:\n- `isItemOpen(index: number): boolean` → returns whether the given index is currently open.\n- `onItemToggle(index: number)` → updates `openIndexes` based on `allowMultiple`.\n\nIn single-open mode, `onItemToggle` should behave like a radio group: either an item is the only open one or there are none. In multi-open mode, it behaves like a set: clicking an item toggles its presence in `openIndexes`. The child `FaqItemComponent` is kept dumb – it only receives data and emits a `toggle` event, leaving all state decisions to the parent.",
+          "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface FaqItem {\n  question: string;\n  answer: string;\n}\n\n@Component({\n  selector: 'app-faq-item',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <article class=\"faq-item\" [class.open]=\"isOpen\">\n      <button class=\"faq-header\" type=\"button\" (click)=\"toggle.emit()\" aria-expanded=\"{{ isOpen }}\">\n        <span class=\"question\">{{ question }}</span>\n        <span class=\"indicator\">{{ isOpen ? '-' : '+' }}</span>\n      </button>\n      <div class=\"faq-body\" *ngIf=\"isOpen\">\n        <p>{{ answer }}</p>\n      </div>\n    </article>\n  `,\n  styles: [\n    `.faq-item{border-radius:12px;background:#0b1020;border:1px solid #1f2937;overflow:hidden;}`,\n    `.faq-item + .faq-item{margin-top:8px;}`,\n    `.faq-header{width:100%;padding:12px 14px;background:transparent;border:none;display:flex;justify-content:space-between;align-items:center;color:#e5e7eb;cursor:pointer;font-size:14px;}`,\n    `.indicator{font-weight:700;}`,\n    `.faq-body{padding:0 14px 12px;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class FaqItemComponent {\n  @Input() question = '';\n  @Input() answer = '';\n  @Input() isOpen = false;\n  @Output() toggle = new EventEmitter<void>();\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FaqItemComponent],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <header class=\"header\">\n          <h1>FAQ</h1>\n          <label class=\"switch\">\n            <input type=\"checkbox\" [checked]=\"allowMultiple\" (change)=\"onToggleAllowMultiple()\" />\n            <span>Allow multiple open</span>\n          </label>\n        </header>\n\n        <div class=\"list\">\n          <app-faq-item\n            *ngFor=\"let item of faqItems; index as i\"\n            [question]=\"item.question\"\n            [answer]=\"item.answer\"\n            [isOpen]=\"isItemOpen(i)\"\n            (toggle)=\"onItemToggle(i)\">\n          </app-faq-item>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px;}`,\n    `.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}`,\n    `.header h1{font-size:20px;margin:0;}`,\n    `.switch{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  faqItems: FaqItem[] = [\n    {\n      question: 'Lorem ipsum dolor sit amet?',\n      answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n    },\n    {\n      question: 'Curabitur blandit tempus porttitor?',\n      answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n    },\n    {\n      question: 'Aenean lacinia bibendum nulla sed consectetur?',\n      answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n    },\n    {\n      question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n      answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n    }\n  ];\n\n  allowMultiple = false;\n  openIndexes: number[] = [];\n\n  isItemOpen(index: number): boolean {\n    return this.openIndexes.includes(index);\n  }\n\n  onItemToggle(index: number): void {\n    const currentlyOpen = this.isItemOpen(index);\n\n    if (this.allowMultiple) {\n      // Treat as a set\n      this.openIndexes = currentlyOpen\n        ? this.openIndexes.filter(i => i !== index)\n        : [...this.openIndexes, index];\n      return;\n    }\n\n    // Single-open mode\n    if (currentlyOpen) {\n      this.openIndexes = [];\n    } else {\n      this.openIndexes = [index];\n    }\n  }\n\n  onToggleAllowMultiple(): void {\n    this.allowMultiple = !this.allowMultiple;\n    if (!this.allowMultiple && this.openIndexes.length > 1) {\n      // Keep only the first open item in single-open mode\n      this.openIndexes = this.openIndexes.length ? [this.openIndexes[0]] : [];\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Letting each item manage its own open/closed state, which makes it hard to enforce 'only one open at a time'.",
+          "Using index-based state but forgetting to clear other indexes in single-open mode.",
+          "Directly mutating the `faqItems` array to store UI-only state instead of keeping a separate `openIndexes` representation."
+        ],
+        "techniques": [
+          "Keeping view data (question/answer) separate from UI state (open indexes).",
+          "Using a child component with `@Input`/`@Output` to keep the parent in full control of state.",
+          "Deriving `isItemOpen` from an array of indexes instead of storing booleans on each item."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-faq-accordion.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-faq-accordion"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-pagination-table",
+    "title": "Paginated Data Table",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "pagination",
+      "arrays",
+      "derived-state"
+    ],
+    "description": {
+      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a static list (20–30 items) of users in a table (id, name, email, role).",
+          "Show 5 rows per page.",
+          "Add \"Previous\" and \"Next\" buttons to change the current page.",
+          "Display the current page and total pages (e.g. \"Page 2 of 5\").",
+          "Disable the \"Previous\" button on the first page.",
+          "Disable the \"Next\" button on the last page."
+        ],
+        "expectedBehavior": [
+          "Initially, the table shows the first 5 users (page 1).",
+          "Clicking \"Next\" advances to the next 5 users, until the last page.",
+          "Clicking \"Previous\" goes back one page, until the first page.",
+          "On the first page, \"Previous\" is disabled and cannot change the page.",
+          "On the last page, \"Next\" is disabled and cannot change the page.",
+          "The label \"Page X of Y\" always reflects the state correctly (X is 1-based)."
+        ],
+        "implementationNotes": [
+          "Store the current page index in a component property (e.g. `currentPage = 0`).",
+          "Keep the full list in a single readonly array on the component.",
+          "Use a derived getter (e.g. `pagedUsers`) that slices the array based on `currentPage` and `pageSize`.",
+          "Use additional getters like `isFirstPage` and `isLastPage` to drive button disabled state."
+        ],
+        "techFocus": [
+          "Component-level state for pagination (`currentPage`).",
+          "Derived data using `slice(start, end)`.",
+          "Handling edge cases in UI state (first/last page).",
+          "Clean template bindings for lists (`*ngFor`) and button states (`[disabled]`)."
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render → shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled.",
+      "approaches": [
+        {
+          "title": "Standalone component with derived pagination slice",
+          "prose": "Use a single standalone `AppComponent` that holds the full users array and pagination state.\n\n1. Define a `User` type and a constant `USERS` array with ~20–30 users.\n2. In the component, expose `readonly users = USERS;`, a `pageSize = 5;` and `currentPage = 0;`.\n3. Add getters `totalPages`, `pagedUsers`, `isFirstPage`, and `isLastPage`.\n   - `totalPages` uses `Math.ceil(this.users.length / this.pageSize)`.\n   - `pagedUsers` computes `start = currentPage * pageSize` and `end = start + pageSize` and returns `this.users.slice(start, end)`.\n4. Implement `goToPrevious()` and `goToNext()` so they guard against going before page 0 or past the last page.\n5. In the template, render the table rows with `*ngFor=\"let user of pagedUsers\"` and bind the button `disabled` flags to `isFirstPage` / `isLastPage`.\n\nThis keeps the logic simple, shows a clear separation between state and derived data, and matches how you'd wire pagination in a real-world Angular component.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nconst USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users = USERS;\n  readonly pageSize = 5;\n  currentPage = 0; // 0-based\n\n  get totalPages(): number {\n    return Math.ceil(this.users.length / this.pageSize) || 1;\n  }\n\n  get pagedUsers(): User[] {\n    const start = this.currentPage * this.pageSize;\n    const end = start + this.pageSize;\n    return this.users.slice(start, end);\n  }\n\n  get isFirstPage(): boolean {\n    return this.currentPage === 0;\n  }\n\n  get isLastPage(): boolean {\n    return this.currentPage >= this.totalPages - 1;\n  }\n\n  goToPrevious(): void {\n    if (!this.isFirstPage) {\n      this.currentPage--;\n    }\n  }\n\n  goToNext(): void {\n    if (!this.isLastPage) {\n      this.currentPage++;\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Treating `currentPage` as 1-based while doing slice calculations, which makes `start` / `end` off by one.",
+          "Forgetting to guard the page change functions, causing `currentPage` to go negative or past the last page.",
+          "Computing the slice inline in the template instead of using a getter, which hurts readability and testability.",
+          "Not updating the disabled state of the buttons, so users can still click Previous on the first page or Next on the last page."
+        ],
+        "techniques": [
+          "Using a standalone Angular component (`standalone: true`) with `bootstrapApplication`.",
+          "Deriving UI data from minimal state (current page + array length).",
+          "Using getters for small bits of view logic (page slice, first/last flags).",
+          "Keeping the dataset static and focusing purely on pagination behavior."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-pagination-table.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-pagination-table"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-theme-toggle",
+    "title": "Theme Toggle with Persisted Light/Dark Mode",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "services",
+      "dependency-injection",
+      "state",
+      "local-storage",
+      "theming"
+    ],
+    "description": {
+      "summary": "Add a global light/dark theme toggle in the top-right of the page. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "specs": {
+        "requirements": [
+          "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
+          "Support two themes: \"light\" and \"dark\".",
+          "Store the current theme in a dedicated Angular service (global-ish state).",
+          "Persist the selected theme in localStorage under a stable key.",
+          "On initial load, read the theme from localStorage and apply it before the user interacts.",
+          "Apply the theme at the document level by setting `data-theme` on `<html>`, so that the existing CSS can react to it.",
+          "You only need to edit TypeScript files: `/src/app/theme.service.ts` and `/src/app/app.component.ts`. All CSS files are already wired to respond to `data-theme` and should be left as-is."
+        ],
+        "expectedBehavior": [
+          "By default, the app starts in light mode if there is no previous theme stored.",
+          "If the user toggles to dark mode, the page background, text, and card colors change.",
+          "Reloading the page keeps the user’s last theme selection (light or dark).",
+          "The toggle UI (label or icon) always reflects the actual current theme.",
+          "Switching themes is instant and does not require a full reload."
+        ],
+        "implementationNotes": [
+          "`/src/app/theme.service.ts`: Use an Angular service (e.g. `ThemeService`) to hold global theme state, read/write localStorage, and update the `data-theme` attribute on `<html>`.",
+          "`/src/app/app.component.ts`: Inject the service, expose an `isDark` getter based on `themeService.currentTheme`, and wire the toggle button to `themeService.toggleTheme()`.",
+          "The CSS in `/src/app/app.component.css` and `/src/styles.css` is already configured: it uses `:root` / `:root[data-theme='dark']` and `:host-context([data-theme='dark'])` rules to switch page, card, and toggle colors when `data-theme` changes.",
+          "You do not need to modify any CSS for this exercise; just drive the theme state and `data-theme` from the service.",
+          "Avoid duplicating theme logic in multiple components; treat the service as the single source of truth."
+        ],
+        "techFocus": [
+          "Angular services and dependency injection",
+          "Global-ish state via a shared service",
+          "Side-effects and initialization logic (constructor / app bootstrap)",
+          "Using localStorage safely in a browser environment",
+          "Simple theming by driving `data-theme` on `<html>` and letting existing CSS respond"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+      "approaches": [
+        {
+          "title": "Global ThemeService with `data-theme` on `<html>`",
+          "prose": "Use a dedicated `ThemeService` as the global source of truth for the theme.\n\n1. Define a `Theme` type alias (`'light' | 'dark'`) and a stable localStorage key.\n2. In the service constructor, read from localStorage; if a value exists, use it; otherwise default to `'light'`. After deciding the initial theme, immediately apply it to `document.documentElement` (e.g. via `setAttribute('data-theme', theme)`).\n3. Expose a `currentTheme` property, a `setTheme(theme)` method, and a `toggleTheme()` helper.\n   - `setTheme(theme)` updates `currentTheme`, writes it to localStorage, and updates the `<html>` `data-theme`.\n   - `toggleTheme()` flips between `'light'` and `'dark'` using `setTheme`.\n4. In `AppComponent`, inject `ThemeService` and expose a getter `isDark` that checks `themeService.currentTheme === 'dark'`.\n5. Bind the toggle button to `onToggleClick()` which calls `themeService.toggleTheme()`. Use `isDark` to set the button label/icon (e.g. show the moon when in dark mode).\n6. The existing CSS in `styles.css` and `app.component.css` uses `:root[data-theme='dark']` and `:host-context([data-theme='dark'])` to change background, text, and card colors based on `data-theme`, so no CSS changes are required.\n\nThis implementation keeps theme state in one place, uses DI for access, and demonstrates a clean separation between state (service), UI (component), and styling (preconfigured CSS that reacts to `data-theme`).",
+          "codeTs": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ThemeService } from './theme.service';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly themeService = inject(ThemeService);\n\n  get isDark(): boolean {\n    return this.themeService.currentTheme === 'dark';\n  }\n\n  onToggleClick(): void {\n    this.themeService.toggleTheme();\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Reading from localStorage too late (e.g. after the first render), causing a visible flash from light to dark.",
+          "Forgetting to actually apply the theme to the document (only changing the label but not colors).",
+          "Using multiple sources of truth for the theme (e.g. duplicating theme state in both component and service).",
+          "Trying to change the CSS instead of driving the existing `data-theme`-based styles from the service."
+        ],
+        "techniques": [
+          "Using an Angular service as a global singleton to hold app-wide state.",
+          "Injecting `DOCUMENT` from `@angular/common` to manipulate the root element safely.",
+          "Encapsulating side-effects (localStorage reads/writes, DOM attribute updates) inside the service instead of scattering them across components.",
+          "Letting preconfigured CSS (`:root[data-theme='dark']` and `:host-context([data-theme='dark'])`) handle visual changes while the service only controls `data-theme`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-theme-toggle.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-theme-toggle"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-multi-step-form-starter",
+    "title": "Multi-step Signup Form (Reactive Forms)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "forms",
+      "reactive-forms",
+      "validation",
+      "components",
+      "state"
+    ],
+    "description": {
+      "summary": "Build a 3-step signup flow using Angular reactive forms: basic info, address info, and a summary + submit step. Each step should only allow moving forward when its fields are valid.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Use Angular reactive forms (`FormGroup`, `FormBuilder`, `Validators`) with nested form groups.",
+          "Step 1 (Basic info): capture `name` and `email` fields.",
+          "Step 2 (Address info): capture `street`, `city`, `country`, and optionally `postalCode`.",
+          "Step 3 (Summary): display a read-only summary of all collected values and provide a `Submit` button.",
+          "The `Next` button should be disabled unless the current step's group is valid.",
+          "Preserve entered values when navigating back and forth between steps.",
+          "(Optional) Add a `Back` button to move to the previous step."
+        ],
+        "expectedBehavior": [
+          "The flow starts on Step 1 (Basic info).",
+          "On Step 1, `Next` is disabled until both `name` and `email` are valid (required + valid email).",
+          "On Step 2, `Next` is disabled until required address fields are valid.",
+          "Clicking `Next` on a valid step moves to the next step.",
+          "Clicking `Back` moves to the previous step without losing already entered values.",
+          "On Step 3, the user sees a summary of all fields and a `Submit` button.",
+          "Clicking `Submit` validates the entire form and (for this exercise) logs or otherwise handles the collected data."
+        ],
+        "implementationNotes": [
+          "Use a single top-level `FormGroup` with nested groups like `basic` and `address` to keep form state centralized.",
+          "Track the current step with a simple number index (e.g. `currentStep = 0 | 1 | 2`).",
+          "Expose convenience getters like `basicGroup` and `addressGroup` for cleaner template bindings.",
+          "Use `markAllAsTouched()` before moving forward or submitting, so validation errors show up immediately.",
+          "Derive boolean helpers like `isFirstStep`, `isLastStep`, and `canGoNext` in the component instead of scattering conditions in the template."
+        ],
+        "techFocus": [
+          "Angular reactive forms",
+          "Grouping related controls with nested `FormGroup`s",
+          "Form validation and disabled states",
+          "Managing multi-step UI state in a single component",
+          "Basic UI architecture for a wizard-like flow"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise is about centralizing form state with Angular reactive forms and wiring a simple stepper on top of it. A good solution uses a single top-level `FormGroup` with nested groups for each step (`basic`, `address`) and a `currentStep` number to control which UI section is visible.\n\nThe core idea is:\n- Model all fields in one `FormGroup` to avoid juggling separate pieces of state.\n- Use per-step validation by checking only the current group's validity when deciding if the user can go to the next step.\n- Derive booleans for `canGoNext`, `isFirstStep`, and `isLastStep` instead of hard-coding conditions in the template.\n\n**Test cases**\n- Initial load → Step 1 is shown, `Next` is disabled.\n- Fill valid `name` and `email`, click `Next` → moves to Step 2.\n- On Step 2 with invalid address fields → `Next` stays disabled and/or shows validation errors when attempted.\n- After filling valid address, click `Next` → Step 3 shows a summary of all values.\n- Click `Back` from Step 3 → Step 2 is shown with previously entered data intact.\n- Click `Submit` on Step 3 with valid data → form is processed (e.g. logged) and no validation errors are shown.",
+      "approaches": [
+        {
+          "title": "Single reactive FormGroup with nested groups and step index",
+          "prose": "Use one top-level reactive `FormGroup` that contains nested groups for each logical step, plus a simple `currentStep` number to control the view.\n\n1. Inject `FormBuilder` and create the form in the constructor or as a class property. For example:\n   - `basic` group with `name` and `email` (required + email validator).\n   - `address` group with `street`, `city`, `country`, and optional `postalCode`.\n2. Keep `currentStep` as a number (0, 1, 2) and derive helpers like `isFirstStep`, `isLastStep`, and `canGoNext`.\n3. When the user clicks `Next`, call `markAllAsTouched()` on the current group's controls. Only move to the next step if that group is valid.\n4. Implement `Back` by simply decrementing `currentStep` when possible.\n5. For `Submit`, mark the whole form as touched, check `form.valid`, and then log or otherwise handle the data.\n\nThis approach keeps all state and rules in one place, and the template becomes mostly a projection of the current step with bindings to the appropriate nested group.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\" [formGroup]=\"form\">\n        <header class=\"header\">\n          <h1>Multi-step Signup</h1>\n          <p class=\"subtitle\">Step {{ currentStep + 1 }} of 3</p>\n        </header>\n\n        <section class=\"steps\" [ngSwitch]=\"currentStep\">\n          <!-- Step 1: Basic info -->\n          <div *ngSwitchCase=\"0\" formGroupName=\"basic\" class=\"step\">\n            <h2 class=\"step-title\">Basic info</h2>\n            <label class=\"field\">\n              <span>Name</span>\n              <input type=\"text\" formControlName=\"name\" placeholder=\"Jane Doe\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('name')?.touched && basicGroup.get('name')?.invalid\">\n                Name is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Email</span>\n              <input type=\"email\" formControlName=\"email\" placeholder=\"jane@example.com\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('email')?.touched && basicGroup.get('email')?.invalid\">\n                Please enter a valid email.\n              </small>\n            </label>\n          </div>\n\n          <!-- Step 2: Address info -->\n          <div *ngSwitchCase=\"1\" formGroupName=\"address\" class=\"step\">\n            <h2 class=\"step-title\">Address</h2>\n            <label class=\"field\">\n              <span>Street</span>\n              <input type=\"text\" formControlName=\"street\" placeholder=\"123 Main St\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('street')?.touched && addressGroup.get('street')?.invalid\">\n                Street is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>City</span>\n              <input type=\"text\" formControlName=\"city\" placeholder=\"Istanbul\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('city')?.touched && addressGroup.get('city')?.invalid\">\n                City is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Country</span>\n              <input type=\"text\" formControlName=\"country\" placeholder=\"Türkiye\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('country')?.touched && addressGroup.get('country')?.invalid\">\n                Country is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Postal code (optional)</span>\n              <input type=\"text\" formControlName=\"postalCode\" placeholder=\"34000\" />\n            </label>\n          </div>\n\n          <!-- Step 3: Summary -->\n          <div *ngSwitchCase=\"2\" class=\"step\">\n            <h2 class=\"step-title\">Summary</h2>\n            <div class=\"summary\">\n              <h3>Basic info</h3>\n              <p><strong>Name:</strong> {{ basicGroup.get('name')?.value }}</p>\n              <p><strong>Email:</strong> {{ basicGroup.get('email')?.value }}</p>\n\n              <h3>Address</h3>\n              <p><strong>Street:</strong> {{ addressGroup.get('street')?.value }}</p>\n              <p><strong>City:</strong> {{ addressGroup.get('city')?.value }}</p>\n              <p><strong>Country:</strong> {{ addressGroup.get('country')?.value }}</p>\n              <p><strong>Postal code:</strong> {{ addressGroup.get('postalCode')?.value || '—' }}</p>\n            </div>\n          </div>\n        </section>\n\n        <footer class=\"actions\">\n          <button type=\"button\" class=\"ghost\" (click)=\"prev()\" [disabled]=\"isFirstStep\">\n            Back\n          </button>\n\n          <button\n            *ngIf=\"!isLastStep\"\n            type=\"button\"\n            (click)=\"next()\"\n            [disabled]=\"!canGoNext\"\n          >\n            Next\n          </button>\n\n          <button\n            *ngIf=\"isLastStep\"\n            type=\"button\"\n            class=\"primary\"\n            (click)=\"submit()\"\n          >\n            Submit\n          </button>\n        </footer>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 16px;display:grid;gap:16px;}`,\n    `.header h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}`,\n    `.steps{min-height:260px;}`,\n    `.step{display:grid;gap:12px;}`,\n    `.step-title{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.field{display:grid;gap:4px;font-size:13px;}`,\n    `.field span{color:#e5e7eb;}`,\n    `.field input{border-radius:10px;border:1px solid #374151;background:#020617;padding:8px 10px;color:#e5e7eb;font-size:14px;}`,\n    `.field input:focus{outline:none;border-color:#a3e635;}`,\n    `.error{font-size:11px;color:#f97316;}`,\n    `.summary{display:grid;gap:4px;font-size:14px;}`,\n    `.summary h3{margin:8px 0 2px;font-size:14px;font-weight:600;color:#e5e7eb;}`,\n    `.actions{display:flex;justify-content:space-between;gap:8px;margin-top:4px;}`,\n    `.actions button{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;}`,\n    `.actions button.primary{background:#a3e635;color:#020617;border-color:#a3e635;}`,\n    `.actions button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.actions button.ghost{background:transparent;}`\n  ]\n})\nexport class AppComponent {\n  readonly lastStepIndex = 2;\n  currentStep = 0;\n\n  constructor(private fb: FormBuilder) {}\n\n  form: FormGroup = this.fb.group({\n    basic: this.fb.group({\n      name: ['', Validators.required],\n      email: ['', [Validators.required, Validators.email]]\n    }),\n    address: this.fb.group({\n      street: ['', Validators.required],\n      city: ['', Validators.required],\n      country: ['', Validators.required],\n      postalCode: ['']\n    })\n  });\n\n  get basicGroup(): FormGroup {\n    return this.form.get('basic') as FormGroup;\n  }\n\n  get addressGroup(): FormGroup {\n    return this.form.get('address') as FormGroup;\n  }\n\n  get isFirstStep(): boolean {\n    return this.currentStep === 0;\n  }\n\n  get isLastStep(): boolean {\n    return this.currentStep === this.lastStepIndex;\n  }\n\n  get canGoNext(): boolean {\n    if (this.currentStep === 0) {\n      return this.basicGroup.valid;\n    }\n    if (this.currentStep === 1) {\n      return this.addressGroup.valid;\n    }\n    return false;\n  }\n\n  private currentGroup(): FormGroup {\n    if (this.currentStep === 0) return this.basicGroup;\n    if (this.currentStep === 1) return this.addressGroup;\n    return this.form;\n  }\n\n  next(): void {\n    const group = this.currentGroup();\n    group.markAllAsTouched();\n    if (group.invalid) {\n      return;\n    }\n    if (!this.isLastStep) {\n      this.currentStep++;\n    }\n  }\n\n  prev(): void {\n    if (!this.isFirstStep) {\n      this.currentStep--;\n    }\n  }\n\n  submit(): void {\n    this.form.markAllAsTouched();\n    if (this.form.invalid) {\n      return;\n    }\n    console.log('Signup submitted', this.form.value);\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Managing each step as a completely separate form, which makes it harder to submit a single payload at the end.",
+          "Allowing `Next` to move forward even when the current step is invalid, causing confusing validation behavior on later steps.",
+          "Not marking controls as touched before checking validity, so users never see why they cannot proceed.",
+          "Mutating `currentStep` from the template instead of keeping navigation logic in clear methods."
+        ],
+        "techniques": [
+          "Grouping related fields under nested `FormGroup`s (`basic`, `address`) for cleaner validation and payload structure.",
+          "Using helper getters (`basicGroup`, `addressGroup`, `canGoNext`, `isFirstStep`, `isLastStep`) to keep templates declarative.",
+          "Calling `markAllAsTouched()` before moving forward or submitting to surface validation errors.",
+          "Using `ngSwitch` in the template to keep each step's markup focused and easy to read."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-multi-step-form.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-multi-step-form-starter"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-shopping-cart-mini",
+    "title": "Shopping Cart Mini (Standalone Component)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "hard",
+    "importance": 4,
+    "tags": [
+      "components",
+      "state",
+      "derived-state",
+      "arrays",
+      "immutability",
+      "change-detection"
+    ],
+    "description": {
+      "summary": "Build a small shopping cart UI using an Angular standalone component. Render a product list with \"Add to cart\" buttons and a cart section where you can increase/decrease quantities, remove items, and show derived totals.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a static product list with name and price for each product.",
+          "Each product should have an \"Add to cart\" button.",
+          "Render a cart section that lists all items currently in the cart.",
+          "Each cart item should show name, unit price, quantity, and line total (price × quantity).",
+          "In the cart, allow increasing and decreasing the quantity of an item.",
+          "Allow removing an item from the cart entirely.",
+          "Show derived totals: overall item count (total quantity) and total price for the entire cart.",
+          "Keep the cart state in a nested structure (e.g. an array of `cartItems`)."
+        ],
+        "expectedBehavior": [
+          "Clicking \"Add to cart\" for a product adds it to the cart with quantity 1 (or increments the quantity if it already exists).",
+          "Clicking \"+\" in the cart increases that item's quantity by 1.",
+          "Clicking \"−\" in the cart decreases that item's quantity by 1; if it reaches 0, the item can be removed or clamped at 1 (depending on your chosen UX).",
+          "Clicking \"Remove\" deletes the item from the cart.",
+          "Total quantity updates whenever items are added, removed, or their quantities change.",
+          "Total price updates whenever items are added, removed, or their quantities change.",
+          "UI stays in sync with state without manual DOM manipulation."
+        ],
+        "implementationNotes": [
+          "Use a nested state structure for the cart, e.g. `cartItems: { id, name, price, quantity }[]`.",
+          "Prefer immutable-style updates for the cart array (e.g. `map`, `filter`, spread) instead of mutating it in-place. This is good practice for OnPush-style thinking.",
+          "Use derived getters like `get totalQty()` and `get totalPrice()` instead of storing totals separately.",
+          "Keep the state and update methods on the component; you do not need NgRx or a global store for this exercise.",
+          "Use `*ngFor` with `trackBy` for rendering lists of products and cart items."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Nested state for cart items",
+          "Immutable update patterns (arrays of objects)",
+          "Derived state via getters (total quantity, total price)",
+          "Template bindings for lists and events",
+          "Thinking in terms of OnPush change detection"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Model the cart as an array of items where each item has `id`, `name`, `price`, and `quantity`. Keep this array in the root component and expose derived getters for `totalQty` and `totalPrice`. For updates, always create a new array instead of mutating the existing one (e.g. using `map` and `filter`). The template renders a static product list on the left and a cart summary on the right, wiring buttons to methods like `addToCart`, `increaseQty`, `decreaseQty`, and `removeItem`.\n\n**Key ideas**\n- Nested state: a list of cart items with quantities.\n- Immutable updates: replace `cartItems` with a new array instead of mutating in place.\n- Derived state: compute `totalQty` and `totalPrice` from `cartItems` instead of storing them.\n- Template-driven: the view is a pure function of the current state.",
+      "approaches": [
+        {
+          "title": "Single standalone component with immutable cart updates and derived totals",
+          "prose": "Define a constant `PRODUCTS` array and expose it as a public field. For the cart, store `cartItems: CartItem[] = []` where `CartItem` extends the product shape with a `quantity` field. When adding to the cart, check if an item with the same `id` exists; if so, replace it via `map` with an incremented quantity, otherwise append a new item via spread. For increasing and decreasing quantity, use `map` to return a new array, removing items via `filter` when necessary. The `totalQty` and `totalPrice` getters use `reduce` to derive their values from `cartItems`, ensuring they stay consistent without extra bookkeeping. This structure works nicely with OnPush change detection because each update replaces the `cartItems` reference.",
+          "codeTs": "interface Product {\n  id: string;\n  name: string;\n  price: number;\n}\n\ninterface CartItem extends Product {\n  quantity: number;\n}\n\nconst PRODUCTS: Product[] = [\n  { id: 'p1', name: 'Wireless Headphones', price: 129.99 },\n  { id: 'p2', name: 'Mechanical Keyboard', price: 89.5 },\n  { id: 'p3', name: 'Ergonomic Mouse', price: 49.99 }\n];\n\n// ... inside AppComponent\nproducts = PRODUCTS;\ncartItems: CartItem[] = [];\n\nget totalQty(): number {\n  return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);\n}\n\nget totalPrice(): number {\n  return this.cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);\n}\n\naddToCart(product: Product): void {\n  const existing = this.cartItems.find(i => i.id === product.id);\n  if (!existing) {\n    this.cartItems = [\n      ...this.cartItems,\n      { ...product, quantity: 1 }\n    ];\n  } else {\n    this.cartItems = this.cartItems.map(i =>\n      i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i\n    );\n  }\n}\n\nincreaseQty(item: CartItem): void {\n  this.cartItems = this.cartItems.map(i =>\n    i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i\n  );\n}\n\ndecreaseQty(item: CartItem): void {\n  if (item.quantity <= 1) {\n    this.removeItem(item);\n    return;\n  }\n  this.cartItems = this.cartItems.map(i =>\n    i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i\n  );\n}\n\nremoveItem(item: CartItem): void {\n  this.cartItems = this.cartItems.filter(i => i.id !== item.id);\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating the existing `cartItems` array (e.g. `push`, `splice`) instead of creating a new array, which can lead to subtle bugs when using OnPush or when reasoning about state changes.",
+          "Duplicating products in the cart instead of merging them and increasing `quantity`.",
+          "Trying to manually keep track of `totalPrice` and `totalQty` as separate state instead of deriving them from `cartItems`, which can easily drift out of sync.",
+          "Not handling the edge case when decreasing quantity to zero (e.g. leaving zero-quantity items in the cart)."
+        ],
+        "techniques": [
+          "Immutable array updates via spread (`[...]`), `map`, and `filter`.",
+          "Using TypeScript interfaces to model products and cart items.",
+          "Derived getters on the component for totals to keep state single-sourced.",
+          "Using `*ngFor` with `trackBy` to render and update lists efficiently."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-shopping-cart.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-shopping-cart"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-debounced-search",
+    "title": "Debounced Search with Fake API",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "hard",
+    "importance": 5,
+    "tags": [
+      "angular",
+      "rxjs",
+      "http",
+      "debounce",
+      "switchmap",
+      "error-handling",
+      "async",
+      "forms"
+    ],
+    "description": {
+      "summary": "Build a debounced search box in Angular that calls a fake API 500ms after the user stops typing. Show loading and error states while results are being fetched.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a search input where the user can type a query.",
+          "Do NOT call the fake API on every keystroke; debounce input so the search runs 500ms after the user stops typing.",
+          "Perform a fake async search call (e.g. in-memory array) that returns results based on the query text.",
+          "Show a loading state while the debounced search request is in flight.",
+          "Show an error state when the fake API fails.",
+          "Show a list of matching results when the request succeeds.",
+          "When the query is cleared, cancel the pending search and clear the results."
+        ],
+        "expectedBehavior": [
+          "Typing quickly in the input does not trigger multiple API calls; only the final value after the user pauses for 500ms is searched.",
+          "While a search is running, a small loading label (e.g. \"Searching…\") is visible.",
+          "If the fake API throws an error, an error message is displayed and loading is cleared.",
+          "On success, results are rendered as a list. Updating the query triggers a new debounced search.",
+          "Clearing the query clears both the loading state and the results list.",
+          "Subscriptions are cleaned up when the component is destroyed (no memory leaks)."
+        ],
+        "implementationNotes": [
+          "Use RxJS to handle debouncing and cancellation.",
+          "A common pattern is a `Subject<string>` for search terms, piped through `debounceTime(500)` and `distinctUntilChanged()`.",
+          "Use `switchMap` so that if the user types again while a previous request is in flight, the previous request is cancelled.",
+          "Use `tap` to toggle `isLoading` and reset error state before each search.",
+          "Use `catchError` to handle errors from the fake API and surface them as UI state.",
+          "You can simulate a fake API with an in-memory array and `of(...).pipe(delay(...))`. You may also deliberately throw for specific queries (e.g. \"error\") to test the error state."
+        ],
+        "techFocus": [
+          "Angular standalone component setup",
+          "RxJS streams for UI events",
+          "debounceTime + distinctUntilChanged",
+          "switchMap for cancellable async work",
+          "Async loading & error state management",
+          "Subscription cleanup with `takeUntil` or `OnDestroy`"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Use a standalone Angular component with a `Subject<string>` for search terms. Pipe it through `debounceTime(500)` and `distinctUntilChanged()` to avoid spamming the fake API, then `switchMap` into a fake search function that returns an observable.\n\nToggle `isLoading` and `error` inside `tap` and `catchError`, and write the results plus loading state into simple component fields for the template. Use `takeUntil` in the pipe and a `destroy$` subject in `ngOnDestroy` to clean up subscriptions.\n\n**Key ideas**\n- Represent user input as a stream (`Subject<string>`).\n- Use `debounceTime` + `distinctUntilChanged` + `switchMap` to control when and how the fake API runs.\n- Keep `results`, `isLoading`, and `error` as simple component state derived from the RxJS pipeline.",
+      "approaches": [
+        {
+          "title": "Subject-based stream with debounce + switchMap",
+          "prose": "Create a `searchTerm$ = new Subject<string>()` and emit the raw input value from an `onQueryChange` handler. In `setupSearchStream`, pipe that subject through `debounceTime(500)` and `distinctUntilChanged()` so rapid typing collapses into a single value. Use `tap` before `switchMap` to set `isLoading` and clear `error`, and again after empty inputs to clear results without hitting the API.\n\nInside `switchMap`, call a `fakeApiSearch(term)` that returns an observable created from an in-memory dataset with `of(filtered).pipe(delay(...))`. Use `catchError` to set `error` and recover with an empty array. Finally, subscribe to the pipeline and write the results into `this.results`, clearing `isLoading` when the observable completes."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Calling the fake API directly from the input handler without debounce, which causes unnecessary requests.",
+          "Using `mergeMap` instead of `switchMap`, so old requests can overwrite newer results.",
+          "Forgetting to clear `isLoading` on error, leaving the UI stuck in a loading state.",
+          "Not handling the empty-query case (should clear results and avoid calling the API).",
+          "Leaking subscriptions by never unsubscribing when the component is destroyed."
+        ],
+        "techniques": [
+          "Subject + RxJS operators for debounced UI events.",
+          "Cancellable async work with `switchMap`.",
+          "Error handling with `catchError` and safe fallbacks.",
+          "Component-level subscription cleanup with `takeUntil` + `ngOnDestroy`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-debounced-search.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v1:ui:angular:angular-debounced-search"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-star-rating",
+    "title": "Star Rating Widget",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "components",
+      "inputs-outputs",
+      "event-binding",
+      "template-syntax",
+      "accessibility"
+    ],
+    "description": {
+      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes.",
+      "specs": {
+        "requirements": [
+          "Create a standalone `StarRatingComponent` that renders a row of stars.",
+          "Support a configurable maximum number of stars via an `@Input()` (e.g. default to 5).",
+          "Expose the current rating as an `@Input()` so the parent can control the value.",
+          "Emit an event when the user selects a rating so the parent can react (e.g. two-way binding).",
+          "Use the widget from a simple `AppComponent` and show the current rating below it."
+        ],
+        "expectedBehavior": [
+          "Stars render from 1 up to the configured `max` (e.g. 5).",
+          "Clicking a star sets the rating to that star index (e.g. clicking the 4th star sets rating to 4).",
+          "All stars with index less than or equal to the rating appear visually \"filled\".",
+          "The parent component sees the updated rating value (e.g. via `[(rating)]` or an output event)."
+        ],
+        "implementationNotes": [
+          "Use `*ngFor` in the star-rating template to loop over an array of star indices.",
+          "Use `@Input()` for `max` and `rating`, and an `@Output()` `EventEmitter<number>` for rating changes.",
+          "Use class binding (e.g. `[class.filled]=\"star <= rating\"`) to style selected stars.",
+          "Prefer a small derived getter (e.g. `stars`) that returns an array like `[1, 2, 3, 4, 5]` for the template.",
+          "Add basic ARIA attributes (e.g. `role=\"radiogroup\"`, `aria-label`) for accessibility."
+        ],
+        "techFocus": [
+          "Standalone child components",
+          "Inputs & outputs (parent–child communication)",
+          "Template loops and class binding",
+          "Simple, accessible UI widgets"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise builds a small but reusable UI widget: a star rating control. The key is to keep the rendering logic in the star-rating component and let the parent own the current rating value. The widget exposes `@Input()`s for `max` and `rating`, and an `@Output()` `ratingChange` emitter so the parent can use Angular's two-way binding convention `[(rating)]`.\n\n**Test cases**\n- Initial state: rating is `0` → no stars are filled.\n- Click the 3rd star → rating becomes `3` and three stars appear filled.\n- Click the 5th star → rating becomes `5` and five stars appear filled.\n- Updating the rating from the parent (e.g. `currentRating = 2`) updates the visual state of the widget.\n- When `max` is changed (e.g. to 10), the component renders that many stars.",
+      "approaches": [
+        {
+          "title": "Standalone child component with Input/Output and ngFor",
+          "prose": "Encapsulate the star UI into a dedicated `StarRatingComponent` and let a simple `AppComponent` host it.\n\n1. In `StarRatingComponent`, define `@Input() max = 5`, `@Input() rating = 0`, and `@Output() ratingChange = new EventEmitter<number>()`.\n2. Expose a `stars` getter that returns an array `[1, 2, ..., max]` for the template.\n3. Use `*ngFor` to render one button per star. Bind `[class.filled]` when `star <= rating`.\n4. When a star is clicked, update `rating` and emit `ratingChange.emit(newValue)`.\n5. In `AppComponent`, hold a `currentRating` property and bind the widget using `[(rating)]=\"currentRating\"` to wire up two-way binding.\n\nThis approach keeps the widget focused on presentation and simple state, while the parent component controls the rating value and can display or persist it as needed.",
+          "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-star-rating',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      <button\n        *ngFor=\"let star of stars\"\n        type=\"button\"\n        class=\"star\"\n        [class.filled]=\"star <= rating\"\n        (click)=\"onRate(star)\"\n        [attr.aria-label]=\"star + ' out of ' + max\"\n        [attr.aria-pressed]=\"star <= rating\"\n      >\n        ★\n      </button>\n    </div>\n  `,\n  styles: [\n    `:host{display:inline-flex;}`,\n    `.stars{display:inline-flex;gap:4px;}`,\n    `.star{background:transparent;border:none;font-size:28px;cursor:pointer;padding:4px;line-height:1;color:#4b5563;transition:transform .1s ease,color .1s ease;}`,\n    `.star.filled{color:#facc15;}`,\n    `.star:focus-visible{outline:2px solid #facc15;outline-offset:2px;}`,\n    `.star:hover{transform:scale(1.1);}`\n  ]\n})\nexport class StarRatingComponent {\n  @Input() max = 5;\n  @Input() rating = 0;\n  @Output() ratingChange = new EventEmitter<number>();\n\n  get stars(): number[] {\n    return Array.from({ length: this.max }, (_, i) => i + 1);\n  }\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max) {\n      return;\n    }\n    this.rating = value;\n    this.ratingChange.emit(this.rating);\n  }\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, StarRatingComponent],\n  template: `\n    <main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n      <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n        <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Star Rating Widget</h1>\n        <div class=\"panel\">\n          <app-star-rating [(rating)]=\"currentRating\"></app-star-rating>\n          <p class=\"hint\">Current rating: {{ currentRating }} / 5</p>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}`,\n    `.hint{margin:0;font-size:14px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  currentRating = 0;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Hardcoding five stars directly in the template instead of using a loop, which makes `max` difficult to change.",
+          "Forgetting to emit `ratingChange`, so the parent never sees the updated rating.",
+          "Mutating parent state directly in the child instead of using an `@Output()`.",
+          "Not visually differentiating filled vs empty stars, making the rating unclear."
+        ],
+        "techniques": [
+          "Using Angular's two-way binding convention with `@Input() rating` and `@Output() ratingChange`.",
+          "Using a derived getter (`stars`) to keep template logic simple.",
+          "Building a focused, reusable standalone component that can be dropped into other views."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-star-rating.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-star-rating"
+    },
+    "companies": [
+      "amazon"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-dynamic-table-starter",
+    "title": "Dynamic Table (Rows × Columns)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "components",
+      "dynamic-ui",
+      "forms",
+      "ng-for",
+      "structural-directives",
+      "template-syntax"
+    ],
+    "description": {
+      "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and `*ngFor` loops to generate the table structure.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Provide two numeric inputs: one for the number of rows and one for the number of columns.",
+          "Provide a button (e.g. \"Generate table\" or \"Update\") that rebuilds the table when clicked.",
+          "Render an HTML table whose number of rows and columns matches the user-input values.",
+          "Each cell should render something simple and visible (e.g. its row/column index like `R1C1`)."
+        ],
+        "expectedBehavior": [
+          "Initially, no table or an empty grid is fine, as long as it appears correctly after the first generate action.",
+          "Changing the row or column input and clicking the button updates the table dimensions.",
+          "If the user enters non-positive values (0 or negative), the implementation may treat them as 0 and render no rows/columns, or clamp them to a minimum of 1 (either behavior is acceptable as long as it is consistent)."
+        ],
+        "implementationNotes": [
+          "Use regular class properties (e.g. `rowInput`, `colInput`) to store the current input values.",
+          "Use additional arrays (e.g. `rows: number[]` and `cols: number[]`) for driving `*ngFor` loops.",
+          "Handle the \"Generate\" button by rebuilding these arrays based on the current inputs.",
+          "Import and use `FormsModule` to enable `[(ngModel)]` two-way binding for the inputs.",
+          "Use nested `*ngFor` loops in the template to generate table rows and cells."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Template-driven two-way binding with `[(ngModel)]`",
+          "Dynamic UI generation with `*ngFor`",
+          "Basic input normalization and state management"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This exercise focuses on dynamic UI generation in Angular. You keep two pieces of input state (`rowInput` and `colInput`) and two arrays (`rows` and `cols`) that drive `*ngFor` loops. When the user clicks a button, you normalize the input values (e.g. clamp at 0 or a sensible maximum) and rebuild `rows` and `cols` accordingly. The table is rendered via nested `*ngFor` loops over these arrays, and each cell prints something simple like its row/column indices.\n\n**Test cases**\n- With `rowInput = 2` and `colInput = 3`, after clicking the generate button, the table has 2 `<tr>` elements and each row has 3 `<td>` elements.\n- Updating `rowInput` to `4` and clicking generate again updates the table to 4 rows.\n- Updating `colInput` to `1` and clicking generate again updates the table to 1 column per row.\n- When rows or columns are set to 0 (or a negative value), the implementation either renders no rows/columns or clamps to at least 1 consistently.",
+      "approaches": [
+        {
+          "title": "Standalone component with inputs and `*ngFor`-driven grid",
+          "prose": "Use a single standalone `AppComponent` that holds four key properties: `rowInput`, `colInput`, `rows`, and `cols`.\n\n1. Store the current numeric input values in `rowInput` and `colInput`.\n2. Store arrays used for iteration, e.g. `rows: number[] = []` and `cols: number[] = []`.\n3. Implement a method `updateTable()` that:\n   - Normalizes `rowInput` and `colInput` to non-negative integers (and optionally clamps a maximum).\n   - Rebuilds `rows` and `cols` using `Array.from` and the normalized counts.\n4. Bind the inputs with `[(ngModel)]` and trigger `updateTable()` on a button click.\n5. In the template, use nested `*ngFor` loops to generate table rows and cells, and print a simple label like `R{{ rowIndex + 1 }}C{{ colIndex + 1 }}` inside each `<td>`.\n\nThis keeps the implementation small while clearly demonstrating dynamic UI generation based on user input, two-way binding, and structural directives.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Dynamic Table</h1>\n        <p class=\"hint\">Enter rows & columns, then generate a table grid.</p>\n\n        <div class=\"controls\">\n          <label>\n            <span>Rows</span>\n            <input type=\"number\" min=\"0\" [(ngModel)]=\"rowInput\" />\n          </label>\n          <label>\n            <span>Columns</span>\n            <input type=\"number\" min=\"0\" [(ngModel)]=\"colInput\" />\n          </label>\n          <button (click)=\"updateTable()\">Generate table</button>\n        </div>\n\n        <div class=\"preview\" *ngIf=\"rows.length && cols.length; else emptyState\">\n          <table class=\"grid\" aria-label=\"dynamic table\">\n            <tbody>\n              <tr *ngFor=\"let _ of rows; let rowIndex = index\">\n                <td *ngFor=\"let __ of cols; let colIndex = index\">\n                  R{{ rowIndex + 1 }}C{{ colIndex + 1 }}\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n\n        <ng-template #emptyState>\n          <p class=\"empty\">Set rows & columns, then generate the table.</p>\n        </ng-template>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:640px;padding:20px 24px;background:#020617;border-radius:16px;border:1px solid #1f2937;display:grid;gap:16px;}`,\n    `h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.hint{margin:0;font-size:13px;color:#9ca3af;}`,\n    `.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}`,\n    `label{display:flex;flex-direction:column;gap:4px;font-size:13px;}`,\n    `input{background:#020617;border:1px solid #374151;border-radius:10px;padding:6px 10px;color:#e5e7eb;min-width:80px;}`,\n    `button{background:#a3e635;color:#0b1020;border:none;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;}`,\n    `button:hover{filter:brightness(1.05);}`,\n    `.preview{overflow:auto;border-radius:12px;border:1px solid #1f2937;padding:12px;background:#020617;}`,\n    `.grid{width:100%;border-collapse:collapse;}`,\n    `td{border:1px solid #1f2937;padding:6px 10px;font-size:13px;text-align:center;}`,\n    `.empty{margin:0;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  rowInput = 3;\n  colInput = 4;\n\n  rows: number[] = [];\n  cols: number[] = [];\n\n  constructor() {\n    this.updateTable();\n  }\n\n  private normalizeCount(raw: number): number {\n    if (!Number.isFinite(raw)) return 0;\n    const n = Math.floor(raw);\n    const clamped = Math.max(0, Math.min(n, 20));\n    return clamped;\n  }\n\n  updateTable(): void {\n    const rows = this.normalizeCount(this.rowInput);\n    const cols = this.normalizeCount(this.colInput);\n\n    this.rows = Array.from({ length: rows }, (_, i) => i);\n    this.cols = Array.from({ length: cols }, (_, i) => i);\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Rendering the table directly from `rowInput`/`colInput` without normalizing them (e.g. allowing negative or non-integer values to break the UI).",
+          "Trying to use `*ngFor` over a number directly instead of an iterable array.",
+          "Forgetting to import `FormsModule`, which will cause `[(ngModel)]` to fail."
+        ],
+        "techniques": [
+          "Using `Array.from({ length: n })` to create arrays for iteration.",
+          "Separating form state (`rowInput`, `colInput`) from derived view state (`rows`, `cols`).",
+          "Using nested `*ngFor` loops for grid-like UIs."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-dynamic-table.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-dynamic-table-starter"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-nested-checkboxes",
+    "title": "Nested Checkbox Tree (Standalone Component)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "components",
+      "dom",
+      "forms",
+      "event-binding",
+      "state",
+      "ui-logic"
+    ],
+    "description": {
+      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states.",
+      "specs": {
+        "requirements": [
+          "Render one parent checkbox and several child checkboxes.",
+          "Checking the parent selects all children.",
+          "Unchecking the parent clears all children.",
+          "When children are toggled manually:",
+          "- If all are checked → parent becomes checked.",
+          "- If none are checked → parent becomes unchecked.",
+          "- If some are checked → parent becomes indeterminate.",
+          "Use a standalone Angular component.",
+          "Use simple arrays or booleans for state (no signals needed)."
+        ],
+        "expectedBehavior": [
+          "Parent reflects the state of the children.",
+          "Children reflect parent state when it changes.",
+          "Parent enters the indeterminate state when child selection is mixed.",
+          "No external libraries or advanced patterns required."
+        ],
+        "implementationNotes": [
+          "Use a boolean array like `[false, false, false]` to track child states.",
+          "Bind the parent checkbox’s `indeterminate` property via `@ViewChild` or a template reference.",
+          "Use `(change)` event bindings for checkbox toggles.",
+          "Derive parent state after each child change."
+        ],
+        "techFocus": [
+          "Standalone components",
+          "DOM event handling",
+          "State derivation",
+          "Working with `indeterminate` on native checkboxes"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "This component manages a parent checkbox and multiple child checkboxes. The parent controls all children: checking it selects all children, and unchecking clears them. Children control the parent: if all are selected, the parent is checked; if none are selected, the parent is unchecked; if some are selected, the parent enters the `indeterminate` state.\n\nThis requires:\n- A simple array of booleans for child states.\n- A derived function that recalculates the parent state on every change.\n- Binding `indeterminate` using a template reference (`#parentBox`).",
+      "approaches": [
+        {
+          "title": "Boolean array with derived parent state",
+          "prose": "Use an array like `children = [false, false, false]`. The parent is derived based on the number of checked children. When clicking the parent checkbox, the entire array is updated. When children are toggled individually, run a helper that updates the parent checkbox's `checked` and `indeterminate` state. Angular does not have a native `indeterminate` input property — you must assign it manually on the element.",
+          "codeTs": "import { Component, ViewChild, ElementRef } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Child checkbox states\n  children = [false, false, false];\n\n  @ViewChild('parentBox', { static: true }) parentBox!: ElementRef<HTMLInputElement>;\n\n  // --- Parent toggle ---\n  toggleParent(event: Event): void {\n    const checked = (event.target as HTMLInputElement).checked;\n    this.children = this.children.map(() => checked);\n    this.updateParentState();\n  }\n\n  // --- Child toggle ---\n  toggleChild(index: number): void {\n    this.children[index] = !this.children[index];\n    this.updateParentState();\n  }\n\n  // --- Derive parent state ---\n  private updateParentState(): void {\n    const total = this.children.length;\n    const checkedCount = this.children.filter(x => x).length;\n\n    const parent = this.parentBox.nativeElement;\n\n    if (checkedCount === total) {\n      parent.checked = true;\n      parent.indeterminate = false;\n    } else if (checkedCount === 0) {\n      parent.checked = false;\n      parent.indeterminate = false;\n    } else {\n      parent.checked = false;\n      parent.indeterminate = true;\n    }\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Trying to bind `[indeterminate]` in Angular — it does NOT work because it's not a real DOM property.",
+          "Mutating the parent checkbox without using `@ViewChild` — required for indeterminate logic.",
+          "Forgetting to recalc parent state after each child toggle."
+        ],
+        "techniques": [
+          "Direct DOM access for `indeterminate`.",
+          "Boolean array state management.",
+          "Derived UI logic (checked / unchecked / indeterminate)."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-nested-checkboxes.v1.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v1:ui:angular:angular-nested-checkboxes"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
+    "access": "premium"
   }
 ]

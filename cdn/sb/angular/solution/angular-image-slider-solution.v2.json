@@ -1,0 +1,39 @@
+{
+  "version": "v2",
+  "type": "user-interface",
+  "title": "Angular Image Slider (solution)",
+  "openFile": "/src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"angular-image-slider-solution\",\n  \"private\": true\n}\n"
+    },
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Image Slider (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+    "/src/app/app.component.ts": {
+      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface Slide {\n  id: number;\n  title: string;\n  imageUrl: string;\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly slides: Slide[] = [\n    {\n      id: 1,\n      title: 'Snowflakes glowing under city lights',\n      imageUrl: 'https://picsum.photos/seed/slide-1/800/400'\n    },\n    {\n      id: 2,\n      title: 'Forest trail in the morning',\n      imageUrl: 'https://images.pexels.com/photos/1563604/pexels-photo-1563604.jpeg'\n    },\n    {\n      id: 3,\n      title: 'City lights at night',\n      imageUrl: 'https://images.pexels.com/photos/220067/pexels-photo-220067.jpeg'\n    }\n  ];\n\n  currentIndex = 0;\n\n  get totalSlides(): number {\n    return this.slides.length;\n  }\n\n  get currentSlide(): Slide | null {\n    return this.slides[this.currentIndex] ?? null;\n  }\n\n  get canGoPrev(): boolean {\n    return this.currentIndex > 0;\n  }\n\n  get canGoNext(): boolean {\n    return this.currentIndex < this.totalSlides - 1;\n  }\n\n  goTo(index: number): void {\n    if (index < 0 || index >= this.totalSlides) {\n      return;\n    }\n    this.currentIndex = index;\n  }\n\n  prev(): void {\n    if (this.canGoPrev) {\n      this.currentIndex--;\n    }\n  }\n\n  next(): void {\n    if (this.canGoNext) {\n      this.currentIndex++;\n    }\n  }\n}\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main class=\"main\">\n  <section class=\"section\">\n    <h1>Image Slider (Solution)</h1>\n\n    <figure class=\"frame\" *ngIf=\"currentSlide as slide\">\n      <img class=\"image\" [src]=\"slide.imageUrl\" [alt]=\"slide.title\" />\n      <figcaption class=\"caption\">{{ slide.title }}</figcaption>\n    </figure>\n\n    <div class=\"meta\">\n      Slide {{ currentIndex + 1 }} of {{ totalSlides }}\n    </div>\n\n    <div class=\"actions\">\n      <button type=\"button\" (click)=\"prev()\" [disabled]=\"!canGoPrev\">\n        Previous\n      </button>\n      <button type=\"button\" (click)=\"next()\" [disabled]=\"!canGoNext\">\n        Next\n      </button>\n    </div>\n\n    <div class=\"dots\">\n      <button\n        type=\"button\"\n        class=\"dot\"\n        *ngFor=\"let slide of slides; let i = index\"\n        [class.active]=\"i === currentIndex\"\n        (click)=\"goTo(i)\"\n        [attr.aria-label]=\"'Go to slide ' + (i + 1)\"\n      ></button>\n    </div>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": ".main{min-height:100vh;background:#0a0a0a;color:#e5e7eb;display:grid;place-items:center;padding:24px;}\n.section{width:100%;max-width:520px;display:grid;gap:16px;}\n.section>h1{margin:0;font-size:20px;font-weight:700;}\n.frame{margin:0;border-radius:12px;overflow:hidden;border:1px solid #1f2937;background:#020617;}\n.image{display:block;width:100%;height:240px;object-fit:cover;}\n.caption{padding:8px 12px;font-size:14px;color:#e5e7eb;background:rgba(15,23,42,.9);}\n.meta{font-size:12px;color:#9ca3af;text-align:center;}\n.actions{display:flex;gap:8px;justify-content:center;margin-top:4px;}\nbutton{background:#a3e635;color:#111;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;}\nbutton[disabled]{opacity:.5;cursor:not-allowed;}\n.dots{display:flex;justify-content:center;gap:6px;margin-top:6px;}\n.dot{width:8px;height:8px;border-radius:999px;border:none;background:#374151;cursor:pointer;padding:0;}\n.dot.active{background:#a3e635;}\n"
+    },
+    "/src/styles.css": {
+      "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+    }
+  }
+}

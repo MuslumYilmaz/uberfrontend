@@ -1,0 +1,169 @@
+{
+    "key": "O",
+    "title": "Optimizations & Deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this last step, the interviewer wants to see if you know where a flashcard language app can break under real usage (long sessions, slow phones, flaky networks) and how you’d improve it without over-engineering. You should talk about: animation performance, batching of progress updates, caching for fast sessions, offline behavior, and accessibility for different users."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First, I’d ship a straightforward version: simple flip animation, basic batching of progress, minimal caching. Then I’d measure real usage: time-to-first-card, animation smoothness, how quickly the UI reacts to answers, and how it behaves offline. Based on that, I’d add targeted optimizations like preloading, better batching, and more robust offline support.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You optimize after measuring, not by guessing.\n- You know main bottlenecks: janky flip animations, chatty network calls, and slow cold-starts.\n- You understand trade-offs: more client logic vs server complexity, more caching vs data freshness.\n- You can go deep on at least one area (SRS, offline-first, animation perf, or accessibility)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Pick a few realistic pain points: slow mobile networks, long study streaks, and users switching devices. Walk through how you’d detect problems (metrics, logs, profiling) and how you’d improve them step by step. Talk like someone who has seen real-world UI glitches and sync bugs before."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Baseline hygiene you should mention",
+                            "items": [
+                                "Use GPU-friendly CSS transforms (`transform`, `opacity`) for flip animations; avoid heavy layout changes.",
+                                "Keep the FlashcardViewer component small and memoized so flipping doesn’t re-render unrelated UI.",
+                                "Preload the next 2–3 cards while the user is viewing the current one to make the next transition instant.",
+                                "Batch progress updates in memory instead of doing a network call on every answer.",
+                                "Use IndexedDB/localStorage to cache deck metadata and recent card batches for faster cold-start.",
+                                "Respect `prefers-reduced-motion` and provide a non-animated flip mode."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "When usage and data grow",
+                            "items": [
+                                "Introduce smarter SRS scheduling to avoid huge card batches and keep sessions focused on problematic cards.",
+                                "Use background sync (where available) or a retry queue to flush progress when connectivity returns.",
+                                "Implement lightweight analytics to detect where users drop out (e.g. slow first load, laggy flips, sync errors).",
+                                "Consider splitting card content and media (e.g. audio, images) so text loads instantly while heavier assets stream in.",
+                                "Cap local caches by deck and size so the app doesn’t grow unbounded on the client.",
+                                "Add a fallback for cross-device conflicts (e.g. last-write-wins + merge heuristics) for progress sync."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Deep-dive topics you can offer",
+            "columns": [
+                "Topic",
+                "Angle",
+                "How you talk about it"
+            ],
+            "rows": [
+                [
+                    "Flip animation performance",
+                    "Smooth UX vs accessibility",
+                    "\"I’d implement flips with CSS 3D transforms and `will-change` to keep them 60 FPS on mid-range phones, but also respect `prefers-reduced-motion` and offer a simple fade for users who disable animations.\""
+                ],
+                [
+                    "Batching & sync of progress",
+                    "Network efficiency vs data safety",
+                    "\"Instead of sending a request per card, I’d keep a local queue of `ProgressUpdate`s and flush every N answers or every few seconds, with backoff and retry. If sync fails, I keep the queue persisted in IndexedDB so we don’t lose learning history.\""
+                ],
+                [
+                    "Client vs server SRS logic",
+                    "Performance vs consistency",
+                    "\"Simple apps can compute SRS entirely on the server. If we want offline sessions, we can mirror the algorithm on the client and reconcile on sync. That’s more complex but gives near-zero-latency scheduling.\""
+                ],
+                [
+                    "Offline-first experience",
+                    "Reliability for travelers/commuters",
+                    "\"For decks users frequently open, I’d proactively cache the next session’s cards and allow answering completely offline. Progress is queued and synced when we detect connectivity again.\""
+                ],
+                [
+                    "Cold-start and navigation speed",
+                    "Time-to-first-card",
+                    "\"I’d optimize for showing the first card very quickly: load deck metadata and first batch in parallel, render skeletons, and delay heavier assets like audio until needed.\""
+                ],
+                [
+                    "Accessibility and input diversity",
+                    "Keyboard, screen reader, touch",
+                    "\"I’d ensure the flip action works with keyboard (Space/Enter) and click/tap, and that screen readers can access both sides of the card with clear labels and announcements for progress changes.\""
+                ]
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Optimization path you should describe",
+            "steps": [
+                {
+                    "title": "1. Build the simple version",
+                    "text": "One batch-at-a-time flow, basic flip animation, naive batching of progress (e.g. sync on session end), and minimal caching."
+                },
+                {
+                    "title": "2. Measure real usage",
+                    "text": "Instrument metrics: time-to-first-card, average latency per flip/answer, error rate for sync, and frame drops during animations on mid-range devices."
+                },
+                {
+                    "title": "3. Fix obvious bottlenecks",
+                    "text": "Reduce unnecessary renders in the study screen, ensure flip uses cheap transforms, prefetch the next cards, and improve progress batching to avoid chatty calls."
+                },
+                {
+                    "title": "4. Add advanced behavior",
+                    "text": "Introduce more robust offline mode, tune SRS (server or hybrid), refine caching limits, and add better conflict resolution for cross-device progress once the basics are solid."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Biggest UX win",
+                    "value": "Instant next card",
+                    "helperText": "Users should never feel a lag between answering one card and seeing the next."
+                },
+                {
+                    "label": "Biggest backend win",
+                    "value": "Batched progress sync",
+                    "helperText": "Fewer, smarter network calls make the app faster and cheaper to run."
+                },
+                {
+                    "label": "Strong senior signal",
+                    "value": "Measure → optimize → iterate",
+                    "helperText": "You only introduce complexity like offline SRS or conflict resolution after profiling and real feedback."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Great candidates don’t just say \"I’d cache things\" or \"I’d use SRS\". They explain when to add these optimizations, which metrics drive those decisions, and how to balance smooth animations, reliable progress sync, and offline behavior without turning the codebase into an unmaintainable mess."
+        }
+    ]
+}

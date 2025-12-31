@@ -1,0 +1,177 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see if you can expose a clean API for a multi-step autosaving form. You should show that you know how other engineers will use this form (props, callbacks, hooks) without leaking implementation details like localStorage calls or deeply nested event handlers."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"From the outside I want a simple contract: a `MultiStepForm` component (or hook) that takes initial values, optional draft key, validation rules and callbacks like `onSubmit` and `onDiscardDraft`. Inside, it handles step navigation, validation and autosave to localStorage automatically.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You expose **simple, predictable props** and callbacks.\n- You separate the public API (`onSubmit`, `onChange`, `onRestoreDraft`) from internal concerns (debounce logic, storage key names).\n- You think about **extensibility**: adding steps or fields without breaking consumers.\n- You make draft behavior explicit: how to restore, clear and detect that a draft exists."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Speak in terms of function signatures and props: what does `MultiStepForm` receive, what does it emit. You don’t need perfect TypeScript, but you should be able to say: \"`onSubmit(form: FormModel)` is called only after all steps validate successfully.\""
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type StepKey = 'step1' | 'step2' | 'step3' | 'step4';\n\ninterface MultiStepFormProps {\n  initialValues?: FormModel;             // optional clean start\n  draftKey?: string;                     // localStorage key\n  validateStep: (step: StepKey, form: FormModel) => ValidationErrors | null;\n  validateAll?: (form: FormModel) => ValidationErrors | null; // optional override\n  onSubmit: (form: FormModel) => Promise<void> | void;\n  onRestoreDraft?: (draft: FormDraft) => void; // fired when we hydrate from localStorage\n  onDiscardDraft?: () => void;          // user chooses to start fresh\n  autosaveIntervalMs?: number;          // debounce interval, e.g. 1000ms\n}\n\n// Optional hook-style API\ninterface UseMultiStepFormResult {\n  form: FormModel;\n  ui: FormUiState;                      // currentStep, dirty, lastSavedAt, errors\n  setFieldValue: (step: StepKey, field: string, value: unknown) => void;\n  goToStep: (stepIndex: number) => void;\n  nextStep: () => void;\n  prevStep: () => void;\n  submit: () => Promise<void>;\n  discardDraft: () => void;\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / prop",
+                "Shape (example)",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "MultiStepFormProps.initialValues",
+                    "Optional `FormModel`",
+                    "\"`initialValues` lets us pre-fill the form when there’s data from the backend or some previous flow. If not provided we use sensible defaults.\""
+                ],
+                [
+                    "MultiStepFormProps.draftKey",
+                    "String like `'checkout-form-draft'`",
+                    "\"`draftKey` is the localStorage key for autosave. This keeps storage names configurable and avoids hard-coding them in multiple places.\""
+                ],
+                [
+                    "validateStep(step, form)",
+                    "Returns `ValidationErrors | null`",
+                    "\"`validateStep` receives the full form plus the current step key and returns a map of errors or null. I can reuse this for blur validation, Next button and final submit.\""
+                ],
+                [
+                    "onSubmit(form)",
+                    "Called when all steps validate",
+                    "\"`onSubmit` only fires once the entire form passes validation. It receives the final `FormModel`, not some half-baked partial.\""
+                ],
+                [
+                    "onRestoreDraft(draft)",
+                    "Optional callback with `FormDraft`",
+                    "\"If there’s a draft, we call `onRestoreDraft` so the host page can, for example, show a toast: 'Draft from yesterday restored'.\""
+                ],
+                [
+                    "Hook result (`useMultiStepForm`)",
+                    "{ form, ui, setFieldValue, nextStep, prevStep, submit, discardDraft }",
+                    "\"In a hook-based design, the hook returns `form` values, `ui` state (currentStep, dirty, lastSavedAt, errors), and helpers like `setFieldValue`, `nextStep`, `submit`, `discardDraft`. Components just bind inputs to these helpers.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly expose",
+                            "items": [
+                                "A way to **configure the draft key** (e.g. `draftKey` prop).",
+                                "A **step-based validation API** (e.g. `validateStep(step, form)`).",
+                                "A clear **submit callback** that only fires on full success (`onSubmit`).",
+                                "Callbacks for **draft lifecycle**: `onRestoreDraft`, `onDiscardDraft`.",
+                                "A way to control **autosave debounce interval** (e.g. `autosaveIntervalMs`).",
+                                "Either a component or a hook that exposes `currentStep`, `dirty`, `errors` and navigation helpers."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should avoid in the API",
+                            "items": [
+                                "Forcing consumers to manually call `localStorage.setItem`.",
+                                "Returning different shapes depending on step (inconsistent contracts).",
+                                "Hiding validation behind magic: callers can’t plug in their own rules.",
+                                "Mixing UI details (progress bar rendering) into the core form API.",
+                                "Making submit fire even when some steps are invalid (undefined behavior)."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical call flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Mount",
+                    "text": "The page renders `<MultiStepForm draftKey=\"checkout-form\" ... />`. The component checks localStorage for that key, optionally restores a `FormDraft`, and initializes internal state."
+                },
+                {
+                    "title": "2. Edit & validate",
+                    "text": "Inputs call `setFieldValue` (or `onChange` props), which updates the form model and sets `dirty = true`. Inline validation uses `validateStep` to populate `validationErrors`."
+                },
+                {
+                    "title": "3. Autosave",
+                    "text": "A debounced effect based on `autosaveIntervalMs` serializes `{ form, currentStep, version, updatedAt }` to localStorage and marks `dirty = false`."
+                },
+                {
+                    "title": "4. Step navigation",
+                    "text": "`nextStep()` runs `validateStep` for the current step; if there are no errors it increments `currentStep`. `prevStep()` just decrements (no validation needed)."
+                },
+                {
+                    "title": "5. Submit",
+                    "text": "When `submit()` is called, the component runs full validation (all steps). On success it calls `onSubmit(form)` and clears the draft key. On failure it surfaces errors without losing any data."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Public surface",
+                    "value": "Tiny & consistent",
+                    "helperText": "A small set of props and helpers that stay stable over time."
+                },
+                {
+                    "label": "Data direction",
+                    "value": "Props in, callbacks out",
+                    "helperText": "Consumers configure behavior; the form reports events and results."
+                },
+                {
+                    "label": "Strong signal",
+                    "value": "Draft lifecycle is explicit",
+                    "helperText": "You clearly define how drafts are created, restored and discarded."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good API makes complex behavior (multi-step + autosave + validation) feel simple to use. If another engineer can wire this form into their page just from the props and hook signatures you described, you’ve nailed the interface."
+        }
+    ]
+}

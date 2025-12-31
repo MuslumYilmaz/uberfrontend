@@ -9,16 +9,12 @@
     "tags": [
       "event-loop",
       "async",
-      "microtasks"
+      "microtasks",
+      "promise",
+      "timers"
     ],
     "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "microsoft",
-      "uber",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -128,7 +124,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re the only cashier at a store. You serve one customer at a time (the call stack). When a customer needs to grab something, you tell them to step aside (macrotask). But before you call the next one, you handle quick questions like ‘Can I get a receipt?’ (microtasks). You repeat this all day — that’s the event loop!"
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-closures",
@@ -139,17 +136,16 @@
     "difficulty": "hard",
     "tags": [
       "closure",
-      "scope",
+      "functions",
       "lexical-environment",
-      "function"
+      "scope"
     ],
     "importance": 5,
     "companies": [
-      "google",
-      "meta",
       "amazon",
-      "microsoft",
-      "netflix"
+      "google",
+      "netflix",
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -202,7 +198,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you leave a room (outer function ends), but you gave your friend (inner function) a copy of the key to your drawer (variables). Even though you’re gone, they can still open it — that’s a closure!"
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-this-keyword",
@@ -212,18 +209,15 @@
     "technology": "javascript",
     "difficulty": "hard",
     "tags": [
-      "this",
-      "context",
       "binding",
-      "function"
+      "context",
+      "functions",
+      "this"
     ],
     "importance": 5,
     "companies": [
-      "google",
-      "meta",
       "amazon",
-      "microsoft",
-      "netflix"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -313,7 +307,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>this</code> as the person holding the phone 📱 — not the number you dialed. The number (function) stays the same, but who picks up (the object that calls it) decides what <code>this</code> will be."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-hoisting-tdz",
@@ -329,13 +324,7 @@
       "variables"
     ],
     "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -418,7 +407,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a classroom roll call 📋. The teacher knows all students’ names at the start (hoisting), but only after they say 'here' (initialization) can they answer questions. Until then, they’re in the **temporal dead zone**!"
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-var-let-const-hoisting",
@@ -426,7 +416,7 @@
     "description": "All variable declarations are hoisted, but only `var` is initialized with `undefined`. Variables declared with `let` and `const` exist in the temporal dead zone until execution reaches their declaration, making them inaccessible beforehand.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "hoisting",
       "variables",
@@ -437,10 +427,7 @@
     "importance": 4,
     "companies": [
       "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -513,7 +500,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re checking into a hotel 🏨. Rooms (<code>var</code>, <code>let</code>, <code>const</code>) are reserved at check-in (hoisting), but only <code>var</code> gets its key immediately. <code>let</code> and <code>const</code> exist but you can’t enter until the receptionist actually hands over the key — that’s the **temporal dead zone**!"
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-promises-async-await",
@@ -523,20 +511,14 @@
     "technology": "javascript",
     "difficulty": "hard",
     "tags": [
-      "promises",
       "async-await",
-      "microtasks",
+      "concurrency",
       "error-handling",
-      "concurrency"
+      "microtasks",
+      "promise"
     ],
     "importance": 5,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -660,7 +642,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a Promise as an order ticket 🧾: you place the order (create Promise), you’ll be notified when it’s ready (microtask). With <code>await</code>, you stand by the counter for <em>just that ticket</em> without blocking other customers — when it’s ready, you pick it up and continue."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-event-delegation",
@@ -668,7 +651,7 @@
     "description": "Event delegation is a technique where a single event listener on a parent element handles events for multiple child elements by using event bubbling and checking the event target.",
     "type": "trivia",
     "technology": "javascript",
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "event-delegation",
       "dom",
@@ -676,13 +659,7 @@
       "bubbling"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -752,7 +729,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine a restaurant. Instead of each waiter (child) taking orders, there’s one manager (parent) who hears all requests and decides who called — that’s **event delegation**!"
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-null-undefined-undeclared",
@@ -770,11 +748,7 @@
     ],
     "importance": 3,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -857,7 +831,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you ordered coffee ☕:\n- <strong>undefined</strong> → The cup exists, but it’s still empty because no one poured coffee yet.\n- <strong>null</strong> → You got an empty cup on purpose (you asked for none).\n- <strong>undeclared</strong> → There’s no cup at all — you never placed an order."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-equality-vs-strict-equality",
@@ -874,11 +849,7 @@
     ],
     "importance": 5,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -949,7 +920,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine two people named Alex:\n- Using <strong>==</strong> is like saying “they have the same name” — even if one is human and one is a robot.\n- Using <strong>===</strong> is like saying “same name <em>and</em> same species” — no confusion at all."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-hoisting",
@@ -966,11 +938,7 @@
     ],
     "importance": 2,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -1072,7 +1040,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of hoisting like setting the stage before a play:\n- <code>var</code> = the actor is on stage but asleep (exists, but undefined).\n- <code>let</code>/<code>const</code> = actor is behind the curtain (exists, but unreachable).\n- Function declaration = actor is fully ready, already rehearsed.\n- Function expression = actor hasn’t arrived yet — script will fail if you try to cue them early."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-higher-order-function",
@@ -1082,19 +1051,13 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
-      "functions",
-      "functional-programming",
       "callbacks",
-      "closures"
+      "closure",
+      "functional-programming",
+      "functions"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1153,7 +1116,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a higher-order function like a chef that doesn’t cook food directly — it takes other chefs (functions) and tells them <em>how</em> to cook. The chef can even create a new chef recipe on the spot and hand it back to you!"
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-event-bubbling-capturing",
@@ -1171,11 +1135,7 @@
     ],
     "importance": 3,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -1262,7 +1222,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of event flow like a water drop hitting nested cups:\n- **Capturing:** The water flows from the biggest cup down to the smallest one.\n- **Target:** The drop hits the smallest cup (the clicked element).\n- **Bubbling:** The water splashes back up through the larger cups."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-call-apply-bind",
@@ -1278,13 +1239,7 @@
       "call-apply-bind"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1375,7 +1330,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like renting a car:\n- <strong>call()</strong> → You rent and drive it right away.\n- <strong>apply()</strong> → You rent and drive it right away, but hand over your passengers list (array).\n- <strong>bind()</strong> → You book it for later — the car is reserved and ready to use when you need it."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-foreach-vs-map",
@@ -1391,13 +1347,7 @@
       "array-methods"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1476,7 +1426,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine sorting mail:\n- <strong>forEach()</strong> → you open each envelope and read it.\n- <strong>map()</strong> → you open each envelope, copy the letter, and build a new stack of letters — the transformed result."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-cookie-sessionstorage-localstorage",
@@ -1486,20 +1437,14 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
-      "storage",
       "cookies",
-      "localstorage",
+      "local-storage",
       "sessionstorage",
+      "storage",
       "web-apis"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1579,7 +1524,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of them like hotel storage options:\n- **Cookies:** Front desk storage — accessible by staff (server) and you (browser).\n- **localStorage:** Your personal locker — data stays even if you leave and come back later.\n- **sessionStorage:** Your room table — data disappears when you check out (close the tab)."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-prototypal-inheritance",
@@ -1597,10 +1543,8 @@
     "importance": 5,
     "companies": [
       "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
+      "netflix",
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -1696,7 +1640,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a family tree:\n- Each child (object) can use traits from their parent (prototype).\n- If the child doesn’t have a skill, it checks if the parent does.\n- If not, it goes further up the chain — until there’s no ancestor left."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-data-types",
@@ -1713,13 +1658,7 @@
       "objects"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1817,7 +1756,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of primitives as single paper notes — once written, they can’t be changed. Objects are like folders — you can add, remove, or edit their contents anytime."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-nan-property",
@@ -1827,19 +1767,14 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "nan",
-      "number",
       "global-object",
       "isnan",
+      "nan",
+      "numbers",
       "type-coercion"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -1895,7 +1830,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>NaN</code> like a 'broken calculator' output — the operation ran, but the result doesn’t make mathematical sense, so JavaScript gives you NaN instead of crashing."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-currying",
@@ -1912,11 +1848,7 @@
     ],
     "importance": 3,
     "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
+      "google"
     ],
     "answer": {
       "blocks": [
@@ -1968,7 +1900,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of currying like a vending machine: instead of inserting all coins at once, you insert them one by one — and after the last coin, you finally get your snack."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-callbacks",
@@ -1978,20 +1911,14 @@
     "technology": "javascript",
     "difficulty": "easy",
     "tags": [
-      "callback",
-      "functions",
-      "asynchronous",
+      "async",
+      "callbacks",
       "event-loop",
+      "functions",
       "higher-order-functions"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "uber"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2047,7 +1974,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like leaving your phone number with someone: you don’t wait on the line — they’ll call you <em>back</em> when they’re ready."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-arrow-functions",
@@ -2064,13 +1992,7 @@
       "syntax"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2135,7 +2057,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of arrow functions as assistants — they don’t have their own <code>this</code>; they simply use their boss’s <code>this</code> from the outer scope."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-object-destructuring",
@@ -2152,13 +2075,7 @@
       "objects"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2242,7 +2159,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of destructuring like unpacking a suitcase: instead of taking each item one by one, you open it once and pull out exactly what you need — all in one move."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-design-patterns",
@@ -2259,13 +2177,7 @@
       "best-practices"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2350,7 +2262,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of design patterns as blueprints for building software. You don’t copy the blueprint exactly — you adapt it to your project, knowing that others have successfully used that same design to build reliable and maintainable structures before."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-deferred-scripts",
@@ -2367,13 +2280,7 @@
       "async"
     ],
     "importance": 1,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2446,7 +2353,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>defer</code> like scheduling a meeting after you've finished your main work — the script is downloaded while you’re busy, but it only executes once your workspace (HTML) is ready. It keeps everything efficient and orderly."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-classes",
@@ -2463,13 +2371,7 @@
       "syntax"
     ],
     "importance": 3,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2547,7 +2449,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a class like a cookie cutter 🍪 — it defines the shape and design. Each cookie (object) made from it shares the same structure, but with its own details (property values)."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-object-creation-methods",
@@ -2564,13 +2467,7 @@
       "es6"
     ],
     "importance": 2,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2731,7 +2628,8 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of object creation methods like different ways to build a house:\n- **Object literal:** Prefab home — quick and easy.\n- **Constructor/Class:** Architect-designed — reusable blueprint.\n- **Factory function:** Custom-built home — flexible but independent.\n- **Object.create():** Extension — built from an existing foundation.\nEach approach gives you a new home (object), but the building method depends on your needs."
         }
       ]
-    }
+    },
+    "access": "free"
   },
   {
     "id": "js-memoization",
@@ -2748,13 +2646,7 @@
       "cache"
     ],
     "importance": 4,
-    "companies": [
-      "google",
-      "meta",
-      "amazon",
-      "microsoft",
-      "netflix"
-    ],
+    "companies": [],
     "answer": {
       "blocks": [
         {
@@ -2832,6 +2724,7 @@
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of memoization like remembering math homework answers — once you’ve solved a problem, you don’t need to redo it every time someone asks. You just recall the answer instantly."
         }
       ]
-    }
+    },
+    "access": "free"
   }
 ]
