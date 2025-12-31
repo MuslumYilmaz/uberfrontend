@@ -38,7 +38,7 @@ import { RouterModule } from '@angular/router';
         <h2>2. Refund Eligibility</h2>
         <p>A refund may be granted if all of the following conditions are met:</p>
         <ul>
-          <li>The refund request is submitted within 7 calendar days of the initial purchase; and</li>
+          <li>The refund request is submitted within 14 calendar days of the initial purchase; and</li>
           <li>The account shows limited usage (no substantial consumption of premium content or features).</li>
         </ul>
         <p>Approval is at FrontendAtlas’s sole discretion.</p>
