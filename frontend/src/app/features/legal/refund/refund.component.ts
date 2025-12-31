@@ -112,11 +112,6 @@ import { RouterModule } from '@angular/router';
         </p>
       </section>
 
-      <section>
-        <h2>8. Policy modifications</h2>
-        <p>We may update this policy from time to time. Changes take effect when published on this page.</p>
-      </section>
-
       <footer class="doc-footer">
         <p class="tiny">© {{ year }} FrontendAtlas. All rights reserved.</p>
       </footer>
