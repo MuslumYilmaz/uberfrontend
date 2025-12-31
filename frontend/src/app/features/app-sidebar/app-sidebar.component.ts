@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, Input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -6,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { TooltipModule } from 'primeng/tooltip';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 interface LinkItem {
@@ -48,6 +50,8 @@ export class AppSidebarComponent {
   submitting = false;
   submitOk = false;
   currentUrl = '';
+
+  constructor(private http: HttpClient) {}
 
   isLink = (i: NavItem): i is LinkItem => i.type === 'link';
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
@@ -139,16 +143,11 @@ export class AppSidebarComponent {
     this.submitting = true;
 
     try {
-      const res = await fetch(`${environment.apiBase}/bug-report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          note,
-          url: this.currentUrl || (typeof window !== 'undefined' ? window.location.href : '')
-        })
-      });
-
-      if (!res.ok) throw new Error(await res.text());
+      const apiBase = String(environment.apiBase).replace(/\/+$/, '');
+      await firstValueFrom(this.http.post(`${apiBase}/bug-report`, {
+        note,
+        url: this.currentUrl || (typeof window !== 'undefined' ? window.location.href : ''),
+      }, { responseType: 'text' }));
 
       this.submitOk = true;
       setTimeout(() => {

@@ -36,6 +36,12 @@ jobs:
       - name: Lint track question ids
         run: npm run lint:tracks
 
+      - name: Lint question assets
+        run: npm run lint:questions
+
+      - name: Build (production)
+        run: npm run build
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:

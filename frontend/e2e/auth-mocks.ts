@@ -84,7 +84,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
   const loginSequence = Array.isArray(opts.loginSequence) ? [...opts.loginSequence] : [];
   const signupSequence = Array.isArray(opts.signupSequence) ? [...opts.signupSequence] : [];
 
-  await page.route('http://localhost:3001/api/auth/**', async (route) => {
+  await page.route(/\/api\/auth\/.*/, async (route) => {
     const req = route.request();
     const url = new URL(req.url());
     const path = url.pathname;

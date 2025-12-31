@@ -3,6 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import { Observable, Subject, catchError, of, shareReplay, tap, throwError } from 'rxjs';
 import { Tech } from '../models/user.model';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 export interface ActivityEvent {
   _id: string;
@@ -39,7 +40,7 @@ type CachedObs<T> = { ts: number; obs: Observable<T> };
 
 @Injectable({ providedIn: 'root' })
 export class ActivityService {
-  private base = 'http://localhost:3001/api/activity';
+  private base = `${String(environment.apiBase).replace(/\/+$/, '')}/activity`;
   private readonly DEFAULT_TTL = 60_000; // 60s
 
   // Emits when any activity is completed

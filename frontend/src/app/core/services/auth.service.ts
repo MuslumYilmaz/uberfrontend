@@ -3,6 +3,7 @@ import { computed, effect, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Tech } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -60,7 +61,7 @@ export interface User {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private base = 'http://localhost:3001/api/auth';
+  private base = `${String(environment.apiBase).replace(/\/+$/, '')}/auth`;
 
   /** Reactive token + user */
   private _token = signal<string | null>(localStorage.getItem('auth_token'));
@@ -193,7 +194,7 @@ export class AuthService {
   /** PUT /api/users/:id */
   updateProfile(id: string, data: Partial<Pick<User, 'username' | 'email' | 'bio' | 'avatarUrl' | 'prefs'>>) {
     return this.http
-      .put<User>(`http://localhost:3001/api/users/${id}`, data, { headers: this.authHeaders() })
+      .put<User>(`${String(environment.apiBase).replace(/\/+$/, '')}/users/${id}`, data, { headers: this.authHeaders() })
       .pipe(tap((u) => this.user.set(u)));
   }
 

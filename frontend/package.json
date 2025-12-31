@@ -8,6 +8,8 @@
     "lint:topics": "node scripts/lint-topics.mjs",
     "lint:topics:fix": "node scripts/lint-topics.mjs --fix",
     "lint:tracks": "node scripts/lint-tracks.mjs",
+    "lint:questions": "node scripts/lint-questions.mjs",
+    "lint:questions:fix": "node scripts/lint-questions.mjs --fix",
     "start:e2e": "npm run gen:data && ng serve --configuration development --port 4200 --host 127.0.0.1",
     "start:prod": "npm run gen:data && ng serve --configuration production",
     "build": "npm run gen:data && ng build --configuration production",

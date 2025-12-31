@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, signal } from '@angular/core';
 import { AuthService, User } from './auth.service';
+import { environment } from '../../../environments/environment';
 
 const LS_SOLVED_GUEST = 'fa:solved:guest';
 
@@ -55,7 +56,7 @@ export class UserProgressService {
 
     try {
       const res = await this.http.post<{ solvedQuestionIds: string[] }>(
-        'http://localhost:3001/api/users/me/solved',
+        `${String(environment.apiBase).replace(/\/+$/, '')}/users/me/solved`,
         { questionId: id, solved: true },
         { headers: this.auth.headers() }
       ).toPromise();
@@ -87,7 +88,7 @@ export class UserProgressService {
 
     try {
       const res = await this.http.post<{ solvedQuestionIds: string[] }>(
-        'http://localhost:3001/api/users/me/solved',
+        `${String(environment.apiBase).replace(/\/+$/, '')}/users/me/solved`,
         { questionId: id, solved: false },
         { headers: this.auth.headers() }
       ).toPromise();
