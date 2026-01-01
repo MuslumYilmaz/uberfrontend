@@ -70,6 +70,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   // preview url
   private _previewUrl = signal<SafeResourceUrl | null>(null);
   previewUrl = () => this._previewUrl();
+  private previewObjectUrl: string | null = null;
+  private previewNavId = 0;
 
   // preview loading
   loadingPreview = signal(true);
@@ -187,6 +189,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.flushPendingPersist();
     if (this.persistTimer) clearTimeout(this.persistTimer);
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
+    try {
+      if (this.previewObjectUrl) URL.revokeObjectURL(this.previewObjectUrl);
+    } catch { }
+    this.previewObjectUrl = null;
     try {
       const frameEl = this.previewFrame?.nativeElement;
       if (frameEl?.contentWindow) {
@@ -530,15 +536,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   private setPreviewHtml(html: string | null) {
-    // cleanup old URL
     const frameEl = this.previewFrame?.nativeElement;
-    try {
-      const current = this._previewUrl();
-      if (current && (current as any).changingThisBreaksApplicationSecurity) {
-        // Angular SafeValue → cannot directly revoke; rely on iframe GC.
-      }
-    } catch { }
-
     if (!frameEl) {
       // iframe not ready yet; retry once
       requestAnimationFrame(() => {
@@ -549,15 +547,19 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       return;
     }
 
+    const prevUrl = this.previewObjectUrl;
+    const navId = ++this.previewNavId;
+
     if (!html) {
-      const doc = frameEl.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write('<!doctype html><meta charset="utf-8">');
-        doc.close();
-      }
+      try {
+        frameEl.src = 'about:blank';
+      } catch { }
       this._previewUrl.set(null);
+      this.previewObjectUrl = null;
       this.loadingPreview.set(false);
+      if (prevUrl) {
+        try { URL.revokeObjectURL(prevUrl); } catch { }
+      }
       return;
     }
 
@@ -566,22 +568,19 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
 
-    const onLoad = () => {
+    this.previewObjectUrl = url;
+    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+
+    frameEl.onload = () => {
+      if (this.destroy) return;
+      if (navId !== this.previewNavId) return;
       this.zone.run(() => this.loadingPreview.set(false));
+      if (prevUrl && prevUrl !== url) {
+        try { URL.revokeObjectURL(prevUrl); } catch { }
+      }
     };
 
-    if (frameEl.contentWindow) {
-      frameEl.onload = onLoad;
-      frameEl.contentWindow.location.replace(url);
-    } else {
-      frameEl.onload = () => {
-        frameEl.contentWindow?.location.replace(url);
-        onLoad();
-      };
-      frameEl.src = url;
-    }
-
-    this._previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(url));
+    frameEl.src = url;
   }
 
   // ---------- helpers ----------

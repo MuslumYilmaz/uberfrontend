@@ -45,15 +45,15 @@ function isAbsoluteUrl(url: string): boolean {
 }
 
 /**
- * Local'de klasör yapısı ne olursa olsun (assets/sb/...),
- * CDN'de hep `sb/<filename>` pattern'ine map eder.
+ * Local'de `assets/` altında nasıl tutuluyorsa,
+ * CDN'de de aynı relative path ile servis eder.
  *
  * Örnek:
- *  - assets/sb/react-counter.v1.json
+ *  - assets/sb/react/question/react-counter.v1.json
  *  - assets/sb/angular/question/angular-counter.v2.json
  * CDN:
- *  - sb/react-counter.v1.json
- *  - sb/angular-counter.v2.json
+ *  - sb/react/question/react-counter.v1.json
+ *  - sb/angular/question/angular-counter.v2.json
  */
 function buildCdnUrl(url: string, cdnBase: string): string {
     const normalizedPath = url.replace(/^\/+/, ''); // baştaki '/' leri temizle
@@ -63,10 +63,9 @@ function buildCdnUrl(url: string, cdnBase: string): string {
         return `${cdnBase}/${normalizedPath}`;
     }
 
-    // assets/sb/... ise sadece dosya adını al ve sb/ altına koy
+    // assets/sb/... ise `assets/` prefix'ini kaldır (sb/... şeklinde servis ediyoruz)
     if (normalizedPath.startsWith('assets/sb/')) {
-        const fileName = normalizedPath.split('/').pop()!; // angular-counter.v2.json
-        return `${cdnBase}/sb/${fileName}`;
+        return `${cdnBase}/${normalizedPath.replace(/^assets\//, '')}`;
     }
 
     // Genel fallback: assets/ prefix'ini sil, kalan kısmı kullan

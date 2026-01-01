@@ -28,7 +28,6 @@ export function makeAngularPreviewHtmlV1(files: Record<string, any>): string {
       '@angular/core': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/core.mjs',
       '@angular/core/rxjs-interop': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/rxjs-interop.mjs',
       '@angular/core/primitives/signals': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/signals.mjs',
-      '@angular/core/primitives/di': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/di.mjs',
       '@angular/core/primitives/event-dispatch': 'https://cdn.jsdelivr.net/npm/@angular/core@18.2.14/fesm2022/primitives/event-dispatch.mjs',
       '@angular/common': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/common.mjs',
       '@angular/common/http': 'https://cdn.jsdelivr.net/npm/@angular/common@18.2.14/fesm2022/http.mjs',
