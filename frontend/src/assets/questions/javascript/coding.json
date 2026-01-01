@@ -2170,9 +2170,9 @@
       "approaches": [
         {
           "title": "Single approach: length snapshot + own-property check (chosen for clarity)",
-          "prose": "We intentionally use an **own-property** check (`Object.hasOwn`) to define “existing element” as an actual slot on the array object. This is the simplest mental model for learners and matches the key interview lesson: **holes are skipped**.\n\nSpec note (1 line): The ECMAScript spec uses `k in O` (includes inherited numeric keys). We avoid that here to keep the exercise focused on holes/length snapshot without prototype-chain surprises.",
-          "codeJs": "Array.prototype.myMap = function (callbackFn, thisArg) {\n  if (this == null) throw new TypeError('Array.prototype.myMap called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const O = Object(this);\n  const len = O.length >>> 0; // snapshot length once\n  const out = new Array(len);\n\n  for (let k = 0; k < len; k++) {\n    if (Object.hasOwn(O, k)) {\n      out[k] = callbackFn.call(thisArg, O[k], k, O);\n    }\n    // else: hole stays hole in out\n  }\n\n  return out;\n};\n",
-          "codeTs": "declare global {\n  interface Array<T> {\n    myMap<U>(\n      callbackFn: (value: T, index: number, array: Array<T>) => U,\n      thisArg?: any\n    ): Array<U>;\n  }\n}\n\nArray.prototype.myMap = function <T, U>(\n  this: T[],\n  callbackFn: (value: T, index: number, array: T[]) => U,\n  thisArg?: any,\n): U[] {\n  if (this == null) throw new TypeError('Array.prototype.myMap called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const O = Object(this) as { [k: number]: T; length: number };\n  const len = O.length >>> 0; // snapshot length once\n  const out = new Array<U>(len);\n\n  for (let k = 0; k < len; k++) {\n    if (Object.hasOwn(O, k)) {\n      out[k] = callbackFn.call(thisArg, O[k], k, O as any);\n    }\n  }\n\n  return out;\n};\n"
+          "prose": "We intentionally use an **own-property** check (`Object.prototype.hasOwnProperty.call`) to define “existing element” as an actual slot on the array object. This is the simplest mental model for learners and matches the key interview lesson: **holes are skipped**.\n\nSpec note (1 line): The ECMAScript spec uses `k in O` (includes inherited numeric keys). We avoid that here to keep the exercise focused on holes/length snapshot without prototype-chain surprises.",
+          "codeJs": "Array.prototype.myMap = function (callbackFn, thisArg) {\n  if (this == null) throw new TypeError('Array.prototype.myMap called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const O = Object(this);\n  const len = O.length >>> 0; // snapshot length once\n  const out = new Array(len);\n\n  for (let k = 0; k < len; k++) {\n    if (Object.prototype.hasOwnProperty.call(O, k)) {\n      out[k] = callbackFn.call(thisArg, O[k], k, O);\n    }\n    // else: hole stays hole in out\n  }\n\n  return out;\n};\n",
+          "codeTs": "declare global {\n  interface Array<T> {\n    myMap<U>(\n      callbackFn: (value: T, index: number, array: Array<T>) => U,\n      thisArg?: any\n    ): Array<U>;\n  }\n}\n\nArray.prototype.myMap = function <T, U>(\n  this: T[],\n  callbackFn: (value: T, index: number, array: T[]) => U,\n  thisArg?: any,\n): U[] {\n  if (this == null) throw new TypeError('Array.prototype.myMap called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const O = Object(this) as { [k: number]: T; length: number };\n  const len = O.length >>> 0; // snapshot length once\n  const out = new Array<U>(len);\n\n  for (let k = 0; k < len; k++) {\n    if (Object.prototype.hasOwnProperty.call(O, k)) {\n      out[k] = callbackFn.call(thisArg, O[k], k, O as any);\n    }\n  }\n\n  return out;\n};\n"
         }
       ],
       "notes": {
@@ -2188,7 +2188,7 @@
         ],
         "techniques": [
           "Box receiver with `Object(this)` and snapshot `length` once (`>>> 0`).",
-          "Use `Object.hasOwn(O, k)` to skip holes (own slots only).",
+          "Use `Object.prototype.hasOwnProperty.call(O, k)` to skip holes (own slots only).",
           "Bind `thisArg` with `.call(thisArg, value, index, array)`.",
           "Preallocate the output array to keep indices aligned."
         ]
@@ -2404,14 +2404,14 @@
         {
           "title": "Single approach: for-loop + own-property check (skip holes + length snapshot)",
           "prose": "Core rules to match native behavior:\n- Snapshot `len` once at the start.\n- Only call the predicate for indices that exist (skip holes).\n- Do not visit elements appended beyond the initial `len`.\n- Pass `(value, index, array)` and bind `thisArg`.\n\nSpec note (1 line): Native `filter` conceptually uses `k in O` (includes inherited numeric keys). For interview/polyfill practice we use own-property checks to focus on holes + length snapshot behavior.",
-          "codeJs": "Array.prototype.myFilter = function(callbackFn, thisArg) {\n  if (this == null) throw new TypeError('Array.prototype.myFilter called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const arr = Object(this);\n  const len = arr.length >>> 0; // snapshot length once\n  const result = [];\n\n  for (let i = 0; i < len; i++) {\n    // skip holes (and skip indices that were never present)\n    if (Object.hasOwn(arr, i)) {\n      const val = arr[i];\n      if (callbackFn.call(thisArg, val, i, arr)) {\n        result.push(val);\n      }\n    }\n  }\n\n  return result;\n};\n",
-          "codeTs": "interface Array<T> {\n  myFilter(callbackFn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): T[];\n}\n\nArray.prototype.myFilter = function<T>(callbackFn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): T[] {\n  if (this == null) throw new TypeError('Array.prototype.myFilter called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const arr = Object(this) as { [k: number]: T; length: number };\n  const len = arr.length >>> 0; // snapshot length once\n  const result: T[] = [];\n\n  for (let i = 0; i < len; i++) {\n    if (Object.hasOwn(arr, i)) {\n      const val = arr[i];\n      if (callbackFn.call(thisArg, val, i, arr as any)) {\n        result.push(val);\n      }\n    }\n  }\n\n  return result;\n};\n"
+          "codeJs": "Array.prototype.myFilter = function(callbackFn, thisArg) {\n  if (this == null) throw new TypeError('Array.prototype.myFilter called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const arr = Object(this);\n  const len = arr.length >>> 0; // snapshot length once\n  const result = [];\n\n  for (let i = 0; i < len; i++) {\n    // skip holes (and skip indices that were never present)\n    if (Object.prototype.hasOwnProperty.call(arr, i)) {\n      const val = arr[i];\n      if (callbackFn.call(thisArg, val, i, arr)) {\n        result.push(val);\n      }\n    }\n  }\n\n  return result;\n};\n",
+          "codeTs": "interface Array<T> {\n  myFilter(callbackFn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): T[];\n}\n\nArray.prototype.myFilter = function<T>(callbackFn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): T[] {\n  if (this == null) throw new TypeError('Array.prototype.myFilter called on null/undefined');\n  if (typeof callbackFn !== 'function') throw new TypeError(String(callbackFn) + ' is not a function');\n\n  const arr = Object(this) as { [k: number]: T; length: number };\n  const len = arr.length >>> 0; // snapshot length once\n  const result: T[] = [];\n\n  for (let i = 0; i < len; i++) {\n    if (Object.prototype.hasOwnProperty.call(arr, i)) {\n      const val = arr[i];\n      if (callbackFn.call(thisArg, val, i, arr as any)) {\n        result.push(val);\n      }\n    }\n  }\n\n  return result;\n};\n"
         }
       ],
       "notes": {
         "pitfalls": [
           "Forgetting to snapshot `length` can cause your loop to visit appended elements (native `filter` does not).",
-          "Calling the predicate for holes — use an existence check (`Object.hasOwn`) before reading/calling.",
+          "Calling the predicate for holes — use an existence check (`Object.prototype.hasOwnProperty.call`) before reading/calling.",
           "`thisArg` does not affect arrow functions because arrows don’t have their own `this`."
         ],
         "edgeCases": [
@@ -2421,7 +2421,7 @@
         "techniques": [
           "`Object(this)` to safely handle array-like receivers.",
           "`len = arr.length >>> 0` to coerce and snapshot length once.",
-          "Existence check with `Object.hasOwn(arr, i)` to skip holes.",
+          "Existence check with `Object.prototype.hasOwnProperty.call(arr, i)` to skip holes.",
           "`.call(thisArg, value, index, array)` for context binding."
         ]
       },
