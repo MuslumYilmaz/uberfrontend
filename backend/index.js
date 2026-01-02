@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit } = require('./middleware/rateLimit');
+const { connectToMongo } = require('./config/mongo');
 
 const app = express();
 
@@ -27,12 +28,12 @@ const BUG_REPORT_MAX_URL_CHARS = Number(process.env.BUG_REPORT_MAX_URL_CHARS || 
 // Validate critical secrets early (fail-fast in production)
 getJwtSecret();
 
-// ---- DB ----
-mongoose.connect(MONGO_URL);
-mongoose.connection.on('connected', () => console.log('✅ MongoDB connected'));
-mongoose.connection.on('error', (err) => console.error('❌ MongoDB error:', err));
-
 // ---- Middleware ----
+// Behind proxies (Vercel/Render/etc), set TRUST_PROXY=true so req.ip is accurate and secure cookies work.
+if (String(process.env.TRUST_PROXY || '').toLowerCase() === 'true') {
+    app.set('trust proxy', 1);
+}
+
 app.use(
     cors({
         origin: FRONTEND_ORIGIN,
@@ -41,6 +42,19 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+// ---- DB (lazy for serverless, fail-fast for local server) ----
+const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/bug-report']);
+app.use(async (req, res, next) => {
+    try {
+        if (SKIP_DB_PATHS.has(req.path)) return next();
+        await connectToMongo(MONGO_URL);
+        return next();
+    } catch (err) {
+        console.error('❌ MongoDB connect failed:', err);
+        return res.status(503).json({ error: 'Database unavailable' });
+    }
+});
 
 // ---- Models ----
 const User = require('./models/User');
@@ -267,5 +281,11 @@ app.get('/api/stats/me', requireAuth, async (req, res) => {
     }
 });
 
-// ---- Start ----
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// ---- Start (only when run directly, not when imported as a serverless handler) ----
+if (require.main === module) {
+    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+    // Best-effort: connect in the background; request middleware will return 503 if DB is unavailable.
+    connectToMongo(MONGO_URL).catch((err) => console.error('❌ MongoDB connect failed:', err));
+}
+
+module.exports = app;

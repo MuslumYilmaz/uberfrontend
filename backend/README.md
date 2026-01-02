@@ -36,3 +36,54 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 - The frontend defaults to proxying `/api` to the backend (no CORS needed). See `frontend/src/environments/environment.ts`.
 - If you disable the proxy and use a full `apiBase` URL from the browser, set `FRONTEND_ORIGIN` to your frontend origin and keep `credentials: true` requests enabled on the frontend.
+
+## Deployment (recommended: Vercel serverless)
+
+This backend is compatible with Vercel serverless functions:
+- No WebSockets / SSE / long-running background jobs
+- Stateless REST endpoints
+- MongoDB connection is cached across invocations
+
+### Vercel project settings (backend)
+
+- Root Directory: `backend`
+- Build Command: (leave empty)
+- Output Directory: (leave empty)
+- Install Command: `npm install` (default)
+
+Routes are handled via `backend/api/[...all].js`, so your API is available at:
+- `https://<your-backend-domain>/api/*`
+
+### Required environment variables (production)
+
+- `NODE_ENV=production`
+- `MONGO_URL` (MongoDB connection string)
+- `JWT_SECRET` (32+ chars)
+- `FRONTEND_ORIGIN` (exact allowed origin for CORS, e.g. `https://frontendatlas.com`)
+- `SERVER_BASE` (backend base URL, used for OAuth callback URLs)
+- `FRONTEND_BASE` (frontend base URL, used for OAuth redirect URLs)
+- `COOKIE_SECURE=true`
+- `TRUST_PROXY=true` (recommended on Vercel so `req.ip` and cookies behave correctly behind proxies)
+
+**Cookie/SameSite**
+- If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax`.
+- If your frontend is on a different site (different eTLD+1), use `COOKIE_SAMESITE=none` (enables CSRF double-submit; the frontend already sends `X-CSRF-Token` when the `csrf_token` cookie exists).
+
+**Bug report email (optional)**
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`
+
+### Quick verification checklist
+
+- Health: `GET /api/hello`
+- Auth:
+  - `POST /api/auth/signup` sets `access_token` cookie
+  - `GET /api/auth/me` returns user when cookie is present
+- Bug report:
+  - `POST /api/bug-report` returns `204` and delivers an email
+
+## Alternative hosting (Render/Fly/Railway)
+
+If you prefer a long-running Node server (no serverless limits/cold starts), this backend also works as a standard service:
+- Start command: `npm start`
+- Port: `process.env.PORT`
+- Health route: `GET /api/hello`

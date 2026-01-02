@@ -54,6 +54,17 @@ Notes:
 
 To safely handle “CDN updates a question (same id) while users have local drafts”, drafts are versioned by content. See `frontend/docs/draft-versioning.md`.
 
+## Deployment (Vercel)
+
+### Vercel project settings (frontend)
+
+- Root Directory: `frontend`
+- Build Command: `npm run build`
+- Output Directory: `dist/frontendatlas/browser`
+
+Notes:
+- The app uses client-side routing, so ensure your hosting has an SPA fallback to `index.html` (Vercel’s Angular preset handles this automatically).
+
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
