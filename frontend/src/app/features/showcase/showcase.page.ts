@@ -176,7 +176,7 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
         key: 'angular-component',
         label: 'Angular · Components',
         caption: '@Component decorator and metadata.',
-        questionId: 'angular-component-decorator',
+        questionId: 'angular-component-metadata',
         questionTech: 'angular',
       },
       {

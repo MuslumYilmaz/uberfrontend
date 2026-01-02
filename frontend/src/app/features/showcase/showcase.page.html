@@ -65,6 +65,7 @@
       <div class="demo-tabs" role="tablist" aria-label="Pick a live demo question">
         <button type="button" class="demo-tab" *ngFor="let tab of demoTabsPrimary" role="tab"
           [attr.id]="'demo-tab-' + tab.key" [class.active]="tab.key === activePrimaryKey"
+          [attr.data-testid]="'showcase-demo-tab-' + tab.key"
           (click)="setActivePrimary(tab.key)" [attr.aria-selected]="tab.key === activePrimaryKey"
           [attr.aria-controls]="'demo-pane'">
           <span class="tab-label">{{ tab.label }}</span>
@@ -75,6 +76,7 @@
         *ngIf="activePrimaryKey === 'ui'">
         <button type="button" class="demo-tab" *ngFor="let tab of demoTabsFramework" role="tab"
           [attr.id]="'demo-tab-' + tab.key" [class.active]="tab.key === activeFrameworkKey"
+          [attr.data-testid]="'showcase-demo-tab-' + tab.key"
           (click)="setActiveFramework(tab.key)" [attr.aria-selected]="tab.key === activeFrameworkKey"
           [attr.aria-controls]="'demo-pane'">
           <span class="tab-label">{{ tab.label }}</span>
@@ -100,7 +102,7 @@
           <ng-container *ngIf="tab.key === activeDemoKey">
             <app-coding-detail [questionId]="tab.questionId" [questionTech]="tab.questionTech" [demoMode]="true"
               [storageKeyOverride]="tab.storageKey" [hideRestoreBanner]="true" [hideFooterBar]="true"
-              [footerLinkTo]="['/coding', tab.questionId]" [disablePersistence]="true"
+              [footerLinkTo]="['/', tab.questionTech, 'coding', tab.questionId]" [disablePersistence]="true"
               footerLinkLabel="Open this challenge fully">
             </app-coding-detail>
           </ng-container>
@@ -109,8 +111,8 @@
     </div>
 
 
-    <a class="demo-banner" [routerLink]="['/coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden"
-      aria-label="Open the live editor for this demo question">
+    <a class="demo-banner" [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden"
+      aria-label="Open the live editor for this demo question" data-testid="showcase-demo-open-live">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>
       <i class="pi pi-arrow-right" aria-hidden="true"></i>
@@ -131,6 +133,7 @@
     <div class="demo-tabs" role="tablist" aria-label="Pick a trivia question preview">
       <button type="button" class="demo-tab" *ngFor="let tab of triviaTabs" role="tab"
         [attr.id]="'trivia-tab-' + tab.key" [class.active]="tab.key === activeTriviaKey"
+        [attr.data-testid]="'showcase-trivia-tab-' + tab.key"
         (click)="setActiveTrivia(tab.key)" [attr.aria-selected]="tab.key === activeTriviaKey"
         aria-controls="trivia-pane">
         <span class="tab-label">{{ tab.label }}</span>
@@ -147,6 +150,7 @@
     </div>
 
     <a class="demo-banner" [routerLink]="triviaPreviewLink" role="button"
+      data-testid="showcase-trivia-open"
       [attr.aria-label]="'Open the full ' + activeTriviaTab.label + ' trivia question'">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Read the rest in the app →</span>
