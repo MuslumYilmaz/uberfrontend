@@ -51,7 +51,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ---- DB (lazy for serverless, fail-fast for local server) ----
-const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/bug-report']);
+const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/bug-report', '/api/health']);
 app.use(async (req, res, next) => {
     try {
         if (SKIP_DB_PATHS.has(req.path)) return next();
@@ -70,6 +70,14 @@ const ActivityEvent = require('./models/ActivityEvent'); // need the model for t
 // ---- Routes (basic) ----
 app.get('/', (_, res) => res.send('Backend is working 🚀'));
 app.get('/api/hello', (_, res) => res.json({ message: 'Hello from backend 👋' }));
+app.get('/api/health', async (_req, res) => {
+    try {
+        await connectToMongo(MONGO_URL);
+        return res.json({ ok: true });
+    } catch {
+        return res.status(503).json({ error: 'Database unavailable' });
+    }
+});
 
 // ======================
 //  Bug Report -> Email

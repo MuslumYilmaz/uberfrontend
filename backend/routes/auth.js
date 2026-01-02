@@ -143,6 +143,9 @@ const pick = (u) => ({
     solvedQuestionIds: u.solvedQuestionIds || [],
 });
 
+// GET /api/auth/ping
+router.get('/ping', (_req, res) => res.json({ ok: true }));
+
 const sign = (u) =>
     jwt.sign(
         { sub: u._id.toString(), role: u.role },
