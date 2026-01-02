@@ -35,8 +35,8 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ## Local development notes
 
-- The frontend uses `environment.apiBase` for API calls (default: `http://localhost:3001`).
-- If you prefer a local proxy, set `apiBase` to `/api` and use `frontend/proxy.conf.json`.
+- The frontend uses `environment.apiBase` for API calls (default: `/api` with `frontend/proxy.conf.json`).
+- If you prefer a full URL, set `apiBase` to `http://localhost:3001`.
 - When using a full `apiBase` URL from the browser, set `FRONTEND_ORIGINS` to include your frontend origin and keep `credentials: true` requests enabled on the frontend.
 
 ## Deployment (recommended: Vercel serverless)

@@ -132,6 +132,7 @@ test('auth: OAuth start uses API base URL (not frontend /api)', async ({ page })
   await installAuthMock(page, { token, user });
 
   const apiRoot = getApiRoot();
+  const usesAbsoluteApi = apiRoot.startsWith('http');
   let oauthUrl: string | null = null;
 
   page.on('request', (req) => {
@@ -143,11 +144,18 @@ test('auth: OAuth start uses API base URL (not frontend /api)', async ({ page })
   await page.goto('/auth/login');
   await expect(page.getByTestId('login-page')).toBeVisible();
   const frontendBase = getFrontendBase() || new URL(page.url()).origin;
+  const apiRootUrl = usesAbsoluteApi
+    ? apiRoot
+    : `${frontendBase}${apiRoot.startsWith('/') ? '' : '/'}${apiRoot}`;
   await page.getByTestId('login-google').click();
 
   await expect.poll(() => oauthUrl).not.toBeNull();
-  expect(oauthUrl!.startsWith(`${apiRoot}/auth/oauth/google/start`)).toBeTruthy();
-  expect(oauthUrl!.startsWith(`${frontendBase}/api/`)).toBeFalsy();
+  expect(oauthUrl!.startsWith(`${apiRootUrl}/auth/oauth/google/start`)).toBeTruthy();
+  if (usesAbsoluteApi) {
+    expect(oauthUrl!.startsWith(`${frontendBase}/api/`)).toBeFalsy();
+  } else {
+    expect(oauthUrl!.startsWith(`${frontendBase}/api/`)).toBeTruthy();
+  }
 });
 
 test('auth: OAuth signup works (Google + GitHub)', async ({ page }) => {
