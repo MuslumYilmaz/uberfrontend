@@ -70,16 +70,31 @@ function cookieValueFromHeader(cookieHeader: string, name: string): string | nul
   return hit.slice(name.length + 1);
 }
 
-function authCookies(token: string) {
-  // Mimic backend: httpOnly access token cookie, lax by default.
+function cookieAttributes(req: Request): string {
+  const origin = req.headers()['origin'] || '';
+  let reqOrigin = '';
+  try { reqOrigin = new URL(req.url()).origin; } catch { /* ignore */ }
+  const crossSite = !!origin && !!reqOrigin && origin !== reqOrigin;
+
+  if (crossSite && reqOrigin.startsWith('https://')) {
+    return 'Path=/; HttpOnly; SameSite=None; Secure';
+  }
+
+  return 'Path=/; HttpOnly; SameSite=Lax';
+}
+
+function authCookies(req: Request, token: string) {
+  // Mimic backend: httpOnly access token cookie.
+  const attrs = cookieAttributes(req);
   return {
-    'set-cookie': `access_token=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax`,
+    'set-cookie': `access_token=${encodeURIComponent(token)}; ${attrs}`,
   } as Record<string, string>;
 }
 
-function clearAuthCookies() {
+function clearAuthCookies(req: Request) {
+  const attrs = cookieAttributes(req);
   return {
-    'set-cookie': `access_token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax`,
+    'set-cookie': `access_token=; ${attrs}; Max-Age=0`,
   } as Record<string, string>;
 }
 
@@ -130,7 +145,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
       return route.fulfill({
         status: 302,
         headers: {
-          ...authCookies(opts.token),
+          ...authCookies(req, opts.token),
           location: dest.toString(),
         },
       });
@@ -143,7 +158,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         const token = next.token ?? opts.token;
         const user = next.user ?? opts.user;
         if (next.status >= 200 && next.status < 300) {
-          return jsonResponse(route, req, next.status, { token, user }, authCookies(token));
+          return jsonResponse(route, req, next.status, { token, user }, authCookies(req, token));
         }
         const message = next.error ?? (next.status === 401 ? 'Invalid credentials' : 'Login failed');
         return jsonResponse(route, req, next.status, { error: message });
@@ -160,7 +175,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           String(body.password || '') === opts.validLogin.password);
 
       if (!ok) return jsonResponse(route, req, 401, { error: 'Invalid credentials' });
-      return jsonResponse(route, req, 200, { token: opts.token, user: opts.user }, authCookies(opts.token));
+      return jsonResponse(route, req, 200, { token: opts.token, user: opts.user }, authCookies(req, opts.token));
     }
 
     // Signup
@@ -170,7 +185,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
         const token = next.token ?? opts.token;
         const user = next.user ?? opts.user;
         if (next.status >= 200 && next.status < 300) {
-          return jsonResponse(route, req, next.status, { token, user }, authCookies(token));
+          return jsonResponse(route, req, next.status, { token, user }, authCookies(req, token));
         }
         const message = next.error ?? (next.status === 409 ? 'Account already exists' : 'Sign up failed');
         return jsonResponse(route, req, next.status, { error: message });
@@ -188,12 +203,12 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
           String(body.password || '') === opts.validSignup.password);
 
       if (!ok) return jsonResponse(route, req, 400, { error: 'Invalid signup payload' });
-      return jsonResponse(route, req, 201, { token: opts.token, user: opts.user }, authCookies(opts.token));
+      return jsonResponse(route, req, 201, { token: opts.token, user: opts.user }, authCookies(req, opts.token));
     }
 
     // Logout (clears cookie)
     if (req.method() === 'POST' && path.endsWith('/logout')) {
-      return jsonResponse(route, req, 200, { ok: true }, clearAuthCookies());
+      return jsonResponse(route, req, 200, { ok: true }, clearAuthCookies(req));
     }
 
     // Me

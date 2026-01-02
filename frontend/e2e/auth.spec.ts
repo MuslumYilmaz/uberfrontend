@@ -1,6 +1,5 @@
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
-import { getApiRoot, getFrontendBase } from '../src/app/core/utils/api-base';
 
 async function cookieValue(page: any, name: string): Promise<string | null> {
   const cookies = await page.context().cookies();
@@ -131,9 +130,12 @@ test('auth: OAuth start uses API base URL (not frontend /api)', async ({ page })
   const user = buildMockUser({ _id: 'e2e-user-oauth-start', username: 'oauth_start', email: 'oauth-start@example.com' });
   await installAuthMock(page, { token, user });
 
-  const apiRoot = getApiRoot();
-  const usesAbsoluteApi = apiRoot.startsWith('http');
   let oauthUrl: string | null = null;
+
+  const expectedApiBase = 'https://api.frontendatlas.com';
+  await page.addInitScript((apiBase) => {
+    (window as any).__FA_API_BASE__ = apiBase;
+  }, expectedApiBase);
 
   page.on('request', (req) => {
     if (req.url().includes('/api/auth/oauth/google/start')) {
@@ -143,19 +145,10 @@ test('auth: OAuth start uses API base URL (not frontend /api)', async ({ page })
 
   await page.goto('/auth/login');
   await expect(page.getByTestId('login-page')).toBeVisible();
-  const frontendBase = getFrontendBase() || new URL(page.url()).origin;
-  const apiRootUrl = usesAbsoluteApi
-    ? apiRoot
-    : `${frontendBase}${apiRoot.startsWith('/') ? '' : '/'}${apiRoot}`;
   await page.getByTestId('login-google').click();
 
   await expect.poll(() => oauthUrl).not.toBeNull();
-  expect(oauthUrl!.startsWith(`${apiRootUrl}/auth/oauth/google/start`)).toBeTruthy();
-  if (usesAbsoluteApi) {
-    expect(oauthUrl!.startsWith(`${frontendBase}/api/`)).toBeFalsy();
-  } else {
-    expect(oauthUrl!.startsWith(`${frontendBase}/api/`)).toBeTruthy();
-  }
+  expect(oauthUrl!.startsWith(`${expectedApiBase}/api/auth/oauth/google/start`)).toBeTruthy();
 });
 
 test('auth: OAuth signup works (Google + GitHub)', async ({ page }) => {

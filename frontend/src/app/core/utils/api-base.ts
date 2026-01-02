@@ -1,29 +1,85 @@
 import { environment } from '../../../environments/environment';
 
-const RAW_API_BASE = String(environment.apiBase || '').trim();
-const API_BASE = RAW_API_BASE.replace(/\/+$/, '');
-const API_ROOT = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
-const RAW_FRONTEND_BASE = String(environment.frontendBase || '').trim();
-const FRONTEND_BASE = RAW_FRONTEND_BASE.replace(/\/+$/, '');
+function normalizeBase(value: string): string {
+  return String(value || '').trim().replace(/\/+$/, '');
+}
+
+function isAbsoluteUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
+function getRuntimeOrigin(): string {
+  if (typeof window === 'undefined') return '';
+  return window.location?.origin || '';
+}
+
+function getRuntimeHost(): string {
+  if (typeof window === 'undefined') return '';
+  return window.location?.hostname || '';
+}
+
+function getOverrideApiBase(): string {
+  if (typeof window === 'undefined') return '';
+  const override = (window as any).__FA_API_BASE__;
+  return typeof override === 'string' ? normalizeBase(override) : '';
+}
+
+function deriveApiBaseFromOrigin(origin: string): string {
+  if (!origin) return '';
+  try {
+    const url = new URL(origin);
+    const host = url.hostname.replace(/^www\./, '');
+    if (!host) return '';
+    return `${url.protocol}//api.${host}`;
+  } catch {
+    return '';
+  }
+}
+
+function resolveApiBase(): string {
+  const override = getOverrideApiBase();
+  const raw = override || String(environment.apiBase || '').trim();
+  let base = normalizeBase(raw);
+
+  if (isAbsoluteUrl(base)) return base;
+
+  const runtimeHost = getRuntimeHost();
+  const runtimeOrigin = getRuntimeOrigin();
+  const isLocal = runtimeHost ? LOCAL_HOSTS.has(runtimeHost) : false;
+  const isProdRuntime = environment.production || (runtimeHost && !isLocal);
+
+  if (isProdRuntime) {
+    const fromEnv = deriveApiBaseFromOrigin(environment.frontendBase || '');
+    const fromRuntime = deriveApiBaseFromOrigin(runtimeOrigin);
+    const derived = normalizeBase(fromEnv || fromRuntime);
+    if (derived) return derived;
+  }
+
+  return base;
+}
 
 export function getApiBase(): string {
-  return API_BASE;
+  return resolveApiBase();
 }
 
 export function getApiRoot(): string {
-  return API_ROOT;
+  const base = resolveApiBase();
+  if (!base) return '/api';
+  return base.endsWith('/api') ? base : `${base}/api`;
 }
 
 export function apiUrl(path: string): string {
+  const apiRoot = getApiRoot();
   const rawPath = String(path || '').trim();
-  if (!rawPath) return API_ROOT;
+  if (!rawPath) return apiRoot;
   const trimmed = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
-  if (trimmed === '/api') return API_ROOT;
+  if (trimmed === '/api') return apiRoot;
   const normalized = trimmed.startsWith('/api/') ? trimmed.slice(4) : trimmed;
-  return `${API_ROOT}${normalized}`;
+  return `${apiRoot}${normalized}`;
 }
 
 export function getFrontendBase(): string {
-  return FRONTEND_BASE;
+  return normalizeBase(environment.frontendBase || '');
 }

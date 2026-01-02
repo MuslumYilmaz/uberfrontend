@@ -3,7 +3,8 @@ import { computed, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Tech } from '../models/user.model';
-import { apiUrl, getFrontendBase } from '../utils/api-base';
+import { environment } from '../../../environments/environment';
+import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -186,6 +187,23 @@ export class AuthService {
       .pipe(tap((u) => this.user.set(u)));
   }
 
+  private isLocalHost(host: string): boolean {
+    return host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  }
+
+  private isProdRuntime(): boolean {
+    if (environment.production) return true;
+    if (typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    return !!host && !this.isLocalHost(host);
+  }
+
+  private shouldDebugOAuth(): boolean {
+    if (environment.production) return false;
+    if (typeof window === 'undefined') return false;
+    return this.isLocalHost(window.location.hostname);
+  }
+
   /** Start OAuth: redirects to backend which 302s to Google */
   oauthStart(provider: 'google' | 'github', mode: 'login' | 'signup' = 'login') {
     const base = this.frontendBase || (typeof window !== 'undefined' ? window.location.origin : '');
@@ -199,6 +217,14 @@ export class AuthService {
       `?redirect_uri=${encodeURIComponent(redirectUri)}` +
       `&state=${encodeURIComponent(state)}` +
       `&mode=${encodeURIComponent(mode)}`;
+
+    if (this.isProdRuntime() && !/^https?:\/\//i.test(url)) {
+      throw new Error('OAuth start URL must be absolute in production');
+    }
+
+    if (this.shouldDebugOAuth()) {
+      console.debug('[OAuth]', { apiBase: getApiBase(), oauthStart: url });
+    }
 
     window.location.assign(url);
   }
