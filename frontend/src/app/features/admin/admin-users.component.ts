@@ -3,7 +3,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
-import { environment } from '../../../environments/environment';
+import { apiUrl } from '../../core/utils/api-base';
 
 type AdminRow = {
   _id: string;
@@ -169,7 +169,7 @@ export class AdminUsersComponent implements OnInit {
   load(): void {
     this.loading.set(true);
     this.error.set(null);
-    this.http.get<any[]>(`${environment.apiBase}/admin/users`, { headers: this.auth.headers() })
+    this.http.get<any[]>(apiUrl('/admin/users'), { headers: this.auth.headers() })
       .subscribe({
         next: (list) => {
           this.users.set(list.map(u => this.toRow(u)));
@@ -236,7 +236,7 @@ export class AdminUsersComponent implements OnInit {
       solvedQuestionIds: solved,
     };
 
-    this.http.put<any>(`${environment.apiBase}/admin/users/${row._id}`, payload, {
+    this.http.put<any>(apiUrl(`/admin/users/${row._id}`), payload, {
       headers: this.auth.headers()
     }).subscribe({
       next: (updated) => {

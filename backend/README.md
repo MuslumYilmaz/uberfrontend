@@ -23,7 +23,8 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 ### Required env vars
 
 - `JWT_SECRET`: JWT signing secret (32+ chars required in production).
-- `FRONTEND_ORIGIN`: Allowed CORS origin (e.g. `http://localhost:4200`).
+- `FRONTEND_ORIGINS`: Comma-separated allowed CORS origins (e.g. `http://localhost:4200,https://frontendatlas.com`).
+- `FRONTEND_ORIGIN`: Single allowed CORS origin (legacy fallback).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
 - `COOKIE_SECURE`: `true` in production over HTTPS, `false` for local HTTP dev.
 
@@ -34,8 +35,9 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 ## Local development notes
 
-- The frontend defaults to proxying `/api` to the backend (no CORS needed). See `frontend/src/environments/environment.ts`.
-- If you disable the proxy and use a full `apiBase` URL from the browser, set `FRONTEND_ORIGIN` to your frontend origin and keep `credentials: true` requests enabled on the frontend.
+- The frontend uses `environment.apiBase` for API calls (default: `http://localhost:3001`).
+- If you prefer a local proxy, set `apiBase` to `/api` and use `frontend/proxy.conf.json`.
+- When using a full `apiBase` URL from the browser, set `FRONTEND_ORIGINS` to include your frontend origin and keep `credentials: true` requests enabled on the frontend.
 
 ## Deployment (recommended: Vercel serverless)
 
@@ -59,7 +61,7 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - `NODE_ENV=production`
 - `MONGO_URL` (MongoDB connection string)
 - `JWT_SECRET` (32+ chars)
-- `FRONTEND_ORIGIN` (exact allowed origin for CORS, e.g. `https://frontendatlas.com`)
+- `FRONTEND_ORIGINS` (exact allowed origins for CORS, e.g. `https://frontendatlas.com`)
 - `SERVER_BASE` (backend base URL, used for OAuth callback URLs)
 - `FRONTEND_BASE` (frontend base URL, used for OAuth redirect URLs)
 - `COOKIE_SECURE=true`

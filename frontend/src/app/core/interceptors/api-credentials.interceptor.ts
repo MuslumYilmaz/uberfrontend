@@ -1,11 +1,11 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { getApiRoot } from '../utils/api-base';
 
-const API_BASE = String(environment.apiBase || '').replace(/\/+$/, '');
+const API_ROOT = getApiRoot();
 
 function isApiRequest(url: string): boolean {
-  if (!API_BASE) return false;
-  return url.startsWith(API_BASE);
+  if (!API_ROOT) return false;
+  return url.startsWith(API_ROOT);
 }
 
 function readCookie(name: string): string | null {
@@ -43,4 +43,3 @@ export const apiCredentialsInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(nextReq);
 };
-

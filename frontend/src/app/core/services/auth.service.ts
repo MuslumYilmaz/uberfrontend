@@ -3,7 +3,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Tech } from '../models/user.model';
-import { environment } from '../../../environments/environment';
+import { apiUrl, getFrontendBase } from '../utils/api-base';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -61,7 +61,8 @@ export interface User {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private base = `${String(environment.apiBase).replace(/\/+$/, '')}/auth`;
+  private base = apiUrl('/auth');
+  private frontendBase = getFrontendBase();
   private static readonly SESSION_HINT_KEY = 'fa:auth:session';
 
   /** Reactive user */
@@ -181,13 +182,14 @@ export class AuthService {
   /** PUT /api/users/:id */
   updateProfile(id: string, data: Partial<Pick<User, 'username' | 'email' | 'bio' | 'avatarUrl' | 'prefs'>>) {
     return this.http
-      .put<User>(`${String(environment.apiBase).replace(/\/+$/, '')}/users/${id}`, data, { withCredentials: true })
+      .put<User>(apiUrl(`/users/${id}`), data, { withCredentials: true })
       .pipe(tap((u) => this.user.set(u)));
   }
 
   /** Start OAuth: redirects to backend which 302s to Google */
   oauthStart(provider: 'google' | 'github', mode: 'login' | 'signup' = 'login') {
-    const redirectUri = `${window.location.origin}/auth/callback`;
+    const base = this.frontendBase || (typeof window !== 'undefined' ? window.location.origin : '');
+    const redirectUri = `${base}/auth/callback`;
     const state = (crypto as any).randomUUID ? (crypto as any).randomUUID() : `${Date.now()}-${Math.random()}`;
     sessionStorage.setItem('oauth:state', state);
 

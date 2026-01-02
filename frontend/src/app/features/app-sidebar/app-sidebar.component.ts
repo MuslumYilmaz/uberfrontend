@@ -8,7 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { apiUrl } from '../../core/utils/api-base';
 
 interface LinkItem {
   type: 'link';
@@ -143,8 +143,7 @@ export class AppSidebarComponent {
     this.submitting = true;
 
     try {
-      const apiBase = String(environment.apiBase).replace(/\/+$/, '');
-      await firstValueFrom(this.http.post(`${apiBase}/bug-report`, {
+      await firstValueFrom(this.http.post(apiUrl('/bug-report'), {
         note,
         url: this.currentUrl || (typeof window !== 'undefined' ? window.location.href : ''),
       }, { responseType: 'text' }));

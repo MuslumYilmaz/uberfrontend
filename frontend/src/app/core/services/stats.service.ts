@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import { Observable, shareReplay } from 'rxjs';
 import { ActivityService } from './activity.service';
 import { AuthService } from './auth.service';
-import { environment } from '../../../environments/environment';
+import { apiUrl } from '../utils/api-base';
 
 export interface HeatmapDay {
   day: string;   // YYYY-MM-DD
@@ -15,7 +15,7 @@ type CachedObs<T> = { ts: number; obs: Observable<T> };
 
 @Injectable({ providedIn: 'root' })
 export class StatsService {
-  private base = `${String(environment.apiBase).replace(/\/+$/, '')}/stats`;
+  private base = apiUrl('/stats');
   private readonly DEFAULT_TTL = 5 * 60_000; // 5 minutes
 
   heatmap = signal<HeatmapDay[]>([]);

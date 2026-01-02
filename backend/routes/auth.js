@@ -6,6 +6,7 @@ const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
 const { requireAuth } = require('../middleware/Auth.js');
 const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
+const { resolveAllowedFrontendOrigins, resolveFrontendBase, resolveServerBase } = require('../config/urls');
 
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -94,12 +95,9 @@ const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || '';
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || '';
 
-const SERVER_BASE = (process.env.SERVER_BASE || 'http://localhost:3001').trim();
-const FRONTEND_BASE = (process.env.FRONTEND_BASE || 'http://localhost:4200').trim();
-const FRONTEND_ORIGIN = (() => {
-    const raw = String(process.env.FRONTEND_ORIGIN || new URL(FRONTEND_BASE).origin).trim();
-    try { return new URL(raw).origin; } catch { return raw; }
-})();
+const SERVER_BASE = resolveServerBase();
+const FRONTEND_BASE = resolveFrontendBase();
+const FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
 
 const GOOGLE_REDIRECT = `${SERVER_BASE}/api/auth/oauth/google/callback`;
 const GITHUB_REDIRECT = `${SERVER_BASE}/api/auth/oauth/github/callback`;
@@ -112,7 +110,7 @@ const fromB64 = s => Buffer.from(s, 'base64url').toString('utf8');
 function isAllowedRedirectUri(uri) {
     try {
         const u = new URL(String(uri));
-        return u.origin === FRONTEND_ORIGIN;
+        return FRONTEND_ORIGINS.includes(u.origin);
     } catch {
         return false;
     }

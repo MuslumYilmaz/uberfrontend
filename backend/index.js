@@ -10,16 +10,15 @@ const nodemailer = require('nodemailer'); // <-- NEW
 const { requireAdmin } = require('./middleware/RequireAdmin');
 const { rateLimit } = require('./middleware/rateLimit');
 const { connectToMongo } = require('./config/mongo');
+const { normalizeOrigin, resolveAllowedFrontendOrigins, resolveServerBase } = require('./config/urls');
 
 const app = express();
 
 // ---- Config ----
 const PORT = process.env.PORT || 3001;
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/myapp';
-const FRONTEND_ORIGIN = (() => {
-    const raw = String(process.env.FRONTEND_ORIGIN || process.env.FRONTEND_BASE || 'http://localhost:4200').trim();
-    try { return new URL(raw).origin; } catch { return raw; }
-})();
+const SERVER_BASE = resolveServerBase();
+const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
 const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h
 const BUG_REPORT_MAX = Number(process.env.BUG_REPORT_MAX || 5);
 const BUG_REPORT_MAX_NOTE_CHARS = Number(process.env.BUG_REPORT_MAX_NOTE_CHARS || 4000);
@@ -34,9 +33,17 @@ if (String(process.env.TRUST_PROXY || '').toLowerCase() === 'true') {
     app.set('trust proxy', 1);
 }
 
+console.log(`🔧 SERVER_BASE: ${SERVER_BASE}`);
+console.log(`🔧 Allowed frontend origins: ${ALLOWED_FRONTEND_ORIGINS.join(', ') || '(none)'}`);
+
 app.use(
     cors({
-        origin: FRONTEND_ORIGIN,
+        origin: (origin, cb) => {
+            if (!origin) return cb(null, true);
+            const normalized = normalizeOrigin(origin);
+            if (ALLOWED_FRONTEND_ORIGINS.includes(normalized)) return cb(null, true);
+            return cb(new Error('CORS origin not allowed'));
+        },
         credentials: true,
     })
 );

@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures';
 import { buildMockUser, installAuthMock } from './auth-mocks';
+import { getApiRoot, getFrontendBase } from '../src/app/core/utils/api-base';
 
 async function cookieValue(page: any, name: string): Promise<string | null> {
   const cookies = await page.context().cookies();
@@ -123,6 +124,30 @@ test('auth: OAuth login works (Google + GitHub)', async ({ page }) => {
   await page.getByTestId('login-github').click();
   await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
+});
+
+test('auth: OAuth start uses API base URL (not frontend /api)', async ({ page }) => {
+  const token = `e2e-token-oauth-start-${Date.now()}`;
+  const user = buildMockUser({ _id: 'e2e-user-oauth-start', username: 'oauth_start', email: 'oauth-start@example.com' });
+  await installAuthMock(page, { token, user });
+
+  const apiRoot = getApiRoot();
+  let oauthUrl: string | null = null;
+
+  page.on('request', (req) => {
+    if (req.url().includes('/api/auth/oauth/google/start')) {
+      oauthUrl = req.url();
+    }
+  });
+
+  await page.goto('/auth/login');
+  await expect(page.getByTestId('login-page')).toBeVisible();
+  const frontendBase = getFrontendBase() || new URL(page.url()).origin;
+  await page.getByTestId('login-google').click();
+
+  await expect.poll(() => oauthUrl).not.toBeNull();
+  expect(oauthUrl!.startsWith(`${apiRoot}/auth/oauth/google/start`)).toBeTruthy();
+  expect(oauthUrl!.startsWith(`${frontendBase}/api/`)).toBeFalsy();
 });
 
 test('auth: OAuth signup works (Google + GitHub)', async ({ page }) => {
