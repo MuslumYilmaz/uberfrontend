@@ -2881,7 +2881,7 @@
     "type": "coding",
     "technology": "javascript",
     "importance": 5,
-    "difficulty": "medium",
+    "difficulty": "intermediate",
     "tags": [
       "promise",
       "async",
