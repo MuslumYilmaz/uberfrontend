@@ -1,5 +1,16 @@
 <div class="bg-neutral-900 rounded-lg shadow-sm border border-white/10 flex-1 flex flex-col overflow-hidden relative">
 
+    <!-- Draft update banner (versioned drafts) -->
+    <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion()"
+        [isVisible]="true" mode="updated" [otherDrafts]="availableOlderDrafts()"
+        (openVersion)="openOlderDraft($event)" (copyVersion)="copyDraftIntoLatest($event)" (dismiss)="dismissDraftUpdateBanner()">
+    </app-draft-update-banner>
+
+    <app-draft-update-banner *ngIf="isViewingOlderVersion()"
+        [isVisible]="true" mode="older"
+        (switchToCurrent)="backToLatestDraft()" (copyVersion)="copyActiveDraftIntoLatest()">
+    </app-draft-update-banner>
+
     <!-- Restore banner -->
     <app-restore-banner [isVisible]="showRestoreBanner()" [isSolution]="viewingSolution()"
         (reset)="viewingSolution() ? revertToUserCodeFromBanner() : resetToStarter()"

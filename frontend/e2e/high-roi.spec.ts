@@ -4,8 +4,8 @@ import {
   JS_QUESTION,
   getMonacoModelValue,
   setMonacoModelValue,
-  waitForIndexedDbContains,
-  waitForIndexedDbNotContains,
+  waitForIndexedDbKeyPrefixContains,
+  waitForIndexedDbKeyPrefixNotContains,
 } from './helpers';
 
 type RequestFailure = {
@@ -110,10 +110,10 @@ test('editor reset clears persisted override and survives refresh', async ({ pag
 
   await setMonacoModelValue(page, codeModelKey, `${starter}\n\n// ${marker}\n`);
 
-  await waitForIndexedDbContains(page, {
+  await waitForIndexedDbKeyPrefixContains(page, {
     dbName: 'frontendatlas',
     storeName: 'fa_js',
-    key: `v2:code:js2:${JS_QUESTION.id}`,
+    keyPrefix: `v2:code:js2:${JS_QUESTION.id}@`,
     substring: marker,
   });
 
@@ -124,10 +124,10 @@ test('editor reset clears persisted override and survives refresh', async ({ pag
   await page.getByTestId('restore-banner-reset').click();
 
   await expect.poll(() => getMonacoModelValue(page, codeModelKey)).toBe(starter);
-  await waitForIndexedDbNotContains(page, {
+  await waitForIndexedDbKeyPrefixNotContains(page, {
     dbName: 'frontendatlas',
     storeName: 'fa_js',
-    key: `v2:code:js2:${JS_QUESTION.id}`,
+    keyPrefix: `v2:code:js2:${JS_QUESTION.id}@`,
     substring: marker,
   });
 
@@ -288,10 +288,10 @@ test('JS/TS buffer isolation: edits stay in their tab and persist after refresh'
   const markerTs = `e2e-ts-${Date.now()}`;
 
   await setMonacoModelValue(page, codeModelKey, `// ${markerJs}\nexport default function clamp(v,l,u){return v}\n`);
-  await waitForIndexedDbContains(page, {
+  await waitForIndexedDbKeyPrefixContains(page, {
     dbName: 'frontendatlas',
     storeName: 'fa_js',
-    key: `v2:code:js2:${JS_QUESTION.id}`,
+    keyPrefix: `v2:code:js2:${JS_QUESTION.id}@`,
     substring: markerJs,
   });
 
@@ -301,10 +301,10 @@ test('JS/TS buffer isolation: edits stay in their tab and persist after refresh'
   await waitForTwoAnimationFrames(page);
 
   await setMonacoModelValue(page, codeModelKey, `// ${markerTs}\nexport default function clamp(v:number,l:number,u:number){return v}\n`);
-  await waitForIndexedDbContains(page, {
+  await waitForIndexedDbKeyPrefixContains(page, {
     dbName: 'frontendatlas',
     storeName: 'fa_js',
-    key: `v2:code:js2:${JS_QUESTION.id}`,
+    keyPrefix: `v2:code:js2:${JS_QUESTION.id}@`,
     substring: markerTs,
   });
 
@@ -346,7 +346,7 @@ test('content edge-case: missing tests/solution fields render safely (no crash)'
     starterCode: 'export default function noop() { return 1; }',
   };
 
-  await page.route('**/assets/questions/javascript/coding.json', async (route) => {
+  await page.route('**/questions/javascript/coding.json*', async (route) => {
     await route.fulfill({
       contentType: 'application/json',
       body: JSON.stringify([fixtureQuestion]),

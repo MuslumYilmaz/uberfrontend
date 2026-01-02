@@ -5,10 +5,10 @@ import {
   getMonacoModelValue,
   setMonacoModelValue,
   waitForIframeReady,
-  waitForIndexedDbContains,
+  waitForIndexedDbKeyPrefixContains,
 } from './helpers';
 
-test('storage migration: v2 localStorage bundle restores and mirrors to IndexedDB', async ({ page }) => {
+test('storage migration: legacy (unversioned) bundle is preserved and mirrored to IndexedDB', async ({ page }) => {
   const marker = `// e2e-migrate-${Date.now()}`;
   const code = [
     marker,
@@ -36,13 +36,17 @@ test('storage migration: v2 localStorage bundle restores and mirrors to IndexedD
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   await expect(page.getByTestId('js-panel')).toBeVisible();
 
+  // Legacy (unversioned) draft should be preserved, but not auto-loaded into the latest version.
+  await expect(page.getByTestId('draft-update-banner')).toBeVisible();
+  await page.getByTestId('draft-update-open-older').click();
+
   const codeModelKey = `q-${JS_QUESTION.id}-code`;
   await expect.poll(() => getMonacoModelValue(page, codeModelKey)).toContain(marker);
 
-  await waitForIndexedDbContains(page, {
+  await waitForIndexedDbKeyPrefixContains(page, {
     dbName: 'frontendatlas',
     storeName: 'fa_js',
-    key,
+    keyPrefix: `v2:code:js2:${JS_QUESTION.id}@legacy`,
     substring: marker,
   });
 });

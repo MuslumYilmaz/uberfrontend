@@ -27,6 +27,7 @@ export class QuestionService {
       ? (environment as any).cdnEnabled
       : !!(environment as any).cdnBaseUrl;
   private version$?: Observable<string>;
+  private versionModeKey: string | null = null;
 
   constructor(private http: HttpClient) { }
 
@@ -37,6 +38,9 @@ export class QuestionService {
     this.safeSet(this.cdnFlagKey, enabled ? '1' : '0');
     // Mod değişince eski normalized cache'leri temizlemek mantıklı
     this.clearCache();
+    // Re-read data-version from the new source (CDN vs assets)
+    this.version$ = undefined;
+    this.versionModeKey = null;
   }
 
   /** Şu an CDN modunun açık mı, local-only mod mu olduğunu döner. */
@@ -69,7 +73,7 @@ export class QuestionService {
     if (existing) return existing;
 
     const request$ = this.getVersion().pipe(
-      switchMap(() => {
+      switchMap((bankVersion) => {
         const oKey = this.overrideKey(technology, kind);
         const cKey = this.key(technology, kind);
 
@@ -94,7 +98,7 @@ export class QuestionService {
         //    - cdnEnabled === false → direkt assets (CDN yok)
         const assetsUrl = this.assetUrl(technology, kind);
         const useCdn = this.cdnEnabled;
-        const cdnUrl = useCdn ? this.cdnUrl(technology, kind) : '';
+        const cdnUrl = useCdn ? this.cdnUrl(technology, kind, bankVersion) : '';
 
         const source$ = cdnUrl
           ? this.http.get<any>(cdnUrl).pipe(
@@ -294,10 +298,14 @@ export class QuestionService {
     return `assets/questions/${tech}/${kind}.json`;
   }
 
-  private cdnUrl(tech: Tech, kind: Kind): string {
+  private cdnUrl(tech: Tech, kind: Kind, bankVersion?: string): string {
     const base = (environment as any).cdnBaseUrl;
     if (!base) return '';
-    return `${String(base).replace(/\/+$/, '')}/questions/${tech}/${kind}.json`;
+    const url = `${String(base).replace(/\/+$/, '')}/questions/${tech}/${kind}.json`;
+    const v = String(bankVersion ?? '').trim();
+    if (!v || v === '0') return url;
+    // cache-bust so CDN updates are actually visible to the browser
+    return `${url}?v=${encodeURIComponent(v)}`;
   }
 
   /** Normalize any supported JSON shape to Question[] and add safe defaults. */
@@ -332,18 +340,32 @@ export class QuestionService {
 
   /** Fetch data-version once; invalidate normalized cache when it changes. */
   private getVersion(): Observable<string> {
-    if (!this.version$) {
-      this.version$ = this.http
-        .get<DataVersion>('assets/data-version.json', {
-          headers: { 'cache-control': 'no-cache' },
-        })
-        .pipe(
-          map((v) => String(v?.dataVersion ?? v?.version ?? '0')),
-          catchError(() => of('0')),
-          tap((ver) => this.ensureCacheVersion(ver)),
-          shareReplay(1)
-        );
+    const cdnBase = String((environment as any).cdnBaseUrl || '').replace(/\/+$/, '');
+    const useCdn = this.cdnEnabled && !!cdnBase;
+
+    // If the source of truth changes, re-fetch version.
+    const modeKey = useCdn ? `cdn:${cdnBase}` : 'assets';
+    if (!this.version$ || this.versionModeKey !== modeKey) {
+      this.versionModeKey = modeKey;
+
+      const bust = `t=${Date.now()}`;
+      const assetsUrl = `assets/data-version.json?${bust}`;
+      const cdnUrl = `${cdnBase}/data-version.json?${bust}`;
+
+      const src$ = useCdn
+        ? this.http.get<DataVersion>(cdnUrl).pipe(
+          catchError(() => this.http.get<DataVersion>(assetsUrl))
+        )
+        : this.http.get<DataVersion>(assetsUrl);
+
+      this.version$ = src$.pipe(
+        map((v) => String(v?.dataVersion ?? v?.version ?? '0')),
+        catchError(() => of('0')),
+        tap((ver) => this.ensureCacheVersion(ver)),
+        shareReplay(1)
+      );
     }
+
     return this.version$;
   }
 

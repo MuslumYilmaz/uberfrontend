@@ -4,7 +4,17 @@ import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { UserCodeSandboxService } from '../../../../core/services/user-code-sandbox.service';
+import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import {
+  dismissUpdateBanner,
+  isUpdateBannerDismissed,
+  listOtherVersions,
+  makeDraftKey,
+  type DraftIndexEntry,
+  upsertDraftIndexVersion,
+} from '../../../../core/utils/versioned-drafts.util';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-logger/console-logger.component';
 
@@ -15,7 +25,7 @@ export type JsLang = 'js' | 'ts';
 @Component({
   selector: 'app-coding-js-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent],
+  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, RestoreBannerComponent, DraftUpdateBannerComponent],
   templateUrl: './coding-js-panel.component.html',
   styleUrls: ['./coding-js-panel.component.css']
 })
@@ -56,6 +66,18 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   jsLang = signal<JsLang>('js');                       // 'js' | 'ts'
   topTab = signal<'code' | 'tests'>('code');
   subTab = signal<'tests' | 'console'>('tests');
+
+  // Draft versioning (question updates)
+  private baseDraftKey = signal<string>('');
+  private currentContentVersion = signal<string>('');
+  private activeDraftVersion = signal<string>('');
+  isViewingOlderVersion = computed(() => {
+    const cur = this.currentContentVersion();
+    const active = this.activeDraftVersion();
+    return !!cur && !!active && cur !== active;
+  });
+  availableOlderDrafts = signal<DraftIndexEntry[]>([]);
+  showUpdateBanner = signal(false);
 
   editorContent = signal<string>('');                  // user code
   testCode = signal<string>('');                       // test code
@@ -255,6 +277,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this._hydrating = true;
     const { js: sJs, ts: sTs } = this.startersForBoth(q);
 
+    // Compute draft identity: baseKey + contentVersion
+    const baseKey = (this.storageKeyOverride || '').trim() || q.id;
+    const contentVersion = computeJsQuestionContentVersion(q as any);
+    this.baseDraftKey.set(baseKey);
+    this.currentContentVersion.set(contentVersion);
+    this.activeDraftVersion.set(contentVersion);
+
     if (this.disablePersistence) {
       this.volatileBuffers = { js: sJs, ts: sTs };
       const preferred: JsLang = 'js';
@@ -275,6 +304,31 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     const storageKey = this.storageKeyFor(q);
     if (!storageKey) return;
+
+    // Backward-compat: if legacy (unversioned) draft exists, keep it archived and start fresh for this version.
+    const now = new Date().toISOString();
+    const legacy = await this.codeStore.getJsAsync(baseKey);
+    if (legacy) {
+      const legacyKey = makeDraftKey(baseKey, 'legacy');
+      await this.codeStore.cloneJsBundleAsync(baseKey, legacyKey).catch(() => false);
+      upsertDraftIndexVersion(
+        baseKey,
+        { version: 'legacy', updatedAt: legacy.updatedAt || now, lang: legacy.language },
+        { latestVersion: contentVersion }
+      );
+    }
+
+    // Track current version in the draft index (used for "updated question" banner)
+    const existingCurrent = await this.codeStore.getJsAsync(storageKey);
+    const idx = upsertDraftIndexVersion(
+      baseKey,
+      { version: contentVersion, updatedAt: existingCurrent?.updatedAt || now, lang: existingCurrent?.language },
+      { latestVersion: contentVersion }
+    );
+
+    const others = listOtherVersions(idx, contentVersion);
+    this.availableOlderDrafts.set(others);
+    this.showUpdateBanner.set(others.length > 0 && !isUpdateBannerDismissed(baseKey, contentVersion));
 
     // Seed baselines so "dirty" comparisons work reliably
     await Promise.all([
@@ -315,6 +369,134 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // End hydration on next tick
     requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
+  }
+
+  dismissDraftUpdateBanner(): void {
+    const baseKey = this.baseDraftKey();
+    const current = this.currentContentVersion();
+    if (baseKey && current) dismissUpdateBanner(baseKey, current);
+    this.showUpdateBanner.set(false);
+  }
+
+  async backToLatestDraft(): Promise<void> {
+    if (!this.isViewingOlderVersion()) return;
+    this.flushPendingPersist();
+    await this.initFromQuestion();
+  }
+
+  async openOlderDraft(versionRaw: string): Promise<void> {
+    const version = String(versionRaw ?? '').trim();
+    const q = this.question as Question;
+    if (!q || !version) return;
+    if (this.disablePersistence) return;
+
+    const baseKey = this.baseDraftKey() || (this.storageKeyOverride || '').trim() || q.id;
+    const currentVersion = this.currentContentVersion() || computeJsQuestionContentVersion(q as any);
+    if (version === currentVersion) {
+      await this.backToLatestDraft();
+      return;
+    }
+
+    // Persist current buffer before switching drafts.
+    this.flushPendingPersist();
+    const activeKey = makeDraftKey(baseKey, this.activeDraftVersion() || currentVersion);
+    await this.codeStore.saveJsAsync(activeKey, this.editorContent(), this.jsLang()).catch(() => { });
+
+    this._hydrating = true;
+    this.viewingSolution.set(false);
+    this.topTab.set('code');
+    this.subTab.set('tests');
+    this.hasRunTests.set(false);
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+
+    this.activeDraftVersion.set(version);
+    const storageKey = makeDraftKey(baseKey, version);
+
+    const [jsState, tsState, last] = await Promise.all([
+      this.codeStore.getJsLangStateAsync(storageKey, 'js').catch(() => null as any),
+      this.codeStore.getJsLangStateAsync(storageKey, 'ts').catch(() => null as any),
+      this.codeStore.getLastLang(storageKey).catch(() => null),
+    ]);
+
+    const preferred: JsLang =
+      (tsState?.dirty && !jsState?.dirty)
+        ? 'ts'
+        : (jsState?.dirty && !tsState?.dirty)
+          ? 'js'
+          : ((last === 'ts' || last === 'js') ? last : 'js');
+
+    const state = preferred === 'ts' ? tsState : jsState;
+    if (!state) {
+      // Couldn't load the requested version; fall back to latest.
+      await this.initFromQuestion();
+      return;
+    }
+
+    const visible = state.hasUserCode ? state.code : state.baseline;
+    this.jsLang.set(preferred);
+    this.langChange.emit(preferred);
+    this.editorContent.set(visible || '');
+    this.testCode.set(this.pickTests(q as any, preferred));
+
+    this.restoredFromStorage.set(state.dirty);
+    this.restoreDismissed.set(false);
+
+    await this.codeStore.setLastLangAsync(storageKey, preferred).catch(() => { });
+
+    queueMicrotask(() => window.dispatchEvent(new Event('resize')));
+    this.endHydrationSoon();
+  }
+
+  async copyDraftIntoLatest(versionRaw: string): Promise<void> {
+    const fromVersion = String(versionRaw ?? '').trim();
+    const q = this.question as Question;
+    if (!q || !fromVersion) return;
+    if (this.disablePersistence) return;
+
+    const baseKey = this.baseDraftKey() || (this.storageKeyOverride || '').trim() || q.id;
+    const currentVersion = this.currentContentVersion() || computeJsQuestionContentVersion(q as any);
+    if (!currentVersion) return;
+
+    const fromKey = makeDraftKey(baseKey, fromVersion);
+    const toKey = makeDraftKey(baseKey, currentVersion);
+
+    const { js: starterJs, ts: starterTs } = this.startersForBoth(q);
+    const langToCopy: JsLang = this.jsLang();
+    const starterForLang = langToCopy === 'ts' ? starterTs : starterJs;
+
+    // Ensure current baselines exist so "dirty" comparisons remain meaningful.
+    await Promise.all([
+      this.codeStore.setJsBaselineAsync(toKey, 'js', starterJs),
+      this.codeStore.setJsBaselineAsync(toKey, 'ts', starterTs),
+    ]).catch(() => { });
+
+    const state = await this.codeStore.getJsLangStateAsync(fromKey, langToCopy).catch(() => null as any);
+    const nextCode = (state?.hasUserCode ? state.code : state?.baseline) || starterForLang;
+
+    await this.codeStore.saveJsAsync(toKey, nextCode, langToCopy, { force: true }).catch(() => { });
+
+    // If we were looking at an older draft, jump back to latest so the user sees the copied content.
+    if (this.isViewingOlderVersion()) {
+      await this.initFromQuestion();
+      return;
+    }
+
+    // We are already on latest → update editor in-place.
+    this._hydrating = true;
+    this.editorContent.set(nextCode);
+    this.testCode.set(this.pickTests(q as any, langToCopy));
+    this.viewingSolution.set(false);
+    this.restoredFromStorage.set(true);
+    this.restoreDismissed.set(false);
+    this.hasRunTests.set(false);
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+    this.endHydrationSoon();
+  }
+
+  copyActiveDraftIntoLatest(): Promise<void> {
+    return this.copyDraftIntoLatest(this.activeDraftVersion());
   }
 
   // REPLACE your current setLanguage with this one
@@ -838,7 +1020,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
   private storageKeyFor(q: Question | null): string | null {
     if (!q || this.disablePersistence) return null;
-    const override = (this.storageKeyOverride || '').trim();
-    return override ? override : q.id;
+    const baseKey = (this.storageKeyOverride || '').trim() || q.id;
+    const version = (this.activeDraftVersion() || computeJsQuestionContentVersion(q as any)).trim();
+    return makeDraftKey(baseKey, version);
   }
 }

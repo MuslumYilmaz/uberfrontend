@@ -9,6 +9,10 @@
         </div>
 
         <div class="ml-auto flex items-center gap-2">
+            <span *ngIf="isViewingOlderVersion()" class="text-[11px] px-2 py-1 rounded bg-blue-500/20 text-blue-200 border border-blue-500/30"
+                data-testid="older-draft-label">
+                Older version
+            </span>
             <span class="text-xs opacity-70">Language</span>
             <div class="lang-wrap">
                 <select #langSel class="lang-select" data-testid="js-language-select" [value]="jsLang()" (change)="setLanguage(langSel.value)"
@@ -25,6 +29,17 @@
     <app-restore-banner *ngIf="!hideRestoreBanner" [isVisible]="restoredFromStorage() && !restoreDismissed()" [isSolution]="viewingSolution()"
         (reset)="resetToDefault()" (dismiss)="dismissRestoreBanner()">
     </app-restore-banner>
+
+    <!-- Draft update banner (versioned drafts) -->
+    <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion()"
+        [isVisible]="true" mode="updated" [otherDrafts]="availableOlderDrafts()"
+        (openVersion)="openOlderDraft($event)" (copyVersion)="copyDraftIntoLatest($event)" (dismiss)="dismissDraftUpdateBanner()">
+    </app-draft-update-banner>
+
+    <app-draft-update-banner *ngIf="isViewingOlderVersion()"
+        [isVisible]="true" mode="older"
+        (switchToCurrent)="backToLatestDraft()" (copyVersion)="copyActiveDraftIntoLatest()">
+    </app-draft-update-banner>
 
     <!-- Editors -->
     <div class="flex-1 flex flex-col overflow-hidden">

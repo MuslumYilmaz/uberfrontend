@@ -111,6 +111,88 @@ export async function waitForIndexedDbNotContains(
   }, opts);
 }
 
+export async function waitForIndexedDbKeyPrefixContains(
+  page: Page,
+  opts: { dbName: string; storeName: string; keyPrefix: string; substring: string }
+) {
+  await page.waitForFunction(async ({ dbName, storeName, keyPrefix, substring }) => {
+    try {
+      const openReq = indexedDB.open(dbName);
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        openReq.onsuccess = () => resolve(openReq.result);
+        openReq.onerror = () => reject(openReq.error);
+      });
+
+      try {
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+
+        return await new Promise<boolean>((resolve) => {
+          const req = store.openCursor();
+          req.onsuccess = () => {
+            const cursor = req.result;
+            if (!cursor) return resolve(false);
+            const k = String(cursor.key ?? '');
+            if (k.startsWith(String(keyPrefix ?? ''))) {
+              const v = cursor.value;
+              if (typeof v === 'string' && v.includes(String(substring ?? ''))) {
+                return resolve(true);
+              }
+            }
+            cursor.continue();
+          };
+          req.onerror = () => resolve(false);
+        });
+      } finally {
+        try { db.close(); } catch { /* ignore */ }
+      }
+    } catch {
+      return false;
+    }
+  }, opts);
+}
+
+export async function waitForIndexedDbKeyPrefixNotContains(
+  page: Page,
+  opts: { dbName: string; storeName: string; keyPrefix: string; substring: string }
+) {
+  await page.waitForFunction(async ({ dbName, storeName, keyPrefix, substring }) => {
+    try {
+      const openReq = indexedDB.open(dbName);
+      const db = await new Promise<IDBDatabase>((resolve, reject) => {
+        openReq.onsuccess = () => resolve(openReq.result);
+        openReq.onerror = () => reject(openReq.error);
+      });
+
+      try {
+        const tx = db.transaction(storeName, 'readonly');
+        const store = tx.objectStore(storeName);
+
+        return await new Promise<boolean>((resolve) => {
+          const req = store.openCursor();
+          req.onsuccess = () => {
+            const cursor = req.result;
+            if (!cursor) return resolve(true);
+            const k = String(cursor.key ?? '');
+            if (k.startsWith(String(keyPrefix ?? ''))) {
+              const v = cursor.value;
+              if (typeof v === 'string' && v.includes(String(substring ?? ''))) {
+                return resolve(false);
+              }
+            }
+            cursor.continue();
+          };
+          req.onerror = () => resolve(true);
+        });
+      } finally {
+        try { db.close(); } catch { /* ignore */ }
+      }
+    } catch {
+      return true;
+    }
+  }, opts);
+}
+
 export async function waitForIframeReady(page: Page, iframeTestId: string) {
   await page.getByTestId(iframeTestId).waitFor({ state: 'attached' });
   await page

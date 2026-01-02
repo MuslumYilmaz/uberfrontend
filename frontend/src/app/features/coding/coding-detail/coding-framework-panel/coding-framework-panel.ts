@@ -19,10 +19,20 @@ import { Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
 import { makeAngularPreviewHtmlV1 } from '../../../../core/utils/angular-preview-builder';
+import { computeFrameworkContentVersion } from '../../../../core/utils/content-version.util';
 import { makeReactPreviewHtml } from '../../../../core/utils/react-preview-builder';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
 import { makeVuePreviewHtml } from '../../../../core/utils/vue-preview-builder';
+import {
+  dismissUpdateBanner,
+  isUpdateBannerDismissed,
+  listOtherVersions,
+  makeDraftKey,
+  type DraftIndexEntry,
+  upsertDraftIndexVersion,
+} from '../../../../core/utils/versioned-drafts.util';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 
 type TreeNode =
@@ -32,7 +42,7 @@ type TreeNode =
 @Component({
   selector: 'app-coding-framework-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent],
+  imports: [CommonModule, MonacoEditorComponent, RestoreBannerComponent, DraftUpdateBannerComponent],
   templateUrl: './coding-framework-panel.component.html',
   styleUrls: ['./coding-framework-panel.component.css'],
 })
@@ -61,6 +71,18 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   showRestoreBanner = signal(false);
   viewingSolution = signal(false);
 
+  // Draft versioning (question updates)
+  private baseDraftKey = signal<string>('');
+  private currentContentVersion = signal<string>('');
+  private activeDraftVersion = signal<string>('');
+  isViewingOlderVersion = computed(() => {
+    const cur = this.currentContentVersion();
+    const active = this.activeDraftVersion();
+    return !!cur && !!active && cur !== active;
+  });
+  availableOlderDrafts = signal<DraftIndexEntry[]>([]);
+  showUpdateBanner = signal(false);
+
   // Solution preview (right iframe shows solution instead of user code)
   showingFrameworkSolutionPreview = signal(false);
 
@@ -81,6 +103,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private persistTimer: any = null;
   private pendingPersist: { key: string; tech: Tech; path: string; code: string } | null = null;
   private userFilesBackup: Record<string, string> | null = null;
+  private latestStarters: Record<string, string> | null = null;
+  private latestEntryHint = '';
   private destroy = false;
 
   // File tree computed
@@ -114,7 +138,12 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private draggingFrameworkCols = false;
   private startXFrameworkCols = 0;
   private startFrameworkColsRatio = 0;
-  private storageKey(q: Question): string { return (this.storageKeyOverride || '').trim() || q.id; }
+  private baseStorageKey(q: Question): string { return (this.storageKeyOverride || '').trim() || q.id; }
+  private storageKey(q: Question): string {
+    const baseKey = this.baseStorageKey(q);
+    const v = String(this.activeDraftVersion() || '').trim();
+    return v ? makeDraftKey(baseKey, v) : baseKey;
+  }
 
   constructor(
     private codeStore: CodeStorageService,
@@ -355,6 +384,111 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (!this.viewingSolution()) this.userFilesBackup = null;
   }
 
+  // ---------- draft-update banner actions ----------
+
+  dismissDraftUpdateBanner(): void {
+    const baseKey = this.baseDraftKey();
+    const current = this.currentContentVersion();
+    if (baseKey && current) dismissUpdateBanner(baseKey, current);
+    this.showUpdateBanner.set(false);
+  }
+
+  backToLatestDraft(): void {
+    if (!this.isViewingOlderVersion()) return;
+    this.flushPendingPersist();
+    this.initFromQuestion();
+  }
+
+  async openOlderDraft(versionRaw: string): Promise<void> {
+    const version = String(versionRaw ?? '').trim();
+    const q = this.question;
+    if (!q || !version || !this.isFrameworkTech()) return;
+    if (this.disablePersistence) return;
+
+    const baseKey = this.baseDraftKey() || this.baseStorageKey(q);
+    const currentVersion = this.currentContentVersion();
+    if (currentVersion && version === currentVersion) {
+      this.backToLatestDraft();
+      return;
+    }
+
+    // Persist pending changes for the current draft, then switch.
+    this.flushPendingPersist();
+
+    this.loadingPreview.set(true);
+    this.viewingSolution.set(false);
+    this.showRestoreBanner.set(false);
+    this.showingFrameworkSolutionPreview.set(false);
+    this.userFilesBackup = null;
+
+    this.activeDraftVersion.set(version);
+    const storageKey = makeDraftKey(baseKey, version);
+    const snap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, storageKey);
+    if (!snap || !Object.keys(snap.files || {}).length) {
+      this.initFromQuestion();
+      return;
+    }
+
+    const visibleFiles: Record<string, string> = {};
+    let restored = false;
+    for (const [path, st] of Object.entries(snap.files)) {
+      const base = st.baseline ?? '';
+      const code = st.code ?? '';
+      const visible = code || base || '';
+      visibleFiles[path] = visible;
+      if (code && base && code.trim() !== base.trim()) restored = true;
+    }
+
+    const entry = snap.entryFile && visibleFiles[snap.entryFile] ? snap.entryFile : this.pickFirstOpen(visibleFiles);
+
+    this.filesMap.set(visibleFiles);
+    this.openAllDirsFromPaths(Object.keys(visibleFiles));
+    this.openPath.set(entry);
+    this.frameworkEntryFile = entry;
+    this.editorContent.set(visibleFiles[entry] ?? '');
+
+    await this.rebuildFrameworkPreview().catch(() => this.setPreviewHtml(null));
+    this.showRestoreBanner.set(restored);
+    this.loadingPreview.set(false);
+  }
+
+  async copyDraftIntoLatest(versionRaw: string): Promise<void> {
+    const fromVersion = String(versionRaw ?? '').trim();
+    const q = this.question;
+    if (!q || !fromVersion || !this.isFrameworkTech()) return;
+    if (this.disablePersistence) return;
+
+    const baseKey = this.baseDraftKey() || this.baseStorageKey(q);
+    const currentVersion = this.currentContentVersion();
+    if (!currentVersion) return;
+
+    const fromKey = makeDraftKey(baseKey, fromVersion);
+    const toKey = makeDraftKey(baseKey, currentVersion);
+
+    const snap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, fromKey);
+    if (!snap || !Object.keys(snap.files || {}).length) return;
+
+    const starters = this.latestStarters || {};
+    const allowed = new Set(Object.keys(starters || {}).map((p) => String(p).replace(/^\/+/, '')));
+
+    const writes: Array<Promise<void>> = [];
+    for (const [pathRaw, st] of Object.entries(snap.files || {})) {
+      const path = String(pathRaw).replace(/^\/+/, '');
+      if (allowed.size && !allowed.has(path)) continue;
+      const visible = (st.code || st.baseline || '').toString();
+      writes.push(this.codeStore.saveFrameworkFileAsync(toKey, this.tech as any, path, visible, { force: true }));
+    }
+
+    await Promise.all(writes).catch(() => { });
+
+    // Reload latest to show the copied content (and preserve baselines/starter merging).
+    this.initFromQuestion();
+  }
+
+  copyActiveDraftIntoLatest(): Promise<void> {
+    return this.copyDraftIntoLatest(this.activeDraftVersion());
+  }
+
   // ---------- internal: workspace bootstrap ----------
 
   private async bootstrapWorkspaceFromSdk(
@@ -362,15 +496,17 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     opts?: { forceReset?: boolean }
   ): Promise<void> {
     const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
-    const key = this.storageKey(q);
+    const baseKey = this.baseStorageKey(q);
 
     let starters: Record<string, string> = {};
     let entryHint: string;
+    let dependencies: Record<string, string> | undefined;
 
     if (meta?.asset) {
       try {
         // Use shared util to fetch the asset
         const raw = await fetchSdkAsset(this.http, meta.asset);
+        dependencies = raw?.dependencies;
 
         // Prefer explicit openFile from meta, otherwise asset.openFile
         const { files, initialPath } = resolveSolutionFiles({
@@ -395,6 +531,20 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       entryHint = this.defaultEntry();
     }
 
+    // Compute the version for draft keying (id + contentVersion).
+    const contentVersion = computeFrameworkContentVersion({
+      files: starters,
+      entryFile: entryHint,
+      dependencies,
+      contentVersion: (q as any)?.contentVersion ?? null,
+    });
+    this.baseDraftKey.set(baseKey);
+    this.currentContentVersion.set(contentVersion);
+    this.activeDraftVersion.set(contentVersion);
+    const key = this.storageKey(q);
+    this.latestStarters = { ...starters };
+    this.latestEntryHint = entryHint;
+
     // If caller requested a hard reset, overwrite stored workspace
     if (opts?.forceReset && !this.disablePersistence) {
       await this.codeStore.resetFrameworkAsync(key, this.tech as any, starters, entryHint);
@@ -416,6 +566,25 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this.showingFrameworkSolutionPreview.set(false);
       return;
     }
+
+    // Backward-compat: archive legacy (unversioned) draft if it exists.
+    const now = new Date().toISOString();
+    const legacySnap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, baseKey);
+    if (legacySnap) {
+      const legacyKey = makeDraftKey(baseKey, 'legacy');
+      await this.codeStore.cloneFrameworkBundleAsync(this.tech as any, baseKey, legacyKey).catch(() => false);
+      upsertDraftIndexVersion(baseKey, { version: 'legacy', updatedAt: legacySnap.updatedAt || now }, { latestVersion: contentVersion });
+    }
+
+    const currentSnap = await this.codeStore.getFrameworkDraftSnapshotAsync(this.tech as any, key);
+    const idx = upsertDraftIndexVersion(
+      baseKey,
+      { version: contentVersion, updatedAt: currentSnap?.updatedAt || now },
+      { latestVersion: contentVersion }
+    );
+    const others = listOtherVersions(idx, contentVersion);
+    this.availableOlderDrafts.set(others);
+    this.showUpdateBanner.set(others.length > 0 && !isUpdateBannerDismissed(baseKey, contentVersion));
 
     // Initialize from storage (may restore previous work)
     const { files, entryFile, restored } =

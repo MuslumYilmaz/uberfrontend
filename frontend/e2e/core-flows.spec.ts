@@ -5,7 +5,7 @@ import {
   getMonacoModelValue,
   setMonacoModelValue,
   waitForIframeReady,
-  waitForIndexedDbContains,
+  waitForIndexedDbKeyPrefixContains,
 } from './helpers';
 
 test('app loads (landing + showcase) without console errors', async ({ page }) => {
@@ -90,10 +90,10 @@ test('persistence: partial edit -> refresh -> code restored safely', async ({ pa
   await setMonacoModelValue(page, codeModelKey, nextCode);
 
   // Wait for persistence (IndexedDB primary in this app)
-  await waitForIndexedDbContains(page, {
+  await waitForIndexedDbKeyPrefixContains(page, {
     dbName: 'frontendatlas',
     storeName: 'fa_js',
-    key: `v2:code:js2:${JS_QUESTION.id}`,
+    keyPrefix: `v2:code:js2:${JS_QUESTION.id}@`,
     substring: marker,
   });
 

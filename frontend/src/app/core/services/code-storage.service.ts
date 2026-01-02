@@ -1172,4 +1172,142 @@ export class CodeStorageService {
 
     await this.saveFrameworkBundlePrimary(tech, qid, bundle);
   }
+
+  // ---------- Versioned draft helpers (used by UI migration / banners) ----------
+
+  /**
+   * Clone an existing JS bundle from one qid to another.
+   * - Does NOT delete or overwrite the source.
+   * - By default, does NOT overwrite the destination if it exists.
+   */
+  async cloneJsBundleAsync(
+    fromQidRaw: string | number,
+    toQidRaw: string | number,
+    opts?: { overwrite?: boolean }
+  ): Promise<boolean> {
+    this.ensureMigrated();
+    const fromQid = String(fromQidRaw);
+    const toQid = String(toQidRaw);
+    if (!fromQid || !toQid || fromQid === toQid) return false;
+
+    const destKey = V2_JS_BUNDLE(toQid);
+    return this.enqueueBundleOp(destKey, async () => {
+      const src = await this.getBundleAsync(fromQid);
+      if (!src) return false;
+
+      if (!opts?.overwrite) {
+        const existing = await this.getBundleAsync(toQid);
+        if (existing) return false;
+      }
+
+      // Preserve the original payload (including baselines) for safe archiving.
+      const cloned = JSON.parse(JSON.stringify(src)) as JsBundleV2;
+      await this.saveBundlePrimary(toQid, cloned, { silent: true });
+      return true;
+    });
+  }
+
+  /**
+   * Clone an existing WEB bundle from one qid to another.
+   * - Does NOT delete or overwrite the source.
+   * - By default, does NOT overwrite the destination if it exists.
+   */
+  async cloneWebBundleAsync(
+    fromQidRaw: string | number,
+    toQidRaw: string | number,
+    opts?: { overwrite?: boolean }
+  ): Promise<boolean> {
+    const fromQid = String(fromQidRaw);
+    const toQid = String(toQidRaw);
+    if (!fromQid || !toQid || fromQid === toQid) return false;
+
+    const destKey = V2_WEB_BUNDLE(toQid);
+    return this.enqueueBundleOp(destKey, async () => {
+      const src = await this.getWebBundleAsync(fromQid);
+      if (!src) return false;
+
+      if (!opts?.overwrite) {
+        const existing = await this.getWebBundleAsync(toQid);
+        if (existing) return false;
+      }
+
+      const cloned = JSON.parse(JSON.stringify(src)) as WebBundleV2;
+      await this.saveWebBundlePrimary(toQid, cloned, { silent: true });
+      return true;
+    });
+  }
+
+  /**
+   * Clone an existing framework bundle from one qid to another.
+   * - Does NOT delete or overwrite the source.
+   * - By default, does NOT overwrite the destination if it exists.
+   */
+  async cloneFrameworkBundleAsync(
+    tech: FrameworkTech,
+    fromQidRaw: string | number,
+    toQidRaw: string | number,
+    opts?: { overwrite?: boolean }
+  ): Promise<boolean> {
+    const fromQid = String(fromQidRaw);
+    const toQid = String(toQidRaw);
+    if (!fromQid || !toQid || fromQid === toQid) return false;
+
+    const destKey = V2_FW_BUNDLE(tech, toQid);
+    return this.enqueueBundleOp(destKey, async () => {
+      const src = await this.getFrameworkBundleAsync(tech, fromQid);
+      if (!src) return false;
+
+      if (!opts?.overwrite) {
+        const existing = await this.getFrameworkBundleAsync(tech, toQid);
+        if (existing) return false;
+      }
+
+      const cloned = JSON.parse(JSON.stringify(src)) as FrameworkBundleV2;
+      await this.saveFrameworkBundlePrimary(tech, toQid, cloned, { silent: true });
+      return true;
+    });
+  }
+
+  async getWebDraftSnapshotAsync(qidRaw: string | number): Promise<{
+    html: { code: string; baseline: string };
+    css: { code: string; baseline: string };
+    updatedAt: string;
+  } | null> {
+    const qid = String(qidRaw);
+    const bundle = await this.getWebBundleAsync(qid);
+    if (!bundle) return null;
+    return {
+      html: { code: String(bundle.html?.code ?? ''), baseline: String(bundle.html?.baseline ?? '') },
+      css: { code: String(bundle.css?.code ?? ''), baseline: String(bundle.css?.baseline ?? '') },
+      updatedAt: String(bundle.updatedAt ?? ''),
+    };
+  }
+
+  async getFrameworkDraftSnapshotAsync(
+    tech: FrameworkTech,
+    qidRaw: string | number
+  ): Promise<{
+    files: Record<string, { code: string; baseline: string }>;
+    entryFile: string;
+    updatedAt: string;
+  } | null> {
+    const qid = String(qidRaw);
+    const bundle = await this.getFrameworkBundleAsync(tech, qid);
+    if (!bundle) return null;
+
+    const files: Record<string, { code: string; baseline: string }> = {};
+    for (const [path, st] of Object.entries(bundle.files || {})) {
+      const p = String(path).replace(/^\/+/, '');
+      files[p] = {
+        code: String(st?.code ?? ''),
+        baseline: String(st?.baseline ?? ''),
+      };
+    }
+
+    return {
+      files,
+      entryFile: String(bundle.entryFile ?? ''),
+      updatedAt: String(bundle.updatedAt ?? ''),
+    };
+  }
 }

@@ -318,6 +318,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           const sharedCompilerOptions = {
             allowJs: true,
             target: monaco.languages.typescript.ScriptTarget.ES2020,
+            lib: ['es2022', 'dom'],
             module: monaco.languages.typescript.ModuleKind.ESNext,
             moduleResolution: monaco.languages.typescript.ModuleResolutionKind.Bundler,
             jsx: monaco.languages.typescript.JsxEmit.ReactJSX,

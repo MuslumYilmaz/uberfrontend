@@ -17,14 +17,24 @@ import { ButtonModule } from 'primeng/button';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
+import { computeWebQuestionContentVersion } from '../../../../core/utils/content-version.util';
+import {
+  dismissUpdateBanner,
+  isUpdateBannerDismissed,
+  listOtherVersions,
+  makeDraftKey,
+  type DraftIndexEntry,
+  upsertDraftIndexVersion,
+} from '../../../../core/utils/versioned-drafts.util';
 import { MonacoEditorComponent } from '../../../../monaco-editor.component';
+import { DraftUpdateBannerComponent } from '../../../../shared/components/draft-update-banner/draft-update-banner';
 import { RestoreBannerComponent } from '../../../../shared/components/restore-banner/restore-banner';
 import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../../console-logger/console-logger.component';
 
 @Component({
   selector: 'app-coding-web-panel',
   standalone: true,
-  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent],
+  imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent],
   styles: [`
   :host { color: var(--uf-text-primary); }
   .web-panel { gap: var(--uf-space-3); }
@@ -148,7 +158,21 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 `],
   template: `
 	<div class="web-panel w-full min-h-0 flex flex-col flex-1" data-testid="web-panel">
-	  <!-- Banner -->
+	  <!-- Draft update banner (versioned drafts) -->
+	  <app-draft-update-banner *ngIf="showUpdateBanner() && !isViewingOlderVersion()"
+	    [isVisible]="true" mode="updated" [otherDrafts]="availableOlderDrafts()"
+	    (openVersion)="openOlderDraft($event)"
+	    (copyVersion)="copyDraftIntoLatest($event)"
+	    (dismiss)="dismissDraftUpdateBanner()">
+	  </app-draft-update-banner>
+
+	  <app-draft-update-banner *ngIf="isViewingOlderVersion()"
+	    [isVisible]="true" mode="older"
+	    (switchToCurrent)="backToLatestDraft()"
+	    (copyVersion)="copyActiveDraftIntoLatest()">
+	  </app-draft-update-banner>
+
+	  <!-- Restore banner -->
 	  <app-restore-banner *ngIf="!hideRestoreBanner"
 	    [isVisible]="showRestoreBanner()"
 	    [isSolution]="viewingSolution()"
@@ -251,7 +275,22 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private cssCode = signal<string>('');
   webHtml = () => this.htmlCode();
   webCss = () => this.cssCode();
-  private storageKeyFor(q: Question): string { return (this.storageKeyOverride || '').trim() || q.id; }
+  private baseDraftKey = signal<string>('');
+  private currentContentVersion = signal<string>('');
+  private activeDraftVersion = signal<string>('');
+  isViewingOlderVersion = computed(() => {
+    const cur = this.currentContentVersion();
+    const active = this.activeDraftVersion();
+    return !!cur && !!active && cur !== active;
+  });
+  availableOlderDrafts = signal<DraftIndexEntry[]>([]);
+  showUpdateBanner = signal(false);
+
+  private storageKeyFor(q: Question): string {
+    const baseKey = (this.storageKeyOverride || '').trim() || q.id;
+    const v = (this.activeDraftVersion() || computeWebQuestionContentVersion(q as any)).trim();
+    return makeDraftKey(baseKey, v);
+  }
 
   testCode = signal<string>('');
   previewTopTab = signal<'preview' | 'testcode'>('preview');
@@ -388,14 +427,41 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (!q) return;
 
     const starters = this.getWebStarters(q);
+    const baseKey = (this.storageKeyOverride || '').trim() || q.id;
+    const contentVersion = computeWebQuestionContentVersion(q as any);
+    this.baseDraftKey.set(baseKey);
+    this.currentContentVersion.set(contentVersion);
+    this.activeDraftVersion.set(contentVersion);
 
     // HTML/CSS come from shared IndexedDB-backed storage
     if (this.disablePersistence) {
       this.htmlCode.set(starters.html);
       this.cssCode.set(starters.css);
       this.showRestoreBanner.set(false);
+      this.showUpdateBanner.set(false);
     } else {
       const key = this.storageKeyFor(q);
+      const now = new Date().toISOString();
+
+      // Backward-compat: archive legacy (unversioned) draft if it exists.
+      const legacySnap = await this.codeStorage.getWebDraftSnapshotAsync(baseKey);
+      if (legacySnap) {
+        const legacyKey = makeDraftKey(baseKey, 'legacy');
+        await this.codeStorage.cloneWebBundleAsync(baseKey, legacyKey).catch(() => false);
+        upsertDraftIndexVersion(baseKey, { version: 'legacy', updatedAt: legacySnap.updatedAt || now }, { latestVersion: contentVersion });
+      }
+
+      const currentSnap = await this.codeStorage.getWebDraftSnapshotAsync(key);
+      const idx = upsertDraftIndexVersion(
+        baseKey,
+        { version: contentVersion, updatedAt: currentSnap?.updatedAt || now },
+        { latestVersion: contentVersion }
+      );
+
+      const others = listOtherVersions(idx, contentVersion);
+      this.availableOlderDrafts.set(others);
+      this.showUpdateBanner.set(others.length > 0 && !isUpdateBannerDismissed(baseKey, contentVersion));
+
       const { html, css, restored } = await this.codeStorage.initWebAsync(key, starters);
 
       this.htmlCode.set(html);
@@ -555,6 +621,125 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   // ---------- banner actions ----------
+  dismissDraftUpdateBanner(): void {
+    const baseKey = this.baseDraftKey();
+    const current = this.currentContentVersion();
+    if (baseKey && current) dismissUpdateBanner(baseKey, current);
+    this.showUpdateBanner.set(false);
+  }
+
+  async backToLatestDraft(): Promise<void> {
+    if (!this.isViewingOlderVersion()) return;
+    const q = this.question;
+    if (!q) return;
+
+    if (!this.disablePersistence) {
+      if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+      const activeKey = this.storageKeyFor(q);
+      await Promise.all([
+        this.codeStorage.saveWebAsync(activeKey, 'html', this.webHtml()),
+        this.codeStorage.saveWebAsync(activeKey, 'css', this.webCss()),
+      ]).catch(() => { });
+    }
+
+    await this.initFromQuestion();
+  }
+
+  async openOlderDraft(versionRaw: string): Promise<void> {
+    const version = String(versionRaw ?? '').trim();
+    const q = this.question;
+    if (!q || !version) return;
+    if (this.disablePersistence) return;
+
+    const baseKey = this.baseDraftKey() || (this.storageKeyOverride || '').trim() || q.id;
+    const currentVersion = this.currentContentVersion() || computeWebQuestionContentVersion(q as any);
+    if (version === currentVersion) {
+      await this.backToLatestDraft();
+      return;
+    }
+
+    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+
+    // Persist current buffers before switching drafts.
+    const activeKey = this.storageKeyFor(q);
+    await Promise.all([
+      this.codeStorage.saveWebAsync(activeKey, 'html', this.webHtml()),
+      this.codeStorage.saveWebAsync(activeKey, 'css', this.webCss()),
+    ]).catch(() => { });
+
+    this.exitSolutionPreview('open older draft');
+    this.viewingSolution.set(false);
+    this.hasRunTests = false;
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+
+    this.activeDraftVersion.set(version);
+    const storageKey = makeDraftKey(baseKey, version);
+    const snap = await this.codeStorage.getWebDraftSnapshotAsync(storageKey);
+    if (!snap) {
+      await this.initFromQuestion();
+      return;
+    }
+
+    const html = snap.html.code?.trim() ? snap.html.code : snap.html.baseline;
+    const css = snap.css.code?.trim() ? snap.css.code : snap.css.baseline;
+    const restored =
+      (!!snap.html.code?.trim() && (snap.html.code.trim() !== (snap.html.baseline || '').trim())) ||
+      (!!snap.css.code?.trim() && (snap.css.code.trim() !== (snap.css.baseline || '').trim()));
+
+    this.htmlCode.set(html || '');
+    this.cssCode.set(css || '');
+    this.showRestoreBanner.set(restored);
+    this.scheduleWebPreview();
+  }
+
+  async copyDraftIntoLatest(versionRaw: string): Promise<void> {
+    const fromVersion = String(versionRaw ?? '').trim();
+    const q = this.question;
+    if (!q || !fromVersion) return;
+    if (this.disablePersistence) return;
+
+    const baseKey = this.baseDraftKey() || (this.storageKeyOverride || '').trim() || q.id;
+    const currentVersion = this.currentContentVersion() || computeWebQuestionContentVersion(q as any);
+    if (!currentVersion) return;
+
+    const starters = this.getWebStarters(q);
+    const fromKey = makeDraftKey(baseKey, fromVersion);
+    const toKey = makeDraftKey(baseKey, currentVersion);
+
+    const snap = await this.codeStorage.getWebDraftSnapshotAsync(fromKey);
+    if (!snap) return;
+
+    const nextHtml = (snap.html.code?.trim() ? snap.html.code : snap.html.baseline) || starters.html;
+    const nextCss = (snap.css.code?.trim() ? snap.css.code : snap.css.baseline) || starters.css;
+
+    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+
+    await Promise.all([
+      this.codeStorage.saveWebAsync(toKey, 'html', nextHtml, { force: true }),
+      this.codeStorage.saveWebAsync(toKey, 'css', nextCss, { force: true }),
+    ]).catch(() => { });
+
+    if (this.isViewingOlderVersion()) {
+      await this.initFromQuestion();
+      return;
+    }
+
+    this.exitSolutionPreview('copied older draft into latest');
+    this.viewingSolution.set(false);
+    this.htmlCode.set(nextHtml);
+    this.cssCode.set(nextCss);
+    this.showRestoreBanner.set(true);
+    this.hasRunTests = false;
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+    this.scheduleWebPreview();
+  }
+
+  copyActiveDraftIntoLatest(): Promise<void> {
+    return this.copyDraftIntoLatest(this.activeDraftVersion());
+  }
+
   dismissRestoreBanner() { this.showRestoreBanner.set(false); }
   async resetFromBanner() { await this.resetQuestion(); this.showRestoreBanner.set(false); }
 
