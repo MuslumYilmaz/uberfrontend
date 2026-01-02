@@ -108,32 +108,32 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     // ✅ Create the model first with a deterministic URI/extension
     this.createOrSwapModel(langNorm, this.code ?? '');
 
-	    // Then create the editor bound to that model
-	    this.editor = window.monaco.editor.create(this.container.nativeElement, {
-	      ...baseOpts,
-	      model: this.model,
-	    });
+    // Then create the editor bound to that model
+    this.editor = window.monaco.editor.create(this.container.nativeElement, {
+      ...baseOpts,
+      model: this.model,
+    });
 
-	    // Some embedding contexts can break Monaco's default Enter/Tab acceptance for suggestions.
-	    // Re-bind them explicitly when the suggest widget is visible.
-	    try {
-	      const monaco = (window as any).monaco;
-	      const whenSuggest = monaco?.editor?.ContextKeyExpr?.has?.('suggestWidgetVisible');
-	      if (whenSuggest) {
-	        this.editor.addCommand(monaco.KeyCode.Enter, () => {
-	          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
-	        }, whenSuggest);
-	        this.editor.addCommand(monaco.KeyCode.Tab, () => {
-	          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
-	        }, whenSuggest);
-	      }
-	    } catch { }
+    // Some embedding contexts can break Monaco's default Enter/Tab acceptance for suggestions.
+    // Re-bind them explicitly when the suggest widget is visible.
+    try {
+      const monaco = (window as any).monaco;
+      const whenSuggest = monaco?.editor?.ContextKeyExpr?.has?.('suggestWidgetVisible');
+      if (whenSuggest) {
+        this.editor.addCommand(monaco.KeyCode.Enter, () => {
+          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
+        }, whenSuggest);
+        this.editor.addCommand(monaco.KeyCode.Tab, () => {
+          this.editor.trigger('keyboard', 'acceptSelectedSuggestion', {});
+        }, whenSuggest);
+      }
+    } catch { }
 
-	    // Mirror -> @Output
-	    this.editor.onDidChangeModelContent?.(() => {
-	      if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
-	      this.codeChange.emit(this.editor.getValue());
-	      if (this.autoHeight) this.fit();
+    // Mirror -> @Output
+    this.editor.onDidChangeModelContent?.(() => {
+      if (this.suppressNextModelUpdate) { this.suppressNextModelUpdate = false; return; }
+      this.codeChange.emit(this.editor.getValue());
+      if (this.autoHeight) this.fit();
     });
 
     // Auto-height handling
@@ -318,7 +318,6 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
           const sharedCompilerOptions = {
             allowJs: true,
             target: monaco.languages.typescript.ScriptTarget.ES2020,
-            lib: ['es2022', 'dom'],
             module: monaco.languages.typescript.ModuleKind.ESNext,
             moduleResolution: monaco.languages.typescript.ModuleResolutionKind.Bundler,
             jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
@@ -466,7 +465,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
               "  export class HttpRequest<T = any> { constructor(method: string, url: string, body?: T); }",
               "  export type HttpEvent<T = any> = HttpResponse<T>;",
               "  export abstract class HttpBackend { handle(req: HttpRequest<any>): any; }",
-            "}",
+              "}",
             ].join('\\n');
             ts.typescriptDefaults.addExtraLib(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');
             ts.javascriptDefaults?.addExtraLib?.(angularHttpLib, 'file:///node_modules/@angular/common/http/index.d.ts');

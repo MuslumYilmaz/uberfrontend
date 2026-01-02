@@ -7,7 +7,7 @@
         <span class="crumb-current">{{ t.title }}</span>
       </nav>
 
-      <ng-container *ngIf="filtered$ | async as questions">
+      <ng-container *ngIf="filtered$ | async as questions; else loadingTpl">
         <section class="fa-track-header fa-card fa-card--elevated">
           <div class="fa-track-header__left">
             <div class="fa-track-header__eyebrow fa-meta-label">Track</div>
@@ -232,6 +232,13 @@
           </a>
         </section>
       </ng-container>
+
+      <ng-template #loadingTpl>
+        <div class="py-10 flex flex-col items-center gap-3" role="status" aria-live="polite" data-testid="track-detail-loading">
+          <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
+          <div class="text-sm opacity-80">Loading track questions…</div>
+        </div>
+      </ng-template>
     </div>
   </div>
 </ng-container>

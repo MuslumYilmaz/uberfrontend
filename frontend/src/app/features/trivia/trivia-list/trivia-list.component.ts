@@ -10,7 +10,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 
 import { Difficulty, Question } from '../../../core/models/question.model';
 import { QuestionService } from '../../../core/services/question.service';
@@ -46,8 +46,10 @@ export class TriviaListComponent {
   rawQuestions$ = this.route.parent!.paramMap.pipe(
     map(pm => pm.get('tech') ?? 'javascript'),
     tap(t => (this.tech = t)),
-    switchMap(t => this.questionService.loadQuestions(t, 'trivia')),
-    startWith<Question[]>([])
+    switchMap(t => this.questionService.loadQuestions(t, 'trivia').pipe(
+      startWith<Question[] | null>(null),
+    )),
+    shareReplay(1),
   );
 
   filtered$ = combineLatest([
@@ -57,7 +59,7 @@ export class TriviaListComponent {
     this.maxImp$
   ]).pipe(
     map(([qs, term, diffs, maxImp]) =>
-      qs
+      (qs ?? [])
         .filter(q =>
           q.title.toLowerCase().includes(term.toLowerCase()) &&
           (diffs.length === 0 || diffs.includes(q.difficulty)) &&

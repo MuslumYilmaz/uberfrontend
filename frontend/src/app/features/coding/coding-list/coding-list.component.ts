@@ -227,7 +227,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   ).pipe(startWith(''));
 
   // ---------- base load ----------
-  rawQuestions$: Observable<any> = this.route.data.pipe(
+  rawQuestions$: Observable<Row[] | null> = this.route.data.pipe(
     tap(d => {
       this.source = (d['source'] as ListSource) ?? 'tech';
       this.kind = (d['kind'] as Kind) ?? 'coding';
@@ -258,21 +258,23 @@ export class CodingListComponent implements OnInit, OnDestroy {
                       )),
                   ]).pipe(
                     map(([a, b]) => [...a, ...b]),
-                    startWith<Row[]>([])
+                    startWith<Row[] | null>(null)
                   );
                 }
 
                 // single kind
                 const base$ = this.qs.loadAllQuestions(k as any).pipe(
                   map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
-                  startWith<Row[]>([])
+                  startWith<Row[] | null>(null)
                 );
 
                 if (this.viewMode === 'formats') {
-                  return combineLatest<[Row[], Row[]]>([
+                  return combineLatest<[Row[] | null, Row[] | null]>([
                     base$,
-                    this.loadSystemDesignRows$()
-                  ]).pipe(map(([a, sys]) => [...a, ...sys]));
+                    this.loadSystemDesignRows$().pipe(startWith<Row[] | null>(null))
+                  ]).pipe(
+                    map(([a, sys]) => (a === null || sys === null) ? null : [...a, ...sys]),
+                  );
                 }
                 return base$;
               })
@@ -298,14 +300,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
                       .pipe(map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: 'trivia' }))))
                   ]).pipe(
                     map(([a, b]) => [...a, ...b]),
-                    startWith<Row[]>([])
+                    startWith<Row[] | null>(null)
                   );
                 }
 
                 const k = this.kind as QuestionKind;
                 return this.qs.loadQuestions(this.tech, k).pipe(
                   map((list: Question[]) => list.map<Row>(q => ({ ...q, __kind: k }))),
-                  startWith<Row[]>([])
+                  startWith<Row[] | null>(null)
                 );
               })
             );
@@ -330,7 +332,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 this.loadSystemDesignRows$()
               ]).pipe(
                 map(([coding, trivia, system]) => [...coding, ...trivia, ...system]),
-                startWith<Row[]>([])
+                startWith<Row[] | null>(null)
               );
             }
 
@@ -340,7 +342,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 map(list =>
                   list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
                 ),
-                startWith<Row[]>([])
+                startWith<Row[] | null>(null)
               );
             }
 
@@ -350,13 +352,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 map(list =>
                   list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
                 ),
-                startWith<Row[]>([])
+                startWith<Row[] | null>(null)
               );
             }
 
             if (this.kind === 'system-design') {
               return this.loadSystemDesignRows$().pipe(
-                startWith<Row[]>([])
+                startWith<Row[] | null>(null)
               );
             }
           }
@@ -364,7 +366,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
         })
       )
     )
-  );
+  ) as unknown as Observable<Row[] | null>;
 
   allTagCounts$ = this.rawQuestions$.pipe(
     map(rows => {
@@ -402,6 +404,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.sort$,
   ]).pipe(
     map(([questions, term, diffs, tiers, companySlug, selectedTech, selectedCategory, selTags, sortKey]) => {
+      if (questions === null) return null;
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
@@ -460,7 +463,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   visible$ = combineLatest([this.filtered$, this.solvedIds$]).pipe(
     tap(([, ids]) => console.log('[SOLVED-DBG] solvedIds changed', ids)),
     map(([qs, ids]) => {
-      console.log('[SOLVED-DBG] visible recompute', { count: qs.length, solvedCount: ids.length });
+      console.log('[SOLVED-DBG] visible recompute', { count: qs ? qs.length : null, solvedCount: ids.length });
       return qs;
     })
   );
@@ -497,7 +500,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'system', label: 'System design' },
   ];
 
-  filteredCount$ = this.filtered$.pipe(map(list => list.length), startWith(0));
+  filteredCount$ = this.filtered$.pipe(map(list => list?.length ?? 0), startWith(0));
 
   kindTabs: Array<{ key: QuestionKind; label: string }> = [
     { key: 'coding', label: 'Coding' },
@@ -1195,7 +1198,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
           __sd: true
         }))
       ),
-      startWith<Row[]>([])
     );
   }
 

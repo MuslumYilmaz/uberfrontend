@@ -2,6 +2,7 @@ import { CommonModule, Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BehaviorSubject, combineLatest, distinctUntilChanged, forkJoin, map, Observable, of, shareReplay, Subject, takeUntil } from 'rxjs';
 import { Question, QuestionKind } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
@@ -53,7 +54,7 @@ const IMP_ORDER: ReadonlyArray<ImportanceTier> = ['low', 'medium', 'high'];
 @Component({
   selector: 'app-track-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, FaChipComponent, CodingFilterPanelComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressSpinnerModule, FaChipComponent, CodingFilterPanelComponent],
   templateUrl: './track-detail.component.html',
   styleUrls: ['./track-detail.component.css'],
 })

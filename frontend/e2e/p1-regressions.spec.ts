@@ -60,6 +60,8 @@ test('invalid question id deep link renders a safe 404 (no crash)', async ({ pag
 test('filter empty state shows reset option and recovers', async ({ page }) => {
   await page.goto('/coding');
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
+  await expect(page.getByTestId('coding-list-loading')).toBeHidden();
+  await expect(page.locator('[data-testid^="question-card-"]')).not.toHaveCount(0);
 
   await page.getByTestId('filter-tech-javascript').click();
   await expect(page).toHaveURL(/tech=javascript/);

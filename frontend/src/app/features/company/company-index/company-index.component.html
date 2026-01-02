@@ -4,17 +4,26 @@
     Prepare for specific companies by learning insider tips and practicing known questions.
 </p>
 
-<div class="company-list">
-    <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'all']">
-        <div class="company-card__content">
-            <div class="company-card__left">
-                <div class="company-card__avatar">{{ c.label[0] }}</div>
-                <div>
-                    <div class="company-card__title">{{ c.label }}</div>
-                    <div class="company-card__meta">{{ c.count }} questions</div>
+<ng-container *ngIf="loading; else loaded">
+    <div class="py-10 flex flex-col items-center gap-3" role="status" aria-live="polite" data-testid="company-index-loading">
+        <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
+        <div class="text-sm text-gray-300">Loading company guides…</div>
+    </div>
+</ng-container>
+
+<ng-template #loaded>
+    <div class="company-list">
+        <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'all']">
+            <div class="company-card__content">
+                <div class="company-card__left">
+                    <div class="company-card__avatar">{{ c.label[0] }}</div>
+                    <div>
+                        <div class="company-card__title">{{ c.label }}</div>
+                        <div class="company-card__meta">{{ c.count }} questions</div>
+                    </div>
                 </div>
+                <div class="company-card__chevron">→</div>
             </div>
-            <div class="company-card__chevron">→</div>
-        </div>
-    </a>
-</div>
+        </a>
+    </div>
+</ng-template>

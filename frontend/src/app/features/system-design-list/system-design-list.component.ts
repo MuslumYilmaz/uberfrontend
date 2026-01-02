@@ -8,7 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { map, shareReplay, startWith } from 'rxjs/operators';
 import { QuestionService } from '../../core/services/question.service';
 import { isQuestionLockedForTier } from '../../core/models/question.model';
 import { AuthService } from '../../core/services/auth.service';
@@ -37,10 +37,13 @@ export class SystemDesignListComponent {
   search$ = new BehaviorSubject<string>('');
   tags$ = new BehaviorSubject<string[]>([]);
 
-  rawQuestions$ = this.qs.loadSystemDesign().pipe(startWith<SysDesign[]>([]));
+  rawQuestions$ = this.qs.loadSystemDesign().pipe(
+    startWith<SysDesign[] | null>(null),
+    shareReplay(1),
+  );
 
   tagOptions$ = this.rawQuestions$.pipe(
-    map(qs => Array.from(new Set(qs.flatMap(q => q.tags))).sort()),
+    map(qs => Array.from(new Set((qs ?? []).flatMap(q => q.tags))).sort()),
     map(tags => tags.map(t => ({ label: t, value: t })))
   );
 
@@ -48,7 +51,7 @@ export class SystemDesignListComponent {
     map(([questions, term, pickedTags]) => {
       const q = term.trim().toLowerCase();
       const hasTags = (arr: string[]) => pickedTags.length === 0 || pickedTags.every(t => arr.includes(t));
-      return questions
+      return (questions ?? [])
         .filter(x =>
           (x.title.toLowerCase().includes(q) || x.tags.some(t => t.toLowerCase().includes(q))) &&
           hasTags(x.tags)

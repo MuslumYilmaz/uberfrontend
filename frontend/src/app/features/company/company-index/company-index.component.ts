@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { forkJoin } from 'rxjs';
 import { count, map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
@@ -66,15 +67,17 @@ function companiesOf(q: any): string[] {
 @Component({
   standalone: true,
   selector: 'app-company-index',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProgressSpinnerModule],
   templateUrl: './company-index.component.html',
   styleUrls: ['./company-index.component.scss']
 })
 export class CompanyIndexComponent {
   companies: CompanyCard[] = [];
+  loading = true;
   private qs = inject(QuestionService);
 
   ngOnInit() {
+    this.loading = true;
     forkJoin([
       this.qs.loadAllQuestions('coding'),
       this.qs.loadAllQuestions('trivia')
@@ -112,6 +115,9 @@ export class CompanyIndexComponent {
           return list.sort((a, b) => a.label.localeCompare(b.label));
         })
       )
-      .subscribe(list => (this.companies = list));
+      .subscribe(list => {
+        this.companies = list;
+        this.loading = false;
+      });
   }
 }
