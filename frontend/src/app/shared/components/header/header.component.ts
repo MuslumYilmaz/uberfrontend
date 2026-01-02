@@ -35,7 +35,7 @@ type VisibleEntry = {
     <div class="fah-inner">
       <!-- LEFT (brand) -->
       <div class="fah-left">
-        <a class="fah-brand" routerLink="/">FrontendAtlas</a>
+        <a class="fah-brand" routerLink="/dashboard">FrontendAtlas</a>
       </div>
 
       <!-- CENTER (Prepare trigger) -->
