@@ -41,7 +41,7 @@ export class LoginComponent {
     this.auth
       .login({ emailOrUsername: email.trim(), password })
       .subscribe({
-        next: () => this.router.navigateByUrl('/'),
+        next: () => this.router.navigateByUrl('/dashboard'),
         error: (err) => {
           // show a friendly message
           this.error =

@@ -56,7 +56,7 @@ export class SignupComponent {
     this.loading = true;
     this.error = '';
     this.auth.signup({ email, username, password }).subscribe({
-      next: () => this.router.navigateByUrl('/'),
+      next: () => this.router.navigateByUrl('/dashboard'),
       error: (err: any) => { this.error = err.error?.error || 'Sign up failed'; this.loading = false; }
     });
   }

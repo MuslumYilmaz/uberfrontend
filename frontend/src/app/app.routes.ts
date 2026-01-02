@@ -26,7 +26,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
         title: 'High-signal frontend interview prep',
@@ -39,6 +39,17 @@ export const routes: Routes = [
           'system design for frontend',
           'ui coding challenges',
         ],
+      },
+    },
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+    data: {
+      seo: {
+        title: 'Dashboard',
+        description: 'Your FrontendAtlas home for tracks, guides, and practice questions.',
       },
     },
   },
@@ -63,14 +74,8 @@ export const routes: Routes = [
   },
   {
     path: 'showcase',
-    loadComponent: () =>
-      import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
-    data: {
-      seo: {
-        title: 'Showcase',
-        description: 'See FrontendAtlas in action with live UI challenges, guided flows, and interactive demos.',
-      },
-    },
+    pathMatch: 'full',
+    redirectTo: '',
   },
 
   // Auth

@@ -104,7 +104,7 @@ test('coding list keeps last filters after reloading another route', async ({ pa
   await expect(page.getByTestId(`question-card-${JS_QUESTION.id}`)).toBeVisible();
 
   // Simulate leaving the list, reloading the app elsewhere, then returning to /coding without params.
-  await page.goto('/');
+  await page.goto('/dashboard');
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
   await page.reload();
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
@@ -142,7 +142,7 @@ test('track keeps last filters after reloading another route', async ({ page }) 
   await page.getByTestId(`track-question-card-${targetId}`).click();
   await expect(page).toHaveURL(new RegExp(`/javascript/trivia/${targetId}$`));
 
-  await page.goto('/');
+  await page.goto('/dashboard');
   await expect(page.getByTestId('dashboard-page')).toBeVisible();
   await page.reload();
   await expect(page.getByTestId('dashboard-page')).toBeVisible();

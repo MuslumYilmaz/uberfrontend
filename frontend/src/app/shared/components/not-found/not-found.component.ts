@@ -88,7 +88,7 @@ import { Router, RouterLink } from '@angular/router';
         <p class="p">It may have been moved, or the URL is mistyped.</p>
 
         <div class="actions">
-          <a class="btn primary" routerLink="/">Go to dashboard</a>
+          <a class="btn primary" routerLink="/dashboard">Go to dashboard</a>
         </div>
 
         <div class="small">Tip: check the address bar or use the navigation above.</div>

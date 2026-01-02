@@ -27,7 +27,7 @@ async function logout(page: any) {
   await page.getByTestId('header-profile-button').click();
   await expect(page.getByTestId('header-profile-menu')).toBeVisible();
   await page.getByTestId('header-menu-logout').click();
-  await expect(page.getByTestId('dashboard-page')).toBeVisible();
+  await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
   await expectAccessTokenCookie(page, null);
 }
 
@@ -49,7 +49,7 @@ test('auth: signup (email/password) logs in', async ({ page }) => {
   await page.getByTestId('signup-confirm').fill('secret123');
   await page.getByTestId('signup-submit').click();
 
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await expectAccessTokenCookie(page, token);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
@@ -73,7 +73,7 @@ test('auth edge: signup trims email/username and still succeeds', async ({ page 
   await page.getByTestId('signup-confirm').fill('secret123');
   await page.getByTestId('signup-submit').click();
 
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await expectAccessTokenCookie(page, token);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
@@ -95,13 +95,13 @@ test('auth: login (email/password) logs in and survives reload', async ({ page }
   await page.getByTestId('login-password').fill('secret123');
   await page.getByTestId('login-submit').click();
 
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await expectAccessTokenCookie(page, token);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_token'))).toBe(null);
 
   await page.reload();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await expectAccessTokenCookie(page, token);
 });
@@ -114,14 +114,14 @@ test('auth: OAuth login works (Google + GitHub)', async ({ page }) => {
   await page.goto('/auth/login');
   await expect(page.getByTestId('login-page')).toBeVisible();
   await page.getByTestId('login-google').click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await logout(page);
 
   await page.goto('/auth/login');
   await expect(page.getByTestId('login-page')).toBeVisible();
   await page.getByTestId('login-github').click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
 });
 
@@ -133,14 +133,14 @@ test('auth: OAuth signup works (Google + GitHub)', async ({ page }) => {
   await page.goto('/auth/signup');
   await expect(page.getByTestId('signup-page')).toBeVisible();
   await page.getByTestId('signup-google').click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
   await logout(page);
 
   await page.goto('/auth/signup');
   await expect(page.getByTestId('signup-page')).toBeVisible();
   await page.getByTestId('signup-github').click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('/dashboard');
   await expectLoggedIn(page);
 });
 
@@ -203,7 +203,7 @@ test.describe('auth edge: retry flows', () => {
       await expect(page.getByTestId('login-submit')).toBeEnabled();
 
       await page.getByTestId('login-submit').click();
-      await expect(page).toHaveURL('/');
+      await expect(page).toHaveURL('/dashboard');
       await expectLoggedIn(page);
     });
   });
@@ -241,7 +241,7 @@ test.describe('auth edge: retry flows', () => {
       await expect(page.getByTestId('signup-submit')).toBeEnabled();
 
       await page.getByTestId('signup-submit').click();
-      await expect(page).toHaveURL('/');
+      await expect(page).toHaveURL('/dashboard');
       await expectLoggedIn(page);
     });
   });

@@ -8,12 +8,12 @@ import {
   waitForIndexedDbKeyPrefixContains,
 } from './helpers';
 
-test('app loads (landing + showcase) without console errors', async ({ page }) => {
+test('app loads (showcase + dashboard) without console errors', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('dashboard-page')).toBeVisible();
-
-  await page.goto('/showcase');
   await expect(page.getByTestId('showcase-hero-title')).toBeVisible();
+
+  await page.goto('/dashboard');
+  await expect(page.getByTestId('dashboard-page')).toBeVisible();
 });
 
 test('navigate list -> open question detail -> editor visible', async ({ page }) => {

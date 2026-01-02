@@ -57,7 +57,7 @@ export class AppSidebarComponent {
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
 
   nav: NavItem[] = [
-    { type: 'link', label: 'Dashboard', icon: 'pi pi-th-large', to: '/' },
+    { type: 'link', label: 'Dashboard', icon: 'pi pi-th-large', to: '/dashboard' },
 
     {
       type: 'group',

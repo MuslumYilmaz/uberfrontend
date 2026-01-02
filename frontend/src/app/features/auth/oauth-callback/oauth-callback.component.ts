@@ -25,7 +25,7 @@ export class OAuthCallbackComponent implements OnInit {
   ngOnInit(): void {
     const qp = this.route.snapshot.queryParams || {};
     this.auth.completeOAuthCallback(qp).subscribe({
-      next: () => this.router.navigateByUrl('/'),
+      next: () => this.router.navigateByUrl('/dashboard'),
       error: (e) => this.error = e?.message || 'OAuth failed'
     });
   }

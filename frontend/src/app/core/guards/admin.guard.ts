@@ -16,7 +16,7 @@ function adminCheck(targetUrl?: string): boolean | UrlTree | Observable<boolean 
   return auth.ensureMe().pipe(
     map((u) => {
       if (!u) return loginRedirect;
-      if ((u.role ?? 'user') !== 'admin') return router.createUrlTree(['/']);
+      if ((u.role ?? 'user') !== 'admin') return router.createUrlTree(['/dashboard']);
       return true;
     }),
     catchError(() => of(loginRedirect))
