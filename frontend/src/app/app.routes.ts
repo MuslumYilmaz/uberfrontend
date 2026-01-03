@@ -50,6 +50,7 @@ export const routes: Routes = [
       seo: {
         title: 'Dashboard',
         description: 'Your FrontendAtlas home for tracks, guides, and practice questions.',
+        robots: 'noindex,nofollow',
       },
     },
   },

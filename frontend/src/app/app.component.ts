@@ -2,10 +2,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { DailyService } from './core/services/daily.service';
-import { SeoService } from './core/services/seo.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { OfflineBannerComponent } from './shared/components/offline-banner/offline-banner';
@@ -19,9 +18,7 @@ import { OfflineBannerComponent } from './shared/components/offline-banner/offli
 })
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   private currentUrl = signal(this.router.url || '/');
-  private seo = inject(SeoService);
 
   // hide header on /auth/*
   isAuthRoute = computed(() => this.currentUrl().startsWith('/auth'));
@@ -56,8 +53,6 @@ export class AppComponent implements OnInit, OnDestroy {
   private midnightTimer?: number;
 
   ngOnInit() {
-    this.seo.init(this.route);
-
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: any) => this.currentUrl.set(e.urlAfterRedirects || e.url));

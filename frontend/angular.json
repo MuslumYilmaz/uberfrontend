@@ -27,6 +27,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/robots.txt",
+              {
+                "glob": "sitemap*.xml",
+                "input": "src",
+                "output": "/"
+              },
               "src/assets",
               {
                 "glob": "**/*",
@@ -100,6 +106,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/robots.txt",
+              {
+                "glob": "sitemap*.xml",
+                "input": "src",
+                "output": "/"
+              },
               "src/assets",
               {
                 "glob": "**/*",

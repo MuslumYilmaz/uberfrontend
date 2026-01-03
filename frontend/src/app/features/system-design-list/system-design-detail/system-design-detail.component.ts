@@ -337,10 +337,53 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private updateSeo(question: SDQuestion): void {
+    const canonical = this.seo.buildCanonicalUrl(`/system-design/${question.id}`);
+    const description = this.sdDescription(question);
+    const keywords = this.sdKeywords(question);
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'System design',
+          item: this.seo.buildCanonicalUrl('/system-design'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: question.title,
+          item: canonical,
+        },
+      ],
+    };
+
+    const article = {
+      '@type': 'Article',
+      '@id': canonical,
+      headline: question.title,
+      description,
+      mainEntityOfPage: canonical,
+      inLanguage: 'en',
+      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      isAccessibleForFree: question.access !== 'premium',
+      keywords: keywords.join(', '),
+    };
+
     this.seo.updateTags({
       title: question.title,
-      description: this.sdDescription(question),
-      keywords: this.sdKeywords(question),
+      description,
+      keywords,
+      canonical,
+      ogType: 'article',
+      jsonLd: [breadcrumb, article],
     });
   }
 

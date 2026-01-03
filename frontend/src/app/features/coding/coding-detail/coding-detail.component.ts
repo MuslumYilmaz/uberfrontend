@@ -671,10 +671,53 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateSeoForQuestion(q: Question): void {
+    const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/${this.kind}/${q.id}`);
+    const description = this.questionDescription(q);
+    const keywords = this.questionKeywords(q);
+
+    const breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'FrontendAtlas',
+          item: this.seo.buildCanonicalUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Practice',
+          item: this.seo.buildCanonicalUrl('/coding'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: q.title,
+          item: canonical,
+        },
+      ],
+    };
+
+    const article = {
+      '@type': 'TechArticle',
+      '@id': canonical,
+      headline: q.title,
+      description,
+      mainEntityOfPage: canonical,
+      inLanguage: 'en',
+      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      isAccessibleForFree: q.access !== 'premium',
+      keywords: keywords.join(', '),
+    };
+
     this.seo.updateTags({
       title: q.title,
-      description: this.questionDescription(q),
-      keywords: this.questionKeywords(q),
+      description,
+      keywords,
+      canonical,
+      ogType: 'article',
+      jsonLd: [breadcrumb, article],
     });
   }
 
