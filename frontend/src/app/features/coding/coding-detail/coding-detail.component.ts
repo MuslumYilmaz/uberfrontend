@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
   AfterViewInit, Component, Input, computed, effect,
-  ElementRef, NgZone,
+  ElementRef, inject, NgZone,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -24,6 +24,7 @@ import type { Tech } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
+import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
@@ -100,6 +101,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() footerLinkLabel = 'Open in full workspace';
   @Input() footerLinkTo: any[] | string | null = null;
   @Input() disablePersistence = false;
+  private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
 
   tech!: Tech;
   kind: Kind = 'coding';
@@ -671,6 +673,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateSeoForQuestion(q: Question): void {
+    if (this.demoMode || this.suppressSeo) return;
     const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/${this.kind}/${q.id}`);
     const description = this.questionDescription(q);
     const keywords = this.questionKeywords(q);

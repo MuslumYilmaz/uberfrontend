@@ -9,6 +9,7 @@ import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 
@@ -110,6 +111,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   readonly router = inject(Router);
   private qs = inject(QuestionService);
   private seo = inject(SeoService);
+  private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   readonly auth = inject(AuthService);
 
   q: WritableSignal<SDQuestion | null> = signal(null);
@@ -337,6 +339,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private updateSeo(question: SDQuestion): void {
+    if (this.suppressSeo) return;
     const canonical = this.seo.buildCanonicalUrl(`/system-design/${question.id}`);
     const description = this.sdDescription(question);
     const keywords = this.sdKeywords(question);

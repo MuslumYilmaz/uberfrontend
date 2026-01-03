@@ -15,6 +15,7 @@ import { combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { QuestionService } from '../../core/services/question.service';
+import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { CodingDetailComponent } from '../coding/coding-detail/coding-detail.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
@@ -582,7 +583,10 @@ You can also reset any task back to the starter whenever you want to re-practice
     };
 
     this.triviaInjector = Injector.create({
-      providers: [{ provide: ActivatedRoute, useValue: routeStub }],
+      providers: [
+        { provide: ActivatedRoute, useValue: routeStub },
+        { provide: SEO_SUPPRESS_TOKEN, useValue: true },
+      ],
       parent: this.injector,
     });
   }
@@ -614,7 +618,10 @@ You can also reset any task back to the starter whenever you want to re-practice
     };
 
     this.systemInjector = Injector.create({
-      providers: [{ provide: ActivatedRoute, useValue: routeStub }],
+      providers: [
+        { provide: ActivatedRoute, useValue: routeStub },
+        { provide: SEO_SUPPRESS_TOKEN, useValue: true },
+      ],
       parent: this.injector,
     });
   }

@@ -16,6 +16,11 @@ async function getCanonical(page: any): Promise<string | null> {
   return page.locator('link[rel="canonical"]').getAttribute('href');
 }
 
+function extractLocs(xml: string): string[] {
+  const matches = xml.matchAll(/<loc>([^<]+)<\/loc>/g);
+  return Array.from(matches, (m) => m[1]);
+}
+
 test('seo: home has title/description/canonical and is indexable', async ({ page }) => {
   await setSeoHost(page, 'frontendatlas.com');
   await page.goto('/');
@@ -76,6 +81,26 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
   const sitemap = await chunkRes.text();
   expect(sitemap).toContain('https://frontendatlas.com/');
   expect(sitemap).toContain('https://frontendatlas.com/javascript/coding/js-number-clamp');
-  expect(sitemap).not.toContain('/auth/login');
-  expect(sitemap).not.toContain('/dashboard');
+  const locs = extractLocs(sitemap);
+  const disallowedPrefixes = ['/auth/', '/dashboard', '/profile', '/admin'];
+  const disallowedExact = ['/auth/login', '/auth/register', '/dashboard', '/profile', '/admin'];
+
+  locs.forEach((loc) => {
+    const path = (() => {
+      try {
+        return new URL(loc).pathname;
+      } catch {
+        return loc;
+      }
+    })();
+
+    disallowedExact.forEach((exact) => expect(path).not.toBe(exact));
+    disallowedPrefixes.forEach((prefix) => {
+      if (prefix.endsWith('/')) {
+        expect(path.startsWith(prefix)).toBe(false);
+      } else {
+        expect(path === prefix || path.startsWith(`${prefix}/`)).toBe(false);
+      }
+    });
+  });
 });

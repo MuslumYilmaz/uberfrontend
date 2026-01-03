@@ -1,6 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -11,6 +11,7 @@ import { PrismHighlightDirective } from '../../../core/directives/prism-highligh
 import { Question, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
 import { QuestionService } from '../../../core/services/question.service';
+import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -71,6 +72,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   loginPromptOpen = false;
 
   private sub?: Subscription;
+  private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
 
   // practice session
   private practice: PracticeSession = null;
@@ -262,6 +264,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   private updateSeo(q: Question | null): void {
+    if (this.suppressSeo) return;
     if (!q) {
       this.seo.updateTags({
         title: 'Front-end trivia question',
