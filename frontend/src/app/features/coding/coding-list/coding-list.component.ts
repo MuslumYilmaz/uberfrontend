@@ -432,6 +432,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
       const cmp = this.makeComparator(sortKey as SortKey);
       const deduped = this.dedupeFrameworkRows(filtered);
       const warmupFirst = (a: any, b: any) => {
+        if (this.source === 'global-coding') {
+          const aPremium = this.isPremiumQuestion(a);
+          const bPremium = this.isPremiumQuestion(b);
+          if (aPremium !== bPremium) return aPremium ? 1 : -1;
+        }
+
         const aw = this.isWarmupTitle(a?.title);
         const bw = this.isWarmupTitle(b?.title);
         if (aw !== bw) return aw ? -1 : 1;
@@ -1288,6 +1294,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   private isWarmupTitle(title: string | null | undefined): boolean {
     return /\bwarm[-\s]?up\b/i.test(title ?? '');
+  }
+
+  private isPremiumQuestion(q: Row | null | undefined): boolean {
+    return String((q as any)?.access || '').toLowerCase() === 'premium';
   }
   private createdTs(q: any): number {
     const raw = q.createdAt || q.created || q.date || q.addedAt || q.added;
