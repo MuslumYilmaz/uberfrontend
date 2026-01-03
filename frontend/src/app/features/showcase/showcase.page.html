@@ -307,7 +307,17 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection>
+<section class="section reveal" #observeSection aria-labelledby="pricing-title">
+  <div class="shell">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Pricing</p>
+        <h2 id="pricing-title">Choose the plan that fits your prep.</h2>
+      </div>
+      <p class="muted">All plans unlock the core practice loop — code, preview, test, and review.</p>
+    </div>
+  </div>
+
   <app-pricing-plans-section
     variant="compact"
     [paymentsEnabled]="false"
@@ -336,14 +346,18 @@
 
 <section class="section reveal" #observeSection aria-labelledby="contact-title">
   <div class="shell">
-    <div class="contact-card glass">
-      <div class="contact-copy">
+    <div class="section-head">
+      <div>
         <p class="eyebrow">Contact</p>
         <h2 id="contact-title">Still have a question?</h2>
-        <p class="muted">
-          If the FAQ didn’t cover it, reach out. We read every message.
-        </p>
+      </div>
+      <p class="muted">
+        If the FAQ didn’t cover it, reach out. We read every message.
+      </p>
+    </div>
 
+    <div class="contact-card glass">
+      <div class="contact-copy">
         <div class="contact-pills" aria-label="Contact options">
           <form class="contact-form" (ngSubmit)="submitContact()" #f="ngForm" novalidate>
             <div class="contact-form-row">
