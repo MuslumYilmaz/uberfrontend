@@ -6,7 +6,8 @@ import type { Tech } from '../../../core/models/user.model';
 import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 
 // keep in sync with parent
-type Kind = 'coding' | 'trivia' | 'all';
+type SelectedKind = 'coding' | 'trivia';
+type Kind = SelectedKind | 'all';
 type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
 type ViewMode = 'tech' | 'formats';
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -22,14 +23,14 @@ export class CodingTechKindTabsComponent {
   @Input() source!: ListSource;
 
   @Input() techTabs: Array<{ key: Tech; label: string; badge: string; cls: string }> = [];
-  @Input() kindTabs: Array<{ key: Exclude<Kind, 'all'>; label: string }> = [];
+  @Input() kindTabs: Array<{ key: SelectedKind; label: string }> = [];
 
   @Input() tech: Tech | null = null;        // current route tech (per-tech pages)
   @Input() kind: Kind = 'coding';
 
   @Input() viewMode: ViewMode = 'tech';
   @Input() selectedTech: Tech | null = null;
-  @Input() selectedKind: Kind | null = 'all';
+  @Input() selectedKind: SelectedKind | null = 'coding';
   @Input() selectedCategory: CategoryKey | null = null;
 
   @Input() isSystemCategoryActive = false;  // burada tipi netleştir, boolean | null yerine
@@ -38,7 +39,7 @@ export class CodingTechKindTabsComponent {
 
   @Output() techSelected = new EventEmitter<Tech>();
   @Output() categoryToggled = new EventEmitter<CategoryKey>();
-  @Output() kindSelected = new EventEmitter<Kind>();
+  @Output() kindSelected = new EventEmitter<SelectedKind>();
 
   categoryTabs: Array<{ key: CategoryKey; label: string }> = [
     { key: 'ui', label: 'User interface' },
@@ -50,10 +51,9 @@ export class CodingTechKindTabsComponent {
 
   heading(): string {
     if (this.source === 'global-coding') {
-      const k: Kind = this.selectedKind ?? 'all';
+      const k: SelectedKind = this.selectedKind ?? 'coding';
       const kindLabel =
-        k === 'all' ? '' :
-          k === 'trivia' ? 'Quiz' : 'Coding';
+        k === 'trivia' ? 'Quiz' : 'Coding';
 
       if (this.viewMode === 'formats') {
         const cat = this.selectedCategory;
@@ -65,17 +65,15 @@ export class CodingTechKindTabsComponent {
                   cat === 'algo' ? ' — Algorithmic coding' :
                     ' — System design';
 
-        return `All ${kindLabel || 'Questions'}${catLabel}`;
+        return `${kindLabel} questions${catLabel}`;
       }
 
-      return `All ${kindLabel || 'Questions'}`;
+      return `${kindLabel} questions`;
     }
 
     const t = this.tech ?? 'javascript';
     const what =
-      this.kind === 'coding' ? 'Coding Challenges'
-        : this.kind === 'trivia' ? 'Trivia Questions'
-          : 'All Questions';
+      this.kind === 'coding' ? 'Coding Challenges' : 'Trivia Questions';
 
     return `${this.capitalize(t)} ${what}`;
   }

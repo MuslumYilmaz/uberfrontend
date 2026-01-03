@@ -49,10 +49,6 @@
     <!-- GLOBAL (/coding): render kind pills unless System design is active -->
     <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
       <ng-container *ngIf="!isSystemCategoryActive">
-        <fa-chip size="sm" [selected]="selectedKind === 'all'" (selectedChange)="kindSelected.emit('all')">
-          All
-        </fa-chip>
-
         <fa-chip size="sm" [selected]="selectedKind === 'coding'" (selectedChange)="kindSelected.emit('coding')">
           Coding
         </fa-chip>

@@ -31,6 +31,7 @@ type StructuredDescription = { text?: string; summary?: string; examples?: strin
 type ListSource = 'tech' | 'company' | 'global-coding';
 
 type Kind = QuestionKind | 'all';
+type SelectedKind = QuestionKind;
 
 type Row = Question & {
   tech?: Tech;
@@ -168,7 +169,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   // GLOBAL (/coding) local filters
   selectedTech$ = new BehaviorSubject<Tech | null>(null);
-  selectedKind$ = new BehaviorSubject<Kind>('all');
+  selectedKind$ = new BehaviorSubject<SelectedKind>('coding');
   selectedCategory$ = new BehaviorSubject<CategoryKey | null>(null); // only for formats mode
 
   selectedTags$ = new BehaviorSubject<string[]>([]);
@@ -245,24 +246,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
           if (this.source === 'global-coding') {
             return this.selectedKind$.pipe(
               switchMap((k) => {
-                if (k === 'all') {
-                  // Load only kinds supported by loadAllQuestions
-                  return forkJoin([
-                    this.qs.loadAllQuestions('coding')
-                      .pipe(map((list: MixedQuestion[]) =>
-                        list.map<Row>(q => ({ ...q, __kind: 'coding', tech: q.tech }))
-                      )),
-                    this.qs.loadAllQuestions('trivia')
-                      .pipe(map((list: MixedQuestion[]) =>
-                        list.map<Row>(q => ({ ...q, __kind: 'trivia', tech: q.tech }))
-                      )),
-                  ]).pipe(
-                    map(([a, b]) => [...a, ...b]),
-                    startWith<Row[] | null>(null)
-                  );
-                }
-
-                // single kind
                 const base$ = this.qs.loadAllQuestions(k as any).pipe(
                   map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
                   startWith<Row[] | null>(null)
@@ -585,9 +568,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
             return;
           }
 
-          const k = qp.get('kind') as Kind | null;
-          const allowed = new Set<Kind>(['all', 'coding', 'trivia']);
-          this.selectedKind$.next(allowed.has((k || '') as Kind) ? (k as Kind) : 'all');
+          const k = qp.get('kind');
+          this.selectedKind$.next(this.normalizeSelectedKind(k));
           this.debug('seed kind from qp', { k, applied: this.selectedKind$.value });
         })
       )
@@ -751,12 +733,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.sort$.next('default');
       this.tagMatchMode = 'all';
       this.selectedTech$.next(null);
-      this.selectedKind$.next('all');
+      this.selectedKind$.next('coding');
       this.selectedCategory$.next(null);
     }
 
     const techFromUrl = (qp.get('tech') || '').toLowerCase() as Tech;
-    const kindFromUrl = qp.get('kind') as Kind | null;
+    const kindFromUrl = qp.get('kind');
     const categoryRaw = qp.get('category') as CategoryKey | null;
     const categoryFromUrl =
       categoryRaw && ALLOWED_CATEGORIES.includes(categoryRaw)
@@ -774,12 +756,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
         this.selectedCategory$.next(categoryFromUrl);
       }
 
-      const allowedKinds = new Set<Kind>(['all', 'coding', 'trivia']);
-      if (kindFromUrl && allowedKinds.has(kindFromUrl as Kind)) {
-        this.selectedKind$.next(kindFromUrl as Kind);
+      if (kindFromUrl) {
+        this.selectedKind$.next(this.normalizeSelectedKind(kindFromUrl));
       } else if (shouldReset) {
-        // reset geldiyse formats için default 'all'
-        this.selectedKind$.next('all');
+        // reset geldiyse formats için default 'coding'
+        this.selectedKind$.next('coding');
       }
 
       const qFromUrl = qp.get('q');
@@ -867,7 +848,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.tagMatchMode = saved.tagMatchMode;
 
       this.selectedTech$.next(saved.selectedTech);
-      this.selectedKind$.next(saved.selectedKind);
+      this.selectedKind$.next(this.normalizeSelectedKind(saved.selectedKind));
       this.selectedCategory$.next(saved.selectedCategory);
     }
 
@@ -877,11 +858,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
       this.selectedTech$.next(techFromUrl);
     }
 
-    const allowedKinds = new Set<Kind>(['all', 'coding', 'trivia']);
-    if (kindFromUrl && allowedKinds.has(kindFromUrl as Kind)) {
-      this.selectedKind$.next(kindFromUrl as Kind);
+    if (kindFromUrl) {
+      this.selectedKind$.next(this.normalizeSelectedKind(kindFromUrl));
     } else if (shouldReset) {
-      this.selectedKind$.next('all');
+      this.selectedKind$.next('coding');
     }
 
     const focus = qp.get('focus') as FocusSlug | null;
@@ -921,7 +901,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
       if (!hasAnyExplicitFilter) {
         const queryParams: Record<string, any> = {
           tech: tech ?? null,
-          kind: kind && kind !== 'all' ? kind : null,
+          kind: kind !== 'coding' ? kind : null,
           q: q || null,
           diff: diffs.length ? diffs.join(',') : null,
           imp: imps.length ? imps.join(',') : null,
@@ -1035,8 +1015,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (this.source === 'global-coding') {
       const k = this.selectedKind$.value;
       const kindLabel =
-        k === 'all' ? '' :
-          k === 'trivia' ? 'Quiz' : 'Coding';
+        k === 'trivia' ? 'Quiz' : 'Coding';
 
       if (this.isFormatsMode()) {
         const cat = this.selectedCategory$.value;
@@ -1047,9 +1026,9 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 cat === 'html-css' ? ' — HTML & CSS' :
                   cat === 'algo' ? ' — Algorithmic coding' :
                     ' — System design';
-        return `All ${kindLabel || 'Questions'}${catLabel}`;
+        return `${kindLabel} questions${catLabel}`;
       }
-      return `All ${kindLabel || 'Questions'}`;
+      return `${kindLabel} questions`;
     }
 
     const t = this.tech ?? 'javascript';
@@ -1061,6 +1040,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   private capitalize(s: string | null | undefined) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+  private normalizeSelectedKind(value: string | null | undefined): SelectedKind {
+    return value === 'trivia' ? 'trivia' : 'coding';
+  }
 
   techName(q: Row) {
     // System design questions: show a custom label
@@ -1132,12 +1115,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.saveFiltersTo(this.getActiveViewKey());
   }
 
-  selectKind(k: Kind) {
+  selectKind(k: SelectedKind) {
     this.debug('selectKind', { k, source: this.source, view: this.currentViewKey });
     if (this.source === 'global-coding') {
       this.selectedKind$.next(k);
 
-      this.replaceQueryParams({ kind: k === 'all' ? null : k });
+      this.replaceQueryParams({ kind: k === 'coding' ? null : k });
       this.saveFiltersTo(this.getActiveViewKey());
     } else {
       this.kind = k as any;
@@ -1274,7 +1257,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.sort$.next('default');
     this.tagMatchMode = 'all';
     this.selectedTech$.next(null);
-    this.selectedKind$.next('all');
+    this.selectedKind$.next('coding');
     this.selectedCategory$.next(null);
     this.closeSort();
 
@@ -1595,12 +1578,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
         const cat = ALLOWED_CATEGORIES.includes(raw) ? raw : null;
 
         this.selectedCategory$.next(cat);
-        this.selectedKind$.next('all');
+        this.selectedKind$.next('coding');
       } else {
         // tech view için her şeyi sıfırla
         this.selectedTech$.next(null);
         this.selectedCategory$.next(null);
-        this.selectedKind$.next('all');
+        this.selectedKind$.next('coding');
       }
       return;
     }
@@ -1617,12 +1600,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     if (view === 'formats') {
       // formats'ta selectedTech global kalsın, sadece formats'a ait olanları yükle
-      this.selectedKind$.next(saved.selectedKind);
+      this.selectedKind$.next(this.normalizeSelectedKind(saved.selectedKind));
       this.selectedCategory$.next(saved.selectedCategory);
     } else {
       // tech view'de hepsini yükle
       this.selectedTech$.next(saved.selectedTech);
-      this.selectedKind$.next(saved.selectedKind);
+      this.selectedKind$.next(this.normalizeSelectedKind(saved.selectedKind));
       this.selectedCategory$.next(saved.selectedCategory);
     }
 
@@ -1647,7 +1630,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     const kind = this.selectedKind$.value;
-    if (kind && kind !== 'all') queryParams['kind'] = kind;
+    if (kind !== 'coding') queryParams['kind'] = kind;
 
     const q = (this.searchTerm || '').trim();
     if (q) queryParams['q'] = q;

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Difficulty } from '../models/question.model';
+import { Difficulty, QuestionKind } from '../models/question.model';
 import { Tech } from '../models/user.model';
 
 export type ListSource = 'tech' | 'company' | 'global-coding';
-export type Kind = 'coding' | 'trivia' | 'all';
+export type Kind = QuestionKind;
 
 export type CategoryKey = 'ui' | 'js-fn' | 'html-css' | 'algo' | 'system';
 export type ViewMode = 'tech' | 'formats';
@@ -65,12 +65,22 @@ export class CodingListStateService {
   }
 
   private normalize(input: any): GlobalCodingViewState {
-    const tech = input?.tech ?? null;
-    const formats = input?.formats ?? null;
     return {
-      tech: this.isFilterState(tech) ? tech : null,
-      formats: this.isFilterState(formats) ? formats : null,
+      tech: this.normalizeFilterState(input?.tech),
+      formats: this.normalizeFilterState(input?.formats),
     };
+  }
+
+  private normalizeFilterState(val: any): CodingListFilterState | null {
+    if (!this.isFilterState(val)) return null;
+    return {
+      ...val,
+      selectedKind: this.normalizeKind(val.selectedKind),
+    };
+  }
+
+  private normalizeKind(value: unknown): Kind {
+    return value === 'trivia' ? 'trivia' : 'coding';
   }
 
   private isFilterState(val: any): val is CodingListFilterState {
