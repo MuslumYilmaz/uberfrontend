@@ -35,7 +35,7 @@ type VisibleEntry = {
     <div class="fah-inner">
       <!-- LEFT (brand) -->
       <div class="fah-left">
-        <a class="fah-brand" routerLink="/dashboard">FrontendAtlas</a>
+        <a class="fah-brand" routerLink="/">FrontendAtlas</a>
       </div>
 
       <!-- CENTER (Prepare trigger) -->
@@ -52,6 +52,7 @@ type VisibleEntry = {
 
       <!-- RIGHT (Pricing → Avatar → CTA) -->
       <div class="fah-right" (click)="$event.stopPropagation()">
+        <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
         <a class="fah-btn" routerLink="/pricing">Pricing</a>
 
         <div class="fah-profile fah-profile-right">
