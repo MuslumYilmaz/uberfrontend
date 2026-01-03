@@ -63,7 +63,7 @@ test('seo: robots.txt and sitemaps are served', async ({ page }) => {
   const indexRes = await page.request.get('/sitemap-index.xml');
   expect(indexRes.status()).toBe(200);
   const indexText = await indexRes.text();
-  const match = indexText.match(/<loc>([^<]+)<\\/loc>/);
+  const match = indexText.match(/<loc>([^<]+)<\/loc>/);
   expect(match).not.toBeNull();
 
   const sitemapRes = await page.request.get('/sitemap.xml');
