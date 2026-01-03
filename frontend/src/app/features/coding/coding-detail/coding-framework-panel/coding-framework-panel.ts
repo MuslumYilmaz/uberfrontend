@@ -721,8 +721,11 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
     if (!html) {
       try {
+        // Avoid adding iframe history entries; keep Back button on the page.
+        frameEl.contentWindow?.location.replace('about:blank');
+      } catch {
         frameEl.src = 'about:blank';
-      } catch { }
+      }
       this._previewUrl.set(null);
       this.previewObjectUrl = null;
       this.loadingPreview.set(false);
@@ -749,7 +752,12 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       }
     };
 
-    frameEl.src = url;
+    try {
+      // Use replace() so live preview updates don't pollute session history.
+      frameEl.contentWindow?.location.replace(url);
+    } catch {
+      frameEl.src = url;
+    }
   }
 
   // ---------- helpers ----------
