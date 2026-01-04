@@ -5,20 +5,33 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { DailyService } from './core/services/daily.service';
+import { PremiumGateService } from './core/services/premium-gate.service';
 import { AppSidebarComponent } from './features/app-sidebar/app-sidebar.component';
+import { PremiumRequiredDialogComponent } from './shared/components/premium-required-dialog/premium-required-dialog.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { OfflineBannerComponent } from './shared/components/offline-banner/offline-banner';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, HttpClientModule, HeaderComponent, AppSidebarComponent, OfflineBannerComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterModule,
+    HttpClientModule,
+    HeaderComponent,
+    AppSidebarComponent,
+    OfflineBannerComponent,
+    PremiumRequiredDialogComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private currentUrl = signal(this.router.url || '/');
+  premiumGate = inject(PremiumGateService);
+  premiumGateState = this.premiumGate.dialogState;
 
   // hide header on /auth/*
   isAuthRoute = computed(() => this.currentUrl().startsWith('/auth'));

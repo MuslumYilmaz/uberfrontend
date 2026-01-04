@@ -142,9 +142,6 @@
     <loc>https://frontendatlas.com/coding</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/companies</loc>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/css/coding/css-box-model-margin-padding-border</loc>
   </url>
   <url>
@@ -749,9 +746,6 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/realtime-search-debounce-cache</loc>
-  </url>
-  <url>
-    <loc>https://frontendatlas.com/tracks</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>

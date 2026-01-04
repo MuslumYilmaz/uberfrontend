@@ -50,8 +50,6 @@ function buildUrls() {
     '/',
     '/pricing',
     '/coding',
-    '/tracks',
-    '/companies',
     '/system-design',
     '/guides',
     '/guides/interview-blueprint',

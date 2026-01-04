@@ -4,5 +4,7 @@ Disallow: /auth/
 Disallow: /dashboard
 Disallow: /profile
 Disallow: /admin
+Disallow: /tracks
+Disallow: /companies/
 
 Sitemap: https://frontendatlas.com/sitemap-index.xml

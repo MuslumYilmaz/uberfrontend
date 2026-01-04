@@ -1,5 +1,31 @@
+import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
+import { buildMockUser, installAuthMock } from './auth-mocks';
 import { JS_QUESTION, WEB_QUESTION } from './helpers';
+
+async function seedPremiumSession(page: Page) {
+  const token = `e2e-token-premium-${Date.now()}`;
+  const user = buildMockUser({
+    _id: 'e2e-user-premium',
+    username: 'premium_user',
+    email: 'premium@example.com',
+    accessTier: 'premium',
+  });
+
+  await installAuthMock(page, { token, user });
+
+  await page.goto('/');
+  const origin = new URL(page.url()).origin;
+  await page.context().addCookies([{
+    name: 'access_token',
+    value: encodeURIComponent(token),
+    url: origin,
+    path: '/',
+  }]);
+  await page.evaluate(() => {
+    localStorage.setItem('fa:auth:session', '1');
+  });
+}
 
 test('coding list filters sync to URL and persist on reload + back', async ({ page }) => {
   await page.goto('/coding');
@@ -44,6 +70,7 @@ test('coding list filters sync to URL and persist on reload + back', async ({ pa
 });
 
 test('track filters sync to URL and persist on reload + back', async ({ page }) => {
+  await seedPremiumSession(page);
   await page.goto('/tracks/foundations-30d');
   await expect(page.getByTestId('track-detail-page')).toBeVisible();
   await expect(page.getByTestId('track-filter-kind-all')).toBeVisible();
@@ -126,6 +153,7 @@ test('coding list keeps last filters after reloading another route', async ({ pa
 });
 
 test('track keeps last filters after reloading another route', async ({ page }) => {
+  await seedPremiumSession(page);
   const trackSlug = 'foundations-30d';
   const targetId = 'js-equality-vs-strict-equality';
 

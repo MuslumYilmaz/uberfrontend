@@ -9,6 +9,7 @@ import {
 
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
+import { premiumGuard } from './core/guards/premium.guard';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -157,14 +158,17 @@ export const routes: Routes = [
   // Companies
   {
     path: 'companies',
+    canActivate: [premiumGuard],
     loadComponent: () =>
       import('./features/company/company-layout/company-layout.component').then(
         (m) => m.CompanyLayoutComponent,
       ),
     data: {
+      premiumGate: 'company',
       seo: {
         title: 'Company interview prep',
         description: 'Company-specific front-end interview guides, drills, and question banks.',
+        robots: 'noindex,nofollow',
       },
     },
     children: [
@@ -179,6 +183,7 @@ export const routes: Routes = [
           seo: {
             title: 'Company interview guides',
             description: 'Pick a company to see tailored front-end interview questions and tips.',
+            robots: 'noindex,nofollow',
           },
         },
       },
@@ -192,6 +197,7 @@ export const routes: Routes = [
           seo: {
             title: 'Company front-end interview questions',
             description: 'Focused coding, trivia, and system design practice for a specific company.',
+            robots: 'noindex,nofollow',
           },
         },
         children: [
@@ -208,6 +214,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company interview questions',
                 description: 'Browse all front-end interview questions for this company.',
+                robots: 'noindex,nofollow',
               },
             },
           },
@@ -223,6 +230,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company coding interview questions',
                 description: 'Solve coding and debugging questions used in this company’s interviews.',
+                robots: 'noindex,nofollow',
               },
             },
           },
@@ -238,6 +246,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company trivia questions',
                 description: 'Quick front-end trivia to mirror this company’s interview screens.',
+                robots: 'noindex,nofollow',
               },
             },
           },
@@ -253,6 +262,7 @@ export const routes: Routes = [
               seo: {
                 title: 'Company system design prompts',
                 description: 'Front-end system design prompts tailored to this company.',
+                robots: 'noindex,nofollow',
               },
             },
           },
@@ -284,6 +294,8 @@ export const routes: Routes = [
   // Tracks (curated question sets)
   {
     path: 'tracks',
+    canActivate: [premiumGuard],
+    data: { premiumGate: 'tracks' },
     children: [
       {
         path: '',
@@ -295,6 +307,7 @@ export const routes: Routes = [
           seo: {
             title: 'Interview prep tracks',
             description: 'Pick a curated set of questions for FAANG, senior roles, crash prep, or fundamentals.',
+            robots: 'noindex,nofollow',
           },
         },
       },
@@ -308,6 +321,7 @@ export const routes: Routes = [
           seo: {
             title: 'Interview prep track',
             description: 'Curated front-end interview questions aligned to a specific goal.',
+            robots: 'noindex,nofollow',
           },
         },
       },

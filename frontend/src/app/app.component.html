@@ -15,4 +15,12 @@
       </main>
     </div>
   </ng-template>
+
+  <app-premium-required-dialog
+    [visible]="premiumGateState().visible"
+    (visibleChange)="premiumGate.close()"
+    [context]="premiumGateState().reason"
+    [targetUrl]="premiumGateState().targetUrl"
+    [isLoggedIn]="premiumGateState().isLoggedIn"
+  ></app-premium-required-dialog>
 </div>
