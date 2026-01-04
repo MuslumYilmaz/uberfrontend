@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, computed, signal } from '@angular/core';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
@@ -30,6 +30,8 @@ export type JsLang = 'js' | 'ts';
   styleUrls: ['./coding-js-panel.component.css']
 })
 export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
+  @ViewChild('codeEditor') codeEditor?: MonacoEditorComponent;
+  @ViewChild('testsEditor') testsEditor?: MonacoEditorComponent;
   /* ---------- Inputs ---------- */
   @Input() question: Question | null = null;   // <- allow null until bound
   @Input() tech: Tech = 'javascript';         // for future-proofing
@@ -632,12 +634,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.hasRunTests.set(false);
     this.testResults.set([]);
     this.consoleEntries.set([]);
+    this.consoleEntriesChange.emit([]);
 
     try {
-      const userSrc = await this.ensureJs(this.editorContent(), `${q.id}.ts`);
+      await this.flushEditorBuffer();
+      const rawUser = this.codeEditor?.getValue?.() ?? this.editorContent();
+      const rawTests = this.testsEditor?.getValue?.() ?? this.testCode();
+      this.syncEditorBuffers(rawUser, rawTests);
+      const userSrc = await this.ensureJs(rawUser, `${q.id}.ts`);
       if (runId !== this._runSeq) return;
 
-      const testsSrc = await this.ensureJs(this.testCode(), `${q.id}.tests.ts`);
+      const testsSrc = await this.ensureJs(rawTests, `${q.id}.tests.ts`);
       if (runId !== this._runSeq) return;
 
       const wrapped = this.wrapExportDefault(userSrc);
@@ -853,6 +860,36 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+  private async flushEditorBuffer(): Promise<void> {
+    await new Promise<void>((resolve) => {
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(() => resolve());
+      } else {
+        Promise.resolve().then(resolve);
+      }
+    });
+  }
+
+  private syncEditorBuffers(rawUser: string, rawTests: string): void {
+    if (rawUser !== this.editorContent()) {
+      this.editorContent.set(rawUser);
+      if (this.disablePersistence) {
+        this.volatileBuffers[this.jsLang()] = rawUser;
+      } else {
+        const storageKey = this.storageKeyFor(this.question);
+        if (storageKey) this.schedulePersist(storageKey, this.jsLang(), rawUser);
+      }
+      this.codeChange.emit({ lang: this.jsLang(), code: rawUser });
+      if (this.viewingSolution()) {
+        this.viewingSolution.set(false);
+      }
+    }
+
+    if (rawTests !== this.testCode()) {
+      this.testCode.set(rawTests);
+    }
+  }
+
   /* ---------- Helpers (trimmed copies of your originals) ---------- */
   private pickTests(q: any, lang: JsLang): string {
     const keysJs = ['tests', 'testsJs', 'unitTests', 'spec', 'specs', 'testCode'];
@@ -870,11 +907,14 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private async ensureJs(code: string, fileName: string): Promise<string> {
     if (!code) return '';
 
+    const cleaned = this.stripCommentsAndStrings(code);
     const looksTs =
-      /:\s*[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code) ||
-      /\sas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(code) ||
-      /\binterface\b|\btype\s+[^=]+\=/.test(code) ||
-      /\benum\s+[A-Za-z_$]/.test(code);
+      /\binterface\b/.test(cleaned) ||
+      /\benum\s+[A-Za-z_$]/.test(cleaned) ||
+      /\btype\s+[A-Za-z_$][\w$]*\s*=/.test(cleaned) ||
+      /\bas\s+[A-Za-z_$][\w$<>\[\]\|&\s,]*/.test(cleaned) ||
+      /\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*:\s*[A-Za-z_$]/.test(cleaned) ||
+      /\)\s*:\s*[A-Za-z_$]/.test(cleaned);
 
     const stripTypes = (s: string) =>
       s
@@ -906,6 +946,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     return code;
+  }
+
+  private stripCommentsAndStrings(code: string): string {
+    return code
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/.*$/gm, '')
+      .replace(/(['"`])(?:\\.|(?!\1)[\s\S])*?\1/g, '');
   }
 
   private wrapExportDefault(src: string): string {

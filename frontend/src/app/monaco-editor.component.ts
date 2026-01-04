@@ -223,6 +223,10 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
     try { this.model?.dispose?.(); } catch { }  // keep this
   }
 
+  getValue(): string {
+    return this.model?.getValue?.() ?? this.editor?.getValue?.() ?? this.code ?? '';
+  }
+
   // ---------- helpers ----------
 
   private normalizeLanguage(lang: string): string {

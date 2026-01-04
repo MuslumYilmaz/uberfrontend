@@ -1,12 +1,20 @@
 #!/usr/bin/env sh
 set -eu
 
-echo "[pre-push] Running FrontendAtlas E2E tests (Playwright)..."
+echo "[pre-push] Running FrontendAtlas unit tests (Karma)..."
 
 if ! command -v npm >/dev/null 2>&1; then
   echo "[pre-push] ERROR: npm not found. Install Node.js/npm and retry." >&2
   exit 1
 fi
+
+if ! npm -C frontend run test; then
+  echo "[pre-push] ERROR: Unit tests failed. Push aborted." >&2
+  exit 1
+fi
+
+echo "[pre-push] OK: Unit tests passed."
+echo "[pre-push] Running FrontendAtlas E2E tests (Playwright)..."
 
 # Run Playwright E2E (starts dev server via playwright.config.ts webServer)
 if ! npm -C frontend run test:e2e; then
