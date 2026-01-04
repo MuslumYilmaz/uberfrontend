@@ -8,6 +8,16 @@ export type NormalizedError = {
 
 const firstLine = (value: string) => value.split(/\r?\n/)[0]?.trim() || '';
 
+const withNamePrefix = (name: string | undefined, message: string) => {
+  if (!name) return message;
+  const trimmed = message.trim();
+  if (!trimmed) return name;
+  const lower = trimmed.toLowerCase();
+  const nameLower = name.toLowerCase();
+  if (lower.startsWith(`${nameLower}:`)) return trimmed;
+  return `${name}: ${trimmed}`;
+};
+
 export function normalizeError(err: unknown, opts: { mode: NormalizeMode }): NormalizedError {
   let name: string | undefined;
   let message = '';
@@ -23,7 +33,7 @@ export function normalizeError(err: unknown, opts: { mode: NormalizeMode }): Nor
     message = String(err);
   }
 
-  const msgLine = firstLine(message) || (name ? `${name}` : 'Error');
+  const msgLine = withNamePrefix(name, firstLine(message)) || (name ? `${name}` : 'Error');
   const normalized: NormalizedError = { message: msgLine };
   if (name) normalized.name = name;
   if (opts.mode === 'dev' && stack) normalized.stack = stack;
