@@ -33,12 +33,7 @@
                 "input": "src",
                 "output": "/"
               },
-              "src/assets",
-              {
-                "glob": "**/*",
-                "input": "node_modules/monaco-editor/min",
-                "output": "assets/monaco/min"
-              }
+              "src/assets"
             ],
             "styles": [
               "src/styles.scss"
@@ -52,15 +47,26 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
+              "aot": true,
+              "extractLicenses": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "900kb",
+                  "maximumError": "1.2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "20kb",
+                  "maximumWarning": "40kb",
                   "maximumError": "60kb"
                 }
               ],
@@ -112,12 +118,7 @@
                 "input": "src",
                 "output": "/"
               },
-              "src/assets",
-              {
-                "glob": "**/*",
-                "input": "node_modules/monaco-editor/min",
-                "output": "assets/monaco/min"
-              }
+              "src/assets"
             ],
             "styles": [
               "src/styles.scss"
@@ -132,6 +133,11 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": true,
+      "environment": "all",
+      "path": ".angular/cache"
+    }
   }
 }

@@ -12,7 +12,9 @@
     "lint:questions:fix": "node scripts/lint-questions.mjs --fix",
     "start:e2e": "npm run gen:data && ng serve --configuration development --port 4200 --host 127.0.0.1",
     "start:prod": "npm run gen:data && ng serve --configuration production",
+    "build:prod": "ng build --configuration production",
     "build": "npm run gen:data && ng build --configuration production",
+    "build:analyze": "ng build --configuration production --stats-json --source-map && npx source-map-explorer dist/frontendatlas/browser/*.js --summary",
     "test:unit": "ng test --watch=false --browsers=ChromeHeadless",
     "test": "ng test --watch=false --browsers=ChromeHeadless && node scripts/sitemap.test.mjs",
     "test:e2e": "playwright test"
@@ -58,6 +60,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "monaco-editor": "^0.43.0",
     "postcss": "^8.5.6",
+    "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.2.2"
   }
