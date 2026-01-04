@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 
-export type ConsoleEntry = { level: 'log' | 'warn' | 'error'; message: string; timestamp: number };
+export type ConsoleEntry = {
+  level: 'log' | 'warn' | 'error';
+  message: string;
+  timestamp: number;
+  stack?: string;
+  name?: string;
+};
 export type TestResult = { name: string; passed: boolean; error?: string };
 export type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
 

@@ -1,8 +1,9 @@
 // src/app/features/coding/console-logger/console-logger.component.ts
 import { CommonModule } from '@angular/common';
 import {
-  ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, ViewChild
+  ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, ViewChild, isDevMode
 } from '@angular/core';
+import { normalizeError, normalizeMessageLine } from '../../../core/utils/console-normalize';
 
 export type LogLevel = 'log' | 'warn' | 'error' | 'info';
 
@@ -12,6 +13,8 @@ export interface ConsoleEntry {
   timestamp: number;
   /** optional: consecutive duplicates will increment this */
   repeat?: number;
+  stack?: string;
+  name?: string;
 }
 
 export interface TestResult {
@@ -35,6 +38,9 @@ export interface TestResult {
     .ts { opacity:.6; font-size:.65rem; }
     .msg { margin-left:.25rem; }
     .badge { margin-left:.5rem; font-size:.65rem; opacity:.7; border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:0 .35rem; }
+    .details { margin:.35rem 0 0 1.25rem; font-size:.7rem; opacity:.9; }
+    .details summary { cursor:pointer; opacity:.75; }
+    .details pre { margin:.35rem 0 0; white-space:pre-wrap; word-break:break-word; }
     .l-log   { color:#e5e7eb; }
     .l-info  { color:#7dd3fc; }
     .l-warn  { color:#fde68a; }
@@ -55,6 +61,10 @@ export interface TestResult {
             <strong>{{ e.level.toUpperCase() }}:</strong> {{ e.message }}
             <span *ngIf="(e.repeat ?? 1) > 1" class="badge">×{{ e.repeat }}</span>
           </span>
+          <details *ngIf="showDetails && e.stack" class="details">
+            <summary>Details</summary>
+            <pre>{{ e.stack }}</pre>
+          </details>
         </div>
 
         <div *ngIf="processed.length===0" class="opacity-60">No logs yet.</div>
@@ -67,6 +77,10 @@ export class ConsoleLoggerComponent implements OnChanges {
   @Input() max = 500;
   /** auto-scroll to bottom if user is already near bottom */
   @Input() autoScroll = true;
+  /** dev-only stack details */
+  @Input() showDetails = isDevMode();
+  /** window in ms for deduping identical messages */
+  @Input() dedupeWindowMs = 200;
   /** raw entries (can be huge; we’ll trim & coalesce) */
   @Input() entries: ConsoleEntry[] = [];
   @Input() results: TestResult[] = [];
@@ -78,17 +92,24 @@ export class ConsoleLoggerComponent implements OnChanges {
   ngOnChanges() {
     const trimmed = (this.entries ?? []).slice(-(this.max * 4));
     const out: ConsoleEntry[] = [];
-    for (const e of trimmed) {
-      const prev = out[out.length - 1];
-      if (prev && prev.level === e.level && prev.message === e.message) {
-        prev.repeat = (prev.repeat ?? 1) + 1;
-        prev.timestamp = e.timestamp;
-      } else {
-        const msg = typeof e.message === 'string' && e.message.length > 4000
-          ? (e.message.slice(0, 4000) + '…')
-          : e.message;
-        out.push({ ...e, message: msg, repeat: 1 });
+    const lastSeen = new Map<string, { idx: number; ts: number }>();
+    for (const raw of trimmed) {
+      const normalized = this.normalizeEntry(raw);
+      const key = this.entryKey(normalized);
+      const prev = lastSeen.get(key);
+      if (prev && Math.abs(normalized.timestamp - prev.ts) <= this.dedupeWindowMs) {
+        const target = out[prev.idx];
+        if (target) {
+          target.repeat = (target.repeat ?? 1) + 1;
+          target.timestamp = normalized.timestamp;
+          prev.ts = normalized.timestamp;
+          continue;
+        }
       }
+
+      const msg = this.clampMessage(normalized.message);
+      out.push({ ...normalized, message: msg, repeat: 1 });
+      lastSeen.set(key, { idx: out.length - 1, ts: normalized.timestamp });
     }
     this.processed = out.slice(-this.max);
     queueMicrotask(() => this.maybeAutoScroll());
@@ -111,4 +132,38 @@ export class ConsoleLoggerComponent implements OnChanges {
 
   // ✅ Correct TrackByFunction signature: (index: number, item: ConsoleEntry) => any
   trackByIdx(index: number, _item: ConsoleEntry) { return index; }
+
+  private normalizeEntry(entry: ConsoleEntry): ConsoleEntry {
+    const mode = this.showDetails ? 'dev' : 'prod';
+    if (entry.level === 'error' || entry.stack) {
+      const normalized = normalizeError(entry, { mode });
+      return {
+        ...entry,
+        message: normalizeMessageLine(normalized.message),
+        stack: normalized.stack,
+        name: normalized.name,
+      };
+    }
+    return { ...entry, message: normalizeMessageLine(entry.message) };
+  }
+
+  private clampMessage(message: string): string {
+    return typeof message === 'string' && message.length > 4000
+      ? (message.slice(0, 4000) + '…')
+      : message;
+  }
+
+  private entryKey(entry: ConsoleEntry): string {
+    const stackHash = entry.stack ? this.hashString(entry.stack) : '';
+    const name = entry.name ? `:${entry.name}` : '';
+    return `${entry.level}|${entry.message}${name}|${stackHash}`;
+  }
+
+  private hashString(value: string): string {
+    let hash = 5381;
+    for (let i = 0; i < value.length; i += 1) {
+      hash = ((hash << 5) + hash) + value.charCodeAt(i);
+    }
+    return (hash >>> 0).toString(16);
+  }
 }

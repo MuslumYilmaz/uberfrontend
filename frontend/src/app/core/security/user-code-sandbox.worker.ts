@@ -1,5 +1,7 @@
 /// <reference lib="webworker" />
 
+import { normalizeError } from '../utils/console-normalize';
+
 // ---------- message contracts ----------
 type RunMsg = {
     type: 'run';
@@ -10,7 +12,7 @@ type RunMsg = {
 };
 
 type LogLevel = 'log' | 'warn' | 'error' | 'info';
-type LogEntry = { level: LogLevel; message: string; timestamp: number };
+type LogEntry = { level: LogLevel; message: string; timestamp: number; stack?: string; name?: string };
 type TestResult = { name: string; passed: boolean; error?: string; order?: number };
 type DoneMsg = {
     type: 'done';
@@ -162,7 +164,7 @@ const formatArgs = (args: unknown[]) => {
     }
     return clamp(msg);
 };
-const push = (level: LogLevel, ...args: unknown[]) => {
+const pushEntry = (entry: LogEntry) => {
     if (logs.length >= MAX_LOGS) {
         if (!logLimitHit) {
             logs.push({ level: 'warn', message: `Log limit reached (${MAX_LOGS})`, timestamp: now() });
@@ -170,11 +172,30 @@ const push = (level: LogLevel, ...args: unknown[]) => {
         }
         return;
     }
-    logs.push({ level, message: formatArgs(args), timestamp: now() });
+    logs.push(entry);
 };
 
-const cleanErrorMessage = (e: any) =>
-    e?.message ? String(e.message) : String(e);
+const push = (level: LogLevel, ...args: unknown[]) => {
+    pushEntry({ level, message: formatArgs(args), timestamp: now() });
+};
+
+const normalizeWorkerError = (err: unknown) => {
+    const normalized = normalizeError(err, { mode: 'dev' });
+    const stack = normalized.stack ? stripStack(String(normalized.stack)) : undefined;
+    return { ...normalized, stack };
+};
+
+const pushError = (err: unknown) => {
+    const normalized = normalizeWorkerError(err);
+    pushEntry({
+        level: 'error',
+        message: normalized.message,
+        timestamp: now(),
+        stack: normalized.stack,
+        name: normalized.name,
+    });
+    return normalized.message;
+};
 
 const stripStack = (s: string) =>
     s.split('\n').filter(line => !/blob:|worker_|webpack|zone\.js/i.test(line)).join('\n');
@@ -261,8 +282,7 @@ async function runQueued(): Promise<TestResult[]> {
             if (maybe && typeof (maybe as any).then === 'function') await (maybe as any);
             results.push({ name: t.name, passed: true, order: t.idx });
         } catch (e: any) {
-            const msg = cleanErrorMessage(e);
-            if (e?.stack) push('error', 'Stack:', stripStack(String(e.stack)));
+            const msg = pushError(e);
             results.push({ name: t.name, passed: false, error: msg, order: t.idx });
         }
     }
@@ -340,8 +360,7 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
         }
     } catch (err: any) {
         if (!timedOut) {
-            const msg = cleanErrorMessage(err);
-            if (err?.stack) push('error', 'Stack:', stripStack(String(err.stack)));
+            const msg = pushError(err);
             sendDone({ entries: logs, results: [], error: msg });
         }
     } finally {

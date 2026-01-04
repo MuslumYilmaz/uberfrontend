@@ -1014,7 +1014,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       return toStr(parts);
     };
     return (raw || []).slice(-MAX_LOGS).map((r: any) => {
-      if (r?.level && r?.message) return { level: r.level, message: clamp(String(r.message)), timestamp: r.timestamp ?? now };
+      if (r?.level && r?.message) {
+        const stack = typeof r.stack === 'string' ? r.stack : undefined;
+        const name = typeof r.name === 'string' ? r.name : undefined;
+        return {
+          level: r.level,
+          message: clamp(String(r.message)),
+          timestamp: r.timestamp ?? now,
+          stack,
+          name,
+        };
+      }
       if (r?.type) {
         const level = (['info', 'warn', 'error'].includes(r.type) ? r.type : 'log') as ConsoleEntry['level'];
         return { level, message: toMsg(r.args), timestamp: now };
