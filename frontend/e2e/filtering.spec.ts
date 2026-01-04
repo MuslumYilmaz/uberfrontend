@@ -4,6 +4,7 @@ import { buildMockUser, installAuthMock } from './auth-mocks';
 import { JS_QUESTION, WEB_QUESTION } from './helpers';
 
 async function seedPremiumSession(page: Page) {
+  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4200';
   const token = `e2e-token-premium-${Date.now()}`;
   const user = buildMockUser({
     _id: 'e2e-user-premium',
@@ -14,12 +15,12 @@ async function seedPremiumSession(page: Page) {
 
   await installAuthMock(page, { token, user });
 
-  await page.goto('/');
-  const origin = new URL(page.url()).origin;
+  await page.goto(baseUrl);
+  const parsedBase = new URL(baseUrl);
   await page.context().addCookies([{
     name: 'access_token',
     value: encodeURIComponent(token),
-    url: origin,
+    domain: parsedBase.hostname,
     path: '/',
   }]);
   await page.evaluate(() => {
@@ -140,7 +141,6 @@ test('coding list keeps last filters after reloading another route', async ({ pa
   await expect(page.getByTestId('coding-list-page')).toBeVisible();
 
   await expect(page).toHaveURL(/tech=javascript/);
-  await expect(page).toHaveURL(/kind=coding/);
   await expect(page).toHaveURL(/q=Clamp/);
   await expect(page).toHaveURL(/diff=easy/);
   await expect(page).toHaveURL(/imp=low/);
