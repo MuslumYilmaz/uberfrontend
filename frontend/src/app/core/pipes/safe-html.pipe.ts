@@ -1,5 +1,5 @@
 import { Pipe, type PipeTransform } from '@angular/core';
-import DOMPurify from 'dompurify';
+import createDOMPurify, { type DOMPurify } from 'dompurify';
 
 const ALLOWED_TAGS = [
   'a',
@@ -31,12 +31,23 @@ const ALLOWED_TAGS = [
 const ALLOWED_ATTR = ['href', 'target', 'rel', 'class'];
 
 let hooksInstalled = false;
+let domPurifyInstance: DOMPurify | null = null;
+
+function getDomPurify(): DOMPurify | null {
+  if (domPurifyInstance) return domPurifyInstance;
+  if (typeof window === 'undefined') return null;
+  domPurifyInstance = createDOMPurify(window);
+  return domPurifyInstance;
+}
 
 function ensureHooksInstalled() {
   if (hooksInstalled) return;
+  const domPurify = getDomPurify();
+  if (!domPurify) return;
   hooksInstalled = true;
 
-  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  domPurify.addHook('afterSanitizeAttributes', (node: Element) => {
+    if (typeof Element === 'undefined') return;
     if (!(node instanceof Element)) return;
     if (node.tagName !== 'A') return;
 
@@ -61,13 +72,14 @@ function ensureHooksInstalled() {
 })
 export class SafeHtmlPipe implements PipeTransform {
   transform(value: unknown): string {
-    ensureHooksInstalled();
     if (value === null || value === undefined) return '';
+    const domPurify = getDomPurify();
+    if (!domPurify) return String(value);
+    ensureHooksInstalled();
 
-    return DOMPurify.sanitize(String(value), {
+    return domPurify.sanitize(String(value), {
       ALLOWED_TAGS,
       ALLOWED_ATTR,
     });
   }
 }
-
