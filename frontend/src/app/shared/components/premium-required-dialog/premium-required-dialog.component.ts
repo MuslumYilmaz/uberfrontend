@@ -4,18 +4,18 @@ import { Router } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 import { PremiumGateReason } from '../../../core/services/premium-gate.service';
 
-const COPY: Record<PremiumGateReason, { title: string; action: string }> = {
+const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
   tracks: {
     title: 'Premium tracks',
-    action: 'unlock these tracks',
+    body: 'These learning tracks are available on Premium. Upgrade to follow structured paths and practice end-to-end.',
   },
   company: {
     title: 'Premium company questions',
-    action: "unlock this company's questions",
+    body: 'Access real interview questions from top companies with a Premium plan.',
   },
   generic: {
-    title: 'Premium question',
-    action: 'unlock this challenge',
+    title: 'This question is part of Premium',
+    body: 'Upgrade to Premium to unlock this challenge and practice with full access.',
   },
 };
 
@@ -182,11 +182,7 @@ export class PremiumRequiredDialogComponent {
   }
 
   get body(): string {
-    const action = (COPY[this.context] || COPY.generic).action;
-    if (this.isLoggedIn) {
-      return `You're on the free tier. Upgrade to ${action}.`;
-    }
-    return `Upgrade to FrontendAtlas Premium to ${action}. Already upgraded? Sign in to continue.`;
+    return (COPY[this.context] || COPY.generic).body;
   }
 
   onClose() {
