@@ -19,6 +19,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
+import tagRegistry from '../../../../assets/questions/tag-registry.json';
+import topicRegistry from '../../../../assets/questions/topic-registry.json';
 
 /** ============== Rich Answer Format ============== */
 type BlockText = { type: 'text'; text: string };
@@ -45,6 +47,34 @@ type RichAnswer = { blocks: AnswerBlock[] } | null | undefined;
 type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
 type SimilarItem = { question: Question; difficulty: string };
+type TagMatcher = { tag: string; re: RegExp };
+
+const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
+  ...(Array.isArray(tagRegistry?.tags) ? tagRegistry.tags : []),
+  ...((Array.isArray(topicRegistry?.topics) ? topicRegistry.topics : [])
+    .flatMap((topic: any) => Array.isArray(topic?.tags) ? topic.tags : [])),
+]);
+
+function buildTagMatchers(rawTags: unknown[]): TagMatcher[] {
+  const unique = new Set<string>();
+  const matchers: TagMatcher[] = [];
+
+  for (const raw of rawTags) {
+    if (typeof raw !== 'string') continue;
+    const tag = raw.trim().toLowerCase();
+    if (!tag || unique.has(tag)) continue;
+    unique.add(tag);
+    matchers.push({ tag, re: buildTagRegex(tag) });
+  }
+
+  return matchers;
+}
+
+function buildTagRegex(tag: string): RegExp {
+  const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = escaped.replace(/\\-/g, '[\\s-]+');
+  return new RegExp(`\\b${pattern}\\b`);
+}
 
 @Component({
   selector: 'app-trivia-detail',
@@ -161,14 +191,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const current = this.question();
     if (!current) return [];
 
-    const baseTags = this.normalizeTags(current.tags);
+    const baseTags = this.getQuestionTags(current);
     if (!baseTags.length) return [];
 
     const baseSet = new Set(baseTags);
     const scored = this.questionsList
       .filter((q) => q.id !== current.id)
       .map((q) => {
-        const tags = this.normalizeTags(q.tags);
+        const tags = this.getQuestionTags(q);
         if (!tags.length) return null;
         let score = 0;
         for (const tag of tags) {
@@ -472,6 +502,39 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       .map((tag) => String(tag || '').trim().toLowerCase())
       .filter(Boolean);
     return Array.from(new Set(normalized));
+  }
+
+  private getQuestionTags(q: Question): string[] {
+    const explicit = this.normalizeTags(q.tags);
+    if (explicit.length) return explicit;
+    return this.deriveTagsFromText(q);
+  }
+
+  private deriveTagsFromText(q: Question): string[] {
+    const text = this.questionTextForTags(q);
+    if (!text) return [];
+    const matched: string[] = [];
+    for (const matcher of TAG_MATCHERS) {
+      if (matcher.re.test(text)) matched.push(matcher.tag);
+    }
+    return matched;
+  }
+
+  private questionTextForTags(q: Question): string {
+    const description = this.descriptionTextForTags(q.description);
+    return `${q.title || ''} ${description || ''}`
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }
+
+  private descriptionTextForTags(desc: unknown): string {
+    if (typeof desc === 'string') return desc;
+    const obj = desc as any;
+    if (obj && typeof obj.summary === 'string') return obj.summary;
+    if (obj && typeof obj.text === 'string') return obj.text;
+    return '';
   }
 
   private decodeHtmlEntities(s: string): string {
