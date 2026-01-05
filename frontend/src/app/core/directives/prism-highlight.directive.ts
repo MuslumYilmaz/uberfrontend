@@ -1,10 +1,13 @@
+import { isPlatformBrowser } from '@angular/common';
 import {
     AfterViewInit,
     Directive,
     ElementRef,
     Input,
     OnChanges,
+    PLATFORM_ID,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 
 import 'prismjs';
@@ -28,6 +31,7 @@ declare const Prism: any;
 export class PrismHighlightDirective implements OnChanges, AfterViewInit {
     @Input() lang = 'javascript';
     @Input() code = '';
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     constructor(private el: ElementRef<HTMLElement>) { }
 
@@ -43,6 +47,7 @@ export class PrismHighlightDirective implements OnChanges, AfterViewInit {
         const element = this.el.nativeElement;
         element.className = `language-${this.lang || 'javascript'}`;
         element.textContent = this.code ?? '';
+        if (!this.isBrowser || typeof Prism === 'undefined') return;
         // Let Prism do its thing.
         Prism.highlightElement(element);
     }

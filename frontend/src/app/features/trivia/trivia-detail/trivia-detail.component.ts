@@ -1,6 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -106,6 +106,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   // practice session
   private practice: PracticeSession = null;
@@ -256,7 +257,9 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy() { this.sub?.unsubscribe(); }
 
   private hydrateState() {
-    const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
+    const navState = this.router.getCurrentNavigation()?.extras?.state;
+    const browserState = this.isBrowser ? history.state : null;
+    const s = (navState ?? browserState) as any;
     this.practice = (s?.session ?? null) as PracticeSession;
     this.returnTo = s?.returnTo ?? null;
     this.returnToUrl = typeof s?.returnToUrl === 'string' ? s.returnToUrl : null;
@@ -268,7 +271,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       this.router.navigate(this.returnTo);
     } else if (this.returnToUrl) {
       this.router.navigateByUrl(this.returnToUrl);
-    } else if (window.history.length > 1) {
+    } else if (this.isBrowser && window.history.length > 1) {
       window.history.back();
     } else {
       this.router.navigate(['/coding']);
@@ -456,6 +459,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   copy(code: string, idx: number) {
+    if (!this.isBrowser) return;
     navigator.clipboard.writeText(code ?? '').catch(() => { });
     this.copiedIndex.set(idx);
 
@@ -549,6 +553,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   private scrollMainToTop() {
+    if (!this.isBrowser) return;
     const el = this.mainScroll?.nativeElement;
     if (!el) return;
     requestAnimationFrame(() => {

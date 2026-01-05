@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -30,6 +30,7 @@ export class PlaybookHostComponent implements OnDestroy {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private sub?: Subscription;
+    private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
     ngOnInit() {
         // React to slug changes on the same component instance
@@ -85,12 +86,14 @@ export class PlaybookHostComponent implements OnDestroy {
         }
 
         // Ensure we start at the top for each article
-        window.scrollTo({ top: 0 });
+        if (this.isBrowser) window.scrollTo({ top: 0 });
     }
 
     private go404() {
         const missing = this.router.url; // e.g. /guides/interview-blueprint/asd
-        try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
+        if (this.isBrowser) {
+            try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
+        }
         this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
     }
 }

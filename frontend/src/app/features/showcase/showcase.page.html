@@ -98,13 +98,15 @@
     <div class="demo-frame-wrap" [class.hidden]="demoHidden">
       <div class="demo-frame glass" role="tabpanel" id="demo-pane"
         [attr.aria-labelledby]="'demo-tab-' + activeDemo.key">
-        <ng-container *ngFor="let tab of allDemoTabs">
-          <ng-container *ngIf="tab.key === activeDemoKey">
-            <app-coding-detail [questionId]="tab.questionId" [questionTech]="tab.questionTech" [demoMode]="true"
-              [storageKeyOverride]="tab.storageKey" [hideRestoreBanner]="true" [hideFooterBar]="true"
-              [footerLinkTo]="['/', tab.questionTech, 'coding', tab.questionId]" [disablePersistence]="true"
-              footerLinkLabel="Open this challenge fully">
-            </app-coding-detail>
+        <ng-container *ngIf="isBrowser">
+          <ng-container *ngFor="let tab of allDemoTabs">
+            <ng-container *ngIf="tab.key === activeDemoKey">
+              <app-coding-detail [questionId]="tab.questionId" [questionTech]="tab.questionTech" [demoMode]="true"
+                [storageKeyOverride]="tab.storageKey" [hideRestoreBanner]="true" [hideFooterBar]="true"
+                [footerLinkTo]="['/', tab.questionTech, 'coding', tab.questionId]" [disablePersistence]="true"
+                footerLinkLabel="Open this challenge fully">
+              </app-coding-detail>
+            </ng-container>
           </ng-container>
         </ng-container>
       </div>

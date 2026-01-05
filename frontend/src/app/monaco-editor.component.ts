@@ -1,8 +1,8 @@
 // src/app/monaco-editor.component.ts
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges,
-  OnDestroy, Output, SimpleChanges, ViewChild
+  OnDestroy, Output, PLATFORM_ID, SimpleChanges, ViewChild, inject
 } from '@angular/core';
 
 declare global {
@@ -52,6 +52,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private resizeObs?: ResizeObserver;
   private static seq = 0;
   private static webCompletionsInstalled = false;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
     const baseExt =
@@ -81,6 +82,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private readonly vsBasePath = 'assets/monaco/min/vs';
 
   async ngAfterViewInit() {
+    if (!this.isBrowser) return;
     await this.ensureMonaco();
     if (this.disposed) return;
 
@@ -217,6 +219,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
 
   ngOnDestroy() {
+    if (!this.isBrowser) return;
     this.disposed = true;
     try { this.resizeObs?.disconnect(); } catch { }
     try { this.editor?.dispose?.(); } catch { }

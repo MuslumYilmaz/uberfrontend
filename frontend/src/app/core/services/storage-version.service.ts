@@ -10,6 +10,7 @@ export class StorageVersionService {
   constructor(private http: HttpClient) { }
 
   async ensureFreshStorage(): Promise<void> {
+    if (typeof localStorage === 'undefined') return;
     // Dev: skip entirely (prevents 404 spam when the file doesn't exist)
     if (isDevMode()) return;
 

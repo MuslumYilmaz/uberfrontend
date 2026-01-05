@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
-  AfterViewInit, Component, ElementRef, OnDestroy, OnInit,
+  AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID,
   QueryList, ViewChild, ViewChildren, WritableSignal, computed, inject, signal
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -113,6 +113,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private seo = inject(SeoService);
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   readonly auth = inject(AuthService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   q: WritableSignal<SDQuestion | null> = signal(null);
   all: SDQuestion[] = [];
@@ -203,6 +204,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
     this.heads.changes.subscribe(() => setTimeout(() => {
       this.updateActiveFromPositions();
     }, 0));
@@ -210,6 +212,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     // Observe code sentinels for lazy Monaco mount
     const setupIO = () => {
       this.io?.disconnect();
+      if (typeof IntersectionObserver === 'undefined') return;
       this.io = new IntersectionObserver((entries) => {
         const next = new Set(this.mountedCodes());
         for (const e of entries) {
@@ -237,10 +240,12 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('scroll', this.onScroll);
-    window.removeEventListener('resize', this.onResize);
+    if (this.isBrowser) {
+      window.removeEventListener('scroll', this.onScroll);
+      window.removeEventListener('resize', this.onResize);
+      if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);
+    }
     clearInterval(this.settleWatcher);
-    if (this.resizeRaf) cancelAnimationFrame(this.resizeRaf);
     this.io?.disconnect();
   }
 
@@ -296,12 +301,14 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
         this.updateSeo(merged);
 
         // “continue where you left off” için
-        try {
+        if (this.isBrowser) {
+          try {
           localStorage.setItem('fa:lastVisited', JSON.stringify({
             to: ['/system-design', merged.id],
             label: merged.title ?? 'System design'
           }));
-        } catch { }
+          } catch { }
+        }
 
         // default aktif section: ilk section
         const secs = this.sections();
@@ -320,7 +327,9 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   /** Send the user to the NotFound page with the missing URL preserved. */
   private navTo404() {
     const missing = this.router.url;
-    try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
+    if (this.isBrowser) {
+      try { sessionStorage.setItem('fa:lastMissing', missing); } catch { }
+    }
     // replaceUrl so Back returns to the last valid page instead of the bad URL
     this.router.navigateByUrl('/404', { state: { missing }, replaceUrl: true });
   }
@@ -392,6 +401,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   /** Height to keep clear for the fixed header + breathing room */
   private headerOffset(): number {
+    if (!this.isBrowser) return 76;
     const raw = getComputedStyle(document.documentElement).getPropertyValue('--app-safe-top').trim();
     const base = parseInt(raw || '64', 10);
     return (isNaN(base) ? 64 : base) + 12;
@@ -402,7 +412,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   /** Choose the last heading whose absolute top is <= scroll line; force last when near bottom. */
   private updateActiveFromPositions = () => {
-    if (!this.heads) return;
+    if (!this.isBrowser || !this.heads) return;
     const nodes = this.heads.toArray().map(h => h.nativeElement);
     if (!nodes.length) return;
 
@@ -442,6 +452,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   /** smooth scroll to section with offset and a “settle” guard */
   scrollToKey(key: string) {
+    if (!this.isBrowser) return;
     const el = document.getElementById(this.anchorId(key));
     if (!el) return;
 
@@ -478,6 +489,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   scrollTop() {
+    if (!this.isBrowser) return;
     this.isProgrammaticScroll = true;
     this.programScrollTarget = 0;
     window.scrollTo({ top: 0, behavior: 'smooth' });

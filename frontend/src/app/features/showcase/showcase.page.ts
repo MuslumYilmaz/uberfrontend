@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -7,7 +7,9 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
+  PLATFORM_ID,
   ViewChildren,
+  inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
@@ -425,6 +427,7 @@ You can also reset any task back to the starter whenever you want to re-practice
   );
 
   explanationVisible = false;
+  readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(private injector: Injector, private qs: QuestionService) { }
 

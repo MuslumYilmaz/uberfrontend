@@ -1,13 +1,15 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
   Input,
   OnDestroy,
+  PLATFORM_ID,
   Renderer2,
   ViewChild,
   ViewEncapsulation,
+  inject,
   signal,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -261,6 +263,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   private onScroll = () => { };
   private mo?: MutationObserver;
   private imgListeners: Array<() => void> = [];
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(private r: Renderer2) { }
 
@@ -268,10 +271,11 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
     const el = this.contentRef.nativeElement;
 
     this.buildToc(el);
-    this.buildRanges();          // compute ranges once content is laid out
-
     this.enhanceCodeBlocks(el);
     this.enhanceTables(el);
+    if (!this.isBrowser) return;
+
+    this.buildRanges();          // compute ranges once content is laid out
     this.positionFixedPanels();
 
     // Keep ranges fresh
@@ -286,11 +290,13 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
     window.addEventListener('scroll', this.onScroll, { passive: true });
 
     // MutationObserver (DOM changes inside content)
-    this.mo = new MutationObserver(() => {
-      // schedule on next frame to allow layout to settle
-      requestAnimationFrame(() => { this.buildRanges(); this.recalcActiveFromScroll(); });
-    });
-    this.mo.observe(el, { childList: true, subtree: true, attributes: true });
+    if (typeof MutationObserver !== 'undefined') {
+      this.mo = new MutationObserver(() => {
+        // schedule on next frame to allow layout to settle
+        requestAnimationFrame(() => { this.buildRanges(); this.recalcActiveFromScroll(); });
+      });
+      this.mo.observe(el, { childList: true, subtree: true, attributes: true });
+    }
 
     // Recalc when images load
     for (const img of Array.from(el.querySelectorAll('img'))) {
@@ -303,14 +309,17 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.onResize);
-    window.removeEventListener('scroll', this.onScroll);
+    if (this.isBrowser) {
+      window.removeEventListener('resize', this.onResize);
+      window.removeEventListener('scroll', this.onScroll);
+    }
     this.mo?.disconnect();
     this.imgListeners.forEach(off => off());
   }
 
   /* ---------- layout helpers ---------- */
   private positionFixedPanels() {
+    if (!this.isBrowser) return;
     if (window.matchMedia('(max-width: 1100px)').matches) return;
     const setLeft = (anchor?: ElementRef<HTMLElement>, panel?: ElementRef<HTMLElement>) => {
       if (!anchor?.nativeElement || !panel?.nativeElement) return;
@@ -322,6 +331,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   }
 
   private headerOffset(): number {
+    if (!this.isBrowser) return 76;
     return (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--app-safe-top')) || 64) + 12;
   }
 
@@ -338,6 +348,10 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   }
 
   private buildRanges() {
+    if (!this.isBrowser) {
+      this.ranges = [];
+      return;
+    }
     const off = this.headerOffset();
     const tops = this.headingEls.map(h => h.getBoundingClientRect().top + window.scrollY - off);
     this.ranges = tops.map((t, i) => [
@@ -352,6 +366,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
   }
 
   smoothScroll(ev: Event, id: string) {
+    if (!this.isBrowser) return;
     ev.preventDefault();
     this.activeId.set(id); // immediate feedback
     const t = document.getElementById(id);
@@ -362,6 +377,7 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
 
   /** Range-based selection — no “near-bottom” hacks, so it won’t skip on direction changes. */
   private recalcActiveFromScroll() {
+    if (!this.isBrowser) return;
     if (!this.ranges.length) return;
 
     const y = window.scrollY + 1; // tiny nudge to avoid boundary flicker

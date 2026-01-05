@@ -1,7 +1,7 @@
 // app.component.ts
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { DailyService } from './core/services/daily.service';
@@ -32,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private currentUrl = signal(this.router.url || '/');
   premiumGate = inject(PremiumGateService);
   premiumGateState = this.premiumGate.dialogState;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   // hide header on /auth/*
   isAuthRoute = computed(() => this.currentUrl().startsWith('/auth'));
@@ -70,12 +71,15 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: any) => this.currentUrl.set(e.urlAfterRedirects || e.url));
 
+    if (!this.isBrowser) return;
+
     this.daily.ensureTodaySet();
     this.scheduleToNextMidnight();
     document.addEventListener('visibilitychange', this.onVisibility);
   }
 
   ngOnDestroy() {
+    if (!this.isBrowser) return;
     if (this.midnightTimer) window.clearTimeout(this.midnightTimer);
     document.removeEventListener('visibilitychange', this.onVisibility);
   }
@@ -88,6 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
   };
 
   private scheduleToNextMidnight() {
+    if (!this.isBrowser) return;
     if (this.midnightTimer) window.clearTimeout(this.midnightTimer);
     const now = new Date();
     const next = new Date(now);
