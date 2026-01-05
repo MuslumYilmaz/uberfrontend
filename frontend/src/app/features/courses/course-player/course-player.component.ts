@@ -135,7 +135,6 @@ export class CoursePlayerComponent {
     this.navigateTo(n.tId, n.lesson.id);
   }
   markComplete() {
-    console.log('Marked lesson as complete:', this.lesson?.id);
   }
 
   private prevEntry(): FlatEntry | null {

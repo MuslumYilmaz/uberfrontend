@@ -222,10 +222,6 @@ export class AuthService {
       throw new Error('OAuth start URL must be absolute in production');
     }
 
-    if (this.shouldDebugOAuth()) {
-      console.debug('[OAuth]', { apiBase: getApiBase(), oauthStart: url });
-    }
-
     window.location.assign(url);
   }
 

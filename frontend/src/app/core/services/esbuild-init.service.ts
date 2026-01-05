@@ -15,9 +15,7 @@ export class EsbuildInitService {
 
     this.pending = this.tryInit()
       .then(() => { this.inited = true; })
-      .catch((err) => {
-        console.warn('[esbuild] optional init failed; continuing without it:', err);
-      })
+      .catch(() => { })
       .finally(() => { this.pending = null; });
 
     return this.pending;

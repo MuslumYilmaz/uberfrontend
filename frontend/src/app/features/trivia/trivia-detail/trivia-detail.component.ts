@@ -4,7 +4,6 @@ import { Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, compu
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.js';
 import { Subscription, combineLatest, map, switchMap, tap } from 'rxjs';
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
@@ -91,7 +90,7 @@ function buildTagRegex(tag: string): RegExp {
     SafeHtmlPipe,
   ],
   templateUrl: './trivia-detail.component.html',
-  styleUrls: ['./trivia-detail.component.scss'],
+  styleUrls: ['./trivia-detail.component.css'],
 })
 export class TriviaDetailComponent implements OnInit, OnDestroy {
   @ViewChild('mainScroll') mainScroll?: ElementRef<HTMLElement>;

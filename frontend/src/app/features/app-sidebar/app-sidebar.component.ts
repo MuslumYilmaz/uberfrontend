@@ -155,7 +155,6 @@ export class AppSidebarComponent {
         this.submitOk = false;
       }, 900);
     } catch (err) {
-      console.error(err);
       alert('Failed to send bug report. Please try again.');
     } finally {
       this.submitting = false;

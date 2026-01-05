@@ -69,7 +69,7 @@ function companiesOf(q: any): string[] {
   selector: 'app-company-index',
   imports: [CommonModule, RouterModule, ProgressSpinnerModule],
   templateUrl: './company-index.component.html',
-  styleUrls: ['./company-index.component.scss']
+  styleUrls: ['./company-index.component.css']
 })
 export class CompanyIndexComponent {
   companies: CompanyCard[] = [];
@@ -87,7 +87,6 @@ export class CompanyIndexComponent {
           // Build counts from whatever hints the questions provide.
           const counts = new Map<string, number>();
           [...coding, ...trivia].forEach((q: any) => {
-            console.log(q);
             companiesOf(q).forEach(slug => {
               counts.set(slug, (counts.get(slug) || 0) + 1);
             });

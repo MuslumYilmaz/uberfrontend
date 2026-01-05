@@ -530,12 +530,11 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 	        this.exitSolutionPreview('rebuilding from editors');
 	        const htmlDoc = this.previewDocRaw();
 	        this.setPreviewHtml(htmlDoc);
-	      } catch (e) {
-	        console.error('web preview build failed', e);
-	        this.setPreviewHtml(null);
-	      }
-	    }, 120);
-	  }
+      } catch {
+        this.setPreviewHtml(null);
+      }
+    }, 120);
+  }
 
 	  openSolutionPreview() {
 	    const q = this.question; if (!q || this.showingSolutionPreview) return;

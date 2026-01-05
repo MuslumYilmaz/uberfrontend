@@ -450,11 +450,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   // Emit list again whenever solved ids change, so UI reacts immediately to auth/progress updates.
   visible$ = combineLatest([this.filtered$, this.solvedIds$]).pipe(
-    tap(([, ids]) => console.log('[SOLVED-DBG] solvedIds changed', ids)),
-    map(([qs, ids]) => {
-      console.log('[SOLVED-DBG] visible recompute', { count: qs ? qs.length : null, solvedCount: ids.length });
-      return qs;
-    })
+    map(([qs]) => qs)
   );
 
   // True when /coding?view=forms and the "System design" pill is selected
@@ -612,10 +608,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.viewModeSub = this.viewMode$.subscribe();
-    this.solvedIds$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(ids => console.log('[SOLVED-DBG] solvedIds$ subscription', ids));
-
     // Ensure current view key mirrors the initial URL before async viewMode$ emits
     this.currentViewKey = this.getViewKeyFromRoute();
     this.debug('init view key', { currentViewKey: this.currentViewKey });

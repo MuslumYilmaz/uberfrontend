@@ -104,8 +104,7 @@ export async function fetchSdkAsset(http: HttpClient, url: string): Promise<SdkA
     if (cdnUrl) {
         try {
             return await firstValueFrom(http.get<SdkAsset>(cdnUrl));
-        } catch (e) {
-            console.warn('[fetchSdkAsset] CDN failed, falling back to local assets', e);
+        } catch {
         }
     }
 

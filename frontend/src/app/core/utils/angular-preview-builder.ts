@@ -322,7 +322,6 @@ function compileTS(src, filename){
       const mainURL = self.FA_emit('src/main.ts');
       await import(mainURL);
     }catch(e){
-      console.error(e);
       try{ showOverlay(e?.message || e, 'bootstrap'); }catch{}
     }
   </script>

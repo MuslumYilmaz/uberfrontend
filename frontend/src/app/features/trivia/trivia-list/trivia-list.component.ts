@@ -31,7 +31,7 @@ import { QuestionService } from '../../../core/services/question.service';
     FormsModule
   ],
   templateUrl: './trivia-list.component.html',
-  styleUrls: ['./trivia-list.component.scss']
+  styleUrls: ['./trivia-list.component.css']
 })
 export class TriviaListComponent {
   // filter state

@@ -522,7 +522,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       const s = document.createElement('script');
       s.src = this.amdLoaderPath;
       s.onload = () => { (window as any).require = (window as any).require || {}; start(); };
-      s.onerror = () => { console.error('Failed to load Monaco AMD loader from', this.amdLoaderPath); resolve(); };
+      s.onerror = () => { resolve(); };
       document.body.appendChild(s);
     });
   }

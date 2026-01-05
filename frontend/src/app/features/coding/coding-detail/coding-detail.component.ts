@@ -835,7 +835,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const { files, initialPath } = resolveSolutionFiles(raw);
 
       if (!Object.keys(files).length) {
-        console.warn('[solutionAsset] No files in', assetPath, raw);
         this.solutionFilesMap.set({});
         this.solutionOpenPath.set('');
         return;
@@ -844,7 +843,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.solutionFilesMap.set(files);
       this.solutionOpenPath.set(initialPath);
     } catch (err) {
-      console.error('[solutionAsset] Failed to load', assetPath, err);
       this.solutionFilesMap.set({});
       this.solutionOpenPath.set('');
     }
@@ -1220,15 +1218,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.copiedExamples.set(true);
         setTimeout(() => this.copiedExamples.set(false), 1200);
       })
-      .catch((e) => {
-        console.warn('Copy failed', e);
-      });
+      .catch(() => { });
   }
 
   copySolutionCode() {
     const code = this.solutionCodeFor(this.getActiveJsLang()) || '';
     if (!code.trim()) {
-      console.warn('No solution code to copy.');
       return;
     }
     navigator.clipboard
@@ -1237,7 +1232,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.copiedExamples.set(true);
         setTimeout(() => this.copiedExamples.set(false), 1200);
       })
-      .catch((e) => console.error('Clipboard write failed', e));
+      .catch(() => { });
   }
 
   goToCustomTests(e?: Event) { if (e) e.preventDefault(); this.topTab.set('tests'); this.subTab.set('tests'); }
@@ -1349,7 +1344,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
         this.activity.refreshSummary();
       },
-      error: (e) => console.error('record completion failed', e),
+      error: () => { },
     });
   }
 
@@ -1383,7 +1378,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rebuildTimer = setTimeout(() => {
       // guard so preview errors never take down the app
       this.rebuildFrameworkPreview().catch(err => {
-        console.error('rebuild failed', err);
         this.setPreviewHtml(null);
       });
     }, 200);
@@ -1416,7 +1410,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       const html = files['index.html'] || files['public/index.html'] || '';
       this.setPreviewHtml(html || null);
     } catch (e) {
-      console.error('preview build failed', e);
       this.setPreviewHtml(null);
     }
   }
@@ -1632,7 +1625,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   async copyText(text: string) {
     const value = text ?? '';
     if (!value.trim()) {
-      console.warn('[copyText] No content to copy.');
       return;
     }
 
@@ -1656,7 +1648,6 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.copiedSolutionFile.set(true);
       setTimeout(() => this.copiedSolutionFile.set(false), 1200);
     } catch (err) {
-      console.error('[copyText] Copy failed', err);
     }
   }
 

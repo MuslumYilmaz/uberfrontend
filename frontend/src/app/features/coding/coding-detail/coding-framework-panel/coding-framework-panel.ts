@@ -248,9 +248,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.userFilesBackup = null;
 
     this.bootstrapWorkspaceFromSdk(q)
-      .catch(err => {
-        console.error('[framework-panel] initFromQuestion failed', err);
-      });
+      .catch(() => { });
   }
 
   /** Parent: "Load solution into editor" button from Solution panel. */
@@ -262,7 +260,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     const sol = this.solutionFilesMap || {};
     const solKeys = Object.keys(sol);
     if (!solKeys.length) {
-      console.warn('[framework-panel] No solution files to apply.');
       return;
     }
 
@@ -349,7 +346,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       this.setPreviewHtml(html);
       this.showingFrameworkSolutionPreview.set(true);
     } catch (e) {
-      console.error('[framework-panel] openSolutionPreview failed', e);
     }
   }
 
@@ -360,7 +356,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     try {
       await this.rebuildFrameworkPreview();
     } catch (e) {
-      console.error('[framework-panel] closeSolutionPreview rebuild failed', e);
       this.setPreviewHtml(null);
     }
   }
@@ -521,7 +516,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
         starters = files;
         entryHint = initialPath || this.defaultEntry();
       } catch (e) {
-        console.warn('[framework-panel] asset load failed, using fallback', e);
         starters = this.createFrameworkFallbackFiles();
         entryHint = this.defaultEntry();
       }
@@ -673,7 +667,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (this.rebuildTimer) clearTimeout(this.rebuildTimer);
     this.rebuildTimer = setTimeout(() => {
       this.rebuildFrameworkPreview().catch(err => {
-        console.error('[framework-panel] rebuild failed', err);
         this.setPreviewHtml(null);
       });
     }, 200);
@@ -698,7 +691,6 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
 
       this.setPreviewHtml(html || null);
     } catch (e) {
-      console.error('[framework-panel] preview build failed', e);
       this.setPreviewHtml(null);
       this.loadingPreview.set(false);
     }

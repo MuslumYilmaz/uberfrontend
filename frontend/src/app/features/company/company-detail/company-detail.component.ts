@@ -12,7 +12,7 @@ import { FaChipComponent } from '../../../shared/components/chip/fa-chip.compone
   selector: 'app-company-detail',
   imports: [CommonModule, RouterModule, RouterOutlet, RouterLink, FaChipComponent],
   templateUrl: './company-detail.component.html',
-  styleUrls: ['./company-detail.component.scss']
+  styleUrls: ['./company-detail.component.css']
 })
 export class CompanyDetailComponent {
   slug = this.route.paramMap.pipe(map(pm => (pm.get('slug') || '').toLowerCase()));
