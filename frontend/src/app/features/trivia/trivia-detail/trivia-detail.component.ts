@@ -1,6 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -44,6 +44,7 @@ type RichAnswer = { blocks: AnswerBlock[] } | null | undefined;
 
 type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
+type SimilarItem = { question: Question; difficulty: string };
 
 @Component({
   selector: 'app-trivia-detail',
@@ -63,6 +64,7 @@ type PracticeSession = { items: PracticeItem[]; index: number } | null;
   styleUrls: ['./trivia-detail.component.scss'],
 })
 export class TriviaDetailComponent implements OnInit, OnDestroy {
+  @ViewChild('mainScroll') mainScroll?: ElementRef<HTMLElement>;
   tech!: Tech;
 
   questionsList: Question[] = [];
@@ -70,6 +72,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   copiedIndex = signal<number | null>(null);
   solved = signal(false);
   loginPromptOpen = false;
+  similarOpen = signal(true);
 
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
@@ -151,6 +154,41 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const a = q?.answer as RichAnswer;
     if (!a?.blocks) return [];
     return a.blocks.filter(b => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b));
+  });
+
+  /** Similar questions based on shared tags (top 3). */
+  similarItems = computed<SimilarItem[]>(() => {
+    const current = this.question();
+    if (!current) return [];
+
+    const baseTags = this.normalizeTags(current.tags);
+    if (!baseTags.length) return [];
+
+    const baseSet = new Set(baseTags);
+    const scored = this.questionsList
+      .filter((q) => q.id !== current.id)
+      .map((q) => {
+        const tags = this.normalizeTags(q.tags);
+        if (!tags.length) return null;
+        let score = 0;
+        for (const tag of tags) {
+          if (baseSet.has(tag)) score += 1;
+        }
+        if (!score) return null;
+        return { question: q, score, importance: q.importance ?? 0 };
+      })
+      .filter(Boolean) as Array<{ question: Question; score: number; importance: number }>;
+
+    scored.sort((a, b) =>
+      b.score - a.score
+      || b.importance - a.importance
+      || (a.question.title || '').localeCompare(b.question.title || '')
+    );
+
+    return scored.slice(0, 3).map((item) => ({
+      question: item.question,
+      difficulty: this.difficultyLabel(item.question.difficulty),
+    }));
   });
 
   constructor(
@@ -242,6 +280,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     this.question.set(found);
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
     this.updateSeo(found);
+    this.scrollMainToTop();
   }
 
   isActive(q: Question) { return this.question()?.id === q.id; }
@@ -326,13 +365,12 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   onSelect(q: Question) {
     this.ensurePracticeBuilt(q.id);
     this.router.navigate(['/', this.tech, 'trivia', q.id], {
-      state: {
-        session: this.practice!,
-        returnTo: this.returnTo ?? undefined,
-        returnToUrl: this.returnToUrl ?? undefined,
-        returnLabel: this.returnLabel() ?? undefined
-      }
+      state: this.buildNavState(q.id),
     });
+  }
+
+  similarNavState(q: Question) {
+    return this.buildNavState(q.id);
   }
 
   // footer actions
@@ -404,6 +442,38 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     return '';
   }
 
+  private buildNavState(targetId: string) {
+    const session = this.practice ?? this.buildSessionFromList();
+    const index = session
+      ? Math.max(0, session.items.findIndex((item) => item.id === targetId))
+      : 0;
+    const normalizedSession = session ? { items: session.items, index } : undefined;
+
+    return {
+      session: normalizedSession,
+      returnTo: this.returnTo ?? undefined,
+      returnToUrl: this.returnToUrl ?? undefined,
+      returnLabel: this.returnLabel() ?? undefined,
+    };
+  }
+
+  private buildSessionFromList(): PracticeSession | null {
+    if (!this.questionsList.length) return null;
+    const items: PracticeItem[] = this.questionsList.map(q => ({
+      tech: this.tech, kind: 'trivia', id: q.id
+    }));
+    const index = Math.max(0, items.findIndex((item) => item.id === this.question()?.id));
+    return { items, index };
+  }
+
+  private normalizeTags(tags: unknown): string[] {
+    if (!Array.isArray(tags)) return [];
+    const normalized = tags
+      .map((tag) => String(tag || '').trim().toLowerCase())
+      .filter(Boolean);
+    return Array.from(new Set(normalized));
+  }
+
   private decodeHtmlEntities(s: string): string {
     // Fast path for common entities (also fixes double-escaped cases like "&amp;lt;")
     return (s ?? '')
@@ -413,6 +483,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&');
+  }
+
+  private scrollMainToTop() {
+    const el = this.mainScroll?.nativeElement;
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTo({ top: 0 });
+    });
   }
 
   dedent(source: string = ''): string {

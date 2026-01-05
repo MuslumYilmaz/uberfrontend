@@ -115,6 +115,45 @@ html, body { height: 100%; background: var(--uf-bg); }
 }
 .card-head { background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt)); padding: 10px 14px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--uf-text-secondary); border-bottom: 1px solid var(--uf-border-subtle); }
 .card-body { padding: 18px 20px; }
+.card-head-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.card-head-toggle i { font-size: 12px; }
+
+.similar-list { display: grid; gap: 10px; }
+.similar-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--uf-border-subtle);
+  background: var(--uf-surface-alt);
+  color: var(--uf-text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+}
+.similar-item:visited { color: var(--uf-text-primary); }
+.similar-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--uf-card-shadow-strong);
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
+}
+.similar-title { font-weight: 700; font-size: 13.5px; }
+.similar-meta {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--uf-text-secondary);
+}
 
 /* “Still so complicated?” body highlight */
 .tip-body { background: color-mix(in srgb, var(--uf-accent) 8%, var(--uf-surface)); border-radius: 10px; }

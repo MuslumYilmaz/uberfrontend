@@ -21,7 +21,7 @@
     </aside>
 
     <!-- Detail -->
-    <main class="main">
+    <main class="main" #mainScroll>
         <div *ngIf="question() as q; else missing" class="main-stack">
             <ng-container *ngIf="!locked(); else lockedView">
             <!-- Title + chips -->
@@ -136,6 +136,24 @@
                 <div class="card-head">Summary</div>
                 <div class="card-body">
                     <div class="content" [innerHTML]="summaryHelp() | safeHtml"></div>
+                </div>
+            </section>
+
+            <!-- Similar questions -->
+            <section class="card" *ngIf="similarItems().length">
+                <div class="card-head card-head-toggle" (click)="similarOpen.set(!similarOpen())">
+                    <span>Similar questions</span>
+                    <i class="fa-solid" [ngClass]="similarOpen() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                </div>
+                <div class="card-body" *ngIf="similarOpen()">
+                    <div class="similar-list">
+                        <a class="similar-item" *ngFor="let s of similarItems()"
+                            [routerLink]="['/', tech, 'trivia', s.question.id]"
+                            [state]="similarNavState(s.question)">
+                            <span class="similar-title">{{ s.question.title }}</span>
+                            <span class="similar-meta">{{ s.difficulty }}</span>
+                        </a>
+                    </div>
                 </div>
             </section>
             </ng-container>
