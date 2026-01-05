@@ -97,7 +97,7 @@
                             <div class="row-body">
                                 <div class="row-title fa-card-title">{{ topic.title }}</div>
                                 <div class="row-sub fa-meta-text">
-                                    {{ stats.topicCounts[topic.id] ?? 0 }} questions
+                                    {{ stats.topicCounts[topic.id] || 0 }} questions
                                 </div>
                             </div>
                         </div>
