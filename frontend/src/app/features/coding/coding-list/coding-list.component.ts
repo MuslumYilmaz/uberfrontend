@@ -26,6 +26,7 @@ import { CodingFilterPanelComponent } from '../../filters/coding-filter-panel/co
 import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs.component.ts/coding-tech-kind-tabs.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
+import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -217,6 +218,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   public tagMatchMode: 'all' | 'any' = 'all';
 
   currentCompanySlug: string | null = null;
+  private readonly maxItemListItems = 50;
 
   // company slug from parent param (:slug) OR ?c=
   companySlug$ = (this.route.parent
@@ -527,7 +529,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
     private location: Location,
     private listState: CodingListStateService,
     private progress: UserProgressService,
-    public auth: AuthService
+    public auth: AuthService,
+    private seo: SeoService
   ) {
     this.debug('ctor', {
       instance: this.instanceId,
@@ -642,6 +645,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
     const qp = this.route.snapshot.queryParamMap;
     this.lastScopedFilter = { topic: qp.get('topic'), focus: qp.get('focus') };
+    this.initListSeo();
 
     // If we navigate from a scoped focus/topic URL back to plain /coding (same component instance),
     // the in-memory tag filters would otherwise "stick". Treat leaving a scoped URL as a reset.
@@ -914,6 +918,64 @@ export class CodingListComponent implements OnInit, OnDestroy {
     }
 
     this.saveFiltersTo(viewKey);
+  }
+
+  private initListSeo(): void {
+    if (!this.shouldApplyListSeo()) return;
+
+    this.filtered$
+      .pipe(
+        takeUntil(this.destroy$),
+        map(list => (list ?? []).filter((q) => q?.id && q?.title)),
+        map(list => list.slice(0, this.maxItemListItems)),
+        map(list => ({ list, key: list.map((q) => q.id).join('|') })),
+        distinctUntilChanged((a, b) => a.key === b.key),
+      )
+      .subscribe(({ list }) => this.updateListSeo(list));
+  }
+
+  private updateListSeo(list: Row[]): void {
+    const baseSeo = this.getRouteSeo();
+    if (!baseSeo || this.isNoIndex(baseSeo) || list.length === 0) return;
+    const itemList = this.buildItemListSchema(list);
+    if (!itemList) return;
+    this.seo.updateTags({ ...baseSeo, jsonLd: itemList });
+  }
+
+  private buildItemListSchema(list: Row[]): Record<string, any> | null {
+    const items = list
+      .filter((q) => q?.id && q?.title)
+      .slice(0, this.maxItemListItems)
+      .map((q, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: q.title,
+        url: this.seo.buildCanonicalUrl(this.listItemPath(q)),
+      }));
+
+    if (!items.length) return null;
+    return { '@type': 'ItemList', itemListElement: items };
+  }
+
+  private listItemPath(q: Row): string {
+    const commands = this.linkTo(q);
+    const tree = this.router.createUrlTree(commands);
+    return this.router.serializeUrl(tree);
+  }
+
+  private getRouteSeo(): SeoMeta | null {
+    return (this.route.snapshot.data['seo'] as SeoMeta | undefined) ?? null;
+  }
+
+  private shouldApplyListSeo(): boolean {
+    const baseSeo = this.getRouteSeo();
+    if (!baseSeo) return false;
+    if (this.isNoIndex(baseSeo)) return false;
+    return this.source === 'global-coding';
+  }
+
+  private isNoIndex(seo: SeoMeta): boolean {
+    return (seo.robots || '').toLowerCase().includes('noindex');
   }
 
   private applyTopic(topicId: string) {
