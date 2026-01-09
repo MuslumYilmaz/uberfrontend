@@ -1,0 +1,39 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Tic-Tac-Toe (solution)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-tictactoe-solution\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Tic-Tac-Toe (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype Cell = 'X' | 'O' | null;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  board: Cell[] = Array.from({ length: 9 }, () => null);\n  currentPlayer: 'X' | 'O' = 'X';\n  winner: 'X' | 'O' | null = null;\n\n  get isDraw(): boolean {\n    return !this.winner && this.board.every((c) => c !== null);\n  }\n\n  get isGameOver(): boolean {\n    return !!this.winner || this.isDraw;\n  }\n\n  get status(): string {\n    if (this.winner) return `Winner: ${this.winner}`;\n    if (this.isDraw) return 'Draw';\n    return `Next: ${this.currentPlayer}`;\n  }\n\n  play(i: number): void {\n    if (this.isGameOver) return;\n    if (this.board[i] !== null) return;\n\n    const next = this.board.slice();\n    next[i] = this.currentPlayer;\n    this.board = next;\n\n    const w = this.calculateWinner(this.board);\n    if (w) {\n      this.winner = w;\n      return;\n    }\n\n    if (!this.isDraw) {\n      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';\n    }\n  }\n\n  reset(): void {\n    this.board = Array.from({ length: 9 }, () => null);\n    this.currentPlayer = 'X';\n    this.winner = null;\n  }\n\n  private calculateWinner(b: Cell[]): 'X' | 'O' | null {\n    const lines: number[][] = [\n      [0, 1, 2],\n      [3, 4, 5],\n      [6, 7, 8],\n      [0, 3, 6],\n      [1, 4, 7],\n      [2, 5, 8],\n      [0, 4, 8],\n      [2, 4, 6]\n    ];\n\n    for (const [a, c, d] of lines) {\n      const v = b[a];\n      if (v && v === b[c] && v === b[d]) return v;\n    }\n\n    return null;\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Tic-Tac-Toe</h1>\n    <p class=\"subtitle\">Two players take turns. First to 3 in a row wins.</p>\n\n    <div class=\"status\" aria-live=\"polite\">{{ status }}</div>\n\n    <div class=\"board\" role=\"grid\" aria-label=\"tic tac toe board\">\n      <button\n        class=\"cell\"\n        *ngFor=\"let cell of board; let i = index\"\n        type=\"button\"\n        (click)=\"play(i)\"\n        [disabled]=\"isGameOver || cell !== null\"\n        [attr.aria-label]=\"'cell ' + i\"\n      >\n        {{ cell ?? '' }}\n      </button>\n    </div>\n\n    <div class=\"actions\">\n      <button class=\"ghost\" type=\"button\" (click)=\"reset()\">Reset</button>\n    </div>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.card{width:100%;max-width:520px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}\n.title{margin:0;font-size:18px;font-weight:800;}\n.subtitle{margin:0;color:#9ca3af;font-size:12px;}\n.status{padding:10px 12px;border:1px solid #1f2937;border-radius:12px;background:#0a0f1e;font-weight:700;}\n.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}\n.cell{aspect-ratio:1/1;border-radius:14px;border:1px solid rgba(31,41,55,.7);background:#0a0f1e;color:#e5e7eb;font-size:34px;font-weight:900;cursor:pointer;display:grid;place-items:center;}\n.cell:disabled{opacity:.55;cursor:not-allowed;}\n.actions{display:flex;justify-content:flex-end;}\n.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

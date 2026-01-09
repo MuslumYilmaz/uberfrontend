@@ -14,21 +14,21 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a simple Vue 3 counter component that displays a value and has '+' and '−' buttons. The count must never go below 0.",
+      "summary": "Build a simple Vue 3 counter component that displays a value and has '+' and '\u2212' buttons. The count must never go below 0.",
       "specs": {
         "requirements": [
           "Render the counter UI as the main component.",
           "Display the current count value.",
-          "Provide '+' and '−' buttons to increment and decrement.",
+          "Provide '+' and '\u2212' buttons to increment and decrement.",
           "Prevent the count from ever going below 0.",
           "Include a 'Reset' button that sets the count back to 0."
         ],
         "expectedBehavior": [
           "Initial count starts at 0.",
           "Clicking '+' increases the count by 1.",
-          "Clicking '−' decreases the count by 1, but never below 0.",
+          "Clicking '\u2212' decreases the count by 1, but never below 0.",
           "Clicking 'Reset' sets the count back to 0.",
-          "The '−' button is disabled when the count is 0."
+          "The '\u2212' button is disabled when the count is 0."
         ],
         "implementationNotes": [
           "Use Vue 3's Composition API with `ref` to store the count.",
@@ -45,7 +45,7 @@
     },
     "starterCodeHint": "Implement the counter logic inside `<script setup>`. Use `ref(0)` for the value and a `computed` property for the disabled state of the decrement button.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with `ref(0)` for the count and a `computed` property that returns `true` when the count is 0. The '+' button increments the ref, the '−' button decrements but is guarded so the value never becomes negative, and 'Reset' sets it back to 0.\n\n**Key ideas**\n- Store count in a single `ref`.\n- Derive disabled state from a `computed` value.\n- Guard the decrement so it never sets a negative value.",
+      "overview": "Use Vue 3's Composition API with `ref(0)` for the count and a `computed` property that returns `true` when the count is 0. The '+' button increments the ref, the '\u2212' button decrements but is guarded so the value never becomes negative, and 'Reset' sets it back to 0.\n\n**Key ideas**\n- Store count in a single `ref`.\n- Derive disabled state from a `computed` value.\n- Guard the decrement so it never sets a negative value.",
       "approaches": [
         {
           "title": "Single component with guarded decrement",
@@ -128,7 +128,7 @@
         {
           "title": "Single file component with refs, derived validity, and fetch",
           "prose": "Keep everything inside App.vue using <script setup>. Use refs for name, email, message, and for touched flags (touchedName, touchedEmail, touchedMessage). Derive nameIsValid, emailIsValid, and messageIsValid as booleans, and then combine them into formIsValid. In the template, bind fields with v-model, show error messages when a field is both touched and invalid, and disable the submit button when !formIsValid or isSubmitting is true.\n\nIn handleSubmit, call event.preventDefault(), mark all fields as touched, clear successMessage and errorMessage, and if the form is valid, set isSubmitting to true and send a fetch POST request to https://jsonplaceholder.typicode.com/posts with a JSON body. On a successful response, show the success message and reset the fields and touched flags. On failure, show the error message and leave the fields as-is.",
-          "codeTs": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Contact Us (Solution)</h1>\n\n      <form class=\"panel\" novalidate @submit=\"handleSubmit\">\n        <div class=\"field\">\n          <label for=\"name\">Name</label>\n          <input\n            id=\"name\"\n            type=\"text\"\n            v-model=\"name\"\n            @blur=\"touchedName = true\"\n          />\n          <p v-if=\"touchedName && !nameIsValid\" class=\"error\">Name is required.</p>\n        </div>\n\n        <div class=\"field\">\n          <label for=\"email\">Email</label>\n          <input\n            id=\"email\"\n            type=\"email\"\n            v-model=\"email\"\n            @blur=\"touchedEmail = true\"\n          />\n          <p v-if=\"touchedEmail && !email\" class=\"error\">Email is required.</p>\n          <p v-if=\"touchedEmail && email && !emailIsValid\" class=\"error\">Enter a valid email address.</p>\n        </div>\n\n        <div class=\"field\">\n          <label for=\"message\">Message</label>\n          <textarea\n            id=\"message\"\n            rows=\"4\"\n            v-model=\"message\"\n            @blur=\"touchedMessage = true\"\n          />\n          <p v-if=\"touchedMessage && !message\" class=\"error\">Message is required.</p>\n          <p\n            v-if=\"touchedMessage && message && !messageIsValid\"\n            class=\"error\"\n          >\n            Message should be at least 10 characters.\n          </p>\n        </div>\n\n        <button\n          type=\"submit\"\n          class=\"primary\"\n          :disabled=\"!formIsValid || isSubmitting\"\n        >\n          {{ isSubmitting ? 'Sending…' : 'Send message' }}\n        </button>\n\n        <p v-if=\"successMessage\" class=\"success\">{{ successMessage }}</p>\n        <p v-if=\"errorMessage\" class=\"error\">{{ errorMessage }}</p>\n      </form>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\nconst name = ref('');\nconst email = ref('');\nconst message = ref('');\n\nconst touchedName = ref(false);\nconst touchedEmail = ref(false);\nconst touchedMessage = ref(false);\n\nconst isSubmitting = ref(false);\nconst successMessage = ref('');\nconst errorMessage = ref('');\n\nconst nameIsValid = computed(() => name.value.trim().length > 0);\nconst emailIsValid = computed(() => /\\S+@\\S+\\.\\S+/.test(email.value));\nconst messageIsValid = computed(() => message.value.trim().length >= 10);\n\nconst formIsValid = computed(\n  () => nameIsValid.value && emailIsValid.value && messageIsValid.value\n);\n\nconst handleSubmit = async (event: any) => {\n  event.preventDefault();\n\n  touchedName.value = true;\n  touchedEmail.value = true;\n  touchedMessage.value = true;\n\n  successMessage.value = '';\n  errorMessage.value = '';\n\n  if (!formIsValid.value) {\n    return;\n  }\n\n  isSubmitting.value = true;\n\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify({\n        name: name.value,\n        email: email.value,\n        message: message.value\n      })\n    });\n\n    if (!response.ok) {\n      throw new Error('Request failed');\n    }\n\n    successMessage.value = 'Your message has been sent. Thank you!';\n\n    name.value = '';\n    email.value = '';\n    message.value = '';\n    touchedName.value = false;\n    touchedEmail.value = false;\n    touchedMessage.value = false;\n  } catch (error) {\n    errorMessage.value = 'Something went wrong. Please try again.';\n  } finally {\n    isSubmitting.value = false;\n  }\n};\n</script>\n"
+          "codeTs": "<template>\n  <main class=\"main\">\n    <section class=\"section\">\n      <h1>Contact Us (Solution)</h1>\n\n      <form class=\"panel\" novalidate @submit=\"handleSubmit\">\n        <div class=\"field\">\n          <label for=\"name\">Name</label>\n          <input\n            id=\"name\"\n            type=\"text\"\n            v-model=\"name\"\n            @blur=\"touchedName = true\"\n          />\n          <p v-if=\"touchedName && !nameIsValid\" class=\"error\">Name is required.</p>\n        </div>\n\n        <div class=\"field\">\n          <label for=\"email\">Email</label>\n          <input\n            id=\"email\"\n            type=\"email\"\n            v-model=\"email\"\n            @blur=\"touchedEmail = true\"\n          />\n          <p v-if=\"touchedEmail && !email\" class=\"error\">Email is required.</p>\n          <p v-if=\"touchedEmail && email && !emailIsValid\" class=\"error\">Enter a valid email address.</p>\n        </div>\n\n        <div class=\"field\">\n          <label for=\"message\">Message</label>\n          <textarea\n            id=\"message\"\n            rows=\"4\"\n            v-model=\"message\"\n            @blur=\"touchedMessage = true\"\n          />\n          <p v-if=\"touchedMessage && !message\" class=\"error\">Message is required.</p>\n          <p\n            v-if=\"touchedMessage && message && !messageIsValid\"\n            class=\"error\"\n          >\n            Message should be at least 10 characters.\n          </p>\n        </div>\n\n        <button\n          type=\"submit\"\n          class=\"primary\"\n          :disabled=\"!formIsValid || isSubmitting\"\n        >\n          {{ isSubmitting ? 'Sending\u2026' : 'Send message' }}\n        </button>\n\n        <p v-if=\"successMessage\" class=\"success\">{{ successMessage }}</p>\n        <p v-if=\"errorMessage\" class=\"error\">{{ errorMessage }}</p>\n      </form>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref, computed } from 'vue';\n\nconst name = ref('');\nconst email = ref('');\nconst message = ref('');\n\nconst touchedName = ref(false);\nconst touchedEmail = ref(false);\nconst touchedMessage = ref(false);\n\nconst isSubmitting = ref(false);\nconst successMessage = ref('');\nconst errorMessage = ref('');\n\nconst nameIsValid = computed(() => name.value.trim().length > 0);\nconst emailIsValid = computed(() => /\\S+@\\S+\\.\\S+/.test(email.value));\nconst messageIsValid = computed(() => message.value.trim().length >= 10);\n\nconst formIsValid = computed(\n  () => nameIsValid.value && emailIsValid.value && messageIsValid.value\n);\n\nconst handleSubmit = async (event: any) => {\n  event.preventDefault();\n\n  touchedName.value = true;\n  touchedEmail.value = true;\n  touchedMessage.value = true;\n\n  successMessage.value = '';\n  errorMessage.value = '';\n\n  if (!formIsValid.value) {\n    return;\n  }\n\n  isSubmitting.value = true;\n\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json'\n      },\n      body: JSON.stringify({\n        name: name.value,\n        email: email.value,\n        message: message.value\n      })\n    });\n\n    if (!response.ok) {\n      throw new Error('Request failed');\n    }\n\n    successMessage.value = 'Your message has been sent. Thank you!';\n\n    name.value = '';\n    email.value = '';\n    message.value = '';\n    touchedName.value = false;\n    touchedEmail.value = false;\n    touchedMessage.value = false;\n  } catch (error) {\n    errorMessage.value = 'Something went wrong. Please try again.';\n  } finally {\n    isSubmitting.value = false;\n  }\n};\n</script>\n"
         }
       ],
       "notes": {
@@ -487,11 +487,11 @@
       "state-management"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) UI in Vue 3 that renders 3–4 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "summary": "Build a simple FAQ (accordion) UI in Vue 3 that renders 3\u20134 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
       "specs": {
         "requirements": [
           "Use Vue 3 with a single <App.vue> root component as the main entry.",
-          "Render a FAQ card with 3–4 FAQ items (question + answer).",
+          "Render a FAQ card with 3\u20134 FAQ items (question + answer).",
           "Clicking a question toggles its answer open/closed.",
           "In the default mode, only one FAQ item can be open at a time.",
           "Add a control (e.g. a checkbox) to switch to 'allow multiple open' mode.",
@@ -537,7 +537,7 @@
         ],
         "techniques": [
           "Using `ref<number[]>` to represent a collection of selected items in Vue 3.",
-          "Using `defineProps` / `defineEmits` in `<script setup>` for clean parent–child communication.",
+          "Using `defineProps` / `defineEmits` in `<script setup>` for clean parent\u2013child communication.",
           "Deriving `isItemOpen` from an index array to support both single and multi selection with the same state shape."
         ]
       }
@@ -599,7 +599,7 @@
     },
     "starterCodeHint": "Keep all logic inside `<script setup lang=\"ts\">`. Use `const currentPage = ref(0)` for page state, a constant `PAGE_SIZE = 5`, and `computed` properties to derive the current page slice, total pages, and button disabled state.",
     "solutionBlock": {
-      "overview": "This exercise is about managing a single piece of state: the current page. The full users array stays static in the component. From that, you derive the paged slice, total page count, and booleans indicating when you are on the first or last page.\n\n**Core ideas**\n- `currentPage` is a `ref(0)` and represents a 0-based index.\n- `PAGE_SIZE` is a constant (5 rows per page).\n- `totalPages` is a `computed` that uses `Math.ceil(USERS.length / PAGE_SIZE)`.\n- A `computed` for `pagedUsers` uses `slice(start, end)` where `start = currentPage.value * PAGE_SIZE`.\n- `isFirstPage` and `isLastPage` are `computed` booleans used to disable navigation buttons and guard the handlers.\n\n**Test cases**\n- Initial render → first 5 users, label shows `Page 1 of N`, Previous disabled.\n- Clicking Next repeatedly walks through the list and disables Next on the last page.\n- Clicking Previous repeatedly walks back and disables Previous on the first page.\n- The page label always matches the current page index.",
+      "overview": "This exercise is about managing a single piece of state: the current page. The full users array stays static in the component. From that, you derive the paged slice, total page count, and booleans indicating when you are on the first or last page.\n\n**Core ideas**\n- `currentPage` is a `ref(0)` and represents a 0-based index.\n- `PAGE_SIZE` is a constant (5 rows per page).\n- `totalPages` is a `computed` that uses `Math.ceil(USERS.length / PAGE_SIZE)`.\n- A `computed` for `pagedUsers` uses `slice(start, end)` where `start = currentPage.value * PAGE_SIZE`.\n- `isFirstPage` and `isLastPage` are `computed` booleans used to disable navigation buttons and guard the handlers.\n\n**Test cases**\n- Initial render \u2192 first 5 users, label shows `Page 1 of N`, Previous disabled.\n- Clicking Next repeatedly walks through the list and disables Next on the last page.\n- Clicking Previous repeatedly walks back and disables Previous on the first page.\n- The page label always matches the current page index.",
       "approaches": [
         {
           "title": "Single component with derived pagination slice",
@@ -609,7 +609,7 @@
       "notes": {
         "pitfalls": [
           "Treating `currentPage` as 1-based while doing `slice` calculations, causing off-by-one bugs.",
-          "Letting `currentPage` go below 0 or above `totalPages - 1` because handlers aren’t guarded.",
+          "Letting `currentPage` go below 0 or above `totalPages - 1` because handlers aren\u2019t guarded.",
           "Deriving the slice inline in the template instead of a named `computed`, which makes the code harder to read.",
           "Forgetting to use `.value` when reading/writing `ref`s inside `<script setup>`."
         ],
@@ -657,12 +657,12 @@
         "expectedBehavior": [
           "By default, the app starts in light mode if there is no previous theme stored.",
           "If the user toggles to dark mode, the page background, text, and card colors change.",
-          "Reloading the page keeps the user’s last theme selection (light or dark).",
+          "Reloading the page keeps the user\u2019s last theme selection (light or dark).",
           "The toggle UI (label or icon) always reflects the actual current theme.",
           "Switching themes is instant and does not require a full reload."
         ],
         "implementationNotes": [
-          "Use Vue 3’s Composition API with a `ref<'light' | 'dark'>` to hold the current theme.",
+          "Use Vue 3\u2019s Composition API with a `ref<'light' | 'dark'>` to hold the current theme.",
           "Read from `window.localStorage` using a stable key (for example `uf-theme`) and validate the stored value.",
           "Apply the theme to `document.documentElement` via `setAttribute('data-theme', theme)` so the CSS can use `:root[data-theme='dark']` / `html[data-theme='dark'] ...` selectors.",
           "Encapsulate the side-effects (localStorage read/write + DOM attribute update) in a couple of helper functions instead of scattering them across the component.",
@@ -679,11 +679,11 @@
     },
     "starterCodeHint": "Create a `Theme` type (`'light' | 'dark'`) and a `ref<Theme>('light')` that holds the current theme. On startup, read a stored value from `localStorage` (if running in the browser), validate it, and call a helper that sets `document.documentElement.dataset.theme`. Derive an `isDark` computed from the theme and wire the toggle button to a `toggleTheme()` function that flips between `'light'` and `'dark'` and persists the result.",
     "solutionBlock": {
-      "overview": "This exercise is about lifting theme state into a small global-ish store in Vue (a module-level `ref` + helpers) and wiring it to both the UI and the DOM. You store the current theme (`'light'` or `'dark'`) in a reactive `ref`, read an initial value from `localStorage` when the module is evaluated, and apply that value to the `<html>` element via a `data-theme` attribute. The root `App.vue` template shows a toggle in the top-right corner and delegates all theme changes to `toggleTheme()`. The provided CSS (`styles.css` + `App.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `html[data-theme='dark'] .app-shell` rules, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+      "overview": "This exercise is about lifting theme state into a small global-ish store in Vue (a module-level `ref` + helpers) and wiring it to both the UI and the DOM. You store the current theme (`'light'` or `'dark'`) in a reactive `ref`, read an initial value from `localStorage` when the module is evaluated, and apply that value to the `<html>` element via a `data-theme` attribute. The root `App.vue` template shows a toggle in the top-right corner and delegates all theme changes to `toggleTheme()`. The provided CSS (`styles.css` + `App.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `html[data-theme='dark'] .app-shell` rules, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage \u2192 app starts in light mode and shows the light theme.\n- Click the toggle once \u2192 app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode \u2192 app initializes in dark mode.\n- Toggle back to light \u2192 theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
       "approaches": [
         {
           "title": "Module-level theme store with `data-theme` on `<html>`",
-          "prose": "Use a tiny theme store built directly in `<script setup>`.\n\n1. Define a `Theme` type alias (`'light' | 'dark'`) and a stable localStorage key.\n2. Create `const theme = ref<Theme>('light')` as the single source of truth.\n3. Add `applyTheme(theme)` that sets `document.documentElement.setAttribute('data-theme', theme)`.\n4. Run an `initTheme()` function at module evaluation time: it reads from localStorage, validates `'light'` / `'dark'`, falls back to `'light'`, assigns to `theme.value`, and calls `applyTheme`.\n5. Implement `setTheme(theme)` to update the ref, write to localStorage, and call `applyTheme`.\n6. Implement `toggleTheme()` to flip between `'light'` and `'dark'` using `setTheme`.\n7. Expose `const isDark = computed(() => theme.value === 'dark')` and an `onToggleClick()` handler that calls `toggleTheme()`.\n\nThe template stays very simple: it just binds the button to `onToggleClick` and shows `🌙 / ☀️` and `Dark / Light` labels based on `isDark`. All the persistence and DOM side-effects live in a few small helpers, keeping the component easy to reason about."
+          "prose": "Use a tiny theme store built directly in `<script setup>`.\n\n1. Define a `Theme` type alias (`'light' | 'dark'`) and a stable localStorage key.\n2. Create `const theme = ref<Theme>('light')` as the single source of truth.\n3. Add `applyTheme(theme)` that sets `document.documentElement.setAttribute('data-theme', theme)`.\n4. Run an `initTheme()` function at module evaluation time: it reads from localStorage, validates `'light'` / `'dark'`, falls back to `'light'`, assigns to `theme.value`, and calls `applyTheme`.\n5. Implement `setTheme(theme)` to update the ref, write to localStorage, and call `applyTheme`.\n6. Implement `toggleTheme()` to flip between `'light'` and `'dark'` using `setTheme`.\n7. Expose `const isDark = computed(() => theme.value === 'dark')` and an `onToggleClick()` handler that calls `toggleTheme()`.\n\nThe template stays very simple: it just binds the button to `onToggleClick` and shows `\ud83c\udf19 / \u2600\ufe0f` and `Dark / Light` labels based on `isDark`. All the persistence and DOM side-effects live in a few small helpers, keeping the component easy to reason about."
         }
       ],
       "notes": {
@@ -830,7 +830,7 @@
           "Clicking \"Add to cart\" for a product that is not yet in the cart adds it with quantity `1`.",
           "Clicking \"Add to cart\" again for the same product increases its quantity by `1`.",
           "Clicking the \"+\" button in the cart increases that item's quantity by `1`.",
-          "Clicking the \"−\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart.",
+          "Clicking the \"\u2212\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart.",
           "Clicking \"Remove\" immediately removes that item from the cart.",
           "Total item count and total price update correctly whenever the cart changes."
         ],
@@ -941,7 +941,7 @@
         {
           "title": "Single component with `watch` and debounced API call",
           "prose": "Use Composition API state (`ref`) inside `<script setup>`. Implement a `watch(query, ...)` that debounces the search.\n\n1. Declare `query`, `results`, `isLoading`, and `error` as refs.\n2. Inside `watch(query, (value, _old, onInvalidate) => { ... })`:\n   - Clear any previous timeout.\n   - If `value.trim()` is empty: reset results, `isLoading`, and `error`, then return.\n   - Otherwise, set `isLoading` and clear `error`, then start a 500ms timeout.\n   - In the timeout, call `fakeApiSearch(trimmed)` and update `results` / `error` / `isLoading`.\n3. Use `onInvalidate` to clear the timeout so that intermediate keystrokes don't leak timeouts and stale responses.\n\nThis mirrors how you might use `useEffect` + cleanup in React, but using Vue's `watch` API.",
-          "codeJs": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching…</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { ref, watch } from 'vue';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref([]);\nconst isLoading = ref(false);\nconst error = ref(null);\n\nlet timeoutId;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId != null) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    timeoutId = setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      if (timeoutId != null) {\n        clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event) => {\n  query.value = event.target.value;\n};\n</script>\n\n<style scoped>\n/* same UI styles as React / Angular debounced search */\n</style>\n"
+          "codeJs": "<template>\n  <main class=\"main\">\n    <section class=\"card\">\n      <header class=\"header\">\n        <h1 class=\"title\">Debounced Search</h1>\n        <p class=\"subtitle\">\n          Type to search a fake user directory. Search runs 500ms after you stop typing.\n        </p>\n      </header>\n\n      <div class=\"field\">\n        <label class=\"label\" for=\"search-input\">Search</label>\n        <input\n          id=\"search-input\"\n          class=\"input\"\n          type=\"text\"\n          :value=\"query\"\n          @input=\"onInput\"\n          placeholder=\"Start typing a name or email...\"\n          autocomplete=\"off\"\n        />\n      </div>\n\n      <div class=\"status-row\">\n        <span v-if=\"isLoading\" class=\"status status--loading\">Searching\u2026</span>\n        <span\n          v-else-if=\"!error && query\"\n          class=\"status\"\n        >\n          Showing {{ results.length }} result(s) for \"{{ query }}\"\n        </span>\n        <span\n          v-else-if=\"!error && !query\"\n          class=\"status status--muted\"\n        >\n          Start typing to search.\n        </span>\n        <span v-if=\"error\" class=\"status status--error\">{{ error }}</span>\n      </div>\n\n      <ul class=\"results\" v-if=\"results.length\">\n        <li class=\"result-row\" v-for=\"r in results\" :key=\"r.id\">\n          <div class=\"result-name\">{{ r.name }}</div>\n          <div class=\"result-email\">{{ r.email }}</div>\n        </li>\n      </ul>\n\n      <p\n        class=\"empty\"\n        v-if=\"!results.length && !isLoading && query && !error\"\n      >\n        No results found for \"{{ query }}\".\n      </p>\n    </section>\n  </main>\n</template>\n\n<script setup>\nimport { ref, watch } from 'vue';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nconst query = ref('');\nconst results = ref([]);\nconst isLoading = ref(false);\nconst error = ref(null);\n\nlet timeoutId;\n\nwatch(\n  query,\n  (value, _oldValue, onInvalidate) => {\n    const trimmed = value.trim();\n\n    if (timeoutId != null) {\n      clearTimeout(timeoutId);\n      timeoutId = undefined;\n    }\n\n    if (!trimmed) {\n      results.value = [];\n      isLoading.value = false;\n      error.value = null;\n      return;\n    }\n\n    isLoading.value = true;\n    error.value = null;\n\n    timeoutId = setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          results.value = data;\n          isLoading.value = false;\n        })\n        .catch((err) => {\n          results.value = [];\n          isLoading.value = false;\n          error.value = err instanceof Error ? err.message : 'Something went wrong.';\n        });\n    }, 500);\n\n    onInvalidate(() => {\n      if (timeoutId != null) {\n        clearTimeout(timeoutId);\n        timeoutId = undefined;\n      }\n    });\n  }\n);\n\nconst onInput = (event) => {\n  query.value = event.target.value;\n};\n</script>\n\n<style scoped>\n/* same UI styles as React / Angular debounced search */\n</style>\n"
         }
       ],
       "notes": {
@@ -1047,7 +1047,7 @@
   },
   {
     "id": "vue-dynamic-table",
-    "title": "Dynamic Table (Rows × Columns)",
+    "title": "Dynamic Table (Rows \u00d7 Columns)",
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
@@ -1078,7 +1078,7 @@
         "implementationNotes": [
           "Use Vue 3's Composition API inside `<script setup>`.",
           "Use `ref` to store the numeric inputs and the `rows`/`cols` arrays that drive rendering.",
-          "Implement a helper (e.g. `normalizeCount`) to clamp user input to a safe range (such as 0–20).",
+          "Implement a helper (e.g. `normalizeCount`) to clamp user input to a safe range (such as 0\u201320).",
           "Use `Array.from` or a similar approach to build arrays for `v-for` loops.",
           "Use a `computed` value for simple derived state like `hasGrid` (whether there is anything to render)."
         ],
@@ -1092,7 +1092,7 @@
     },
     "starterCodeHint": "Implement the logic inside `<script setup>`. Use `ref(3)` and `ref(4)` for the initial row/column inputs, keep `rows` and `cols` in refs that you rebuild in an `updateTable()` function, and drive the table with nested `v-for` loops over those arrays.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0–20) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts.",
+      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0\u201320) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts.",
       "approaches": [
         {
           "title": "Single component with reactive inputs and `v-for`-driven grid",
@@ -1123,7 +1123,7 @@
   },
   {
     "id": "vue-nested-checkboxes",
-    "title": "Nested Checkbox Tree (Parent–Child Sync)",
+    "title": "Nested Checkbox Tree (Parent\u2013Child Sync)",
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
@@ -1144,20 +1144,20 @@
           "Checking the parent selects all children.",
           "Unchecking the parent clears all children.",
           "When children are toggled individually:",
-          "- If all are checked → parent is checked.",
-          "- If none are checked → parent is unchecked.",
-          "- If some are checked → parent is indeterminate.",
+          "- If all are checked \u2192 parent is checked.",
+          "- If none are checked \u2192 parent is unchecked.",
+          "- If some are checked \u2192 parent is indeterminate.",
           "Keep everything in a single <App.vue> component."
         ],
         "expectedBehavior": [
           "Each child checkbox toggles independently.",
           "The parent reflects the aggregate state of the children.",
-          "The parent’s visual state shows indeterminate when selection is mixed.",
+          "The parent\u2019s visual state shows indeterminate when selection is mixed.",
           "No external component libraries are required."
         ],
         "implementationNotes": [
           "Use Vue 3's Composition API in <script setup> with `ref` to store the children list.",
-          "Derive the parent’s checked/indeterminate state from the children and apply `indeterminate` via a template ref.",
+          "Derive the parent\u2019s checked/indeterminate state from the children and apply `indeterminate` via a template ref.",
           "Use standard `@change` handlers to wire parent and child events."
         ],
         "techFocus": [
@@ -1196,6 +1196,263 @@
       "storageKey": "v1:ui:vue:vue-nested-checkboxes"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-autocomplete-search",
+    "title": "Autocomplete Search (debounce + keyboard + outside click)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "medium",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "composition-api",
+      "reactivity",
+      "events",
+      "keyboard",
+      "debounce",
+      "accessibility",
+      "components"
+    ],
+    "description": {
+      "summary": "Build a Vue 3 autocomplete search input. It should debounce queries, show a dropdown with results, support keyboard navigation (\u2191/\u2193/Enter/Esc), and close on outside click. Keep the UI styles exactly as provided.",
+      "specs": {
+        "requirements": [
+          "Render the autocomplete UI as the main component.",
+          "Typing filters a fixed city list and shows results in a dropdown.",
+          "Debounce input by ~300ms before searching.",
+          "If query is empty (after trim): close dropdown and clear results.",
+          "If query is non-empty: open dropdown and show results.",
+          "Show up to 8 results.",
+          "Keyboard support: ArrowUp/ArrowDown to move active option, Enter to select, Esc to close.",
+          "Close dropdown on outside click.",
+          "Highlight the matched substring using <mark> (escape HTML first).",
+          "Show a 'Loading\u2026' row while async search is pending (avoid flashing 'No results' during loading)."
+        ],
+        "expectedBehavior": [
+          "Focus with non-empty query opens the dropdown.",
+          "Typing updates results after debounce + simulated latency.",
+          "Arrow keys cycle through visible options (wrap around).",
+          "Enter selects the active option, sets input value, closes dropdown.",
+          "Esc closes dropdown and clears active selection.",
+          "Clicking an option selects it (mousedown to avoid blur issues).",
+          "Clicking outside closes dropdown and clears active selection.",
+          "When loading: dropdown can be open but shows 'Loading\u2026' instead of 'No results'.",
+          "When not loading and results are empty: show 'No results'."
+        ],
+        "implementationNotes": [
+          "Use Vue 3 Composition API in <script setup>.",
+          "Use refs for query/isOpen/activeIndex/results/isLoading.",
+          "Use a debounced watcher on query to trigger async search.",
+          "Use stale-result protection (sequence id or cancellation flag) so older searches don\u2019t override newer ones.",
+          "Use document mousedown listener for outside click."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (ref, computed, watch, onMounted/onBeforeUnmount)",
+          "Debounced async effects",
+          "Keyboard navigation state",
+          "Outside click handling",
+          "Safe HTML escaping + highlight rendering"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement the TODOs in <script setup>. Use a debounced watcher on `query` to call `search(q)` and update `results`. Track `isOpen`, `activeIndex`, `isLoading`. Close on outside click. Use `v-html` with escaped + highlighted markup.",
+    "solutionBlock": {
+      "overview": "Use `watch(query)` with a 300ms timeout to debounce. On non-empty query, open dropdown and set loading true, then call an async `search(q)` that simulates latency and returns up to 8 matches. Protect against stale updates using a sequence counter. Add keyboard handling to move `activeIndex` and select results. Use `document.addEventListener('mousedown', ...)` to close on outside click.\n\n**Key ideas**\n- Debounce + async search\n- Loading state to avoid 'No results' flicker\n- Active index wrap-around navigation\n- Escape HTML before inserting <mark>\n- Outside click close",
+      "approaches": [
+        {
+          "title": "Single component (Composition API) with debounced watcher",
+          "prose": "Keep everything in `App.vue`. Store state in refs: `query`, `isOpen`, `activeIndex`, `results`, `isLoading`. Debounce query changes with a timeout. When searching, bump a `seq` counter and only apply results if the sequence matches. Implement `onKeyDown` to wrap selection and select on Enter. Use a document mousedown handler to detect clicks outside the root element."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Showing 'No results' while a request is still in flight (fix with `isLoading`).",
+          "Not trimming query, causing dropdown to open for whitespace.",
+          "Letting stale async responses overwrite newer results (fix with seq/cancel).",
+          "Using `click` instead of `mousedown` on options (blur can close dropdown before select).",
+          "Injecting raw HTML into v-html without escaping (escape first)."
+        ],
+        "techniques": [
+          "Debouncing with `setTimeout` inside `watch` and clearing on cleanup.",
+          "Stale-result protection with a sequence ref.",
+          "Wrap-around navigation using modular arithmetic."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-autocomplete-search.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v2:ui:vue:vue-autocomplete-search"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-autocomplete-search-solution.v1.json",
+    "companies": [
+      "apple"
+    ],
+    "access": "premium"
+  },
+  {
+    "id": "vue-transfer-list",
+    "title": "Transfer List (Move Selected Items Between Two Lists)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "vue",
+      "components",
+      "reactivity",
+      "derived-state",
+      "event-handlers",
+      "lists",
+      "inputs"
+    ],
+    "description": {
+      "summary": "Build a Vue 3 \u201cTransfer List\u201d component that lets users select items (via checkboxes) from two lists (Top and Bottom) and move the selected items between them using arrow buttons.",
+      "specs": {
+        "requirements": [
+          "Render two lists: Top and Bottom.",
+          "Each row must have a checkbox to select the item.",
+          "Provide two buttons between the lists: \u2193 moves selected Top items to Bottom, \u2191 moves selected Bottom items to Top.",
+          "When moving items, append them to the end of the destination list.",
+          "After moving, clear the selection of the moved-from list."
+        ],
+        "expectedBehavior": [
+          "Top and Bottom lists render initial items.",
+          "Selecting checkboxes enables the corresponding move button (\u2193 for Top, \u2191 for Bottom).",
+          "Clicking \u2193 moves selected items from Top to Bottom and clears Top selection.",
+          "Clicking \u2191 moves selected items from Bottom to Top and clears Bottom selection.",
+          "Selections are per-list (selecting in Top should not affect Bottom)."
+        ],
+        "implementationNotes": [
+          "Use Vue 3 Composition API with `ref` for list state and selection state.",
+          "Use `computed` properties for `canMoveDown` and `canMoveUp` (button enablement).",
+          "When toggling selection, create a new `Set` to ensure reactivity updates properly.",
+          "Keep everything in a single `<App.vue>` component for this exercise."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Immutable-ish updates with Set cloning",
+          "Checkbox bindings and event handlers",
+          "Moving items between lists"
+        ]
+      }
+    },
+    "starterCodeHint": "Store items in `ref<Item[]>` and selections in `ref<Set<string>>`. Use computed values to enable/disable arrows. When toggling selection, always replace with a new Set.",
+    "solutionBlock": {
+      "overview": "Use two reactive arrays for Top and Bottom items and two reactive `Set`s for selected ids. Button enablement is derived from `selected.size`. Moving is done by splitting source items into `moved` and `remaining`, updating both lists, and clearing the source selection.\n\n**Key ideas**\n- Keep selection state per-list (two Sets).\n- Replace Sets with new instances to trigger updates.\n- Move appends to the destination list and clears source selection.",
+      "approaches": [
+        {
+          "title": "Single component with per-list selection sets",
+          "prose": "Keep everything in `App.vue` using `<script setup>`. Represent the two lists as `ref<Item[]>`. Represent selections as `ref<Set<string>>`. `toggleTop/toggleBottom` clone the previous Set and add/remove ids. `moveDown/moveUp` build `moved` and `remaining` arrays from the source list, update destination via append, update source to remaining, and clear source selection."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating the same Set instance (Vue may not update UI as expected).",
+          "Forgetting to clear selection after moving items.",
+          "Removing items incorrectly (e.g., using wrong ids or mixing selections across lists)."
+        ],
+        "techniques": [
+          "Using `computed` for enablement flags.",
+          "Cloning Sets and arrays for predictable UI updates.",
+          "Keeping state and handlers colocated in a single component."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-transfer-list.v2.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v2:ui:vue:vue-transfer-list"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "vue-tictactoe",
+    "title": "Tic-Tac-Toe (Reactivity + Winner Detection)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "composition-api",
+      "reactivity",
+      "event-handlers",
+      "derived-state",
+      "arrays",
+      "control-flow"
+    ],
+    "description": {
+      "summary": "Build a simple 3\u00d73 Tic-Tac-Toe game in Vue 3. Two players take turns placing X and O. Detect wins/draws and allow resetting the game.",
+      "specs": {
+        "requirements": [
+          "Render the Tic-Tac-Toe UI as the main component.",
+          "Render a 3\u00d73 board (9 cells).",
+          "Alternate turns between 'X' and 'O'.",
+          "Clicking an empty cell places the current player's mark (only if the game is not over).",
+          "Detect a winner (3 in a row) and stop further moves.",
+          "Detect a draw when the board is full and there is no winner.",
+          "Show status text (next player / winner / draw).",
+          "Include a 'Reset' button to restart the game."
+        ],
+        "expectedBehavior": [
+          "Initial state shows an empty board and indicates 'Next: X'.",
+          "Turns alternate X then O.",
+          "Clicking a filled cell does nothing.",
+          "After a win, status shows 'Winner: X' or 'Winner: O' and moves stop.",
+          "After a draw, status shows 'Draw' and moves stop.",
+          "Reset clears the board and sets next player to X."
+        ],
+        "implementationNotes": [
+          "Model the board as an array of 9 values (`'X' | 'O' | null`).",
+          "Use `ref` to store board and current player.",
+          "Use `computed` for derived state: winner, draw, game-over, status.",
+          "Use a helper that checks the 8 winning line combinations."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (`ref`, `computed`)",
+          "Event handlers",
+          "Rendering lists",
+          "Derived state",
+          "Basic game logic"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement `calculateWinner`, derive `isDraw`, `isGameOver`, and `status` via `computed`, then implement `play(i)` and `reset()` inside `<script setup>`.",
+    "solutionBlock": {
+      "overview": "Keep a 9-cell board in a `ref`. Derive winner/draw/game-over and status via `computed`. On click, ignore if game is over or the cell is filled; otherwise place the current player's mark and toggle the player if the game is still ongoing. Provide reset to restore initial state.\n\n**Test cases**\n- Start \u2192 `Next: X`.\n- Moves alternate X/O.\n- Filled cell click \u2192 no-op.\n- Winning line \u2192 `Winner: X|O`, no more moves.\n- Full board with no winner \u2192 `Draw`.\n- Reset \u2192 clears board and sets `Next: X`.",
+      "approaches": [
+        {
+          "title": "Single SFC with refs + computed derived state",
+          "prose": "Use a single `App.vue` with `ref` for `board` and `currentPlayer`. Use `computed` for `winner`, `isDraw`, `isGameOver`, and `status`. Render the grid with `v-for` and disable cells when filled or game over."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing overwriting a filled cell.",
+          "Allowing moves after winner/draw.",
+          "Missing diagonal win checks.",
+          "Mutating without copying when you rely on immutable patterns (not required here, but be consistent)."
+        ],
+        "techniques": [
+          "Use a fixed list of winning index triples.",
+          "Use computed properties for status and game over logic.",
+          "Keep UI handlers small and guarded."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-tictactoe.v1.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v1:ui:vue:vue-tictactoe"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-tictactoe-solution.v1.json",
+    "companies": [
+      "amazon"
+    ],
     "access": "premium"
   }
 ]

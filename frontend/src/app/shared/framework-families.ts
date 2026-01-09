@@ -125,6 +125,30 @@ export const FRAMEWORK_FAMILIES: FrameworkFamily[] = [
       { tech: 'vue', id: 'vue-nested-checkboxes', kind: 'coding' },
     ],
   },
+  {
+    key: 'autocomplete-search',
+    members: [
+      { tech: 'react', id: 'react-autocomplete-search-starter', kind: 'coding' },
+      { tech: 'angular', id: 'angular-autocomplete-search-starter', kind: 'coding' },
+      { tech: 'vue', id: 'vue-autocomplete-search', kind: 'coding' },
+    ],
+  },
+  {
+    key: 'transfer-list',
+    members: [
+      { tech: 'react', id: 'react-transfer-list', kind: 'coding' },
+      { tech: 'angular', id: 'angular-transfer-list', kind: 'coding' },
+      { tech: 'vue', id: 'vue-transfer-list', kind: 'coding' },
+    ],
+  },
+  {
+    key: 'tictactoe',
+    members: [
+      { tech: 'react', id: 'react-tictactoe', kind: 'coding' },
+      { tech: 'angular', id: 'angular-tictactoe-starter', kind: 'coding' },
+      { tech: 'vue', id: 'vue-tictactoe', kind: 'coding' },
+    ],
+  },
 ];
 
 export const FRAMEWORK_FAMILY_BY_ID = FRAMEWORK_FAMILIES.reduce((acc, fam) => {

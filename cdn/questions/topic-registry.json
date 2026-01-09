@@ -37,6 +37,7 @@
       "tags": [
         "derived-state",
         "global-state",
+        "hooks",
         "immutability",
         "lifting-state",
         "reactivity",
@@ -53,6 +54,7 @@
         "accessibility",
         "aria-describedby",
         "aria-labelledby",
+        "keyboard",
         "labels",
         "semantics"
       ]

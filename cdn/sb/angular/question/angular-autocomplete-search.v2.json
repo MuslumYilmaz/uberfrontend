@@ -1,0 +1,40 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Autocomplete Search",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/forms": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-autocomplete-search\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Autocomplete</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { CommonModule } from '@angular/common';\nimport { Component, ElementRef, HostListener, inject } from '@angular/core';\nimport { FormControl, ReactiveFormsModule } from '@angular/forms';\nimport { of } from 'rxjs';\nimport { debounceTime, delay, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  private readonly host = inject(ElementRef<HTMLElement>);\n\n  readonly listboxId = 'autocomplete-listbox';\n\n  private readonly cities: string[] = [\n    'Amsterdam', 'Ankara', 'Athens', 'Austin',\n    'Barcelona', 'Berlin', 'Boston', 'Brussels',\n    'Chicago', 'Copenhagen',\n    'Dubai',\n    'Edinburgh',\n    'Frankfurt',\n    'Hamburg',\n    'Istanbul', 'Izmir',\n    'London', 'Los Angeles',\n    'Madrid', 'Miami', 'Milan', 'Munich',\n    'New York',\n    'Oslo',\n    'Paris', 'Prague',\n    'Rome',\n    'San Diego', 'San Francisco', 'San Jose', 'Seattle',\n    'Tokyo',\n    'Vienna',\n    'Zurich'\n  ];\n\n  // NOTE: Keep it simple (compatible with environments where typed-forms overloads are not enabled)\n  readonly queryControl = new FormControl('');\n\n  isOpen = false;\n  activeIndex = -1;\n\n  // TODO: results$ should be driven by queryControl.valueChanges\n  // - debounceTime(300)\n  // - distinctUntilChanged()\n  // - trim query\n  // - if empty => close dropdown and return []\n  // - else open dropdown and switchMap into search()\n  readonly results$ = of([] as string[]);\n\n  onFocus(): void {\n    // TODO: Open dropdown when there is a non-empty query\n  }\n\n  onKeyDown(ev: KeyboardEvent): void {\n    // TODO: ArrowUp/ArrowDown/Enter/Escape\n  }\n\n  select(value: string): void {\n    // TODO: setValue(value), close dropdown, reset activeIndex\n  }\n\n  trackByValue(_: number, v: string): string {\n    return v;\n  }\n\n  optionId(i: number): string {\n    return `opt-${i}`;\n  }\n\n  highlight(item: string, queryRaw: unknown): string {\n    // TODO: highlight match using <mark>\n    return String(item);\n  }\n\n  @HostListener('document:mousedown', ['$event'])\n  onDocMouseDown(ev: MouseEvent): void {\n    // TODO: close dropdown when click is outside this component\n  }\n\n  private search(q: string) {\n    // TODO: filter cities and return of(filtered).pipe(delay(150))\n    return of([] as string[]).pipe(delay(150));\n  }\n\n  private escapeHtml(s: string): string {\n    return s\n      .replace(/&/g, '&amp;')\n      .replace(/</g, '&lt;')\n      .replace(/>/g, '&gt;')\n      .replace(/\"/g, '&quot;')\n      .replace(/'/g, '&#39;');\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Autocomplete</h1>\n\n    <div\n      class=\"combo\"\n      role=\"combobox\"\n      aria-haspopup=\"listbox\"\n      [attr.aria-expanded]=\"isOpen\"\n      [attr.aria-owns]=\"listboxId\"\n      [attr.aria-activedescendant]=\"activeIndex >= 0 ? optionId(activeIndex) : null\"\n    >\n      <label class=\"label\" for=\"q\">Search</label>\n      <input\n        id=\"q\"\n        class=\"input\"\n        type=\"text\"\n        autocomplete=\"off\"\n        placeholder=\"Type a city...\"\n        [formControl]=\"queryControl\"\n        (focus)=\"onFocus()\"\n        (keydown)=\"onKeyDown($event)\"\n      />\n\n      <ng-container *ngIf=\"results$ | async as results\">\n        <ul *ngIf=\"isOpen\" class=\"list\" role=\"listbox\" [id]=\"listboxId\">\n          <li\n            *ngFor=\"let item of results; let i = index; trackBy: trackByValue\"\n            class=\"option\"\n            role=\"option\"\n            [id]=\"optionId(i)\"\n            [class.active]=\"i === activeIndex\"\n            [attr.aria-selected]=\"i === activeIndex\"\n            (mousedown)=\"select(item)\"\n            [innerHTML]=\"highlight(item, queryControl.value)\"\n          ></li>\n\n          <li *ngIf=\"results.length === 0\" class=\"empty\">No results</li>\n        </ul>\n      </ng-container>\n    </div>\n\n    <p class=\"hint\">Keyboard: ↑/↓ navigate, Enter select, Esc close.</p>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.card{width:100%;max-width:520px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}\n.title{margin:0;font-size:18px;font-weight:800;}\n.label{display:block;font-size:12px;color:#9ca3af;margin-bottom:6px;}\n.combo{position:relative;}\n.input{width:100%;padding:12px 12px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;color:#e5e7eb;outline:none;}\n.input:focus{border-color:#a3e635;box-shadow:0 0 0 2px rgba(163,230,53,.15);}\n.list{position:absolute;z-index:10;left:0;right:0;margin-top:8px;max-height:240px;overflow:auto;border-radius:12px;border:1px solid #1f2937;background:#0a0f1e;}\n.option{padding:10px 12px;cursor:pointer;border-bottom:1px solid rgba(31,41,55,.5);}\n.option:last-child{border-bottom:none;}\n.option.active{background:rgba(163,230,53,.12);}\n.empty{padding:10px 12px;color:#9ca3af;}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\nmark{background:rgba(163,230,53,.25);color:#e5e7eb;border-radius:4px;padding:0 2px;}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#0a0a0a;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

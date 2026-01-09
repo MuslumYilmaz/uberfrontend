@@ -1,0 +1,39 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Transfer List (solution)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-transfer-list-solution\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Transfer List (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { CommonModule } from '@angular/common';\nimport { Component } from '@angular/core';\n\ntype Item = { id: string; label: string };\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  topItems: Item[] = [\n    { id: 'a', label: 'Alpha' },\n    { id: 'b', label: 'Beta' },\n    { id: 'c', label: 'Gamma' },\n    { id: 'd', label: 'Delta' },\n    { id: 'e', label: 'Epsilon' }\n  ];\n\n  bottomItems: Item[] = [\n    { id: 'x', label: 'Xenon' },\n    { id: 'y', label: 'Yttrium' },\n    { id: 'z', label: 'Zinc' }\n  ];\n\n  topSelected = new Set<string>();\n  bottomSelected = new Set<string>();\n\n  isTopSelected(id: string): boolean {\n    return this.topSelected.has(id);\n  }\n\n  isBottomSelected(id: string): boolean {\n    return this.bottomSelected.has(id);\n  }\n\n  toggleTop(id: string, checked: boolean): void {\n    if (checked) this.topSelected.add(id);\n    else this.topSelected.delete(id);\n  }\n\n  toggleBottom(id: string, checked: boolean): void {\n    if (checked) this.bottomSelected.add(id);\n    else this.bottomSelected.delete(id);\n  }\n\n  get canMoveDown(): boolean {\n    return this.topSelected.size > 0;\n  }\n\n  get canMoveUp(): boolean {\n    return this.bottomSelected.size > 0;\n  }\n\n  moveDown(): void {\n    if (!this.canMoveDown) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of this.topItems) {\n      if (this.topSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    this.topItems = remaining;\n    this.bottomItems = [...this.bottomItems, ...moved];\n    this.topSelected.clear();\n    this.activeCleanup();\n  }\n\n  moveUp(): void {\n    if (!this.canMoveUp) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of this.bottomItems) {\n      if (this.bottomSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    this.bottomItems = remaining;\n    this.topItems = [...this.topItems, ...moved];\n    this.bottomSelected.clear();\n    this.activeCleanup();\n  }\n\n  // Optional: if you ever add active row / keyboard nav later.\n  private activeCleanup(): void {\n    // no-op\n  }\n\n  trackById(_: number, item: Item): string {\n    return item.id;\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Transfer List</h1>\n    <p class=\"subtitle\">Select items and move them between lists.</p>\n\n    <div class=\"layout\">\n      <!-- TOP LIST -->\n      <section class=\"listCard\">\n        <div class=\"listTitle\">Top</div>\n        <ul class=\"list\" role=\"list\">\n          <li *ngFor=\"let item of topItems; trackBy: trackById\" class=\"row\">\n            <label class=\"rowLabel\">\n              <input\n                type=\"checkbox\"\n                [checked]=\"isTopSelected(item.id)\"\n                (change)=\"toggleTop(item.id, $any($event.target).checked)\"\n              />\n              <span>{{ item.label }}</span>\n            </label>\n          </li>\n          <li *ngIf=\"topItems.length === 0\" class=\"empty\">Empty</li>\n        </ul>\n      </section>\n\n      <!-- CONTROLS -->\n      <section class=\"controls\">\n        <button class=\"btn\" (click)=\"moveDown()\" [disabled]=\"!canMoveDown\" aria-label=\"move down\">\n          ↓\n        </button>\n        <button class=\"btn\" (click)=\"moveUp()\" [disabled]=\"!canMoveUp\" aria-label=\"move up\">\n          ↑\n        </button>\n      </section>\n\n      <!-- BOTTOM LIST -->\n      <section class=\"listCard\">\n        <div class=\"listTitle\">Bottom</div>\n        <ul class=\"list\" role=\"list\">\n          <li *ngFor=\"let item of bottomItems; trackBy: trackById\" class=\"row\">\n            <label class=\"rowLabel\">\n              <input\n                type=\"checkbox\"\n                [checked]=\"isBottomSelected(item.id)\"\n                (change)=\"toggleBottom(item.id, $any($event.target).checked)\"\n              />\n              <span>{{ item.label }}</span>\n            </label>\n          </li>\n          <li *ngIf=\"bottomItems.length === 0\" class=\"empty\">Empty</li>\n        </ul>\n      </section>\n    </div>\n\n    <p class=\"hint\">Tip: selections are per-list. Move clears selection of moved items.</p>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.card{width:100%;max-width:780px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}\n.title{margin:0;font-size:18px;font-weight:800;}\n.subtitle{margin:0;color:#9ca3af;font-size:12px;}\n.layout{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:start;}\n.listCard{background:#0a0f1e;border:1px solid #1f2937;border-radius:12px;padding:12px;}\n.listTitle{font-size:12px;color:#9ca3af;margin-bottom:8px;}\n.list{list-style:none;margin:0;padding:0;display:grid;gap:6px;}\n.row{padding:8px 10px;border:1px solid rgba(31,41,55,.5);border-radius:10px;}\n.rowLabel{display:flex;gap:10px;align-items:center;cursor:pointer;}\n.rowLabel input{accent-color:#a3e635;}\n.controls{display:grid;gap:10px;place-items:center;padding-top:22px;}\n.btn{width:44px;height:44px;border-radius:12px;border:1px solid #374151;background:#0a0f1e;color:#e5e7eb;font-weight:900;cursor:pointer;}\n.btn:disabled{opacity:.5;cursor:not-allowed;}\n.empty{padding:8px 10px;color:#9ca3af;}\n.hint{margin:0;color:#9ca3af;font-size:12px;}\n@media (max-width:720px){.layout{grid-template-columns:1fr;}.controls{grid-template-columns:1fr 1fr;justify-content:center;padding-top:0;}}\n"
+        },
+        "/src/styles.css": {
+            "code": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#0a0a0a;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}
