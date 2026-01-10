@@ -1,0 +1,14 @@
+{
+    "dependencies": {
+        "vue": "3.x"
+    },
+    "openFile": "/src/App.vue",
+    "files": {
+        "package.json": "{\n  \"name\": \"vue-dynamic-counter-buttons-solution\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"vue\": \"3.x\"\n  },\n  \"scripts\": {\n    \"serve\": \"vue-cli-service serve\"\n  }\n}\n",
+        "public/index.html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Vue SDK • Dynamic Counter Buttons (solution)</title></head><body><div id=\"app\"></div></body></html>",
+        "src/main.ts": "import { createApp } from 'vue';\nimport App from './App.vue';\nimport './App.css';\n\ncreateApp(App).mount('#app');\n",
+        "src/App.vue": "<template>\n  <main class=\"page\">\n    <section class=\"card\">\n      <h1 class=\"title\">Dynamic Counter Buttons (Solution)</h1>\n      <p class=\"subtitle\">Each click increments only the clicked button and appends a new 0 button.</p>\n\n      <div class=\"list\">\n        <button\n          v-for=\"(c, i) in counts\"\n          :key=\"i\"\n          class=\"counterBtn\"\n          type=\"button\"\n          @click=\"onClick(i)\"\n        >\n          {{ c }}\n        </button>\n      </div>\n\n      <div class=\"hint\">Try clicking different buttons: each one keeps its own count.</div>\n    </section>\n  </main>\n</template>\n\n<script setup lang=\"ts\">\nimport { ref } from 'vue';\n\nconst counts = ref<number[]>([0]);\n\nconst onClick = (index: number) => {\n  counts.value[index] += 1;\n  counts.value.push(0);\n};\n</script>\n",
+        "src/App.css": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.page { min-height:100vh; display:grid; place-items:center; background:#0a0a0a; padding:24px; }\n.card { width:100%; max-width:420px; background:#0b1020; border:1px solid #1f2937; border-radius:16px; padding:18px; display:grid; gap:14px; color:#e5e7eb; }\n.title { margin:0; font-size:20px; font-weight:900; color:#e5e7eb; }\n.subtitle { margin:0; color:#9ca3af; font-size:12px; line-height:1.45; }\n\n.list { display:grid; gap:10px; }\n\n.counterBtn { background:#0a0f1e; border:1px solid #1f2937; border-radius:12px; padding:12px 14px; font-weight:900; cursor:pointer; color:#e5e7eb; text-align:center; }\n.counterBtn:hover { border-color:#374151; }\n\n.hint { color:#9ca3af; font-size:12px; line-height:1.45; }\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Node\",\n    \"strict\": true,\n    \"allowJs\": true\n  }\n}\n"
+    }
+}

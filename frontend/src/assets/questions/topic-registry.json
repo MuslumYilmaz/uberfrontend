@@ -36,6 +36,7 @@
       "title": "State & Reactivity",
       "tags": [
         "derived-state",
+        "computed",
         "global-state",
         "hooks",
         "immutability",

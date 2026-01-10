@@ -1,0 +1,39 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular • Dynamic Counter Buttons (starter)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-dynamic-counter-buttons\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Dynamic Counter Buttons</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color:#e5e7eb; }\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // TODO: each button has its own count\n  counts: number[] = [0];\n\n  // TODO: when a button is clicked:\n  // 1) increment ONLY that button's count\n  // 2) append a NEW button with value 0\n  onClick(_index: number): void {\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Dynamic Counter Buttons</h1>\n    <p class=\"subtitle\">Clicking a button increments only that button and adds a new 0 button below. Every button keeps its own count.</p>\n\n    <div class=\"list\">\n      <button\n        class=\"counterBtn\"\n        *ngFor=\"let c of counts; let i = index\"\n        (click)=\"onClick(i)\"\n        type=\"button\"\n      >\n        {{ c }}\n      </button>\n    </div>\n\n    <div class=\"hint\">Goal: each click grows the list by 1 and only the clicked button changes.</div>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".page{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;padding:24px;}\n.card{width:100%;max-width:420px;background:#0b1020;border:1px solid #1f2937;border-radius:16px;padding:18px;display:grid;gap:14px;color:#e5e7eb;}\n.title{margin:0;font-size:20px;font-weight:900;color:#e5e7eb;}\n.subtitle{margin:0;color:#9ca3af;font-size:12px;line-height:1.45;}\n\n.list{display:grid;gap:10px;}\n\n.counterBtn{background:#0a0f1e;border:1px solid #1f2937;border-radius:12px;padding:12px 14px;font-weight:900;cursor:pointer;color:#e5e7eb;text-align:center;}\n.counterBtn:hover{border-color:#374151;}\n\n.hint{color:#9ca3af;font-size:12px;line-height:1.45;}\n"
+        }
+    }
+}

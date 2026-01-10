@@ -1507,5 +1507,313 @@
       "netflix"
     ],
     "access": "premium"
+  },
+  {
+    "id": "react-like-button",
+    "title": "Like Button (Facebook-style Toggle + Counter)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "react",
+      "state",
+      "event-handlers",
+      "components",
+      "conditional-rendering"
+    ],
+    "description": {
+      "summary": "Build a Facebook-style Like button in React. Clicking toggles the liked state and updates a like counter (+1 when liking, -1 when unliking). The count must never go below 0.",
+      "specs": {
+        "requirements": [
+          "Render a Like button and a like counter.",
+          "Clicking toggles between 'Like' and 'Liked'.",
+          "When toggling to liked: increment the counter by 1.",
+          "When toggling to unliked: decrement the counter by 1.",
+          "The counter must never go below 0.",
+          "Update button styling based on liked state."
+        ],
+        "expectedBehavior": [
+          "Initial state: not liked, counter shows an initial value (e.g., 120).",
+          "Clicking the button toggles the label and active style.",
+          "Counter updates by +1 / -1 depending on toggle direction.",
+          "If the counter is 0, unliking should not make it negative."
+        ],
+        "implementationNotes": [
+          "Use `useState` for `liked` and `count`.",
+          "Implement `toggleLike()` with a guarded update (never below 0).",
+          "Keep everything in a single `App.tsx` for this exercise."
+        ],
+        "techFocus": [
+          "React useState",
+          "Event handlers",
+          "Derived UI from state",
+          "Guarded updates"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement `toggleLike()` and update both `liked` and `count`. Ensure the count never drops below 0.",
+    "solutionBlock": {
+      "overview": "Store `liked` and `count` in React state. When the user clicks the button, flip `liked` and update `count`: +1 when liking, -1 when unliking. Clamp the count to never go below 0.",
+      "approaches": [
+        {
+          "title": "Single component with guarded toggle",
+          "prose": "Use two state variables: `liked` (boolean) and `count` (number). In `toggleLike()`, update both using functional state updates so the code is resilient to batching. When unliking, clamp with `Math.max(0, n - 1)`."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Updating count based on stale state instead of functional updates.",
+          "Allowing count to go negative when unliking from 0.",
+          "Deriving UI (label/style) from separate variables that can get out of sync."
+        ],
+        "techniques": [
+          "Functional state updates with `setState((prev) => ...)`",
+          "Conditional className based on state"
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-like-button.v2.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-like-button"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-like-button-solution.v2.json",
+    "companies": [
+      "amazon"
+    ],
+    "access": "premium"
+  },
+  {
+    "id": "react-progress-bar-thresholds",
+    "title": "Progress Bar (0–100 with Threshold Colors)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "react",
+      "state",
+      "event-handlers",
+      "components",
+      "styling"
+    ],
+    "description": {
+      "summary": "Build a progress bar that visualizes a value from 0 to 100. Add +10% / −10% buttons, clamp the value to [0, 100], and change the bar color by thresholds (red/orange/green).",
+      "specs": {
+        "requirements": [
+          "Render the progress bar UI as the main component.",
+          "Display the current progress percentage (e.g., \"40%\").",
+          "Provide \"-10%\" and \"+10%\" buttons to decrease/increase progress by 10.",
+          "Clamp progress so it never goes below 0 or above 100.",
+          "Change the bar color based on thresholds (red/orange/green)."
+        ],
+        "expectedBehavior": [
+          "Initial progress starts at 0%.",
+          "Clicking \"+10%\" increases progress by 10 up to 100.",
+          "Clicking \"-10%\" decreases progress by 10 down to 0.",
+          "Progress never renders below 0% or above 100%.",
+          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
+        ],
+        "implementationNotes": [
+          "Use React state (`useState`) to store progress.",
+          "Implement handlers `inc()` and `dec()` that clamp with `Math.min` / `Math.max`.",
+          "Derive a className for the fill element based on thresholds.",
+          "UI should match the Angular version: title + subtitle + value + track/fill + two buttons + hint."
+        ],
+        "techFocus": [
+          "React useState",
+          "Event handlers",
+          "Clamped updates",
+          "Derived UI state (threshold class)",
+          "Basic styling"
+        ]
+      }
+    },
+    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (<34 red, 34–66 orange, >66 green) and bind width via `style={{ width: progress + '%' }}`.",
+    "solutionBlock": {
+      "overview": "Use a single `progress` state value. +10/−10 handlers update progress with clamping to [0, 100]. Render a track with a fill whose width is `progress%`. Compute the fill color class from thresholds (red/orange/green).",
+      "approaches": [
+        {
+          "title": "Single component with clamped progress and threshold class",
+          "prose": "Store `progress` in state. `inc()` uses `setProgress(p => Math.min(100, p + 10))`. `dec()` uses `setProgress(p => Math.max(0, p - 10))`. Compute `barClass` from progress and apply it to the fill. Bind width with `style={{ width: progress + '%' }}`."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Not clamping updates (value can go negative or above 100).",
+          "Deriving UI color in multiple places instead of one derived variable.",
+          "Using non-functional `setState` updates when multiple clicks can batch (prefer functional updater)."
+        ],
+        "techniques": [
+          "Functional state updates to avoid stale reads.",
+          "Clamping with Math.min/Math.max.",
+          "Derived className for threshold-based styling."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-progress-bar-thresholds.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-progress-bar-thresholds"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-progress-bar-thresholds-solution.v1.json",
+    "companies": [
+      "react"
+    ],
+    "access": "premium"
+  },
+  {
+    "id": "react-nested-comments",
+    "title": "Nested Comments (Infinite Replies, Single Active Reply Input)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "react",
+      "state",
+      "recursion",
+      "tree",
+      "event-handlers",
+      "controlled-inputs"
+    ],
+    "description": {
+      "summary": "Build a nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation.",
+      "specs": {
+        "requirements": [
+          "Render a nested comments UI as the main screen.",
+          "Allow adding top-level comments via a textarea + 'Add Comment' button.",
+          "Each comment has a 'Reply' button.",
+          "Clicking 'Reply' opens a reply input ONLY under that comment (single active reply at a time).",
+          "Allow infinite depth replies (nested tree).",
+          "Render replies hierarchically with indentation."
+        ],
+        "expectedBehavior": [
+          "Top-level 'Add Comment' adds a new comment to the list.",
+          "Clicking 'Reply' under a comment shows a reply input under that comment and hides any other open reply input.",
+          "Posting a reply adds it as a child of the correct parent comment.",
+          "Cancel closes the reply input without changes.",
+          "Replies can be nested infinitely and indentation increases with depth."
+        ],
+        "implementationNotes": [
+          "Use React state for the comment tree.",
+          "Keep a single `activeReplyId` + `replyDraft` to ensure only one reply input exists.",
+          "Use recursive rendering to display nested comments.",
+          "IDs can be simple incrementing strings."
+        ],
+        "techFocus": [
+          "Tree data structures in UI",
+          "Recursive rendering",
+          "Single active input state",
+          "Controlled inputs and event handlers"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Maintain a comment tree in state. Add top-level comments by unshifting a new node into the root array. For replies, track `activeReplyId` and `replyDraft` so only one reply input is visible. When submitting a reply, find the parent node by id (DFS) and push a new child into `children`. Render the tree recursively and indent each node by `depth * 16`.",
+      "approaches": [
+        {
+          "title": "Single component + recursive renderer + single active reply state",
+          "prose": "1) Store comments in a `CommentNode[]` state.\n2) Store `activeReplyId` + `replyDraft` as UI state.\n3) Implement `addTop`, `openReply`, `cancelReply`, `submitReply`.\n4) Implement `findById` DFS to locate a node.\n5) Render a recursive `Tree` component that maps nodes and renders children with increased depth.\n\nImportant: ensure text colors are explicitly set so headings and comment text are readable on the dark background."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Opening multiple reply inputs (having per-node local reply state).",
+          "Mutating state incorrectly when adding replies (losing children references).",
+          "Forgetting to apply readable text colors; default styles may render text too dark on dark backgrounds."
+        ],
+        "techniques": [
+          "DFS search in a tree (`findById`).",
+          "Single active reply input via `activeReplyId`.",
+          "Recursive React component for tree rendering."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-nested-comments.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v1:ui:react:react-nested-comments"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-nested-comments-solution.v1.json",
+    "companies": [
+      "google"
+    ],
+    "access": "premium"
+  },
+  {
+    "id": "react-dynamic-counter-buttons",
+    "title": "Dynamic Counter Buttons (Grow-on-Click)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "react",
+      "state",
+      "arrays",
+      "event-handlers",
+      "dynamic-ui"
+    ],
+    "description": {
+      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently.",
+      "specs": {
+        "requirements": [
+          "Render the dynamic counter buttons UI as the main screen.",
+          "Initially render exactly 1 counter button with value 0.",
+          "Clicking any button increments ONLY that button’s value by 1.",
+          "After each click, append a NEW button at the bottom with value 0.",
+          "All buttons keep their own values independently."
+        ],
+        "expectedBehavior": [
+          "Initial UI: one button showing 0.",
+          "Click first button once → first becomes 1, and a second button (0) appears below.",
+          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Existing button values never reset when new buttons appear."
+        ],
+        "implementationNotes": [
+          "Use React state with an array like `counts: number[]`.",
+          "Render buttons with `counts.map(...)`.",
+          "On click: increment the clicked index and append 0.",
+          "Keep styling consistent with the dark UI theme (explicit readable text colors)."
+        ],
+        "techFocus": [
+          "React useState with arrays",
+          "Rendering lists",
+          "Updating array state",
+          "Event handlers with indices"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Keep an array of counts in state. Render one button per entry. On click, copy the array, increment the clicked index, then push a new 0 at the end, and set the new array.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "approaches": [
+        {
+          "title": "Single component with counts[] array",
+          "prose": "1) Initialize `counts` as `[0]`.\n2) Render: `counts.map((c,i) => <button ...>{c}</button>)`.\n3) `onClick(i)`: clone array, increment clone[i], push(0), setCounts(clone).\n\nThis matches the spec exactly and stays small."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Mutating state directly (e.g. `counts[i]++` without cloning) causing stale renders.",
+          "Incrementing all buttons instead of just the clicked one.",
+          "Missing explicit text colors on dark backgrounds (unreadable buttons)."
+        ],
+        "techniques": [
+          "Immutable array updates via cloning",
+          "Index-based updates",
+          "List rendering with stable keys"
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-dynamic-counter-buttons.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v1:ui:react:react-dynamic-counter-buttons"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-dynamic-counter-buttons-solution.v1.json",
+    "companies": ["amazon"],
+    "access": "premium"
   }
 ]

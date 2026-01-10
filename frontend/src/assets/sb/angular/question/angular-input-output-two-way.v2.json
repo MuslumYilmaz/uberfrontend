@@ -1,0 +1,48 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular • @Input/@Output + Two-way Binding (question)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-input-output-two-way-question\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Input/Output + Two-way (question)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/styles.css": {
+            "code": ":root{color-scheme:dark;}html,body{margin:0;height:100%;background:#0a0a0a;}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#e5e7eb;}\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        },
+        "/src/app/child.component.ts": {
+            "code": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-child',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './child.component.html',\n  styleUrls: ['./child.component.css']\n})\nexport class ChildComponent {\n  // TODO: accept value from parent\n  @Input() value = 0;\n\n  // TODO: emit valueChange for two-way binding support\n  @Output() valueChange = new EventEmitter<number>();\n\n  // TODO: emit likedChange when user toggles like\n  @Output() likedChange = new EventEmitter<boolean>();\n\n  // TODO: internal liked state (should come from parent via input OR be managed here + emitted)\n  liked = false;\n\n  // TODO: increment value and emit\n  inc(): void {\n  }\n\n  // TODO: decrement value (not below 0) and emit\n  dec(): void {\n  }\n\n  // TODO: toggle liked and emit\n  toggleLike(): void {\n  }\n}\n"
+        },
+        "/src/app/child.component.html": {
+            "code": "<div class=\"panel\">\n  <div class=\"row\">\n    <div class=\"k\">Child value</div>\n    <div class=\"v\">{{ value }}</div>\n  </div>\n\n  <div class=\"actions\">\n    <button class=\"btn\" (click)=\"dec()\" aria-label=\"decrement\">−</button>\n    <button class=\"btn\" (click)=\"inc()\" aria-label=\"increment\">+</button>\n\n    <button\n      class=\"btn like\"\n      [class.active]=\"liked\"\n      (click)=\"toggleLike()\"\n      aria-label=\"like\"\n    >\n      {{ liked ? 'Liked' : 'Like' }}\n    </button>\n  </div>\n\n  <div class=\"hint\">\n    Implement &#64;Input / &#64;Output + [(value)] two-way binding.\n  </div>\n</div>\n"
+        },
+        "/src/app/child.component.css": {
+            "code": ".panel{background:#0a0f1e;border:1px solid #1f2937;border-radius:12px;padding:12px;display:grid;gap:10px}\n.row{display:flex;justify-content:space-between;align-items:baseline}\n.k{color:#9ca3af;font-size:12px}\n.v{font-size:20px;font-weight:900}\n.actions{display:flex;gap:8px;flex-wrap:wrap}\n.btn{background:#a3e635;color:#111;border:none;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}\n.btn.like{background:transparent;color:#e5e7eb;border:1px solid #374151}\n.btn.like.active{background:#3b82f6;border-color:#2563eb;color:#fff}\n.hint{color:#9ca3af;font-size:12px;line-height:1.35}\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ChildComponent } from './child.component';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ChildComponent],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Parent state\n  value = 0;\n  liked = false;\n\n  // TODO: handle liked change from child\n  onLikedChange(next: boolean): void {\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">&#64;Input / &#64;Output + Two-way Binding</h1>\n    <p class=\"subtitle\">Make the child reusable: accept data via &#64;Input, emit changes via &#64;Output, and support [(value)].</p>\n\n    <div class=\"stats\">\n      <div class=\"stat\"><div class=\"k\">Parent value</div><div class=\"v\">{{ value }}</div></div>\n      <div class=\"stat\"><div class=\"k\">Parent liked</div><div class=\"v\">{{ liked ? 'true' : 'false' }}</div></div>\n    </div>\n\n    <!-- TODO: wire two-way binding + liked change -->\n    <app-child\n      [value]=\"value\"\n      (valueChange)=\"value = $event\"\n      (likedChange)=\"onLikedChange($event)\"\n    />\n\n    <p class=\"foot\">Goal: child increments/decrements should update parent value. Like should update parent liked.</p>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb}\n.card{width:100%;max-width:620px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px}\n.title{margin:0;font-size:18px;font-weight:900}\n.subtitle{margin:0;color:#9ca3af;font-size:12px}\n.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}\n.stat{background:#0a0f1e;border:1px solid #1f2937;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:baseline}\n.k{color:#9ca3af;font-size:12px}\n.v{font-size:18px;font-weight:900}\n.foot{margin:0;color:#9ca3af;font-size:12px}\n"
+        }
+    }
+}

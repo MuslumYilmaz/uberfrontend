@@ -49,6 +49,7 @@
     "components",
     "composition",
     "composition-api",
+    "computed",
     "concurrency",
     "conditional-rendering",
     "const",

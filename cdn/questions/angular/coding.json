@@ -1459,5 +1459,391 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tictactoe-solution.v1.json",
     "access": "premium"
+  },
+  {
+    "id": "angular-like-button",
+    "title": "Like Button (Facebook-style Toggle)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "components",
+      "event-binding",
+      "state",
+      "conditional-rendering",
+      "styling"
+    ],
+    "description": {
+      "summary": "Build a Facebook-style Like button as an Angular standalone component. Clicking toggles the liked state, updates the count (+1 / -1), and changes the button style.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a Like button with an icon, label, and a like count.",
+          "Clicking the button toggles the liked state.",
+          "When liked becomes true, increase the count by 1; when unliked, decrease by 1.",
+          "Update the button visual style based on liked state.",
+          "Prevent the count from going below 0."
+        ],
+        "expectedBehavior": [
+          "Initial state: not liked, count shows the initial value.",
+          "First click: becomes liked, count increases by 1, button turns 'active'.",
+          "Second click: becomes unliked, count decreases by 1, button returns to normal.",
+          "Count never becomes negative."
+        ],
+        "implementationNotes": [
+          "Use component class properties for state (`liked`, `count`).",
+          "Use `(click)` event binding to toggle.",
+          "Use `[class.active]` (or `[ngClass]`) to change styles."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "State in a component class",
+          "Event binding",
+          "Conditional class binding"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Store `liked` (boolean) and `count` (number) as component state. The click handler flips `liked` and updates `count` accordingly. Bind a CSS class based on `liked` to change the button appearance. Clamp `count` at 0 to avoid negative values.",
+      "approaches": [
+        {
+          "title": "Single standalone component with class-based state",
+          "prose": "Keep everything in `AppComponent`. Add `liked = false` and `count = 0` (or any initial value). Implement `toggleLike()`:\n- If currently not liked: set liked=true and count++\n- Else: set liked=false and count=Math.max(0, count-1)\nBind `[class.active]=\"liked\"` in the template."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to decrement on unlike (toggle only changes style).",
+          "Letting count become negative.",
+          "Mutating state in template expressions instead of using a method."
+        ],
+        "techniques": [
+          "Use a single click handler to keep logic centralized.",
+          "Use derived UI from state (class binding)."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-like-button.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-like-button"
+    },
+    "companies": [
+      "amazon"
+    ],
+    "solutionAsset": "assets/sb/angular/solution/angular-like-button-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-input-output-two-way",
+    "title": "Reusable Child Component with @Input/@Output (Two-way Binding)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "components",
+      "inputs-outputs",
+      "binding",
+      "event-binding",
+      "template-syntax"
+    ],
+    "description": {
+      "summary": "Build a reusable Angular child component that supports @Input/@Output, property binding, event emitters, and two-way binding. The parent must pass data to the child and receive changes back.",
+      "specs": {
+        "requirements": [
+          "Create a reusable child component (standalone) that receives `value` via @Input.",
+          "Child must emit changes via @Output so the parent can react.",
+          "Implement two-way binding pattern: `value` + `valueChange` (so parent can use `[(value)]`).",
+          "Parent component must demonstrate:",
+          "  - Property binding: `[label]=\"...\"` and `[value]=\"...\"`",
+          "  - Event binding: `(valueChange)=\"...\"` or `[(value)]=\"...\"`",
+          "UI should include an input + a button inside the child. Child emits updated value when user edits input or presses button."
+        ],
+        "expectedBehavior": [
+          "Typing in the child input updates the parent's state (via two-way binding).",
+          "Clicking child button emits an event that the parent logs/increments a counter.",
+          "Parent can also update the value programmatically and child reflects it."
+        ],
+        "implementationNotes": [
+          "Use standalone components.",
+          "Use a classic `@Input() value` + `@Output() valueChange = new EventEmitter<...>()` for two-way binding.",
+          "Avoid FormsModule; use plain `(input)` event handling for simplicity.",
+          "Keep everything minimal: two components + one small UI."
+        ],
+        "techFocus": [
+          "@Input / @Output",
+          "EventEmitter",
+          "Two-way binding convention `value` + `valueChange`",
+          "Property binding & event binding",
+          "Parent-child communication"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Implement a child component that accepts `value` and `label` via `@Input`. To support Angular two-way binding, expose `@Output() valueChange` and emit the new value when the user types. Also expose another output like `submit` to demonstrate emitting discrete events. The parent binds `[(value)]` to keep state synchronized and listens for `(submit)` to track events.",
+      "approaches": [
+        {
+          "title": "Two-way binding via value/valueChange + submit output",
+          "prose": "Child:\n- `@Input() value: string` and `@Output() valueChange = new EventEmitter<string>()`.\n- Emit on input: `valueChange.emit(next)`.\n- Provide `@Output() submit = new EventEmitter<void>()` for button clicks.\n\nParent:\n- Store `name` and `submitCount`.\n- Use `<app-child [(value)]=\"name\" (submit)=\"onSubmit()\" [label]=\"...\" />`.\n- Show `name` and `submitCount` in parent UI.\n- Add a parent button to programmatically set the value."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting the exact naming convention `value` + `valueChange` required for `[(value)]`.",
+          "Mutating @Input directly inside child instead of emitting changes to the parent.",
+          "Not reflecting parent updates back into child (fixed by using `value` as source of truth)."
+        ],
+        "techniques": [
+          "Two-way binding convention in Angular custom components.",
+          "Event emitter for parent notification.",
+          "Property + event binding in templates."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-input-output-two-way.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-input-output-two-way"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-input-output-two-way-solution.v2.json",
+    "companies": [
+      "google"
+    ],
+    "access": "premium"
+  },
+  {
+    "id": "angular-progress-bar-thresholds",
+    "title": "Progress Bar (0–100 with Threshold Colors)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "easy",
+    "importance": 3,
+    "tags": [
+      "components",
+      "event-binding",
+      "state",
+      "styling",
+      "derived-state"
+    ],
+    "description": {
+      "summary": "Build a progress bar that visualizes a value from 0 to 100. Add +10% / −10% buttons, clamp the value to [0, 100], and change the bar color by thresholds (red/orange/green).",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render a progress bar where the fill represents a progress value from 0 to 100.",
+          "Provide \"-10%\" and \"+10%\" buttons to decrease/increase progress by 10.",
+          "Clamp progress so it never goes below 0 or above 100.",
+          "Change the bar color based on thresholds (red/orange/green).",
+          "Display the current progress percentage (e.g., \"40%\")."
+        ],
+        "expectedBehavior": [
+          "Initial progress starts at 0%.",
+          "Clicking \"+10%\" increases progress by 10 up to 100.",
+          "Clicking \"-10%\" decreases progress by 10 down to 0.",
+          "Progress never renders below 0% or above 100%.",
+          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
+        ],
+        "implementationNotes": [
+          "Store progress as a number (e.g., `progress = 0`).",
+          "Use `(click)` bindings for buttons.",
+          "Bind fill width using `[style.width.%]=\"progress\"`.",
+          "Compute a derived class for the fill color via a getter (e.g., `barClass`).",
+          "Avoid using literal '@Input' / '@Output' text in Angular templates; Angular 17+ may interpret '@' as block syntax. Use '&#64;Input' if needed."
+        ],
+        "techFocus": [
+          "Standalone component setup",
+          "Local state in component",
+          "Event binding",
+          "Style/property binding",
+          "Derived UI state (threshold class)"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement `inc()` and `dec()` to add/subtract 10 and clamp. Bind `[style.width.%]` to progress and return a threshold-based class string from `barClass`.",
+    "solutionBlock": {
+      "overview": "Keep a single `progress` number in a standalone component. Use +10/−10 button handlers with clamping. Render a track and a fill element where width is bound to progress percentage. Compute threshold-based classes (red/orange/green) from progress via a getter.",
+      "approaches": [
+        {
+          "title": "Standalone component with clamped progress and threshold class",
+          "prose": "Store `progress = 0`. Implement `inc()` as `progress = Math.min(100, progress + 10)` and `dec()` as `progress = Math.max(0, progress - 10)`. Use `[style.width.%]=\"progress\"` on the fill div. Compute the fill class with a getter: `<34` red, `34–66` orange, `>66` green."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Not clamping (value goes <0 or >100).",
+          "Using `[style.width]` without `%` (wrong CSS).",
+          "Hardcoding color logic in multiple places instead of a derived getter."
+        ],
+        "techniques": [
+          "Use `[style.width.%]` for percent-based widths.",
+          "Use a getter for threshold-based UI state.",
+          "Keep minimal state + methods in one standalone component."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-progress-bar-thresholds.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-progress-bar-thresholds"
+    },
+    "companies": [],
+    "solutionAsset": "assets/sb/angular/solution/angular-progress-bar-thresholds-solution.v2.json",
+    "access": "premium"
+  },
+  {
+    "id": "angular-nested-comments",
+    "title": "Nested Comments (Infinite Replies)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "components",
+      "recursion",
+      "tree",
+      "forms",
+      "state"
+    ],
+    "description": {
+      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular root component.",
+          "Users can add top-level comments via a textarea + Add button.",
+          "Each comment shows a Reply button.",
+          "Clicking Reply opens a reply input ONLY under that comment.",
+          "Users can submit a reply, which becomes a child comment under the parent.",
+          "Support infinite nesting depth (replies can be replied to).",
+          "Render nested replies with visible indentation."
+        ],
+        "expectedBehavior": [
+          "Submitting a top-level comment adds it to the list.",
+          "Clicking Reply on one comment toggles only that comment’s reply input.",
+          "Submitting a reply appends a child comment under the correct parent.",
+          "Replies can be nested indefinitely.",
+          "UI indentation increases with depth."
+        ],
+        "implementationNotes": [
+          "Keep all state in the root component (no child components required).",
+          "Use a tree structure: Comment = { id, text, children: Comment[] }.",
+          "Track which comment is currently being replied to using `activeReplyId` (or similar).",
+          "Use a single `replyDraft` string bound to the active reply input.",
+          "Render recursively using an `ng-template` and `ngTemplateOutlet`."
+        ],
+        "techFocus": [
+          "Standalone component",
+          "State modeling (tree)",
+          "Recursive template rendering",
+          "UI state isolation (activeReplyId)",
+          "Basic forms (ngModel)"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Model comments as a tree. Use one input for adding top-level comments and a second input for replying. Store `activeReplyId` to ensure only one reply input is open at a time (and only under the clicked comment). Render the tree recursively via an `ng-template` with `ngTemplateOutlet`, passing `depth` to compute indentation.\n\n**Test cases**\n- Add a top-level comment → it appears in the list.\n- Click Reply on comment A → reply input appears only under A.\n- Click Reply on comment B → input moves to B; A’s input disappears.\n- Submit a reply under A → reply is added to A.children.\n- Reply to a reply (depth 2+) → nested indentation increases and tree stays correct.",
+      "approaches": [
+        {
+          "title": "Single component + recursive template (ngTemplateOutlet)",
+          "prose": "1) Define a `CommentNode` type with `children: CommentNode[]`.\n2) Store `comments: CommentNode[]`.\n3) Use `activeReplyId: string | null` + `replyDraft: string` to control reply UI.\n4) `openReply(id)` sets activeReplyId and clears replyDraft.\n5) `submitReply(parentId)` finds the node in the tree and pushes a new child.\n6) Render recursively using an `ng-template` that calls itself via `ngTemplateOutlet`, passing `nodes` and `depth`.\n7) Apply indentation via `[style.marginLeft.px]=\"depth * 16\"`.",
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\n\ntype CommentNode = {\n  id: string;\n  text: string;\n  children: CommentNode[];\n};\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  comments: CommentNode[] = [];\n\n  topDraft = '';\n\n  activeReplyId: string | null = null;\n  replyDraft = '';\n\n  private nextId = 1;\n  private makeId(): string {\n    return String(this.nextId++);\n  }\n\n  addTop(): void {\n    const text = this.topDraft.trim();\n    if (!text) return;\n\n    this.comments.unshift({ id: this.makeId(), text, children: [] });\n    this.topDraft = '';\n  }\n\n  openReply(id: string): void {\n    // only that comment gets the input (others unaffected)\n    this.activeReplyId = id;\n    this.replyDraft = '';\n  }\n\n  cancelReply(): void {\n    this.activeReplyId = null;\n    this.replyDraft = '';\n  }\n\n  submitReply(parentId: string): void {\n    const text = this.replyDraft.trim();\n    if (!text) return;\n\n    const parent = this.findById(this.comments, parentId);\n    if (!parent) return;\n\n    parent.children.push({ id: this.makeId(), text, children: [] });\n    this.cancelReply();\n  }\n\n  private findById(nodes: CommentNode[], id: string): CommentNode | null {\n    for (const n of nodes) {\n      if (n.id === id) return n;\n      const found = this.findById(n.children, id);\n      if (found) return found;\n    }\n    return null;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using per-node booleans for reply inputs (hard to manage as tree grows).",
+          "Mutating the wrong branch because parent lookup is incorrect.",
+          "Trying to render recursively without `ngTemplateOutlet` (Angular doesn’t allow direct component recursion unless you create a child component)."
+        ],
+        "techniques": [
+          "Tree structure + DFS lookup for insertion.",
+          "`activeReplyId` to isolate reply UI to a single target comment.",
+          "Recursive rendering with `ng-template` + `ngTemplateOutlet`."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-nested-comments.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-nested-comments"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-nested-comments-solution.v2.json",
+    "companies": [],
+    "access": "premium"
+  },
+  {
+    "id": "angular-dynamic-counter-buttons",
+    "title": "Dynamic Counter Buttons (Grow-on-Click)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "components",
+      "event-binding",
+      "state",
+      "ng-for",
+      "arrays"
+    ],
+    "description": {
+      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently.",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular root component.",
+          "Initially render exactly 1 counter button with value 0.",
+          "Clicking any button increments ONLY that button’s value by 1.",
+          "After each click, append a NEW button at the bottom with value 0.",
+          "All buttons keep their own values independently."
+        ],
+        "expectedBehavior": [
+          "Initial UI: one button showing 0.",
+          "Click first button once → first becomes 1, and a second button (0) appears below.",
+          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Existing button values never reset when new buttons appear."
+        ],
+        "implementationNotes": [
+          "Store button values in an array like `counts: number[]`.",
+          "Render buttons with `*ngFor`.",
+          "On click: increment `counts[i]` and then `counts.push(0)`.",
+          "Keep styling consistent with your dark UI theme (섭: explicit text color)."
+        ],
+        "techFocus": [
+          "Array state in Angular components",
+          "*ngFor rendering",
+          "Event binding with parameters",
+          "Simple immutable vs mutable updates (either is acceptable here)"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "Keep an array of counts. Render a button for each count. When a button is clicked, increment that specific index, then append a new 0 at the end. This naturally grows the UI while preserving each button’s independent value.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "approaches": [
+        {
+          "title": "Standalone component + counts[] array",
+          "prose": "1) Initialize `counts = [0]`.\n2) Template: `*ngFor=\"let c of counts; let i = index\"`.\n3) Button click: `onClick(i)`.\n4) In `onClick(i)`: `this.counts[i] += 1; this.counts.push(0);`.\n\nThis is minimal and matches the spec exactly."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Incrementing all buttons instead of just the clicked one.",
+          "Appending the new 0 before incrementing (still works but can confuse beginners).",
+          "Not using explicit text colors in CSS, causing unreadable dark-on-dark labels."
+        ],
+        "techniques": [
+          "Index-based updates in arrays",
+          "Rendering dynamic lists with *ngFor",
+          "Keeping UI readable on dark background with explicit colors"
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-dynamic-counter-buttons.v2.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v2:ui:angular:angular-dynamic-counter-buttons"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json",
+    "companies": [],
+    "access": "premium"
   }
 ]

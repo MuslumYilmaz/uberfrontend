@@ -1,0 +1,39 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "Angular Like Button (solution)",
+    "openFile": "/src/app/app.component.ts",
+    "dependencies": {
+        "@angular/core": "17.1.0",
+        "@angular/common": "17.1.0",
+        "@angular/platform-browser": "17.1.0",
+        "rxjs": "7.8.1",
+        "zone.js": "^0.14.2"
+    },
+    "files": {
+        "/package.json": {
+            "code": "{\n  \"name\": \"angular-like-button-solution\",\n  \"private\": true\n}\n"
+        },
+        "/src/main.ts": {
+            "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+        },
+        "/src/index.html": {
+            "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Like Button (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+        },
+        "/src/styles.css": {
+            "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+        },
+        "/src/app/app.component.ts": {
+            "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  liked = false;\n  count = 120;\n\n  toggleLike(): void {\n    if (!this.liked) {\n      this.liked = true;\n      this.count += 1;\n      return;\n    }\n\n    this.liked = false;\n    this.count = Math.max(0, this.count - 1);\n  }\n}\n"
+        },
+        "/src/app/app.component.html": {
+            "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Like Button</h1>\n    <p class=\"subtitle\">Click to toggle like state and update the counter.</p>\n\n    <div class=\"row\">\n      <button\n        class=\"likeBtn\"\n        [class.active]=\"liked\"\n        (click)=\"toggleLike()\"\n        [attr.aria-pressed]=\"liked\"\n        aria-label=\"like button\"\n      >\n        <span class=\"icon\" aria-hidden=\"true\">👍</span>\n        <span class=\"label\">{{ liked ? 'Liked' : 'Like' }}</span>\n      </button>\n\n      <div class=\"count\" aria-label=\"like count\">{{ count }}</div>\n    </div>\n\n    <p class=\"hint\">\n      Toggling updates both style and count (+1 / -1). Count never goes below 0.\n    </p>\n  </section>\n</main>\n"
+        },
+        "/src/app/app.component.css": {
+            "code": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;}\n.card{width:100%;max-width:520px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}\n.title{margin:0;font-size:18px;font-weight:800;}\n.subtitle{margin:0;color:#9ca3af;font-size:12px;}\n.row{display:flex;align-items:center;gap:12px;}\n.likeBtn{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:10px 14px;border:1px solid #374151;background:#0a0f1e;color:#e5e7eb;font-weight:800;cursor:pointer;}\n.likeBtn:hover{border-color:#4b5563;}\n.likeBtn.active{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.7);color:#dbeafe;}\n.icon{font-size:16px;line-height:1;}\n.label{font-size:14px;}\n.count{min-width:64px;text-align:center;background:#0a0f1e;border:1px solid #1f2937;border-radius:12px;padding:10px 12px;font-weight:900;}\n.hint{margin:0;color:#9ca3af;font-size:12px;line-height:1.35;}\n"
+        },
+        "/tsconfig.json": {
+            "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+        }
+    }
+}

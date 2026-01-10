@@ -4,6 +4,9 @@
     <loc>https://frontendatlas.com/</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-autocomplete-search-starter</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-contact-form-starter</loc>
   </url>
   <url>
@@ -11,6 +14,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-debounced-search</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-dynamic-counter-buttons</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-dynamic-table-starter</loc>
@@ -25,13 +31,25 @@
     <loc>https://frontendatlas.com/angular/coding/angular-image-slider-starter</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-input-output-two-way</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-like-button</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-multi-step-form-starter</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-nested-checkboxes</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-nested-comments</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-pagination-table</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-progress-bar-thresholds</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-shopping-cart-mini</loc>
@@ -46,7 +64,13 @@
     <loc>https://frontendatlas.com/angular/coding/angular-theme-toggle</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-tictactoe-starter</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-todo-list-starter</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-transfer-list</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/debug/ng-debug-counter-change-detection</loc>
@@ -430,7 +454,28 @@
     <loc>https://frontendatlas.com/javascript/coding/js-deep-clone</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-deep-clone-cycles-3</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-deep-equal</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-1</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-2</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-3</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-1</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-2</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-3</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-event-emitter-mini</loc>
@@ -442,7 +487,19 @@
     <loc>https://frontendatlas.com/javascript/coding/js-flatten-once</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-get-by-path-1</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-group-by</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-implement-bind</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-implement-instanceof</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-implement-new</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-is-object-empty</loc>
@@ -460,7 +517,28 @@
     <loc>https://frontendatlas.com/javascript/coding/js-promise-all</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-querystring-parse-1</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-querystring-parse-3</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-querystring-stringify-2</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-reverse-string</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-closest-2</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-matches-1</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-qsa-3</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-set-by-path-2</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-streaming-ndjson-parser</loc>
@@ -586,6 +664,9 @@
     <loc>https://frontendatlas.com/react/coding/react-accordion-faq</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/coding/react-autocomplete-search-starter</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/coding/react-contact-form-starter</loc>
   </url>
   <url>
@@ -593,6 +674,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-debounced-search</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/coding/react-dynamic-counter-buttons</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-dynamic-table</loc>
@@ -604,13 +688,22 @@
     <loc>https://frontendatlas.com/react/coding/react-image-slider</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/coding/react-like-button</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/coding/react-multi-step-signup</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-nested-checkboxes</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/coding/react-nested-comments</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/coding/react-pagination-table</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/coding/react-progress-bar-thresholds</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-shopping-cart</loc>
@@ -625,7 +718,16 @@
     <loc>https://frontendatlas.com/react/coding/react-theme-toggle</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/coding/react-tictactoe</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/coding/react-todo-list</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/coding/react-transfer-list</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/coding/react-use-effect-once</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/trivia/react-component-rerendering</loc>
@@ -751,6 +853,9 @@
     <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-autocomplete-search</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-contact-form-starter</loc>
   </url>
   <url>
@@ -758,6 +863,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-debounced-search</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-dynamic-counter-buttons</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-dynamic-table</loc>
@@ -769,13 +877,22 @@
     <loc>https://frontendatlas.com/vue/coding/vue-image-slider</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-like-button</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-multi-step-form</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-nested-checkboxes</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-nested-comments</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-pagination-table</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-progress-bar-thresholds</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-shopping-cart</loc>
@@ -790,7 +907,13 @@
     <loc>https://frontendatlas.com/vue/coding/vue-theme-toggle</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-tictactoe</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-todo-list</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-transfer-list</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/trivia/vue-architecture-decisions-scalability</loc>

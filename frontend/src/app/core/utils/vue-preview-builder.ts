@@ -38,7 +38,7 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; frame-ancestors 'none'; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Vue Preview</title>
   <style>
     html,body,#app{height:100%}
@@ -233,7 +233,7 @@ function parseSfc(src: string): {
   // 1) <template> bloğunu yakala
   const templateRE = /<template>([\s\S]*?)<\/template>/;
   const tplMatch = src.match(templateRE);
-  const template = tplMatch?.[1]?.trim() ?? '';
+  let template = tplMatch?.[1]?.trim() ?? '';
 
   // 2) <script ...> bloğunu yakala (setup veya normal fark etmez)
   const scriptRE = /<script([^>]*)>([\s\S]*?)<\/script>/;
@@ -242,9 +242,6 @@ function parseSfc(src: string): {
   const scriptRaw = scriptMatch?.[2]?.trim() ?? '';
 
   const isSetup = /\bsetup\b/.test(scriptAttrs);
-
-  // Template'i backtick içine koymak için ` işaretini kaçışlayalım
-  const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
 
   if (isSetup) {
     // ---------- <script setup> yolu ----------
@@ -261,6 +258,17 @@ function parseSfc(src: string): {
       return _m;
     });
 
+    // Replace component tags (<Tree />) with dynamic component usage (<component :is="Tree" />)
+    const componentTags = new Set<string>();
+    const componentTagRE = /<([A-Z][A-Za-z0-9_]*)\b/g;
+    let m: RegExpExecArray | null;
+    while ((m = componentTagRE.exec(template)) !== null) {
+      componentTags.add(m[1]);
+    }
+    if (componentTags.size) {
+      template = rewriteComponentTags(template, componentTags);
+    }
+
     // 2) Template içinde gerçekten kullanılan identifier'ları bul
     const templateIds = new Set<string>();
 
@@ -273,7 +281,7 @@ function parseSfc(src: string): {
       'Math', 'Date', 'Number', 'String', 'Boolean', 'Array', 'Object'
     ]);
 
-    let m: RegExpExecArray | null;
+    m = null;
     while ((m = exprRE.exec(template)) !== null) {
       const expr = m[1] || m[3] || m[4] || m[5] || '';
       let idm: RegExpExecArray | null;
@@ -296,8 +304,10 @@ function parseSfc(src: string): {
       ? body.split('\n').map(line => '      ' + line).join('\n')
       : '';
 
+    const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
+
     const script = `
-const { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate } = Vue;
+const { ref, reactive, computed, watch, watchEffect, onMounted, onUnmounted, onBeforeMount, onBeforeUnmount, onUpdated, onBeforeUpdate, defineComponent, h } = Vue;
 
 const App = {
   template: \`${escTemplate}\`,
@@ -322,6 +332,8 @@ ${indentedBody}
     script = scriptRaw.replace(exportMatch[0], '').trim();
   }
 
+  const escTemplate = (template || '<div>Hello Vue 👋</div>').replace(/`/g, '\\`');
+
   const fullScript = `
 ${script}
 export default {
@@ -331,6 +343,19 @@ export default {
 `.trim();
 
   return { template, script: fullScript, scriptExports };
+}
+
+function rewriteComponentTags(template: string, tags: Set<string>): string {
+  let out = template;
+  for (const tag of tags) {
+    const selfClosing = new RegExp(`<${tag}(\\s[^>]*)?\\s*/>`, 'g');
+    out = out.replace(selfClosing, `<component :is="${tag}"$1 />`);
+    const openTag = new RegExp(`<${tag}(\\s[^>/]*)?>`, 'g');
+    out = out.replace(openTag, `<component :is="${tag}"$1>`);
+    const closeTag = new RegExp(`</${tag}>`, 'g');
+    out = out.replace(closeTag, `</component>`);
+  }
+  return out;
 }
 
 /** Turn a module-style Vue component into a plain script with `App` in scope */

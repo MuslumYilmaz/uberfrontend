@@ -1,0 +1,19 @@
+{
+    "version": "v2",
+    "type": "user-interface",
+    "title": "React • Dynamic Counter Buttons (starter)",
+    "openFile": "/src/App.tsx",
+    "dependencies": {
+        "react": "18.x",
+        "react-dom": "18.x",
+        "react-scripts": "5.0.1"
+    },
+    "files": {
+        "package.json": "{\n  \"name\": \"react-dynamic-counter-buttons\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"react\": \"18.x\",\n    \"react-dom\": \"18.x\",\n    \"react-scripts\": \"5.0.1\"\n  },\n  \"scripts\": { \"start\": \"react-scripts start\" }\n}\n",
+        "public/index.html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>React SDK • Dynamic Counter Buttons</title></head><body><div id=\"root\"></div></body></html>",
+        "src/index.tsx": "import React from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App';\n\ncreateRoot(document.getElementById('root')!).render(<App />);\n",
+        "src/App.tsx": "import React, { useState } from 'react';\nimport './App.css';\n\nexport default function App() {\n  // TODO: Each button has its own count\n  const [counts, setCounts] = useState<number[]>([0]);\n\n  // TODO: When a button is clicked:\n  // 1) increment ONLY that button\n  // 2) append a NEW 0 button at the bottom\n  const onClick = (_index: number) => {\n  };\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Dynamic Counter Buttons</h1>\n        <p className=\"subtitle\">Clicking a button increments only that button and adds a new 0 button below. Every button keeps its own count.</p>\n\n        <div className=\"list\">\n          {counts.map((c, i) => (\n            <button\n              key={i}\n              className=\"counterBtn\"\n              onClick={() => onClick(i)}\n              type=\"button\"\n            >\n              {c}\n            </button>\n          ))}\n        </div>\n\n        <div className=\"hint\">Goal: each click grows the list by 1 and only the clicked button changes.</div>\n      </section>\n    </main>\n  );\n}\n",
+        "src/App.css": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n\n.page { min-height:100vh; display:grid; place-items:center; background:#0a0a0a; padding:24px; }\n.card { width:100%; max-width:420px; background:#0b1020; border:1px solid #1f2937; border-radius:16px; padding:18px; display:grid; gap:14px; color:#e5e7eb; }\n.title { margin:0; font-size:20px; font-weight:900; color:#e5e7eb; }\n.subtitle { margin:0; color:#9ca3af; font-size:12px; line-height:1.45; }\n\n.list { display:grid; gap:10px; }\n\n.counterBtn { background:#0a0f1e; border:1px solid #1f2937; border-radius:12px; padding:12px 14px; font-weight:900; cursor:pointer; color:#e5e7eb; text-align:center; }\n.counterBtn:hover { border-color:#374151; }\n\n.hint { color:#9ca3af; font-size:12px; line-height:1.45; }\n",
+        "tsconfig.json": "{\n  \"compilerOptions\": {\n    \"jsx\": \"react-jsx\",\n    \"target\": \"ES2020\",\n    \"module\": \"ESNext\",\n    \"strict\": true\n  }\n}\n"
+    }
+}

@@ -149,6 +149,38 @@ export const FRAMEWORK_FAMILIES: FrameworkFamily[] = [
       { tech: 'vue', id: 'vue-tictactoe', kind: 'coding' },
     ],
   },
+  {
+    key: 'like-button',
+    members: [
+      { tech: 'react', id: 'react-like-button', kind: 'coding' },
+      { tech: 'angular', id: 'angular-like-button', kind: 'coding' },
+      { tech: 'vue', id: 'vue-like-button', kind: 'coding' },
+    ],
+  },
+  {
+    key: 'progress-bar-thresholds',
+    members: [
+      { tech: 'react', id: 'react-progress-bar-thresholds', kind: 'coding' },
+      { tech: 'angular', id: 'angular-progress-bar-thresholds', kind: 'coding' },
+      { tech: 'vue', id: 'vue-progress-bar-thresholds', kind: 'coding' },
+    ],
+  },
+  {
+    key: 'nested-comments',
+    members: [
+      { tech: 'react', id: 'react-nested-comments', kind: 'coding' },
+      { tech: 'angular', id: 'angular-nested-comments', kind: 'coding' },
+      { tech: 'vue', id: 'vue-nested-comments', kind: 'coding' },
+    ],
+  },
+  {
+    key: 'dynamic-counter-buttons',
+    members: [
+      { tech: 'react', id: 'react-dynamic-counter-buttons', kind: 'coding' },
+      { tech: 'angular', id: 'angular-dynamic-counter-buttons', kind: 'coding' },
+      { tech: 'vue', id: 'vue-dynamic-counter-buttons', kind: 'coding' },
+    ],
+  },
 ];
 
 export const FRAMEWORK_FAMILY_BY_ID = FRAMEWORK_FAMILIES.reduce((acc, fam) => {
