@@ -47,7 +47,17 @@ app.use(
         credentials: true,
     })
 );
-app.use(express.json());
+app.use(express.json({
+    verify: (req, _res, buf) => {
+        if (!req.rawBody && buf?.length) req.rawBody = buf;
+    },
+}));
+app.use(express.urlencoded({
+    extended: false,
+    verify: (req, _res, buf) => {
+        if (!req.rawBody && buf?.length) req.rawBody = buf;
+    },
+}));
 app.use(cookieParser());
 
 // ---- DB (lazy for serverless, fail-fast for local server) ----
@@ -156,6 +166,8 @@ function escapeAttr(s = '') {
 
 // ---- Auth routes ----
 app.use('/api/auth', require('./routes/auth'));
+// ---- Billing routes ----
+app.use('/api/billing', require('./routes/billing'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));

@@ -12,11 +12,12 @@ import {
 import { Observable, catchError, map, of } from 'rxjs';
 import { AuthService, User } from '../services/auth.service';
 import { PremiumGateReason, PremiumGateService } from '../services/premium-gate.service';
+import { isProActive } from '../utils/entitlements.util';
 
 function isPremiumUser(user: User | null): boolean {
   if (!user) return false;
   if (user.role === 'admin') return true;
-  return (user.accessTier ?? 'free') === 'premium';
+  return isProActive(user);
 }
 
 function resolveReason(routeData: Record<string, unknown> | undefined, targetUrl?: string): PremiumGateReason {

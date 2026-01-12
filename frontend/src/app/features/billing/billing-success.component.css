@@ -1,0 +1,74 @@
+.billing-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  background: radial-gradient(circle at top, rgba(24, 32, 48, 0.4), rgba(10, 12, 16, 0.95));
+  color: #e6e8ee;
+}
+
+.billing-card {
+  width: min(520px, 100%);
+  background: rgba(15, 20, 32, 0.92);
+  border: 1px solid rgba(120, 140, 180, 0.2);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  color: rgba(230, 232, 238, 0.55);
+  margin: 0 0 12px;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: 28px;
+}
+
+.lead {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.muted {
+  color: rgba(230, 232, 238, 0.7);
+  font-size: 14px;
+}
+
+.timeout {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(120, 140, 180, 0.2);
+}
+
+.btn {
+  margin-top: 12px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #2563eb;
+}
+
+.link {
+  display: inline-block;
+  margin-left: 12px;
+  color: #9ec3ff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { Tech } from '../models/user.model';
+import { Entitlements, Tech } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
 
@@ -52,6 +52,9 @@ export interface User {
   avatarUrl?: string;
   role: Role;
   accessTier?: 'free' | 'premium';
+  entitlements?: Entitlements;
+  accessTierEffective?: 'free' | 'premium';
+  effectiveProActive?: boolean;
   prefs: UserPrefs;
   stats?: UserStats;
   billing?: Billing;
@@ -173,6 +176,13 @@ export class AuthService {
     return {
       ...u,
       accessTier: u.accessTier ?? 'free',
+      entitlements: u.entitlements
+        ? {
+            ...u.entitlements,
+            pro: { ...u.entitlements.pro },
+            projects: { ...u.entitlements.projects },
+          }
+        : u.entitlements,
       prefs: u.prefs ? { ...u.prefs } : u.prefs,
       stats: u.stats ? { ...u.stats } as any : u.stats,
       billing: u.billing ? { ...u.billing } as any : u.billing,

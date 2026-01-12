@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User.js');
+const PendingEntitlement = require('../models/PendingEntitlement');
+const { applyPendingEntitlementsForUser } = require('../services/billing/pending-entitlements');
 const { requireAuth } = require('../middleware/Auth.js');
 const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
 const { resolveAllowedFrontendOrigins, resolveFrontendBase, resolveServerBase } = require('../config/urls');
@@ -88,6 +90,63 @@ function shouldReturnToken(req) {
     return false;
 }
 
+const ENTITLEMENT_STATUSES = new Set([
+    'none',
+    'active',
+    'lifetime',
+    'cancelled',
+    'expired',
+    'refunded',
+    'chargeback',
+]);
+
+function normalizeValidUntil(raw) {
+    if (!raw) return null;
+    const asDate = raw instanceof Date ? raw : new Date(raw);
+    return Number.isNaN(asDate.getTime()) ? null : asDate;
+}
+
+function normalizeEntitlement(raw) {
+    if (!raw || typeof raw !== 'object') {
+        return { status: 'none', validUntil: null };
+    }
+    const status = ENTITLEMENT_STATUSES.has(raw.status) ? raw.status : 'none';
+    const validUntil = normalizeValidUntil(raw.validUntil);
+    return { status, validUntil };
+}
+
+function isLegacyProActive(status) {
+    if (!status) return false;
+    return status === 'active' || status === 'lifetime' || status === 'canceled';
+}
+
+function deriveLegacyProEntitlement(user) {
+    const accessTier = user?.accessTier ?? 'free';
+    const billingStatus = user?.billing?.pro?.status;
+    const isActive = accessTier === 'premium' || isLegacyProActive(billingStatus);
+    const validUntil = normalizeValidUntil(user?.billing?.pro?.renewsAt);
+    return { status: isActive ? 'active' : 'none', validUntil };
+}
+
+function resolveEntitlements(user) {
+    const entitlements = user?.entitlements || {};
+    const normalizedPro = normalizeEntitlement(entitlements?.pro);
+    const hasLegacyActive =
+        (user?.accessTier ?? 'free') === 'premium' ||
+        isLegacyProActive(user?.billing?.pro?.status);
+    const shouldDerivePro =
+        !entitlements?.pro ||
+        !entitlements.pro.status ||
+        (normalizedPro.status === 'none' && !normalizedPro.validUntil && hasLegacyActive);
+    const pro = shouldDerivePro ? deriveLegacyProEntitlement(user) : normalizedPro;
+    const projects = normalizeEntitlement(entitlements?.projects);
+    const now = Date.now();
+    const effectiveProActive =
+        ['active', 'lifetime', 'cancelled'].includes(pro.status) &&
+        (!pro.validUntil || pro.validUntil.getTime() > now);
+    return { entitlements: { pro, projects }, effectiveProActive };
+}
+
 // --- Google OAuth config ---
 const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const GOOGLE_CLIENT_SECRET = (process.env.GOOGLE_CLIENT_SECRET || '').trim();
@@ -126,22 +185,28 @@ function getClientMode(req) {
     return typeof m === 'string' ? m.slice(0, 64) : '';
 }
 
-const pick = (u) => ({
-    _id: u._id,
-    username: u.username,
-    email: u.email,
-    bio: u.bio,
-    avatarUrl: u.avatarUrl,
-    role: u.role,
-    accessTier: u.accessTier || 'free',
-    createdAt: u.createdAt,
-    prefs: u.prefs,
-    stats: u.stats,
-    billing: u.billing,
-    coupons: u.coupons,
-    lastLoginAt: u.lastLoginAt,
-    solvedQuestionIds: u.solvedQuestionIds || [],
-});
+const pick = (u) => {
+    const { entitlements, effectiveProActive } = resolveEntitlements(u);
+    return {
+        _id: u._id,
+        username: u.username,
+        email: u.email,
+        bio: u.bio,
+        avatarUrl: u.avatarUrl,
+        role: u.role,
+        accessTier: u.accessTier || 'free',
+        accessTierEffective: effectiveProActive ? 'premium' : 'free',
+        createdAt: u.createdAt,
+        prefs: u.prefs,
+        stats: u.stats,
+        billing: u.billing,
+        entitlements,
+        effectiveProActive,
+        coupons: u.coupons,
+        lastLoginAt: u.lastLoginAt,
+        solvedQuestionIds: u.solvedQuestionIds || [],
+    };
+};
 
 // GET /api/auth/ping
 router.get('/ping', (_req, res) => res.json({ ok: true }));
@@ -432,6 +497,11 @@ router.get('/me', requireAuth, async (req, res) => {
         const user = await User.findById(req.auth.userId).select('-passwordHash');
         if (!user) return res.status(404).json({ error: 'User not found' });
 
+        try {
+            await applyPendingEntitlementsForUser(PendingEntitlement, user);
+        } catch (err) {
+            console.error('Failed to apply pending entitlements:', err);
+        }
         res.json(pick(user));
     } catch (e) {
         res.status(500).json({ error: 'Failed to load user' });

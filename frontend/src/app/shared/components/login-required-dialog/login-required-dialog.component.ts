@@ -201,7 +201,7 @@ import { DialogModule } from 'primeng/dialog';
         <div class="login-dialog__header-row">
           <div class="login-dialog__icon"><i class="pi pi-lock"></i></div>
           <div>
-            <h3 class="login-dialog__title" [id]="dialogTitleId">{{ title }}</h3>
+            <h3 class="login-dialog__title" [id]="dialogTitleId" data-testid="login-required-title">{{ title }}</h3>
             <p class="login-dialog__text" [id]="dialogDescId">{{ body }}</p>
           </div>
         </div>
@@ -221,6 +221,7 @@ export class LoginRequiredDialogComponent {
   @Input() title = 'Sign in to save progress';
   @Input() body = 'To track completed questions and keep your progress synced, sign in or create a free account.';
   @Input() ctaLabel = 'Go to login';
+  @Input() redirectTo?: string;
 
   dialogTitleId = 'login-dialog-title';
   dialogDescId = 'login-dialog-desc';
@@ -234,6 +235,8 @@ export class LoginRequiredDialogComponent {
 
   goToLogin() {
     this.onClose();
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/auth/login'], {
+      queryParams: this.redirectTo ? { redirectTo: this.redirectTo } : undefined,
+    });
   }
 }

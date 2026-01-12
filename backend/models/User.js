@@ -8,6 +8,48 @@ const PerTechSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const EntitlementSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: ['none', 'active', 'lifetime', 'cancelled', 'expired', 'refunded', 'chargeback'],
+      default: 'none',
+    },
+    validUntil: { type: Date, default: null },
+  },
+  { _id: false }
+);
+
+const GumroadProviderSchema = new mongoose.Schema(
+  {
+    saleId: String,
+    purchaserEmail: String,
+    lastEventId: String,
+    lastEventAt: Date,
+  },
+  { _id: false }
+);
+
+const LemonSqueezyProviderSchema = new mongoose.Schema(
+  {
+    customerId: String,
+    subscriptionId: String,
+    lastEventId: String,
+    lastEventAt: Date,
+  },
+  { _id: false }
+);
+
+const StripeProviderSchema = new mongoose.Schema(
+  {
+    customerId: String,
+    subscriptionId: String,
+    lastEventId: String,
+    lastEventAt: Date,
+  },
+  { _id: false }
+);
+
 const UserSchema = new mongoose.Schema(
   {
     // identity
@@ -71,6 +113,17 @@ const UserSchema = new mongoose.Schema(
         renewsAt: Date,
         canceledAt: Date,
       },
+      providers: {
+        gumroad: { type: GumroadProviderSchema, default: () => ({}) },
+        lemonsqueezy: { type: LemonSqueezyProviderSchema, default: () => ({}) },
+        stripe: { type: StripeProviderSchema, default: () => ({}) },
+      },
+    },
+
+    // entitlements (provider-agnostic)
+    entitlements: {
+      pro: { type: EntitlementSchema, default: () => ({}) },
+      projects: { type: EntitlementSchema, default: () => ({}) },
     },
 
     coupons: [
@@ -90,9 +143,5 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-// Indexes
-UserSchema.index({ email: 1 }, { unique: true });
-UserSchema.index({ username: 1 }, { unique: true });
 
 module.exports = mongoose.model('User', UserSchema);

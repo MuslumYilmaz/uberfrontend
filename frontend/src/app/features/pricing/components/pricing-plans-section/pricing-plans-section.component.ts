@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
+import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
+import { PlanId } from '../../../../core/utils/payments-provider.util';
+import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 
 type PricingVariant = 'full' | 'compact';
@@ -9,7 +14,7 @@ type CtaMode = 'emit' | 'navigatePricing';
 @Component({
   standalone: true,
   selector: 'app-pricing-plans-section',
-  imports: [CommonModule, FaqSectionComponent],
+  imports: [CommonModule, FaqSectionComponent, LoginRequiredDialogComponent],
   styleUrls: ['./pricing-plans-section.component.css'],
   template: `
     <section class="pr-wrap">
@@ -37,11 +42,17 @@ type CtaMode = 'emit' | 'navigatePricing';
           <div class="price">
             {{ plan.price }}<span>{{ plan.priceSuffix }}</span>
           </div>
-          <div class="billing-note">{{ plan.billingNote }}</div>
           <ul class="features">
             <li *ngFor="let feat of plan.features">{{ feat }}</li>
           </ul>
-          <button class="btn" type="button" (click)="onCta(plan.id)">
+          <button
+            class="btn"
+            type="button"
+            (click)="onCta(plan.id)"
+            [disabled]="paymentsEnabled && (!isCheckoutAvailable(plan.id) || isCheckoutLoading(plan.id))"
+            [attr.aria-disabled]="paymentsEnabled && (!isCheckoutAvailable(plan.id) || isCheckoutLoading(plan.id)) ? 'true' : null"
+            [attr.title]="checkoutTooltip(plan.id)"
+            [attr.data-testid]="'pricing-cta-' + plan.id">
             {{ ctaText }}
           </button>
           <div class="plan-note" *ngIf="plan.note">
@@ -106,58 +117,74 @@ type CtaMode = 'emit' | 'navigatePricing';
       <p class="tiny muted pr-footnote" *ngIf="variant === 'full' && !paymentsEnabled">
         Payments are not enabled in this build.
       </p>
+      <p class="tiny muted pr-footnote" *ngIf="checkoutNotice" data-testid="checkout-notice">
+        {{ checkoutNotice }}
+      </p>
     </section>
+
+    <app-login-required-dialog
+      [(visible)]="loginRequiredOpen"
+      [title]="loginRequiredTitle"
+      [body]="loginRequiredBody"
+      [ctaLabel]="loginRequiredCta"
+      [redirectTo]="loginRedirectTo">
+    </app-login-required-dialog>
   `,
 })
-export class PricingPlansSectionComponent {
+export class PricingPlansSectionComponent implements OnInit, OnDestroy {
   @Input() variant: PricingVariant = 'full';
   @Input() paymentsEnabled = false;
   @Input() ctaMode: CtaMode = 'navigatePricing';
   @Input() ctaLabel?: string;
-  @Output() ctaClick = new EventEmitter<{ planId: string }>();
+  @Input() checkoutUrls: Partial<Record<PlanId, string>> | null = null;
+  @Output() ctaClick = new EventEmitter<{ planId: PlanId }>();
 
-  plans = [
-    {
-      id: 'monthly',
-      title: 'Monthly',
-      price: 'TBD',
-      priceSuffix: '',
-      billingNote: 'Launch pricing coming soon (USD shown at checkout)',
-      features: ['Updates while active'],
-      badge: '',
-      note: 'Final price, currency, and taxes are shown at checkout.',
-    },
-    {
-      id: 'quarterly',
-      title: 'Quarterly',
-      price: 'TBD',
-      priceSuffix: '',
-      billingNote: 'Launch pricing coming soon (USD shown at checkout)',
-      features: ['Updates while active'],
-      badge: '',
-      note: 'Final price, currency, and taxes are shown at checkout.',
-    },
-    {
-      id: 'annual',
-      title: 'Annual',
-      price: 'TBD',
-      priceSuffix: '',
-      billingNote: 'Launch pricing coming soon (USD shown at checkout)',
-      features: ['Best value for active prep', 'More front-end system design scenarios (planned)'],
-      badge: 'Best for active prep',
-      note: 'Final price, currency, and taxes are shown at checkout.',
-    },
-    {
-      id: 'lifetime',
-      title: 'Lifetime',
-      price: 'TBD',
-      priceSuffix: '',
-      billingNote: 'One-time purchase (USD shown at checkout)',
-      features: ['Future updates included'],
-      badge: '',
-      note: 'Lifetime applies to FrontendAtlas core features. New premium products may be priced separately. Final price, currency, and taxes are shown at checkout.',
-    },
-  ];
+  private checkoutLoading: PlanId | null = null;
+  loginRequiredOpen = false;
+  loginRedirectTo = '/pricing';
+  loginRequiredTitle = 'Sign in to purchase';
+  loginRequiredBody = 'To buy a subscription, please sign in or create a free account.';
+  loginRequiredCta = 'Sign in / create account';
+  checkoutNotice: string | null = null;
+  private checkoutNoticeTimer?: number;
+
+  plans: Array<{
+    id: PlanId;
+    title: string;
+    price: string;
+    priceSuffix: string;
+    features: string[];
+    badge: string;
+    note?: string;
+  }> = [
+      {
+        id: 'monthly',
+        title: 'Monthly',
+        price: '$12',
+        priceSuffix: '',
+        features: ['Updates while active'],
+        badge: '',
+        note: 'Final price, currency, and taxes are shown at checkout.',
+      },
+      {
+        id: 'quarterly',
+        title: 'Quarterly',
+        price: '$29',
+        priceSuffix: '',
+        features: ['Updates while active'],
+        badge: '',
+        note: 'Final price, currency, and taxes are shown at checkout.',
+      },
+      {
+        id: 'annual',
+        title: 'Annual',
+        price: '$79',
+        priceSuffix: '',
+        features: ['Best value for active prep', 'More front-end system design scenarios (planned)'],
+        badge: 'Best for active prep',
+        note: 'Final price, currency, and taxes are shown at checkout.',
+      },
+    ];
 
   featureCards = [
     { icon: 'fa-solid fa-book', title: 'Large question library', desc: 'UI-first coding and practical front-end scenarios — growing over time.' },
@@ -294,15 +321,6 @@ Typically, it unlocks:<br>
 If you’re practicing consistently, Premium mainly saves you time: less hunting, more reps.`,
         },
         {
-          id: 'subscription-vs-lifetime',
-          q: 'What’s the difference between Subscription and Lifetime?',
-          a: `<strong>Subscription</strong> = pay as you go, renews automatically unless canceled.<br>
-Best if you want to ramp up for a specific interview window.<br><br>
-<strong>Lifetime</strong> = one-time purchase for FrontendAtlas core content.<br>
-Best if you prefer a single payment and long-term access.<br><br>
-Note: if separate premium products are introduced in the future, they may be priced independently.`,
-        },
-        {
           id: 'cancel-anytime',
           q: 'Can I cancel a subscription anytime?',
           a: `Yes.<br><br>
@@ -351,11 +369,92 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     return this.paymentsEnabled ? 'Upgrade' : 'Upgrade';
   }
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private auth: AuthService,
+    private billingCheckout: BillingCheckoutService
+  ) { }
 
-  onCta(planId: string) {
+  ngOnInit(): void {
     if (this.paymentsEnabled) {
-      this.ctaClick.emit({ planId });
+      this.billingCheckout.prefetch();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.checkoutNoticeTimer && typeof window !== 'undefined') {
+      window.clearTimeout(this.checkoutNoticeTimer);
+      this.checkoutNoticeTimer = undefined;
+    }
+  }
+
+  private resolveCheckoutUrl(planId: PlanId): string | null {
+    const url = this.checkoutUrls?.[planId] || '';
+    return url ? url : null;
+  }
+
+  isCheckoutAvailable(planId: PlanId): boolean {
+    return !!this.resolveCheckoutUrl(planId);
+  }
+
+  isCheckoutLoading(planId: PlanId): boolean {
+    return this.checkoutLoading === planId;
+  }
+
+  checkoutTooltip(planId: PlanId): string | null {
+    if (this.isCheckoutLoading(planId)) return 'Loading checkout...';
+    if (!this.paymentsEnabled || this.isCheckoutAvailable(planId)) return null;
+    return 'Checkout is temporarily unavailable.';
+  }
+
+  private setCheckoutNotice(message: string) {
+    this.checkoutNotice = message;
+    if (this.checkoutNoticeTimer && typeof window !== 'undefined') {
+      window.clearTimeout(this.checkoutNoticeTimer);
+    }
+    if (typeof window === 'undefined') return;
+    this.checkoutNoticeTimer = window.setTimeout(() => {
+      this.checkoutNotice = null;
+      this.checkoutNoticeTimer = undefined;
+    }, 8000);
+  }
+
+  async onCta(planId: PlanId) {
+    if (this.paymentsEnabled) {
+      const checkoutUrl = this.resolveCheckoutUrl(planId);
+      if (checkoutUrl) {
+        this.checkoutLoading = planId;
+        try {
+          let user = this.auth.user();
+          if (!user) {
+            try {
+              user = await firstValueFrom(this.auth.ensureMe());
+            } catch {
+              user = null;
+            }
+          }
+
+          if (!user) {
+            this.loginRedirectTo = this.router.url || '/pricing';
+            this.loginRequiredOpen = true;
+            return;
+          }
+
+          const result = await this.billingCheckout.checkout(planId);
+          if (!result.ok) {
+            this.setCheckoutNotice('Checkout is unavailable right now. Please try again in a moment.');
+            return;
+          }
+          if (result.mode === 'new-tab') {
+            this.setCheckoutNotice('Checkout opened in a new tab. If it did not open, allow popups and try again.');
+          }
+        } finally {
+          if (this.checkoutLoading === planId) {
+            this.checkoutLoading = null;
+          }
+        }
+        return;
+      }
       return;
     }
 

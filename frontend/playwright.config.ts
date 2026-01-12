@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
+const useWebServer = process.env.PLAYWRIGHT_WEB_SERVER === '1';
 const includeWebkit = isCI || process.env.PLAYWRIGHT_ENABLE_WEBKIT === '1';
 
 export default defineConfig({
@@ -16,19 +17,21 @@ export default defineConfig({
     : [['list'], ['html', { open: 'on-failure' }]],
 
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4200',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200',
     headless: isCI,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
 
-  webServer: {
-    command: 'npm run start:e2e',
-    url: 'http://127.0.0.1:4200',
-    reuseExistingServer: !isCI,
-    timeout: 180_000,
-  },
+  webServer: useWebServer
+    ? {
+      command: 'npm run start:e2e',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !isCI,
+      timeout: 180_000,
+    }
+    : undefined,
 
   projects: [
     {

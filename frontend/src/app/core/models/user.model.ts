@@ -7,9 +7,31 @@ export interface User {
     avatarUrl?: string;
     role: 'user' | 'admin';
     accessTier?: 'free' | 'premium';
+    entitlements?: Entitlements;
+    accessTierEffective?: 'free' | 'premium';
+    effectiveProActive?: boolean;
     solvedQuestionIds?: string[];
     createdAt: string;
     updatedAt: string;
+}
+
+export type EntitlementStatus =
+    | 'none'
+    | 'active'
+    | 'lifetime'
+    | 'cancelled'
+    | 'expired'
+    | 'refunded'
+    | 'chargeback';
+
+export interface Entitlement {
+    status: EntitlementStatus;
+    validUntil: string | null;
+}
+
+export interface Entitlements {
+    pro: Entitlement;
+    projects: Entitlement;
 }
 
 // --- app-level enums & helpers ---

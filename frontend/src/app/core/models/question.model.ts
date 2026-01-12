@@ -1,4 +1,5 @@
 import { Tech } from './user.model';
+import { EntitledUser, isProActive } from '../utils/entitlements.util';
 
 export type QuestionType = 'trivia' | 'coding' | 'system-design';
 export type Technology = Tech;
@@ -54,5 +55,5 @@ export interface Question {
 
 export const isQuestionLockedForTier = (
   q: Pick<Question, 'access'>,
-  userTier: AccessLevel | undefined
-): boolean => q.access === 'premium' && userTier !== 'premium';
+  user?: EntitledUser | null
+): boolean => q.access === 'premium' && !isProActive(user);

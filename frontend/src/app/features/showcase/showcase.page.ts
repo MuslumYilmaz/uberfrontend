@@ -23,6 +23,12 @@ import { CodingDetailComponent } from '../coding/coding-detail/coding-detail.com
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { SystemDesignDetailComponent } from '../system-design-list/system-design-detail/system-design-detail.component';
 import { TriviaDetailComponent } from '../trivia/trivia-detail/trivia-detail.component';
+import { environment } from '../../../environments/environment';
+import {
+  buildCheckoutUrls,
+  hasCheckoutUrls,
+  resolvePaymentsProvider,
+} from '../../core/utils/payments-provider.util';
 
 type DemoKey = 'ui' | 'html' | 'js' | 'react' | 'angular' | 'vue';
 type TriviaTabKey = 'js-loop' | 'react-hooks' | 'angular-component' | 'vue-reactivity';
@@ -42,6 +48,10 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   >;
 
   demoHidden = false;
+
+  paymentsProvider = resolvePaymentsProvider(environment);
+  checkoutUrls = buildCheckoutUrls(this.paymentsProvider, environment);
+  paymentsEnabled = hasCheckoutUrls(this.checkoutUrls);
 
   contact = {
     name: '',

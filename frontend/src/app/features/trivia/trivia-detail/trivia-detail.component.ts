@@ -114,8 +114,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   private returnLabel = signal<string | null>(null);
   locked = computed(() => {
     const q = this.question();
-    const tier = this.auth.user()?.accessTier ?? 'free';
-    return q ? isQuestionLockedForTier(q, tier) : false;
+    const user = this.auth.user();
+    return q ? isQuestionLockedForTier(q, user) : false;
   });
 
   // footer helpers

@@ -18,7 +18,9 @@
     "build:analyze": "ng build --configuration production --stats-json --source-map && npx source-map-explorer dist/frontendatlas/browser/*.js --summary",
     "test:unit": "ng test --watch=false --browsers=ChromeHeadless",
     "test": "ng test --watch=false --browsers=ChromeHeadless && node scripts/question-tags.test.mjs && node scripts/sitemap.test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui"
   },
   "private": true,
   "dependencies": {

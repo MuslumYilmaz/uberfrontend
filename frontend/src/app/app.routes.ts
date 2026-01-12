@@ -290,6 +290,39 @@ export const routes: Routes = [
       },
     },
   },
+  {
+    path: 'billing',
+    children: [
+      {
+        path: 'success',
+        loadComponent: () =>
+          import('./features/billing/billing-success.component').then(
+            (m) => m.BillingSuccessComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Payment received',
+            description: 'Confirming your subscription status.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
+      {
+        path: 'cancel',
+        loadComponent: () =>
+          import('./features/billing/billing-cancel.component').then(
+            (m) => m.BillingCancelComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Checkout canceled',
+            description: 'Checkout was canceled. You can return to pricing.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
+    ],
+  },
 
   // Tracks (curated question sets)
   {

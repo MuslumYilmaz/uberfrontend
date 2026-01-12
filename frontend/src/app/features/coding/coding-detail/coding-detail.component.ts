@@ -220,8 +220,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   solved = signal(false);
   locked = computed(() => {
     const q = this.question();
-    const tier = this.auth.user()?.accessTier ?? 'free';
-    return q ? isQuestionLockedForTier(q, tier) : false;
+    const user = this.auth.user();
+    return q ? isQuestionLockedForTier(q, user) : false;
   });
 
   // ✅ UI solved: only true when authenticated

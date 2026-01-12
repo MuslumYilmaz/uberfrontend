@@ -28,6 +28,13 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
 - `COOKIE_SECURE`: `true` in production over HTTPS, `false` for local HTTP dev.
 
+### Billing (webhooks)
+
+- `BILLING_PROVIDER`: `gumroad` (default), `lemonsqueezy`, or `stripe` (future use).
+- `GUMROAD_WEBHOOK_SECRET`: shared secret for Gumroad webhooks.
+- `LEMONSQUEEZY_WEBHOOK_SECRET`: reserved for future use.
+- `STRIPE_WEBHOOK_SECRET`: reserved for future use.
+
 ## Run
 
 - Dev (auto-reload): `npm run dev`

@@ -4,7 +4,7 @@ import { buildMockUser, installAuthMock } from './auth-mocks';
 import { JS_QUESTION, WEB_QUESTION } from './helpers';
 
 async function seedPremiumSession(page: Page) {
-  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4200';
+  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200';
   const token = `e2e-token-premium-${Date.now()}`;
   const user = buildMockUser({
     _id: 'e2e-user-premium',

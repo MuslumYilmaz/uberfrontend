@@ -512,8 +512,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   isLocked(q: Row): boolean {
-    const tier = this.auth.user()?.accessTier ?? 'free';
-    return isQuestionLockedForTier(q, tier);
+    const user = this.auth.user();
+    return isQuestionLockedForTier(q, user);
   }
 
   handleCardClick(ev: Event, q: Row) {

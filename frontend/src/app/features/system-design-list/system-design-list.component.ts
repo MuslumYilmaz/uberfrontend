@@ -82,9 +82,9 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
   trackById = (_: number, q: SysDesign) => q.id;
 
   isLocked(q: SysDesign): boolean {
-    const tier = this.auth.user()?.accessTier ?? 'free';
+    const user = this.auth.user();
     const access = q.access ?? 'free';
-    return isQuestionLockedForTier({ access } as any, tier);
+    return isQuestionLockedForTier({ access } as any, user);
   }
 
   handleRowClick(ev: Event, q: SysDesign) {

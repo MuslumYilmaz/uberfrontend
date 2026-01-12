@@ -1,0 +1,20 @@
+<section class="billing-page">
+  <div class="billing-card">
+    <p class="eyebrow">Billing</p>
+    <h1 data-testid="billing-success-title">Payment received</h1>
+    <p class="lead">Payment received, syncing access...</p>
+    <p class="muted">This usually takes a few seconds.</p>
+
+    <p class="muted" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+    <div class="timeout" *ngIf="state() === 'timeout'">
+      <p>We’re still waiting on the subscription update.</p>
+      <p class="muted">You can refresh your access or try again in a moment.</p>
+      <p class="muted" data-testid="billing-timeout-hint">
+        If you checked out with a different email, sign in with that email or contact support&#64;frontendatlas.com.
+      </p>
+      <button class="btn" type="button" (click)="startPolling()">Refresh access</button>
+      <a class="link" routerLink="/profile">Go to profile</a>
+    </div>
+  </div>
+</section>

@@ -3,6 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PricingPlansSectionComponent } from './components/pricing-plans-section/pricing-plans-section.component';
+import { environment } from '../../../environments/environment';
+import {
+  buildCheckoutUrls,
+  hasCheckoutUrls,
+  resolvePaymentsProvider,
+} from '../../core/utils/payments-provider.util';
 
 @Component({
   standalone: true,
@@ -13,10 +19,15 @@ import { PricingPlansSectionComponent } from './components/pricing-plans-section
     <section class="pricing-page">
       <app-pricing-plans-section
         variant="full"
-        [paymentsEnabled]="false"
+        [paymentsEnabled]="paymentsEnabled"
+        [checkoutUrls]="checkoutUrls"
         ctaMode="emit">
       </app-pricing-plans-section>
     </section>
   `
 })
-export class PricingComponent { }
+export class PricingComponent {
+  paymentsProvider = resolvePaymentsProvider(environment);
+  checkoutUrls = buildCheckoutUrls(this.paymentsProvider, environment);
+  paymentsEnabled = hasCheckoutUrls(this.checkoutUrls);
+}
