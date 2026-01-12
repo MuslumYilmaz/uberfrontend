@@ -1,4 +1,5 @@
 import { isProActive } from './entitlements.util';
+import type { Entitlements } from '../models/user.model';
 
 describe('entitlements.util', () => {
   it('returns false for guests', () => {
@@ -7,7 +8,8 @@ describe('entitlements.util', () => {
 
   it('uses entitlement status and validUntil', () => {
     const now = Date.now();
-    const baseEntitlements = {
+    const baseEntitlements: Entitlements = {
+      pro: { status: 'none', validUntil: null },
       projects: { status: 'none', validUntil: null },
     };
 
