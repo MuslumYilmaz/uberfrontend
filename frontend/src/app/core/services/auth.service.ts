@@ -197,6 +197,15 @@ export class AuthService {
       .pipe(tap((u) => this.user.set(u)));
   }
 
+  /** POST /api/auth/change-password */
+  changePassword(currentPassword: string, currentPasswordConfirm: string, newPassword: string) {
+    return this.http.post<{ ok: boolean }>(
+      `${this.base}/change-password`,
+      { currentPassword, currentPasswordConfirm, newPassword },
+      { withCredentials: true }
+    );
+  }
+
   private isLocalHost(host: string): boolean {
     return host === 'localhost' || host === '127.0.0.1' || host === '::1';
   }

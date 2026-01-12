@@ -29,6 +29,9 @@ type AuthMockOptions = {
   forceSignupError?: { status: number; error: string };
   loginSequence?: Array<{ status: number; error?: string; token?: string; user?: MockUser }>;
   signupSequence?: Array<{ status: number; error?: string; token?: string; user?: MockUser }>;
+  changePassword?: { currentPassword: string; currentPasswordConfirm: string; newPassword: string };
+  forceChangePasswordError?: { status: number; error: string };
+  changePasswordSequence?: Array<{ status: number; error?: string }>;
 };
 
 function getCorsHeaders(req: Request) {
@@ -121,6 +124,7 @@ export function buildMockUser(overrides?: Partial<MockUser>): MockUser {
 export async function installAuthMock(page: Page, opts: AuthMockOptions) {
   const loginSequence = Array.isArray(opts.loginSequence) ? [...opts.loginSequence] : [];
   const signupSequence = Array.isArray(opts.signupSequence) ? [...opts.signupSequence] : [];
+  const changePasswordSequence = Array.isArray(opts.changePasswordSequence) ? [...opts.changePasswordSequence] : [];
 
   await page.route(/\/api\/auth\/.*/, async (route) => {
     const req = route.request();
@@ -209,6 +213,32 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
     // Logout (clears cookie)
     if (req.method() === 'POST' && path.endsWith('/logout')) {
       return jsonResponse(route, req, 200, { ok: true }, clearAuthCookies(req));
+    }
+
+    // Change password
+    if (req.method() === 'POST' && path.endsWith('/change-password')) {
+      if (changePasswordSequence.length) {
+        const next = changePasswordSequence.shift()!;
+        if (next.status >= 200 && next.status < 300) {
+          return jsonResponse(route, req, next.status, { ok: true });
+        }
+        const message = next.error ?? (next.status === 401 ? 'Invalid current password' : 'Change password failed');
+        return jsonResponse(route, req, next.status, { error: message });
+      }
+
+      if (opts.forceChangePasswordError) {
+        return jsonResponse(route, req, opts.forceChangePasswordError.status, { error: opts.forceChangePasswordError.error });
+      }
+
+      if (opts.changePassword) {
+        const body = parseJsonBody(req) || {};
+        const ok =
+          String(body.currentPassword || '') === opts.changePassword.currentPassword &&
+          String(body.currentPasswordConfirm || '') === opts.changePassword.currentPasswordConfirm &&
+          String(body.newPassword || '') === opts.changePassword.newPassword;
+        if (!ok) return jsonResponse(route, req, 400, { error: 'Invalid change password payload' });
+        return jsonResponse(route, req, 200, { ok: true });
+      }
     }
 
     // Me

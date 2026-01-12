@@ -8,12 +8,15 @@ type PaymentsEnv = {
   GUMROAD_MONTHLY_URL?: string;
   GUMROAD_QUARTERLY_URL?: string;
   GUMROAD_ANNUAL_URL?: string;
+  GUMROAD_MANAGE_URL?: string;
   LEMONSQUEEZY_MONTHLY_URL?: string;
   LEMONSQUEEZY_QUARTERLY_URL?: string;
   LEMONSQUEEZY_ANNUAL_URL?: string;
+  LEMONSQUEEZY_MANAGE_URL?: string;
   STRIPE_MONTHLY_URL?: string;
   STRIPE_QUARTERLY_URL?: string;
   STRIPE_ANNUAL_URL?: string;
+  STRIPE_MANAGE_URL?: string;
 };
 
 const PROVIDERS: PaymentsProvider[] = ['gumroad', 'lemonsqueezy', 'stripe'];
@@ -62,4 +65,17 @@ export function buildCheckoutUrls(
 
 export function hasCheckoutUrls(urls: Record<PlanId, string>): boolean {
   return Object.values(urls).some((value) => !!value);
+}
+
+export function resolveManageUrl(
+  provider: PaymentsProvider,
+  env: PaymentsEnv = environment
+): string | null {
+  const map: Record<PaymentsProvider, string | undefined> = {
+    gumroad: env.GUMROAD_MANAGE_URL,
+    lemonsqueezy: env.LEMONSQUEEZY_MANAGE_URL,
+    stripe: env.STRIPE_MANAGE_URL,
+  };
+  const url = map[provider];
+  return url ? url : null;
 }

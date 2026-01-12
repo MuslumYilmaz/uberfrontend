@@ -1,16 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal, DestroyRef, Injector } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuthService, User, UserPrefs } from '../../../core/services/auth.service';
+import { RouterModule } from '@angular/router';
+import { DialogModule } from 'primeng/dialog';
+import { AuthService, User } from '../../../core/services/auth.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { SolvedQuestion, SolvedQuestionsService } from '../../../core/services/solved-questions.service';
 import { take } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { environment } from '../../../../environments/environment';
+import { PaymentsProvider, resolveManageUrl, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DialogModule, RouterModule],
   styleUrls: ['./profile.component.css'],
   template: `
     <div class="profile-layout" *ngIf="user(); else loadingTpl">
@@ -86,47 +90,6 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
             <input [(ngModel)]="form.email" />
             <button class="btn-save" [disabled]="saving() || !dirty()" (click)="save()">Save changes</button>
           </div>
-
-          <div class="account-card">
-            <h4>Bio</h4>
-            <p class="desc">A short bio (max 280 chars).</p>
-            <textarea [(ngModel)]="form.bio" maxlength="280"></textarea>
-            <div class="helper">{{ form.bio.length || 0 }}/280</div>
-            <button class="btn-save" [disabled]="saving() || !dirty()" (click)="save()">Save changes</button>
-          </div>
-
-          <div class="account-card">
-            <h4>Preferences</h4>
-            <div class="grid2">
-              <label>Timezone
-                <input [(ngModel)]="form.prefs.tz" />
-              </label>
-              <label>Theme
-                <select [(ngModel)]="form.prefs.theme">
-                  <option value="dark">Dark</option>
-                  <option value="light">Light</option>
-                  <option value="system">System</option>
-                </select>
-              </label>
-              <label>Default Tech
-                <select [(ngModel)]="form.prefs.defaultTech">
-                  <option value="javascript">JavaScript</option>
-                  <option value="angular">Angular</option>
-                </select>
-              </label>
-              <label>Keyboard
-                <select [(ngModel)]="form.prefs.keyboard">
-                  <option value="default">Default</option>
-                  <option value="vim">Vim</option>
-                </select>
-              </label>
-              <label class="row">
-                <input type="checkbox" [(ngModel)]="form.prefs.marketingEmails" />
-                Marketing emails
-              </label>
-            </div>
-            <button class="btn-save" [disabled]="saving() || !dirty()" (click)="save()">Save changes</button>
-          </div>
         </section>
 
         <!-- Billing -->
@@ -137,27 +100,27 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
             <p class="desc" *ngIf="billing()?.pro?.status === 'active'">
               Your subscription renews on {{ billing()?.pro?.renewsAt | date:'mediumDate' }}.
             </p>
-            <p class="desc" *ngIf="!billing() || billing()?.pro?.status === 'none'">You are not subscribed.</p>
-          </div>
-
-          <div class="account-card">
-            <h4>FrontendAtlas Projects</h4>
-            <p class="desc" *ngIf="billing()?.projects?.status === 'active'">
-              Your subscription renews on {{ billing()?.projects?.renewsAt | date:'mediumDate' }}.
+            <p class="desc" *ngIf="!isPro()">
+              You are not subscribed.
+              <a [routerLink]="['/pricing']">View subscription plans</a>
             </p>
-            <p class="desc" *ngIf="!billing() || billing()?.projects?.status === 'none'">
-              You are not subscribed. <a href="#">View subscription plans</a>
-            </p>
-            <div class="promo">
-              <strong>Upgrade to Premium Projects</strong>
+            <div class="promo" *ngIf="!isPro()">
+              <strong>Upgrade to FrontendAtlas Pro</strong>
               <p>Get access to premium challenges, guides, and exclusive tracks.</p>
             </div>
           </div>
 
           <div class="account-card">
             <h4>Manage subscription</h4>
-            <p class="desc">Manage your subscription and payment methods via Stripe.</p>
-            <button class="btn-save" disabled>Manage on Stripe</button>
+            <p class="desc" *ngIf="manageUrl; else manageMissing">
+              Manage your subscription and payment methods via {{ manageProviderLabel }}.
+            </p>
+            <ng-template #manageMissing>
+              <p class="desc">Manage subscription is not configured yet. Please contact support.</p>
+            </ng-template>
+            <button class="btn-save" [disabled]="!manageUrl" (click)="openManageSubscription()">
+              Manage on {{ manageProviderLabel }}
+            </button>
           </div>
         </section>
 
@@ -165,8 +128,15 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
         <section *ngIf="tab() === 'security'" class="panel">
           <div class="account-card">
             <h4>Change password</h4>
-            <p class="desc">Password changes will be enabled once the endpoint is added.</p>
-            <button class="btn-save" disabled>Change password</button>
+            <p class="desc">Update your password to keep your account secure.</p>
+            <button
+              class="btn-save"
+              type="button"
+              data-testid="profile-change-password-open"
+              (click)="openChangePassword()"
+            >
+              Change password
+            </button>
           </div>
         </section>
 
@@ -188,6 +158,73 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
     <ng-template #loadingTpl>
       <div class="panel" style="margin:24px">Loading profile…</div>
     </ng-template>
+
+    <p-dialog
+      [visible]="changePasswordOpen()"
+      (visibleChange)="changePasswordOpen.set($event)"
+      [modal]="true"
+      [dismissableMask]="true"
+      [draggable]="false"
+      [resizable]="false"
+      header="Change password"
+      styleClass="profile-password-dialog"
+      (onHide)="resetChangePassword()"
+    >
+      <div class="password-form" data-testid="profile-change-password-form">
+        <label>
+          Current password
+          <input
+            type="password"
+            autocomplete="current-password"
+            data-testid="profile-change-password-current"
+            [(ngModel)]="changePasswordForm.currentPassword"
+          />
+        </label>
+        <label>
+          Confirm current password
+          <input
+            type="password"
+            autocomplete="current-password"
+            data-testid="profile-change-password-current-confirm"
+            [(ngModel)]="changePasswordForm.currentPasswordConfirm"
+          />
+        </label>
+        <label>
+          New password
+          <input
+            type="password"
+            autocomplete="new-password"
+            data-testid="profile-change-password-new"
+            [(ngModel)]="changePasswordForm.newPassword"
+          />
+        </label>
+        <p class="field-error" *ngIf="changePasswordError()" data-testid="profile-change-password-error">
+          {{ changePasswordError() }}
+        </p>
+        <p class="field-success" *ngIf="changePasswordSuccess()" data-testid="profile-change-password-success">
+          Password updated.
+        </p>
+      </div>
+      <ng-template pTemplate="footer">
+        <button
+          class="btn-secondary"
+          type="button"
+          data-testid="profile-change-password-close"
+          (click)="closeChangePassword()"
+        >
+          Close
+        </button>
+        <button
+          class="btn-save"
+          type="button"
+          data-testid="profile-change-password-save"
+          [disabled]="changePasswordSaving() || !canSubmitChangePassword()"
+          (click)="submitChangePassword()"
+        >
+          Save password
+        </button>
+      </ng-template>
+    </p-dialog>
   `
 })
 export class ProfileComponent implements OnInit {
@@ -195,24 +232,28 @@ export class ProfileComponent implements OnInit {
 
   user = computed(() => this.auth.user());
   billing = computed(() => this.auth.user()?.billing);
+  paymentsProvider = resolvePaymentsProvider(environment);
+  manageUrl = resolveManageUrl(this.paymentsProvider, environment);
+  manageProviderLabel = this.providerLabel(this.paymentsProvider);
 
   // Form state (editable subset)
-  form: { username: string; email: string; bio: string; prefs: UserPrefs } = {
+  form: { username: string; email: string } = {
     username: '',
     email: '',
-    bio: '',
-    prefs: {
-      tz: 'Europe/Istanbul',
-      theme: 'dark',
-      defaultTech: 'javascript',
-      keyboard: 'default',
-      marketingEmails: false
-    },
   };
 
   solved = signal<SolvedQuestion[]>([]);
   solvedLoading = signal(false);
   saving = signal(false);
+  changePasswordOpen = signal(false);
+  changePasswordSaving = signal(false);
+  changePasswordError = signal<string | null>(null);
+  changePasswordSuccess = signal(false);
+  changePasswordForm = {
+    currentPassword: '',
+    currentPasswordConfirm: '',
+    newPassword: '',
+  };
 
   constructor(
     private auth: AuthService,
@@ -245,18 +286,85 @@ export class ProfileComponent implements OnInit {
     return !!b && (b.pro?.status === 'lifetime' || b.pro?.status === 'active');
   }
 
+  openChangePassword(): void {
+    this.resetChangePassword();
+    this.changePasswordOpen.set(true);
+  }
+
+  closeChangePassword(): void {
+    this.changePasswordOpen.set(false);
+  }
+
+  resetChangePassword(): void {
+    this.changePasswordForm = {
+      currentPassword: '',
+      currentPasswordConfirm: '',
+      newPassword: '',
+    };
+    this.changePasswordError.set(null);
+    this.changePasswordSuccess.set(false);
+    this.changePasswordSaving.set(false);
+  }
+
+  canSubmitChangePassword(): boolean {
+    const { currentPassword, currentPasswordConfirm, newPassword } = this.changePasswordForm;
+    return !!currentPassword && !!currentPasswordConfirm && !!newPassword;
+  }
+
+  submitChangePassword(): void {
+    const { currentPassword, currentPasswordConfirm, newPassword } = this.changePasswordForm;
+    this.changePasswordError.set(null);
+    this.changePasswordSuccess.set(false);
+
+    if (!currentPassword || !currentPasswordConfirm || !newPassword) {
+      this.changePasswordError.set('All fields are required.');
+      return;
+    }
+    if (currentPassword !== currentPasswordConfirm) {
+      this.changePasswordError.set('Current passwords do not match.');
+      return;
+    }
+
+    this.changePasswordSaving.set(true);
+    this.auth.changePassword(currentPassword, currentPasswordConfirm, newPassword).subscribe({
+      next: () => {
+        this.changePasswordSaving.set(false);
+        this.changePasswordSuccess.set(true);
+        this.changePasswordForm = {
+          currentPassword: '',
+          currentPasswordConfirm: '',
+          newPassword: '',
+        };
+      },
+      error: (err) => {
+        this.changePasswordSaving.set(false);
+        this.changePasswordError.set(err?.error?.error || 'Failed to change password.');
+      },
+    });
+  }
+
+  openManageSubscription(): void {
+    if (!this.manageUrl) return;
+    window.open(this.manageUrl, '_blank', 'noopener');
+  }
+
+  private providerLabel(provider: PaymentsProvider): string {
+    switch (provider) {
+      case 'gumroad':
+        return 'Gumroad';
+      case 'lemonsqueezy':
+        return 'LemonSqueezy';
+      case 'stripe':
+        return 'Stripe';
+      default:
+        return 'Provider';
+    }
+  }
+
   private resetForm(u: User) {
     this.form = {
       username: u.username,
       email: u.email,
-      bio: u.bio || '',
-      prefs: {
-        tz: u.prefs?.tz || 'Europe/Istanbul',
-        theme: u.prefs?.theme || 'dark',
-        defaultTech: u.prefs?.defaultTech || 'javascript',
-        keyboard: u.prefs?.keyboard || 'default',
-        marketingEmails: !!u.prefs?.marketingEmails,
-      },
     };
   }
 
@@ -266,13 +374,7 @@ export class ProfileComponent implements OnInit {
     if (!u) return false;
     return (
       u.username !== this.form.username ||
-      u.email !== this.form.email ||
-      (u.bio || '') !== (this.form.bio || '') ||
-      u.prefs?.tz !== this.form.prefs.tz ||
-      u.prefs?.theme !== this.form.prefs.theme ||
-      u.prefs?.defaultTech !== this.form.prefs.defaultTech ||
-      u.prefs?.keyboard !== this.form.prefs.keyboard ||
-      !!u.prefs?.marketingEmails !== !!this.form.prefs.marketingEmails
+      u.email !== this.form.email
     );
   }
 
@@ -298,8 +400,6 @@ export class ProfileComponent implements OnInit {
       .updateProfile(u._id, {
         username: this.form.username,
         email: this.form.email,
-        bio: this.form.bio,
-        prefs: { ...this.form.prefs },
       })
       .subscribe({
         next: (updated) => {

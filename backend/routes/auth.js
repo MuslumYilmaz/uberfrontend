@@ -491,6 +491,33 @@ router.post('/logout', (req, res) => {
     return res.status(200).json({ ok: true });
 });
 
+// POST /api/auth/change-password
+router.post('/change-password', requireAuth, async (req, res) => {
+    try {
+        const { currentPassword, currentPasswordConfirm, newPassword } = req.body || {};
+        if (!currentPassword || !currentPasswordConfirm || !newPassword) {
+            return res.status(400).json({ error: 'Missing fields' });
+        }
+        if (currentPassword !== currentPasswordConfirm) {
+            return res.status(400).json({ error: 'Current passwords do not match' });
+        }
+
+        const user = await User.findById(req.auth.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+        if (!ok) return res.status(401).json({ error: 'Invalid current password' });
+
+        user.passwordHash = await bcrypt.hash(newPassword, 10);
+        user.passwordUpdatedAt = new Date();
+        await user.save();
+
+        return res.json({ ok: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Failed to change password' });
+    }
+});
+
 // GET /api/auth/me  (cookie auth primary; Authorization header fallback)
 router.get('/me', requireAuth, async (req, res) => {
     try {

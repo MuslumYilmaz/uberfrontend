@@ -10,19 +10,20 @@
 
 /* Sidebar */
 .profile-sidebar {
-  background: var(--uf-surface);
+  background: linear-gradient(165deg, color-mix(in srgb, var(--uf-text-primary) 8%, var(--uf-surface)), var(--uf-surface));
   padding: 16px;
   border-radius: var(--uf-card-radius);
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 80%, var(--uf-accent) 20%);
   font-size: 13px;
-  box-shadow: var(--uf-card-shadow);
+  box-shadow: var(--uf-card-shadow-strong);
 }
 .profile-header { display: flex; align-items: center; gap: 12px; }
 .avatar {
   width: 48px; height: 48px; border-radius: 50%;
-  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  background: var(--uf-accent);
   display: grid; place-items: center;
-  font-weight: 600; font-size: 18px; color: var(--uf-bg);
+  font-weight: 800; font-size: 18px; color: #15130b;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--uf-accent) 55%, transparent);
 }
 .name { margin: 0; font-size: 15px; font-weight: 600; }
 .badge-premium { background: var(--uf-accent); color: var(--uf-bg); padding: 2px 6px; border-radius: 6px; font-size: 11px; margin-left: 6px; font-weight: 700; }
@@ -33,9 +34,10 @@
 
 /* Main */
 .profile-main {
-  background: var(--uf-surface); padding: 16px; border-radius: var(--uf-card-radius);
-  border: 1px solid var(--uf-border-subtle);
-  box-shadow: var(--uf-card-shadow);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-text-primary) 8%);
+  padding: 16px; border-radius: var(--uf-card-radius);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 80%, var(--uf-text-primary) 20%);
+  box-shadow: var(--uf-card-shadow-strong);
 }
 
 /* Tabs */
@@ -68,7 +70,8 @@
 
 /* Account cards */
 .account-card {
-  background: var(--uf-surface-alt); border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-text-primary) 8%);
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 80%, var(--uf-text-primary) 20%);
   border-radius: var(--uf-card-radius); padding: 14px; font-size: 13px;
   box-shadow: var(--uf-card-shadow);
 }
@@ -83,13 +86,97 @@
 
 .helper { font-size: 11px; color: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent); margin-top: 4px; text-align: right; }
 .btn-save {
-  margin-top: 8px; padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer; background: var(--uf-accent); color: var(--uf-bg);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--uf-accent) 32%, transparent);
+  margin-top: 8px; padding: 6px 12px; font-size: 13px; border-radius: 6px; border: none; cursor: pointer;
+  background: linear-gradient(180deg, var(--uf-accent), color-mix(in srgb, var(--uf-accent) 80%, #fff 20%));
+  color: var(--uf-bg);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--uf-accent) 32%, transparent);
 }
-.btn-save:disabled { background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); color: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent); cursor: not-allowed; }
+.btn-save:disabled {
+  background: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
+  color: color-mix(in srgb, var(--uf-text-primary) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 35%, var(--uf-border-subtle));
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.btn-secondary {
+  margin-top: 8px; padding: 6px 12px; font-size: 13px; border-radius: 6px; cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-primary) 30%);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
+  color: var(--uf-text-primary);
+}
+.btn-secondary:disabled {
+  color: color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, transparent);
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 80%, var(--uf-text-primary) 20%);
+  cursor: not-allowed;
+}
 
 .promo { margin-top: 8px; background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface)); padding: 10px; border-radius: 6px; color: var(--uf-text-primary); font-size: 12px; border: 1px solid color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle)); }
 .promo strong { display: block; margin-bottom: 4px; }
+
+/* Password dialog */
+:host ::ng-deep .p-dialog-mask {
+  background: color-mix(in srgb, var(--uf-bg) 55%, transparent);
+  backdrop-filter: blur(4px);
+}
+:host ::ng-deep .profile-password-dialog {
+  width: min(520px, 92vw);
+  border-radius: 16px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+:host ::ng-deep .profile-password-dialog .p-dialog-header,
+:host ::ng-deep .profile-password-dialog .p-dialog-content,
+:host ::ng-deep .profile-password-dialog .p-dialog-footer {
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-text-primary) 8%);
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-primary) 30%);
+  color: var(--uf-text-primary);
+}
+:host ::ng-deep .profile-password-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+:host ::ng-deep .profile-password-dialog .p-dialog-header {
+  padding: 18px 20px 10px;
+  font-weight: 600;
+}
+:host ::ng-deep .profile-password-dialog .p-dialog-content {
+  padding: 12px 20px 4px;
+}
+:host ::ng-deep .profile-password-dialog .p-dialog-footer {
+  padding: 12px 20px 18px;
+  border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-primary) 30%);
+}
+.password-form {
+  display: grid;
+  gap: 10px;
+}
+.password-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
+}
+.password-form input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--uf-border-subtle);
+  background: var(--uf-surface);
+  color: var(--uf-text-primary);
+  font-size: 13px;
+}
+.field-error {
+  margin: 2px 0 0;
+  color: #f87171;
+  font-size: 12px;
+}
+.field-success {
+  margin: 2px 0 0;
+  color: #34d399;
+  font-size: 12px;
+}
 
 /* === Responsive === */
 @media (max-width: 1080px) { }
