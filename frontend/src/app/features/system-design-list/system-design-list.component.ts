@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
@@ -68,6 +68,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private seo: SeoService,
     private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -114,7 +115,8 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
     const itemList = this.buildItemListSchema(list);
     if (!itemList) return;
 
-    this.seo.updateTags({ ...baseSeo, jsonLd: itemList });
+    const canonical = this.seo.buildCanonicalUrl(this.router.url);
+    this.seo.updateTags({ ...baseSeo, canonical, jsonLd: itemList });
   }
 
   private buildItemListSchema(list: SysDesign[]): Record<string, any> | null {

@@ -942,7 +942,8 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (!baseSeo || this.isNoIndex(baseSeo) || list.length === 0) return;
     const itemList = this.buildItemListSchema(list);
     if (!itemList) return;
-    this.seo.updateTags({ ...baseSeo, jsonLd: itemList });
+    const canonical = this.seo.buildCanonicalUrl(this.router.url);
+    this.seo.updateTags({ ...baseSeo, canonical, jsonLd: itemList });
   }
 
   private buildItemListSchema(list: Row[]): Record<string, any> | null {

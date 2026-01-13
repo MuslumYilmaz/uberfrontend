@@ -17,12 +17,24 @@ export class SeoTitleStrategy extends TitleStrategy {
     let current = snapshot.root;
     while (current.firstChild) current = current.firstChild;
     const data = current.data || {};
+    const canonical = this.canonicalFromSnapshot(snapshot);
 
-    if (data['seo']) return data['seo'] as SeoMeta;
+    if (data['seo']) return this.withCanonical(data['seo'] as SeoMeta, canonical);
 
     const built = this.buildTitle(snapshot);
-    if (built) return { title: built };
+    if (built) return canonical ? { title: built, canonical } : { title: built };
 
-    return {};
+    return canonical ? { canonical } : {};
+  }
+
+  private canonicalFromSnapshot(snapshot: RouterStateSnapshot): string | null {
+    const url = (snapshot.url || '').trim();
+    if (!url) return '/';
+    return url.startsWith('/') ? url : `/${url}`;
+  }
+
+  private withCanonical(meta: SeoMeta, canonical: string | null): SeoMeta {
+    if (!canonical || meta.canonical) return meta;
+    return { ...meta, canonical };
   }
 }
