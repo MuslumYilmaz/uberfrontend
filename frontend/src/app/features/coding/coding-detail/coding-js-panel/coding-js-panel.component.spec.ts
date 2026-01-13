@@ -1,3 +1,5 @@
+import { PLATFORM_ID } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import type { ConsoleEntry, TestResult } from '../../console-logger/console-logger.component';
 import { CodingJsPanelComponent } from './coding-js-panel.component';
 
@@ -13,9 +15,17 @@ class RunnerStub {
 }
 
 describe('CodingJsPanelComponent', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+  });
+
   it('runs tests with the latest editor buffers and updates state', async () => {
     const runner = new RunnerStub();
-    const component = new CodingJsPanelComponent(runner as any, {} as any);
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(runner as any, {} as any),
+    );
     component.question = { id: 'unique' } as any;
     component.disablePersistence = true;
 
