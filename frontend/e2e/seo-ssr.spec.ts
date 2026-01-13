@@ -17,16 +17,20 @@ const CASES = [
     path: '/coding',
     titleIncludes: 'coding interview questions',
     h1: 'All questions',
+    detail: false,
   },
   {
     path: '/react/coding/react-counter',
     titleIncludes: 'Counter',
     h1: 'Counter (Component with Guarded Decrement)',
+    detail: true,
   },
   {
     path: '/javascript/trivia/js-event-loop',
     titleIncludes: 'Explain the JavaScript Event Loop',
     h1: 'Explain the JavaScript Event Loop',
+    detail: true,
+    expectNoMonaco: true,
   },
 ];
 
@@ -48,7 +52,7 @@ function isSkeletonH1(text: string): boolean {
   return /loading|skeleton|preparing|please wait/i.test(text);
 }
 
-async function assertSsrBasics(page: Page, entry: { path: string; h1: string }) {
+async function assertSsrBasics(page: Page, entry: { path: string; h1: string; detail?: boolean; expectNoMonaco?: boolean }) {
   const title = await page.title();
   expect(title).not.toBe(HOME_TITLE);
 
@@ -59,14 +63,29 @@ async function assertSsrBasics(page: Page, entry: { path: string; h1: string }) 
   const h1Count = await h1Locator.count();
   if (h1Count > 0) {
     const h1 = (await h1Locator.first().textContent())?.trim() || '';
-    expect(isSkeletonH1(h1) || h1.includes(entry.h1)).toBe(true);
+    if (entry.detail) {
+      expect(isSkeletonH1(h1)).toBe(false);
+    }
+    expect(h1).toContain(entry.h1);
   }
 
   await expect(page.locator('[data-testid="offline-banner"]')).toHaveCount(0);
   await expect(page.getByText(/Question not found/i)).toHaveCount(0);
+
+  if (entry.detail) {
+    await expect(page.getByText(/Loading question/i)).toHaveCount(0);
+  }
+
+  if (entry.expectNoMonaco) {
+    await expect(page.locator('script[src*="monaco"]')).toHaveCount(0);
+    await expect(page.locator('script:has-text("monaco")')).toHaveCount(0);
+  }
 }
 
-async function assertHydratedBasics(page: Page, entry: { path: string; titleIncludes: string; h1: string }) {
+async function assertHydratedBasics(
+  page: Page,
+  entry: { path: string; titleIncludes: string; h1: string; detail?: boolean },
+) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
 
   await expect
@@ -78,6 +97,9 @@ async function assertHydratedBasics(page: Page, entry: { path: string; titleIncl
 
   await expect(page.locator('[data-testid="offline-banner"]')).toHaveCount(0);
   await expect(page.getByText(/Question not found/i)).toHaveCount(0);
+  if (entry.detail) {
+    await expect(page.getByText(/Loading question/i)).toHaveCount(0);
+  }
 }
 
 test.describe('seo-ssr', () => {

@@ -10,7 +10,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { filter, Subject } from 'rxjs';
+import { filter, Subject, Subscription } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
@@ -24,6 +24,7 @@ import type { Tech } from '../../../core/models/user.model';
 import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
+import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
@@ -193,6 +194,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private previewObjectUrl: string | null = null;
   private destroy$ = new Subject<void>();
   private lastPreviewHtml: string | null = null;
+  private routeParamSub?: Subscription;
+  private routeDataSub?: Subscription;
 
   allQuestions: Question[] = [];
   currentIndex = 0;
@@ -546,26 +549,35 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(recompute);
 
       // determine :tech and :kind
-      this.route.paramMap.subscribe((pm) => {
-        let p: ActivatedRoute | null = this.route;
-        let tech: string | null = null;
-        while (p && !tech) {
-          tech = p.snapshot.paramMap.get('tech');
-          p = p.parent!;
+      this.routeDataSub = this.route.data.subscribe((data) => {
+        const resolved = data['questionDetail'] as QuestionDetailResolved | undefined;
+        if (resolved) {
+          this.applyResolved(resolved);
+          return;
         }
-        this.tech = ((tech || 'javascript') as Tech);
 
-        const path = this.route.routeConfig?.path || '';
-        this.kind = path.startsWith('debug') ? 'debug' : 'coding';
+        if (this.routeParamSub) return;
+        this.routeParamSub = this.route.paramMap.subscribe((pm) => {
+          let p: ActivatedRoute | null = this.route;
+          let tech: string | null = null;
+          while (p && !tech) {
+            tech = p.snapshot.paramMap.get('tech');
+            p = p.parent!;
+          }
+          this.tech = ((tech || 'javascript') as Tech);
 
-        this.daily.ensureTodaySet(this.tech as any);
-        this.setInitialAsideWidth();
+          const path = this.route.routeConfig?.path || '';
+          this.kind = path.startsWith('debug') ? 'debug' : 'coding';
 
-        const id = pm.get('id')!;
-        this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
-          this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
-          this.dataLoaded = true;
-          this.loadQuestion(id);
+          this.daily.ensureTodaySet(this.tech as any);
+          this.setInitialAsideWidth();
+
+          const id = pm.get('id')!;
+          this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
+            this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
+            this.dataLoaded = true;
+            this.loadQuestion(id);
+          });
         });
       });
     }
@@ -606,6 +618,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  private applyResolved(resolved: QuestionDetailResolved) {
+    this.tech = resolved.tech;
+    this.kind = resolved.kind === 'debug' ? 'debug' : 'coding';
+    this.daily.ensureTodaySet(this.tech as any);
+    this.setInitialAsideWidth();
+    this.allQuestions = [...(resolved.list || [])].sort(CodingDetailComponent.sortForPractice);
+    this.dataLoaded = true;
+    if (resolved.id) {
+      this.loadQuestion(resolved.id);
+    }
+  }
+
   ngAfterViewInit() {
     if (!this.isBrowser) return;
     this.zone.runOutsideAngular(() => {
@@ -615,6 +639,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.routeParamSub?.unsubscribe();
+    this.routeDataSub?.unsubscribe();
     if (this.isBrowser) {
       window.removeEventListener('pointermove', this.onPointerMove);
       window.removeEventListener('pointerup', this.onPointerUp);
@@ -765,6 +791,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // reset solution files for new question before loading
     this.solutionFilesMap.set({});
     this.solutionOpenPath.set('');
+
+    if (!this.isBrowser) return;
 
     await this.loadSolutionAssetIfAny(q);
 

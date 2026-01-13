@@ -5,10 +5,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.js';
-import { Subscription, combineLatest, map, switchMap, tap } from 'rxjs';
+import { Subscription, combineLatest, map, of, switchMap, tap } from 'rxjs';
 import { PrismHighlightDirective } from '../../../core/directives/prism-highlight.directive';
 import { Question, isQuestionLockedForTier } from '../../../core/models/question.model';
 import { Tech } from '../../../core/models/user.model';
+import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { QuestionService } from '../../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
@@ -235,28 +236,46 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.hydrateState();
 
-    this.sub = combineLatest([this.route.parent!.paramMap, this.route.paramMap])
+    this.sub = this.route.data
       .pipe(
-        map(([parentPm, childPm]) => ({
-          tech: parentPm.get('tech')! as Tech,
-          id: childPm.get('id')!,
-        })),
-        tap(({ tech }) => (this.tech = tech)),
-        switchMap(({ tech, id }) =>
-          this.qs.loadQuestions(tech, 'trivia').pipe(
-            tap((all) => {
-              this.questionsList = all;
-              this.dataLoaded = true;
-              this.selectQuestion(id);
-              this.syncPracticeIndexById(id);
-            })
-          )
-        )
+        switchMap((data) => {
+          const resolved = data['questionDetail'] as QuestionDetailResolved | undefined;
+          if (resolved) {
+            this.applyResolved(resolved);
+            return of(null);
+          }
+
+          return combineLatest([this.route.parent!.paramMap, this.route.paramMap]).pipe(
+            map(([parentPm, childPm]) => ({
+              tech: parentPm.get('tech')! as Tech,
+              id: childPm.get('id')!,
+            })),
+            tap(({ tech }) => (this.tech = tech)),
+            switchMap(({ tech, id }) =>
+              this.qs.loadQuestions(tech, 'trivia').pipe(
+                tap((all) => {
+                  this.questionsList = all;
+                  this.dataLoaded = true;
+                  this.selectQuestion(id);
+                  this.syncPracticeIndexById(id);
+                })
+              )
+            )
+          );
+        })
       )
       .subscribe();
   }
 
   ngOnDestroy() { this.sub?.unsubscribe(); }
+
+  private applyResolved(resolved: QuestionDetailResolved) {
+    this.tech = resolved.tech;
+    this.questionsList = resolved.list ?? [];
+    this.dataLoaded = true;
+    this.selectQuestion(resolved.id);
+    this.syncPracticeIndexById(resolved.id);
+  }
 
   private hydrateState() {
     const navState = this.router.getCurrentNavigation()?.extras?.state;

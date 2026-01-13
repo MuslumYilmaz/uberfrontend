@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import SentryCli from '@sentry/cli';
+import { SentryCli } from '@sentry/cli';
 
 const authToken = process.env.SENTRY_AUTH_TOKEN || '';
 const org = process.env.SENTRY_ORG || '';

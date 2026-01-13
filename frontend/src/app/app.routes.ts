@@ -10,6 +10,10 @@ import {
 import { authGuard, authMatchGuard } from './core/guards/auth.guard';
 import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
 import { premiumGuard } from './core/guards/premium.guard';
+import {
+  codingDetailResolver,
+  triviaDetailResolver,
+} from './core/resolvers/question-detail.resolver';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -694,6 +698,9 @@ export const routes: Routes = [
           import('./features/coding/coding-detail/coding-detail.component').then(
             (m) => m.CodingDetailComponent,
           ),
+        resolve: {
+          questionDetail: codingDetailResolver,
+        },
         data: {
           seo: {
             title: 'Coding interview question',
@@ -707,6 +714,9 @@ export const routes: Routes = [
           import('./features/trivia/trivia-detail/trivia-detail.component').then(
             (m) => m.TriviaDetailComponent,
           ),
+        resolve: {
+          questionDetail: triviaDetailResolver,
+        },
         data: {
           seo: {
             title: 'Front-end trivia question',
@@ -720,6 +730,9 @@ export const routes: Routes = [
           import('./features/coding/coding-detail/coding-detail.component').then(
             (m) => m.CodingDetailComponent,
           ),
+        resolve: {
+          questionDetail: codingDetailResolver,
+        },
         data: {
           kind: 'debug',
           seo: {

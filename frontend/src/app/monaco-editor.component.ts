@@ -301,6 +301,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private ensureMonaco(): Promise<void> {
     return new Promise((resolve) => {
       const start = () => {
+        if (!(window as any).MonacoEnvironment) {
+          (window as any).MonacoEnvironment = {
+            getWorkerUrl: () =>
+              new URL(`${this.vsBasePath}/base/worker/workerMain.js`, document.baseURI).toString(),
+          };
+        }
+
         // Configure AMD path to Monaco once
         if (!(window as any).require || !(window as any).require.configuredForVs) {
           const req: any = (window as any).require || {};

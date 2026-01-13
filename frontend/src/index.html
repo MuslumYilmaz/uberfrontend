@@ -29,28 +29,6 @@
 
 <body>
   <app-root></app-root>
-
-  <!-- Monaco loader + worker setup (single load, guarded) -->
-  <script>
-    (function () {
-      if (window.require && typeof window.require.config === 'function') return;
-
-      window.require = { paths: { vs: 'assets/monaco/min/vs' } };
-
-      window.MonacoEnvironment = {
-        getWorkerUrl() {
-          return new URL('assets/monaco/min/vs/base/worker/workerMain.js', document.baseURI).toString();
-        }
-      };
-
-      var s = document.createElement('script');
-      s.src = 'assets/monaco/min/vs/loader.js';
-      s.onload = function () {
-        window.require(['vs/editor/editor.main'], function () { });
-      };
-      document.head.appendChild(s);
-    })();
-  </script>
 </body>
 
 </html>
