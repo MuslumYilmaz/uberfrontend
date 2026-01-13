@@ -71,7 +71,7 @@ Or run locally with a prerendered build:
 
 1) `ng run frontendatlas:prerender`
 2) Serve `dist/frontendatlas/browser` with a static server (any tool you prefer).
-3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 npm run test:e2e -- seo-ssr`
+3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 PLAYWRIGHT_SSR=1 npm run test:e2e -- seo-ssr`
 
 ## Draft versioning
 

@@ -2,6 +2,15 @@ import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = (process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4200').replace(/\/$/, '');
 const CANONICAL_BASE = (process.env.PLAYWRIGHT_CANONICAL_BASE || 'https://frontendatlas.com').replace(/\/$/, '');
+const SSR_ENABLED = (() => {
+  if (process.env.PLAYWRIGHT_SSR === '1') return true;
+  try {
+    const { hostname } = new URL(BASE_URL);
+    return hostname !== 'localhost' && hostname !== '127.0.0.1';
+  } catch {
+    return false;
+  }
+})();
 
 const CASES = [
   {
@@ -71,70 +80,77 @@ async function assertHydratedBasics(page: Page, entry: { path: string; titleIncl
   await expect(page.getByText(/Question not found/i)).toHaveCount(0);
 }
 
-test('SSR HTML renders correct shell + meta (JS disabled)', async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
-  const page = await context.newPage();
+test.describe('seo-ssr', () => {
+  test.skip(
+    !SSR_ENABLED,
+    'SSR tests require prerender/SSR output (set PLAYWRIGHT_SSR=1 to force).',
+  );
 
-  for (const entry of CASES) {
-    await page.goto(fullUrl(entry.path), { waitUntil: 'domcontentloaded' });
-    await assertSsrBasics(page, entry);
-  }
+  test('SSR HTML renders correct shell + meta (JS disabled)', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
 
-  await context.close();
-});
+    for (const entry of CASES) {
+      await page.goto(fullUrl(entry.path), { waitUntil: 'domcontentloaded' });
+      await assertSsrBasics(page, entry);
+    }
 
-test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {
-  for (const entry of CASES) {
-    await page.goto(entry.path, { waitUntil: 'domcontentloaded' });
-    await expect
-      .poll(async () => (await page.locator('h1').first().textContent())?.trim() || '', {
-        timeout: 15000,
+    await context.close();
+  });
+
+  test('Hydrated HTML renders correct shell + meta (JS enabled)', async ({ page }) => {
+    for (const entry of CASES) {
+      await page.goto(entry.path, { waitUntil: 'domcontentloaded' });
+      await expect
+        .poll(async () => (await page.locator('h1').first().textContent())?.trim() || '', {
+          timeout: 15000,
+        })
+        .toContain(entry.h1);
+      await assertHydratedBasics(page, entry);
+    }
+  });
+
+  test('SSR sitemap sampling does not collapse to home meta', async ({ browser, request }) => {
+    let response = await request.get(`${BASE_URL}/sitemap-1.xml`);
+    if (!response.ok()) {
+      response = await request.get(`${BASE_URL}/sitemap.xml`);
+    }
+    expect(response.ok()).toBeTruthy();
+
+    const xml = await response.text();
+    const urls = Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g))
+      .map((m) => m[1])
+      .filter((url) => {
+        if (!url) return false;
+        try {
+          const parsed = new URL(url);
+          return parsed.pathname !== '/';
+        } catch {
+          return url !== '/' && url !== `${BASE_URL}/` && url !== BASE_URL;
+        }
       })
-      .toContain(entry.h1);
-    await assertHydratedBasics(page, entry);
-  }
-});
+      .slice(0, 5);
 
-test('SSR sitemap sampling does not collapse to home meta', async ({ browser, request }) => {
-  let response = await request.get(`${BASE_URL}/sitemap-1.xml`);
-  if (!response.ok()) {
-    response = await request.get(`${BASE_URL}/sitemap.xml`);
-  }
-  expect(response.ok()).toBeTruthy();
+    expect(urls.length).toBeGreaterThan(0);
 
-  const xml = await response.text();
-  const urls = Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g))
-    .map((m) => m[1])
-    .filter((url) => {
-      if (!url) return false;
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+
+    for (const url of urls) {
+      let path = url;
       try {
         const parsed = new URL(url);
-        return parsed.pathname !== '/';
+        path = `${parsed.pathname}${parsed.search}`;
       } catch {
-        return url !== '/' && url !== `${BASE_URL}/` && url !== BASE_URL;
+        path = url;
       }
-    })
-    .slice(0, 5);
-
-  expect(urls.length).toBeGreaterThan(0);
-
-  const context = await browser.newContext({ javaScriptEnabled: false });
-  const page = await context.newPage();
-
-  for (const url of urls) {
-    let path = url;
-    try {
-      const parsed = new URL(url);
-      path = `${parsed.pathname}${parsed.search}`;
-    } catch {
-      path = url;
+      await page.goto(fullUrl(path), { waitUntil: 'domcontentloaded' });
+      const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+      expect(canonical).not.toBe(`${BASE_URL}/`);
+      const title = await page.title();
+      expect(title).not.toBe(HOME_TITLE);
     }
-    await page.goto(fullUrl(path), { waitUntil: 'domcontentloaded' });
-    const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
-    expect(canonical).not.toBe(`${BASE_URL}/`);
-    const title = await page.title();
-    expect(title).not.toBe(HOME_TITLE);
-  }
 
-  await context.close();
+    await context.close();
+  });
 });
