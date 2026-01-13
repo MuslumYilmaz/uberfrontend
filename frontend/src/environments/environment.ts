@@ -1,3 +1,5 @@
+import { SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './sentry.env';
+
 export const environment = {
     production: false,
     dataVersion: "2025-08-19a",
@@ -5,6 +7,9 @@ export const environment = {
     frontendBase: "",
     cdnBaseUrl: 'https://frontendatlas.vercel.app',
     cdnEnabled: true,
+    sentryDsn: SENTRY_DSN,
+    sentryRelease: SENTRY_RELEASE,
+    sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
     PAYMENTS_PROVIDER: 'gumroad',
     GUMROAD_MONTHLY_URL: 'https://frontendatlas.gumroad.com/l/xsoew',
     GUMROAD_QUARTERLY_URL: 'https://frontendatlas.gumroad.com/l/rwsapy',

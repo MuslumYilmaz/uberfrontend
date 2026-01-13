@@ -2,7 +2,7 @@
   "name": "frontendatlas",
   "version": "0.0.0",
   "scripts": {
-    "gen:data": "node scripts/gen-data-version.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs",
+    "gen:data": "node scripts/gen-sentry-env.mjs && node scripts/gen-data-version.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs",
     "gen:prerender": "node scripts/generate-prerender-routes.mjs",
     "lint:tags": "node scripts/lint-tags.mjs",
     "lint:tags:fix": "node scripts/lint-tags.mjs --fix",
@@ -21,7 +21,8 @@
     "test:e2e": "playwright test",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "postbuild": "node scripts/sentry-release.mjs"
   },
   "private": true,
   "dependencies": {
@@ -38,6 +39,7 @@
     "canvas-confetti": "^1.9.3",
     "dompurify": "^3.3.1",
     "esbuild-wasm": "^0.25.10",
+    "@sentry/angular": "10.33.0",
     "localforage": "^1.10.0",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
@@ -52,6 +54,7 @@
     "@angular/cli": "17.3.12",
     "@angular/compiler-cli": "17.3.12",
     "@playwright/test": "^1.57.0",
+    "@sentry/cli": "3.1.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/jasmine": "~5.1.0",
     "@types/prismjs": "^1.26.5",
