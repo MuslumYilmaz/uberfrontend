@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
   AfterViewInit,
@@ -9,9 +9,11 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
   SimpleChanges,
   ViewChild,
   computed,
+  inject,
   signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -94,6 +96,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   previewUrl = () => this._previewUrl();
   private previewObjectUrl: string | null = null;
   private previewNavId = 0;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   // preview loading
   loadingPreview = signal(true);
@@ -192,6 +195,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   ngAfterViewInit() {
+    if (!this.isBrowser) return;
     // description splitter’da yaptığın gibi global dinleyici
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMoveFrameworkCols);
@@ -229,8 +233,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       }
     } catch { }
 
-    window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
-    window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
+    if (this.isBrowser) {
+      window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
+      window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
+    }
   }
 
   // ---------- public API (called by parent) ----------
@@ -240,6 +246,15 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     this.flushPendingPersist();
     const q = this.question;
     if (!q || !this.isFrameworkTech()) return;
+
+    if (!this.isBrowser) {
+      this.filesMap.set({});
+      this.openPath.set('');
+      this.frameworkEntryFile = '';
+      this.editorContent.set('');
+      this.loadingPreview.set(false);
+      return;
+    }
 
     this.loadingPreview.set(true);
     this.viewingSolution.set(false);
@@ -490,6 +505,10 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     q: Question,
     opts?: { forceReset?: boolean }
   ): Promise<void> {
+    if (!this.isBrowser) {
+      this.loadingPreview.set(false);
+      return;
+    }
     const meta = (q as any).sdk as { asset?: string; openFile?: string } | undefined;
     const baseKey = this.baseStorageKey(q);
 

@@ -30,6 +30,7 @@ export interface JsBundleV2 {
 }
 
 type WebLang = 'html' | 'css';
+type LocalForageInstance = ReturnType<typeof localForage.createInstance>;
 
 export interface WebBundleV2 {
   html?: { code?: string; baseline?: string; updatedAt?: string };
@@ -54,10 +55,27 @@ interface FrameworkBundleV2 {
 }
 
 const DATA_VERSION = '2';
+const IS_BROWSER_ENV = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-const LF_JS = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_js' });
-const LF_NG = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_ng' });
-const LF_WEB = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_web' });
+let lfJs: LocalForageInstance | null = null;
+let lfNg: LocalForageInstance | null = null;
+let lfWeb: LocalForageInstance | null = null;
+
+function getJsStore(): LocalForageInstance | null {
+  if (!IS_BROWSER_ENV) return null;
+  if (!lfJs) lfJs = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_js' });
+  return lfJs;
+}
+function getNgStore(): LocalForageInstance | null {
+  if (!IS_BROWSER_ENV) return null;
+  if (!lfNg) lfNg = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_ng' });
+  return lfNg;
+}
+function getWebStore(): LocalForageInstance | null {
+  if (!IS_BROWSER_ENV) return null;
+  if (!lfWeb) lfWeb = localForage.createInstance({ name: 'frontendatlas', storeName: 'fa_web' });
+  return lfWeb;
+}
 
 const BASE = 'code:';
 const PREFIX = `v${DATA_VERSION}:${BASE}`; // e.g. v2:code:
@@ -80,6 +98,7 @@ const MIGRATION_FLAG_JS_IDB = 'fa:js:idb:migrated:v1';
 
 /** Guard: is localStorage usable? (some browsers/iframes can throw) */
 function hasLocalStorage(): boolean {
+  if (typeof localStorage === 'undefined') return false;
   try {
     const k = '__ls_probe__';
     localStorage.setItem(k, '1');
@@ -497,7 +516,10 @@ export class CodeStorageService {
     const key = V2_JS_BUNDLE(qid);
     await this.enqueueBundleOp(key, async () => {
       this.jsBundleCache.delete(key);
-      try { await LF_JS.removeItem(key); } catch { /* ignore */ }
+      const store = getJsStore();
+      if (store) {
+        try { await store.removeItem(key); } catch { /* ignore */ }
+      }
       if (hasLocalStorage()) {
         try { localStorage.removeItem(key); } catch { /* ignore */ }
       }
@@ -511,7 +533,8 @@ export class CodeStorageService {
     const cached = this.cacheGet(this.jsBundleCache, key);
     if (cached) return cached;
 
-    const raw = await LF_JS.getItem<string>(key);
+    const store = getJsStore();
+    const raw = store ? await store.getItem<string>(key) : null;
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as JsBundleV2;
@@ -520,13 +543,16 @@ export class CodeStorageService {
       } catch { /* ignore */ }
     }
     // fallback to LS if IDB missing/invalid
-    try {
-      const ls = localStorage.getItem(key);
-      if (!ls) return null;
-      const parsed = JSON.parse(ls) as JsBundleV2;
-      this.cacheSet(this.jsBundleCache, key, parsed);
-      return parsed;
-    } catch { return null; }
+    if (hasLocalStorage()) {
+      try {
+        const ls = localStorage.getItem(key);
+        if (!ls) return null;
+        const parsed = JSON.parse(ls) as JsBundleV2;
+        this.cacheSet(this.jsBundleCache, key, parsed);
+        return parsed;
+      } catch { return null; }
+    }
+    return null;
   }
 
   private async saveBundlePrimary(
@@ -537,25 +563,29 @@ export class CodeStorageService {
     const key = V2_JS_BUNDLE(qid);
     const payload = JSON.stringify(bundle);
 
-    try {
-      // Primary: IndexedDB
-      await LF_JS.setItem(key, payload);
-      this.cacheSet(this.jsBundleCache, key, bundle);
-      return;
-    } catch {
-      // Fallback: localStorage (only if available)
-      if (!hasLocalStorage()) {
-        if (!opts?.silent) {
-          // optionally log in dev
-        }
-        return;
-      }
+    const store = getJsStore();
+    if (store) {
       try {
-        localStorage.setItem(key, payload);
+        // Primary: IndexedDB
+        await store.setItem(key, payload);
         this.cacheSet(this.jsBundleCache, key, bundle);
+        return;
       } catch {
-        // Out of quota both in IDB/LS → nothing else to do.
+        // fall through to LS
       }
+    }
+    // Fallback: localStorage (only if available)
+    if (!hasLocalStorage()) {
+      if (!opts?.silent) {
+        // optionally log in dev
+      }
+      return;
+    }
+    try {
+      localStorage.setItem(key, payload);
+      this.cacheSet(this.jsBundleCache, key, bundle);
+    } catch {
+      // Out of quota both in IDB/LS → nothing else to do.
     }
   }
 
@@ -669,7 +699,8 @@ export class CodeStorageService {
     if (cached) return cached;
 
     // IDB first
-    const raw = await LF_WEB.getItem<string>(key);
+    const store = getWebStore();
+    const raw = store ? await store.getItem<string>(key) : null;
     if (raw) {
       try {
         const parsed = JSON.parse(raw) as WebBundleV2;
@@ -700,23 +731,27 @@ export class CodeStorageService {
     const key = V2_WEB_BUNDLE(qid);
     const payload = JSON.stringify(bundle);
 
-    try {
-      await LF_WEB.setItem(key, payload);
-      this.cacheSet(this.webBundleCache, key, bundle);
-      return;
-    } catch {
-      if (!hasLocalStorage()) {
-        if (!opts?.silent) {
-          // optionally log in dev
-        }
-        return;
-      }
+    const store = getWebStore();
+    if (store) {
       try {
-        localStorage.setItem(key, payload);
+        await store.setItem(key, payload);
         this.cacheSet(this.webBundleCache, key, bundle);
+        return;
       } catch {
-        // both stores failed; nothing else to do
+        // fall through to LS
       }
+    }
+    if (!hasLocalStorage()) {
+      if (!opts?.silent) {
+        // optionally log in dev
+      }
+      return;
+    }
+    try {
+      localStorage.setItem(key, payload);
+      this.cacheSet(this.webBundleCache, key, bundle);
+    } catch {
+      // both stores failed; nothing else to do
     }
   }
 
@@ -726,6 +761,8 @@ export class CodeStorageService {
  */
   async migrateAllJsToIndexedDbOnce(): Promise<void> {
     if (!hasLocalStorage()) return;
+    const store = getJsStore();
+    if (!store) return;
 
     // Already migrated? bail.
     if (localStorage.getItem(MIGRATION_FLAG_JS_IDB) === '1') {
@@ -743,7 +780,7 @@ export class CodeStorageService {
         if (!raw) continue;
 
         try {
-          await LF_JS.setItem(k, raw);   // mirror LS -> IDB as-is
+          await store.setItem(k, raw);   // mirror LS -> IDB as-is
         } catch {
           // ignore per-key failure; continue others
         }
@@ -879,7 +916,10 @@ export class CodeStorageService {
     const key = V2_WEB_BUNDLE(qid);
     await this.enqueueBundleOp(key, async () => {
       this.webBundleCache.delete(key);
-      try { await LF_WEB.removeItem(key); } catch { /* ignore */ }
+      const store = getWebStore();
+      if (store) {
+        try { await store.removeItem(key); } catch { /* ignore */ }
+      }
       if (hasLocalStorage()) {
         try { localStorage.removeItem(key); } catch { /* ignore */ }
       }
@@ -896,14 +936,17 @@ export class CodeStorageService {
     if (cached) return cached;
 
     // IDB first
-    try {
-      const raw = await LF_NG.getItem<string>(key);
-      if (raw) {
-        const parsed = JSON.parse(raw) as FrameworkBundleV2;
-        this.cacheSet(this.fwBundleCache, key, parsed);
-        return parsed;
-      }
-    } catch { /* ignore */ }
+    const store = getNgStore();
+    if (store) {
+      try {
+        const raw = await store.getItem<string>(key);
+        if (raw) {
+          const parsed = JSON.parse(raw) as FrameworkBundleV2;
+          this.cacheSet(this.fwBundleCache, key, parsed);
+          return parsed;
+        }
+      } catch { /* ignore */ }
+    }
 
     // Fallback: localStorage (for migration / legacy)
     if (hasLocalStorage()) {
@@ -930,23 +973,27 @@ export class CodeStorageService {
     const key = V2_FW_BUNDLE(tech, qid);
     const payload = JSON.stringify(bundle);
 
-    try {
-      await LF_NG.setItem(key, payload);
-      this.cacheSet(this.fwBundleCache, key, bundle);
-      return;
-    } catch {
-      if (!hasLocalStorage()) {
-        if (!opts?.silent) {
-          // optional log
-        }
-        return;
-      }
+    const store = getNgStore();
+    if (store) {
       try {
-        localStorage.setItem(key, payload);
+        await store.setItem(key, payload);
         this.cacheSet(this.fwBundleCache, key, bundle);
+        return;
       } catch {
-        // out of quota both places; nothing else to do
+        // fall through to LS
       }
+    }
+    if (!hasLocalStorage()) {
+      if (!opts?.silent) {
+        // optional log
+      }
+      return;
+    }
+    try {
+      localStorage.setItem(key, payload);
+      this.cacheSet(this.fwBundleCache, key, bundle);
+    } catch {
+      // out of quota both places; nothing else to do
     }
   }
 
@@ -1132,7 +1179,10 @@ export class CodeStorageService {
     const key = V2_FW_BUNDLE(tech, qid);
     await this.enqueueBundleOp(key, async () => {
       this.fwBundleCache.delete(key);
-      try { await LF_NG.removeItem(key); } catch { /* ignore */ }
+      const store = getNgStore();
+      if (store) {
+        try { await store.removeItem(key); } catch { /* ignore */ }
+      }
       if (hasLocalStorage()) {
         try { localStorage.removeItem(key); } catch { /* ignore */ }
       }

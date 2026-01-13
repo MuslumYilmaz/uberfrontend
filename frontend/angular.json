@@ -44,7 +44,11 @@
                 "src"
               ]
             },
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "prismjs",
+              "localforage"
+            ]
           },
           "configurations": {
             "production": {
@@ -77,6 +81,37 @@
               ],
               "outputHashing": "all"
             },
+            "prerender": {
+              "optimization": true,
+              "aot": true,
+              "extractLicenses": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "prerender": {
+                "routesFile": "src/prerender.routes.txt",
+                "discoverRoutes": false
+              },
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "900kb",
+                  "maximumError": "1.2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "40kb",
+                  "maximumError": "60kb"
+                }
+              ],
+              "outputHashing": "all",
+              "tsConfig": "tsconfig.prerender.json"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -106,27 +141,72 @@
               "optimization": false,
               "sourceMap": true
             }
-          },
-          "defaultConfiguration": "production"
+          }
         },
         "prerender": {
-          "builder": "@angular-devkit/build-angular:prerender",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "routesFile": "src/prerender.routes.txt",
-            "browserTarget": "frontendatlas:build:production",
-            "serverTarget": "frontendatlas:server:production"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "frontendatlas:build:production",
-              "serverTarget": "frontendatlas:server:production"
+            "outputPath": "dist/frontendatlas",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "server": "src/main.server.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.prerender.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/robots.txt",
+              {
+                "glob": "sitemap*.xml",
+                "input": "src",
+                "output": "/"
+              },
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
             },
-            "development": {
-              "browserTarget": "frontendatlas:build:development",
-              "serverTarget": "frontendatlas:server:development"
-            }
-          },
-          "defaultConfiguration": "production"
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "prismjs",
+              "localforage"
+            ],
+            "prerender": {
+              "routesFile": "src/prerender.routes.txt",
+              "discoverRoutes": false
+            },
+            "fileReplacements": [
+              {
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }
+            ],
+            "optimization": true,
+            "aot": true,
+            "extractLicenses": true,
+            "sourceMap": false,
+            "namedChunks": false,
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "900kb",
+                "maximumError": "1.2mb"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "40kb",
+                "maximumError": "60kb"
+              }
+            ],
+            "outputHashing": "all"
+          }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",

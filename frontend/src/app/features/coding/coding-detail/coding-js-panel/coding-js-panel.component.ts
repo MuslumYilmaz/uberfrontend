@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild, computed, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, PLATFORM_ID, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
@@ -96,21 +96,25 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private persistTimer: any = null;
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngOnInit() {
+    if (!this.isBrowser) return;
     window.addEventListener('beforeunload', this._persistLangOnUnload);
   }
 
   ngOnDestroy() {
     this.flushPendingPersist();
-    window.removeEventListener('beforeunload', this._persistLangOnUnload);
+    if (this.isBrowser) {
+      window.removeEventListener('beforeunload', this._persistLangOnUnload);
+      if (this.resizeRaf != null) {
+        cancelAnimationFrame(this.resizeRaf);
+        this.resizeRaf = null;
+      }
+    }
     if (this.persistTimer) {
       clearTimeout(this.persistTimer);
       this.persistTimer = null;
-    }
-    if (this.resizeRaf != null) {
-      cancelAnimationFrame(this.resizeRaf);
-      this.resizeRaf = null;
     }
   }
 
@@ -158,6 +162,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   private scheduleResize() {
+    if (!this.isBrowser) return;
     if (this.resizeRaf != null) return;
     this.resizeRaf = requestAnimationFrame(() => {
       this.resizeRaf = null;
@@ -166,6 +171,10 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   private endHydrationSoon() {
+    if (!this.isBrowser) {
+      this._hydrating = false;
+      return;
+    }
     requestAnimationFrame(() =>
       requestAnimationFrame(() => { this._hydrating = false; })
     );
@@ -285,6 +294,22 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     this.baseDraftKey.set(baseKey);
     this.currentContentVersion.set(contentVersion);
     this.activeDraftVersion.set(contentVersion);
+
+    if (!this.isBrowser) {
+      this.volatileBuffers = { js: sJs, ts: sTs };
+      const preferred: JsLang = 'js';
+      this.jsLang.set(preferred);
+      this.editorContent.set(sJs);
+      this.testCode.set(this.pickTests(q as any, preferred));
+      this.restoredFromStorage.set(false);
+      this.restoreDismissed.set(true);
+      this.viewingSolution.set(false);
+      this.hasRunTests.set(false);
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      this._hydrating = false;
+      return;
+    }
 
     if (this.disablePersistence) {
       this.volatileBuffers = { js: sJs, ts: sTs };

@@ -1,5 +1,5 @@
-import { CommonModule, Location } from '@angular/common';
-import { Component, computed, OnDestroy, OnInit } from '@angular/core';
+import { CommonModule, Location, isPlatformBrowser } from '@angular/common';
+import { Component, PLATFORM_ID, computed, inject, OnDestroy, OnInit } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationStart, Router, RouterModule } from '@angular/router';
@@ -154,6 +154,7 @@ function inferCategory(q: any): CategoryKey {
   styleUrls: ['./coding-list.component.scss']
 })
 export class CodingListComponent implements OnInit, OnDestroy {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private static _instanceCounter = 0;
   readonly instanceId = ++CodingListComponent._instanceCounter;
   solvedIds = this.progress.solvedIds;
@@ -580,14 +581,16 @@ export class CodingListComponent implements OnInit, OnDestroy {
       )
       .subscribe();
 
-    document.addEventListener(
-      'click',
-      (e) => {
-        const target = e.target as HTMLElement;
-        if (!target.closest('.sort-wrap')) this.closeSort();
-      },
-      { capture: true }
-    );
+    if (this.isBrowser) {
+      document.addEventListener(
+        'click',
+        (e) => {
+          const target = e.target as HTMLElement;
+          if (!target.closest('.sort-wrap')) this.closeSort();
+        },
+        { capture: true }
+      );
+    }
 
     this.companySlug$.subscribe((slug) => {
       this.currentCompanySlug = slug || null;
@@ -1033,12 +1036,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
       returnToUrl = this.buildReturnUrl(viewKey);
 
       // Drop reset=1 if present
-      try {
-        const url = new URL(returnToUrl, window.location.origin);
-        url.searchParams.delete('reset');
-        returnToUrl = url.pathname + url.search;
-      } catch {
-        // ignore
+      if (this.isBrowser) {
+        try {
+          const url = new URL(returnToUrl, window.location.origin);
+          url.searchParams.delete('reset');
+          returnToUrl = url.pathname + url.search;
+        } catch {
+          // ignore
+        }
       }
     }
 
@@ -1133,6 +1138,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   }
 
   private replaceQueryParams(params: Record<string, any>) {
+    if (!this.isBrowser) return;
     // NOTE: We intentionally use `Location.replaceState()` (no navigation / no history pollution),
     // so Angular Router's internal `ActivatedRoute` query state can be stale.
     // Merge against the *actual* current URL to avoid dropping previously-set params.
@@ -1584,6 +1590,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   private saveFiltersTo(view: ViewMode) {
     if (this.source !== 'global-coding') return;
+    if (!this.isBrowser) return;
     if (!this.hydrated) {
       this.debug('saveFiltersTo skipped (not hydrated)', { view });
       return;

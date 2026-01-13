@@ -125,6 +125,41 @@
   border-top:1px solid var(--uf-border-subtle);
   background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-text-primary) 4%);
 }
+
+.coding-detail-skeleton {
+  margin: 24px;
+  padding: 24px;
+  border-radius: var(--uf-card-radius);
+  background: var(--uf-surface);
+  border: 1px solid var(--uf-border-subtle);
+  box-shadow: var(--uf-card-shadow);
+}
+
+.coding-detail-skeleton__title {
+  height: 20px;
+  width: 60%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-border-subtle) 60%, transparent);
+  margin-bottom: 12px;
+}
+
+.coding-detail-skeleton__line {
+  height: 12px;
+  width: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-border-subtle) 50%, transparent);
+  margin-bottom: 10px;
+}
+
+.coding-detail-empty {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.coding-detail-empty__text {
+  color: var(--uf-text-secondary);
+  font-size: 14px;
+}
 .demo-cta-btn{
   display:inline-flex;
   align-items:center;

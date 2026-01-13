@@ -100,12 +100,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   question = signal<Question | null>(null);
   copiedIndex = signal<number | null>(null);
   solved = signal(false);
+  loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
   similarOpen = signal(true);
 
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private dataLoaded = false;
 
   // practice session
   private practice: PracticeSession = null;
@@ -244,6 +246,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
           this.qs.loadQuestions(tech, 'trivia').pipe(
             tap((all) => {
               this.questionsList = all;
+              this.dataLoaded = true;
               this.selectQuestion(id);
               this.syncPracticeIndexById(id);
             })
@@ -311,8 +314,21 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
+    this.setLoadState(found);
     this.updateSeo(found);
     this.scrollMainToTop();
+  }
+
+  private setLoadState(found: Question | null) {
+    if (found) {
+      this.loadState.set('loaded');
+      return;
+    }
+    if (this.isBrowser && this.dataLoaded) {
+      this.loadState.set('notFound');
+      return;
+    }
+    this.loadState.set('loading');
   }
 
   isActive(q: Question) { return this.question()?.id === q.id; }

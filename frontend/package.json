@@ -20,7 +20,8 @@
     "test": "ng test --watch=false --browsers=ChromeHeadless && node scripts/question-tags.test.mjs && node scripts/sitemap.test.mjs",
     "test:e2e": "playwright test",
     "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui"
+    "e2e:ui": "playwright test --ui",
+    "postinstall": "patch-package"
   },
   "private": true,
   "dependencies": {
@@ -30,8 +31,8 @@
     "@angular/core": "17.3.12",
     "@angular/forms": "17.3.12",
     "@angular/platform-browser": "17.3.12",
-    "@angular/platform-server": "17.3.12",
     "@angular/platform-browser-dynamic": "17.3.12",
+    "@angular/platform-server": "17.3.12",
     "@angular/router": "17.3.12",
     "@primeuix/themes": "^1.2.1",
     "canvas-confetti": "^1.9.3",
@@ -63,6 +64,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "monaco-editor": "^0.43.0",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.6",
     "source-map-explorer": "^2.5.3",
     "tailwindcss": "^3.4.17",

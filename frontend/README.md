@@ -59,6 +59,20 @@ Notes:
 - Tests fail on `console.error`, `pageerror`, and `unhandledrejection` by default (allowlist: `frontend/e2e/console-allowlist.ts`).
 - Reports/artifacts are written to `frontend/playwright-report/` and `frontend/test-results/`.
 
+## SSR/SEO regression tests (Playwright)
+
+These tests validate SSR/prerender output (JS-disabled) versus hydrated DOM (JS-enabled).
+
+Run against a deployed SSR/prerender build:
+
+`PLAYWRIGHT_BASE_URL=https://frontendatlas.com npm run test:e2e -- seo-ssr`
+
+Or run locally with a prerendered build:
+
+1) `ng run frontendatlas:prerender`
+2) Serve `dist/frontendatlas/browser` with a static server (any tool you prefer).
+3) `PLAYWRIGHT_BASE_URL=http://localhost:4200 npm run test:e2e -- seo-ssr`
+
 ## Draft versioning
 
 To safely handle “CDN updates a question (same id) while users have local drafts”, drafts are versioned by content. See `frontend/docs/draft-versioning.md`.

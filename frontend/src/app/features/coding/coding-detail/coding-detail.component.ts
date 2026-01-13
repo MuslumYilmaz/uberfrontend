@@ -1,9 +1,9 @@
 // coding-detail.component.ts
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
   AfterViewInit, Component, Input, computed, effect,
-  ElementRef, inject, NgZone,
+  ElementRef, inject, NgZone, PLATFORM_ID,
   OnDestroy, OnInit, signal, ViewChild
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -102,10 +102,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() footerLinkTo: any[] | string | null = null;
   @Input() disablePersistence = false;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   tech!: Tech;
   kind: Kind = 'coding';
   question = signal<Question | null>(null);
+  loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
+  private dataLoaded = false;
 
   // JS/TS editor + tests
   editorContent = signal<string>('');
@@ -458,10 +461,15 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private collapseKey(q: Question) { return `fa:coding:descCollapsed:${this.tech}:${q.id}`; }
   private loadCollapsePref(q: Question) {
+    if (!this.isBrowser) {
+      this.descCollapsed.set(false);
+      return;
+    }
     try { this.descCollapsed.set(!!JSON.parse(localStorage.getItem(this.collapseKey(q)) || 'false')); }
     catch { this.descCollapsed.set(false); }
   }
   private saveCollapsePref(q: Question, v: boolean) {
+    if (!this.isBrowser) return;
     try { localStorage.setItem(this.collapseKey(q), JSON.stringify(v)); } catch { }
   }
   toggleDescription() {
@@ -487,7 +495,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private hydrateReturnInfo() {
-    const s = (this.router.getCurrentNavigation()?.extras?.state ?? history.state) as any;
+    const navState = this.router.getCurrentNavigation()?.extras?.state as any | undefined;
+    const s = (navState ?? (this.isBrowser ? history.state : null)) as any;
 
     this.courseNav.set(s?.courseNav ?? null);
     this.practice = (s?.session ?? null) as PracticeSession;
@@ -555,12 +564,13 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         const id = pm.get('id')!;
         this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
           this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
+          this.dataLoaded = true;
           this.loadQuestion(id);
         });
       });
     }
 
-    if (!this.demoMode) {
+    if (!this.demoMode && this.isBrowser) {
       document.body.style.overflow = 'hidden';
       this.overflowPatched = true;
     }
@@ -588,6 +598,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.qs.loadQuestions(this.tech, this.kind).subscribe((list) => {
       this.allQuestions = [...list].sort(CodingDetailComponent.sortForPractice);
+      this.dataLoaded = true;
       const preferred = this.questionId;
       const fallback = this.allQuestions[0]?.id;
       const resolvedId = preferred && this.allQuestions.some(q => q.id === preferred) ? preferred : fallback;
@@ -596,6 +607,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    if (!this.isBrowser) return;
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMove);
       window.addEventListener('pointerup', this.onPointerUp);
@@ -603,14 +615,16 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    window.removeEventListener('pointermove', this.onPointerMove);
-    window.removeEventListener('pointerup', this.onPointerUp);
+    if (this.isBrowser) {
+      window.removeEventListener('pointermove', this.onPointerMove);
+      window.removeEventListener('pointerup', this.onPointerUp);
+    }
     clearTimeout(this.copyTimer);
 
     this.destroy$.next();
     this.destroy$.complete();
 
-    if (this.overflowPatched) {
+    if (this.isBrowser && this.overflowPatched) {
       document.body.style.overflow = '';
     }
 
@@ -726,6 +740,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---------- Load question ----------
   private async loadQuestion(id: string) {
+    this.loadState.set('loading');
     const idx = this.allQuestions.findIndex(q => q.id === id);
     if (idx < 0) {
       if (this.questionId && this.allQuestions.length) {
@@ -734,7 +749,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
           await this.loadQuestion(fallback);
           return;
         }
-      } else {
+      } else if (this.isBrowser && this.dataLoaded) {
+        this.loadState.set('notFound');
         this.router.navigateByUrl('/404', { state: { from: this.router.url } });
       }
       return;
@@ -743,6 +759,7 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentIndex = idx;
     const q = this.allQuestions[idx];
     this.question.set(q);
+    this.loadState.set('loaded');
     this.updateSeoForQuestion(q);
 
     // reset solution files for new question before loading

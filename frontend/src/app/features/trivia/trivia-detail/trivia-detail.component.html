@@ -22,7 +22,7 @@
 
     <!-- Detail -->
     <main class="main" #mainScroll>
-        <div *ngIf="question() as q; else missing" class="main-stack">
+        <div *ngIf="loadState() === 'loaded' && question() as q; else stateBlock" class="main-stack">
             <ng-container *ngIf="!locked(); else lockedView">
             <!-- Title + chips -->
             <header class="title-block">
@@ -159,8 +159,11 @@
             </ng-container>
         </div>
 
-        <ng-template #missing>
-            <div class="empty">
+        <ng-template #stateBlock>
+            <div class="empty" *ngIf="loadState() === 'loading'">
+                <div class="empty-text">Loading question...</div>
+            </div>
+            <div class="empty" *ngIf="loadState() === 'notFound'">
                 <div class="empty-text">Question not found.</div>
             </div>
         </ng-template>

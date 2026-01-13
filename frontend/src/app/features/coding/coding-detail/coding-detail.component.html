@@ -1,3 +1,4 @@
+<ng-container *ngIf="loadState() === 'loaded'; else loadingOrMissing">
 <ng-container *ngIf="!locked(); else lockedView">
 <div class="coding-detail flex gap-[5px]" data-testid="coding-detail-page" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
@@ -468,6 +469,19 @@
   ctaLabel="Go to login">
 </app-login-required-dialog>
 </ng-container>
+</ng-container>
+
+<ng-template #loadingOrMissing>
+  <div class="coding-detail-skeleton" data-testid="coding-detail-skeleton">
+    <div class="coding-detail-skeleton__title"></div>
+    <div class="coding-detail-skeleton__line"></div>
+    <div class="coding-detail-skeleton__line"></div>
+    <div class="coding-detail-skeleton__line"></div>
+  </div>
+  <div class="coding-detail-empty" *ngIf="loadState() === 'notFound'">
+    <div class="coding-detail-empty__text">Question not found.</div>
+  </div>
+</ng-template>
 
 <ng-template #lockedView>
   <div class="locked-shell">

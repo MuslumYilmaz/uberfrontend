@@ -1,8 +1,9 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   Component,
   Input,
   OnDestroy,
+  PLATFORM_ID,
   computed,
   effect,
   inject,
@@ -36,6 +37,7 @@ export class DailyHeatmapComponent implements OnDestroy {
 
   private activity = inject(ActivityService);
   private auth = inject(AuthService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   /** Intensities per day, 0..3, oldest → newest */
   days = signal<number[]>(Array.from({ length: this.daysCount }, () => 0));
@@ -63,6 +65,7 @@ export class DailyHeatmapComponent implements OnDestroy {
 
     effect((onCleanup) => {
       if (!this.auth.isLoggedIn()) return;
+      if (!this.isBrowser) return;
       document.addEventListener('visibilitychange', this.visHandler);
       onCleanup(() => document.removeEventListener('visibilitychange', this.visHandler));
     });
@@ -71,7 +74,9 @@ export class DailyHeatmapComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.clearLocalMidnightTimer();
     this.unbindActivityStream();
-    document.removeEventListener('visibilitychange', this.visHandler);
+    if (this.isBrowser) {
+      document.removeEventListener('visibilitychange', this.visHandler);
+    }
   }
 
   // ---------- Data loading (cached via ActivityService) ----------

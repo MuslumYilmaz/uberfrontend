@@ -24,6 +24,14 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
+function addQuestionUrls(set, tech, kind, list) {
+  if (!Array.isArray(list)) return;
+  list.forEach((q) => {
+    if (!q?.id) return;
+    addRoute(set, `/${tech}/${kind}/${q.id}`);
+  });
+}
+
 function listTechDirs() {
   return fs
     .readdirSync(QUESTIONS_DIR)
@@ -55,24 +63,40 @@ function buildRoutes() {
 
   [
     '/',
+    '/coding',
     '/pricing',
     '/guides',
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',
     '/system-design',
+    '/legal',
+    '/legal/terms',
+    '/legal/privacy',
+    '/legal/refund',
+    '/legal/cookies',
   ].forEach((route) => addRoute(routes, route));
 
   // Trivia detail routes
   listTechDirs().forEach((tech) => {
+    const codingPath = path.join(QUESTIONS_DIR, tech, 'coding.json');
     const triviaPath = path.join(QUESTIONS_DIR, tech, 'trivia.json');
-    if (!fs.existsSync(triviaPath)) return;
-    const list = readJson(triviaPath);
-    if (!Array.isArray(list)) return;
-    list.forEach((q) => {
-      if (!q?.id) return;
-      addRoute(routes, `/${tech}/trivia/${q.id}`);
-    });
+    const debugPath = path.join(QUESTIONS_DIR, tech, 'debug.json');
+    if (fs.existsSync(codingPath)) {
+      addQuestionUrls(routes, tech, 'coding', readJson(codingPath));
+    }
+    if (fs.existsSync(triviaPath)) {
+      const list = readJson(triviaPath);
+      if (Array.isArray(list)) {
+        list.forEach((q) => {
+          if (!q?.id) return;
+          addRoute(routes, `/${tech}/trivia/${q.id}`);
+        });
+      }
+    }
+    if (fs.existsSync(debugPath)) {
+      addQuestionUrls(routes, tech, 'debug', readJson(debugPath));
+    }
   });
 
   // System design detail routes

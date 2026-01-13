@@ -1654,7 +1654,7 @@
   box-shadow: 0 16px 40px rgba(0,0,0,.22);
 }
 
-.qtop{ display:flex; justify-content: space-between; gap: 12px; align-items: start; }
+.qtop{ display:flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
 .qtitle{ font-weight: 900; letter-spacing: -0.01em; }
 .qdesc{ color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); line-height: 1.5; }
 .qno{ font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: color-mix(in srgb, var(--uf-text-secondary) 70%, transparent); margin-right: 6px; text-transform: uppercase; }

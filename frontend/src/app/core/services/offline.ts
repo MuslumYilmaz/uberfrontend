@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 
 const PROBE_URLS = [
   // Lightweight "no content" endpoints commonly used for connectivity checks.
@@ -12,11 +13,14 @@ const PROBE_TIMEOUT_MS = 2500;
 
 @Injectable({ providedIn: 'root' })
 export class OfflineService {
-  isOnline = signal<boolean>(typeof navigator === 'undefined' ? true : navigator.onLine);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
+
+  isOnline = signal<boolean>(this.resolveInitialOnline());
   private probeNonce = 0;
 
   constructor() {
-    if (typeof window === 'undefined') return;
+    if (!this.isBrowser) return;
 
     window.addEventListener('online', () => {
       // Cancel any pending "offline probe" and reflect the event immediately.
@@ -49,6 +53,11 @@ export class OfflineService {
 
   private syncFromNavigator() {
     const navOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
+    if (typeof navOnline !== 'boolean') {
+      this.probeNonce++;
+      this.isOnline.set(true);
+      return;
+    }
     if (navOnline) {
       this.probeNonce++;
       this.isOnline.set(true);
@@ -61,6 +70,12 @@ export class OfflineService {
       if (nonce !== this.probeNonce) return;
       this.isOnline.set(ok);
     });
+  }
+
+  private resolveInitialOnline(): boolean {
+    if (!this.isBrowser) return true;
+    const navOnline = typeof navigator === 'undefined' ? true : navigator.onLine;
+    return typeof navOnline === 'boolean' ? navOnline : true;
   }
 
   private async probeConnectivity(): Promise<boolean> {

@@ -1,0 +1,50 @@
+diff --git a/node_modules/xhr2/lib/xhr2.js b/node_modules/xhr2/lib/xhr2.js
+index f66dadd..8655faf 100644
+--- a/node_modules/xhr2/lib/xhr2.js
++++ b/node_modules/xhr2/lib/xhr2.js
+@@ -381,7 +381,11 @@
+         if ('baseUrl' in options) {
+           baseUrl = options.baseUrl;
+           if (baseUrl !== null) {
+-            parsedUrl = url.parse(baseUrl, false, true);
++            try {
++              parsedUrl = new url.URL(baseUrl);
++            } catch (error) {
++              throw new SyntaxError("baseUrl must be an absolute URL");
++            }
+             if (!parsedUrl.protocol) {
+               throw new SyntaxError("baseUrl must be an absolute URL");
+             }
+@@ -711,14 +715,28 @@
+       // @param {String} urlString the URL to be parsed
+       // @return {Object} parsed URL
+       _parseUrl(urlString) {
+-        var absoluteUrlString, index, password, user, xhrUrl;
++        var absoluteUrlString, index, parsedUrl, password, user, xhrUrl;
+         if (this.nodejsBaseUrl === null) {
+           absoluteUrlString = urlString;
+         } else {
+-          absoluteUrlString = url.resolve(this.nodejsBaseUrl, urlString);
++          absoluteUrlString = new url.URL(urlString, this.nodejsBaseUrl).toString();
+         }
+-        xhrUrl = url.parse(absoluteUrlString, false, true);
+-        xhrUrl.hash = null;
++        parsedUrl = new url.URL(absoluteUrlString);
++        parsedUrl.hash = '';
++        xhrUrl = {
++          href: parsedUrl.href,
++          protocol: parsedUrl.protocol,
++          slashes: true,
++          auth: parsedUrl.username ? (parsedUrl.password ? `${parsedUrl.username}:${parsedUrl.password}` : parsedUrl.username) : null,
++          host: parsedUrl.host,
++          port: parsedUrl.port,
++          hostname: parsedUrl.hostname,
++          hash: null,
++          search: parsedUrl.search,
++          query: parsedUrl.search ? parsedUrl.search.slice(1) : null,
++          pathname: parsedUrl.pathname,
++          path: `${parsedUrl.pathname}${parsedUrl.search}`
++        };
+         if (xhrUrl.auth && ((typeof user !== "undefined" && user !== null) || (typeof password !== "undefined" && password !== null))) {
+           index = xhrUrl.auth.indexOf(':');
+           if (index === -1) {

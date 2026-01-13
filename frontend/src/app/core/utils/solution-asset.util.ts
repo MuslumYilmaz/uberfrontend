@@ -12,6 +12,7 @@ export type SdkAsset = {
 const CDN_FLAG_KEY = 'fa:cdn:enabled';
 
 function hasLocalStorage(): boolean {
+    if (typeof localStorage === 'undefined') return false;
     try {
         const k = '__sdk_probe__';
         localStorage.setItem(k, '1');
@@ -95,7 +96,8 @@ export async function fetchSdkAsset(http: HttpClient, url: string): Promise<SdkA
     const useCdn = isCdnEnabledByFlag() && !!cdnBase;
 
     // Local URL: Angular'ın baseHref'ine göre
-    const localUrl = new URL(url, document.baseURI).toString();
+    const baseHref = typeof document === 'undefined' ? (environment.frontendBase || '') : document.baseURI;
+    const localUrl = baseHref ? new URL(url, baseHref).toString() : url;
 
     // 2) CDN URL'i
     const cdnUrl = useCdn && cdnBase ? buildCdnUrl(url, cdnBase) : null;

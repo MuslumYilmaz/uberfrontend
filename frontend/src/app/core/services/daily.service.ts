@@ -1,4 +1,5 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Injectable, computed, inject, PLATFORM_ID, signal } from '@angular/core';
 import {
   DailyItem, DailyItemKind, DailySet,
   LS_DAILY_PREFIX,
@@ -15,6 +16,8 @@ type XpData = { total: number; today?: number; lastDay?: string; };
 
 @Injectable({ providedIn: 'root' })
 export class DailyService {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   // ---- signals exposed to components ----
   daily = signal<DailySet | undefined>(undefined);
   xp = signal<XpData>(this.loadXp());
@@ -63,7 +66,7 @@ export class DailyService {
       s.lastActive = this.dayKey();
     }
     this.streak.set(s);
-    localStorage.setItem(LS_STREAK, JSON.stringify(s));
+    this.writeStorage(LS_STREAK, JSON.stringify(s));
 
     // If server clearly reports the whole day done, reflect that locally
     const d = this.daily();
@@ -78,7 +81,7 @@ export class DailyService {
       const s2 = { ...this.streak() };
       s2.lastCompleted = this.dayKey();
       this.streak.set(s2);
-      localStorage.setItem(LS_STREAK, JSON.stringify(s2));
+      this.writeStorage(LS_STREAK, JSON.stringify(s2));
 
       this.daily.set({ ...d });
       this.saveDaily(d);
@@ -91,7 +94,7 @@ export class DailyService {
       // Maintain today bucket boundary but don't award again.
       x.lastDay = x.lastDay ?? this.dayKey();
       this.xp.set(x);
-      localStorage.setItem(LS_XP, JSON.stringify(x));
+      this.writeStorage(LS_XP, JSON.stringify(x));
     }
   }
 
@@ -146,7 +149,7 @@ export class DailyService {
     s.lastActive = todayLocal;
     if (d.completed) s.lastCompleted = todayLocal;
     this.streak.set(s);
-    localStorage.setItem(LS_STREAK, JSON.stringify(s));
+    this.writeStorage(LS_STREAK, JSON.stringify(s));
 
     this.daily.set({ ...d });
     this.saveDaily(d);
@@ -238,14 +241,14 @@ export class DailyService {
     s.longest = Math.max(s.longest || 0, s.current);
     s.lastActive = key;
     this.streak.set(s);
-    localStorage.setItem(LS_STREAK, JSON.stringify(s));
+    this.writeStorage(LS_STREAK, JSON.stringify(s));
   }
 
   private markDayCompleted() {
     const s = { ...this.streak() };
     s.lastCompleted = this.dayKey();
     this.streak.set(s);
-    localStorage.setItem(LS_STREAK, JSON.stringify(s));
+    this.writeStorage(LS_STREAK, JSON.stringify(s));
   }
 
   private awardXp(delta: number) {
@@ -255,7 +258,7 @@ export class DailyService {
     x.today = (x.today ?? 0) + delta;
     x.total = (x.total ?? 0) + delta;
     this.xp.set(x);
-    localStorage.setItem(LS_XP, JSON.stringify(x));
+    this.writeStorage(LS_XP, JSON.stringify(x));
   }
 
   private resetXpIfNewDay() {
@@ -265,7 +268,7 @@ export class DailyService {
       x.lastDay = key;
       x.today = 0;
       this.xp.set(x);
-      localStorage.setItem(LS_XP, JSON.stringify(x));
+      this.writeStorage(LS_XP, JSON.stringify(x));
     }
   }
 
@@ -312,20 +315,29 @@ export class DailyService {
   }
 
   private saveDaily(set: DailySet) {
-    localStorage.setItem(LS_DAILY_PREFIX + set.date, JSON.stringify(set));
+    this.writeStorage(LS_DAILY_PREFIX + set.date, JSON.stringify(set));
   }
   private loadDaily(dateKey: string): DailySet | undefined {
-    const raw = localStorage.getItem(LS_DAILY_PREFIX + dateKey);
+    const raw = this.readStorage(LS_DAILY_PREFIX + dateKey);
     if (!raw) return undefined;
     try { return JSON.parse(raw) as DailySet; } catch { return undefined; }
   }
 
   private loadXp(): XpData {
-    try { return JSON.parse(localStorage.getItem(LS_XP) || '{}') as XpData; }
+    try { return JSON.parse(this.readStorage(LS_XP) || '{}') as XpData; }
     catch { return { total: 0, today: 0 }; }
   }
   private loadStreak(): StreakData {
-    try { return JSON.parse(localStorage.getItem(LS_STREAK) || '{}') as StreakData; }
+    try { return JSON.parse(this.readStorage(LS_STREAK) || '{}') as StreakData; }
     catch { return { current: 0, longest: 0 }; }
+  }
+
+  private readStorage(key: string): string | null {
+    if (!this.isBrowser) return null;
+    try { return localStorage.getItem(key); } catch { return null; }
+  }
+  private writeStorage(key: string, value: string) {
+    if (!this.isBrowser) return;
+    try { localStorage.setItem(key, value); } catch { }
   }
 }

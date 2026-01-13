@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -7,9 +7,11 @@ import {
   NgZone,
   OnChanges,
   OnDestroy,
+  PLATFORM_ID,
   SimpleChanges,
   ViewChild,
   computed,
+  inject,
   signal
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -346,6 +348,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private previewContentWindow: Window | null = null;
   private cachedPreviewFormMessagesForQuestionId: string | null = null;
   private cachedPreviewFormMessages: { valid: string | null; invalid: string | null } = { valid: null, invalid: null };
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngOnChanges(ch: SimpleChanges): void {
     if (ch['question'] && this.question) {
@@ -354,6 +357,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   ngAfterViewInit(): void {
+    if (!this.isBrowser) return;
     this.zone.runOutsideAngular(() => {
       window.addEventListener('pointermove', this.onPointerMove);
       window.addEventListener('pointerup', this.onPointerUp);
@@ -365,11 +369,13 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('pointermove', this.onPointerMove);
-    window.removeEventListener('pointerup', this.onPointerUp);
-    window.removeEventListener('pointercancel', this.onPointerUp);
-    window.removeEventListener('message', this.onPreviewMessage);
-    if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    if (this.isBrowser) {
+      window.removeEventListener('pointermove', this.onPointerMove);
+      window.removeEventListener('pointerup', this.onPointerUp);
+      window.removeEventListener('pointercancel', this.onPointerUp);
+      window.removeEventListener('message', this.onPreviewMessage);
+      if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
+    }
   }
 
   // -------- init from question (unchanged logic) --------
@@ -427,6 +433,18 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (!q) return;
 
     const starters = this.getWebStarters(q);
+    if (!this.isBrowser) {
+      this.htmlCode.set(starters.html);
+      this.cssCode.set(starters.css);
+      this.showRestoreBanner.set(false);
+      this.showUpdateBanner.set(false);
+      this.testCode.set(this.getWebTests(q));
+      this.hasRunTests = false;
+      this.testResults.set([]);
+      this.consoleEntries.set([]);
+      return;
+    }
+
     const baseKey = (this.storageKeyOverride || '').trim() || q.id;
     const contentVersion = computeWebQuestionContentVersion(q as any);
     this.baseDraftKey.set(baseKey);
@@ -524,6 +542,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
 	  private scheduleWebPreview() {
+      if (!this.isBrowser) return;
 	    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
 	    this.webPreviewTimer = setTimeout(() => {
 	      try {
@@ -1237,6 +1256,10 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   }
 
 	  private setPreviewHtml(html: string | null) {
+      if (!this.isBrowser) {
+        this._previewUrl.set(null);
+        return;
+      }
 	    this.lastPreviewHtml = html;
 
 	    try {

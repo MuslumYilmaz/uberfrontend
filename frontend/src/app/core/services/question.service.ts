@@ -1,11 +1,14 @@
 // src/app/core/services/question.service.ts
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AccessLevel, Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
+import { ASSET_READER, AssetReader } from './asset-reader';
 
 type Kind = 'coding' | 'trivia' | 'debug';
 export type MixedQuestion = Question & { tech: Tech };
@@ -14,6 +17,11 @@ type DataVersion = { dataVersion?: string; version?: string };
 
 @Injectable({ providedIn: 'root' })
 export class QuestionService {
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isServer = isPlatformServer(this.platformId);
+  private readonly transferState = inject(TransferState);
+  private readonly assetReader = inject(ASSET_READER) as AssetReader;
+
   private readonly cachePrefix = 'qcache:';          // normalized cache
   private readonly overridePrefix = 'qoverride:';    // manual/local overrides
   private readonly dvKey = `${this.cachePrefix}dv`;
@@ -68,6 +76,17 @@ export class QuestionService {
    * 4. Assets JSON under assets/questions/<tech>/<kind>.json
    */
   loadQuestions(technology: Tech, kind: Kind): Observable<Question[]> {
+    if (this.isServer) {
+      return this.loadQuestionsFromFs(technology, kind);
+    }
+
+    const tsKey = this.questionsStateKey(technology, kind);
+    if (this.transferState.hasKey(tsKey)) {
+      const list = this.transferState.get(tsKey, [] as Question[]);
+      this.transferState.remove(tsKey);
+      return of(list);
+    }
+
     const inflightKey = `${technology}:${kind}:${this.cdnEnabled ? 'cdn' : 'assets'}`;
     const existing = this.inflightLoads.get(inflightKey);
     if (existing) return existing;
@@ -145,6 +164,17 @@ export class QuestionService {
 
   /** System design list (now using index.json). */
   loadSystemDesign(): Observable<any[]> {
+    if (this.isServer) {
+      return this.loadSystemDesignFromFs();
+    }
+
+    const tsKey = this.systemDesignStateKey();
+    if (this.transferState.hasKey(tsKey)) {
+      const list = this.transferState.get(tsKey, [] as any[]);
+      this.transferState.remove(tsKey);
+      return of(list);
+    }
+
     const key = `${this.cachePrefix}system-design`;
     const cachedRaw = this.safeGet(key);
 
@@ -181,6 +211,17 @@ export class QuestionService {
 
   /** Load a single system-design question (meta + section blocks). */
   loadSystemDesignQuestion(id: string): Observable<any | null> {
+    if (this.isServer) {
+      return this.loadSystemDesignQuestionFromFs(id);
+    }
+
+    const tsKey = this.systemDesignQuestionStateKey(id);
+    if (this.transferState.hasKey(tsKey)) {
+      const cached = this.transferState.get(tsKey, null as any);
+      this.transferState.remove(tsKey);
+      return of(cached);
+    }
+
     const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
     const useCdn = this.cdnEnabled;
 
@@ -247,6 +288,11 @@ export class QuestionService {
             radio: radioSections
           }))
         );
+      }),
+      tap((full) => {
+        if (full) {
+          this.transferState.set(this.systemDesignQuestionStateKey(id), full);
+        }
       }),
       catchError(() => of(null))
     );
@@ -336,6 +382,72 @@ export class QuestionService {
     });
 
     return normalized;
+  }
+
+  private questionsStateKey(technology: Tech, kind: Kind) {
+    return makeStateKey<Question[]>(`questions:${technology}:${kind}`);
+  }
+
+  private systemDesignStateKey() {
+    return makeStateKey<any[]>('system-design:index');
+  }
+
+  private systemDesignQuestionStateKey(id: string) {
+    return makeStateKey<any>(`system-design:${id}`);
+  }
+
+  private loadQuestionsFromFs(technology: Tech, kind: Kind): Observable<Question[]> {
+    const rel = `assets/questions/${technology}/${kind}.json`;
+    const key = this.questionsStateKey(technology, kind);
+    return this.assetReader.readJson(rel).pipe(
+      map((raw) => this.normalizeQuestions(raw, technology, kind)),
+      tap((list) => this.transferState.set(key, list)),
+      catchError(() => of([] as Question[])),
+    );
+  }
+
+  private loadSystemDesignFromFs(): Observable<any[]> {
+    const rel = 'assets/questions/system-design/index.json';
+    const key = this.systemDesignStateKey();
+    return this.assetReader.readJson(rel).pipe(
+      map((raw) => Array.isArray(raw) ? raw : []),
+      tap((list) => this.transferState.set(key, list)),
+      catchError(() => of([] as any[])),
+    );
+  }
+
+  private loadSystemDesignQuestionFromFs(id: string): Observable<any | null> {
+    const metaRel = `assets/questions/system-design/${id}/meta.json`;
+    const key = this.systemDesignQuestionStateKey(id);
+    return this.assetReader.readJson(metaRel).pipe(
+      switchMap((meta) => {
+        if (!meta) return of(null);
+        const sections = Array.isArray(meta.sections) ? meta.sections : [];
+        if (!sections.length) {
+          return of(meta);
+        }
+        const sectionRequests = sections.map((s: any) =>
+          this.assetReader.readJson(`assets/questions/system-design/${id}/${s.file}`).pipe(
+            catchError(() => of(null)),
+            map((sec) => ({
+              key: s.key,
+              title: s.title,
+              blocks: (sec && (sec as any).blocks) || [],
+            }))
+          )
+        );
+        return forkJoin(sectionRequests).pipe(
+          map((sectionsResolved) => ({
+            ...meta,
+            radio: sectionsResolved,
+          }))
+        );
+      }),
+      tap((full) => {
+        if (full) this.transferState.set(key, full);
+      }),
+      catchError(() => of(null))
+    );
   }
 
   /** Fetch data-version once; invalidate normalized cache when it changes. */
