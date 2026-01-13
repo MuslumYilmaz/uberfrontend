@@ -57,6 +57,7 @@
               "extractLicenses": true,
               "sourceMap": false,
               "namedChunks": false,
+              "tsConfig": "tsconfig.prerender.json",
               "prerender": {
                 "routesFile": "src/prerender.routes.txt",
                 "discoverRoutes": false
