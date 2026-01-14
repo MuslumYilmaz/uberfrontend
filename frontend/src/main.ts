@@ -3,6 +3,10 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
+if (!environment.production || environment.sentryDebug) {
+  console.info(`[sentry] runtime: DSN ${environment.sentryDsn ? 'present' : 'missing'}`);
+}
+
 if (environment.sentryDsn) {
   import('@sentry/angular').then(({ browserTracingIntegration, init }) => {
     init({

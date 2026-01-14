@@ -1,4 +1,4 @@
-import { SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './sentry.env';
+import { SENTRY_DEBUG, SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './sentry.env';
 
 export const environment = {
     production: false,
@@ -10,6 +10,7 @@ export const environment = {
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
+    sentryDebug: SENTRY_DEBUG,
     PAYMENTS_PROVIDER: 'gumroad',
     GUMROAD_MONTHLY_URL: 'https://frontendatlas.gumroad.com/l/xsoew',
     GUMROAD_QUARTERLY_URL: 'https://frontendatlas.gumroad.com/l/rwsapy',
