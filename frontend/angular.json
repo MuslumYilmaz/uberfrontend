@@ -55,7 +55,12 @@
               "optimization": true,
               "aot": true,
               "extractLicenses": true,
-              "sourceMap": false,
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "vendor": false,
+                "hidden": false
+              },
               "namedChunks": false,
               "tsConfig": "tsconfig.prerender.json",
               "prerender": {
@@ -90,7 +95,12 @@
               "optimization": true,
               "aot": true,
               "extractLicenses": true,
-              "sourceMap": false,
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "vendor": false,
+                "hidden": false
+              },
               "namedChunks": false,
               "prerender": {
                 "routesFile": "src/prerender.routes.txt",

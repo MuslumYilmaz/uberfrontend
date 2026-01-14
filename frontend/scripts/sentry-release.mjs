@@ -39,6 +39,44 @@ if (!fs.existsSync(browserOutDir)) {
   process.exit(0);
 }
 
+function listMapFiles(rootDir) {
+  const out = [];
+  const stack = [rootDir];
+  while (stack.length) {
+    const dir = stack.pop();
+    let entries = [];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(full);
+      } else if (entry.isFile() && entry.name.endsWith('.map')) {
+        out.push(full);
+      }
+    }
+  }
+  return out;
+}
+
+const mapFiles = listMapFiles(browserOutDir);
+console.log(`[sentry] Build output dir: ${browserOutDir}`);
+console.log(`[sentry] Sourcemap files found: ${mapFiles.length}`);
+if (mapFiles.length) {
+  const preview = mapFiles
+    .slice(0, 5)
+    .map((p) => path.relative(browserOutDir, p));
+  console.log(`[sentry] Sample sourcemaps: ${preview.join(', ')}`);
+}
+
+if (mapFiles.length === 0) {
+  console.log('[sentry] No sourcemaps found; skipping upload.');
+  process.exit(0);
+}
+
 const cli = new SentryCli(undefined, { authToken, org, project });
 
 try {
@@ -50,6 +88,9 @@ try {
 await cli.releases.uploadSourceMaps(release, {
   include: [browserOutDir],
   urlPrefix: '~/',
+  rewrite: true,
+  validate: true,
+  ext: ['js', 'map'],
 });
 
 await cli.releases.finalize(release);
