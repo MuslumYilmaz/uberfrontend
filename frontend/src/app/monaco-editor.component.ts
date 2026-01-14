@@ -52,6 +52,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private resizeObs?: ResizeObserver;
   private static seq = 0;
   private static webCompletionsInstalled = false;
+  private static loaderPromise: Promise<void> | null = null;
+  private static monacoReady = false;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private get _modelId(): string {
     const lang = this.normalizeLanguage(this.language);
@@ -299,7 +301,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
   // ---------- AMD bootstrap ----------
   private ensureMonaco(): Promise<void> {
-    return new Promise((resolve) => {
+    if (!this.isBrowser) return Promise.resolve();
+    const win = window as any;
+    if (win.__faMonacoReady || MonacoEditorComponent.monacoReady) return Promise.resolve();
+    if (win.__faMonacoLoaderPromise) return win.__faMonacoLoaderPromise as Promise<void>;
+    if (MonacoEditorComponent.loaderPromise) return MonacoEditorComponent.loaderPromise;
+
+    const loaderPromise = new Promise<void>((resolve) => {
       const start = () => {
         if (!(window as any).MonacoEnvironment) {
           (window as any).MonacoEnvironment = {
@@ -516,6 +524,8 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
             mAny.__faNodeShimLib = true;
           }
 
+          MonacoEditorComponent.monacoReady = true;
+          win.__faMonacoReady = true;
           resolve();
         });
       };
@@ -526,12 +536,29 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
         return;
       }
 
+      const existing = document.querySelector<HTMLScriptElement>(
+        'script[data-fa-monaco-loader], script[src*="monaco/min/vs/loader.js"]'
+      );
+      if (existing) {
+        existing.addEventListener('load', () => {
+          (window as any).require = (window as any).require || {};
+          start();
+        }, { once: true });
+        existing.addEventListener('error', () => resolve(), { once: true });
+        return;
+      }
+
       const s = document.createElement('script');
       s.src = this.amdLoaderPath;
+      s.dataset['faMonacoLoader'] = 'true';
       s.onload = () => { (window as any).require = (window as any).require || {}; start(); };
       s.onerror = () => { resolve(); };
-      document.body.appendChild(s);
+      document.head.appendChild(s);
     });
+
+    MonacoEditorComponent.loaderPromise = loaderPromise;
+    win.__faMonacoLoaderPromise = loaderPromise;
+    return loaderPromise;
   }
 
   private getLanguageDefaultOptions(langNorm: string): any {

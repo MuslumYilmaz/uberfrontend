@@ -16,16 +16,22 @@ let cachedTopics: TopicsRegistry | null = null;
 export async function loadTopics(): Promise<TopicsRegistry> {
     if (cachedTopics) return cachedTopics;
 
-    const res = await fetch(TOPIC_REGISTRY_ASSET_URL);
-    if (!res.ok) {
-        throw new Error(
-            `Failed to load topic registry: ${res.status} ${res.statusText} (${TOPIC_REGISTRY_ASSET_URL})`
-        );
-    }
+    try {
+        const res = await fetch(TOPIC_REGISTRY_ASSET_URL);
+        if (!res.ok) {
+            throw new Error(
+                `Failed to load topic registry: ${res.status} ${res.statusText} (${TOPIC_REGISTRY_ASSET_URL})`
+            );
+        }
 
-    const data = (await res.json()) as TopicsRegistry;
-    cachedTopics = data;
-    return data;
+        const data = (await res.json()) as TopicsRegistry;
+        cachedTopics = data;
+        return data;
+    } catch {
+        const empty: TopicsRegistry = { schemaVersion: 1, topics: [] };
+        cachedTopics = empty;
+        return empty;
+    }
 }
 
 export function deriveTopicIdsFromTags(tags: string[], topicsRegistry: TopicsRegistry): string[] {
@@ -52,4 +58,3 @@ export function expandTopicsToTags(topicIds: string[], topicsRegistry: TopicsReg
 
     return [...tags].sort();
 }
-

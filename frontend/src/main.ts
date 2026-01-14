@@ -1,17 +1,18 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { browserTracingIntegration, init } from '@sentry/angular';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
 if (environment.sentryDsn) {
-  init({
-    dsn: environment.sentryDsn,
-    release: environment.sentryRelease || undefined,
-    environment: environment.production ? 'production' : 'development',
-    integrations: [browserTracingIntegration()],
-    tracePropagationTargets: [environment.apiBase, /^\//],
-    tracesSampleRate: environment.sentryTracesSampleRate,
+  import('@sentry/angular').then(({ browserTracingIntegration, init }) => {
+    init({
+      dsn: environment.sentryDsn,
+      release: environment.sentryRelease || undefined,
+      environment: environment.production ? 'production' : 'development',
+      integrations: [browserTracingIntegration()],
+      tracePropagationTargets: [environment.apiBase, /^\//],
+      tracesSampleRate: environment.sentryTracesSampleRate,
+    });
   });
 }
 
