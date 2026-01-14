@@ -432,6 +432,31 @@
   font-size: 14px;
   line-height: 1.55;
 }
+.locked-preview{
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-text-primary) 6%);
+  display: grid;
+  gap: 8px;
+}
+.locked-preview__summary{
+  margin: 0;
+  color: var(--uf-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.locked-preview__list{
+  margin: 0;
+  padding-left: 18px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.locked-preview__list li{
+  margin: 0 0 4px;
+}
 .locked-actions{
   display: flex;
   gap: 12px;

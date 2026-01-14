@@ -90,8 +90,7 @@ export class SystemDesignListComponent implements OnInit, OnDestroy {
 
   handleRowClick(ev: Event, q: SysDesign) {
     if (!this.isLocked(q)) return;
-    ev.preventDefault();
-    ev.stopPropagation();
+    // Allow navigation to detail so SSR can render the premium preview.
   }
 
   private initListSeo(): void {

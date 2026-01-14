@@ -519,8 +519,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   handleCardClick(ev: Event, q: Row) {
     if (!this.isLocked(q)) return;
-    ev.preventDefault();
-    ev.stopPropagation();
+    // Allow navigation to detail so SSR can render the premium preview.
   }
 
   constructor(
@@ -1488,10 +1487,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
   goToFramework(ev: Event, opt: FrameworkVariant, source?: Row) {
     ev.stopPropagation();
     ev.preventDefault();
-
-    if (source && this.isLocked(source)) {
-      return;
-    }
 
     const path = ['/', opt.tech, opt.kind === 'trivia' ? 'trivia' : 'coding', opt.id];
     this.router.navigate(path, {

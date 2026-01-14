@@ -128,6 +128,16 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const user = this.auth.user();
     return isQuestionLockedForTier({ access } as any, user);
   });
+  lockedTitle = computed(() => this.q()?.title ?? 'Premium question');
+  lockedSummary = computed(() => {
+    const q = this.q();
+    if (!q) return '';
+    return this.sdDescription(q);
+  });
+  lockedBullets = computed(() => {
+    const sections = this.sections();
+    return sections.map((s) => s.title).filter(Boolean).slice(0, 2);
+  });
 
   sections = computed<Required<RadioSection>[]>(() => {
     const item = this.q(); if (!item) return [];

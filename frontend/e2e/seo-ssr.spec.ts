@@ -20,6 +20,13 @@ const CASES = [
     detail: false,
   },
   {
+    path: '/angular/coding/angular-autocomplete-search-starter',
+    titleIncludes: 'Autocomplete Search Bar',
+    h1: 'Autocomplete Search Bar (Standalone Component)',
+    detail: true,
+    premiumPreviewText: 'autocomplete search bar',
+  },
+  {
     path: '/react/coding/react-counter',
     titleIncludes: 'Counter',
     h1: 'Counter (Component with Guarded Decrement)',
@@ -52,7 +59,10 @@ function isSkeletonH1(text: string): boolean {
   return /loading|skeleton|preparing|please wait/i.test(text);
 }
 
-async function assertSsrBasics(page: Page, entry: { path: string; h1: string; detail?: boolean; expectNoMonaco?: boolean }) {
+async function assertSsrBasics(
+  page: Page,
+  entry: { path: string; h1: string; detail?: boolean; expectNoMonaco?: boolean; premiumPreviewText?: string },
+) {
   const title = await page.title();
   expect(title).not.toBe(HOME_TITLE);
 
@@ -76,6 +86,12 @@ async function assertSsrBasics(page: Page, entry: { path: string; h1: string; de
     await expect(page.getByText(/Loading question/i)).toHaveCount(0);
   }
 
+  if (entry.premiumPreviewText) {
+    await expect(page.getByTestId('premium-preview')).toContainText(
+      new RegExp(entry.premiumPreviewText, 'i'),
+    );
+  }
+
   if (entry.expectNoMonaco) {
     await expect(page.locator('script[src*="monaco"]')).toHaveCount(0);
     await expect(page.locator('script:has-text("monaco")')).toHaveCount(0);
@@ -84,7 +100,7 @@ async function assertSsrBasics(page: Page, entry: { path: string; h1: string; de
 
 async function assertHydratedBasics(
   page: Page,
-  entry: { path: string; titleIncludes: string; h1: string; detail?: boolean },
+  entry: { path: string; titleIncludes: string; h1: string; detail?: boolean; premiumPreviewText?: string },
 ) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
 
@@ -99,6 +115,12 @@ async function assertHydratedBasics(
   await expect(page.getByText(/Question not found/i)).toHaveCount(0);
   if (entry.detail) {
     await expect(page.getByText(/Loading question/i)).toHaveCount(0);
+  }
+
+  if (entry.premiumPreviewText) {
+    await expect(page.getByTestId('premium-preview')).toContainText(
+      new RegExp(entry.premiumPreviewText, 'i'),
+    );
   }
 }
 

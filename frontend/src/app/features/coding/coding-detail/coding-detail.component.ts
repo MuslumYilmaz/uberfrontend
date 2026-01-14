@@ -229,6 +229,18 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const user = this.auth.user();
     return q ? isQuestionLockedForTier(q, user) : false;
   });
+  lockedTitle = computed(() => this.question()?.title || 'Premium question');
+  lockedSummary = computed(() => {
+    const q = this.question();
+    if (!q) return '';
+    const raw = this.descriptionText();
+    const cleaned = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return cleaned || this.questionDescription(q);
+  });
+  lockedBullets = computed(() => {
+    const requirements = this.descSpecs()?.requirements ?? [];
+    return requirements.filter((item): item is string => Boolean(item)).slice(0, 2);
+  });
 
   // ✅ UI solved: only true when authenticated
   uiSolved = computed(() => this.auth.isLoggedIn() && this.solved());

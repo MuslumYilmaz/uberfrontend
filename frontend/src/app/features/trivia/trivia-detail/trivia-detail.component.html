@@ -171,7 +171,13 @@
             <div class="locked-shell">
                 <div class="locked-card">
                     <div class="locked-pill">Premium</div>
-                    <h1 class="locked-title">Premium question</h1>
+                    <h1 class="locked-title">{{ lockedTitle() }}</h1>
+                    <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
+                        <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
+                        <ul class="locked-preview__list" *ngIf="lockedBullets().length">
+                            <li *ngFor="let item of lockedBullets()">{{ item }}</li>
+                        </ul>
+                    </div>
                     <p class="locked-copy">
                         <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
                             You're on the free tier. Upgrade to view this answer.

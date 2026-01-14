@@ -120,6 +120,28 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const user = this.auth.user();
     return q ? isQuestionLockedForTier(q, user) : false;
   });
+  lockedTitle = computed(() => this.question()?.title || 'Premium question');
+  lockedSummary = computed(() => {
+    const q = this.question();
+    if (!q) return '';
+    const desc = q.description as any;
+    let raw = '';
+    if (desc && typeof desc === 'object' && typeof desc.summary === 'string') {
+      raw = desc.summary;
+    }
+    if (!raw) {
+      raw = this.descText(q.description || '');
+    }
+    const cleaned = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return cleaned || this.questionDescription(q);
+  });
+  lockedBullets = computed(() => {
+    const desc = this.question()?.description as any;
+    const requirements: unknown[] = Array.isArray(desc?.specs?.requirements) ? desc.specs.requirements : [];
+    return requirements
+      .filter((item: unknown): item is string => typeof item === 'string' && item.trim().length > 0)
+      .slice(0, 2);
+  });
 
   // footer helpers
   readonly progressText = computed(() =>
