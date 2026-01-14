@@ -18,6 +18,7 @@ import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier
 import { Tech } from '../../../core/models/user.model';
 import { CodingListFilterState, CodingListStateService } from '../../../core/services/coding-list-state';
 import { MixedQuestion, QuestionService } from '../../../core/services/question.service';
+import { QuestionListResolved } from '../../../core/resolvers/question-list.resolver';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
@@ -206,6 +207,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private navSub?: Subscription;
   private hydrated = false;
   private lastScopedFilter: { topic: string | null; focus: string | null } = { topic: null, focus: null };
+  private resolvedList: QuestionListResolved | null = null;
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -235,6 +237,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
     tap(d => {
       this.source = (d['source'] as ListSource) ?? 'tech';
       this.kind = (d['kind'] as Kind) ?? 'coding';
+      this.resolvedList = (d['questionList'] as QuestionListResolved | undefined) ?? null;
     }),
     switchMap(() =>
       combineLatest([
@@ -249,10 +252,18 @@ export class CodingListComponent implements OnInit, OnDestroy {
           if (this.source === 'global-coding') {
             return this.selectedKind$.pipe(
               switchMap((k) => {
-                const base$ = this.qs.loadAllQuestions(k as any).pipe(
-                  map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
-                  startWith<Row[] | null>(null)
-                );
+                const preloaded = this.resolvedGlobalList(k);
+                let base$: Observable<Row[] | null>;
+                if (preloaded) {
+                  base$ = of(preloaded).pipe(
+                    map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech })))
+                  );
+                } else {
+                  base$ = this.qs.loadAllQuestions(k as any).pipe(
+                    map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
+                    startWith<Row[] | null>(null)
+                  );
+                }
 
                 if (this.viewMode === 'formats') {
                   return combineLatest<[Row[] | null, Row[] | null]>([
@@ -353,6 +364,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
       )
     )
   ) as unknown as Observable<Row[] | null>;
+
+  private resolvedGlobalList(kind: SelectedKind): MixedQuestion[] | null {
+    const resolved = this.resolvedList;
+    if (!resolved || resolved.source !== 'global-coding') return null;
+    if (resolved.kind !== kind) return null;
+    return resolved.items;
+  }
 
   allTagCounts$ = this.rawQuestions$.pipe(
     map(rows => {

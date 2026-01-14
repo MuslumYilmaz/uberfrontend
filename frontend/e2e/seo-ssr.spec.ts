@@ -18,6 +18,7 @@ const CASES = [
     titleIncludes: 'coding interview questions',
     h1: 'All questions',
     detail: false,
+    listTestIdPrefix: 'question-card-',
   },
   {
     path: '/angular/coding/angular-autocomplete-search-starter',
@@ -61,7 +62,14 @@ function isSkeletonH1(text: string): boolean {
 
 async function assertSsrBasics(
   page: Page,
-  entry: { path: string; h1: string; detail?: boolean; expectNoMonaco?: boolean; premiumPreviewText?: string },
+  entry: {
+    path: string;
+    h1: string;
+    detail?: boolean;
+    expectNoMonaco?: boolean;
+    premiumPreviewText?: string;
+    listTestIdPrefix?: string;
+  },
 ) {
   const title = await page.title();
   expect(title).not.toBe(HOME_TITLE);
@@ -86,6 +94,12 @@ async function assertSsrBasics(
     await expect(page.getByText(/Loading question/i)).toHaveCount(0);
   }
 
+  if (entry.listTestIdPrefix) {
+    await expect(page.getByText(/Loading questions/i)).toHaveCount(0);
+    const count = await page.locator(`[data-testid^="${entry.listTestIdPrefix}"]`).count();
+    expect(count).toBeGreaterThan(0);
+  }
+
   if (entry.premiumPreviewText) {
     await expect(page.getByTestId('premium-preview')).toContainText(
       new RegExp(entry.premiumPreviewText, 'i'),
@@ -100,7 +114,14 @@ async function assertSsrBasics(
 
 async function assertHydratedBasics(
   page: Page,
-  entry: { path: string; titleIncludes: string; h1: string; detail?: boolean; premiumPreviewText?: string },
+  entry: {
+    path: string;
+    titleIncludes: string;
+    h1: string;
+    detail?: boolean;
+    premiumPreviewText?: string;
+    listTestIdPrefix?: string;
+  },
 ) {
   await expect(page).toHaveTitle(new RegExp(entry.titleIncludes, 'i'));
 
@@ -115,6 +136,12 @@ async function assertHydratedBasics(
   await expect(page.getByText(/Question not found/i)).toHaveCount(0);
   if (entry.detail) {
     await expect(page.getByText(/Loading question/i)).toHaveCount(0);
+  }
+
+  if (entry.listTestIdPrefix) {
+    await expect(page.getByText(/Loading questions/i)).toHaveCount(0);
+    const count = await page.locator(`[data-testid^="${entry.listTestIdPrefix}"]`).count();
+    expect(count).toBeGreaterThan(0);
   }
 
   if (entry.premiumPreviewText) {

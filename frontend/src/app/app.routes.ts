@@ -14,6 +14,7 @@ import {
   codingDetailResolver,
   triviaDetailResolver,
 } from './core/resolvers/question-detail.resolver';
+import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
 
 /** Only match allowed techs at the first URL segment */
 const ALLOWED_TECH = new Set(['javascript', 'angular', 'react', 'vue', 'html', 'css']);
@@ -667,6 +668,9 @@ export const routes: Routes = [
       import('./features/coding/coding-list/coding-list.component').then(
         (m) => m.CodingListComponent,
       ),
+    resolve: {
+      questionList: globalCodingListResolver,
+    },
     data: {
       source: 'global-coding',
       kind: 'coding',
