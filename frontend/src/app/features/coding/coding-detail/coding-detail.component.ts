@@ -234,12 +234,17 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     const q = this.question();
     if (!q) return '';
     const raw = this.descriptionText();
-    const cleaned = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    return cleaned || this.questionDescription(q);
+    const fallback = this.questionDescription(q);
+    const normalized = this.normalizePreviewText(raw || fallback);
+    return this.trimWords(normalized, 45);
   });
   lockedBullets = computed(() => {
     const requirements = this.descSpecs()?.requirements ?? [];
-    return requirements.filter((item): item is string => Boolean(item)).slice(0, 2);
+    return requirements
+      .filter((item): item is string => Boolean(item))
+      .map((item) => this.trimWords(this.normalizePreviewText(item), 12))
+      .filter((item) => item.length > 0)
+      .slice(0, 2);
   });
 
   // ✅ UI solved: only true when authenticated
@@ -703,6 +708,22 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const tech = (q as any).tech ?? (q as any).technology ?? this.tech;
     return `Front-end ${this.kind} question for ${tech}.`;
+  }
+
+  private normalizePreviewText(text: string): string {
+    return String(text || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/`+/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private trimWords(text: string, maxWords: number): string {
+    if (!text) return '';
+    const words = text.split(/\s+/);
+    if (words.length <= maxWords) return text;
+    return `${words.slice(0, maxWords).join(' ')}…`;
   }
 
   private questionKeywords(q: Question): string[] {

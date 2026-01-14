@@ -132,14 +132,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     if (!raw) {
       raw = this.descText(q.description || '');
     }
-    const cleaned = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    return cleaned || this.questionDescription(q);
+    const normalized = this.normalizePreviewText(raw || this.questionDescription(q));
+    return this.trimWords(normalized, 45);
   });
   lockedBullets = computed(() => {
     const desc = this.question()?.description as any;
     const requirements: unknown[] = Array.isArray(desc?.specs?.requirements) ? desc.specs.requirements : [];
     return requirements
       .filter((item: unknown): item is string => typeof item === 'string' && item.trim().length > 0)
+      .map((item) => this.trimWords(this.normalizePreviewText(item), 12))
+      .filter((item) => item.length > 0)
       .slice(0, 2);
   });
 
@@ -373,6 +375,22 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   isActive(q: Question) { return this.question()?.id === q.id; }
+
+  private normalizePreviewText(text: string): string {
+    return String(text || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/`+/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private trimWords(text: string, maxWords: number): string {
+    if (!text) return '';
+    const words = text.split(/\s+/);
+    if (words.length <= maxWords) return text;
+    return `${words.slice(0, maxWords).join(' ')}…`;
+  }
 
   private questionDescription(q: Question): string {
     const raw = this.descText(q.description || '');

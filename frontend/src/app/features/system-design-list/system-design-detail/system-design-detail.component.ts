@@ -132,11 +132,15 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   lockedSummary = computed(() => {
     const q = this.q();
     if (!q) return '';
-    return this.sdDescription(q);
+    const normalized = this.normalizePreviewText(this.sdDescription(q));
+    return this.trimWords(normalized, 45);
   });
   lockedBullets = computed(() => {
     const sections = this.sections();
-    return sections.map((s) => s.title).filter(Boolean).slice(0, 2);
+    return sections
+      .map((s) => this.trimWords(this.normalizePreviewText(s.title), 8))
+      .filter((item) => item.length > 0)
+      .slice(0, 2);
   });
 
   sections = computed<Required<RadioSection>[]>(() => {
@@ -347,6 +351,22 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private sdDescription(q: SDQuestion): string {
     const plain = (q.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     return plain || `Front-end system design scenario: ${q.title}`;
+  }
+
+  private normalizePreviewText(text: string): string {
+    return String(text || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/`+/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private trimWords(text: string, maxWords: number): string {
+    if (!text) return '';
+    const words = text.split(/\s+/);
+    if (words.length <= maxWords) return text;
+    return `${words.slice(0, maxWords).join(' ')}…`;
   }
 
   private sdKeywords(q: SDQuestion): string[] {
