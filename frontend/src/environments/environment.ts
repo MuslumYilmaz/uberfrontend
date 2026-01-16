@@ -5,8 +5,8 @@ export const environment = {
     dataVersion: "2025-08-19a",
     apiBase: "/api", // 👈 proxy to http://localhost:3001/api
     frontendBase: "",
-    cdnBaseUrl: 'https://frontendatlas.vercel.app',
-    cdnEnabled: true,
+    cdnBaseUrl: '',
+    cdnEnabled: false,
     sentryDsn: SENTRY_DSN,
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,

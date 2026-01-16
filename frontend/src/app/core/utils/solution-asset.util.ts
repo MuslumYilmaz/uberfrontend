@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { buildAssetUrl, getSafeAssetBase } from './asset-url.util';
 import { normalizeSdkFiles } from './snapshot.utils';
 
 export type SdkAsset = {
@@ -46,39 +47,6 @@ function isAbsoluteUrl(url: string): boolean {
 }
 
 /**
- * Local'de `assets/` altında nasıl tutuluyorsa,
- * CDN'de de aynı relative path ile servis eder.
- *
- * Örnek:
- *  - assets/sb/react/question/react-counter.v1.json
- *  - assets/sb/angular/question/angular-counter.v2.json
- * CDN:
- *  - sb/react/question/react-counter.v1.json
- *  - sb/angular/question/angular-counter.v2.json
- */
-function buildCdnUrl(url: string, cdnBase: string): string {
-    const normalizedPath = url.replace(/^\/+/, ''); // baştaki '/' leri temizle
-
-    // Zaten 'sb/...' ile başlıyorsa olduğu gibi kullan
-    if (normalizedPath.startsWith('sb/')) {
-        return `${cdnBase}/${normalizedPath}`;
-    }
-
-    // assets/sb/... ise `assets/` prefix'ini kaldır (sb/... şeklinde servis ediyoruz)
-    if (normalizedPath.startsWith('assets/sb/')) {
-        return `${cdnBase}/${normalizedPath.replace(/^assets\//, '')}`;
-    }
-
-    // Genel fallback: assets/ prefix'ini sil, kalan kısmı kullan
-    let cdnPath = normalizedPath;
-    if (cdnPath.startsWith('assets/')) {
-        cdnPath = cdnPath.replace(/^assets\//, '');
-    }
-
-    return `${cdnBase}/${cdnPath}`;
-}
-
-/**
  * Fetch a solution/sdk asset JSON, resolving against CDN if enabled,
  * otherwise falling back to <base href>/assets.
  */
@@ -92,20 +60,13 @@ export async function fetchSdkAsset(http: HttpClient, url: string): Promise<SdkA
         return await firstValueFrom(http.get<SdkAsset>(url));
     }
 
-    const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
-    const useCdn = isCdnEnabledByFlag() && !!cdnBase;
+    const base = isCdnEnabledByFlag() ? getSafeAssetBase((environment as any).cdnBaseUrl || '') : '';
+    const localUrl = buildAssetUrl(url);
+    const preferredUrl = base ? buildAssetUrl(url, { preferBase: base }) : localUrl;
 
-    // Local URL: Angular'ın baseHref'ine göre
-    const baseHref = typeof document === 'undefined' ? (environment.frontendBase || '') : document.baseURI;
-    const localUrl = baseHref ? new URL(url, baseHref).toString() : url;
-
-    // 2) CDN URL'i
-    const cdnUrl = useCdn && cdnBase ? buildCdnUrl(url, cdnBase) : null;
-
-    // 3) Önce CDN, patlarsa local
-    if (cdnUrl) {
+    if (preferredUrl !== localUrl) {
         try {
-            return await firstValueFrom(http.get<SdkAsset>(cdnUrl));
+            return await firstValueFrom(http.get<SdkAsset>(preferredUrl));
         } catch {
         }
     }

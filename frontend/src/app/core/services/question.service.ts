@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment';
 import { AccessLevel, Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
 import { ASSET_READER, AssetReader } from './asset-reader';
+import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from '../utils/asset-url.util';
 
 type Kind = 'coding' | 'trivia' | 'debug';
 export type MixedQuestion = Question & { tech: Tech };
@@ -72,7 +73,7 @@ export class QuestionService {
    * Order of precedence:
    * 1. Local override in localStorage (qoverride:<tech>:<kind>)
    * 2. Cached normalized list (qcache:<tech>:<kind>)
-   * 3. CDN JSON (if cdnBaseUrl configured)
+   * 3. Preferred asset base (if enabled)
    * 4. Assets JSON under assets/questions/<tech>/<kind>.json
    */
   loadQuestions(technology: Tech, kind: Kind): Observable<Question[]> {
@@ -115,15 +116,10 @@ export class QuestionService {
         // 3) Remote source:
         //    - cdnEnabled === true  → CDN + fallback assets
         //    - cdnEnabled === false → direkt assets (CDN yok)
-        const assetsUrl = this.assetUrl(technology, kind);
-        const useCdn = this.cdnEnabled;
-        const cdnUrl = useCdn ? this.cdnUrl(technology, kind, bankVersion) : '';
-
-        const source$ = cdnUrl
-          ? this.http.get<any>(cdnUrl).pipe(
-            catchError(() => this.http.get<any>(assetsUrl))
-          )
-          : this.http.get<any>(assetsUrl);
+        const { primary, fallback } = this.getAssetUrls(`questions/${technology}/${kind}.json`, bankVersion);
+        const source$ = primary !== fallback
+          ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
+          : this.http.get<any>(fallback);
 
         return source$.pipe(
           map((raw) => this.normalizeQuestions(raw, technology, kind)),
@@ -188,20 +184,10 @@ export class QuestionService {
       }
     }
 
-    const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
-    const useCdn = this.cdnEnabled;
-
-    const cdnUrl = useCdn && cdnBase
-      ? `${cdnBase}/questions/system-design/index.json`
-      : null;
-
-    const assetsUrl = `assets/questions/system-design/index.json`;
-
-    const source$ = cdnUrl
-      ? this.http.get<any[]>(cdnUrl).pipe(
-        catchError(() => this.http.get<any[]>(assetsUrl))
-      )
-      : this.http.get<any[]>(assetsUrl);
+    const { primary, fallback } = this.getAssetUrls('questions/system-design/index.json');
+    const source$ = primary !== fallback
+      ? this.http.get<any[]>(primary).pipe(catchError(() => this.http.get<any[]>(fallback)))
+      : this.http.get<any[]>(fallback);
 
     return source$.pipe(
       catchError(() => of([] as any[])),
@@ -222,20 +208,12 @@ export class QuestionService {
       return of(cached);
     }
 
-    const cdnBase = (environment as any).cdnBaseUrl?.replace(/\/+$/, '');
-    const useCdn = this.cdnEnabled;
-
-    const metaCdnUrl = useCdn && cdnBase
-      ? `${cdnBase}/questions/system-design/${id}/meta.json`
-      : null;
-
-    const metaAssetsUrl = `assets/questions/system-design/${id}/meta.json`;
-
-    const meta$ = metaCdnUrl
-      ? this.http.get<any>(metaCdnUrl).pipe(
-        catchError(() => this.http.get<any>(metaAssetsUrl))
-      )
-      : this.http.get<any>(metaAssetsUrl);
+    const { primary: metaPrimary, fallback: metaFallback } = this.getAssetUrls(
+      `questions/system-design/${id}/meta.json`
+    );
+    const meta$ = metaPrimary !== metaFallback
+      ? this.http.get<any>(metaPrimary).pipe(catchError(() => this.http.get<any>(metaFallback)))
+      : this.http.get<any>(metaFallback);
 
     return meta$.pipe(
       switchMap((meta) => {
@@ -249,23 +227,12 @@ export class QuestionService {
           return of(meta);
         }
 
-        const baseCdnFolder = metaCdnUrl
-          ? metaCdnUrl.replace(/\/meta\.json$/, '')
-          : null;
-        const baseAssetsFolder = metaAssetsUrl.replace(/\/meta\.json$/, '');
-
         const sectionRequests = sections.map((s: any) => {
           const file = s.file;
-          const secCdnUrl = baseCdnFolder && useCdn
-            ? `${baseCdnFolder}/${file}`
-            : null;
-          const secAssetsUrl = `${baseAssetsFolder}/${file}`;
-
-          const src$ = secCdnUrl
-            ? this.http.get<any>(secCdnUrl).pipe(
-              catchError(() => this.http.get<any>(secAssetsUrl))
-            )
-            : this.http.get<any>(secAssetsUrl);
+          const { primary, fallback } = this.getAssetUrls(`questions/system-design/${id}/${file}`);
+          const src$ = primary !== fallback
+            ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
+            : this.http.get<any>(fallback);
 
           return src$.pipe(
             catchError(() => of(null)),
@@ -338,20 +305,6 @@ export class QuestionService {
 
   private overrideKey(tech: Tech, kind: Kind) {
     return `${this.overridePrefix}${tech}:${kind}`;
-  }
-
-  private assetUrl(tech: Tech, kind: Kind) {
-    return `assets/questions/${tech}/${kind}.json`;
-  }
-
-  private cdnUrl(tech: Tech, kind: Kind, bankVersion?: string): string {
-    const base = (environment as any).cdnBaseUrl;
-    if (!base) return '';
-    const url = `${String(base).replace(/\/+$/, '')}/questions/${tech}/${kind}.json`;
-    const v = String(bankVersion ?? '').trim();
-    if (!v || v === '0') return url;
-    // cache-bust so CDN updates are actually visible to the browser
-    return `${url}?v=${encodeURIComponent(v)}`;
   }
 
   /** Normalize any supported JSON shape to Question[] and add safe defaults. */
@@ -452,23 +405,20 @@ export class QuestionService {
 
   /** Fetch data-version once; invalidate normalized cache when it changes. */
   private getVersion(): Observable<string> {
-    const cdnBase = String((environment as any).cdnBaseUrl || '').replace(/\/+$/, '');
-    const useCdn = this.cdnEnabled && !!cdnBase;
-
-    // If the source of truth changes, re-fetch version.
-    const modeKey = useCdn ? `cdn:${cdnBase}` : 'assets';
+    const base = this.getAssetBase();
+    const modeKey = base ? `base:${base}` : 'assets';
     if (!this.version$ || this.versionModeKey !== modeKey) {
       this.versionModeKey = modeKey;
 
       const bust = `t=${Date.now()}`;
-      const assetsUrl = `assets/data-version.json?${bust}`;
-      const cdnUrl = `${cdnBase}/data-version.json?${bust}`;
-
-      const src$ = useCdn
-        ? this.http.get<DataVersion>(cdnUrl).pipe(
-          catchError(() => this.http.get<DataVersion>(assetsUrl))
+      const { primary, fallback } = this.getAssetUrls('data-version.json');
+      const primaryUrl = this.appendQuery(primary, bust);
+      const fallbackUrl = this.appendQuery(fallback, bust);
+      const src$ = primaryUrl !== fallbackUrl
+        ? this.http.get<DataVersion>(primaryUrl).pipe(
+          catchError(() => this.http.get<DataVersion>(fallbackUrl))
         )
-        : this.http.get<DataVersion>(assetsUrl);
+        : this.http.get<DataVersion>(fallbackUrl);
 
       this.version$ = src$.pipe(
         map((v) => String(v?.dataVersion ?? v?.version ?? '0')),
@@ -479,6 +429,34 @@ export class QuestionService {
     }
 
     return this.version$;
+  }
+
+  private getAssetBase(): string {
+    if (!this.cdnEnabled) return '';
+    return getSafeAssetBase((environment as any).cdnBaseUrl || '');
+  }
+
+  private getAssetUrls(path: string, bankVersion?: string): { primary: string; fallback: string } {
+    const normalized = normalizeAssetPath(path);
+    const base = this.getAssetBase();
+    const primary = base ? buildAssetUrl(normalized, { preferBase: base }) : normalized;
+    const fallback = normalized;
+
+    const versionedPrimary = this.appendVersion(primary, bankVersion);
+    const versionedFallback = this.appendVersion(fallback, bankVersion);
+    return { primary: versionedPrimary, fallback: versionedFallback };
+  }
+
+  private appendVersion(url: string, bankVersion?: string): string {
+    const v = String(bankVersion ?? '').trim();
+    if (!v || v === '0') return url;
+    return this.appendQuery(url, `v=${encodeURIComponent(v)}`);
+  }
+
+  private appendQuery(url: string, query: string): string {
+    if (!query) return url;
+    const joiner = url.includes('?') ? '&' : '?';
+    return `${url}${joiner}${query}`;
   }
 
   private ensureCacheVersion(ver: string): void {
