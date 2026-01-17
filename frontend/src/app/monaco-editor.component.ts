@@ -42,6 +42,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   @Input() minHeight = 24;
 
   @Output() codeChange = new EventEmitter<string>();
+  @Output() ready = new EventEmitter<void>();
   @Input() modelKey?: string; // stable key from parent, e.g., "q-42-code"
 
   // ADD
@@ -49,6 +50,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
   private model?: any;                  // NEW: keep a handle to the model
   private suppressNextModelUpdate = false;
   private disposed = false;
+  private readyEmitted = false;
   private resizeObs?: ResizeObserver;
   private static seq = 0;
   private static webCompletionsInstalled = false;
@@ -164,6 +166,7 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
 
     this.applyInteractivity();
     setTimeout(() => this.layoutToCurrentSize(), 0);
+    this.scheduleReadyEmit();
   }
 
 
@@ -267,6 +270,18 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       host.style.pointerEvents = 'none';
       host.style.userSelect = 'none';
     }
+  }
+
+  private scheduleReadyEmit(attempt = 0) {
+    if (this.readyEmitted || this.disposed || !this.isBrowser) return;
+    const el = this.container?.nativeElement;
+    if (el && el.clientWidth > 0 && el.clientHeight > 0) {
+      this.readyEmitted = true;
+      this.ready.emit();
+      return;
+    }
+    if (attempt > 120) return; // keep lite overlay if editor never becomes visible
+    requestAnimationFrame(() => this.scheduleReadyEmit(attempt + 1));
   }
 
   /** Resize host height to content (and clamp to maxHeight if provided). */

@@ -51,7 +51,7 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
   </style>
 
   <!-- Vue 3 (global build with compiler) -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <!-- Babel for TS -> JS -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>

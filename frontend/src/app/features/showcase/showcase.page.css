@@ -583,6 +583,37 @@
   height: 880px;
 }
 
+.demo-placeholder {
+  height: 100%;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  color: var(--uf-text-primary);
+}
+
+.demo-placeholder__title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.demo-placeholder__copy {
+  color: var(--uf-text-secondary);
+  max-width: 420px;
+}
+
+.demo-placeholder__meta {
+  font-size: 12px;
+  color: var(--uf-text-tertiary);
+}
+
+.preview-placeholder {
+  padding: 16px 18px;
+  color: var(--uf-text-tertiary);
+  font-size: 13px;
+}
+
 .demo-frame-wrap {
   overflow: hidden;
   transition: max-height 240ms ease, opacity 200ms ease, transform 200ms ease;

@@ -8,21 +8,19 @@ import {
   OnInit,
   QueryList,
   PLATFORM_ID,
+  Type,
   ViewChildren,
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router';
-import { combineLatest, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { QuestionService } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
-import { CodingDetailComponent } from '../coding/coding-detail/coding-detail.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
-import { SystemDesignDetailComponent } from '../system-design-list/system-design-detail/system-design-detail.component';
-import { TriviaDetailComponent } from '../trivia/trivia-detail/trivia-detail.component';
 import { environment } from '../../../environments/environment';
 import {
   buildCheckoutUrls,
@@ -36,7 +34,7 @@ type LibraryLane = 'skills' | 'tech' | 'format';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CodingDetailComponent, PricingPlansSectionComponent, FaqSectionComponent],
+  imports: [CommonModule, FormsModule, RouterModule, PricingPlansSectionComponent, FaqSectionComponent],
   selector: 'app-showcase-page',
   templateUrl: './showcase.page.html',
   styleUrls: ['./showcase.page.css'],
@@ -48,6 +46,9 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   >;
 
   demoHidden = false;
+  demoLoading = false;
+  demoComponent?: Type<unknown>;
+  private demoComponentPromise?: Promise<Type<unknown>>;
 
   paymentsProvider = resolvePaymentsProvider(environment);
   checkoutUrls = buildCheckoutUrls(this.paymentsProvider, environment);
@@ -205,11 +206,11 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
   triviaPreviewLink: any[] = ['/javascript', 'trivia', 'js-event-loop'];
   triviaPreviewId = 'js-event-loop';
   triviaPreviewTech: Tech = 'javascript';
-  triviaDetailComponent = TriviaDetailComponent;
+  triviaDetailComponent?: Type<unknown>;
   triviaInjector!: Injector;
   systemPreviewLink: any[] = ['/system-design', 'infinite-scroll-list'];
   systemPreviewId = 'infinite-scroll-list';
-  systemDesignDetailComponent = SystemDesignDetailComponent;
+  systemDesignDetailComponent?: Type<unknown>;
   systemInjector!: Injector;
 
   capabilities = [
@@ -413,28 +414,8 @@ You can also reset any task back to the starter whenever you want to re-practice
     { name: 'Apple', slug: 'apple', icon: '', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple'] },
   ];
 
-  companyCounts$ = combineLatest([
-    this.qs.loadAllQuestions('coding'),
-    this.qs.loadAllQuestions('trivia'),
-    this.qs.loadSystemDesign(),
-  ]).pipe(
-    map(([coding, trivia, system]) => {
-      const counts: Record<string, { all: number; coding: number; trivia: number; system: number }> = {};
-      const bump = (slug: string, key: 'coding' | 'trivia' | 'system') => {
-        const bucket = counts[slug] || { all: 0, coding: 0, trivia: 0, system: 0 };
-        bucket[key] += 1;
-        bucket.all += 1;
-        counts[slug] = bucket;
-      };
-      const addList = (list: any[], key: 'coding' | 'trivia' | 'system') => {
-        list.forEach((q) => (q.companies || []).forEach((slug: string) => bump(slug, key)));
-      };
-      addList(coding, 'coding');
-      addList(trivia, 'trivia');
-      addList(system, 'system');
-      return counts;
-    })
-  );
+  companyCounts$?: Observable<Record<string, { all: number; coding: number; trivia: number; system: number }>>;
+  private companyCountsLoaded = false;
 
   explanationVisible = false;
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -464,6 +445,26 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.explanationVisible = !this.explanationVisible;
   }
 
+  activateDemo() {
+    if (!this.isBrowser) return;
+    if (this.demoComponent || this.demoLoading) {
+      this.demoHidden = false;
+      return;
+    }
+    this.demoLoading = true;
+    const loader =
+      this.demoComponentPromise ||
+      import('../coding/coding-detail/coding-detail.component').then((m) => m.CodingDetailComponent);
+    this.demoComponentPromise = loader;
+    loader
+      .then((cmp) => {
+        this.demoComponent = cmp;
+      })
+      .finally(() => {
+        this.demoLoading = false;
+      });
+  }
+
   setActiveTrivia(key: TriviaTabKey) {
     const tab = this.triviaTabs.find((t) => t.key === key);
     if (!tab || this.activeTriviaKey === key) return;
@@ -472,6 +473,7 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.triviaPreviewTech = tab.questionTech;
     this.triviaPreviewLink = ['/', tab.questionTech, 'trivia', tab.questionId];
     this.buildTriviaInjector();
+    this.loadTriviaPreview();
   }
 
   private setupObserver() {
@@ -485,6 +487,7 @@ You can also reset any task back to the starter whenever you want to re-practice
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            this.handleDeferredSection(entry.target as HTMLElement);
             entry.target.classList.add('visible');
             this.observer?.unobserve(entry.target as Element);
           }
@@ -498,6 +501,30 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   private markAllVisible() {
     this.observeSections?.forEach((section) => section.nativeElement.classList.add('visible'));
+    this.activateDemo();
+    this.loadTriviaPreview();
+    this.loadSystemPreview();
+    this.enableCompanyCounts();
+  }
+
+  private handleDeferredSection(el: HTMLElement) {
+    const key = el.dataset['load'];
+    if (!key) return;
+    if (key === 'demo') {
+      this.activateDemo();
+      return;
+    }
+    if (key === 'trivia') {
+      this.loadTriviaPreview();
+      return;
+    }
+    if (key === 'system') {
+      this.loadSystemPreview();
+      return;
+    }
+    if (key === 'company') {
+      this.enableCompanyCounts();
+    }
   }
 
   private startFlowTicker() {
@@ -531,19 +558,40 @@ You can also reset any task back to the starter whenever you want to re-practice
       this.activeFrameworkKey = 'react';
     }
     this.demoHidden = false;
+    this.activateDemo();
   }
 
   setActiveFramework(key: DemoKey) {
     this.activeFrameworkKey = key;
     this.demoHidden = false;
+    this.activateDemo();
   }
 
   get isHideableDemo() {
-    return this.activeDemoKey === 'html' || this.activeDemoKey === 'js';
+    return !!this.demoComponent && (this.activeDemoKey === 'html' || this.activeDemoKey === 'js');
   }
 
   toggleDemoVisibility() {
     this.demoHidden = !this.demoHidden;
+    if (!this.demoHidden) {
+      this.activateDemo();
+    }
+  }
+
+  get demoInputs() {
+    const tab = this.activeDemo;
+    return {
+      questionId: tab.questionId,
+      questionTech: tab.questionTech,
+      demoMode: true,
+      liteMode: true,
+      storageKeyOverride: tab.storageKey,
+      hideRestoreBanner: true,
+      hideFooterBar: true,
+      footerLinkTo: ['/', tab.questionTech, 'coding', tab.questionId],
+      footerLinkLabel: 'Open this challenge fully',
+      disablePersistence: true,
+    };
   }
 
   private buildTriviaInjector() {
@@ -687,5 +735,46 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   get activeOptions() {
     return this.activeLaneModel ? this.activeLaneModel.options : [];
+  }
+
+  private loadTriviaPreview() {
+    if (!this.isBrowser || this.triviaDetailComponent) return;
+    import('../trivia/trivia-detail/trivia-detail.component').then((m) => {
+      this.triviaDetailComponent = m.TriviaDetailComponent;
+    });
+  }
+
+  private loadSystemPreview() {
+    if (!this.isBrowser || this.systemDesignDetailComponent) return;
+    import('../system-design-list/system-design-detail/system-design-detail.component').then((m) => {
+      this.systemDesignDetailComponent = m.SystemDesignDetailComponent;
+    });
+  }
+
+  private enableCompanyCounts() {
+    if (this.companyCountsLoaded) return;
+    this.companyCountsLoaded = true;
+    this.companyCounts$ = combineLatest([
+      this.qs.loadAllQuestions('coding'),
+      this.qs.loadAllQuestions('trivia'),
+      this.qs.loadSystemDesign(),
+    ]).pipe(
+      map(([coding, trivia, system]) => {
+        const counts: Record<string, { all: number; coding: number; trivia: number; system: number }> = {};
+        const bump = (slug: string, key: 'coding' | 'trivia' | 'system') => {
+          const bucket = counts[slug] || { all: 0, coding: 0, trivia: 0, system: 0 };
+          bucket[key] += 1;
+          bucket.all += 1;
+          counts[slug] = bucket;
+        };
+        const addList = (list: any[], key: 'coding' | 'trivia' | 'system') => {
+          list.forEach((q) => (q.companies || []).forEach((slug: string) => bump(slug, key)));
+        };
+        addList(coding, 'coding');
+        addList(trivia, 'trivia');
+        addList(system, 'system');
+        return counts;
+      })
+    );
   }
 }

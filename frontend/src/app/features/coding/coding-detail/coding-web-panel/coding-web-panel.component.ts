@@ -38,13 +38,37 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
   standalone: true,
   imports: [CommonModule, MonacoEditorComponent, ConsoleLoggerComponent, ButtonModule, RestoreBannerComponent, DraftUpdateBannerComponent],
   styles: [`
-  :host { color: var(--uf-text-primary); }
+  :host {
+    color: var(--uf-text-primary);
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+  }
   .web-panel { gap: var(--uf-space-3); }
   .web-card {
     background: var(--uf-surface);
     border: 1px solid var(--uf-border-subtle);
     border-radius: var(--uf-card-radius);
     box-shadow: var(--uf-card-shadow);
+  }
+
+  .lite-editor {
+    display: block;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    resize: none;
+    padding: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--uf-text-primary);
+    background: var(--uf-surface);
+    border: 0;
+    outline: none;
   }
 
   .panel-label {
@@ -190,12 +214,22 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 	          <div class="panel-label muted">&lt;html&gt; HTML</div>
 
           <div class="overflow-hidden" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'" style="min-height:120px;">
-            <app-monaco-editor class="h-full editor-fill" data-testid="web-html-editor"
-                               [modelKey]="question ? 'q-' + question.id + '-html' : undefined"
-                               [code]="webHtml()" [language]="'html'"
-                               [options]="editorOptions"
-                               (codeChange)="onHtmlChange($event)">
-            </app-monaco-editor>
+            <ng-container *ngIf="useMonaco(); else liteHtmlEditor">
+              <app-monaco-editor class="h-full editor-fill" data-testid="web-html-editor"
+                                 [modelKey]="question ? 'q-' + question.id + '-html' : undefined"
+                                 [code]="webHtml()" [language]="'html'"
+                                 [options]="editorOptions"
+                                 (codeChange)="onHtmlChange($event)">
+              </app-monaco-editor>
+            </ng-container>
+            <ng-template #liteHtmlEditor>
+              <textarea
+                class="lite-editor editor-fill"
+                data-testid="web-html-editor"
+                [value]="webHtml()"
+                [attr.spellcheck]="false"
+                (input)="onHtmlChange($any($event.target).value)"></textarea>
+            </ng-template>
           </div>
 
           <div class="horizontal-splitter" [class.dragging]="isDraggingHorizontal()"
@@ -203,12 +237,22 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 
           <div class="flex-1 min-h-0 flex flex-col">
             <div class="panel-label muted"># CSS</div>
-            <app-monaco-editor class="flex-1 editor-fill" data-testid="web-css-editor"
-                               [modelKey]="question ? 'q-' + question.id + '-css' : undefined"
-                               [code]="webCss()" [language]="'css'"
-                               [options]="editorOptions"
-                               (codeChange)="onCssChange($event)">
-            </app-monaco-editor>
+            <ng-container *ngIf="useMonaco(); else liteCssEditor">
+              <app-monaco-editor class="flex-1 editor-fill" data-testid="web-css-editor"
+                                 [modelKey]="question ? 'q-' + question.id + '-css' : undefined"
+                                 [code]="webCss()" [language]="'css'"
+                                 [options]="editorOptions"
+                                 (codeChange)="onCssChange($event)">
+              </app-monaco-editor>
+            </ng-container>
+            <ng-template #liteCssEditor>
+              <textarea
+                class="lite-editor editor-fill"
+                data-testid="web-css-editor"
+                [value]="webCss()"
+                [attr.spellcheck]="false"
+                (input)="onCssChange($any($event.target).value)"></textarea>
+            </ng-template>
           </div>
         </div>
 	      </div>
@@ -260,6 +304,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() storageKeyOverride: string | null = null;
   @Input() disablePersistence = false;
   @Input() hideRestoreBanner = false;
+  @Input() liteMode = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -329,6 +374,8 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private _previewUrl = signal<SafeResourceUrl | null>(null);
   previewUrl = () => this._previewUrl();
 
+  useMonaco = signal(true);
+
   showingSolutionPreview = false;
   showRestoreBanner = signal(false);
 
@@ -354,6 +401,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     if (ch['question'] && this.question) {
       void this.initFromQuestion();
     }
+    if (ch['liteMode']) {
+      this.configureLiteEditors();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -376,6 +426,14 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       window.removeEventListener('message', this.onPreviewMessage);
       if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
     }
+  }
+
+  private configureLiteEditors() {
+    if (!this.isBrowser) {
+      this.useMonaco.set(false);
+      return;
+    }
+    this.useMonaco.set(!this.liteMode);
   }
 
   // -------- init from question (unchanged logic) --------

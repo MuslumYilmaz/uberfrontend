@@ -2,9 +2,21 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import {
-  AfterViewInit, Component, Input, computed, effect,
-  ElementRef, inject, NgZone, PLATFORM_ID,
-  OnDestroy, OnInit, signal, ViewChild
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  NgZone,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  SimpleChanges,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+  signal,
 } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -92,10 +104,11 @@ type FASolutionBlock = {
   templateUrl: './coding-detail.component.html',
   styleUrls: ['./coding-detail.component.css'],
 })
-export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() questionId: string | null = null;
   @Input() questionTech: Tech = 'javascript';
   @Input() demoMode = false;
+  @Input() liteMode = false;
   @Input() storageKeyOverride: string | null = null;
   @Input() hideRestoreBanner = false;
   @Input() hideFooterBar = false;
@@ -110,6 +123,12 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   question = signal<Question | null>(null);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   private dataLoaded = false;
+  liteEditors = signal(false);
+  litePreloadActive = signal(false);
+  private liteUpgradeScheduled = false;
+  private liteUpgradeTimer?: number;
+  private liteReadyPollTimer?: number;
+  private liteReadyAttempts = 0;
 
   // JS/TS editor + tests
   editorContent = signal<string>('');
@@ -603,6 +622,14 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       document.body.style.overflow = 'hidden';
       this.overflowPatched = true;
     }
+
+    this.configureLiteEditors();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['liteMode']) {
+      this.configureLiteEditors();
+    }
   }
 
   private computeIsCourseContext(): boolean {
@@ -663,6 +690,8 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
       window.removeEventListener('pointerup', this.onPointerUp);
     }
     clearTimeout(this.copyTimer);
+    if (this.liteUpgradeTimer) clearTimeout(this.liteUpgradeTimer);
+    if (this.liteReadyPollTimer) clearInterval(this.liteReadyPollTimer);
 
     this.destroy$.next();
     this.destroy$.complete();
@@ -683,6 +712,53 @@ export class CodingDetailComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
+  }
+
+  private configureLiteEditors() {
+    if (!this.isBrowser || !this.liteMode) {
+      this.liteEditors.set(false);
+      this.litePreloadActive.set(false);
+      return;
+    }
+    this.liteEditors.set(true);
+    this.litePreloadActive.set(false);
+    this.scheduleLiteUpgrade();
+  }
+
+  private scheduleLiteUpgrade() {
+    if (!this.isBrowser || this.liteUpgradeScheduled) return;
+    this.liteUpgradeScheduled = true;
+    const upgrade = () => {
+      if (!this.liteMode) return;
+      this.litePreloadActive.set(true);
+      this.startMonacoReadyPolling();
+    };
+    if (typeof (window as any).requestIdleCallback === 'function') {
+      (window as any).requestIdleCallback(upgrade, { timeout: 1200 });
+    } else {
+      this.liteUpgradeTimer = window.setTimeout(upgrade, 900);
+    }
+  }
+
+  private startMonacoReadyPolling() {
+    if (!this.isBrowser || this.liteReadyPollTimer) return;
+    this.liteReadyAttempts = 0;
+    this.liteReadyPollTimer = window.setInterval(() => {
+      this.liteReadyAttempts += 1;
+      if ((window as any).__faMonacoReady) {
+        clearInterval(this.liteReadyPollTimer);
+        this.liteReadyPollTimer = undefined;
+        if (this.liteMode) {
+          this.liteEditors.set(false);
+          this.litePreloadActive.set(false);
+        }
+        return;
+      }
+      if (this.liteReadyAttempts > 80) {
+        clearInterval(this.liteReadyPollTimer);
+        this.liteReadyPollTimer = undefined;
+      }
+    }, 150);
   }
 
   // ---------- WEB (html/css) utilities ----------

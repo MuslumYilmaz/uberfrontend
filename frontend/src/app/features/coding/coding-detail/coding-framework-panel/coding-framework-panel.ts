@@ -56,6 +56,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   @Input() solutionFilesMap: Record<string, string> = {};
   @Input() storageKeyOverride: string | null = null;
   @Input() disablePersistence = false;
+  @Input() liteMode = false;
 
   @ViewChild('previewFrame', { read: ElementRef }) previewFrame?: ElementRef<HTMLIFrameElement>;
 
@@ -97,6 +98,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private previewObjectUrl: string | null = null;
   private previewNavId = 0;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  useMonaco = signal(true);
+  editorReady = signal(false);
 
   // preview loading
   loadingPreview = signal(true);
@@ -192,6 +195,7 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     if (this.question && this.tech && this.isFrameworkTech()) {
       this.initFromQuestion();
     }
+    this.configureLiteEditors();
   }
 
   ngAfterViewInit() {
@@ -215,6 +219,9 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       // re-apply updated solution bundle
       this.applySolutionFiles();
     }
+    if (changes['liteMode']) {
+      this.configureLiteEditors();
+    }
   }
 
   ngOnDestroy(): void {
@@ -237,6 +244,19 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
       window.removeEventListener('pointermove', this.onPointerMoveFrameworkCols);
       window.removeEventListener('pointerup', this.onPointerUpFrameworkCols);
     }
+  }
+
+  private configureLiteEditors() {
+    if (!this.isBrowser) {
+      this.useMonaco.set(false);
+      return;
+    }
+    this.useMonaco.set(!this.liteMode);
+    this.editorReady.set(false);
+  }
+
+  onEditorReady() {
+    this.editorReady.set(true);
   }
 
   // ---------- public API (called by parent) ----------

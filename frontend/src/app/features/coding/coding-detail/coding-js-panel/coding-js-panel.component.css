@@ -4,6 +4,7 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;     /* allow children to shrink inside flex containers */
+  height: 100%;
 }
 
 /* full-height editor containers */
@@ -12,6 +13,30 @@ app-monaco-editor {
   display: block;
   height: 100%;
   min-height: 0;
+}
+
+.lite-editor {
+  display: block;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  resize: none;
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--uf-text-primary);
+  background: var(--uf-surface);
+  border: 0;
+  outline: none;
+}
+
+.lite-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
 }
 
 /* (optional) keep other sections from forcing layout overflow */

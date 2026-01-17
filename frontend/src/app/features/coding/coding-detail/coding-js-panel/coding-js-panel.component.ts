@@ -39,6 +39,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   @Input() storageKeyOverride: string | null = null;
   @Input() hideRestoreBanner = false;
   @Input() disablePersistence = false;
+  @Input() liteMode = false;
 
   // optional UI options (pass from parent to keep look consistent)
   @Input() editorOptions: any = {
@@ -97,9 +98,13 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   private pendingPersist: { key: string; lang: JsLang; code: string } | null = null;
   private resizeRaf: number | null = null;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  useMonaco = signal(true);
+  codeEditorReady = signal(false);
+  testsEditorReady = signal(false);
 
   ngOnInit() {
     if (!this.isBrowser) return;
+    this.configureLiteEditors();
     window.addEventListener('beforeunload', this._persistLangOnUnload);
   }
 
@@ -279,6 +284,27 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     if (ch['question'] && this.question) {
       this.initFromQuestion();                 // inputs are ready, initialize
     }
+    if (ch['liteMode']) {
+      this.configureLiteEditors();
+    }
+  }
+
+  private configureLiteEditors() {
+    if (!this.isBrowser) {
+      this.useMonaco.set(false);
+      return;
+    }
+    this.useMonaco.set(!this.liteMode);
+    this.codeEditorReady.set(false);
+    this.testsEditorReady.set(false);
+  }
+
+  onCodeEditorReady() {
+    this.codeEditorReady.set(true);
+  }
+
+  onTestsEditorReady() {
+    this.testsEditorReady.set(true);
   }
 
   /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */

@@ -56,7 +56,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="demo-title">
+<section class="section reveal" #observeSection aria-labelledby="demo-title" data-load="demo">
   <div class="shell section-head">
     <div>
       <p class="eyebrow">Interactive demo</p>
@@ -98,19 +98,29 @@
     <div class="demo-frame-wrap" [class.hidden]="demoHidden">
       <div class="demo-frame glass" role="tabpanel" id="demo-pane"
         [attr.aria-labelledby]="'demo-tab-' + activeDemo.key">
-        <ng-container *ngIf="isBrowser">
-          <ng-container *ngFor="let tab of allDemoTabs">
-            <ng-container *ngIf="tab.key === activeDemoKey">
-              <app-coding-detail [questionId]="tab.questionId" [questionTech]="tab.questionTech" [demoMode]="true"
-                [storageKeyOverride]="tab.storageKey" [hideRestoreBanner]="true" [hideFooterBar]="true"
-                [footerLinkTo]="['/', tab.questionTech, 'coding', tab.questionId]" [disablePersistence]="true"
-                footerLinkLabel="Open this challenge fully">
-              </app-coding-detail>
+        <ng-container *ngIf="isBrowser; else demoPlaceholder">
+          <ng-container *ngIf="demoComponent; else demoPlaceholder">
+            <ng-container *ngFor="let tab of allDemoTabs">
+              <ng-container *ngIf="tab.key === activeDemoKey">
+                <ng-container *ngComponentOutlet="demoComponent; inputs: demoInputs"></ng-container>
+              </ng-container>
             </ng-container>
           </ng-container>
         </ng-container>
       </div>
     </div>
+
+    <ng-template #demoPlaceholder>
+      <div class="demo-placeholder">
+        <div class="demo-placeholder__title">Interactive demo</div>
+        <p class="demo-placeholder__copy">
+          Preparing the live editor and preview…
+        </p>
+        <div class="demo-placeholder__meta">
+          {{ demoLoading ? 'Loading demo…' : 'Loading on first paint' }}
+        </div>
+      </div>
+    </ng-template>
 
 
     <a class="demo-banner" [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden"
@@ -122,7 +132,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="trivia-preview-title">
+<section class="section reveal" #observeSection aria-labelledby="trivia-preview-title" data-load="trivia">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -146,7 +156,12 @@
     <div class="trivia-preview-card glass" role="region" aria-label="Trivia question preview">
       <div class="trivia-frame" role="tabpanel" id="trivia-pane"
         [attr.aria-labelledby]="'trivia-tab-' + activeTriviaTab.key">
-        <ng-container *ngComponentOutlet="triviaDetailComponent; injector: triviaInjector"></ng-container>
+        <ng-container *ngIf="triviaDetailComponent; else triviaPlaceholder">
+          <ng-container *ngComponentOutlet="triviaDetailComponent; injector: triviaInjector"></ng-container>
+        </ng-container>
+        <ng-template #triviaPlaceholder>
+          <div class="preview-placeholder">Preview loads when you interact.</div>
+        </ng-template>
         <div class="trivia-gradient" aria-hidden="true"></div>
       </div>
     </div>
@@ -161,7 +176,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="system-preview-title">
+<section class="section reveal" #observeSection aria-labelledby="system-preview-title" data-load="system">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -173,7 +188,12 @@
 
     <div class="system-preview-card glass" role="region" aria-label="System design question preview">
       <div class="system-frame" role="tabpanel">
-        <ng-container *ngComponentOutlet="systemDesignDetailComponent; injector: systemInjector"></ng-container>
+        <ng-container *ngIf="systemDesignDetailComponent; else systemPlaceholder">
+          <ng-container *ngComponentOutlet="systemDesignDetailComponent; injector: systemInjector"></ng-container>
+        </ng-container>
+        <ng-template #systemPlaceholder>
+          <div class="preview-placeholder">Preview loads when you scroll to this section.</div>
+        </ng-template>
         <div class="trivia-gradient" aria-hidden="true"></div>
       </div>
     </div>
@@ -229,7 +249,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="company-title">
+<section class="section reveal" #observeSection aria-labelledby="company-title" data-load="company">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -253,7 +273,7 @@
           <div class="company-note">{{ c.note }}</div>
         </div>
         <div class="company-meta-right">
-          <ng-container *ngIf="companyCounts$ | async as cc">
+          <ng-container *ngIf="companyCounts$ && (companyCounts$ | async) as cc">
             <span class="company-count" *ngIf="cc[c.slug]">{{ cc[c.slug].all }} questions</span>
           </ng-container>
           <a class="company-link" [routerLink]="c.link">View set <i class="pi pi-arrow-right" aria-hidden="true"></i></a>

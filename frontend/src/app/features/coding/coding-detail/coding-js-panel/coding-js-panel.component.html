@@ -48,18 +48,52 @@
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
             <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'">
-                <app-monaco-editor #codeEditor class="h-full editor-fill" data-testid="js-code-editor" [modelKey]="'q-' + question?.id + '-code'"
-                    [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
-                    [options]="editorOptions" (codeChange)="onCodeChange($event)">
-                </app-monaco-editor>
+                <ng-container *ngIf="useMonaco(); else liteCodeEditor">
+                    <app-monaco-editor #codeEditor class="h-full editor-fill" data-testid="js-code-editor" [modelKey]="'q-' + question?.id + '-code'"
+                        [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
+                        [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()">
+                    </app-monaco-editor>
+                    <textarea
+                        *ngIf="!codeEditorReady()"
+                        class="lite-editor editor-fill lite-overlay"
+                        data-testid="js-code-editor"
+                        [value]="editorContent()"
+                        [attr.spellcheck]="false"
+                        (input)="onCodeChange($any($event.target).value)"></textarea>
+                </ng-container>
+                <ng-template #liteCodeEditor>
+                    <textarea
+                        class="lite-editor editor-fill"
+                        data-testid="js-code-editor"
+                        [value]="editorContent()"
+                        [attr.spellcheck]="false"
+                        (input)="onCodeChange($any($event.target).value)"></textarea>
+                </ng-template>
             </div>
 
             <!-- TESTS editor (kept mounted; toggled by display so it retains height) -->
             <div class="absolute inset-0" [style.display]="topTab()==='tests' ? 'block' : 'none'">
-                <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
-                    [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
-                    [options]="editorOptions" (codeChange)="onTestsChange($event)">
-                </app-monaco-editor>
+                <ng-container *ngIf="useMonaco(); else liteTestsEditor">
+                    <app-monaco-editor #testsEditor class="h-full editor-fill" data-testid="js-tests-editor" [modelKey]="'q-' + question?.id + '-tests'"
+                        [code]="testCode()" [language]="jsLang()==='ts' ? 'typescript' : 'javascript'"
+                        [options]="editorOptions" (codeChange)="onTestsChange($event)" (ready)="onTestsEditorReady()">
+                    </app-monaco-editor>
+                    <textarea
+                        *ngIf="!testsEditorReady()"
+                        class="lite-editor editor-fill lite-overlay"
+                        data-testid="js-tests-editor"
+                        [value]="testCode()"
+                        [attr.spellcheck]="false"
+                        (input)="onTestsChange($any($event.target).value)"></textarea>
+                </ng-container>
+                <ng-template #liteTestsEditor>
+                    <textarea
+                        class="lite-editor editor-fill"
+                        data-testid="js-tests-editor"
+                        [value]="testCode()"
+                        [attr.spellcheck]="false"
+                        (input)="onTestsChange($any($event.target).value)"></textarea>
+                </ng-template>
             </div>
         </div>
 

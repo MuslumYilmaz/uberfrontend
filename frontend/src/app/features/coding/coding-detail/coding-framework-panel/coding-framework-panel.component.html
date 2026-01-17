@@ -92,11 +92,26 @@
                 </div>
             </div>
 
-            <section class="min-w-0 min-h-0 flex-1 flex">
-                <app-monaco-editor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
-                    [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
-                    (codeChange)="onFrameworkCodeChange($event)">
-                </app-monaco-editor>
+            <section class="min-w-0 min-h-0 flex-1 flex editor-shell">
+                <ng-container *ngIf="useMonaco(); else liteFrameworkEditor">
+                    <app-monaco-editor class="flex-1 min-h-0 h-full editor-fill" [code]="editorContent()"
+                        [language]="langFromPath(currentPath())" [modelKey]="currentPath()" [options]="editorOptions"
+                        (codeChange)="onFrameworkCodeChange($event)" (ready)="onEditorReady()">
+                    </app-monaco-editor>
+                    <textarea
+                        *ngIf="!editorReady()"
+                        class="lite-editor editor-fill lite-overlay"
+                        [value]="editorContent()"
+                        [attr.spellcheck]="false"
+                        (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
+                </ng-container>
+                <ng-template #liteFrameworkEditor>
+                    <textarea
+                        class="lite-editor editor-fill"
+                        [value]="editorContent()"
+                        [attr.spellcheck]="false"
+                        (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
+                </ng-template>
             </section>
         </div>
 

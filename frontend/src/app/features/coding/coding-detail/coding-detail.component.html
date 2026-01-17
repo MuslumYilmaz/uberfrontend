@@ -2,7 +2,7 @@
 <ng-container *ngIf="!locked(); else lockedView">
 <div class="coding-detail flex gap-[5px]" data-testid="coding-detail-page" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
-  <aside class="flex flex-col bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
+  <aside class="flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
     [style.flex]="asideFlex()" style="min-width:0;">
     <!-- Collapsed rail -->
     <div *ngIf="descCollapsed()" class="h-full w-full flex flex-col items-center justify-between py-2">
@@ -132,11 +132,16 @@
                 </div>
 
                 <div class="code-wrap">
-                  <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                    [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
-                    [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560"
-                    [interactive]="false">
-                  </app-monaco-editor>
+                  <ng-container *ngIf="!liteEditors(); else liteExamples">
+                    <app-monaco-editor class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                      [code]="combinedExamples()" [language]="tech==='angular' ? 'typescript' : 'javascript'"
+                      [readOnly]="true" [options]="examplesMonacoOptions" [autoHeight]="true" [maxHeight]="560"
+                      [interactive]="false">
+                    </app-monaco-editor>
+                  </ng-container>
+                  <ng-template #liteExamples>
+                    <pre class="lite-code">{{ combinedExamples() }}</pre>
+                  </ng-template>
 
                   <button class="copy-fab" aria-label="Copy examples" title="Copy" (click)="copyExamples()">
                     <i class="pi" [ngClass]="copiedExamples() ? 'pi-check' : 'pi-copy'"></i>
@@ -247,11 +252,16 @@
                 <ng-container *ngIf="isWebTech(); else nonWebApproach">
                   <div class="code-wrap mb-2" *ngIf="ap.codeHtml">
                     <div class="px-2 py-1 text-xs opacity-80">&lt;html&gt;</div>
-                    <app-monaco-editor
-                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                      [code]="prettifyHtml(unescapeJsLiterals(ap.codeHtml || ''))" [language]="'html'" [readOnly]="true"
-                      [autoHeight]="true" [options]="examplesMonacoOptions">
-                    </app-monaco-editor>
+                    <ng-container *ngIf="!liteEditors(); else liteHtmlBlock">
+                      <app-monaco-editor
+                        class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                        [code]="prettifyHtml(unescapeJsLiterals(ap.codeHtml || ''))" [language]="'html'" [readOnly]="true"
+                        [autoHeight]="true" [options]="examplesMonacoOptions">
+                      </app-monaco-editor>
+                    </ng-container>
+                    <ng-template #liteHtmlBlock>
+                      <pre class="lite-code">{{ prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')) }}</pre>
+                    </ng-template>
                     <button class="copy-fab" aria-label="Copy HTML" title="Copy HTML"
                       (click)="onCopyApproach(i, prettifyHtml(unescapeJsLiterals(ap.codeHtml || '')))">
                       <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
@@ -260,11 +270,16 @@
 
                   <div class="code-wrap" *ngIf="ap.codeCss">
                     <div class="px-2 py-1 text-xs opacity-80"># CSS</div>
-                    <app-monaco-editor
-                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                      [code]="prettifyCss(unescapeJsLiterals(ap.codeCss || ''))" [language]="'css'" [readOnly]="true"
-                      [autoHeight]="true" [options]="examplesMonacoOptions">
-                    </app-monaco-editor>
+                    <ng-container *ngIf="!liteEditors(); else liteCssBlock">
+                      <app-monaco-editor
+                        class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                        [code]="prettifyCss(unescapeJsLiterals(ap.codeCss || ''))" [language]="'css'" [readOnly]="true"
+                        [autoHeight]="true" [options]="examplesMonacoOptions">
+                      </app-monaco-editor>
+                    </ng-container>
+                    <ng-template #liteCssBlock>
+                      <pre class="lite-code">{{ prettifyCss(unescapeJsLiterals(ap.codeCss || '')) }}</pre>
+                    </ng-template>
                     <button class="copy-fab" aria-label="Copy CSS" title="Copy CSS"
                       (click)="onCopyApproach(i, prettifyCss(unescapeJsLiterals(ap.codeCss || '')))">
                       <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
@@ -276,11 +291,16 @@
                 <ng-template #nonWebApproach>
                   <!-- Only show inline code for plain JS/TS. Frameworks use the Files section instead. -->
                   <div class="code-wrap" *ngIf="!isFrameworkTech() && !isWebTech()">
-                    <app-monaco-editor
-                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                      [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
-                      [readOnly]="true" [autoHeight]="true" [options]="examplesMonacoOptions">
-                    </app-monaco-editor>
+                    <ng-container *ngIf="!liteEditors(); else liteApproachBlock">
+                      <app-monaco-editor
+                        class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                        [code]="codeFor(ap)" [language]="currentJsLang()==='ts' ? 'typescript' : 'javascript'"
+                        [readOnly]="true" [autoHeight]="true" [options]="examplesMonacoOptions">
+                      </app-monaco-editor>
+                    </ng-container>
+                    <ng-template #liteApproachBlock>
+                      <pre class="lite-code">{{ codeFor(ap) }}</pre>
+                    </ng-template>
                     <button class="copy-fab" aria-label="Copy code" title="Copy"
                       (click)="onCopyApproach(i, codeFor(ap))">
                       <i class="pi" [ngClass]="copiedIdx===i ? 'pi-check' : 'pi-copy'"></i>
@@ -308,12 +328,17 @@
 
                   <!-- Active file viewer -->
                   <div class="code-wrap mt-2">
-                    <app-monaco-editor
-                      class="rounded border border-white/10 pointer-events-none select-none w-full block"
-                      [code]="solutionFilesMap()[solutionCurrentPath()] || ''"
-                      [language]="langFromPath(solutionCurrentPath())" [readOnly]="true"
-                      [options]="examplesMonacoOptions" [autoHeight]="true">
-                    </app-monaco-editor>
+                    <ng-container *ngIf="!liteEditors(); else liteSolutionBlock">
+                      <app-monaco-editor
+                        class="rounded border border-white/10 pointer-events-none select-none w-full block"
+                        [code]="solutionFilesMap()[solutionCurrentPath()] || ''"
+                        [language]="langFromPath(solutionCurrentPath())" [readOnly]="true"
+                        [options]="examplesMonacoOptions" [autoHeight]="true">
+                      </app-monaco-editor>
+                    </ng-container>
+                    <ng-template #liteSolutionBlock>
+                      <pre class="lite-code">{{ solutionFilesMap()[solutionCurrentPath()] || '' }}</pre>
+                    </ng-template>
 
                     <button class="copy-fab" aria-label="Copy file" title="Copy"
                       (click)="copyText(solutionFilesMap()[solutionCurrentPath()] || '')">
@@ -397,11 +422,11 @@
     (pointerdown)="startHorizontalDrag($event)"></div>
 
   <!-- RIGHT COLUMN -->
-  <main class="flex-1 flex flex-col overflow-hidden coding-detail__scroll">
+<main class="flex-1 min-h-0 flex flex-col overflow-hidden coding-detail__scroll">
 
     <!-- FRAMEWORK PANEL -->
     <app-coding-framework-panel *ngIf="isFrameworkTech() && question() as q" #frameworkPanel [question]="q"
-      [tech]="tech" [editorOptions]="editorMonacoOptions"
+      [tech]="tech" [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()"
       [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
       [disablePersistence]="disablePersistence || demoMode" [solutionFilesMap]="solutionFilesMap()">
     </app-coding-framework-panel>
@@ -409,7 +434,7 @@
     <!-- NON-FRAMEWORK: WEB or JS -->
     <ng-container *ngIf="!isFrameworkTech()">
       <app-coding-web-panel #webPanel *ngIf="isWebTech(); else jsBlock" [question]="question()!" [tech]="tech"
-        [editorOptions]="editorMonacoOptions"
+        [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()"
         [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
         [hideRestoreBanner]="demoMode || hideRestoreBanner"
         [disablePersistence]="disablePersistence || demoMode" class="flex-1 min-h-0 flex">
@@ -418,7 +443,7 @@
       <!-- JS / TS EDITOR stays the same -->
       <ng-template #jsBlock>
         <app-coding-js-panel #jsPanel class="flex-1 min-h-0 flex" [question]="question()!" [tech]="tech" [kind]="kind"
-          [editorOptions]="editorMonacoOptions" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
+          [editorOptions]="editorMonacoOptions" [liteMode]="liteEditors()" [storageKeyOverride]="storageKeyOverride || (demoMode ? demoStorageKey(question()?.id) : null)"
           [hideRestoreBanner]="demoMode || hideRestoreBanner" [disablePersistence]="disablePersistence || demoMode"
           (langChange)="onChildLang($event)"
           (testResultsChange)="testResults.set($event)" (consoleEntriesChange)="consoleEntries.set($event)"
@@ -427,7 +452,18 @@
       </ng-template>
     </ng-container>
 
-  </main>
+</main>
+
+<app-monaco-editor
+  *ngIf="litePreloadActive()"
+  class="monaco-preload"
+  [code]="''"
+  [language]="'plaintext'"
+  [readOnly]="true"
+  [options]="{ minimap: { enabled: false } }"
+  [interactive]="false"
+  aria-hidden="true">
+</app-monaco-editor>
 </div>
 
 <!-- Footer -->
