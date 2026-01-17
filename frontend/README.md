@@ -66,6 +66,19 @@ Notes:
 - Tests fail on `console.error`, `pageerror`, and `unhandledrejection` by default (allowlist: `frontend/e2e/console-allowlist.ts`).
 - Reports/artifacts are written to `frontend/playwright-report/` and `frontend/test-results/`.
 
+## Performance smoke tests (Playwright)
+
+The perf smoke test measures long tasks on `/showcase` under CPU throttling.
+
+Run locally:
+
+`npm run e2e:perf`
+
+Artifacts:
+- `frontend/test-results/perf/showcase.longtasks.json`
+- `frontend/test-results/perf/showcase-trace.zip`
+- `frontend/test-results/perf/showcase.png` (and `showcase-fail.png` on failure)
+
 ## SSR/SEO regression tests (Playwright)
 
 These tests validate SSR/prerender output (JS-disabled) versus hydrated DOM (JS-enabled).
