@@ -24,8 +24,9 @@ describe('CodingJsPanelComponent', () => {
   it('runs tests with the latest editor buffers and updates state', async () => {
     const runner = new RunnerStub();
     const component = TestBed.runInInjectionContext(
-      () => new CodingJsPanelComponent(runner as any, {} as any),
+      () => new CodingJsPanelComponent({} as any),
     );
+    (component as any).loadRunner = async () => runner;
     component.question = { id: 'unique' } as any;
     component.disablePersistence = true;
 

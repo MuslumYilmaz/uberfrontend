@@ -20,11 +20,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Question } from '../../../../core/models/question.model';
 import { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
-import { makeAngularPreviewHtmlV1 } from '../../../../core/utils/angular-preview-builder';
 import { computeFrameworkContentVersion } from '../../../../core/utils/content-version.util';
-import { makeReactPreviewHtml } from '../../../../core/utils/react-preview-builder';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../../core/utils/solution-asset.util';
-import { makeVuePreviewHtml } from '../../../../core/utils/vue-preview-builder';
 import {
   dismissUpdateBanner,
   isUpdateBannerDismissed,
@@ -100,6 +97,8 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   useMonaco = signal(true);
   editorReady = signal(false);
+  private previewBuilderCache: Partial<Record<'react' | 'angular' | 'vue', (files: Record<string, string>) => string>> = {};
+  private previewBuilderPromise: Partial<Record<'react' | 'angular' | 'vue', Promise<(files: Record<string, string>) => string>>> = {};
 
   // preview loading
   loadingPreview = signal(true);
@@ -362,19 +361,13 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
   }
 
   /** Parent: CTA "Preview what you need to build" → show solution preview in iframe. */
-  openSolutionPreview(): void {
+  async openSolutionPreview(): Promise<void> {
     const sol = this.solutionFilesMap || {};
     if (!this.isFrameworkTech() || !Object.keys(sol).length) return;
 
     try {
-      let html: string | null = null;
-      if (this.tech === 'react') {
-        html = makeReactPreviewHtml(sol);
-      } else if (this.tech === 'angular') {
-        html = makeAngularPreviewHtmlV1(sol);
-      } else if (this.tech === 'vue') {
-        html = makeVuePreviewHtml(sol);
-      }
+      const build = await this.loadPreviewBuilder();
+      const html = build(sol);
 
       if (!html) return;
 
@@ -716,23 +709,47 @@ export class CodingFrameworkPanelComponent implements OnInit, AfterViewInit, OnC
     try {
       const files = this.filesMap();
 
-      let html: string | null = null;
-
-      if (this.tech === 'react') {
-        html = makeReactPreviewHtml(files);
-      } else if (this.tech === 'angular') {
-        html = makeAngularPreviewHtmlV1(files);
-      } else if (this.tech === 'vue') {
-        html = makeVuePreviewHtml(files);
-      } else {
-        html = files['index.html'] || files['public/index.html'] || '';
-      }
+      const build = await this.loadPreviewBuilder();
+      const html = build(files);
 
       this.setPreviewHtml(html || null);
     } catch (e) {
       this.setPreviewHtml(null);
       this.loadingPreview.set(false);
     }
+  }
+
+  private async loadPreviewBuilder(): Promise<(files: Record<string, string>) => string> {
+    if (this.tech === 'react' || this.tech === 'angular' || this.tech === 'vue') {
+      const key = this.tech;
+      const cached = this.previewBuilderCache[key];
+      if (cached) return cached;
+      const pending = this.previewBuilderPromise[key];
+      if (pending) return pending;
+
+      const loader = (async () => {
+        if (key === 'react') {
+          const mod = await import('../../../../core/utils/react-preview-builder');
+          return mod.makeReactPreviewHtml;
+        }
+        if (key === 'angular') {
+          const mod = await import('../../../../core/utils/angular-preview-builder');
+          return mod.makeAngularPreviewHtmlV1;
+        }
+        const mod = await import('../../../../core/utils/vue-preview-builder');
+        return mod.makeVuePreviewHtml;
+      })();
+
+      this.previewBuilderPromise[key] = loader.then((builder) => {
+        this.previewBuilderCache[key] = builder;
+        return builder;
+      });
+
+      return this.previewBuilderPromise[key]!;
+    }
+
+    return (files: Record<string, string>) =>
+      files['index.html'] || files['public/index.html'] || '';
   }
 
   private setPreviewHtml(html: string | null) {

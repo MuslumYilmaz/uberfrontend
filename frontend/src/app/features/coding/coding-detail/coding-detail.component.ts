@@ -1314,7 +1314,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   openFrameworkSolutionPreview() {
-    this.frameworkPanel?.openSolutionPreview();
+    void this.frameworkPanel?.openSolutionPreview();
   }
 
   async closeFrameworkSolutionPreview() {

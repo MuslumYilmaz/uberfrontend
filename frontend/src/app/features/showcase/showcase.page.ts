@@ -419,6 +419,14 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   explanationVisible = false;
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  sectionVisible = {
+    library: !this.isBrowser,
+    company: !this.isBrowser,
+    capabilities: !this.isBrowser,
+    tracks: !this.isBrowser,
+    faq: !this.isBrowser,
+    contact: !this.isBrowser,
+  };
 
   constructor(private injector: Injector, private qs: QuestionService) { }
 
@@ -505,6 +513,8 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.loadTriviaPreview();
     this.loadSystemPreview();
     this.enableCompanyCounts();
+    (Object.keys(this.sectionVisible) as Array<keyof typeof this.sectionVisible>)
+      .forEach((key) => { this.sectionVisible[key] = true; });
   }
 
   private handleDeferredSection(el: HTMLElement) {
@@ -524,6 +534,27 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
     if (key === 'company') {
       this.enableCompanyCounts();
+      this.sectionVisible.company = true;
+      return;
+    }
+    if (key === 'library') {
+      this.sectionVisible.library = true;
+      return;
+    }
+    if (key === 'capabilities') {
+      this.sectionVisible.capabilities = true;
+      return;
+    }
+    if (key === 'tracks') {
+      this.sectionVisible.tracks = true;
+      return;
+    }
+    if (key === 'faq') {
+      this.sectionVisible.faq = true;
+      return;
+    }
+    if (key === 'contact') {
+      this.sectionVisible.contact = true;
     }
   }
 

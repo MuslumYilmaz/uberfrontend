@@ -1,4 +1,11 @@
 export function makeAngularPreviewHtmlV1(files: Record<string, any>): string {
+  const assetBase =
+    typeof window !== 'undefined' && window.location && window.location.origin
+      ? window.location.origin
+      : '';
+  const assetUrl = (path: string) =>
+    assetBase ? new URL(path, assetBase).toString() : path;
+
   const appPath = 'src/app/app.component.ts';
   const mainPath = 'src/main.ts';
 
@@ -194,7 +201,7 @@ function compileTS(src, filename){
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https: http:; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Angular Preview</title>
   <style>
     html,body,#root{height:100%}
@@ -206,7 +213,7 @@ function compileTS(src, filename){
   </style>
 
   <script type="importmap">${JSON.stringify(importMap)}</script>
-  <script src="https://unpkg.com/typescript@5.6.3/lib/typescript.js"></script>
+  <script src="${assetUrl('/assets/vendor/typescript/typescript.js')}"></script>
 </head>
 <body>
   <app-root></app-root>

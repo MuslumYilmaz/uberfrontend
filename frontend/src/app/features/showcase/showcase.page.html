@@ -207,7 +207,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="library-title">
+<section class="section reveal" #observeSection aria-labelledby="library-title" data-load="library">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -223,7 +223,7 @@
       </a>
     </div>
 
-    <div class="library-card glass">
+    <div class="library-card glass" *ngIf="sectionVisible.library; else libraryPlaceholder">
       <div class="library-highlights" role="region" aria-label="Sample questions">
         <a class="qcard" *ngFor="let q of libraryHighlights" [routerLink]="q.link">
           <div class="qtop">
@@ -246,6 +246,9 @@
         <i class="pi pi-arrow-right" aria-hidden="true"></i>
       </a>
     </div>
+    <ng-template #libraryPlaceholder>
+      <div class="preview-placeholder">Loading library highlights…</div>
+    </ng-template>
   </div>
 </section>
 
@@ -262,7 +265,7 @@
       </a>
     </div>
 
-    <div class="company-grid">
+    <div class="company-grid" *ngIf="sectionVisible.company; else companyPlaceholder">
       <article class="company-card glass" *ngFor="let c of companyQuestions">
         <div class="company-logo" [style.background]="c.color" [attr.data-slug]="c.slug">
           <span aria-hidden="true">{{ c.icon }}</span>
@@ -280,10 +283,13 @@
         </div>
       </article>
     </div>
+    <ng-template #companyPlaceholder>
+      <div class="preview-placeholder">Loading company sets…</div>
+    </ng-template>
   </div>
 </section>
 
-<section class="section reveal cap-section" #observeSection aria-labelledby="capabilities-title">
+<section class="section reveal cap-section" #observeSection aria-labelledby="capabilities-title" data-load="capabilities">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -294,7 +300,7 @@
         workspace.</p>
     </div>
 
-    <div class="cap-grid">
+    <div class="cap-grid" *ngIf="sectionVisible.capabilities; else capabilitiesPlaceholder">
       <article class="cap-card glass" *ngFor="let cap of capabilities; let i = index" [attr.data-icon]="cap.icon"
         [style.animationDelay]="(i * 60) + 'ms'">
         <div class="cap-icon" aria-hidden="true"></div>
@@ -302,10 +308,13 @@
         <p>{{ cap.copy }}</p>
       </article>
     </div>
+    <ng-template #capabilitiesPlaceholder>
+      <div class="preview-placeholder">Loading capabilities…</div>
+    </ng-template>
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="tracks-title">
+<section class="section reveal" #observeSection aria-labelledby="tracks-title" data-load="tracks">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -315,7 +324,7 @@
       <p class="muted">Built for progression: the brief stays premium while the scaffolding evolves.</p>
     </div>
 
-    <div class="track-grid">
+    <div class="track-grid" *ngIf="sectionVisible.tracks; else tracksPlaceholder">
       <article class="track-card glass" *ngFor="let track of tracks; let i = index">
         <header>
           <span class="pill">{{ track.name }}</span>
@@ -326,6 +335,9 @@
         </ul>
       </article>
     </div>
+    <ng-template #tracksPlaceholder>
+      <div class="preview-placeholder">Loading track highlights…</div>
+    </ng-template>
   </div>
 </section>
 
@@ -348,16 +360,21 @@
   </app-pricing-plans-section>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="faq-title">
+<section class="section reveal" #observeSection aria-labelledby="faq-title" data-load="faq">
   <div class="shell">
-    <app-faq-section
-      id="faq-title"
-      eyebrow="FAQ"
-      title="Common questions, answered."
-      subtitle="Short, direct answers. If you still have questions, you can link to /guides or /contact."
-      [groups]="faqGroups"
-      [singleOpen]="true">
-    </app-faq-section>
+    <ng-container *ngIf="sectionVisible.faq; else faqPlaceholder">
+      <app-faq-section
+        id="faq-title"
+        eyebrow="FAQ"
+        title="Common questions, answered."
+        subtitle="Short, direct answers. If you still have questions, you can link to /guides or /contact."
+        [groups]="faqGroups"
+        [singleOpen]="true">
+      </app-faq-section>
+    </ng-container>
+    <ng-template #faqPlaceholder>
+      <div class="preview-placeholder">Loading FAQ…</div>
+    </ng-template>
 
     <div class="faq-cta">
       <a class="sk-btn sk-btn-ghost tiny" routerLink="/pricing" aria-label="View the full FAQ">
@@ -367,7 +384,7 @@
   </div>
 </section>
 
-<section class="section reveal" #observeSection aria-labelledby="contact-title">
+<section class="section reveal" #observeSection aria-labelledby="contact-title" data-load="contact">
   <div class="shell">
     <div class="section-head">
       <div>
@@ -379,7 +396,7 @@
       </p>
     </div>
 
-    <div class="contact-card glass">
+    <div class="contact-card glass" *ngIf="sectionVisible.contact; else contactPlaceholder">
       <div class="contact-copy">
         <div class="contact-pills" aria-label="Contact options">
           <form class="contact-form" (ngSubmit)="submitContact()" #f="ngForm" novalidate>
@@ -457,6 +474,9 @@
         </div>
       </div>
     </div>
+    <ng-template #contactPlaceholder>
+      <div class="preview-placeholder">Loading contact form…</div>
+    </ng-template>
   </div>
 </section>
 

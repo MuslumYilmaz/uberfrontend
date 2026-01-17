@@ -6,6 +6,13 @@
  *  The produced module must define:  const App = { ... }
  */
 export function makeVuePreviewHtml(files: Record<string, string>): string {
+  const assetBase =
+    typeof window !== 'undefined' && window.location && window.location.origin
+      ? window.location.origin
+      : '';
+  const assetUrl = (path: string) =>
+    assetBase ? new URL(path, assetBase).toString() : path;
+
   // --- 1) Try SFC first ------------------------------------------------------
   let user: string | undefined;
 
@@ -38,7 +45,7 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https: http:; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Vue Preview</title>
   <style>
     html,body,#app{height:100%}
@@ -51,9 +58,9 @@ export function makeVuePreviewHtml(files: Record<string, string>): string {
   </style>
 
   <!-- Vue 3 (global build with compiler) -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="${assetUrl('/assets/vendor/vue/vue.global.prod.js')}"></script>
   <!-- Babel for TS -> JS -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="${assetUrl('/assets/vendor/babel/babel.min.js')}"></script>
 </head>
 <body>
   <div id="app"></div>

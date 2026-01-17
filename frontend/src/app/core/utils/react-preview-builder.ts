@@ -57,6 +57,13 @@ function rewriteReactModuleToUMD(src: string): string {
 
 
 export function makeReactPreviewHtml(files: Record<string, string>): string {
+  const assetBase =
+    typeof window !== 'undefined' && window.location && window.location.origin
+      ? window.location.origin
+      : '';
+  const assetUrl = (path: string) =>
+    assetBase ? new URL(path, assetBase).toString() : path;
+
   const appSrc =
     files['src/App.tsx'] ??
     files['src/App.jsx'] ??
@@ -88,7 +95,7 @@ export function makeReactPreviewHtml(files: Record<string, string>): string {
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://cdn.jsdelivr.net https://esm.sh; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https: http:; connect-src https: data: blob:; font-src data: https:; base-uri 'none'; form-action 'none';">
   <title>Preview</title>
   <style>
     html,body,#root{height:100%}
@@ -99,9 +106,9 @@ export function makeReactPreviewHtml(files: Record<string, string>): string {
     #_fa_overlay pre{white-space:pre-wrap;margin:0}
     #_fa_overlay .meta{opacity:.8;margin:6px 0 0}
   </style>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="${assetUrl('/assets/vendor/react/react.production.min.js')}"></script>
+  <script src="${assetUrl('/assets/vendor/react-dom/react-dom.production.min.js')}"></script>
+  <script src="${assetUrl('/assets/vendor/babel/babel.min.js')}"></script>
 </head>
 <body>
   <div id="root"></div>

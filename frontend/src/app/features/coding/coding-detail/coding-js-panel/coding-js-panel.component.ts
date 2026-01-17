@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, P
 import type { Question } from '../../../../core/models/question.model';
 import type { Tech } from '../../../../core/models/user.model';
 import { CodeStorageService } from '../../../../core/services/code-storage.service';
-import { UserCodeSandboxService } from '../../../../core/services/user-code-sandbox.service';
 import { computeJsQuestionContentVersion } from '../../../../core/utils/content-version.util';
 import {
   dismissUpdateBanner,
@@ -21,6 +20,8 @@ import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../../console-
 declare const monaco: any;
 
 export type JsLang = 'js' | 'ts';
+type RunnerOutput = { entries: ConsoleEntry[]; results: TestResult[]; timedOut?: boolean; error?: string };
+type Runner = { runWithTests(args: { userCode: string; testCode: string; timeoutMs?: number }): Promise<RunnerOutput> };
 
 @Component({
   selector: 'app-coding-js-panel',
@@ -101,6 +102,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   useMonaco = signal(true);
   codeEditorReady = signal(false);
   testsEditorReady = signal(false);
+  private runnerInstance?: Runner;
+  private runnerPromise?: Promise<Runner>;
 
   ngOnInit() {
     if (!this.isBrowser) return;
@@ -276,7 +279,6 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   constructor(
-    private runner: UserCodeSandboxService,
     public codeStore: CodeStorageService,
   ) { }
 
@@ -702,7 +704,8 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
       const prepared = this.transformTestCode(testsSrc);
 
       try {
-        const out = await this.runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
+        const runner = await this.loadRunner();
+        const out = await runner.runWithTests({ userCode: wrapped, testCode: prepared, timeoutMs: 1500 });
         if (runId !== this._runSeq) return;
         this.consoleEntries.set(this.sanitizeLogs(out?.entries));
         this.testResults.set(out?.results || []);
@@ -909,6 +912,21 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
     } finally {
       if (runId === this._runSeq) this.isRunningTests.set(false);
     }
+  }
+
+  private async loadRunner(): Promise<Runner> {
+    if (this.runnerInstance) return this.runnerInstance;
+    if (this.runnerPromise) return this.runnerPromise;
+    this.runnerPromise = import('../../../../core/services/user-code-sandbox.service')
+      .then((mod) => {
+        const instance = new mod.UserCodeSandboxService();
+        this.runnerInstance = instance;
+        return instance as Runner;
+      })
+      .finally(() => {
+        this.runnerPromise = undefined;
+      });
+    return this.runnerPromise;
   }
 
   private async flushEditorBuffer(): Promise<void> {
