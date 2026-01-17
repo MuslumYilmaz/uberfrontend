@@ -3,20 +3,18 @@ import { buildMockUser } from './auth-mocks';
 
 declare global {
   interface Window {
-    __lastAssignedUrl?: string;
-    __faCheckoutRedirect?: (url: string) => void;
     __lastOpenedUrl?: string;
     __billingPollConfig?: { maxAttempts: number; intervalMs: number };
   }
 }
 
-const PLANS = ['monthly', 'quarterly', 'annual'] as const;
+const PLAN_IDS = ['monthly', 'quarterly', 'annual'] as const;
 
-test.describe('gumroad integration (local)', () => {
-  test('pricing CTA triggers gumroad redirect intent without navigation', async ({ page }) => {
-    let gumroadRequests = 0;
-    await page.route(/gumroad\.com/, (route) => {
-      gumroadRequests += 1;
+test.describe('lemonsqueezy integration (local)', () => {
+  test('pricing CTA opens lemonsqueezy checkout in new tab without navigation', async ({ page }) => {
+    let lsRequests = 0;
+    await page.route(/lemonsqueezy\.com/, (route) => {
+      lsRequests += 1;
       return route.abort();
     });
 
@@ -45,28 +43,29 @@ test.describe('gumroad integration (local)', () => {
 
     await page.addInitScript(() => {
       localStorage.setItem('fa:auth:session', '1');
-      window.__lastAssignedUrl = '';
-      window.__faCheckoutRedirect = (url: string) => {
-        window.__lastAssignedUrl = String(url);
+      window.__lastOpenedUrl = '';
+      window.open = (url?: string | URL) => {
+        window.__lastOpenedUrl = String(url || '');
+        return {} as Window;
       };
     });
 
     await page.goto('/pricing');
     await expect(page.getByTestId('pricing-cta-monthly')).toBeVisible();
 
-    for (const plan of PLANS) {
+    for (const plan of PLAN_IDS) {
       await page.evaluate(() => {
-        window.__lastAssignedUrl = '';
+        window.__lastOpenedUrl = '';
       });
 
       await page.getByTestId(`pricing-cta-${plan}`).click();
 
       await expect
-        .poll(() => page.evaluate(() => window.__lastAssignedUrl || ''))
-        .toContain('gumroad.com');
+        .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
+        .toContain('lemonsqueezy.com/checkout/buy/');
     }
 
-    expect(gumroadRequests).toBe(0);
+    expect(lsRequests).toBe(0);
     await expect(page).toHaveURL(/\/pricing/);
   });
 
@@ -76,7 +75,7 @@ test.describe('gumroad integration (local)', () => {
     });
 
     test('pricing CTA redirects to login when logged out', async ({ page }) => {
-      await page.route(/gumroad\.com/, (route) => route.abort());
+      await page.route(/lemonsqueezy\.com/, (route) => route.abort());
       await page.route('**/api/auth/me', async (route) => {
         await route.fulfill({
           status: 401,
@@ -87,7 +86,6 @@ test.describe('gumroad integration (local)', () => {
 
       await page.addInitScript(() => {
         localStorage.removeItem('fa:auth:session');
-        window.__faCheckoutRedirect = () => void 0;
       });
 
       await page.goto('/pricing');
@@ -97,63 +95,49 @@ test.describe('gumroad integration (local)', () => {
     });
   });
 
-  test.describe('overlay blocked', () => {
-    test.use({
-      consoleErrorAllowlist: ['Failed to load resource: .*gumroad.com/js/gumroad.js'],
+  test('pricing CTA shows new-tab notice for hosted checkout', async ({ page }) => {
+    const user = buildMockUser({
+      _id: 'e2e-billing-user-2',
+      username: 'billing_user_2',
+      email: 'billing2@example.com',
+      accessTier: 'free',
     });
 
-    test('pricing CTA shows fallback notice when overlay is blocked', async ({ page }) => {
-      await page.route(/gumroad\.com/, (route) => route.abort());
-
-      const user = buildMockUser({
-        _id: 'e2e-billing-user-2',
-        username: 'billing_user_2',
-        email: 'billing2@example.com',
-        accessTier: 'free',
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...user,
+          entitlements: {
+            pro: { status: 'none', validUntil: null },
+            projects: { status: 'none', validUntil: null },
+          },
+          effectiveProActive: false,
+          accessTierEffective: 'free',
+        }),
       });
-
-      await page.route('**/api/auth/me', async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            ...user,
-            entitlements: {
-              pro: { status: 'none', validUntil: null },
-              projects: { status: 'none', validUntil: null },
-            },
-            effectiveProActive: false,
-            accessTierEffective: 'free',
-          }),
-        });
-      });
-
-      await page.addInitScript(() => {
-        localStorage.setItem('fa:auth:session', '1');
-        window.__lastOpenedUrl = '';
-        window.open = (url?: string | URL, target?: string, features?: string) => {
-          window.__lastOpenedUrl = String(url || '');
-          return null;
-        };
-      });
-
-      await page.goto('/pricing');
-      await page.getByTestId('pricing-cta-monthly').click();
-
-      await expect(page.getByTestId('checkout-notice')).toContainText(/new tab|popups/i);
-      await expect
-        .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
-        .toContain('gumroad.com');
     });
+
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+      window.__lastOpenedUrl = '';
+      window.open = (url?: string | URL) => {
+        window.__lastOpenedUrl = String(url || '');
+        return {} as Window;
+      };
+    });
+
+    await page.goto('/pricing');
+    await page.getByTestId('pricing-cta-monthly').click();
+
+    await expect(page.getByTestId('checkout-notice')).toContainText(/new tab|popups/i);
+    await expect
+      .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
+      .toContain('lemonsqueezy.com');
   });
 
-  test('billing success polls /api/auth/me and redirects to profile', async ({ page }) => {
-    let gumroadRequests = 0;
-    await page.route(/gumroad\.com/, (route) => {
-      gumroadRequests += 1;
-      return route.abort();
-    });
-
+  test('billing success polls /api/auth/me and redirects to profile (premium unlock)', async ({ page }) => {
     let meCalls = 0;
     await page.route('**/api/auth/me', async (route) => {
       meCalls += 1;
@@ -184,13 +168,13 @@ test.describe('gumroad integration (local)', () => {
 
     await page.goto('/billing/success');
     await expect(page.getByTestId('billing-success-title')).toBeVisible();
-
     await expect(page).toHaveURL(/\/profile/, { timeout: 15_000 });
-    expect(gumroadRequests).toBe(0);
+
+    await page.goto('/tracks');
+    await expect(page.getByText('Premium tracks')).toHaveCount(0);
   });
 
   test('billing success timeout shows email mismatch hint', async ({ page }) => {
-    await page.route(/gumroad\.com/, (route) => route.abort());
     await page.route('**/api/auth/me', async (route) => {
       const user = buildMockUser({
         _id: 'e2e-free-user',
@@ -255,20 +239,9 @@ test.describe('gumroad integration (local)', () => {
   });
 
   test('billing cancel shows message and returns to pricing', async ({ page }) => {
-    let gumroadRequests = 0;
-    await page.route(/gumroad\.com/, (route) => {
-      gumroadRequests += 1;
-      return route.abort();
-    });
-
-    await page.addInitScript(() => {
-      window.__faCheckoutRedirect = () => void 0;
-    });
-
     await page.goto('/billing/cancel');
     await expect(page.getByTestId('billing-cancel-title')).toBeVisible();
     await page.getByRole('link', { name: /back to pricing/i }).click();
     await expect(page).toHaveURL(/\/pricing/);
-    expect(gumroadRequests).toBe(0);
   });
 });

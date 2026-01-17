@@ -32,8 +32,19 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 - `BILLING_PROVIDER`: `gumroad` (default), `lemonsqueezy`, or `stripe` (future use).
 - `GUMROAD_WEBHOOK_SECRET`: shared secret for Gumroad webhooks.
-- `LEMONSQUEEZY_WEBHOOK_SECRET`: reserved for future use.
+- `LEMONSQUEEZY_WEBHOOK_SECRET`: shared secret for LemonSqueezy webhooks.
 - `STRIPE_WEBHOOK_SECRET`: reserved for future use.
+
+### LemonSqueezy prod setup
+
+1) Environment variables (backend):
+   - `LEMONSQUEEZY_WEBHOOK_SECRET`: the secret configured in LS.
+   - `BILLING_PROVIDER=lemonsqueezy` (optional; route still works by provider path).
+
+2) Webhook configuration in LemonSqueezy:
+   - Callback URL: `https://frontendatlas.com/api/billing/webhooks/lemonsqueezy`
+   - Signing secret: same value as `LEMONSQUEEZY_WEBHOOK_SECRET`
+   - Events: `order_created`, `order_refunded`, `subscription_created`, `subscription_updated`, `subscription_cancelled` (optionally payment success/failed).
 
 ## Run
 

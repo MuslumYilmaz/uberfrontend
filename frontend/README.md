@@ -22,8 +22,15 @@ Set these build-time values in `frontend/src/environments/environment.ts` (and `
 
 - `PAYMENTS_PROVIDER`: `gumroad` (default), `lemonsqueezy`, or `stripe`
 - `GUMROAD_MONTHLY_URL`, `GUMROAD_QUARTERLY_URL`, `GUMROAD_ANNUAL_URL`
-- `LEMONSQUEEZY_MONTHLY_URL`, `LEMONSQUEEZY_QUARTERLY_URL`, `LEMONSQUEEZY_ANNUAL_URL` (reserved)
+- `GUMROAD_MANAGE_URL`
+- `LEMONSQUEEZY_MONTHLY_URL`, `LEMONSQUEEZY_QUARTERLY_URL`, `LEMONSQUEEZY_ANNUAL_URL`
+- `LEMONSQUEEZY_MANAGE_URL`
 - `STRIPE_MONTHLY_URL`, `STRIPE_QUARTERLY_URL`, `STRIPE_ANNUAL_URL` (reserved)
+- `STRIPE_MANAGE_URL`
+
+Notes:
+- Local dev: update `environment.ts`.
+- Vercel/prod build: update `environment.prod.ts` before deploying.
 
 ## Running unit tests
 

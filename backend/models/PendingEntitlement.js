@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const PendingEntitlementSchema = new mongoose.Schema(
   {
-    provider: { type: String, enum: ['gumroad'], required: true },
+    provider: { type: String, enum: ['gumroad', 'lemonsqueezy', 'stripe'], required: true },
     scope: { type: String, enum: ['pro', 'projects'], default: 'pro' },
     eventId: { type: String, required: true },
     eventType: { type: String },
@@ -16,6 +16,9 @@ const PendingEntitlementSchema = new mongoose.Schema(
       validUntil: { type: Date, default: null },
     },
     saleId: { type: String },
+    orderId: { type: String },
+    subscriptionId: { type: String },
+    customerId: { type: String },
     payload: { type: Object },
     receivedAt: { type: Date, default: Date.now },
     appliedAt: { type: Date },

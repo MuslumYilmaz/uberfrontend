@@ -455,6 +455,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
         }
         return;
       }
+      this.setCheckoutNotice('Checkout is not configured for this plan yet. Please try again later.');
       return;
     }
 

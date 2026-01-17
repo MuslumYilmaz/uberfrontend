@@ -5,6 +5,10 @@ const PendingEntitlement = require('../models/PendingEntitlement');
 const { createBillingEventStore } = require('../services/billing/billing-events');
 const { isProEntitlementActive } = require('../services/billing/entitlements');
 const { normalizeGumroadEvent, verifyGumroadSignature } = require('../services/billing/providers/gumroad');
+const {
+  normalizeLemonSqueezyEvent,
+  verifyLemonSqueezySignature,
+} = require('../services/billing/providers/lemonsqueezy');
 const { recordPendingEntitlement } = require('../services/billing/pending-entitlements');
 
 const router = express.Router();
@@ -172,6 +176,141 @@ async function handleGumroadWebhook(req, res) {
   }
 }
 
+async function handleLemonSqueezyWebhook(req, res) {
+  try {
+    const debug =
+      process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
+    const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+    if (!secret) {
+      console.error('[lemonsqueezy] missing LEMONSQUEEZY_WEBHOOK_SECRET');
+      return res.status(500).json({ error: 'Webhook secret missing' });
+    }
+
+    const contentType = req.get('content-type') || '(none)';
+    const rawBody = req.rawBody || '';
+    const rawBodyLength = Buffer.isBuffer(rawBody)
+      ? rawBody.length
+      : Buffer.byteLength(String(rawBody || ''));
+    const headerNames = Array.isArray(req.rawHeaders)
+      ? req.rawHeaders.filter((_, i) => i % 2 === 0)
+      : [];
+    const signatureHeader =
+      headerNames.find((name) => String(name).toLowerCase() === 'x-signature') || 'none';
+    if (debug) {
+      console.log('[lemonsqueezy] webhook received', { contentType, rawBodyLength, signatureHeader });
+    }
+
+    const signature = req.get('x-signature') || req.get('X-Signature');
+    const valid = verifyLemonSqueezySignature({ rawBody, signature, secret });
+    if (!valid) {
+      if (debug) {
+        console.warn('[lemonsqueezy] signature verification failed');
+      }
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+
+    const normalized = normalizeLemonSqueezyEvent(req.body || {}, rawBody);
+    if (!normalized.eventTypeKnown) {
+      console.warn('[lemonsqueezy] unknown event type', {
+        eventId: normalized.eventId,
+        eventType: normalized.eventType,
+        keys: Object.keys(req.body || {}),
+      });
+    }
+    if (normalized.validUntilInferred && normalized.entitlement.status === 'cancelled') {
+      console.warn('[lemonsqueezy] cancelled event missing end date; expiring immediately', {
+        eventId: normalized.eventId,
+        eventType: normalized.eventType,
+      });
+    }
+    const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
+    if (!normalized.eventId) {
+      if (debug) {
+        console.warn('[lemonsqueezy] missing event id');
+      }
+      return res.status(400).json({ error: 'Missing event id' });
+    }
+    if (!normalizedEmail) {
+      if (debug) {
+        console.warn('[lemonsqueezy] missing email');
+      }
+      return res.status(400).json({ error: 'Missing email' });
+    }
+
+    const { duplicate } = await eventStore.recordEvent({
+      provider: 'lemonsqueezy',
+      eventId: normalized.eventId,
+      eventType: normalized.eventType,
+      email: normalizedEmail,
+      payload: req.body,
+      processingStatus: normalized.eventTypeKnown ? 'received' : 'received_unknown_type',
+    });
+
+    if (duplicate) {
+      return res.status(200).json({ ok: true, duplicate: true });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      if (debug) {
+        console.warn(`[lemonsqueezy] user not found for event ${normalized.eventId}`);
+      }
+      await recordPendingEntitlement(PendingEntitlement, {
+        provider: 'lemonsqueezy',
+        eventId: normalized.eventId,
+        eventType: normalized.eventType,
+        email: normalizedEmail,
+        entitlement: normalized.entitlement,
+        orderId: normalized.orderId,
+        subscriptionId: normalized.subscriptionId,
+        customerId: normalized.customerId,
+        payload: req.body,
+      });
+      await BillingEvent.updateOne(
+        { provider: 'lemonsqueezy', eventId: normalized.eventId },
+        { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
+      );
+      return res.status(200).json({ ok: true, userFound: false });
+    }
+
+    user.entitlements = user.entitlements || {};
+    user.entitlements.pro = {
+      status: normalized.entitlement.status,
+      validUntil: normalized.entitlement.validUntil,
+    };
+    if (!user.entitlements.projects) {
+      user.entitlements.projects = { status: 'none', validUntil: null };
+    }
+
+    user.billing = user.billing || {};
+    user.billing.providers = user.billing.providers || {};
+    const lsMeta = user.billing.providers.lemonsqueezy || {};
+    if (normalized.customerId) lsMeta.customerId = normalized.customerId;
+    if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
+    lsMeta.lastEventId = normalized.eventId;
+    lsMeta.lastEventAt = new Date();
+    user.billing.providers.lemonsqueezy = lsMeta;
+
+    const isActive = isProEntitlementActive(user.entitlements.pro);
+    user.accessTier = isActive ? 'premium' : 'free';
+
+    await user.save();
+    const processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
+    await BillingEvent.updateOne(
+      { provider: 'lemonsqueezy', eventId: normalized.eventId },
+      { $set: { processingStatus: processedStatus, processedAt: new Date(), userId: user._id } }
+    );
+    if (debug) {
+      console.log(`[lemonsqueezy] updated user ${user._id} -> ${user.entitlements.pro.status}`);
+    }
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error('[lemonsqueezy] webhook error:', err);
+    return res.status(500).json({ error: 'Webhook processing failed' });
+  }
+}
+
 router.post('/webhooks/:provider', gumroadParsers, async (req, res) => {
   const provider = resolveProvider(req.params.provider);
   if (!provider) {
@@ -179,6 +318,9 @@ router.post('/webhooks/:provider', gumroadParsers, async (req, res) => {
   }
   if (provider === 'gumroad') {
     return handleGumroadWebhook(req, res);
+  }
+  if (provider === 'lemonsqueezy') {
+    return handleLemonSqueezyWebhook(req, res);
   }
   return res.status(404).json({ error: `Provider not supported: ${provider}` });
 });

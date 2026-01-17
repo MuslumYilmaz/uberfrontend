@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const BillingEventSchema = new mongoose.Schema(
   {
-    provider: { type: String, enum: ['gumroad'], required: true },
+    provider: { type: String, enum: ['gumroad', 'lemonsqueezy', 'stripe'], required: true },
     eventId: { type: String, required: true },
     eventType: { type: String },
     email: { type: String },

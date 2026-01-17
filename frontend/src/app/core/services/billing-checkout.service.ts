@@ -7,6 +7,7 @@ import {
   resolvePaymentsProvider,
 } from '../utils/payments-provider.util';
 import { GumroadOverlayService } from './gumroad-overlay.service';
+import { LemonSqueezyCheckoutService } from './lemonsqueezy-checkout.service';
 
 type BillingProvider = {
   checkout: (url: string) => Promise<CheckoutMode>;
@@ -22,13 +23,19 @@ export type CheckoutResult =
 export class BillingCheckoutService {
   private providers: Record<PaymentsProvider, BillingProvider | null>;
 
-  constructor(private gumroadOverlay: GumroadOverlayService) {
+  constructor(
+    private gumroadOverlay: GumroadOverlayService,
+    private lemonSqueezyCheckout: LemonSqueezyCheckoutService
+  ) {
     this.providers = {
       gumroad: {
         checkout: (url) => this.gumroadOverlay.open(url),
         prefetch: () => this.gumroadOverlay.prefetch(),
       },
-      lemonsqueezy: null,
+      lemonsqueezy: {
+        checkout: (url) => this.lemonSqueezyCheckout.open(url),
+        prefetch: () => this.lemonSqueezyCheckout.prefetch(),
+      },
       stripe: null,
     };
   }

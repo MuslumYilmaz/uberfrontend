@@ -16,6 +16,9 @@ async function recordPendingEntitlement(model, data) {
       email: normalizeEmail(data.email),
       entitlement: data.entitlement,
       saleId: data.saleId,
+      orderId: data.orderId,
+      subscriptionId: data.subscriptionId,
+      customerId: data.customerId,
       payload: data.payload,
     };
     await model.create(payload);
@@ -60,6 +63,14 @@ async function applyPendingEntitlementsForUser(model, user) {
     gumroadMeta.lastEventId = latest.eventId;
     gumroadMeta.lastEventAt = latest.receivedAt || new Date();
     user.billing.providers.gumroad = gumroadMeta;
+  }
+  if (latest.provider === 'lemonsqueezy') {
+    const lsMeta = user.billing.providers.lemonsqueezy || {};
+    if (latest.customerId) lsMeta.customerId = latest.customerId;
+    if (latest.subscriptionId) lsMeta.subscriptionId = latest.subscriptionId;
+    lsMeta.lastEventId = latest.eventId;
+    lsMeta.lastEventAt = latest.receivedAt || new Date();
+    user.billing.providers.lemonsqueezy = lsMeta;
   }
 
   if (latest.scope === 'pro') {
