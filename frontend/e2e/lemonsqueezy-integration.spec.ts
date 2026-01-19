@@ -1,14 +1,38 @@
 import { test, expect } from './fixtures';
 import { buildMockUser } from './auth-mocks';
+import { environment } from '../src/environments/environment';
+import {
+  resolveCheckoutUrl,
+  resolvePaymentsMode,
+  resolvePaymentsProvider,
+} from '../src/app/core/utils/payments-provider.util';
 
 declare global {
   interface Window {
     __lastOpenedUrl?: string;
     __billingPollConfig?: { maxAttempts: number; intervalMs: number };
+    __faCheckoutRedirect?: (url?: string | URL) => void;
   }
 }
 
 const PLAN_IDS = ['monthly', 'quarterly', 'annual'] as const;
+const paymentsMode = resolvePaymentsMode(environment);
+const allowLive = process.env.E2E_ALLOW_LIVE_PAYMENTS === 'true';
+
+if (paymentsMode === 'live' && !allowLive) {
+  throw new Error('Refusing to run E2E with PAYMENTS_MODE=live. Set E2E_ALLOW_LIVE_PAYMENTS=true to override.');
+}
+
+const provider = resolvePaymentsProvider(environment);
+const expectedUrlFor = (plan: typeof PLAN_IDS[number]) =>
+  resolveCheckoutUrl(provider, plan, environment) || '';
+const liveUrls = new Set(
+  [
+    environment.LEMONSQUEEZY_MONTHLY_URL_LIVE || environment.LEMONSQUEEZY_MONTHLY_URL,
+    environment.LEMONSQUEEZY_QUARTERLY_URL_LIVE || environment.LEMONSQUEEZY_QUARTERLY_URL,
+    environment.LEMONSQUEEZY_ANNUAL_URL_LIVE || environment.LEMONSQUEEZY_ANNUAL_URL,
+  ].filter(Boolean)
+);
 
 test.describe('lemonsqueezy integration (local)', () => {
   test('pricing CTA opens lemonsqueezy checkout in new tab without navigation', async ({ page }) => {
@@ -41,14 +65,17 @@ test.describe('lemonsqueezy integration (local)', () => {
       });
     });
 
-    await page.addInitScript(() => {
+    await page.addInitScript(({ shouldBlock, liveUrlList }) => {
       localStorage.setItem('fa:auth:session', '1');
       window.__lastOpenedUrl = '';
-      window.open = (url?: string | URL) => {
-        window.__lastOpenedUrl = String(url || '');
-        return {} as Window;
+      window.__faCheckoutRedirect = (url?: string | URL) => {
+        const next = String(url || '');
+        window.__lastOpenedUrl = next;
+        if (shouldBlock && liveUrlList.includes(next)) {
+          throw new Error('Blocked live LemonSqueezy checkout URL during E2E.');
+        }
       };
-    });
+    }, { shouldBlock: paymentsMode !== 'test' && !allowLive, liveUrlList: Array.from(liveUrls) });
 
     await page.goto('/pricing');
     await expect(page.getByTestId('pricing-cta-monthly')).toBeVisible();
@@ -60,9 +87,10 @@ test.describe('lemonsqueezy integration (local)', () => {
 
       await page.getByTestId(`pricing-cta-${plan}`).click();
 
+      const expected = expectedUrlFor(plan);
       await expect
         .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
-        .toContain('lemonsqueezy.com/checkout/buy/');
+        .toBe(expected);
     }
 
     expect(lsRequests).toBe(0);
@@ -119,22 +147,26 @@ test.describe('lemonsqueezy integration (local)', () => {
       });
     });
 
-    await page.addInitScript(() => {
+    await page.addInitScript(({ shouldBlock, liveUrlList }) => {
       localStorage.setItem('fa:auth:session', '1');
       window.__lastOpenedUrl = '';
-      window.open = (url?: string | URL) => {
-        window.__lastOpenedUrl = String(url || '');
-        return {} as Window;
+      window.__faCheckoutRedirect = (url?: string | URL) => {
+        const next = String(url || '');
+        window.__lastOpenedUrl = next;
+        if (shouldBlock && liveUrlList.includes(next)) {
+          throw new Error('Blocked live LemonSqueezy checkout URL during E2E.');
+        }
       };
-    });
+    }, { shouldBlock: paymentsMode !== 'test' && !allowLive, liveUrlList: Array.from(liveUrls) });
 
     await page.goto('/pricing');
     await page.getByTestId('pricing-cta-monthly').click();
 
     await expect(page.getByTestId('checkout-notice')).toContainText(/new tab|popups/i);
+    const expected = expectedUrlFor('monthly');
     await expect
       .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
-      .toContain('lemonsqueezy.com');
+      .toBe(expected);
   });
 
   test('billing success polls /api/auth/me and redirects to profile (premium unlock)', async ({ page }) => {

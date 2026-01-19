@@ -180,9 +180,11 @@ async function handleLemonSqueezyWebhook(req, res) {
   try {
     const debug =
       process.env.BILLING_WEBHOOK_DEBUG === 'true' || process.env.NODE_ENV !== 'production';
-    const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
-    if (!secret) {
-      console.error('[lemonsqueezy] missing LEMONSQUEEZY_WEBHOOK_SECRET');
+    const legacySecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+    const testSecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST || legacySecret;
+    const liveSecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE;
+    if (!testSecret && !liveSecret) {
+      console.error('[lemonsqueezy] missing LEMONSQUEEZY webhook secrets');
       return res.status(500).json({ error: 'Webhook secret missing' });
     }
 
@@ -201,7 +203,27 @@ async function handleLemonSqueezyWebhook(req, res) {
     }
 
     const signature = req.get('x-signature') || req.get('X-Signature');
-    const valid = verifyLemonSqueezySignature({ rawBody, signature, secret });
+    const modeHint = resolveLemonSqueezyMode(req.body || {});
+    let verifiedMode = null;
+    let valid = false;
+
+    const verifyWithSecret = (secret, modeLabel) => {
+      if (!secret) return false;
+      const ok = verifyLemonSqueezySignature({ rawBody, signature, secret });
+      if (ok) {
+        verifiedMode = modeLabel;
+      }
+      return ok;
+    };
+
+    if (modeHint === 'test') {
+      valid = verifyWithSecret(testSecret, 'test') || verifyWithSecret(liveSecret, 'live');
+    } else if (modeHint === 'live') {
+      valid = verifyWithSecret(liveSecret, 'live') || verifyWithSecret(testSecret, 'test');
+    } else {
+      valid = verifyWithSecret(testSecret, 'test') || verifyWithSecret(liveSecret, 'live');
+    }
+
     if (!valid) {
       if (debug) {
         console.warn('[lemonsqueezy] signature verification failed');
@@ -224,6 +246,8 @@ async function handleLemonSqueezyWebhook(req, res) {
       });
     }
     const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
+    const eventMode = verifiedMode || modeHint || 'unknown';
+    const eventId = normalized.eventId ? `${eventMode}:${normalized.eventId}` : '';
     if (!normalized.eventId) {
       if (debug) {
         console.warn('[lemonsqueezy] missing event id');
@@ -239,7 +263,7 @@ async function handleLemonSqueezyWebhook(req, res) {
 
     const { duplicate } = await eventStore.recordEvent({
       provider: 'lemonsqueezy',
-      eventId: normalized.eventId,
+      eventId,
       eventType: normalized.eventType,
       email: normalizedEmail,
       payload: req.body,
@@ -253,11 +277,11 @@ async function handleLemonSqueezyWebhook(req, res) {
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       if (debug) {
-        console.warn(`[lemonsqueezy] user not found for event ${normalized.eventId}`);
+        console.warn(`[lemonsqueezy] user not found for event ${eventId}`);
       }
       await recordPendingEntitlement(PendingEntitlement, {
         provider: 'lemonsqueezy',
-        eventId: normalized.eventId,
+        eventId,
         eventType: normalized.eventType,
         email: normalizedEmail,
         entitlement: normalized.entitlement,
@@ -267,7 +291,7 @@ async function handleLemonSqueezyWebhook(req, res) {
         payload: req.body,
       });
       await BillingEvent.updateOne(
-        { provider: 'lemonsqueezy', eventId: normalized.eventId },
+        { provider: 'lemonsqueezy', eventId },
         { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
       );
       return res.status(200).json({ ok: true, userFound: false });
@@ -287,7 +311,7 @@ async function handleLemonSqueezyWebhook(req, res) {
     const lsMeta = user.billing.providers.lemonsqueezy || {};
     if (normalized.customerId) lsMeta.customerId = normalized.customerId;
     if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
-    lsMeta.lastEventId = normalized.eventId;
+    lsMeta.lastEventId = eventId;
     lsMeta.lastEventAt = new Date();
     user.billing.providers.lemonsqueezy = lsMeta;
 
@@ -297,7 +321,7 @@ async function handleLemonSqueezyWebhook(req, res) {
     await user.save();
     const processedStatus = normalized.eventTypeKnown ? 'processed' : 'processed_unknown_type';
     await BillingEvent.updateOne(
-      { provider: 'lemonsqueezy', eventId: normalized.eventId },
+      { provider: 'lemonsqueezy', eventId },
       { $set: { processingStatus: processedStatus, processedAt: new Date(), userId: user._id } }
     );
     if (debug) {
@@ -309,6 +333,29 @@ async function handleLemonSqueezyWebhook(req, res) {
     console.error('[lemonsqueezy] webhook error:', err);
     return res.status(500).json({ error: 'Webhook processing failed' });
   }
+}
+
+function coerceBooleanFlag(value) {
+  if (value === true || value === false) return value;
+  if (value === null || value === undefined) return null;
+  const raw = String(value).trim().toLowerCase();
+  if (!raw) return null;
+  if (['true', '1', 'yes'].includes(raw)) return true;
+  if (['false', '0', 'no'].includes(raw)) return false;
+  return null;
+}
+
+function resolveLemonSqueezyMode(body) {
+  const flag =
+    body?.meta?.test_mode ??
+    body?.meta?.testMode ??
+    body?.data?.attributes?.test_mode ??
+    body?.data?.attributes?.testMode ??
+    body?.data?.attributes?.is_test_mode;
+  const parsed = coerceBooleanFlag(flag);
+  if (parsed === true) return 'test';
+  if (parsed === false) return 'live';
+  return null;
 }
 
 router.post('/webhooks/:provider', gumroadParsers, async (req, res) => {

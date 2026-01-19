@@ -39,6 +39,7 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   process.env.MONGO_URL = mongoServer.getUri();
   process.env.LEMONSQUEEZY_WEBHOOK_SECRET = SECRET;
+  process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = SECRET;
 
   jest.resetModules();
   app = require('../index');
@@ -99,7 +100,7 @@ describe('LemonSqueezy webhook integration', () => {
     expect(user.entitlements.pro.status).toBe('active');
     expect(user.accessTier).toBe('premium');
 
-    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'sub_123' }).lean();
+    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_123' }).lean();
     expect(event.processingStatus).toBe('processed');
   });
 

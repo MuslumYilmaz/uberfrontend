@@ -32,18 +32,22 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 
 - `BILLING_PROVIDER`: `gumroad` (default), `lemonsqueezy`, or `stripe` (future use).
 - `GUMROAD_WEBHOOK_SECRET`: shared secret for Gumroad webhooks.
-- `LEMONSQUEEZY_WEBHOOK_SECRET`: shared secret for LemonSqueezy webhooks.
+- `LEMONSQUEEZY_WEBHOOK_SECRET_TEST`: LemonSqueezy test webhook secret.
+- `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`: LemonSqueezy live webhook secret.
+- `LEMONSQUEEZY_WEBHOOK_SECRET`: legacy fallback (treated as test secret if _TEST is not set).
 - `STRIPE_WEBHOOK_SECRET`: reserved for future use.
 
 ### LemonSqueezy prod setup
 
 1) Environment variables (backend):
-   - `LEMONSQUEEZY_WEBHOOK_SECRET`: the secret configured in LS.
+   - `LEMONSQUEEZY_WEBHOOK_SECRET_TEST`: secret for LS test webhooks.
+   - `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`: secret for LS live webhooks.
    - `BILLING_PROVIDER=lemonsqueezy` (optional; route still works by provider path).
 
 2) Webhook configuration in LemonSqueezy:
    - Callback URL: `https://frontendatlas.com/api/billing/webhooks/lemonsqueezy`
-   - Signing secret: same value as `LEMONSQUEEZY_WEBHOOK_SECRET`
+   - Signing secret (test): same value as `LEMONSQUEEZY_WEBHOOK_SECRET_TEST`
+   - Signing secret (live): same value as `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`
    - Events: `order_created`, `order_refunded`, `subscription_created`, `subscription_updated`, `subscription_cancelled` (optionally payment success/failed).
 
 ## Run

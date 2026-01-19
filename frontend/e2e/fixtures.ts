@@ -6,6 +6,14 @@ type CollectedIssue = {
   message: string;
 };
 
+const paymentsModeEnv = String(process.env.PAYMENTS_MODE || '').trim().toLowerCase();
+const allowLivePayments = process.env.E2E_ALLOW_LIVE_PAYMENTS === 'true';
+if (paymentsModeEnv === 'live' && !allowLivePayments) {
+  throw new Error(
+    'Refusing to run E2E with PAYMENTS_MODE=live. Set E2E_ALLOW_LIVE_PAYMENTS=true to override.'
+  );
+}
+
 function compileAllowlist(patterns: string[] | undefined): RegExp[] {
   const safe = Array.isArray(patterns) ? patterns : [];
   return safe.map((source) => new RegExp(source, 'i'));

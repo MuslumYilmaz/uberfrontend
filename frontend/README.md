@@ -21,16 +21,27 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 Set these build-time values in `frontend/src/environments/environment.ts` (and `environment.prod.ts` for production):
 
 - `PAYMENTS_PROVIDER`: `gumroad` (default), `lemonsqueezy`, or `stripe`
+- `PAYMENTS_MODE`: `test` (default for dev), `live` (prod)
 - `GUMROAD_MONTHLY_URL`, `GUMROAD_QUARTERLY_URL`, `GUMROAD_ANNUAL_URL`
 - `GUMROAD_MANAGE_URL`
 - `LEMONSQUEEZY_MONTHLY_URL`, `LEMONSQUEEZY_QUARTERLY_URL`, `LEMONSQUEEZY_ANNUAL_URL`
 - `LEMONSQUEEZY_MANAGE_URL`
+- `LEMONSQUEEZY_MONTHLY_URL_TEST`, `LEMONSQUEEZY_QUARTERLY_URL_TEST`, `LEMONSQUEEZY_ANNUAL_URL_TEST`
+- `LEMONSQUEEZY_MANAGE_URL_TEST`
+- `LEMONSQUEEZY_MONTHLY_URL_LIVE`, `LEMONSQUEEZY_QUARTERLY_URL_LIVE`, `LEMONSQUEEZY_ANNUAL_URL_LIVE`
+- `LEMONSQUEEZY_MANAGE_URL_LIVE`
 - `STRIPE_MONTHLY_URL`, `STRIPE_QUARTERLY_URL`, `STRIPE_ANNUAL_URL` (reserved)
 - `STRIPE_MANAGE_URL`
 
 Notes:
 - Local dev: update `environment.ts`.
 - Vercel/prod build: update `environment.prod.ts` before deploying.
+- E2E safety: keep `PAYMENTS_MODE=test` for local/CI.
+
+### How to run safely (payments)
+
+- Keep `PAYMENTS_MODE=test` in local/CI builds.
+- E2E will refuse to run if `PAYMENTS_MODE=live` unless `E2E_ALLOW_LIVE_PAYMENTS=true` is set.
 
 ## Running unit tests
 
