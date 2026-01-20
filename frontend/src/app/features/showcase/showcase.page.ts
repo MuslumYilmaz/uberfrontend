@@ -420,12 +420,12 @@ You can also reset any task back to the starter whenever you want to re-practice
   explanationVisible = false;
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   sectionVisible = {
-    library: !this.isBrowser,
-    company: !this.isBrowser,
-    capabilities: !this.isBrowser,
-    tracks: !this.isBrowser,
-    faq: !this.isBrowser,
-    contact: !this.isBrowser,
+    library: true,
+    company: true,
+    capabilities: true,
+    tracks: true,
+    faq: true,
+    contact: true,
   };
 
   constructor(private injector: Injector, private qs: QuestionService) { }
@@ -436,7 +436,11 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   ngAfterViewInit(): void {
-    this.markAllVisible();
+    if (this.isBrowser) {
+      window.setTimeout(() => this.markAllVisible());
+    } else {
+      this.markAllVisible();
+    }
     if (!this.reduceMotion) {
       this.startFlowTicker();
     }

@@ -56,13 +56,14 @@ function rewriteReactModuleToUMD(src: string): string {
 }
 
 
-export function makeReactPreviewHtml(files: Record<string, string>): string {
-  const assetBase =
-    typeof window !== 'undefined' && window.location && window.location.origin
+export function makeReactPreviewHtml(files: Record<string, string>, assetBase?: string): string {
+  const base =
+    assetBase ||
+    (typeof window !== 'undefined' && window.location && window.location.origin
       ? window.location.origin
-      : '';
+      : '');
   const assetUrl = (path: string) =>
-    assetBase ? new URL(path, assetBase).toString() : path;
+    base ? new URL(path, base).toString() : path;
 
   const appSrc =
     files['src/App.tsx'] ??

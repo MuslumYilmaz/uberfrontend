@@ -477,6 +477,8 @@
 .section {
   padding: 60px 0;
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px;
 }
 
 .section::before {
@@ -1124,8 +1126,8 @@
 }
 
 .reveal {
-  opacity: 0;
-  transform: translateY(26px) scale(0.98);
+  opacity: 1;
+  transform: none;
   transition: opacity 640ms ease, transform 640ms ease;
 }
 

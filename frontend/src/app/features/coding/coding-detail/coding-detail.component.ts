@@ -40,11 +40,9 @@ import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
-import { makeAngularPreviewHtmlV1 } from '../../../core/utils/angular-preview-builder';
 import { writeHtmlToIframe } from '../../../core/utils/iframe-preview.util';
-import { makeReactPreviewHtml } from '../../../core/utils/react-preview-builder';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
-import { makeVuePreviewHtml } from '../../../core/utils/vue-preview-builder';
+import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { CodingFrameworkPanelComponent } from './coding-framework-panel/coding-framework-panel';
@@ -117,6 +115,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   @Input() disablePersistence = false;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly previewBuilder = inject(PreviewBuilderService);
 
   tech!: Tech;
   kind: Kind = 'coding';
@@ -722,7 +721,9 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     this.liteEditors.set(true);
     this.litePreloadActive.set(false);
-    this.scheduleLiteUpgrade();
+    if (!this.demoMode) {
+      this.scheduleLiteUpgrade();
+    }
   }
 
   private scheduleLiteUpgrade() {
@@ -1541,27 +1542,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   async rebuildFrameworkPreview() {
     try {
       const files = this.filesMap();
-
-      if (this.tech === 'react') {
-        const html = makeReactPreviewHtml(files);
-        this.setPreviewHtml(html);
-        return;
-      }
-
-      if (this.tech === 'angular') {
-        const html = makeAngularPreviewHtmlV1(files);
-        this.setPreviewHtml(html);
-        return;
-      }
-
-      if (this.tech === 'vue') {
-        const html = makeVuePreviewHtml(this.filesMap());
-        this.setPreviewHtml(html);
-        return;
-      }
-
-      // Fallback for plain index.html
-      const html = files['index.html'] || files['public/index.html'] || '';
+      const html = await this.previewBuilder.build(this.tech as 'react' | 'angular' | 'vue', files);
       this.setPreviewHtml(html || null);
     } catch (e) {
       this.setPreviewHtml(null);

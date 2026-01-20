@@ -1,10 +1,11 @@
-export function makeAngularPreviewHtmlV1(files: Record<string, any>): string {
-  const assetBase =
-    typeof window !== 'undefined' && window.location && window.location.origin
+export function makeAngularPreviewHtmlV1(files: Record<string, any>, assetBase?: string): string {
+  const base =
+    assetBase ||
+    (typeof window !== 'undefined' && window.location && window.location.origin
       ? window.location.origin
-      : '';
+      : '');
   const assetUrl = (path: string) =>
-    assetBase ? new URL(path, assetBase).toString() : path;
+    base ? new URL(path, base).toString() : path;
 
   const appPath = 'src/app/app.component.ts';
   const mainPath = 'src/main.ts';

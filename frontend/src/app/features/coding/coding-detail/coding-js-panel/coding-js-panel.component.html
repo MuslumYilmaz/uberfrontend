@@ -47,9 +47,9 @@
         <!-- TOP: code/tests editor area with adjustable height -->
         <div class="relative min-h-0" [style.flex]="'0 0 ' + (editorRatio()*100) + '%'">
             <!-- CODE editor -->
-            <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'">
+            <div class="absolute inset-0" [style.display]="topTab()==='code' ? 'block' : 'none'" data-testid="js-code-editor">
                 <ng-container *ngIf="useMonaco(); else liteCodeEditor">
-                    <app-monaco-editor #codeEditor class="h-full editor-fill" data-testid="js-code-editor" [modelKey]="'q-' + question?.id + '-code'"
+                    <app-monaco-editor #codeEditor class="h-full editor-fill" [modelKey]="'q-' + question?.id + '-code'"
                         [code]="editorContent()" [language]="jsLang()==='ts' ? 'typescript':'javascript'"
                         [options]="editorOptions" (codeChange)="onCodeChange($event)" (ready)="onCodeEditorReady()">
                     </app-monaco-editor>
@@ -64,7 +64,6 @@
                 <ng-template #liteCodeEditor>
                     <textarea
                         class="lite-editor editor-fill"
-                        data-testid="js-code-editor"
                         [value]="editorContent()"
                         [attr.spellcheck]="false"
                         (input)="onCodeChange($any($event.target).value)"></textarea>

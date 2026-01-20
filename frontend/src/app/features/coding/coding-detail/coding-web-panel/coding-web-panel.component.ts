@@ -305,6 +305,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   @Input() disablePersistence = false;
   @Input() hideRestoreBanner = false;
   @Input() liteMode = false;
+  @Input() deferPreview = false;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -373,6 +374,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   private lastPreviewHtml: string | null = null;
   private _previewUrl = signal<SafeResourceUrl | null>(null);
   previewUrl = () => this._previewUrl();
+  previewReady = signal(false);
 
   useMonaco = signal(true);
 
@@ -382,6 +384,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
   // timers & drag vars
   private webSaveTimer: any = null;
   private webPreviewTimer: any = null;
+  private deferredPreviewTimer?: number;
   private dragging = false; private startY = 0; private startRatio = 0;
   private draggingCols = false; private startXCols = 0; private startColsRatio = 0;
   private draggingPreview = false; private startYPreview = 0; private startPreviewRatio = 0;
@@ -426,6 +429,9 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
       window.removeEventListener('message', this.onPreviewMessage);
       if (this.previewObjectUrl) try { URL.revokeObjectURL(this.previewObjectUrl); } catch { }
     }
+    if (this.webSaveTimer) { clearTimeout(this.webSaveTimer); this.webSaveTimer = null; }
+    if (this.webPreviewTimer) { clearTimeout(this.webPreviewTimer); this.webPreviewTimer = null; }
+    if (this.deferredPreviewTimer) { clearTimeout(this.deferredPreviewTimer); this.deferredPreviewTimer = undefined; }
   }
 
   private configureLiteEditors() {
@@ -550,7 +556,14 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     this.testResults.set([]);
     this.consoleEntries.set([]);
 
-    this.scheduleWebPreview();
+    if (this.deferPreview) {
+      this.previewReady.set(false);
+      this.setPreviewHtml(null);
+      this.scheduleDeferredPreview();
+    } else {
+      this.previewReady.set(true);
+      this.scheduleWebPreview();
+    }
   }
 
 
@@ -574,6 +587,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     }
 
     this.exitSolutionPreview('user edited HTML');
+    this.ensurePreviewReady();
     this.scheduleWebPreview();
   };
 
@@ -596,11 +610,13 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
     }
 
     this.exitSolutionPreview('user edited CSS');
+    this.ensurePreviewReady();
     this.scheduleWebPreview();
   }
 
 	  private scheduleWebPreview() {
       if (!this.isBrowser) return;
+      if (this.deferPreview && !this.previewReady()) return;
 	    if (this.webPreviewTimer) clearTimeout(this.webPreviewTimer);
 	    this.webPreviewTimer = setTimeout(() => {
 	      try {
@@ -615,6 +631,7 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
 	  openSolutionPreview() {
 	    const q = this.question; if (!q || this.showingSolutionPreview) return;
+      this.ensurePreviewReady();
 	    const sol = this.getWebSolutions(q);
 	    const html = this.unescapeJsLiterals(sol.html || '');
 	    const css = this.prettifyCss(this.unescapeJsLiterals(sol.css || ''));
@@ -644,12 +661,29 @@ export class CodingWebPanelComponent implements OnChanges, AfterViewInit, OnDest
 
     this.htmlCode.set(starters.html);
     this.cssCode.set(starters.css);
+    this.ensurePreviewReady();
     this.scheduleWebPreview();
 
     this.consoleEntries.set([]);
     this.testResults.set([]);
     this.hasRunTests = false;
     this.showRestoreBanner.set(false);
+  }
+
+  private ensurePreviewReady() {
+    if (!this.deferPreview || this.previewReady()) return;
+    this.previewReady.set(true);
+  }
+
+  private scheduleDeferredPreview() {
+    if (!this.isBrowser || !this.deferPreview || this.previewReady()) return;
+    if (this.deferredPreviewTimer) return;
+    this.deferredPreviewTimer = window.setTimeout(() => {
+      this.deferredPreviewTimer = undefined;
+      if (!this.deferPreview) return;
+      this.previewReady.set(true);
+      this.scheduleWebPreview();
+    }, 500);
   }
 
 

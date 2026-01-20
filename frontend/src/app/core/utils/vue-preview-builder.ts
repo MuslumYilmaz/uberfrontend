@@ -5,13 +5,14 @@
  *   - src/App.js   (module)
  *  The produced module must define:  const App = { ... }
  */
-export function makeVuePreviewHtml(files: Record<string, string>): string {
-  const assetBase =
-    typeof window !== 'undefined' && window.location && window.location.origin
+export function makeVuePreviewHtml(files: Record<string, string>, assetBase?: string): string {
+  const base =
+    assetBase ||
+    (typeof window !== 'undefined' && window.location && window.location.origin
       ? window.location.origin
-      : '';
+      : '');
   const assetUrl = (path: string) =>
-    assetBase ? new URL(path, assetBase).toString() : path;
+    base ? new URL(path, base).toString() : path;
 
   // --- 1) Try SFC first ------------------------------------------------------
   let user: string | undefined;
