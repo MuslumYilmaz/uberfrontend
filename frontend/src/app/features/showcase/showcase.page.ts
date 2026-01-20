@@ -436,11 +436,9 @@ You can also reset any task back to the starter whenever you want to re-practice
   }
 
   ngAfterViewInit(): void {
-    this.setupObserver();
+    this.markAllVisible();
     if (!this.reduceMotion) {
       this.startFlowTicker();
-    } else {
-      this.markAllVisible();
     }
   }
 

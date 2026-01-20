@@ -276,4 +276,63 @@ test.describe('lemonsqueezy integration (local)', () => {
     await page.getByRole('link', { name: /back to pricing/i }).click();
     await expect(page).toHaveURL(/\/pricing/);
   });
+
+  test('profile manage subscription opens per-user LemonSqueezy portal URL', async ({ page }) => {
+    const manageUrl = 'https://example.com/ls/manage';
+    const user = buildMockUser({
+      _id: 'e2e-ls-manage-user',
+      username: 'ls_manage_user',
+      email: 'ls-manage@example.com',
+      accessTier: 'premium',
+      billing: {
+        pro: { status: 'active' },
+        projects: { status: 'none' },
+        providers: {
+          lemonsqueezy: {
+            customerId: 'cust_99',
+            subscriptionId: 'sub_99',
+            manageUrl,
+          },
+        },
+      },
+      entitlements: {
+        pro: { status: 'active', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      effectiveProActive: true,
+      accessTierEffective: 'premium',
+    });
+
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(user),
+      });
+    });
+    await page.route('**/api/billing/manage-url', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ url: manageUrl }),
+      });
+    });
+
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+      window.__lastOpenedUrl = '';
+      window.__faCheckoutRedirect = (url?: string | URL) => {
+        window.__lastOpenedUrl = String(url || '');
+      };
+    });
+
+    await page.goto('/profile');
+    await page.getByRole('button', { name: 'Billing' }).click();
+    await expect(page.getByTestId('profile-manage-subscription')).toBeVisible();
+    await page.getByTestId('profile-manage-subscription').click();
+
+    await expect
+      .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
+      .toBe(manageUrl);
+  });
 });

@@ -34,6 +34,7 @@ const LemonSqueezyProviderSchema = new mongoose.Schema(
   {
     customerId: String,
     subscriptionId: String,
+    manageUrl: String,
     lastEventId: String,
     lastEventAt: Date,
   },

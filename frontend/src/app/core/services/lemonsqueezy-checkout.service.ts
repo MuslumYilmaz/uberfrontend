@@ -14,7 +14,7 @@ export class LemonSqueezyCheckoutService {
     const testHook = (window as any).__faCheckoutRedirect;
     if (typeof testHook === 'function') {
       testHook(url);
-      return 'overlay';
+      return 'new-tab';
     }
 
     const opened = window.open(url, '_blank', 'noopener');

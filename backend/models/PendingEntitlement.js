@@ -19,6 +19,7 @@ const PendingEntitlementSchema = new mongoose.Schema(
     orderId: { type: String },
     subscriptionId: { type: String },
     customerId: { type: String },
+    manageUrl: { type: String },
     payload: { type: Object },
     receivedAt: { type: Date, default: Date.now },
     appliedAt: { type: Date },

@@ -42,6 +42,27 @@ export interface Billing {
   stripeCustomerId?: string;
   pro: BillingUnit;
   projects: BillingUnit;
+  providers?: {
+    gumroad?: {
+      saleId?: string;
+      purchaserEmail?: string;
+      lastEventId?: string;
+      lastEventAt?: string;
+    };
+    lemonsqueezy?: {
+      customerId?: string;
+      subscriptionId?: string;
+      manageUrl?: string;
+      lastEventId?: string;
+      lastEventAt?: string;
+    };
+    stripe?: {
+      customerId?: string;
+      subscriptionId?: string;
+      lastEventId?: string;
+      lastEventAt?: string;
+    };
+  };
 }
 
 export interface User {
@@ -204,6 +225,11 @@ export class AuthService {
       { currentPassword, currentPasswordConfirm, newPassword },
       { withCredentials: true }
     );
+  }
+
+  /** GET /api/billing/manage-url */
+  getManageSubscriptionUrl(): Observable<{ url: string }> {
+    return this.http.get<{ url: string }>(apiUrl('/billing/manage-url'), { withCredentials: true });
   }
 
   private isLocalHost(host: string): boolean {

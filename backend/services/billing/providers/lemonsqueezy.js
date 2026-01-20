@@ -127,6 +127,27 @@ function extractSubscriptionId(body) {
   return candidate ? String(candidate).trim() : '';
 }
 
+function extractManageUrl(body) {
+  const urls = body?.data?.attributes?.urls || {};
+  const direct = body?.data?.attributes?.manage_url || body?.data?.attributes?.portal_url;
+  const candidates = [
+    direct,
+    urls.customer_portal,
+    urls.portal,
+    urls.manage,
+    urls.update,
+    urls.update_payment_method,
+    urls.payment_method,
+    urls.cancel,
+  ];
+  for (const candidate of candidates) {
+    if (candidate && String(candidate).trim()) {
+      return String(candidate).trim();
+    }
+  }
+  return '';
+}
+
 function extractOrderId(body) {
   const attr = body?.data?.attributes?.order_id || body?.data?.attributes?.order_number;
   const candidate = attr || body?.data?.id;
@@ -183,6 +204,7 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
     email: extractEmail(body),
     customerId: extractCustomerId(body),
     subscriptionId: extractSubscriptionId(body),
+    manageUrl: extractManageUrl(body),
     orderId: extractOrderId(body),
     variantId: extractVariantId(body),
     productId: extractProductId(body),

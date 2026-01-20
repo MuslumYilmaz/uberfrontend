@@ -63,6 +63,9 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  process.env.LEMONSQUEEZY_WEBHOOK_SECRET = SECRET;
+  process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = SECRET;
+  process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = '';
   await User.deleteMany({});
   await BillingEvent.deleteMany({});
   await PendingEntitlement.deleteMany({});
@@ -70,6 +73,140 @@ beforeEach(async () => {
 });
 
 describe('LemonSqueezy webhook integration', () => {
+  test('returns 500 when webhook secret is missing', async () => {
+    const payload = {
+      meta: { event_name: 'subscription_created' },
+      data: {
+        id: 'sub_missing_secret',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const prevLegacy = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+    const prevTest = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST;
+    const prevLive = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE;
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET = '';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = '';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = '';
+
+    try {
+      const res = await request(app)
+        .post('/api/billing/webhooks/lemonsqueezy')
+        .set('Content-Type', 'application/json')
+        .set('x-signature', signature)
+        .send(rawBody);
+
+      expect(res.status).toBe(500);
+      expect(res.body.error).toContain('Webhook secret missing');
+    } finally {
+      process.env.LEMONSQUEEZY_WEBHOOK_SECRET = prevLegacy;
+      process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = prevTest;
+      process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = prevLive;
+    }
+  });
+
+  test('test-mode payload uses TEST secret', async () => {
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = 'test_secret';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = 'live_secret';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET = '';
+
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_test',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+        },
+        relationships: {
+          customer: { data: { id: 'cust_test' } },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = crypto.createHmac('sha256', 'test_secret').update(rawBody).digest('hex');
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_test' }).lean();
+    expect(event).toBeTruthy();
+  });
+
+  test('live-mode payload uses LIVE secret', async () => {
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = 'test_secret';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = 'live_secret';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET = '';
+
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: false },
+      data: {
+        id: 'sub_live',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+        },
+        relationships: {
+          customer: { data: { id: 'cust_live' } },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = crypto.createHmac('sha256', 'live_secret').update(rawBody).digest('hex');
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'live:sub_live' }).lean();
+    expect(event).toBeTruthy();
+  });
+
+  test('legacy single secret still verifies', async () => {
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET = 'legacy_secret';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = '';
+    process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = '';
+
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_legacy',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = crypto.createHmac('sha256', 'legacy_secret').update(rawBody).digest('hex');
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+    const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_legacy' }).lean();
+    expect(event).toBeTruthy();
+  });
+
   test('JSON subscription created upgrades user', async () => {
     const payload = {
       meta: { event_name: 'subscription_created' },

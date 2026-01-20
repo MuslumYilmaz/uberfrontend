@@ -35,6 +35,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `LEMONSQUEEZY_WEBHOOK_SECRET_TEST`: LemonSqueezy test webhook secret.
 - `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`: LemonSqueezy live webhook secret.
 - `LEMONSQUEEZY_WEBHOOK_SECRET`: legacy fallback (treated as test secret if _TEST is not set).
+- `LEMONSQUEEZY_API_KEY`: LemonSqueezy API key for resolving customer portal/manage URLs.
 - `STRIPE_WEBHOOK_SECRET`: reserved for future use.
 
 ### LemonSqueezy prod setup
@@ -45,10 +46,17 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
    - `BILLING_PROVIDER=lemonsqueezy` (optional; route still works by provider path).
 
 2) Webhook configuration in LemonSqueezy:
-   - Callback URL: `https://frontendatlas.com/api/billing/webhooks/lemonsqueezy`
+   - Callback URL (backend): `https://api.frontendatlas.com/api/billing/webhooks/lemonsqueezy`
    - Signing secret (test): same value as `LEMONSQUEEZY_WEBHOOK_SECRET_TEST`
    - Signing secret (live): same value as `LEMONSQUEEZY_WEBHOOK_SECRET_LIVE`
    - Events: `order_created`, `order_refunded`, `subscription_created`, `subscription_updated`, `subscription_cancelled` (optionally payment success/failed).
+
+3) Domain routing:
+   - Ensure `api.frontendatlas.com` points to the backend Vercel project (`frontendatlas-be`) and the env vars are set there.
+
+3) Manage URL (customer portal):
+   - Route: `GET /api/billing/manage-url` (auth required).
+   - Requires `LEMONSQUEEZY_API_KEY` if the webhook payload did not include a portal URL.
 
 ## Run
 

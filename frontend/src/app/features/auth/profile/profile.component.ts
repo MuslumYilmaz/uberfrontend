@@ -9,7 +9,7 @@ import { SolvedQuestion, SolvedQuestionsService } from '../../../core/services/s
 import { take } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
-import { PaymentsProvider, resolveManageUrl, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
+import { PaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
 
 @Component({
   selector: 'app-profile',
@@ -110,16 +110,19 @@ import { PaymentsProvider, resolveManageUrl, resolvePaymentsProvider } from '../
             </div>
           </div>
 
-          <div class="account-card">
+          <div class="account-card" *ngIf="showManageSubscription()">
             <h4>Manage subscription</h4>
-            <p class="desc" *ngIf="manageUrl; else manageMissing">
+            <p class="desc">
               Manage your subscription and payment methods via {{ manageProviderLabel }}.
             </p>
-            <ng-template #manageMissing>
-              <p class="desc">Manage subscription is not configured yet. Please contact support.</p>
-            </ng-template>
-            <button class="btn-save" [disabled]="!manageUrl" (click)="openManageSubscription()">
-              Manage on {{ manageProviderLabel }}
+            <p class="desc" *ngIf="manageError()">{{ manageError() }}</p>
+            <button
+              class="btn-save"
+              data-testid="profile-manage-subscription"
+              [disabled]="manageLoading()"
+              (click)="openManageSubscription()"
+            >
+              {{ manageLoading() ? 'Loading…' : 'Manage on ' + manageProviderLabel }}
             </button>
           </div>
         </section>
@@ -233,7 +236,8 @@ export class ProfileComponent implements OnInit {
   user = computed(() => this.auth.user());
   billing = computed(() => this.auth.user()?.billing);
   paymentsProvider = resolvePaymentsProvider(environment);
-  manageUrl = resolveManageUrl(this.paymentsProvider, environment);
+  manageLoading = signal(false);
+  manageError = signal<string | null>(null);
   manageProviderLabel = this.providerLabel(this.paymentsProvider);
 
   // Form state (editable subset)
@@ -343,9 +347,43 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  showManageSubscription(): boolean {
+    if (this.paymentsProvider !== 'lemonsqueezy') return false;
+    if (this.isPro()) return true;
+    const lsMeta = this.user()?.billing?.providers?.lemonsqueezy;
+    return !!(lsMeta?.subscriptionId || lsMeta?.customerId);
+  }
+
   openManageSubscription(): void {
-    if (!this.manageUrl) return;
-    window.open(this.manageUrl, '_blank', 'noopener');
+    if (this.manageLoading()) return;
+    this.manageError.set(null);
+    this.manageLoading.set(true);
+
+    this.auth.getManageSubscriptionUrl().subscribe({
+      next: ({ url }) => {
+        this.manageLoading.set(false);
+        if (!url) {
+          this.manageError.set('Manage URL is not available yet. Please contact support.');
+          return;
+        }
+        const hook = (window as any).__faCheckoutRedirect;
+        if (typeof hook === 'function') {
+          hook(url);
+          return;
+        }
+        window.open(url, '_blank', 'noopener');
+      },
+      error: (err) => {
+        this.manageLoading.set(false);
+        if (err?.status === 409) {
+          this.manageError.set('Manage URL is not available yet. Please contact support.');
+        } else if (err?.status === 400) {
+          this.manageError.set('Subscription management is not supported for this provider.');
+        } else {
+          this.manageError.set('Failed to load manage URL. Please try again.');
+        }
+      },
+    });
   }
 
   private providerLabel(provider: PaymentsProvider): string {

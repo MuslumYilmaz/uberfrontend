@@ -12,6 +12,7 @@ const {
 const { recordPendingEntitlement } = require('../services/billing/pending-entitlements');
 
 const router = express.Router();
+const { requireAuth } = require('../middleware/Auth');
 const SUPPORTED_PROVIDERS = new Set(['gumroad', 'lemonsqueezy', 'stripe']);
 const DEFAULT_PROVIDER = String(process.env.BILLING_PROVIDER || 'gumroad').toLowerCase();
 
@@ -183,9 +184,24 @@ async function handleLemonSqueezyWebhook(req, res) {
     const legacySecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
     const testSecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST || legacySecret;
     const liveSecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE;
-    if (!testSecret && !liveSecret) {
-      console.error('[lemonsqueezy] missing LEMONSQUEEZY webhook secrets');
-      return res.status(500).json({ error: 'Webhook secret missing' });
+    const modeHint = resolveLemonSqueezyMode(req.body || {});
+    const hasLegacy = !!legacySecret;
+    const hasTest = !!testSecret;
+    const hasLive = !!liveSecret;
+    const expectedMode = modeHint === 'test' ? 'test' : modeHint === 'live' ? 'live' : 'unknown';
+    const missingExpected =
+      (expectedMode === 'test' && !testSecret && !legacySecret) ||
+      (expectedMode === 'live' && !liveSecret && !legacySecret);
+    if (!hasTest && !hasLive || missingExpected) {
+      if (debug) {
+        console.warn('[lemonsqueezy] webhook secrets missing', {
+          hasLegacy,
+          hasTest,
+          hasLive,
+          modeHint: expectedMode,
+        });
+      }
+      return res.status(500).json({ error: `Webhook secret missing (mode: ${expectedMode})` });
     }
 
     const contentType = req.get('content-type') || '(none)';
@@ -203,7 +219,6 @@ async function handleLemonSqueezyWebhook(req, res) {
     }
 
     const signature = req.get('x-signature') || req.get('X-Signature');
-    const modeHint = resolveLemonSqueezyMode(req.body || {});
     let verifiedMode = null;
     let valid = false;
 
@@ -216,12 +231,38 @@ async function handleLemonSqueezyWebhook(req, res) {
       return ok;
     };
 
-    if (modeHint === 'test') {
-      valid = verifyWithSecret(testSecret, 'test') || verifyWithSecret(liveSecret, 'live');
-    } else if (modeHint === 'live') {
-      valid = verifyWithSecret(liveSecret, 'live') || verifyWithSecret(testSecret, 'test');
+    if (expectedMode === 'test') {
+      valid = verifyWithSecret(testSecret, 'test') || verifyWithSecret(legacySecret, 'legacy');
+    } else if (expectedMode === 'live') {
+      valid = verifyWithSecret(liveSecret, 'live') || verifyWithSecret(legacySecret, 'legacy');
     } else {
-      valid = verifyWithSecret(testSecret, 'test') || verifyWithSecret(liveSecret, 'live');
+      // Unknown mode: try test, then live, then legacy.
+      valid =
+        verifyWithSecret(testSecret, 'test') ||
+        verifyWithSecret(liveSecret, 'live') ||
+        verifyWithSecret(legacySecret, 'legacy');
+    }
+
+    const chosenMode = verifiedMode || expectedMode;
+    if (debug) {
+      const eventName =
+        req.body?.meta?.event_name ||
+        req.body?.meta?.event ||
+        req.body?.event_name ||
+        req.body?.event ||
+        req.body?.type ||
+        'unknown';
+      const requestId =
+        req.get('x-vercel-id') || req.get('x-request-id') || req.get('x-amzn-trace-id') || 'none';
+      console.log('[lemonsqueezy] webhook secret status', {
+        hasLegacy,
+        hasTest,
+        hasLive,
+        chosenMode,
+        expectedMode,
+        eventName,
+        requestId,
+      });
     }
 
     if (!valid) {
@@ -246,7 +287,7 @@ async function handleLemonSqueezyWebhook(req, res) {
       });
     }
     const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
-    const eventMode = verifiedMode || modeHint || 'unknown';
+    const eventMode = chosenMode || 'unknown';
     const eventId = normalized.eventId ? `${eventMode}:${normalized.eventId}` : '';
     if (!normalized.eventId) {
       if (debug) {
@@ -288,6 +329,7 @@ async function handleLemonSqueezyWebhook(req, res) {
         orderId: normalized.orderId,
         subscriptionId: normalized.subscriptionId,
         customerId: normalized.customerId,
+        manageUrl: normalized.manageUrl,
         payload: req.body,
       });
       await BillingEvent.updateOne(
@@ -311,6 +353,7 @@ async function handleLemonSqueezyWebhook(req, res) {
     const lsMeta = user.billing.providers.lemonsqueezy || {};
     if (normalized.customerId) lsMeta.customerId = normalized.customerId;
     if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
+    if (normalized.manageUrl) lsMeta.manageUrl = normalized.manageUrl;
     lsMeta.lastEventId = eventId;
     lsMeta.lastEventAt = new Date();
     user.billing.providers.lemonsqueezy = lsMeta;
@@ -334,6 +377,102 @@ async function handleLemonSqueezyWebhook(req, res) {
     return res.status(500).json({ error: 'Webhook processing failed' });
   }
 }
+
+function normalizeManageUrlCandidate(url) {
+  if (!url) return '';
+  const str = String(url).trim();
+  if (!str) return '';
+  if (!/^https?:\/\//i.test(str)) return '';
+  return str;
+}
+
+function pickManageUrlFromApiPayload(payload) {
+  const urls = payload?.data?.attributes?.urls || {};
+  const candidates = [
+    payload?.data?.attributes?.manage_url,
+    payload?.data?.attributes?.portal_url,
+    urls.customer_portal,
+    urls.portal,
+    urls.manage,
+    urls.update,
+    urls.update_payment_method,
+    urls.payment_method,
+    urls.cancel,
+  ];
+  for (const candidate of candidates) {
+    const normalized = normalizeManageUrlCandidate(candidate);
+    if (normalized) return normalized;
+  }
+  return '';
+}
+
+async function fetchLemonSqueezyManageUrl({ apiKey, subscriptionId, customerId }) {
+  if (!apiKey) return { url: '', source: 'missing_api_key' };
+  const headers = {
+    Authorization: `Bearer ${apiKey}`,
+    Accept: 'application/vnd.api+json',
+    'Content-Type': 'application/vnd.api+json',
+  };
+
+  const tryFetch = async (resource, id) => {
+    if (!id) return '';
+    const url = `https://api.lemonsqueezy.com/v1/${resource}/${id}`;
+    const res = await fetch(url, { headers });
+    if (!res.ok) return '';
+    const payload = await res.json();
+    return pickManageUrlFromApiPayload(payload);
+  };
+
+  const fromSubscription = await tryFetch('subscriptions', subscriptionId);
+  if (fromSubscription) return { url: fromSubscription, source: 'subscription' };
+
+  const fromCustomer = await tryFetch('customers', customerId);
+  if (fromCustomer) return { url: fromCustomer, source: 'customer' };
+
+  return { url: '', source: 'not_found' };
+}
+
+router.get('/manage-url', requireAuth, async (req, res) => {
+  try {
+    const provider = String(process.env.BILLING_PROVIDER || 'gumroad').toLowerCase();
+    if (provider !== 'lemonsqueezy') {
+      return res.status(400).json({ error: 'Provider not supported for manage URL' });
+    }
+
+    const user = await User.findById(req.auth.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const lsMeta = user?.billing?.providers?.lemonsqueezy || {};
+    if (lsMeta.manageUrl) {
+      return res.status(200).json({ url: lsMeta.manageUrl });
+    }
+
+    const apiKey = process.env.LEMONSQUEEZY_API_KEY || '';
+    if (!apiKey) {
+      return res.status(409).json({ error: 'Manage URL unavailable' });
+    }
+
+    const { url } = await fetchLemonSqueezyManageUrl({
+      apiKey,
+      subscriptionId: lsMeta.subscriptionId,
+      customerId: lsMeta.customerId,
+    });
+
+    if (!url) {
+      return res.status(409).json({ error: 'Manage URL unavailable' });
+    }
+
+    lsMeta.manageUrl = url;
+    lsMeta.lastEventAt = lsMeta.lastEventAt || new Date();
+    user.billing.providers.lemonsqueezy = lsMeta;
+    await user.save();
+
+    return res.status(200).json({ url });
+  } catch (err) {
+    console.error('[lemonsqueezy] manage-url error:', err);
+    return res.status(500).json({ error: 'Failed to resolve manage URL' });
+  }
+});
 
 function coerceBooleanFlag(value) {
   if (value === true || value === false) return value;

@@ -19,6 +19,7 @@ async function recordPendingEntitlement(model, data) {
       orderId: data.orderId,
       subscriptionId: data.subscriptionId,
       customerId: data.customerId,
+      manageUrl: data.manageUrl,
       payload: data.payload,
     };
     await model.create(payload);
@@ -68,6 +69,7 @@ async function applyPendingEntitlementsForUser(model, user) {
     const lsMeta = user.billing.providers.lemonsqueezy || {};
     if (latest.customerId) lsMeta.customerId = latest.customerId;
     if (latest.subscriptionId) lsMeta.subscriptionId = latest.subscriptionId;
+    if (latest.manageUrl) lsMeta.manageUrl = latest.manageUrl;
     lsMeta.lastEventId = latest.eventId;
     lsMeta.lastEventAt = latest.receivedAt || new Date();
     user.billing.providers.lemonsqueezy = lsMeta;
