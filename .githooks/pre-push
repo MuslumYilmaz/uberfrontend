@@ -17,7 +17,7 @@ echo "[pre-push] OK: Unit tests passed."
 echo "[pre-push] Running FrontendAtlas E2E tests (Playwright)..."
 
 # Run Playwright E2E (starts dev server via playwright.config.ts webServer)
-if ! npm -C frontend run test:e2e; then
+if ! PLAYWRIGHT_WEB_SERVER=1 npm -C frontend run test:e2e; then
   echo "[pre-push] ERROR: E2E tests failed. Push aborted." >&2
   exit 1
 fi
