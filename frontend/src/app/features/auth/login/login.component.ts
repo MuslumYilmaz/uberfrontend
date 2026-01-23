@@ -39,8 +39,8 @@ export class LoginComponent {
     this.submitted = true;
 
     const emailCtrl = this.emailCtrl;
-    const email = String(emailCtrl?.value ?? '').trim();
-    if (emailCtrl && emailCtrl.value !== email) emailCtrl.setValue(email);
+    const emailValue = String(emailCtrl?.value ?? '').trim();
+    if (emailCtrl && emailCtrl.value !== emailValue) emailCtrl.setValue(emailValue);
 
     this.clearFormError('invalidCredentials');
 
@@ -52,14 +52,14 @@ export class LoginComponent {
     this.loading = true;
     this.error = '';
 
-    const { email, password } = this.form.value as {
+    const { password } = this.form.value as {
       email: string;
       password: string;
     };
 
     // backend expects { emailOrUsername, password }
     this.auth
-      .login({ emailOrUsername: email.trim(), password })
+      .login({ emailOrUsername: emailValue, password })
       .subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
         error: (err) => {
