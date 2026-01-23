@@ -14,19 +14,27 @@ import { AuthService } from '../../../core/services/auth.service';
 export class SignupComponent {
   loading = false;
   error = '';
+  submitted = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     username: ['', [Validators.required, Validators.minLength(3)]],
     passwords: this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).{8,}$/)]],
       confirmPassword: ['', [Validators.required]],
     })
   }, { validators: this.matchPasswords });
 
   constructor(private fb: FormBuilder, public auth: AuthService, private router: Router) { }
 
+  get emailCtrl() { return this.form.get('email'); }
+  get usernameCtrl() { return this.form.get('username'); }
+  get passwordCtrl() { return this.form.get('passwords.password'); }
   get confirmCtrl() { return this.form.get('passwords.confirmPassword'); }
+
+  showError(ctrl: any) {
+    return !!ctrl && (ctrl.touched || this.submitted);
+  }
 
   matchPasswords(group: any) {
     const p = group.get('passwords.password')?.value;
@@ -37,13 +45,16 @@ export class SignupComponent {
   submit() {
     if (this.loading) return;
 
-    const emailCtrl = this.form.get('email');
-    const usernameCtrl = this.form.get('username');
+    this.submitted = true;
+
+    const emailCtrl = this.emailCtrl;
+    const usernameCtrl = this.usernameCtrl;
     const email = String(emailCtrl?.value ?? '').trim();
     const username = String(usernameCtrl?.value ?? '').trim();
 
     if (emailCtrl && emailCtrl.value !== email) emailCtrl.setValue(email);
     if (usernameCtrl && usernameCtrl.value !== username) usernameCtrl.setValue(username);
+    this.clearServerErrors();
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -57,11 +68,41 @@ export class SignupComponent {
     this.error = '';
     this.auth.signup({ email, username, password }).subscribe({
       next: () => this.router.navigateByUrl('/dashboard'),
-      error: (err: any) => { this.error = err.error?.error || 'Sign up failed'; this.loading = false; }
+      error: (err: any) => {
+        const data = err?.error || {};
+        if (err?.status === 409) {
+          const fields = data.fields || {};
+          if (fields.email) this.setCtrlError(this.emailCtrl, 'duplicate');
+          if (fields.username) this.setCtrlError(this.usernameCtrl, 'duplicate');
+          if (!fields.email && !fields.username) {
+            this.error = data.error || 'Email or username already in use';
+          }
+        } else {
+          this.error = data.error || 'Sign up failed';
+        }
+        this.loading = false;
+      }
     });
   }
 
   continueWithGoogle() {
     this.auth.oauthStart('google', 'signup');
+  }
+
+  private setCtrlError(ctrl: any, key: string) {
+    if (!ctrl) return;
+    const next = { ...(ctrl.errors || {}), [key]: true };
+    ctrl.setErrors(next);
+  }
+
+  private clearServerErrors() {
+    this.removeCtrlError(this.emailCtrl, 'duplicate');
+    this.removeCtrlError(this.usernameCtrl, 'duplicate');
+  }
+
+  private removeCtrlError(ctrl: any, key: string) {
+    if (!ctrl?.errors || !ctrl.errors[key]) return;
+    const { [key]: _removed, ...rest } = ctrl.errors;
+    ctrl.setErrors(Object.keys(rest).length ? rest : null);
   }
 }

@@ -25,24 +25,42 @@
           <span>Email</span>
           <input data-testid="signup-email" formControlName="email" type="email" placeholder="you@example.com" />
         </label>
+        <div *ngIf="showError(emailCtrl) && emailCtrl?.errors" class="error" data-testid="signup-email-error">
+          <ng-container *ngIf="emailCtrl?.errors?.['required']">Email is required.</ng-container>
+          <ng-container *ngIf="emailCtrl?.errors?.['email']">Enter a valid email address.</ng-container>
+          <ng-container *ngIf="emailCtrl?.errors?.['duplicate']">Email is already in use.</ng-container>
+        </div>
 
         <label class="field">
           <span>Username</span>
           <input data-testid="signup-username" formControlName="username" type="text" placeholder="jane_doe" />
         </label>
+        <div *ngIf="showError(usernameCtrl) && usernameCtrl?.errors" class="error" data-testid="signup-username-error">
+          <ng-container *ngIf="usernameCtrl?.errors?.['required']">Username is required.</ng-container>
+          <ng-container *ngIf="usernameCtrl?.errors?.['minlength']">Username must be at least 3 characters.</ng-container>
+          <ng-container *ngIf="usernameCtrl?.errors?.['duplicate']">Username is already in use.</ng-container>
+        </div>
 
         <div formGroupName="passwords" class="auth-form">
           <label class="field">
             <span>Password</span>
             <input data-testid="signup-password" formControlName="password" type="password" placeholder="••••••••" />
           </label>
+          <div *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="signup-password-error">
+            <ng-container *ngIf="passwordCtrl?.errors?.['required']">Password is required.</ng-container>
+            <ng-container *ngIf="passwordCtrl?.errors?.['minlength']">Password must be at least 8 characters.</ng-container>
+            <ng-container *ngIf="passwordCtrl?.errors?.['pattern']">Use at least 8 characters with a letter and a number.</ng-container>
+          </div>
 
           <label class="field">
             <span>Confirm Password</span>
             <input data-testid="signup-confirm" formControlName="confirmPassword" type="password" placeholder="••••••••" />
           </label>
+          <div *ngIf="showError(confirmCtrl) && confirmCtrl?.errors" class="error" data-testid="signup-confirm-error">
+            <ng-container *ngIf="confirmCtrl?.errors?.['required']">Please confirm your password.</ng-container>
+          </div>
 
-          <div *ngIf="form.hasError('mismatch') && confirmCtrl?.touched" class="error" data-testid="signup-mismatch">
+          <div *ngIf="form.hasError('mismatch') && (showError(confirmCtrl) || showError(passwordCtrl))" class="error" data-testid="signup-mismatch">
             Passwords do not match
           </div>
         </div>

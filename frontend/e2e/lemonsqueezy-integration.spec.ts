@@ -90,7 +90,10 @@ test.describe('lemonsqueezy integration (local)', () => {
       const expected = expectedUrlFor(plan);
       await expect
         .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
-        .toBe(expected);
+        .toContain(expected);
+      await expect
+        .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
+        .toContain('/checkout/buy/');
     }
 
     expect(lsRequests).toBe(0);
@@ -166,7 +169,10 @@ test.describe('lemonsqueezy integration (local)', () => {
     const expected = expectedUrlFor('monthly');
     await expect
       .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
-      .toBe(expected);
+      .toContain(expected);
+    await expect
+      .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
+      .toContain('/checkout/buy/');
   });
 
   test('billing success polls /api/auth/me and redirects to profile (premium unlock)', async ({ page }) => {

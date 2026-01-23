@@ -451,9 +451,23 @@ router.post('/signup', async (req, res) => {
         if (!email || !username || !password) {
             return res.status(400).json({ error: 'Missing fields' });
         }
+        if (!isStrongPassword(password)) {
+            return res.status(400).json({ error: 'Password must be at least 8 characters and include a letter and a number.' });
+        }
 
-        const exists = await User.findOne({ $or: [{ email }, { username }] });
-        if (exists) return res.status(409).json({ error: 'Email or username already in use' });
+        const [emailExists, usernameExists] = await Promise.all([
+            User.exists({ email }),
+            User.exists({ username }),
+        ]);
+        if (emailExists || usernameExists) {
+            return res.status(409).json({
+                error: 'Email or username already in use',
+                fields: {
+                    email: Boolean(emailExists),
+                    username: Boolean(usernameExists),
+                },
+            });
+        }
 
         const passwordHash = await bcrypt.hash(password, 10);
         const user = await User.create({
@@ -517,6 +531,9 @@ router.post('/change-password', requireAuth, async (req, res) => {
         if (currentPassword !== currentPasswordConfirm) {
             return res.status(400).json({ error: 'Current passwords do not match' });
         }
+        if (!isStrongPassword(newPassword)) {
+            return res.status(400).json({ error: 'Password must be at least 8 characters and include a letter and a number.' });
+        }
 
         const user = await User.findById(req.auth.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
@@ -533,6 +550,10 @@ router.post('/change-password', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to change password' });
     }
 });
+
+function isStrongPassword(value = '') {
+    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(String(value));
+}
 
 // GET /api/auth/me  (cookie auth primary; Authorization header fallback)
 router.get('/me', requireAuth, async (req, res) => {

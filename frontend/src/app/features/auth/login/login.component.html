@@ -22,14 +22,20 @@
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
         <label class="field">
-          <span>Email</span>
-          <input data-testid="login-email" formControlName="email" type="email" placeholder="you@example.com" />
+          <span>Email or username</span>
+          <input data-testid="login-email" formControlName="email" type="text" placeholder="you@example.com or username" />
         </label>
+        <div *ngIf="showError(emailCtrl) && emailCtrl?.errors" class="error" data-testid="login-email-error">
+          <ng-container *ngIf="emailCtrl?.errors?.['required']">Email or username is required.</ng-container>
+        </div>
 
         <label class="field">
           <span>Password</span>
           <input data-testid="login-password" formControlName="password" type="password" placeholder="••••••••" />
         </label>
+        <div *ngIf="showError(passwordCtrl) && passwordCtrl?.errors" class="error" data-testid="login-password-error">
+          <ng-container *ngIf="passwordCtrl?.errors?.['required']">Password is required.</ng-container>
+        </div>
 
         <button type="submit" class="btn-primary" data-testid="login-submit" [disabled]="loading">
           {{ loading ? 'Signing in…' : 'Sign In' }}

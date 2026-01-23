@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent {
   loading = false;
   error = '';
+  submitted = false;
 
   form = this.fb.group({
     email: ['', [Validators.required]],    // can be email OR username
@@ -26,8 +27,27 @@ export class LoginComponent {
     private router: Router
   ) { }
 
+  get emailCtrl() { return this.form.get('email'); }
+  get passwordCtrl() { return this.form.get('password'); }
+
+  showError(ctrl: any) {
+    return !!ctrl && (ctrl.touched || this.submitted);
+  }
+
   submit() {
-    if (this.loading || this.form.invalid) return;
+    if (this.loading) return;
+    this.submitted = true;
+
+    const emailCtrl = this.emailCtrl;
+    const email = String(emailCtrl?.value ?? '').trim();
+    if (emailCtrl && emailCtrl.value !== email) emailCtrl.setValue(email);
+
+    this.clearFormError('invalidCredentials');
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     this.loading = true;
     this.error = '';
@@ -43,10 +63,13 @@ export class LoginComponent {
       .subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
         error: (err) => {
-          // show a friendly message
-          this.error =
-            err?.error?.error ||
-            (err?.status === 401 ? 'Invalid credentials' : 'Login failed');
+          const data = err?.error || {};
+          if (err?.status === 401) {
+            this.form.setErrors({ ...(this.form.errors || {}), invalidCredentials: true });
+            this.error = data.error || 'Invalid credentials';
+          } else {
+            this.error = data.error || 'Login failed';
+          }
           this.loading = false;
         },
       });
@@ -54,5 +77,12 @@ export class LoginComponent {
 
   continueWithGoogle() {
     this.auth.oauthStart('google', 'login');
+  }
+
+  private clearFormError(key: string) {
+    const errs = this.form.errors;
+    if (!errs || !errs[key]) return;
+    const { [key]: _removed, ...rest } = errs;
+    this.form.setErrors(Object.keys(rest).length ? rest : null);
   }
 }

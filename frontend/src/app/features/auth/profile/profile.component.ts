@@ -357,6 +357,10 @@ export class ProfileComponent implements OnInit {
       this.changePasswordError.set('Current passwords do not match.');
       return;
     }
+    if (!this.isStrongPassword(newPassword)) {
+      this.changePasswordError.set('Password must be at least 8 characters and include a letter and a number.');
+      return;
+    }
 
     this.changePasswordSaving.set(true);
     this.auth.changePassword(currentPassword, currentPasswordConfirm, newPassword).subscribe({
@@ -426,6 +430,10 @@ export class ProfileComponent implements OnInit {
       default:
         return 'Provider';
     }
+  }
+
+  private isStrongPassword(value: string): boolean {
+    return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(value || '');
   }
 
   private resetForm(u: User) {
