@@ -281,12 +281,14 @@ async function handleLemonSqueezyWebhook(req, res) {
       });
     }
     if (normalized.validUntilInferred && normalized.entitlement.status === 'cancelled') {
-      console.warn('[lemonsqueezy] cancelled event missing end date; expiring immediately', {
+      console.warn('[lemonsqueezy] cancelled event missing end date; preserving existing validUntil', {
         eventId: normalized.eventId,
         eventType: normalized.eventType,
       });
     }
     const normalizedEmail = normalized.email ? normalized.email.trim().toLowerCase() : '';
+    const purchaseEmail = normalized.purchaseEmail ? normalized.purchaseEmail.trim().toLowerCase() : '';
+    const normalizedUserId = normalized.userId ? String(normalized.userId).trim() : '';
     const eventMode = chosenMode || 'unknown';
     const eventId = normalized.eventId ? `${eventMode}:${normalized.eventId}` : '';
     if (!normalized.eventId) {
@@ -295,9 +297,9 @@ async function handleLemonSqueezyWebhook(req, res) {
       }
       return res.status(400).json({ error: 'Missing event id' });
     }
-    if (!normalizedEmail) {
+    if (!normalizedEmail && !normalizedUserId) {
       if (debug) {
-        console.warn('[lemonsqueezy] missing email');
+        console.warn('[lemonsqueezy] missing email and user id');
       }
       return res.status(400).json({ error: 'Missing email' });
     }
@@ -306,7 +308,7 @@ async function handleLemonSqueezyWebhook(req, res) {
       provider: 'lemonsqueezy',
       eventId,
       eventType: normalized.eventType,
-      email: normalizedEmail,
+      email: normalizedEmail || purchaseEmail || undefined,
       payload: req.body,
       processingStatus: normalized.eventTypeKnown ? 'received' : 'received_unknown_type',
     });
@@ -315,10 +317,17 @@ async function handleLemonSqueezyWebhook(req, res) {
       return res.status(200).json({ ok: true, duplicate: true });
     }
 
-    const user = await User.findOne({ email: normalizedEmail });
-    if (!user) {
+    let user = null;
+    if (normalizedUserId) {
+      user = await User.findById(normalizedUserId);
+    }
+
+    if (!normalizedUserId && normalizedEmail) {
       if (debug) {
-        console.warn(`[lemonsqueezy] user not found for event ${eventId}`);
+        console.warn('[lemonsqueezy] missing userId in custom_data; deferring to pending entitlement', {
+          eventId,
+          eventType: normalized.eventType,
+        });
       }
       await recordPendingEntitlement(PendingEntitlement, {
         provider: 'lemonsqueezy',
@@ -339,10 +348,41 @@ async function handleLemonSqueezyWebhook(req, res) {
       return res.status(200).json({ ok: true, userFound: false });
     }
 
+    if (!user) {
+      if (debug) {
+        console.warn(`[lemonsqueezy] user not found for event ${eventId}`);
+      }
+      if (normalizedEmail) {
+        await recordPendingEntitlement(PendingEntitlement, {
+          provider: 'lemonsqueezy',
+          eventId,
+          eventType: normalized.eventType,
+          email: normalizedEmail,
+          entitlement: normalized.entitlement,
+          orderId: normalized.orderId,
+          subscriptionId: normalized.subscriptionId,
+          customerId: normalized.customerId,
+          manageUrl: normalized.manageUrl,
+          payload: req.body,
+        });
+        await BillingEvent.updateOne(
+          { provider: 'lemonsqueezy', eventId },
+          { $set: { processingStatus: 'pending_user', processedAt: new Date() } }
+        );
+      }
+      return res.status(200).json({ ok: true, userFound: false });
+    }
+
     user.entitlements = user.entitlements || {};
+    const existingPro = user.entitlements.pro || {};
+    const nextProStatus = normalized.entitlement.status;
+    let nextProValidUntil = normalized.entitlement.validUntil;
+    if (nextProStatus === 'cancelled' && !nextProValidUntil) {
+      nextProValidUntil = existingPro.validUntil || null;
+    }
     user.entitlements.pro = {
-      status: normalized.entitlement.status,
-      validUntil: normalized.entitlement.validUntil,
+      status: nextProStatus,
+      validUntil: nextProValidUntil,
     };
     if (!user.entitlements.projects) {
       user.entitlements.projects = { status: 'none', validUntil: null };
@@ -354,6 +394,7 @@ async function handleLemonSqueezyWebhook(req, res) {
     if (normalized.customerId) lsMeta.customerId = normalized.customerId;
     if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
     if (normalized.manageUrl) lsMeta.manageUrl = normalized.manageUrl;
+    if (purchaseEmail) lsMeta.purchaserEmail = purchaseEmail;
     lsMeta.lastEventId = eventId;
     lsMeta.lastEventAt = new Date();
     user.billing.providers.lemonsqueezy = lsMeta;

@@ -48,47 +48,102 @@ export function resolveCheckoutUrl(
   planId: PlanId,
   env: PaymentsEnv = environment
 ): string | null {
+  return resolveCheckoutUrlWithMeta(provider, planId, env).url;
+}
+
+export type CheckoutUrlResolution = {
+  provider: PaymentsProvider;
+  planId: PlanId;
+  mode: PaymentsMode;
+  url: string | null;
+  sourceKey: string | null;
+};
+
+export function resolveCheckoutUrlWithMeta(
+  provider: PaymentsProvider,
+  planId: PlanId,
+  env: PaymentsEnv = environment
+): CheckoutUrlResolution {
   const mode = resolvePaymentsMode(env);
-  const lsUrls = {
-    test: {
-      monthly: env.LEMONSQUEEZY_MONTHLY_URL_TEST || env.LEMONSQUEEZY_MONTHLY_URL,
-      quarterly: env.LEMONSQUEEZY_QUARTERLY_URL_TEST || env.LEMONSQUEEZY_QUARTERLY_URL,
-      annual: env.LEMONSQUEEZY_ANNUAL_URL_TEST || env.LEMONSQUEEZY_ANNUAL_URL,
-    },
-    live: {
-      monthly: env.LEMONSQUEEZY_MONTHLY_URL_LIVE || env.LEMONSQUEEZY_MONTHLY_URL,
-      quarterly: env.LEMONSQUEEZY_QUARTERLY_URL_LIVE || env.LEMONSQUEEZY_QUARTERLY_URL,
-      annual: env.LEMONSQUEEZY_ANNUAL_URL_LIVE || env.LEMONSQUEEZY_ANNUAL_URL,
-    },
+  const pick = (value: string | undefined, key: string, fallback?: { value?: string; key: string }) => {
+    if (value) return { url: value, sourceKey: key };
+    if (fallback?.value) return { url: fallback.value, sourceKey: fallback.key };
+    return { url: null, sourceKey: null };
   };
 
   if (provider === 'lemonsqueezy') {
-    const liveAnnual = lsUrls.live.annual;
-    const liveQuarterly = lsUrls.live.quarterly;
-    if (mode === 'live' && liveAnnual && liveQuarterly && liveAnnual === liveQuarterly) {
-      return planId === 'annual' ? null : lsUrls.live[planId] || null;
+    const testKeys: Record<PlanId, { value?: string; key: string; fallback?: { value?: string; key: string } }> = {
+      monthly: {
+        value: env.LEMONSQUEEZY_MONTHLY_URL_TEST,
+        key: 'LEMONSQUEEZY_MONTHLY_URL_TEST',
+        fallback: { value: env.LEMONSQUEEZY_MONTHLY_URL, key: 'LEMONSQUEEZY_MONTHLY_URL' },
+      },
+      quarterly: {
+        value: env.LEMONSQUEEZY_QUARTERLY_URL_TEST,
+        key: 'LEMONSQUEEZY_QUARTERLY_URL_TEST',
+        fallback: { value: env.LEMONSQUEEZY_QUARTERLY_URL, key: 'LEMONSQUEEZY_QUARTERLY_URL' },
+      },
+      annual: {
+        value: env.LEMONSQUEEZY_ANNUAL_URL_TEST,
+        key: 'LEMONSQUEEZY_ANNUAL_URL_TEST',
+        fallback: { value: env.LEMONSQUEEZY_ANNUAL_URL, key: 'LEMONSQUEEZY_ANNUAL_URL' },
+      },
+    };
+    const liveKeys: Record<PlanId, { value?: string; key: string; fallback?: { value?: string; key: string } }> = {
+      monthly: {
+        value: env.LEMONSQUEEZY_MONTHLY_URL_LIVE,
+        key: 'LEMONSQUEEZY_MONTHLY_URL_LIVE',
+        fallback: { value: env.LEMONSQUEEZY_MONTHLY_URL, key: 'LEMONSQUEEZY_MONTHLY_URL' },
+      },
+      quarterly: {
+        value: env.LEMONSQUEEZY_QUARTERLY_URL_LIVE,
+        key: 'LEMONSQUEEZY_QUARTERLY_URL_LIVE',
+        fallback: { value: env.LEMONSQUEEZY_QUARTERLY_URL, key: 'LEMONSQUEEZY_QUARTERLY_URL' },
+      },
+      annual: {
+        value: env.LEMONSQUEEZY_ANNUAL_URL_LIVE,
+        key: 'LEMONSQUEEZY_ANNUAL_URL_LIVE',
+        fallback: { value: env.LEMONSQUEEZY_ANNUAL_URL, key: 'LEMONSQUEEZY_ANNUAL_URL' },
+      },
+    };
+
+    const map = mode === 'live' ? liveKeys : testKeys;
+    const chosen = pick(map[planId].value, map[planId].key, map[planId].fallback);
+
+    if (mode === 'live') {
+      const liveAnnual = liveKeys.annual.value || liveKeys.annual.fallback?.value;
+      const liveQuarterly = liveKeys.quarterly.value || liveKeys.quarterly.fallback?.value;
+      if (planId === 'annual' && liveAnnual && liveQuarterly && liveAnnual === liveQuarterly) {
+        return { provider, planId, mode, url: null, sourceKey: null };
+      }
     }
+
+    return { provider, planId, mode, url: chosen.url, sourceKey: chosen.sourceKey };
   }
 
-  const map: Record<PaymentsProvider, Record<PlanId, string | undefined>> = {
-    gumroad: {
-      monthly: env.GUMROAD_MONTHLY_URL,
-      quarterly: env.GUMROAD_QUARTERLY_URL,
-      annual: env.GUMROAD_ANNUAL_URL,
-    },
-    lemonsqueezy: {
-      monthly: lsUrls[mode].monthly,
-      quarterly: lsUrls[mode].quarterly,
-      annual: lsUrls[mode].annual,
-    },
-    stripe: {
-      monthly: env.STRIPE_MONTHLY_URL,
-      quarterly: env.STRIPE_QUARTERLY_URL,
-      annual: env.STRIPE_ANNUAL_URL,
-    },
+  if (provider === 'gumroad') {
+    const map: Record<PlanId, { value?: string; key: string }> = {
+      monthly: { value: env.GUMROAD_MONTHLY_URL, key: 'GUMROAD_MONTHLY_URL' },
+      quarterly: { value: env.GUMROAD_QUARTERLY_URL, key: 'GUMROAD_QUARTERLY_URL' },
+      annual: { value: env.GUMROAD_ANNUAL_URL, key: 'GUMROAD_ANNUAL_URL' },
+    };
+    const chosen = map[planId];
+    return { provider, planId, mode, url: chosen.value || null, sourceKey: chosen.value ? chosen.key : null };
+  }
+
+  const stripeMap: Record<PlanId, { value?: string; key: string }> = {
+    monthly: { value: env.STRIPE_MONTHLY_URL, key: 'STRIPE_MONTHLY_URL' },
+    quarterly: { value: env.STRIPE_QUARTERLY_URL, key: 'STRIPE_QUARTERLY_URL' },
+    annual: { value: env.STRIPE_ANNUAL_URL, key: 'STRIPE_ANNUAL_URL' },
   };
-  const url = map[provider]?.[planId];
-  return url ? url : null;
+  const stripeChosen = stripeMap[planId];
+  return {
+    provider,
+    planId,
+    mode,
+    url: stripeChosen.value || null,
+    sourceKey: stripeChosen.value ? stripeChosen.key : null,
+  };
 }
 
 export function buildCheckoutUrls(

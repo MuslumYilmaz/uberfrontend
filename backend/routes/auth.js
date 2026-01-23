@@ -29,6 +29,20 @@ function getCookieSecure() {
     return isProd();
 }
 
+function getCookieDomain() {
+    const explicit = String(process.env.COOKIE_DOMAIN || '').trim();
+    if (explicit) return explicit;
+    try {
+        const host = new URL(FRONTEND_BASE || '').hostname || '';
+        if (!host || host === 'localhost' || host.endsWith('.localhost')) return undefined;
+        const parts = host.replace(/^www\./, '').split('.');
+        if (parts.length < 2) return undefined;
+        return `.${parts.slice(-2).join('.')}`;
+    } catch {
+        return undefined;
+    }
+}
+
 function parseExpiresInToMs(expiresIn) {
     const raw = String(expiresIn || '').trim();
     if (!raw) return null;
@@ -53,12 +67,14 @@ function parseExpiresInToMs(expiresIn) {
 function authCookieOptions() {
     const sameSite = getCookieSameSite();
     const secure = getCookieSecure();
+    const domain = getCookieDomain();
     const maxAge = parseExpiresInToMs(JWT_EXPIRES_IN);
 
     return {
         sameSite,
         secure,
         path: '/',
+        ...(domain ? { domain } : {}),
         ...(maxAge ? { maxAge } : {}),
     };
 }

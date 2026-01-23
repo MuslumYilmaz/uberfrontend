@@ -208,6 +208,7 @@ describe('LemonSqueezy webhook integration', () => {
   });
 
   test('JSON subscription created upgrades user', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
     const payload = {
       meta: { event_name: 'subscription_created' },
       data: {
@@ -216,6 +217,10 @@ describe('LemonSqueezy webhook integration', () => {
           user_email: 'test@example.com',
           status: 'active',
           renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_user_email: 'test@example.com',
+          },
         },
         relationships: {
           customer: { data: { id: 'cust_1' } },
@@ -233,12 +238,103 @@ describe('LemonSqueezy webhook integration', () => {
 
     expect(res.status).toBe(200);
 
-    const user = await User.findOne({ email: 'test@example.com' }).lean();
-    expect(user.entitlements.pro.status).toBe('active');
-    expect(user.accessTier).toBe('premium');
+    const updated = await User.findOne({ email: 'test@example.com' }).lean();
+    expect(updated.entitlements.pro.status).toBe('active');
+    expect(updated.accessTier).toBe('premium');
 
     const event = await BillingEvent.findOne({ provider: 'lemonsqueezy', eventId: 'test:sub_123' }).lean();
     expect(event.processingStatus).toBe('processed');
+  });
+
+  test('custom user id links entitlement even when purchase email differs', async () => {
+    const otherUser = await User.create({
+      email: 'other@example.com',
+      username: 'other_user',
+      passwordHash: 'hash',
+      accessTier: 'free',
+      entitlements: {
+        pro: { status: 'none', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+    });
+
+    const payload = {
+      meta: { event_name: 'subscription_created', test_mode: true },
+      data: {
+        id: 'sub_custom_user',
+        attributes: {
+          user_email: 'purchase@example.com',
+          status: 'active',
+          renews_at: '2099-01-01T00:00:00Z',
+          custom_data: {
+            fa_user_id: String(otherUser._id),
+            fa_user_email: 'other@example.com',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+
+    const updated = await User.findById(otherUser._id).lean();
+    expect(updated.entitlements.pro.status).toBe('active');
+    expect(updated.accessTier).toBe('premium');
+    expect(updated.billing.providers.lemonsqueezy.purchaserEmail).toBe('purchase@example.com');
+  });
+
+  test('cancelled without end date preserves previous validUntil', async () => {
+    const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    await User.updateOne(
+      { email: 'test@example.com' },
+      {
+        $set: {
+          entitlements: {
+            pro: { status: 'active', validUntil: future },
+            projects: { status: 'none', validUntil: null },
+          },
+          accessTier: 'premium',
+        },
+      }
+    );
+
+    const payload = {
+      meta: { event_name: 'subscription_cancelled' },
+      data: {
+        id: 'sub_cancel_no_date',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'cancelled',
+          custom_data: {
+            fa_user_id: String(user._id),
+            fa_user_email: 'test@example.com',
+          },
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+
+    const updated = await User.findOne({ email: 'test@example.com' }).lean();
+    expect(updated.entitlements.pro.status).toBe('cancelled');
+    expect(new Date(updated.entitlements.pro.validUntil).toISOString()).toBe(future.toISOString());
+    expect(updated.accessTier).toBe('premium');
   });
 
   test('User not found returns ok without crash', async () => {

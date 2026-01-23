@@ -440,9 +440,17 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
             return;
           }
 
-          const result = await this.billingCheckout.checkout(planId);
+          const result = await this.billingCheckout.checkout(planId, {
+            userId: user._id,
+            email: user.email,
+            username: user.username,
+          });
           if (!result.ok) {
-            this.setCheckoutNotice('Checkout is unavailable right now. Please try again in a moment.');
+            if (result.reason === 'invalid-url') {
+              this.setCheckoutNotice('Checkout is misconfigured right now. Please contact support.');
+            } else {
+              this.setCheckoutNotice('Checkout is unavailable right now. Please try again in a moment.');
+            }
             return;
           }
           if (result.mode === 'new-tab') {

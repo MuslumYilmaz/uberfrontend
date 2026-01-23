@@ -113,6 +113,75 @@ function extractEmail(body) {
   return String(email).trim().toLowerCase();
 }
 
+function parseCustomData(raw) {
+  if (!raw) return null;
+  if (typeof raw === 'object') return raw;
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+function extractCustomData(body) {
+  const candidates = [
+    body?.meta?.custom_data,
+    body?.meta?.customData,
+    body?.meta?.custom,
+    body?.data?.attributes?.custom_data,
+    body?.data?.attributes?.customData,
+    body?.data?.attributes?.custom,
+    body?.data?.attributes?.checkout_data,
+    body?.data?.attributes?.checkoutData,
+    body?.data?.attributes?.checkout?.custom,
+    body?.data?.attributes?.checkout?.custom_data,
+    body?.data?.attributes?.checkout?.customData,
+  ];
+  for (const candidate of candidates) {
+    const parsed = parseCustomData(candidate);
+    if (parsed && typeof parsed === 'object') return parsed;
+  }
+  return null;
+}
+
+function extractCustomValue(customData, keys) {
+  if (!customData || typeof customData !== 'object') return '';
+  for (const key of keys) {
+    const raw = customData[key];
+    if (raw !== undefined && raw !== null && String(raw).trim()) {
+      return String(raw).trim();
+    }
+  }
+  return '';
+}
+
+function extractCustomUserId(body) {
+  const customData = extractCustomData(body);
+  return extractCustomValue(customData, [
+    'fa_user_id',
+    'faUserId',
+    'user_id',
+    'userId',
+    'uid',
+  ]);
+}
+
+function extractCustomEmail(body) {
+  const customData = extractCustomData(body);
+  return extractCustomValue(customData, [
+    'fa_user_email',
+    'faUserEmail',
+    'user_email',
+    'userEmail',
+    'email',
+  ]).toLowerCase();
+}
+
 function extractCustomerId(body) {
   const rel = body?.data?.relationships?.customer?.data?.id;
   const attr = body?.data?.attributes?.customer_id;
@@ -182,12 +251,34 @@ function resolveStatus(eventType, attrs) {
 function resolveValidUntil(status, attrs) {
   if (status === 'none') return { value: null, inferred: false };
   if (status === 'cancelled') {
-    const value = pickDate(attrs, ['ends_at', 'renews_at', 'trial_ends_at', 'current_period_end']);
+    const value = pickDate(attrs, [
+      'ends_at',
+      'renews_at',
+      'trial_ends_at',
+      'trial_end_at',
+      'current_period_end',
+      'current_period_end_at',
+      'current_period_ends_at',
+      'next_payment_at',
+      'next_payment_date',
+      'renewal_date',
+    ]);
     if (value) return { value, inferred: false };
-    return { value: new Date(), inferred: true };
+    return { value: null, inferred: true };
   }
   return {
-    value: pickDate(attrs, ['renews_at', 'ends_at', 'trial_ends_at', 'current_period_end']),
+    value: pickDate(attrs, [
+      'renews_at',
+      'ends_at',
+      'trial_ends_at',
+      'trial_end_at',
+      'current_period_end',
+      'current_period_end_at',
+      'current_period_ends_at',
+      'next_payment_at',
+      'next_payment_date',
+      'renewal_date',
+    ]),
     inferred: false,
   };
 }
@@ -197,11 +288,17 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
   const attrs = body?.data?.attributes || {};
   const status = resolveStatus(eventType, attrs);
   const validUntilResult = resolveValidUntil(status, attrs);
+  const purchaseEmail = extractEmail(body);
+  const customEmail = extractCustomEmail(body);
+  const email = customEmail || purchaseEmail;
 
   return {
     eventId: extractEventId(body, rawBody),
     eventType,
-    email: extractEmail(body),
+    email,
+    purchaseEmail,
+    customEmail,
+    userId: extractCustomUserId(body),
     customerId: extractCustomerId(body),
     subscriptionId: extractSubscriptionId(body),
     manageUrl: extractManageUrl(body),

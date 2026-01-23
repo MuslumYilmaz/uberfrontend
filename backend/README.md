@@ -26,6 +26,7 @@ Then edit `.env` with your values. Do not commit `.env` (it is gitignored).
 - `FRONTEND_ORIGINS`: Comma-separated allowed CORS origins (e.g. `http://localhost:4200,https://frontendatlas.com`).
 - `FRONTEND_ORIGIN`: Single allowed CORS origin (legacy fallback).
 - `COOKIE_SAMESITE`: `lax` (default), `strict`, or `none`.
+- `COOKIE_DOMAIN`: optional, e.g. `.frontendatlas.com` to share cookies across subdomains.
 - `COOKIE_SECURE`: `true` in production over HTTPS, `false` for local HTTP dev.
 
 ### Billing (webhooks)
@@ -98,7 +99,7 @@ Routes are handled via `backend/api/[...all].js`, so your API is available at:
 - `TRUST_PROXY=true` (recommended on Vercel so `req.ip` and cookies behave correctly behind proxies)
 
 **Cookie/SameSite**
-- If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax`.
+- If your frontend + backend share the same site (recommended, e.g. `frontendatlas.com` and `api.frontendatlas.com`), keep `COOKIE_SAMESITE=lax` and consider `COOKIE_DOMAIN=.frontendatlas.com` if you set cookies from different subdomains.
 - If your frontend is on a different site (different eTLD+1), use `COOKIE_SAMESITE=none` (enables CSRF double-submit; the frontend already sends `X-CSRF-Token` when the `csrf_token` cookie exists).
 
 **Bug report email (optional)**
