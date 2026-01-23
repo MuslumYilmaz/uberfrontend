@@ -10,6 +10,7 @@ import { take } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../environments/environment';
 import { PaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/payments-provider.util';
+import { isProActive } from '../../../core/utils/entitlements.util';
 
 @Component({
   selector: 'app-profile',
@@ -100,6 +101,9 @@ import { PaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/p
             <p class="desc" *ngIf="billing()?.pro?.status === 'active'">
               Your subscription renews on {{ billing()?.pro?.renewsAt | date:'mediumDate' }}.
             </p>
+            <p class="desc" *ngIf="isPro() && billing()?.pro?.status !== 'active' && billing()?.pro?.status !== 'lifetime'">
+              Your plan is active.
+            </p>
             <p class="desc" *ngIf="!isPro()">
               You are not subscribed.
               <a [routerLink]="['/pricing']">View subscription plans</a>
@@ -107,6 +111,10 @@ import { PaymentsProvider, resolvePaymentsProvider } from '../../../core/utils/p
             <div class="promo" *ngIf="!isPro()">
               <strong>Upgrade to FrontendAtlas Pro</strong>
               <p>Get access to premium challenges, guides, and exclusive tracks.</p>
+            </div>
+            <div class="promo" *ngIf="isPro()">
+              <strong>You’re a Premium member</strong>
+              <p>Thanks for supporting FrontendAtlas. Premium content is unlocked.</p>
             </div>
           </div>
 
@@ -286,8 +294,7 @@ export class ProfileComponent implements OnInit {
   }
 
   isPro(): boolean {
-    const b = this.billing();
-    return !!b && (b.pro?.status === 'lifetime' || b.pro?.status === 'active');
+    return isProActive(this.user());
   }
 
   openChangePassword(): void {
