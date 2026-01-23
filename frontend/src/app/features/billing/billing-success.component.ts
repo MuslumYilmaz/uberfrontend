@@ -14,7 +14,7 @@ import { isProActive } from '../../core/utils/entitlements.util';
   styleUrls: ['./billing-success.component.css'],
 })
 export class BillingSuccessComponent implements OnInit, OnDestroy {
-  state = signal<'syncing' | 'timeout' | 'error'>('syncing');
+  state = signal<'syncing' | 'timeout' | 'error' | 'login-required'>('syncing');
   errorMessage = signal<string | null>(null);
   attempts = signal(0);
 
@@ -55,19 +55,25 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
     this.pollSub = timer(0, this.pollConfig.intervalMs)
       .pipe(
         switchMap(() =>
-          this.auth.fetchMe().pipe(
+          this.auth.fetchMeStatus().pipe(
             catchError(() => {
               this.errorMessage.set('Unable to refresh your session. Retrying...');
-              return of(null);
+              return of({ user: null, status: 0 });
             })
           )
         )
       )
-      .subscribe((user) => {
+      .subscribe((result) => {
         tries += 1;
         this.attempts.set(tries);
 
-        if (user && isProActive(user)) {
+        if (result.status === 401 || result.status === 403) {
+          this.state.set('login-required');
+          this.pollSub?.unsubscribe();
+          return;
+        }
+
+        if (result.user && isProActive(result.user)) {
           this.router.navigateByUrl('/profile').catch(() => void 0);
           this.pollSub?.unsubscribe();
           return;

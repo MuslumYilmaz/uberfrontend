@@ -14,6 +14,7 @@ async function recordPendingEntitlement(model, data) {
       eventId: data.eventId,
       eventType: data.eventType,
       email: normalizeEmail(data.email),
+      userId: data.userId ? String(data.userId).trim() : undefined,
       entitlement: data.entitlement,
       saleId: data.saleId,
       orderId: data.orderId,
@@ -30,6 +31,27 @@ async function recordPendingEntitlement(model, data) {
   }
 }
 
+function extractUserIdFromPayload(payload) {
+  const custom =
+    payload?.meta?.custom_data ||
+    payload?.meta?.customData ||
+    payload?.data?.attributes?.custom_data ||
+    payload?.data?.attributes?.customData ||
+    payload?.data?.attributes?.custom ||
+    payload?.custom_data ||
+    payload?.customData ||
+    payload?.custom;
+  if (!custom) return '';
+  const raw = typeof custom === 'object' ? custom : null;
+  const candidate =
+    raw?.fa_user_id ||
+    raw?.faUserId ||
+    raw?.user_id ||
+    raw?.userId;
+  if (!candidate) return '';
+  return String(candidate).trim();
+}
+
 async function applyPendingEntitlementsForUser(model, user) {
   const email = normalizeEmail(user?.email);
   if (!email) return { applied: false };
@@ -38,6 +60,12 @@ async function applyPendingEntitlementsForUser(model, user) {
   if (!pending.length) return { applied: false };
 
   const latest = pending[pending.length - 1];
+  if (latest.provider === 'lemonsqueezy') {
+    const pendingUserId = latest.userId || extractUserIdFromPayload(latest.payload);
+    if (!pendingUserId || String(pendingUserId) !== String(user._id)) {
+      return { applied: false, reason: 'lemonsqueezy_user_mismatch', eventId: latest.eventId };
+    }
+  }
 
   user.entitlements = user.entitlements || {};
   if (latest.scope === 'projects') {

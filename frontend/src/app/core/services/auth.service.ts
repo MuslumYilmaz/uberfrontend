@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
@@ -181,6 +181,31 @@ export class AuthService {
             this.user.set(null);
             this.setSessionHint(false);
             return of(null);
+          }
+          return throwError(() => err);
+        })
+      );
+  }
+
+  /** GET /api/auth/me with status (used by billing success polling). */
+  fetchMeStatus(): Observable<{ user: User | null; status: number }> {
+    const seq = ++this.sessionSeq;
+    return this.http
+      .get<User>(`${this.base}/me`, { withCredentials: true, observe: 'response' })
+      .pipe(
+        map((res) => {
+          if (this.sessionSeq === seq && res.body) {
+            this.setSessionHint(true);
+            this.user.set(this.cloneUser(res.body));
+          }
+          return { user: res.body ?? null, status: res.status };
+        }),
+        catchError((err) => {
+          if (this.sessionSeq !== seq) return of({ user: null, status: err?.status ?? 0 });
+          if (err?.status === 401 || err?.status === 403) {
+            this.user.set(null);
+            this.setSessionHint(false);
+            return of({ user: null, status: err.status });
           }
           return throwError(() => err);
         })

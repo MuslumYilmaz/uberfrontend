@@ -33,7 +33,7 @@ function getCookieDomain() {
     const explicit = String(process.env.COOKIE_DOMAIN || '').trim();
     if (explicit) return explicit;
     try {
-        const host = new URL(FRONTEND_BASE || '').hostname || '';
+        const host = new URL(FRONTEND_BASE || SERVER_BASE || '').hostname || '';
         if (!host || host === 'localhost' || host.endsWith('.localhost')) return undefined;
         const parts = host.replace(/^www\./, '').split('.');
         if (parts.length < 2) return undefined;

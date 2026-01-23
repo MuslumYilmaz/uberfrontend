@@ -7,6 +7,7 @@ const PendingEntitlementSchema = new mongoose.Schema(
     eventId: { type: String, required: true },
     eventType: { type: String },
     email: { type: String, required: true, lowercase: true, trim: true },
+    userId: { type: String },
     entitlement: {
       status: {
         type: String,

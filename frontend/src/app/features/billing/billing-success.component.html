@@ -16,5 +16,12 @@
       <button class="btn" type="button" (click)="startPolling()">Refresh access</button>
       <a class="link" routerLink="/profile">Go to profile</a>
     </div>
+
+    <div class="timeout" *ngIf="state() === 'login-required'">
+      <p>Your session expired. Please sign in to finish activation.</p>
+      <p class="muted">We’ll resume syncing once you’re logged in.</p>
+      <a class="btn" routerLink="/auth/login">Sign in</a>
+      <button class="link" type="button" (click)="startPolling()">Retry after login</button>
+    </div>
   </div>
 </section>
