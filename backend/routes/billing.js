@@ -393,6 +393,9 @@ async function handleLemonSqueezyWebhook(req, res) {
     const lsMeta = user.billing.providers.lemonsqueezy || {};
     if (normalized.customerId) lsMeta.customerId = normalized.customerId;
     if (normalized.subscriptionId) lsMeta.subscriptionId = normalized.subscriptionId;
+    if (normalized.startedAt && (!lsMeta.startedAt || normalized.startedAt < lsMeta.startedAt)) {
+      lsMeta.startedAt = normalized.startedAt;
+    }
     if (normalized.manageUrl) lsMeta.manageUrl = normalized.manageUrl;
     if (purchaseEmail) lsMeta.purchaserEmail = purchaseEmail;
     lsMeta.lastEventId = eventId;

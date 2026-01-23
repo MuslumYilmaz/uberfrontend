@@ -283,11 +283,24 @@ function resolveValidUntil(status, attrs) {
   };
 }
 
+function extractStartedAt(attrs) {
+  return pickDate(attrs, [
+    'created_at',
+    'createdAt',
+    'started_at',
+    'startedAt',
+    'activated_at',
+    'activatedAt',
+    'trial_started_at',
+  ]);
+}
+
 function normalizeLemonSqueezyEvent(body, rawBody) {
   const eventType = extractEventType(body);
   const attrs = body?.data?.attributes || {};
   const status = resolveStatus(eventType, attrs);
   const validUntilResult = resolveValidUntil(status, attrs);
+  const startedAt = extractStartedAt(attrs);
   const purchaseEmail = extractEmail(body);
   const customEmail = extractCustomEmail(body);
   const email = customEmail || purchaseEmail;
@@ -299,6 +312,7 @@ function normalizeLemonSqueezyEvent(body, rawBody) {
     purchaseEmail,
     customEmail,
     userId: extractCustomUserId(body),
+    startedAt,
     customerId: extractCustomerId(body),
     subscriptionId: extractSubscriptionId(body),
     manageUrl: extractManageUrl(body),

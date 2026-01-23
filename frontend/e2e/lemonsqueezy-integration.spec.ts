@@ -335,4 +335,59 @@ test.describe('lemonsqueezy integration (local)', () => {
       .poll(() => page.evaluate(() => window.__lastOpenedUrl || ''))
       .toBe(manageUrl);
   });
+
+  const formatDate = (value: string) =>
+    new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(value));
+
+  const subscriptionCases = [
+    { label: 'monthly', start: '2026-01-01T00:00:00Z', end: '2026-02-01T00:00:00Z' },
+    { label: 'quarterly', start: '2026-01-01T00:00:00Z', end: '2026-04-01T00:00:00Z' },
+    { label: 'annual', start: '2026-01-01T00:00:00Z', end: '2027-01-01T00:00:00Z' },
+  ] as const;
+
+  for (const plan of subscriptionCases) {
+    test(`profile billing shows subscription dates for ${plan.label}`, async ({ page }) => {
+      const user = buildMockUser({
+        _id: `e2e-ls-${plan.label}`,
+        username: `ls_${plan.label}`,
+        email: `ls-${plan.label}@example.com`,
+        accessTier: 'premium',
+        billing: {
+          pro: { status: 'active' },
+          projects: { status: 'none' },
+          providers: {
+            lemonsqueezy: {
+              customerId: `cust_${plan.label}`,
+              subscriptionId: `sub_${plan.label}`,
+              startedAt: plan.start,
+            },
+          },
+        },
+        entitlements: {
+          pro: { status: 'active', validUntil: plan.end },
+          projects: { status: 'none', validUntil: null },
+        },
+        effectiveProActive: true,
+        accessTierEffective: 'premium',
+      });
+
+      await page.route('**/api/auth/me', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(user),
+        });
+      });
+
+      await page.addInitScript(() => {
+        localStorage.setItem('fa:auth:session', '1');
+      });
+
+      await page.goto('/profile');
+      await page.getByRole('button', { name: 'Billing' }).click();
+
+      await expect(page.getByTestId('pro-start-date')).toContainText(formatDate(plan.start));
+      await expect(page.getByTestId('pro-end-date')).toContainText(formatDate(plan.end));
+    });
+  }
 });

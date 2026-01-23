@@ -98,8 +98,11 @@ import { isProActive } from '../../../core/utils/entitlements.util';
           <div class="account-card">
             <h4>FrontendAtlas Pro</h4>
             <p class="desc" *ngIf="billing()?.pro?.status === 'lifetime'">You are on the <b>Lifetime</b> plan.</p>
-            <p class="desc" *ngIf="billing()?.pro?.status === 'active'">
-              Your subscription renews on {{ billing()?.pro?.renewsAt | date:'mediumDate' }}.
+            <p class="desc" *ngIf="isPro() && proStartDate()" data-testid="pro-start-date">
+              Started on {{ proStartDate() | date:'mediumDate' }}.
+            </p>
+            <p class="desc" *ngIf="isPro() && proEndDate()" data-testid="pro-end-date">
+              {{ proEndLabel() }} {{ proEndDate() | date:'mediumDate' }}.
             </p>
             <p class="desc" *ngIf="isPro() && billing()?.pro?.status !== 'active' && billing()?.pro?.status !== 'lifetime'">
               Your plan is active.
@@ -295,6 +298,25 @@ export class ProfileComponent implements OnInit {
 
   isPro(): boolean {
     return isProActive(this.user());
+  }
+
+  proStartDate(): Date | null {
+    const lsStartedAt = (this.billing() as any)?.providers?.lemonsqueezy?.startedAt;
+    if (lsStartedAt) return new Date(lsStartedAt);
+    return null;
+  }
+
+  proEndDate(): Date | null {
+    const entValidUntil = (this.user() as any)?.entitlements?.pro?.validUntil;
+    if (entValidUntil) return new Date(entValidUntil);
+    const legacyRenewsAt = this.billing()?.pro?.renewsAt;
+    return legacyRenewsAt ? new Date(legacyRenewsAt) : null;
+  }
+
+  proEndLabel(): string {
+    const status = (this.user() as any)?.entitlements?.pro?.status;
+    if (status === 'cancelled' || status === 'canceled') return 'Access until';
+    return 'Renews on';
   }
 
   openChangePassword(): void {
