@@ -5,6 +5,7 @@ import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Entitlements, Tech } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
+import { resolvePaymentsProvider } from '../utils/payments-provider.util';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -254,7 +255,9 @@ export class AuthService {
 
   /** GET /api/billing/manage-url */
   getManageSubscriptionUrl(): Observable<{ url: string }> {
-    return this.http.get<{ url: string }>(apiUrl('/billing/manage-url'), { withCredentials: true });
+    const provider = resolvePaymentsProvider(environment);
+    const query = provider ? `?provider=${encodeURIComponent(provider)}` : '';
+    return this.http.get<{ url: string }>(apiUrl(`/billing/manage-url${query}`), { withCredentials: true });
   }
 
   private isLocalHost(host: string): boolean {

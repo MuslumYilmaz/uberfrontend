@@ -396,4 +396,49 @@ test.describe('lemonsqueezy integration (local)', () => {
       await expect(page.getByTestId('pro-end-date')).toContainText(formatDate(plan.end));
     });
   }
+
+  test('profile billing shows lifetime status without end date', async ({ page }) => {
+    const user = buildMockUser({
+      _id: 'e2e-ls-lifetime',
+      username: 'ls_lifetime',
+      email: 'ls-lifetime@example.com',
+      accessTier: 'premium',
+      billing: {
+        pro: { status: 'lifetime' },
+        projects: { status: 'none' },
+        providers: {
+          lemonsqueezy: {
+            customerId: 'cust_lifetime',
+            subscriptionId: 'sub_lifetime',
+            startedAt: '2026-01-01T00:00:00Z',
+          },
+        },
+      },
+      entitlements: {
+        pro: { status: 'lifetime', validUntil: null },
+        projects: { status: 'none', validUntil: null },
+      },
+      effectiveProActive: true,
+      accessTierEffective: 'premium',
+    });
+
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(user),
+      });
+    });
+
+    await page.addInitScript(() => {
+      localStorage.setItem('fa:auth:session', '1');
+    });
+
+    await page.goto('/profile');
+    await page.getByRole('button', { name: 'Billing' }).click();
+
+    await expect(page.getByText('Lifetime')).toBeVisible();
+    await expect(page.getByTestId('pro-start-date')).toBeVisible();
+    await expect(page.getByTestId('pro-end-date')).toHaveCount(0);
+  });
 });

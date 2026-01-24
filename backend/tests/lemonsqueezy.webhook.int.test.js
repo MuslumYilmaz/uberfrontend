@@ -144,6 +144,41 @@ describe('LemonSqueezy webhook integration', () => {
     expect(event).toBeTruthy();
   });
 
+  test('lifetime subscription maps to lifetime entitlement', async () => {
+    const user = await User.findOne({ email: 'test@example.com' }).lean();
+    const payload = {
+      meta: {
+        event_name: 'subscription_created',
+        test_mode: true,
+        custom_data: { fa_user_id: user._id.toString() },
+      },
+      data: {
+        id: 'sub_lifetime',
+        attributes: {
+          user_email: 'test@example.com',
+          status: 'active',
+          product_name: 'FrontendAtlas Premium - Lifetime',
+          variant_name: 'Lifetime',
+        },
+      },
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = signPayload(rawBody);
+
+    const res = await request(app)
+      .post('/api/billing/webhooks/lemonsqueezy')
+      .set('Content-Type', 'application/json')
+      .set('x-signature', signature)
+      .send(rawBody);
+
+    expect(res.status).toBe(200);
+
+    const updated = await User.findById(user._id).lean();
+    expect(updated.entitlements.pro.status).toBe('lifetime');
+    expect(updated.entitlements.pro.validUntil).toBeNull();
+    expect(updated.accessTier).toBe('premium');
+  });
+
   test('live-mode payload uses LIVE secret', async () => {
     process.env.LEMONSQUEEZY_WEBHOOK_SECRET_TEST = 'test_secret';
     process.env.LEMONSQUEEZY_WEBHOOK_SECRET_LIVE = 'live_secret';

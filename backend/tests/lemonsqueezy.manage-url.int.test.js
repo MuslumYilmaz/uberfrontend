@@ -96,6 +96,33 @@ describe('LemonSqueezy manage-url route', () => {
     expect(res.body.url).toBe('https://example.com/manage');
   });
 
+  test('returns stored manage URL even if BILLING_PROVIDER is not set', async () => {
+    const prevProvider = process.env.BILLING_PROVIDER;
+    process.env.BILLING_PROVIDER = '';
+    const user = await seedUser({
+      billing: {
+        pro: { status: 'active' },
+        projects: { status: 'none' },
+        providers: {
+          lemonsqueezy: {
+            customerId: 'cust_123',
+            subscriptionId: 'sub_123',
+            manageUrl: 'https://example.com/manage',
+          },
+        },
+      },
+    });
+
+    const res = await request(app)
+      .get('/api/billing/manage-url')
+      .set('Authorization', authHeader(user._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.url).toBe('https://example.com/manage');
+
+    process.env.BILLING_PROVIDER = prevProvider;
+  });
+
   test('returns 409 when manage URL missing and no API key', async () => {
     const user = await seedUser();
     delete process.env.LEMONSQUEEZY_API_KEY;

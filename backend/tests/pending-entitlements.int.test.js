@@ -125,3 +125,37 @@ test('does not apply pending entitlement when email differs', async () => {
   const pending = await PendingEntitlement.findOne({ eventId: 'evt_other' }).lean();
   expect(pending.appliedAt).toBeFalsy();
 });
+
+test('lemonsqueezy pending entitlement requires matching userId', async () => {
+  const user = await User.create({
+    email: 'apply@example.com',
+    username: 'apply_user',
+    passwordHash: 'hash',
+    accessTier: 'free',
+    entitlements: {
+      pro: { status: 'none', validUntil: null },
+      projects: { status: 'none', validUntil: null },
+    },
+  });
+
+  await PendingEntitlement.create({
+    provider: 'lemonsqueezy',
+    scope: 'pro',
+    eventId: 'evt_ls_mismatch',
+    eventType: 'subscription_created',
+    email: 'apply@example.com',
+    userId: 'some-other-user-id',
+    entitlement: { status: 'active', validUntil: new Date('2099-01-01T00:00:00Z') },
+  });
+
+  const token = signToken(user);
+  const res = await request(app)
+    .get('/api/auth/me')
+    .set('Authorization', `Bearer ${token}`);
+
+  expect(res.status).toBe(200);
+  expect(res.body.entitlements.pro.status).toBe('none');
+
+  const pending = await PendingEntitlement.findOne({ eventId: 'evt_ls_mismatch' }).lean();
+  expect(pending.appliedAt).toBeFalsy();
+});

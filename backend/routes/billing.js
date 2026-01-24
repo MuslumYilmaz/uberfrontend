@@ -488,15 +488,17 @@ async function fetchLemonSqueezyManageUrl({ apiKey, subscriptionId, customerId }
 
 router.get('/manage-url', requireAuth, async (req, res) => {
   try {
-    const provider = String(process.env.BILLING_PROVIDER || 'gumroad').toLowerCase();
-    if (provider !== 'lemonsqueezy') {
-      return res.status(400).json({ error: 'Provider not supported for manage URL' });
-    }
-
     const user = await User.findById(req.auth.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const lsMeta = user?.billing?.providers?.lemonsqueezy || {};
+    const requestedProvider = String(req.query.provider || process.env.BILLING_PROVIDER || '').toLowerCase();
+    const hasLsMeta = !!(lsMeta.manageUrl || lsMeta.subscriptionId || lsMeta.customerId);
+    const provider = hasLsMeta ? 'lemonsqueezy' : requestedProvider || 'gumroad';
+    if (provider !== 'lemonsqueezy') {
+      return res.status(400).json({ error: 'Provider not supported for manage URL' });
+    }
+
     if (lsMeta.manageUrl) {
       return res.status(200).json({ url: lsMeta.manageUrl });
     }
