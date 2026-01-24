@@ -233,22 +233,29 @@ function extractProductId(body) {
   return attr ? String(attr).trim() : '';
 }
 
-function resolveStatus(eventType, attrs) {
+function isLifetimePurchase(attrs) {
+  const rawName = `${attrs?.product_name || ''} ${attrs?.variant_name || ''}`.toLowerCase();
+  return rawName.includes('lifetime');
+}
+
+function resolveStatus(eventType, attrs, lifetime) {
   const normalized = String(eventType || '').toLowerCase();
   const statusRaw = String(attrs?.status || '').toLowerCase();
 
   if (normalized.includes('refund') || normalized.includes('refunded')) return 'none';
   if (normalized.includes('payment_failed')) return 'none';
+  if (lifetime) return 'lifetime';
   if (normalized.includes('cancel')) return 'cancelled';
   if (normalized.includes('expired')) return 'none';
 
   if (statusRaw === 'cancelled' || statusRaw === 'canceled') return 'cancelled';
   if (['expired', 'unpaid', 'void', 'refunded', 'failed'].includes(statusRaw)) return 'none';
 
-  return 'active';
+  return lifetime ? 'lifetime' : 'active';
 }
 
 function resolveValidUntil(status, attrs) {
+  if (status === 'lifetime') return { value: null, inferred: false };
   if (status === 'none') return { value: null, inferred: false };
   if (status === 'cancelled') {
     const value = pickDate(attrs, [
@@ -298,7 +305,8 @@ function extractStartedAt(attrs) {
 function normalizeLemonSqueezyEvent(body, rawBody) {
   const eventType = extractEventType(body);
   const attrs = body?.data?.attributes || {};
-  const status = resolveStatus(eventType, attrs);
+  const lifetime = isLifetimePurchase(attrs);
+  const status = resolveStatus(eventType, attrs, lifetime);
   const validUntilResult = resolveValidUntil(status, attrs);
   const startedAt = extractStartedAt(attrs);
   const purchaseEmail = extractEmail(body);

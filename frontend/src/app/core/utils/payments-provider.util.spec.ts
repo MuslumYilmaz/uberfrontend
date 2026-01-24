@@ -22,12 +22,14 @@ describe('payments-provider util', () => {
       LEMONSQUEEZY_MONTHLY_URL_TEST: 'https://test.example.com/monthly',
       LEMONSQUEEZY_QUARTERLY_URL_TEST: 'https://test.example.com/quarterly',
       LEMONSQUEEZY_ANNUAL_URL_TEST: 'https://test.example.com/annual',
+      LEMONSQUEEZY_LIFETIME_URL_TEST: 'https://test.example.com/lifetime',
     };
     const provider = resolvePaymentsProvider(env);
     expect(provider).toBe('lemonsqueezy');
     expect(resolveCheckoutUrl(provider, 'monthly', env)).toBe('https://test.example.com/monthly');
     expect(resolveCheckoutUrl(provider, 'quarterly', env)).toBe('https://test.example.com/quarterly');
     expect(resolveCheckoutUrl(provider, 'annual', env)).toBe('https://test.example.com/annual');
+    expect(resolveCheckoutUrl(provider, 'lifetime', env)).toBe('https://test.example.com/lifetime');
   });
 
   it('falls back to legacy lemonsqueezy urls if mode-specific is missing', () => {
@@ -35,9 +37,11 @@ describe('payments-provider util', () => {
       PAYMENTS_PROVIDER: 'lemonsqueezy',
       PAYMENTS_MODE: 'test',
       LEMONSQUEEZY_MONTHLY_URL: 'https://legacy.example.com/monthly',
+      LEMONSQUEEZY_LIFETIME_URL: 'https://legacy.example.com/lifetime',
     };
     const provider = resolvePaymentsProvider(env);
     expect(resolveCheckoutUrl(provider, 'monthly', env)).toBe('https://legacy.example.com/monthly');
+    expect(resolveCheckoutUrl(provider, 'lifetime', env)).toBe('https://legacy.example.com/lifetime');
   });
 
   it('guards live annual if it matches quarterly', () => {

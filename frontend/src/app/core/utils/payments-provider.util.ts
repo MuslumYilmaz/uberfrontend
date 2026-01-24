@@ -2,7 +2,7 @@ import { environment } from '../../../environments/environment';
 
 export type PaymentsProvider = 'gumroad' | 'lemonsqueezy' | 'stripe';
 export type PaymentsMode = 'test' | 'live';
-export type PlanId = 'monthly' | 'quarterly' | 'annual';
+export type PlanId = 'monthly' | 'quarterly' | 'annual' | 'lifetime';
 
 type PaymentsEnv = {
   PAYMENTS_PROVIDER?: PaymentsProvider | string;
@@ -15,18 +15,22 @@ type PaymentsEnv = {
   LEMONSQUEEZY_MONTHLY_URL?: string;
   LEMONSQUEEZY_QUARTERLY_URL?: string;
   LEMONSQUEEZY_ANNUAL_URL?: string;
+  LEMONSQUEEZY_LIFETIME_URL?: string;
   LEMONSQUEEZY_MANAGE_URL?: string;
   LEMONSQUEEZY_MONTHLY_URL_TEST?: string;
   LEMONSQUEEZY_QUARTERLY_URL_TEST?: string;
   LEMONSQUEEZY_ANNUAL_URL_TEST?: string;
+  LEMONSQUEEZY_LIFETIME_URL_TEST?: string;
   LEMONSQUEEZY_MANAGE_URL_TEST?: string;
   LEMONSQUEEZY_MONTHLY_URL_LIVE?: string;
   LEMONSQUEEZY_QUARTERLY_URL_LIVE?: string;
   LEMONSQUEEZY_ANNUAL_URL_LIVE?: string;
+  LEMONSQUEEZY_LIFETIME_URL_LIVE?: string;
   LEMONSQUEEZY_MANAGE_URL_LIVE?: string;
   STRIPE_MONTHLY_URL?: string;
   STRIPE_QUARTERLY_URL?: string;
   STRIPE_ANNUAL_URL?: string;
+  STRIPE_LIFETIME_URL?: string;
   STRIPE_MANAGE_URL?: string;
 };
 
@@ -88,6 +92,11 @@ export function resolveCheckoutUrlWithMeta(
         key: 'LEMONSQUEEZY_ANNUAL_URL_TEST',
         fallback: { value: env.LEMONSQUEEZY_ANNUAL_URL, key: 'LEMONSQUEEZY_ANNUAL_URL' },
       },
+      lifetime: {
+        value: env.LEMONSQUEEZY_LIFETIME_URL_TEST,
+        key: 'LEMONSQUEEZY_LIFETIME_URL_TEST',
+        fallback: { value: env.LEMONSQUEEZY_LIFETIME_URL, key: 'LEMONSQUEEZY_LIFETIME_URL' },
+      },
     };
     const liveKeys: Record<PlanId, { value?: string; key: string; fallback?: { value?: string; key: string } }> = {
       monthly: {
@@ -104,6 +113,11 @@ export function resolveCheckoutUrlWithMeta(
         value: env.LEMONSQUEEZY_ANNUAL_URL_LIVE,
         key: 'LEMONSQUEEZY_ANNUAL_URL_LIVE',
         fallback: { value: env.LEMONSQUEEZY_ANNUAL_URL, key: 'LEMONSQUEEZY_ANNUAL_URL' },
+      },
+      lifetime: {
+        value: env.LEMONSQUEEZY_LIFETIME_URL_LIVE,
+        key: 'LEMONSQUEEZY_LIFETIME_URL_LIVE',
+        fallback: { value: env.LEMONSQUEEZY_LIFETIME_URL, key: 'LEMONSQUEEZY_LIFETIME_URL' },
       },
     };
 
@@ -126,6 +140,7 @@ export function resolveCheckoutUrlWithMeta(
       monthly: { value: env.GUMROAD_MONTHLY_URL, key: 'GUMROAD_MONTHLY_URL' },
       quarterly: { value: env.GUMROAD_QUARTERLY_URL, key: 'GUMROAD_QUARTERLY_URL' },
       annual: { value: env.GUMROAD_ANNUAL_URL, key: 'GUMROAD_ANNUAL_URL' },
+      lifetime: { value: undefined, key: 'GUMROAD_LIFETIME_URL' },
     };
     const chosen = map[planId];
     return { provider, planId, mode, url: chosen.value || null, sourceKey: chosen.value ? chosen.key : null };
@@ -135,6 +150,7 @@ export function resolveCheckoutUrlWithMeta(
     monthly: { value: env.STRIPE_MONTHLY_URL, key: 'STRIPE_MONTHLY_URL' },
     quarterly: { value: env.STRIPE_QUARTERLY_URL, key: 'STRIPE_QUARTERLY_URL' },
     annual: { value: env.STRIPE_ANNUAL_URL, key: 'STRIPE_ANNUAL_URL' },
+    lifetime: { value: env.STRIPE_LIFETIME_URL, key: 'STRIPE_LIFETIME_URL' },
   };
   const stripeChosen = stripeMap[planId];
   return {
@@ -154,6 +170,7 @@ export function buildCheckoutUrls(
     monthly: resolveCheckoutUrl(provider, 'monthly', env) || '',
     quarterly: resolveCheckoutUrl(provider, 'quarterly', env) || '',
     annual: resolveCheckoutUrl(provider, 'annual', env) || '',
+    lifetime: resolveCheckoutUrl(provider, 'lifetime', env) || '',
   };
 }
 

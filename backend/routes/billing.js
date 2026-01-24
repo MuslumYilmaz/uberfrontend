@@ -379,13 +379,21 @@ async function handleLemonSqueezyWebhook(req, res) {
     const existingPro = user.entitlements.pro || {};
     const nextProStatus = normalized.entitlement.status;
     let nextProValidUntil = normalized.entitlement.validUntil;
-    if (nextProStatus === 'cancelled' && !nextProValidUntil) {
-      nextProValidUntil = existingPro.validUntil || null;
+    const eventTypeLower = String(normalized.eventType || '').toLowerCase();
+    const isRefundEvent = eventTypeLower.includes('refund') || eventTypeLower.includes('chargeback');
+    if (existingPro.status === 'lifetime' && nextProStatus !== 'lifetime' && !isRefundEvent) {
+      // Preserve lifetime entitlements unless a refund/chargeback event explicitly revokes it.
+      nextProValidUntil = null;
+      user.entitlements.pro = { status: 'lifetime', validUntil: null };
+    } else {
+      if (nextProStatus === 'cancelled' && !nextProValidUntil) {
+        nextProValidUntil = existingPro.validUntil || null;
+      }
+      user.entitlements.pro = {
+        status: nextProStatus,
+        validUntil: nextProValidUntil,
+      };
     }
-    user.entitlements.pro = {
-      status: nextProStatus,
-      validUntil: nextProValidUntil,
-    };
     if (!user.entitlements.projects) {
       user.entitlements.projects = { status: 'none', validUntil: null };
     }

@@ -307,6 +307,8 @@ export class ProfileComponent implements OnInit {
   }
 
   proEndDate(): Date | null {
+    const status = (this.user() as any)?.entitlements?.pro?.status;
+    if (status === 'lifetime') return null;
     const entValidUntil = (this.user() as any)?.entitlements?.pro?.validUntil;
     if (entValidUntil) return new Date(entValidUntil);
     const legacyRenewsAt = this.billing()?.pro?.renewsAt;

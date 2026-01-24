@@ -184,6 +184,15 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
         badge: 'Best for active prep',
         note: 'Final price, currency, and taxes are shown at checkout.',
       },
+      {
+        id: 'lifetime',
+        title: 'Lifetime',
+        price: '$149',
+        priceSuffix: '',
+        features: ['One-time payment', 'Premium access forever'],
+        badge: 'Lifetime access',
+        note: 'Final price, currency, and taxes are shown at checkout.',
+      },
     ];
 
   featureCards = [
