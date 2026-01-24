@@ -11,7 +11,7 @@ export const environment = {
     sentryRelease: SENTRY_RELEASE,
     sentryTracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
     PAYMENTS_PROVIDER: 'lemonsqueezy',
-    PAYMENTS_MODE: 'test',
+    PAYMENTS_MODE: 'live',
     GUMROAD_MONTHLY_URL: 'https://frontendatlas.gumroad.com/l/xsoew',
     GUMROAD_QUARTERLY_URL: 'https://frontendatlas.gumroad.com/l/rwsapy',
     GUMROAD_ANNUAL_URL: 'https://frontendatlas.gumroad.com/l/rwurwg',
