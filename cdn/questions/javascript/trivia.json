@@ -2726,5 +2726,803 @@
       ]
     },
     "access": "free"
+  },
+  {
+    "id": "js-microtasks-vs-macrotasks",
+    "title": "Microtasks vs Macrotasks in JavaScript (Event Loop Priority)",
+    "description": "In each event loop turn, JavaScript runs synchronous code, then drains the entire microtask queue (e.g., Promise.then, queueMicrotask) before taking the next macrotask (e.g., setTimeout, DOM events). This priority explains why Promises run before timers and why long microtask chains can delay rendering.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "event-loop",
+      "async",
+      "microtasks",
+      "promise",
+      "timers",
+      "timing",
+      "performance"
+    ],
+    "importance": 5,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Core difference</strong>\n\nBoth are “queued callbacks” that run <em>after</em> the current synchronous call stack finishes. The difference is <strong>priority and timing</strong>.\n\n- <strong>Microtasks</strong> run <strong>immediately after the call stack</strong> and are <strong>fully drained</strong> before anything else happens.\n- <strong>Macrotasks</strong> run <strong>one at a time</strong> on the next event loop turn, and the browser may render between macrotasks."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Queue",
+            "Common sources",
+            "When it runs",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "<strong>Microtask queue</strong>",
+              "<code>Promise.then/catch/finally</code>, <code>queueMicrotask</code>, <code>MutationObserver</code>",
+              "After the current call stack, <strong>before</strong> the next macrotask and typically before rendering",
+              "Higher priority: can “cut in line” before timers/events"
+            ],
+            [
+              "<strong>Macrotask queue</strong>",
+              "<code>setTimeout</code>, <code>setInterval</code>, DOM events, message events, I/O callbacks",
+              "Next event loop turn; one macrotask runs, then microtasks drain again",
+              "Lets the browser breathe: rendering/input can happen between turns"
+            ]
+          ],
+          "caption": "Microtasks are higher priority than macrotasks."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-repeat'></i> <strong>Event loop rule of thumb (browser)</strong>\n\nFor each turn:\n1) Run all synchronous code (call stack)\n2) <strong>Drain microtasks completely</strong>\n3) Run <strong>one macrotask</strong>\n4) Render (if needed) / handle UI\n5) Repeat"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "console.log('A');\n\nsetTimeout(() => console.log('B (macrotask: timer)'), 0);\n\nPromise.resolve()\n  .then(() => console.log('C (microtask: promise)'))\n  .then(() => console.log('D (microtask: promise)'));\n\nconsole.log('E');\n\n// Output:\n// A\n// E\n// C\n// D\n// B"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview punchline:</strong> “Promises run before timers because microtasks are drained before the next macrotask.”"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfall: microtasks can starve rendering</strong>\n\nBecause the microtask queue is drained completely, a long/recursive microtask chain can delay painting and make the UI feel frozen."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function starveUI() {\n  queueMicrotask(starveUI); // or Promise.resolve().then(starveUI)\n}\nstarveUI();\n\n// Result: browser can't yield to rendering/input."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Practical guidance</strong>\n\n- Use <strong>microtasks</strong> for “run right after this finishes” follow-ups (e.g., finalize state, chain promise work).\n- Use <strong>macrotasks</strong> to yield control (e.g., split heavy work so the UI can render):\n  - <code>setTimeout(fn, 0)</code> (coarse)\n  - <code>requestAnimationFrame</code> (before next paint)\n  - <code>requestIdleCallback</code> (when idle; best-effort)"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Yield so the UI can render between chunks\nfunction doChunkedWork(items, chunkSize = 200) {\n  let i = 0;\n  function runChunk() {\n    const end = Math.min(i + chunkSize, items.length);\n    for (; i < end; i++) {\n      // heavy work\n    }\n    if (i < items.length) setTimeout(runChunk, 0); // macrotask yield\n  }\n  runChunk();\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-server'></i> <strong>Node.js note (don’t overclaim)</strong>\n\nNode also has microtasks (Promises) and macrotask-like phases (timers, I/O, check, etc.). Microtasks are processed between phases, and <code>process.nextTick</code> has even higher priority than Promise microtasks. In interviews: keep the core browser model correct, then mention Node differences briefly if asked."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong>Microtasks</strong> (Promises/queueMicrotask) run <strong>immediately after the current stack</strong> and are <strong>drained fully</strong> before moving on, while <strong>macrotasks</strong> (timers/events) run <strong>one per turn</strong>, allowing the runtime/browser to render between turns."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-promise-combinators-all-allsettled-race-any",
+    "title": "Promise.all vs allSettled vs race vs any (JavaScript Promise Combinators)",
+    "description": "Promise combinators coordinate multiple async operations. all fails fast, allSettled always returns results, race resolves/rejects with the first settled promise, and any resolves with the first fulfilled promise (or rejects with AggregateError if all reject). Know the exact output shapes and failure behavior for interviews.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "hard",
+    "tags": [
+      "promise",
+      "async",
+      "concurrency",
+      "error-handling"
+    ],
+    "importance": 5,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nAll four take an <strong>iterable of promises</strong> (values are auto-wrapped via <code>Promise.resolve</code>). The key differences are:\n\n1) <strong>What “finishes” the combinator</strong> (first failure? first settle? first success? all done?)\n2) <strong>What it returns</strong> (values only vs per-promise status objects)\n3) <strong>How errors behave</strong> (fail-fast vs aggregate)\n\nAlso: these combinators <strong>do not cancel</strong> the other promises; they just decide what result to produce."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Combinator",
+            "Resolves when...",
+            "Rejects when...",
+            "Resolved value shape",
+            "Typical use"
+          ],
+          "rows": [
+            [
+              "<strong>Promise.all</strong>",
+              "All promises <strong>fulfill</strong>",
+              "Any promise <strong>rejects</strong> (fail-fast)",
+              "Array of fulfillment values (in input order)",
+              "All-or-nothing dependencies (e.g., load config + user + flags)"
+            ],
+            [
+              "<strong>Promise.allSettled</strong>",
+              "All promises <strong>settle</strong> (fulfilled or rejected)",
+              "Never (unless input iteration throws)",
+              "Array of result objects: <code>{status:'fulfilled', value}</code> or <code>{status:'rejected', reason}</code>",
+              "Collect outcomes (e.g., show partial results, log failures)"
+            ],
+            [
+              "<strong>Promise.race</strong>",
+              "First promise <strong>settles</strong> and it fulfills",
+              "First promise <strong>settles</strong> and it rejects",
+              "The first settled value (or rejection reason)",
+              "Timeouts / “first response wins”"
+            ],
+            [
+              "<strong>Promise.any</strong>",
+              "First promise <strong>fulfills</strong>",
+              "All promises <strong>reject</strong>",
+              "The first fulfilled value; rejects with <code>AggregateError</code>",
+              "Fallbacks (e.g., first successful endpoint/CDN)"
+            ]
+          ],
+          "caption": "Cheat sheet: finish condition + error semantics."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Minimal examples</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const ok1 = Promise.resolve('A');\nconst ok2 = Promise.resolve('B');\nconst bad = Promise.reject(new Error('X'));\n\n// 1) all: fails fast on first rejection\nawait Promise.all([ok1, ok2]);          // -> ['A', 'B']\nawait Promise.all([ok1, bad, ok2]);     // -> rejects with Error('X')\n\n// 2) allSettled: always returns status objects\nawait Promise.allSettled([ok1, bad, ok2]);\n// -> [\n//   { status: 'fulfilled', value: 'A' },\n//   { status: 'rejected', reason: Error('X') },\n//   { status: 'fulfilled', value: 'B' }\n// ]\n\n// 3) race: first settle wins (could be reject)\nawait Promise.race([bad, ok1]);         // -> rejects (bad settles first)\nawait Promise.race([ok1, bad]);         // -> 'A'\n\n// 4) any: first fulfillment wins (ignores rejects until all reject)\nawait Promise.any([bad, ok2]);          // -> 'B'\nawait Promise.any([bad, Promise.reject('Y')]);\n// -> rejects with AggregateError (contains all reasons)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Important details interviewers look for</strong>\n\n1) <strong>Input order</strong>: <code>all</code> and <code>allSettled</code> keep the output array aligned with the input order, not completion order.\n\n2) <strong>Fail-fast vs keep-going</strong>:\n- <code>all</code> rejects as soon as one rejects.\n- <code>allSettled</code> waits for all.\n- <code>race</code> settles on the first settled promise (resolve or reject).\n- <code>any</code> resolves on the first fulfillment; only rejects if everything rejects.\n\n3) <strong>No cancellation</strong>: <code>Promise.all</code> rejecting does not stop the other operations. If you need cancellation, you need explicit support (e.g., <code>AbortController</code> for fetch).\n\n4) <strong>AggregateError</strong>: <code>Promise.any</code> rejects with an <code>AggregateError</code>, which bundles all rejection reasons (often via <code>error.errors</code> in many runtimes)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-stopwatch'></i> <strong>Classic pattern: timeout with race</strong>\n\nUse <code>race</code> to bound time. But remember: the original async work continues unless it’s cancellable."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function timeout(ms) {\n  return new Promise((_, reject) =>\n    setTimeout(() => reject(new Error('Timeout')), ms)\n  );\n}\n\nasync function fetchWithTimeout(url, ms, signal) {\n  // Prefer real cancellation (AbortController) when possible.\n  const fetchPromise = fetch(url, { signal });\n  return Promise.race([fetchPromise, timeout(ms)]);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-network-wired'></i> <strong>Classic pattern: first successful response with any</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "async function firstHealthy(urls) {\n  return Promise.any(\n    urls.map(async (u) => {\n      const r = await fetch(u);\n      if (!r.ok) throw new Error(`${u} -> ${r.status}`);\n      return r;\n    })\n  );\n}\n\n// If all endpoints fail -> AggregateError"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-liners to memorize</strong>\n\n- <strong>all</strong>: “All succeed or I fail fast.”\n- <strong>allSettled</strong>: “Tell me how each one ended.”\n- <strong>race</strong>: “First one to settle decides.”\n- <strong>any</strong>: “First success wins; otherwise aggregate failure.”"
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-object-create-vs-new",
+    "title": "Object.create vs new in JavaScript (Prototypes, Constructors, and Inheritance)",
+    "description": "Both Object.create and the new keyword create objects, but in different ways. new calls a constructor and sets up prototype + initialization, while Object.create creates a plain object with a specified prototype without running any constructor. Understanding this is key to JavaScript's prototypal inheritance.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "objects",
+      "prototypes",
+      "inheritance",
+      "object-creation",
+      "oop",
+      "classes"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong>\n\nBoth create objects, but:\n\n- <strong><code>new</code></strong> creates an object by <strong>calling a constructor function</strong>.\n- <strong><code>Object.create</code></strong> creates an object with a <strong>given prototype</strong> <em>without calling any constructor</em>.\n\nSo the real difference is: <strong>constructor-based creation vs pure prototype-based creation</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "new Constructor()",
+            "Object.create(proto)"
+          ],
+          "rows": [
+            [
+              "Calls constructor?",
+              "Yes",
+              "No"
+            ],
+            [
+              "Prototype of the object",
+              "Constructor.prototype",
+              "Exactly <code>proto</code>"
+            ],
+            [
+              "Can run initialization logic?",
+              "Yes (inside constructor)",
+              "No (unless you call a function manually)"
+            ],
+            [
+              "Can pass arguments?",
+              "Yes",
+              "No (directly)"
+            ],
+            [
+              "Typical use",
+              "Class-like instantiation",
+              "Pure delegation / manual prototype chains"
+            ]
+          ],
+          "caption": "Side-by-side comparison."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>What actually happens with <code>new</code></strong>\n\nWhen you write:\n<pre class='md-pre'>const obj = new Foo(a, b);</pre>\nJavaScript does roughly this:\n1) Create an empty object\n2) Set its <code>[[Prototype]]</code> to <code>Foo.prototype</code>\n3) Call <code>Foo</code> with <code>this = obj</code>\n4) If <code>Foo</code> returns an object, use it; otherwise return <code>obj</code>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function Foo(x) {\n  this.x = x;\n}\n\nconst a = new Foo(10);\n\n// Equivalent (simplified):\nconst a2 = {};\nObject.setPrototypeOf(a2, Foo.prototype);\nFoo.call(a2, 10);\n// return a2"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-link'></i> <strong>What <code>Object.create</code> does</strong>\n\n<code>Object.create(proto)</code> simply creates a new object whose <code>[[Prototype]]</code> is <code>proto</code>. Nothing else happens. No constructor runs. No properties are set (unless you pass a second descriptor argument)."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const proto = {\n  greet() {\n    return 'hi';\n  }\n};\n\nconst obj = Object.create(proto);\n\nobj.greet(); // 'hi'\nobj.hasOwnProperty('greet'); // false (comes from prototype)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important interview traps</strong>\n\n1) <strong><code>Object.create(null)</code></strong> creates an object with <strong>no prototype</strong>. It does not inherit from <code>Object.prototype</code>. No <code>toString</code>, no <code>hasOwnProperty</code>. Useful for pure dictionaries / maps.\n\n2) <strong>Forgetting initialization</strong>: With <code>Object.create</code>, if you need state, you must set it manually or call an init function.\n\n3) <strong><code>class</code> is just syntax sugar</strong>: <code>class A {}</code> still uses <code>new</code> and prototypes under the hood."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-sitemap'></i> <strong>Inheritance patterns</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Using new (constructor/class style)\nfunction Animal(name) {\n  this.name = name;\n}\nAnimal.prototype.speak = function () {\n  return this.name + ' makes a noise';\n};\n\nfunction Dog(name) {\n  Animal.call(this, name); // init\n}\nDog.prototype = Object.create(Animal.prototype);\nDog.prototype.constructor = Dog;\n\nconst d1 = new Dog('Rex');\n\n// Using pure delegation (Object.create style)\nconst animal = {\n  speak() {\n    return this.name + ' makes a noise';\n  }\n};\n\nconst dog = Object.create(animal);\ndog.name = 'Rex';"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When should you use which?</strong>\n\n- Use <strong><code>new</code> / <code>class</code></strong> when:\n  - You want a clear construction step\n  - You need arguments + validation + setup logic\n  - You follow a class-like domain model\n\n- Use <strong><code>Object.create</code></strong> when:\n  - You want <strong>pure prototype delegation</strong>\n  - You want to avoid constructor side effects\n  - You want special objects like <code>Object.create(null)</code>\n  - You are building lightweight objects that just delegate behavior"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong><code>new</code></strong> creates an object by <strong>running a constructor and wiring its prototype</strong>, while <strong><code>Object.create</code></strong> creates an object with a <strong>specified prototype only</strong>, without calling any constructor."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-prototype-vs-__proto__",
+    "title": "prototype vs __proto__ in JavaScript (Prototype Chain, new, and Object.getPrototypeOf)",
+    "description": "prototype is a property on constructor functions that becomes the [[Prototype]] of instances created with new. __proto__ is the (legacy) accessor for an object's [[Prototype]] link used for property lookup. Mastering this distinction explains inheritance, the prototype chain, and why obj.__proto__ === Foo.prototype after new Foo().",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "prototypes",
+      "objects",
+      "inheritance",
+      "oop",
+      "object-creation"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bullseye'></i> <strong>High-signal answer (what interviewers want)</strong>\n\n- <strong><code>prototype</code></strong> is a property on <strong>functions</strong> (constructors). It’s the object that instances created with <code>new</code> will delegate to.\n- <strong><code>__proto__</code></strong> is the <strong>legacy accessor</strong> for an object’s internal <strong><code>[[Prototype]]</code></strong> link (the real prototype chain pointer).\n\nThey connect via <code>new</code>: <strong><code>Object.getPrototypeOf(obj) === Foo.prototype</code></strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Name",
+            "Belongs to",
+            "Meaning",
+            "Use in practice"
+          ],
+          "rows": [
+            [
+              "<strong><code>Foo.prototype</code></strong>",
+              "Constructor function <code>Foo</code>",
+              "The object used as the prototype for instances created by <code>new Foo()</code>",
+              "Put shared methods here (or use <code>class</code>)"
+            ],
+            [
+              "<strong><code>obj.__proto__</code></strong> (aka <code>[[Prototype]]</code>)",
+              "Any object <code>obj</code>",
+              "The actual prototype link used during property lookup",
+              "Prefer <code>Object.getPrototypeOf</code>/<code>Object.setPrototypeOf</code>"
+            ]
+          ],
+          "caption": "prototype is on functions; __proto__/[[Prototype]] is on objects."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>The bridge: what <code>new</code> does</strong>\n\nWhen you run:\n<pre class='md-pre'>const obj = new Foo()</pre>\nJavaScript (roughly) does:\n1) Create a new empty object\n2) Set its <code>[[Prototype]]</code> to <code>Foo.prototype</code>\n3) Call <code>Foo</code> with <code>this = obj</code>\n\nThat step #2 is why the two terms show up together in explanations."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function Foo() {}\nFoo.prototype.sayHi = function () { return 'hi'; };\n\nconst obj = new Foo();\n\nobj.sayHi(); // 'hi'\n\n// Canonical checks (prefer these):\nObject.getPrototypeOf(obj) === Foo.prototype; // true\n\n// Legacy accessor (works, but prefer getPrototypeOf):\nobj.__proto__ === Foo.prototype; // true"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-search'></i> <strong>Prototype chain property lookup</strong>\n\nWhen you read <code>obj.prop</code>, the engine:\n1) Looks on <code>obj</code> itself\n2) If not found, follows <code>[[Prototype]]</code> to the next object\n3) Repeats until it finds the property or hits <code>null</code>\n\nThat chain is the <strong>prototype chain</strong>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const base = { x: 1 };\nconst obj = Object.create(base);\n\nobj.x; // 1 (found on base via prototype chain)\nobj.hasOwnProperty('x'); // false (x is inherited)\nObject.getPrototypeOf(obj) === base; // true"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Top interview pitfalls</strong>\n\n1) <strong>Mixing them up</strong>\n- <code>prototype</code> is on the constructor (<code>Foo.prototype</code>)\n- <code>__proto__</code>/<code>[[Prototype]]</code> is on the instance (<code>obj</code>)\n\n2) <strong>Thinking <code>__proto__</code> is the “official” API</strong>\nUse:\n- <code>Object.getPrototypeOf(obj)</code>\n- <code>Object.setPrototypeOf(obj, proto)</code>\n\n3) <strong>Forgetting functions are objects</strong>\nFunctions have <code>[[Prototype]]</code> too (so <code>Foo.__proto__</code> exists), and also have <code>Foo.prototype</code> (used for instances)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Mind-bender (explains most diagrams)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function A() {}\n\nconst a = new A();\n\n// Instance delegates to A.prototype:\nObject.getPrototypeOf(a) === A.prototype; // true\n\n// A is a function object, so it delegates to Function.prototype:\nObject.getPrototypeOf(A) === Function.prototype; // true\n\n// A.prototype is a normal object, so it delegates to Object.prototype:\nObject.getPrototypeOf(A.prototype) === Object.prototype; // true\n\n// End of the chain:\nObject.getPrototypeOf(Object.prototype) === null; // true"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Practical rule</strong>\n\n- Put shared methods on <code>Foo.prototype</code> (or use <code>class Foo {}</code>).\n- Inspect prototypes with <code>Object.getPrototypeOf</code>.\n- Avoid setting prototypes at runtime unless you must (can be slow and confusing)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong><code>Foo.prototype</code></strong> is the object that instances created with <code>new Foo()</code> will inherit from, while <strong><code>obj.__proto__</code></strong> (aka <code>[[Prototype]]</code>) is the actual internal prototype link on <code>obj</code> used for property lookup."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-shallow-vs-deep-copy",
+    "title": "Shallow Copy vs Deep Copy in JavaScript (Objects, Arrays, References)",
+    "description": "A shallow copy duplicates only the top-level structure and keeps nested object references shared, while a deep copy recursively copies everything. Knowing the difference is critical to avoid accidental mutations in state management, React/Angular, and general JavaScript code.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "deep-copy",
+      "clone",
+      "immutability",
+      "objects",
+      "arrays",
+      "state"
+    ],
+    "importance": 5,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nIn JavaScript, objects and arrays are <strong>reference types</strong>. A “copy” can either:\n\n- <strong>Shallow copy</strong>: copy only the <strong>top-level</strong> container, but keep <strong>nested objects shared</strong>.\n- <strong>Deep copy</strong>: copy <strong>everything recursively</strong>, so no nested references are shared.\n\nMost bugs around state mutation come from <strong>thinking you made a deep copy but actually making a shallow one</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Type",
+            "What gets copied",
+            "What stays shared",
+            "Mutation risk"
+          ],
+          "rows": [
+            [
+              "<strong>Shallow copy</strong>",
+              "Only the first level",
+              "All nested objects/arrays/functions",
+              "High (mutating nested data affects original)"
+            ],
+            [
+              "<strong>Deep copy</strong>",
+              "All levels recursively",
+              "Nothing (new references everywhere)",
+              "Low (copies are fully independent)"
+            ]
+          ],
+          "caption": "The real difference is reference sharing."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Shallow copy examples</strong>\n\nCommon ways to make shallow copies:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const original = {\n  name: 'Alice',\n  address: { city: 'Paris' }\n};\n\n// Shallow copies:\nconst a = { ...original };           // spread\nconst b = Object.assign({}, original);\n\n// Top-level is new:\na !== original; // true\n\n// Nested object is shared:\na.address === original.address; // true\n\n// Mutating nested object affects both:\na.address.city = 'London';\nconsole.log(original.address.city); // 'London'  ❗"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Deep copy examples</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const original = {\n  name: 'Alice',\n  address: { city: 'Paris' }\n};\n\n// 1) structuredClone (modern, correct for most cases)\nconst deep1 = structuredClone(original);\n\n// 2) JSON trick (limited!)\nconst deep2 = JSON.parse(JSON.stringify(original));\n\n// Check:\ndeep1.address === original.address; // false\n\ndeep1.address.city = 'Rome';\nconsole.log(original.address.city); // 'Paris' ✅"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Why JSON.stringify is dangerous</strong>\n\nIt <strong>silently breaks or loses</strong>:\n- <code>undefined</code>, <code>Symbol</code>, functions\n- <code>Date</code>, <code>Map</code>, <code>Set</code>, <code>RegExp</code>\n- Circular references (throws)\n\nSo it only works for <strong>plain data objects</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>What about arrays?</strong>\n\nSame rules apply. <code>[...arr]</code> and <code>arr.slice()</code> are <strong>shallow</strong>."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const arr = [{ x: 1 }, { x: 2 }];\n\nconst copy = [...arr]; // shallow\n\ncopy[0].x = 999;\nconsole.log(arr[0].x); // 999 ❗"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Where this matters in real life</strong>\n\n- React / Angular / Redux / NgRx state updates\n- Undo/redo stacks\n- Caching snapshots\n- Any place you assume “old state” is immutable\n\nA shallow copy of a nested state tree is <strong>not enough</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>Performance reality check</strong>\n\n- Deep copying <strong>large objects is expensive</strong>.\n- In practice, you often do <strong>structural sharing</strong>: deep copy only the path you change, keep the rest shared (like Redux/Immer).\n\nThis is why libraries like <strong>Immer</strong> exist."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\nA <strong>shallow copy</strong> creates a new top-level object but <strong>reuses nested references</strong>, while a <strong>deep copy</strong> <strong>recursively duplicates everything</strong> so changes in one copy never affect the other."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-map-filter-reduce",
+    "title": "map vs filter vs reduce in JavaScript (Array Transformations)",
+    "description": "map, filter, and reduce are the three core array transformation methods in JavaScript. map transforms each item, filter keeps some items, and reduce can build any result by accumulating values. Understanding them is essential for clean, functional-style data processing.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "arrays",
+      "array-methods",
+      "functional-programming",
+      "filtering",
+      "reduction",
+      "immutability",
+      "accumulators"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nThese three methods are about <strong>transforming arrays without mutating them</strong>:\n\n- <strong><code>map</code></strong>: \"For every item, produce a new item.\"\n- <strong><code>filter</code></strong>: \"Keep only the items that pass a test.\"\n- <strong><code>reduce</code></strong>: \"Combine all items into a single result.\"\n\nThey are the foundation of <strong>functional-style programming</strong> in JavaScript."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Method",
+            "Input → Output",
+            "Callback returns",
+            "Typical use"
+          ],
+          "rows": [
+            [
+              "<strong>map</strong>",
+              "Array → Array (same length)",
+              "The new element",
+              "Transform each element (e.g., numbers → strings)"
+            ],
+            [
+              "<strong>filter</strong>",
+              "Array → Array (shorter or same)",
+              "<code>true</code> / <code>false</code>",
+              "Select a subset (e.g., only active users)"
+            ],
+            [
+              "<strong>reduce</strong>",
+              "Array → Any (number, object, array, map, etc.)",
+              "The new accumulator",
+              "Aggregate / fold data into one value"
+            ]
+          ],
+          "caption": "Three different kinds of transformations."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>map: transform each element</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const numbers = [1, 2, 3];\n\nconst doubled = numbers.map(n => n * 2);\n\n// [2, 4, 6]\n// Same length, new values"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>filter: keep some elements</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const numbers = [1, 2, 3, 4, 5];\n\nconst evens = numbers.filter(n => n % 2 === 0);\n\n// [2, 4]\n// Only elements that pass the condition stay"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>reduce: build anything</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const numbers = [1, 2, 3, 4];\n\nconst sum = numbers.reduce((acc, n) => acc + n, 0);\n\n// 10\n// acc is the running total"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>reduce can replace both (but shouldn’t always)</strong>\n\nYou can implement map and filter with reduce, but it’s usually <strong>less readable</strong>:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// map with reduce\nconst doubled2 = numbers.reduce((acc, n) => {\n  acc.push(n * 2);\n  return acc;\n}, []);\n\n// filter with reduce\nconst evens2 = numbers.reduce((acc, n) => {\n  if (n % 2 === 0) acc.push(n);\n  return acc;\n}, []);"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common mistakes</strong>\n\n1) <strong>Forgetting the initial value in <code>reduce</code></strong>: Can cause bugs with empty arrays and wrong types.\n\n2) <strong>Mutating the accumulator or items</strong>: Breaks immutability and can cause hard-to-track bugs in UI state.\n\n3) <strong>Overusing <code>reduce</code></strong>: If <code>map</code> or <code>filter</code> expresses the intent, use them."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Real-world examples</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const users = [\n  { id: 1, name: 'Alice', active: true },\n  { id: 2, name: 'Bob', active: false },\n  { id: 3, name: 'Carol', active: true }\n];\n\n// 1) Get names of active users\nconst activeNames = users\n  .filter(u => u.active)\n  .map(u => u.name);\n\n// ['Alice', 'Carol']\n\n// 2) Index by id (reduce → object)\nconst byId = users.reduce((acc, u) => {\n  acc[u.id] = u;\n  return acc;\n}, {});\n\n// { '1': {...}, '2': {...}, '3': {...} }"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Performance note</strong>\n\nChaining <code>filter().map()</code> loops twice. In <strong>hot paths</strong>, a single <code>reduce</code> can be faster. But in normal code, <strong>readability beats micro-optimizations</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong><code>map</code></strong> transforms each element, <strong><code>filter</code></strong> selects some elements, and <strong><code>reduce</code></strong> combines all elements into a single result of any type."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-array-sort-pitfalls",
+    "title": "Array.sort Pitfalls in JavaScript (Lexicographic Sorting, Mutation, Comparator)",
+    "description": "Array.prototype.sort has several traps: it sorts elements as strings by default, mutates the original array, and requires a correct comparator function for numeric or custom sorting. These pitfalls cause many subtle bugs in real-world code and interviews.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "arrays",
+      "sorting",
+      "comparison",
+      "numbers",
+      "immutability",
+      "array-methods"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The big trap</strong>\n\n<strong><code>Array.prototype.sort()</code> sorts elements as <em>strings</em> by default</strong>. That means numbers are compared <strong>lexicographically</strong>, not numerically."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const nums = [1, 2, 10, 21];\n\nnums.sort();\n\nconsole.log(nums); // [1, 10, 2, 21] ❗ (string comparison)"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-check'></i> <strong>The correct numeric sort</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const nums = [1, 2, 10, 21];\n\nnums.sort((a, b) => a - b);\n\nconsole.log(nums); // [1, 2, 10, 21] ✅"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Pitfall #1: It mutates the original array</strong>\n\n<code>sort()</code> sorts <strong>in place</strong>. If you’re in React/Angular/Redux and expect immutability, this can silently corrupt your state."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const original = [3, 1, 2];\nconst sorted = original.sort((a, b) => a - b);\n\nconsole.log(original); // [1, 2, 3] ❗ mutated\nconsole.log(sorted === original); // true"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Safe pattern:</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const original = [3, 1, 2];\nconst sorted = [...original].sort((a, b) => a - b);\n\nconsole.log(original); // [3, 1, 2] ✅\nconsole.log(sorted);   // [1, 2, 3]"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Pitfall #2: Wrong comparator logic</strong>\n\nThe comparator must return:\n- <strong>&lt; 0</strong> if <code>a</code> should come before <code>b</code>\n- <strong>&gt; 0</strong> if <code>a</code> should come after <code>b</code>\n- <strong>0</strong> if equal\n\nReturning <code>true</code>/<code>false</code> is a bug."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// ❌ Buggy comparator\narr.sort((a, b) => a > b);\n\n// ✅ Correct\narr.sort((a, b) => a - b);"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Pitfall #3: Sorting objects</strong>\n\nYou must compare a <strong>specific field</strong>:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const users = [\n  { name: 'Bob', age: 30 },\n  { name: 'Alice', age: 25 },\n  { name: 'Carol', age: 35 }\n];\n\n// By age\nusers.sort((a, b) => a.age - b.age);\n\n// By name (locale-safe)\nusers.sort((a, b) => a.name.localeCompare(b.name));"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Stability note</strong>\n\nModern JavaScript engines (ES2019+) guarantee that <code>sort</code> is <strong>stable</strong>, but older engines did not. In interviews, it’s good to mention that <strong>today it is stable by spec</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong><code>Array.sort()</code></strong> sorts <strong>in place</strong> and compares items as <strong>strings by default</strong>, so you must clone the array for immutability and provide a <strong>correct numeric or custom comparator</strong> to avoid subtle bugs."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "js-mutability-vs-immutability",
+    "title": "Mutability vs Immutability in JavaScript (State, References, and Side Effects)",
+    "description": "Mutable data can be changed in place, while immutable data is never modified — instead, new copies are created. Understanding this difference is critical for predictable state management in React, Angular, Redux/NgRx, and for avoiding side effects and hard-to-debug bugs.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "immutability",
+      "state",
+      "state-management",
+      "change-detection",
+      "objects"
+    ],
+    "importance": 5,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core difference</strong>\n\n- <strong>Mutable</strong> data can be <strong>changed in place</strong>.\n- <strong>Immutable</strong> data is <strong>never modified</strong>; instead, you <strong>create a new value</strong>.\n\nIn JavaScript, <strong>objects and arrays are mutable by default</strong>. Most bugs in UI state management come from <strong>mutating something you thought was 'a copy'</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "What it means",
+            "Example"
+          ],
+          "rows": [
+            [
+              "<strong>Mutation</strong>",
+              "Changing the same object in memory",
+              "<code>arr.push(1)</code>, <code>obj.x = 5</code>"
+            ],
+            [
+              "<strong>Immutability</strong>",
+              "Creating a new object instead of changing the old one",
+              "<code>newArr = [...arr, 1]</code>, <code>newObj = { ...obj, x: 5 }</code>"
+            ]
+          ],
+          "caption": "Same logical change, different memory behavior."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Mutation in action (the bug factory)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const state = {\n  user: { name: 'Alice' },\n  loggedIn: true\n};\n\nconst nextState = state; // NOT a copy, same reference!\n\nnextState.user.name = 'Bob';\n\nconsole.log(state.user.name); // 'Bob' ❗ original is changed"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-check'></i> <strong>Immutable update (correct pattern)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const state = {\n  user: { name: 'Alice' },\n  loggedIn: true\n};\n\nconst nextState = {\n  ...state,\n  user: {\n    ...state.user,\n    name: 'Bob'\n  }\n};\n\nconsole.log(state.user.name);    // 'Alice' ✅\nconsole.log(nextState.user.name); // 'Bob'"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>Why frameworks care so much</strong>\n\nReact, Angular (OnPush), Redux, NgRx, etc. rely heavily on <strong>reference equality</strong> checks (<code>===</code>) to detect changes.\n\nIf you mutate in place:\n- The reference stays the same\n- Change detection may <strong>not run</strong>\n- UI gets <strong>out of sync</strong>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Operations: mutable vs immutable</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Operation",
+            "Mutable",
+            "Immutable alternative"
+          ],
+          "rows": [
+            [
+              "Add to array",
+              "<code>arr.push(x)</code>",
+              "<code>[...arr, x]</code>"
+            ],
+            [
+              "Remove from array",
+              "<code>arr.splice(i, 1)</code>",
+              "<code>arr.filter((_, idx) => idx !== i)</code>"
+            ],
+            [
+              "Sort array",
+              "<code>arr.sort()</code>",
+              "<code>[...arr].sort()</code>"
+            ],
+            [
+              "Update object field",
+              "<code>obj.x = 5</code>",
+              "<code>{ ...obj, x: 5 }</code>"
+            ]
+          ],
+          "caption": "Same intent, different safety."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Performance reality</strong>\n\n- Naive deep copying everything is <strong>slow</strong>.\n- Real-world immutable systems use <strong>structural sharing</strong>: only copy the path you change, reuse the rest.\n\nLibraries like <strong>Immer</strong> let you write “mutating” code that produces immutable results under the hood."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important nuance</strong>\n\nImmutability is a <strong>discipline</strong>, not a JavaScript language rule. <code>const</code> does <strong>not</strong> make objects immutable — it only prevents reassigning the variable."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const obj = { x: 1 };\nobj.x = 2; // allowed ❗"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong>Mutable</strong> data is changed in place, while <strong>immutable</strong> data is never modified — instead, you create <strong>new values</strong> and keep the old ones untouched, enabling predictable state and cheap change detection."
+        }
+      ]
+    },
+    "access": "free"
   }
 ]

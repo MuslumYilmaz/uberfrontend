@@ -3118,5 +3118,1145 @@
     },
     "access": "free",
     "type": "trivia"
+  },
+  {
+    "id": "react-why-hooks-have-rules",
+    "title": "Why do Hooks have rules? What breaks if you call Hooks conditionally?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain why React Hooks must be called unconditionally and in the same order, how React internally matches Hook calls to state slots, and what breaks when that order changes.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>Hooks have rules because React does <em>not</em> identify Hooks by name. It identifies them by <em>call order</em>. If you call Hooks conditionally, the order changes between renders, and React starts attaching the wrong state/effect/memo to the wrong Hook call."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The mental model</strong><br><br>Internally, React stores Hooks for a component in something like an <em>array</em> and uses a pointer while rendering:<br><br><code>useState → slot 0</code><br><code>useEffect → slot 1</code><br><code>useMemo → slot 2</code><br><br>On every render, React assumes: <em>\"The first Hook call is the same Hook as last time. The second Hook call is the same Hook as last time.\"</em><br><br>So the only thing that matters is: <strong>the order of Hook calls must be identical on every render.</strong>"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Example({ showExtra }) {\n  const [count, setCount] = useState(0);     // Hook slot 0\n\n  if (showExtra) {\n    const [flag, setFlag] = useState(false); // Hook slot 1 (sometimes!)\n  }\n\n  const [name, setName] = useState('Alice'); // Hook slot 1 or 2 🤯\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What breaks here?</strong><br><br>When <code>showExtra</code> is <code>false</code>, the second <code>useState</code> is skipped. That means the <code>name</code> state now occupies <em>slot 1</em> instead of <em>slot 2</em>.<br><br>On the next render when <code>showExtra</code> becomes <code>true</code>, React thinks:<br>• slot 1 = <code>flag</code> state<br>• slot 2 = <code>name</code> state<br><br>But previously:<br>• slot 1 was actually <code>name</code> state 😬<br><br>So now React mixes up states. Values jump between variables. Effects attach to the wrong logic. Everything becomes <em>silently wrong</em>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Rule",
+            "Why it exists",
+            "What breaks if you violate it"
+          ],
+          "rows": [
+            [
+              "Only call Hooks at the top level",
+              "Guarantees stable call order",
+              "State/effects shift between variables"
+            ],
+            [
+              "Never call Hooks conditionally",
+              "Ensures same Hooks run every render",
+              "Hooks get mismatched to wrong slots"
+            ],
+            [
+              "Only call Hooks from components or custom Hooks",
+              "Ensures React controls render lifecycle",
+              "React cannot track Hook state correctly"
+            ]
+          ],
+          "caption": "The real reasons behind the Rules of Hooks"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important insight</strong><br><br>This is not a \"style rule\". This is a <em>fundamental constraint of how Hooks are implemented</em>. React could have designed a more complex system using keys or IDs, but that would make Hooks slower, more complex, and harder to optimize."
+        },
+        {
+          "type": "text",
+          "text": "<strong>How you should write conditional logic instead</strong><br><br>Call Hooks <em>unconditionally</em>, and put the condition <em>inside</em> the Hook logic:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Example({ showExtra }) {\n  const [count, setCount] = useState(0);\n  const [flag, setFlag] = useState(false);\n  const [name, setName] = useState('Alice');\n\n  useEffect(() => {\n    if (!showExtra) return;\n    // conditional behavior goes here\n  }, [showExtra]);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"React tracks Hooks by call order, not by name. If you call Hooks conditionally, the order changes between renders, so React attaches state and effects to the wrong Hook. The Rules of Hooks exist to guarantee stable ordering.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Hooks must be called in the same order on every render. React relies on call order to map Hook calls to internal state slots. Conditional Hooks break this mapping, causing state and effects to shift between variables and produce unpredictable bugs."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "best-practices",
+      "control-flow"
+    ]
+  },
+  {
+    "id": "react-stale-state-closures",
+    "title": "Why does React sometimes show stale state in closures? How do you fix it?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain how JavaScript closures capture values from a specific render, why React renders create new closures, and how this leads to stale state bugs in effects, timeouts, and event handlers — and how to fix them.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>Because <em>each render creates new variables and new functions</em>, and JavaScript closures capture the values from <em>the render they were created in</em>. If an async callback or effect runs later, it may still see <em>old state</em> from an earlier render."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The mental model</strong><br><br>React components are not long-lived objects. They are more like:<br><em>\"Functions that React calls again and again to produce UI.\"</em><br><br>Every render creates a <strong>new snapshot</strong> of props, state, and functions. Closures created in that render <em>freeze</em> those values."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      console.log(count); // ❌ Might log stale value\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []); // empty deps\n\n  return <button onClick={() => setCount(c => c + 1)}>+</button>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this logs stale state</strong><br><br>This effect runs only once. The closure inside <code>setInterval</code> captures <code>count</code> from the <em>first render</em> (which is 0).<br><br>Even if state updates later, this callback still sees <code>count = 0</code> forever. Not a React bug. Just JavaScript closures + React render model."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Cause",
+            "What’s actually happening",
+            "Symptom"
+          ],
+          "rows": [
+            [
+              "Closure captures old render values",
+              "Callback keeps references to old variables",
+              "State appears \"stuck\" or outdated"
+            ],
+            [
+              "Effect deps are missing",
+              "Effect never re-runs with new state",
+              "Logic uses old props/state"
+            ],
+            [
+              "Async logic (timeout, interval, promise)",
+              "Runs after render that created it",
+              "Reads stale snapshot"
+            ]
+          ],
+          "caption": "Why stale state bugs happen"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #1: Add correct dependencies</strong><br><br>Tell React to recreate the closure when state changes:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "useEffect(() => {\n  const id = setInterval(() => {\n    console.log(count);\n  }, 1000);\n\n  return () => clearInterval(id);\n}, [count]); // ✅ now closure updates when count changes"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #2: Use functional updates (most common fix)</strong><br><br>If you are <em>updating state based on previous state</em>, don’t read from the closure at all:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "setCount(c => c + 1); // ✅ always uses latest state"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #3: Use useRef for mutable latest value</strong><br><br>If you need to read the <em>latest</em> value from long-lived async callbacks:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const countRef = useRef(count);\nuseEffect(() => {\n  countRef.current = count;\n}, [count]);\n\nuseEffect(() => {\n  const id = setInterval(() => {\n    console.log(countRef.current); // ✅ always latest\n  }, 1000);\n  return () => clearInterval(id);\n}, []);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important insight</strong><br><br>This is not a React quirk. This is how <em>JavaScript closures</em> work combined with React’s <em>\"each render is a snapshot\"</em> model."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Each render creates a new closure with its own state snapshot. Async callbacks keep the snapshot from the render they were created in. Stale state happens when effects or callbacks don’t re-run with new dependencies. You fix it with correct deps, functional updates, or refs.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Stale state happens because closures capture values from a specific render. React re-renders create new snapshots, but old async callbacks keep old ones. Fix it by using correct dependencies, functional state updates, or a ref for reading the latest value."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "hooks",
+      "closure",
+      "state",
+      "effects",
+      "callbacks"
+    ]
+  },
+  {
+    "id": "react-useref-vs-usestate",
+    "title": "What’s the difference between useRef and useState? When should each be used?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering — and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state).",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br><code>useState</code> is for data that should <strong>drive what you render</strong> (changing it re-renders). <code>useRef</code> is for data you want to <strong>persist across renders</strong> but changing it should <strong>not</strong> trigger a re-render (a mutable container)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Hook",
+            "What it stores",
+            "What happens when it changes"
+          ],
+          "rows": [
+            [
+              "useState",
+              "A render-driving value (UI state)",
+              "✅ Triggers a re-render"
+            ],
+            [
+              "useRef",
+              "A mutable container: { current: ... }",
+              "❌ Does NOT trigger a re-render"
+            ]
+          ],
+          "caption": "The core difference"
+        },
+        {
+          "type": "text",
+          "text": "<strong>First-principles mental model</strong><br><br>React re-renders when you want the UI to reflect new data. So ask yourself one question:<br><br><em>\"Should changing this value update what the user sees right now?\"</em><br><br>If yes → <strong>useState</strong>.<br>If no (but you still need the value to persist) → <strong>useRef</strong>."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Example() {\n  const [count, setCount] = useState(0);  // UI should update when this changes\n  const clicksRef = useRef(0);           // internal bookkeeping; UI doesn't need it\n\n  const onClick = () => {\n    clicksRef.current += 1;              // won't re-render\n    setCount((c) => c + 1);              // will re-render\n  };\n\n  return (\n    <button onClick={onClick}>\n      Count: {count}\n    </button>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common useState use cases</strong><br><br>Use <code>useState</code> when the value affects rendering: text, visibility, selection, form inputs, loading state, errors, filters, toggles, etc."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Correct tool",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Show/hide a modal",
+              "useState",
+              "UI must update immediately"
+            ],
+            [
+              "Form input value",
+              "useState",
+              "Render depends on current value"
+            ],
+            [
+              "Loading / error / fetched data",
+              "useState",
+              "UI should reflect async results"
+            ],
+            [
+              "Selected tab / filter",
+              "useState",
+              "Directly affects what is shown"
+            ]
+          ],
+          "caption": "When useState is the right choice"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common useRef use cases</strong><br><br>Use <code>useRef</code> when you need a value to persist, but you don’t want a render every time it changes."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Why useRef fits",
+            "Example"
+          ],
+          "rows": [
+            [
+              "DOM element access",
+              "Imperative access to a node",
+              "focus(), scrollIntoView()"
+            ],
+            [
+              "Timer / interval IDs",
+              "Store mutable IDs across renders",
+              "setTimeout / setInterval cleanup"
+            ],
+            [
+              "Latest value for async callbacks",
+              "Avoid stale closures without rerendering",
+              "read latest state in an interval"
+            ],
+            [
+              "Previous value tracking",
+              "Persist last render's value",
+              "prevCount.current"
+            ]
+          ],
+          "caption": "When useRef is the right choice"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Search() {\n  const inputRef = useRef(null);\n\n  return (\n    <div>\n      <input ref={inputRef} />\n      <button onClick={() => inputRef.current?.focus()}>\n        Focus input\n      </button>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The big trap: using useRef as \"state\"</strong><br><br>People do this to avoid re-renders, but it’s usually a bug factory. If the UI depends on it and you store it in a ref, the UI won’t update and you’ll get out-of-sync screens."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Bad() {\n  const valueRef = useRef('');\n\n  return (\n    <div>\n      <input onChange={(e) => (valueRef.current = e.target.value)} />\n      <p>Typed: {valueRef.current}</p> {/* ❌ UI won't update reliably */}\n    </div>\n  );\n}\n\nfunction Good() {\n  const [value, setValue] = useState('');\n\n  return (\n    <div>\n      <input value={value} onChange={(e) => setValue(e.target.value)} />\n      <p>Typed: {value}</p> {/* ✅ UI updates */}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb that wins interviews</strong><br><br><strong>useState</strong> = \"React should re-render when this changes.\"<br><strong>useRef</strong> = \"I need to remember something between renders, but it’s not part of the UI.\""
+        },
+        {
+          "type": "text",
+          "text": "<strong>Bonus: combining both (best of both worlds)</strong><br><br>Sometimes you want <em>rendering</em> plus a <em>latest value for async callbacks</em> (avoiding stale closures). Keep the UI in state and mirror it into a ref:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Example() {\n  const [count, setCount] = useState(0);\n  const countRef = useRef(count);\n\n  useEffect(() => {\n    countRef.current = count;\n  }, [count]);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      console.log('latest:', countRef.current);\n    }, 1000);\n    return () => clearInterval(id);\n  }, []);\n\n  return <button onClick={() => setCount((c) => c + 1)}>Count: {count}</button>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br><code>useState</code> holds render-driving state and triggers re-renders. <code>useRef</code> holds a mutable value that persists across renders but does not trigger re-renders. Use state for anything that affects UI, and refs for DOM access, timers, latest values in async callbacks, and other non-visual bookkeeping."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "hooks",
+      "state",
+      "dom"
+    ]
+  },
+  {
+    "id": "react-why-batching-state-updates",
+    "title": "Why does React batch state updates? When does it not batch?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain why React batches multiple state updates into a single render for performance, how automatic batching works (especially in React 18), and in which situations batching does not apply or can be disabled.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>React batches state updates to <strong>avoid unnecessary re-renders</strong>. If multiple state updates happen during the same logical event, React groups them and performs <em>one</em> render instead of many."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The first-principles reason</strong><br><br>Rendering is expensive. Reconciliation + DOM updates cost time. If React re-rendered after <em>every</em> <code>setState</code>, a single click handler could trigger 3–5 renders in a row.<br><br>Batching turns this:<br><em>\"Render → update → render → update → render\"</em><br>into this:<br><em>\"Update → update → update → render once\"</em>."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Counter() {\n  const [a, setA] = useState(0);\n  const [b, setB] = useState(0);\n\n  const onClick = () => {\n    setA(a + 1);\n    setB(b + 1);\n    // ✅ React batches these into ONE render\n  };\n\n  console.log('render');\n\n  return <button onClick={onClick}>Click</button>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What batching guarantees</strong><br><br>Within the same event or task, React waits until your logic finishes, then renders <em>once</em> using the final state."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Without batching",
+            "With batching",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Multiple renders per event",
+              "Single render per event",
+              "Much better performance"
+            ],
+            [
+              "Wasted reconciliation work",
+              "Minimal reconciliation",
+              "Scales better in large apps"
+            ],
+            [
+              "More layout/paint work",
+              "Fewer DOM commits",
+              "Smoother UI"
+            ]
+          ],
+          "caption": "Why batching exists"
+        },
+        {
+          "type": "text",
+          "text": "<strong>React 18: Automatic batching</strong><br><br>Before React 18, batching only happened in <em>React event handlers</em>. In React 18+, batching happens <strong>almost everywhere</strong>:<br>• timeouts<br>• promises<br>• native event handlers<br>• async callbacks"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "setTimeout(() => {\n  setA(a + 1);\n  setB(b + 1);\n  // ✅ React 18 batches these too\n}, 1000);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>But when does React NOT batch?</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Case",
+            "Does it batch?",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Different ticks / separate tasks",
+              "❌ No",
+              "They are not part of the same batch window"
+            ],
+            [
+              "Using flushSync",
+              "❌ No (forces sync render)",
+              "You explicitly tell React to render immediately"
+            ],
+            [
+              "Legacy React (<18) async callbacks",
+              "❌ No",
+              "Batching only existed in React events"
+            ]
+          ],
+          "caption": "When batching does not apply"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "import { flushSync } from 'react-dom';\n\nflushSync(() => {\n  setA(1);\n});\n// 👆 Forces immediate render here\n\nsetB(2);\n// 👆 Causes another render"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important pitfall: stale state with non-functional updates</strong><br><br>Because updates are batched, this is WRONG:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "setCount(count + 1);\nsetCount(count + 1); // ❌ still only +1"
+        },
+        {
+          "type": "text",
+          "text": "Because both updates read the <em>same snapshot</em>. The correct version is:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "setCount(c => c + 1);\nsetCount(c => c + 1); // ✅ +2"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"React batches state updates to minimize renders and improve performance. In React 18, batching is automatic across events, promises, and timeouts. It only stops batching when you cross async boundaries or explicitly force sync rendering with flushSync.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>React batches state updates to reduce unnecessary renders and DOM work. In React 18, batching is automatic in most async and sync contexts. It does not batch across separate tasks or when you explicitly force synchronous rendering with flushSync. Because of batching, functional state updates are often required to avoid stale values."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "state",
+      "performance",
+      "state-management"
+    ]
+  },
+  {
+    "id": "react-derived-state-anti-pattern",
+    "title": "Why is derived state considered an anti-pattern? When is it OK?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain why storing data in state that can be computed from props/state creates duplication and sync bugs, the concept of single source of truth, and when derived state is acceptable (initialization, controlled/uncontrolled transitions, memoized expensive computations, and snapshotting external values).",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>Derived state is considered an anti-pattern because it <strong>duplicates source data</strong>. When you store something in state that can be calculated from props or other state, you now have <em>two sources of truth</em> — and they eventually drift out of sync."
+        },
+        {
+          "type": "text",
+          "text": "<strong>First-principles mental model</strong><br><br>React is best when your UI is a pure function of inputs:<br><br><em>UI = f(props, state)</em><br><br>If a value can be computed from existing inputs, storing it as state means you must keep it manually synced. That’s extra complexity + extra failure modes."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What derived state is",
+            "Why it’s tempting",
+            "Why it bites later"
+          ],
+          "rows": [
+            [
+              "State that can be computed from props/other state",
+              "Feels convenient (\"I’ll store it once\")",
+              "Creates duplication and sync bugs"
+            ],
+            [
+              "Copying props into state",
+              "Lets you “edit” a prop locally",
+              "Prop changes can get ignored"
+            ],
+            [
+              "Storing computed values",
+              "Avoid recomputation",
+              "Stale values when inputs change"
+            ]
+          ],
+          "caption": "Why derived state is risky"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Bad({ items }) {\n  const [count, setCount] = useState(items.length); // ❌ derived from props\n\n  // Now you must remember to keep it in sync...\n  // What if items changes? count becomes wrong.\n\n  return <div>Count: {count}</div>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this breaks in real life</strong><br><br>If <code>items</code> changes (refetch, filtering, websocket update), <code>count</code> won’t automatically update because React does not “re-run” <code>useState</code> initializers. Your UI becomes inconsistent: it shows old computed values from a previous render."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Preferred approach: derive during render</strong><br><br>If it’s cheap to compute, just compute it from the real source of truth:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Good({ items }) {\n  const count = items.length; // ✅ derived during render\n  return <div>Count: {count}</div>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>If it’s expensive: memoize, don’t store</strong><br><br>If computing derived data is heavy (sorting, filtering huge lists), use <code>useMemo</code> so you still have a single source of truth:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Good({ items, query }) {\n  const filtered = useMemo(() => {\n    return items.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));\n  }, [items, query]);\n\n  return <List items={filtered} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>When derived state is OK</strong><br><br>It’s acceptable when you intentionally want a <strong>snapshot</strong> or a <strong>locally editable copy</strong> that should not always follow the source automatically."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "OK scenario",
+            "What you’re doing",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Initial value only (one-time initialization)",
+              "Use prop once to seed local state",
+              "Initial form value from server"
+            ],
+            [
+              "Locally editable draft",
+              "User edits a copy, then saves/cancels",
+              "Edit profile modal: draftName"
+            ],
+            [
+              "State machines / UI modes",
+              "Derived info becomes an independent UI state",
+              "step index, expanded rows"
+            ],
+            [
+              "Snapshot external values",
+              "Capture a value at a moment in time",
+              "store initial scroll position"
+            ]
+          ],
+          "caption": "Acceptable uses of derived state"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function EditProfile({ user }) {\n  // ✅ OK: draft state is intentionally independent\n  const [draftName, setDraftName] = useState(user.name);\n\n  const save = () => {\n    // submit draftName\n  };\n\n  return (\n    <div>\n      <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />\n      <button onClick={save}>Save</button>\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>But… what if the prop can change while editing?</strong><br><br>This is where teams accidentally reintroduce the anti-pattern. If <code>user</code> can change (switching profiles, refetch), you must decide behavior:<br><br>• If you want to <em>reset</em> draft on user change → set draft when the identity changes (not every render).<br>• If you want to <em>preserve</em> unsaved edits → don’t overwrite draft."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function EditProfile({ user }) {\n  const [draftName, setDraftName] = useState(user.name);\n\n  // ✅ reset draft only when user identity changes\n  useEffect(() => {\n    setDraftName(user.name);\n  }, [user.id]);\n\n  return <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><br>If you ever write <code>useEffect(() => setX(deriveFromY), [y])</code>, pause and ask:<br><br><em>\"Why do I need X at all? Can I compute it during render or memoize it?\"</em><br><br>Most of the time: compute/memoize is simpler and safer."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Derived state duplicates data and creates two sources of truth, leading to sync bugs. Prefer computing derived values during render or with useMemo. It’s only OK when you intentionally need a snapshot or an editable draft that should not always track the source.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Derived state is an anti-pattern because it duplicates information that can be derived from props/state, causing drift and stale UI. Prefer deriving during render or memoizing expensive computations. It’s OK when you intentionally need independent local state (drafts, snapshots, UI modes) and you define clear rules for when (or if) it should resync."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "state",
+      "derived-state",
+      "state-management",
+      "best-practices"
+    ]
+  },
+  {
+    "id": "react-context-performance-issues",
+    "title": "Why does Context cause performance issues? How do you fix them?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain why Context updates can trigger re-renders across many consumers (especially when the Provider value identity changes), common pitfalls (inline objects/functions), and practical fixes: memoizing Provider values, splitting contexts, narrowing provider scope, memoizing consumers, and using selector-based patterns when needed.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>Context can cause performance issues because when a Provider’s <code>value</code> changes, React notifies <strong>all consumers</strong> under that Provider. If the value is an object/function created inline, its identity changes on every render — causing a fan-out of re-renders even when the “real data” didn’t change."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Core mechanism</strong><br><br>Context is not a \"subscription by field\" system. React tracks context updates by comparing the Provider’s <code>value</code> <em>by reference</em> (identity), not by deep equality. So this is a common footgun:<br><br><em>\"Provider rerenders → new object → consumers rerender\"</em>."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const AppContext = createContext(null);\n\nfunction AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n\n  // ❌ Bad: new object every render (new identity)\n  const value = { user, setUser };\n\n  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n}\n\nfunction Profile() {\n  const { user } = useContext(AppContext);\n  return <div>{user?.name}</div>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this hurts</strong><br><br>Every time <code>AppProvider</code> re-renders, <code>value</code> becomes a brand-new object. React treats that as a context change and re-renders every component using <code>useContext(AppContext)</code> — even if the piece they care about didn’t change."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common cause",
+            "What happens",
+            "Symptom"
+          ],
+          "rows": [
+            [
+              "Provider value is an inline object",
+              "Identity changes each render",
+              "All consumers re-render too often"
+            ],
+            [
+              "Provider value contains inline functions",
+              "Functions get new identity",
+              "Memoized consumers still re-render"
+            ],
+            [
+              "Context holds “everything” (mega context)",
+              "Any change invalidates all consumers",
+              "Small updates cause big UI work"
+            ],
+            [
+              "Provider wraps the whole app",
+              "Update fan-out is huge",
+              "Scrolling / typing feels laggy"
+            ]
+          ],
+          "caption": "Why Context can become a perf trap"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #1: Memoize the Provider value</strong><br><br>Stabilize the <code>value</code> identity so consumers only re-render when the actual data changes:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  // ✅ stable object identity unless user changes\n\n  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #2: Split contexts by change rate</strong><br><br>Don’t put fast-changing values (like <code>theme</code>, <code>locale</code>, <code>isOnline</code>, <code>mousePosition</code>) in the same context as rarely-changing values (like <code>user</code>). Split them so updates don’t cascade unnecessarily."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const UserContext = createContext(null);\nconst ThemeContext = createContext('light');\n\n// ✅ user updates won't re-render theme consumers and vice versa"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #3: Narrow the Provider scope</strong><br><br>Wrap only the subtree that needs the context. If you wrap the entire app, every update has a huge blast radius."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Strategy",
+            "How it helps",
+            "When to use"
+          ],
+          "rows": [
+            [
+              "Move Provider lower in the tree",
+              "Fewer consumers get notified",
+              "Large apps, frequently updated context"
+            ],
+            [
+              "Create feature-level providers",
+              "Localizes re-renders",
+              "Dashboard pages, complex layouts"
+            ],
+            [
+              "Avoid putting transient UI state in context",
+              "Prevents high-frequency fan-out",
+              "Typing, hover, scroll, drag state"
+            ]
+          ],
+          "caption": "Reducing the blast radius of context updates"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #4: Memoize consumers (sometimes helps)</strong><br><br><code>React.memo</code> does <em>not</em> stop a component from re-rendering due to context changes. But it can still help reduce work inside subtrees if you restructure so only small components read context."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "const UserName = React.memo(function UserName() {\n  const { user } = useContext(AppContext);\n  return <span>{user?.name}</span>;\n});\n\n// ✅ Keep context reads in small leaf components"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix #5: Selector-based patterns for big stores</strong><br><br>If you’re using Context like a global store with lots of fields, you may want a selector-based approach so consumers re-render only when the selected slice changes (instead of any change). This is where store libraries or selector patterns shine."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><br><strong>Context is great for:</strong> low-frequency global values (theme, locale, auth user, feature flags).<br><strong>Context is risky for:</strong> high-frequency state or “everything store” objects (typing, forms, rapidly updating dashboards)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Context updates are based on Provider value identity. If the value changes, all consumers re-render. Fix it by memoizing the Provider value, splitting contexts by change rate, narrowing provider scope, and avoiding mega-context stores. For large state, use selector-based patterns or a store.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Context can hurt performance because Provider value identity changes can trigger re-renders across many consumers. Stabilize the Provider value with useMemo, split contexts, reduce provider scope, keep context reads small, and prefer selector/store patterns when you need fine-grained updates."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "context",
+      "performance",
+      "memoization",
+      "state-management"
+    ]
+  },
+  {
+    "id": "react-error-boundaries-what-they-solve",
+    "title": "What problem do Error Boundaries solve? What don’t they catch?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain how React Error Boundaries prevent a whole app from crashing due to rendering errors by showing a fallback UI, what they catch (render/lifecycle/constructor errors in descendants), and what they do NOT catch (event handlers, async code, SSR, and errors inside the boundary itself).",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>Error Boundaries solve the problem of <strong>UI tree crashes</strong>. If a component throws during rendering, React can replace that broken subtree with a <strong>fallback UI</strong> instead of unmounting the entire app (or leaving a blank screen)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>What they are (mental model)</strong><br><br>An Error Boundary is like a <em>seatbelt for a part of your component tree</em>.<br><br>Without it: one render error can crash the whole render path.<br>With it: React catches the error and renders a fallback for that subtree."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What Error Boundaries catch",
+            "Where the error happens",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Errors during rendering",
+              "While React is computing the UI output",
+              "Prevents blank screens / app crashes"
+            ],
+            [
+              "Errors in lifecycle methods (class components)",
+              "componentDidMount / componentDidUpdate, etc.",
+              "Lets you recover with fallback UI"
+            ],
+            [
+              "Errors in constructors (class components)",
+              "During component creation",
+              "Stops faulty subtree from taking down the app"
+            ]
+          ],
+          "caption": "What Error Boundaries are designed to catch"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "class ErrorBoundary extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = { hasError: false };\n  }\n\n  static getDerivedStateFromError(error) {\n    return { hasError: true };\n  }\n\n  componentDidCatch(error, info) {\n    // log to monitoring (Sentry, etc.)\n    console.error(error, info);\n  }\n\n  render() {\n    if (this.state.hasError) {\n      return <div>Something went wrong.</div>;\n    }\n    return this.props.children;\n  }\n}\n\nfunction App() {\n  return (\n    <ErrorBoundary>\n      <BuggyWidget />\n    </ErrorBoundary>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Key limitation</strong><br><br>Error Boundaries only catch errors that happen while React is rendering/committing the UI tree for <em>descendants</em>.<br><br>They are <strong>not</strong> a general-purpose try/catch for everything in your app."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What they do NOT catch",
+            "Example",
+            "How to handle instead"
+          ],
+          "rows": [
+            [
+              "Event handler errors",
+              "onClick / onSubmit throws",
+              "Use try/catch in the handler + report/log"
+            ],
+            [
+              "Async errors",
+              "setTimeout / promise / async/await throws",
+              "Catch with .catch / try/catch and set error state"
+            ],
+            [
+              "Errors in the Error Boundary itself",
+              "Fallback UI throws",
+              "Wrap higher or fix boundary; keep fallback simple"
+            ],
+            [
+              "Errors outside React tree",
+              "Global scripts, non-React code",
+              "window.onerror / monitoring integration"
+            ],
+            [
+              "SSR rendering errors (server-side)",
+              "Server render throws before client loads",
+              "Handle on server/framework level + return error page"
+            ]
+          ],
+          "caption": "What Error Boundaries don’t catch"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Button() {\n  const onClick = () => {\n    // ❌ Error Boundaries do NOT catch this\n    throw new Error('Boom in event handler');\n  };\n\n  return <button onClick={onClick}>Click me</button>;\n}\n\nfunction SaferButton() {\n  const onClick = () => {\n    try {\n      throw new Error('Boom');\n    } catch (e) {\n      // ✅ handle + report\n      console.error(e);\n    }\n  };\n\n  return <button onClick={onClick}>Click me</button>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Where to place Error Boundaries (practical)</strong><br><br>Don’t wrap the entire app with one giant boundary only. Use a few strategically placed boundaries so failure is isolated:<br><br>• Page-level boundary (keeps navbar/layout alive)<br>• Widget/card boundary (dashboard tiles don’t nuke the whole page)<br>• Route boundary (one route fails, rest of app still usable)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><br>Use Error Boundaries to protect the UI tree from render-time crashes. Use normal error handling for user interactions and async work."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Error Boundaries catch errors during rendering and lifecycle/constructor of descendants, letting React show a fallback UI instead of crashing the whole tree. They do not catch errors in event handlers, async callbacks, SSR, or errors inside the boundary itself — those need explicit try/catch or promise handling.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>Error Boundaries prevent render-time exceptions in a subtree from crashing the entire UI by rendering a fallback and optionally reporting the error. They catch render/commit-time errors in descendants but not event handler errors, async errors, SSR errors, or errors in the boundary itself."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "error-handling",
+      "components",
+      "best-practices"
+    ]
+  },
+  {
+    "id": "react-strictmode-double-invoke-effects",
+    "title": "Why does StrictMode double-invoke effects in dev? What bugs does it expose?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br>React StrictMode double-invokes effects in development to <strong>stress-test your side effects</strong>. It intentionally simulates <em>mount → unmount → mount</em> to expose bugs where effects are not <strong>idempotent</strong> or don’t clean up properly."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important: this only happens in development</strong><br><br>StrictMode checks run <strong>only in dev</strong>. Production builds do not double-invoke effects. This is a <em>diagnostic tool</em>, not a performance feature."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The mental model</strong><br><br>React is preparing for a future where it can <em>pause, discard, and restart renders</em> (concurrent rendering). To make sure your code is safe for that world, StrictMode asks a brutal question:<br><br><em>\"If I mount this component, tear it down, and mount it again immediately… does anything break?\"</em>"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Example() {\n  useEffect(() => {\n    console.log('effect run');\n    return () => {\n      console.log('cleanup');\n    };\n  }, []);\n\n  return <div>Hello</div>;\n}\n\n// In StrictMode (dev), you'll see:\n// effect run\n// cleanup\n// effect run"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What exactly gets double-invoked?</strong><br><br>In React 18 StrictMode (dev):<br>• Component render functions<br>• useEffect / useLayoutEffect setup + cleanup<br>• Certain initializers<br><br>React mounts, cleans up, and mounts again immediately."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What React is testing",
+            "Bad pattern",
+            "Bug it exposes"
+          ],
+          "rows": [
+            [
+              "Missing cleanup",
+              "Subscribing but never unsubscribing",
+              "Memory leaks, duplicate listeners"
+            ],
+            [
+              "Non-idempotent side effects",
+              "Sending analytics / POST request on mount",
+              "Duplicate network calls or double charges"
+            ],
+            [
+              "Mutating external state",
+              "Pushing into global arrays, singletons",
+              "Duplicated or corrupted global state"
+            ],
+            [
+              "Assuming effects run only once",
+              "“This runs once on mount” logic",
+              "Breaks under remounts / transitions"
+            ]
+          ],
+          "caption": "The kinds of bugs StrictMode is hunting"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Classic bug example: missing cleanup</strong>"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  // ❌ No cleanup\n}, []);\n\n// In StrictMode dev, this registers the listener twice 😬"
+        },
+        {
+          "type": "text",
+          "text": "Correct version:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  return () => {\n    window.removeEventListener('resize', onResize);\n  };\n}, []);\n\n// ✅ Safe under mount → unmount → mount"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Another classic: non-idempotent side effects</strong>"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "useEffect(() => {\n  analytics.track('page_view'); // ❌ will fire twice in dev StrictMode\n}, []);"
+        },
+        {
+          "type": "text",
+          "text": "Better patterns:<br><br>• Move it to a router-level boundary<br>• Or make it idempotent<br>• Or dedupe on the analytics side"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why React does this (the real reason)</strong><br><br>Concurrent React may mount, pause, throw away, and restart trees. If your effects are not resilient to being started and stopped multiple times, you’ll get production-only bugs. StrictMode forces you to see them early."
+        },
+        {
+          "type": "text",
+          "text": "<strong>What this is NOT</strong><br><br>• Not a bug<br>• Not React being slow<br>• Not something to “work around”<br><br>It’s a correctness check."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><br>Write effects as if React can run them, clean them up, and run them again at any time. If that is safe, your code is future-proof."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"StrictMode double-invokes effects in dev to simulate mount–unmount–remount and catch unsafe side effects. It exposes missing cleanups, non-idempotent logic, and code that assumes effects run only once. This is to prepare apps for concurrent rendering and only runs in development.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br>StrictMode intentionally double-invokes effects in development to detect unsafe side effects and missing cleanup. It helps catch memory leaks, duplicated subscriptions, non-idempotent logic, and code that assumes a single mount. This behavior is dev-only and exists to make apps safe for concurrent rendering."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "effects",
+      "best-practices"
+    ]
+  },
+  {
+    "id": "react-useeffect-vs-uselayouteffect",
+    "title": "What’s the difference between useEffect and useLayoutEffect? When does it matter?",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain the timing difference between useEffect and useLayoutEffect in the render/commit/paint pipeline, why useLayoutEffect blocks painting, and when it is required (DOM measurements, preventing visual flicker) versus when useEffect is preferred.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Short answer</strong><br><br><code>useEffect</code> runs <strong>after the browser paints</strong>. <code>useLayoutEffect</code> runs <strong>synchronously after DOM mutations but before the browser paints</strong>. The difference matters when you need to <em>read or write layout</em> and avoid visual flicker."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The render pipeline (mental model)</strong><br><br>Roughly, React does this:<br><br>1) Render (compute virtual tree)<br>2) Commit (apply DOM changes)<br>3) <strong>useLayoutEffect runs here (before paint)</strong><br>4) Browser paints to screen<br>5) <strong>useEffect runs here (after paint)</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Hook",
+            "When it runs",
+            "Does it block paint?"
+          ],
+          "rows": [
+            [
+              "useLayoutEffect",
+              "After DOM updates, before paint",
+              "✅ Yes (blocks paint)"
+            ],
+            [
+              "useEffect",
+              "After paint",
+              "❌ No (non-blocking)"
+            ]
+          ],
+          "caption": "The critical timing difference"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this difference exists</strong><br><br><code>useLayoutEffect</code> exists for code that must <em>synchronously</em> read or modify the DOM <strong>before the user sees anything</strong>. <code>useEffect</code> is for everything else (data fetching, subscriptions, logging, timers, etc.)."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Example() {\n  const ref = useRef(null);\n\n  useLayoutEffect(() => {\n    const rect = ref.current.getBoundingClientRect();\n    // Measure and synchronously adjust layout\n  }, []);\n\n  return <div ref={ref}>Hello</div>;\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What happens if you use useEffect for layout work?</strong><br><br>The browser will:<br>• Paint the UI once<br>• Then your effect runs<br>• Then you update layout/state<br>• Then it paints again<br><br>The user sees a <strong>visual flicker / jump</strong>."
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "function Tooltip({ text }) {\n  const ref = useRef(null);\n  const [top, setTop] = useState(0);\n\n  // ❌ This can cause visible jump\n  useEffect(() => {\n    const rect = ref.current.getBoundingClientRect();\n    setTop(rect.top - 10);\n  }, []);\n\n  return (\n    <div ref={ref} style={{ position: 'absolute', top }}>\n      {text}\n    </div>\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "Correct version:"
+        },
+        {
+          "type": "code",
+          "language": "jsx",
+          "code": "useLayoutEffect(() => {\n  const rect = ref.current.getBoundingClientRect();\n  setTop(rect.top - 10);\n}, []);\n// ✅ User never sees the wrong position"
+        },
+        {
+          "type": "text",
+          "text": "<strong>When you should use useLayoutEffect</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Why",
+            "Examples"
+          ],
+          "rows": [
+            [
+              "Measuring DOM size/position",
+              "Must read layout before paint",
+              "getBoundingClientRect, offsetWidth"
+            ],
+            [
+              "Synchronously adjusting layout",
+              "Prevent visible jumps",
+              "Tooltips, popovers, modals"
+            ],
+            [
+              "Scroll position corrections",
+              "Avoid one-frame wrong scroll",
+              "Scroll restoration, anchored lists"
+            ],
+            [
+              "Imperative animations setup",
+              "Need correct initial layout",
+              "FLIP animations, measurement-based motion"
+            ]
+          ],
+          "caption": "Legitimate use cases for useLayoutEffect"
+        },
+        {
+          "type": "text",
+          "text": "<strong>When you should use useEffect (almost always)</strong><br><br>• Data fetching<br>• Subscriptions / event listeners<br>• Logging / analytics<br>• Timers<br>• Syncing with external systems<br><br>These do not need to block paint and should not slow down rendering."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why you should avoid overusing useLayoutEffect</strong><br><br>Because it <strong>blocks the browser from painting</strong>. Too many or heavy <code>useLayoutEffect</code> calls = slow first paint and janky UI."
+        },
+        {
+          "type": "text",
+          "text": "<strong>SSR warning</strong><br><br><code>useLayoutEffect</code> does nothing on the server and causes warnings in SSR environments. Many frameworks alias it to <code>useEffect</code> on the server. Another reason to only use it when truly necessary."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Rule of thumb</strong><br><br>Start with <code>useEffect</code>. Only switch to <code>useLayoutEffect</code> if you see a visual flicker, layout jump, or need to measure/mutate layout before paint."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"useLayoutEffect runs synchronously after DOM mutations but before paint and blocks rendering, so it’s for layout measurement and visual correctness. useEffect runs after paint and is non-blocking, so it’s for side effects like data fetching and subscriptions. You should prefer useEffect unless you need to prevent visual flicker.\"</em>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br><code>useLayoutEffect</code> runs before the browser paints and blocks rendering, making it suitable for DOM measurements and layout corrections. <code>useEffect</code> runs after paint and should be used for most side effects. Overusing <code>useLayoutEffect</code> hurts performance, so only use it when visual correctness requires it."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "react",
+      "hooks",
+      "effects",
+      "performance",
+      "dom"
+    ]
   }
 ]

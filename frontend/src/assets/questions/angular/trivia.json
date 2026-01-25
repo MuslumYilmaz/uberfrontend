@@ -3746,5 +3746,1151 @@
     },
     "access": "free",
     "type": "trivia"
+  },
+  {
+    "id": "angular-onpush-change-detection-debugging-real-bug",
+    "title": "Explain OnPush Change Detection in Angular Like You’re Debugging a Real Production Bug",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "OnPush change detection tells Angular to skip checking a component unless one of a few specific triggers happens (Input reference change, event inside the component, async pipe emission, or manual markForCheck/detectChanges). It dramatically improves performance, but breaks the UI if you mutate objects or arrays instead of changing references.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br><code>ChangeDetectionStrategy.OnPush</code> tells Angular: “Only check this component if something <em>meaningful</em> happened.” Meaningful = an <code>@Input</code> reference changed, an event happened in this component, an <code>async</code> pipe emitted, or you manually asked Angular to check."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What happened?",
+            "Will OnPush re-render?",
+            "Why"
+          ],
+          "rows": [
+            [
+              "An @Input reference changed",
+              "✅ Yes",
+              "Angular compares references, not deep values."
+            ],
+            [
+              "A click/event inside the component",
+              "✅ Yes",
+              "Events mark the component dirty."
+            ],
+            [
+              "An async pipe emits a new value",
+              "✅ Yes",
+              "AsyncPipe internally calls markForCheck()."
+            ],
+            [
+              "You mutated an object/array in place",
+              "❌ No",
+              "Reference did not change, Angular thinks nothing happened."
+            ],
+            [
+              "You call markForCheck() manually",
+              "✅ Yes",
+              "You explicitly told Angular to re-check."
+            ],
+            [
+              "You call detectChanges() manually",
+              "✅ Yes (immediate)",
+              "Forces synchronous change detection for this subtree."
+            ]
+          ],
+          "caption": "What triggers change detection in OnPush components?"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The classic real-world bug</strong><br><br>“My data changes but the UI doesn’t update.” This almost always means <strong>you mutated an object or array instead of creating a new reference</strong>."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Component({\n  selector: 'app-user-list',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <div *ngFor=\"let user of users\">{{ user.name }}</div>\n  `\n})\nexport class UserListComponent {\n  @Input() users: { name: string }[] = [];\n\n  // ❌ BUG: UI will NOT update in OnPush\n  addUserWrong() {\n    this.users.push({ name: 'New User' }); // same array reference\n  }\n\n  // ✅ Correct: new reference => OnPush sees change\n  addUserCorrect() {\n    this.users = [...this.users, { name: 'New User' }];\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why OnPush exists</strong><br><br>Default change detection checks <em>the whole component tree</em> on every async event (timers, HTTP, clicks, etc). OnPush lets Angular <strong>skip huge parts of the tree</strong> unless something relevant changed. This is critical for large apps and big lists."
+        },
+        {
+          "type": "text",
+          "text": "<strong>markForCheck() vs detectChanges()</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Method",
+            "What it does",
+            "When to use"
+          ],
+          "rows": [
+            [
+              "<code>markForCheck()</code>",
+              "Marks this component and its parents as dirty for the next CD cycle.",
+              "When data changes outside Angular's awareness (e.g., custom subscriptions, timers, non-async-pipe streams)."
+            ],
+            [
+              "<code>detectChanges()</code>",
+              "Immediately runs change detection on this component subtree.",
+              "Rare cases: manual rendering, detached views, or very controlled performance scenarios."
+            ]
+          ],
+          "caption": "Manual change detection tools"
+        },
+        {
+          "type": "text",
+          "text": "<strong>AsyncPipe is your best friend</strong><br><br>The <code>async</code> pipe automatically:<br>• Subscribes<br>• Unsubscribes<br>• Calls <code>markForCheck()</code> on emission<br><br>This is why OnPush + async pipe is the <strong>recommended default pattern</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common senior-level pitfalls</strong><br><br>• Mutating arrays/objects instead of replacing them<br>• Forgetting that OnPush uses <em>reference</em> checks, not deep checks<br>• Updating state inside subscriptions without async pipe or markForCheck<br>• Using OnPush everywhere without understanding its mental model"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "What to do",
+            "Why"
+          ],
+          "rows": [
+            [
+              "State comes from Observables",
+              "Use <code>async</code> pipe",
+              "Automatic CD + auto unsubscribe + best performance."
+            ],
+            [
+              "State updated manually in code",
+              "Use immutable updates (new reference)",
+              "So OnPush can detect the change."
+            ],
+            [
+              "State updated outside Angular or in manual subscriptions",
+              "Call <code>markForCheck()</code>",
+              "Otherwise Angular will not re-render."
+            ]
+          ],
+          "caption": "Correct patterns with OnPush"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most “UI not updating” bugs in OnPush come from mutating objects instead of replacing them."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
+    "title": "switchMap vs mergeMap vs exhaustMap vs concatMap: When Would You Use Each in Angular?",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "These RxJS flattening operators control how Angular handles overlapping async work (HTTP calls, saves, clicks, search). switchMap cancels previous, mergeMap runs in parallel, concatMap queues sequentially, and exhaustMap ignores new triggers while busy. Choosing the right one prevents race conditions, double submits, and UI glitches.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>All four operators take a stream of “triggers” (typing, clicks, route params) and map each trigger to an inner Observable (usually an HTTP call). The difference is what they do when a <em>new trigger arrives before the previous one finishes</em>:<br><br><code>switchMap</code> = cancel old, keep latest<br><code>mergeMap</code> = run all in parallel<br><code>concatMap</code> = queue one by one<br><code>exhaustMap</code> = ignore new until current completes"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Operator",
+            "What it does with overlap",
+            "Best Angular use-cases",
+            "Common bug it prevents (or causes)"
+          ],
+          "rows": [
+            [
+              "<code>switchMap</code>",
+              "Cancels the previous inner Observable when a new value arrives (keeps only the latest).",
+              "Search/autocomplete, typeahead filtering, route param changes where you only want the latest request.",
+              "Prevents stale UI from older responses. (But can cancel work you actually needed.)"
+            ],
+            [
+              "<code>mergeMap</code>",
+              "Runs all inner Observables concurrently (no cancellation).",
+              "Fire-and-forget analytics, loading independent resources in parallel, batch requests where order doesn’t matter.",
+              "Can cause race conditions (older response overwrites newer state) if you update shared UI state."
+            ],
+            [
+              "<code>concatMap</code>",
+              "Queues triggers and runs inner Observables sequentially (preserves order).",
+              "Save queue, uploading files in order, sequential steps where order matters and every action must run.",
+              "Prevents out-of-order state. (But can feel “slow” under rapid triggers.)"
+            ],
+            [
+              "<code>exhaustMap</code>",
+              "Ignores new triggers while an inner Observable is active (first wins until completion).",
+              "Login button, “Submit” button, “Pay now”, any action where double submit must be blocked.",
+              "Prevents double submits. (But can drop user actions if they click again too soon.)"
+            ]
+          ],
+          "caption": "Which RxJS mapping operator should you use in Angular?"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview mental model</strong><br><br>Ask yourself: when triggers happen fast, do you want <strong>latest wins</strong>, <strong>all run</strong>, <strong>in order</strong>, or <strong>ignore spam</strong>?"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "You want…",
+            "Pick",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Only the latest result (cancel previous)",
+              "<code>switchMap</code>",
+              "Typing fast should not show older results."
+            ],
+            [
+              "All requests to run concurrently",
+              "<code>mergeMap</code>",
+              "Independent work can finish in any order."
+            ],
+            [
+              "Every action to run, but strictly in order",
+              "<code>concatMap</code>",
+              "Queue saves/commands to avoid state corruption."
+            ],
+            [
+              "Block spam clicks until completion",
+              "<code>exhaustMap</code>",
+              "Prevent double submit / duplicate payments."
+            ]
+          ],
+          "caption": "Fast decision table"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Real Angular examples</strong>"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, ChangeDetectionStrategy, inject } from '@angular/core';\nimport { FormControl } from '@angular/forms';\nimport { debounceTime, distinctUntilChanged, switchMap, mergeMap, concatMap, exhaustMap, tap, filter } from 'rxjs/operators';\nimport { Observable, of, Subject } from 'rxjs';\n\nclass Api {\n  search(term: string): Observable<string[]> { return of([term]); }\n  save(payload: unknown): Observable<void> { return of(void 0); }\n  analytics(event: string): Observable<void> { return of(void 0); }\n}\n\n@Component({\n  selector: 'app-demo',\n  template: ``,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class DemoComponent {\n  private api = inject(Api);\n\n  // 1) Typeahead search: latest wins => switchMap\n  searchControl = new FormControl('');\n  searchResults$ = this.searchControl.valueChanges.pipe(\n    debounceTime(250),\n    distinctUntilChanged(),\n    switchMap(term => this.api.search(String(term ?? '')))\n  );\n\n  // 2) Submit button: block double submit => exhaustMap\n  private submitClicks$ = new Subject<void>();\n  submitting$ = this.submitClicks$.pipe(\n    exhaustMap(() => this.api.save({ /* form value */ }))\n  );\n\n  // 3) Sequential saves: preserve order => concatMap\n  private saveQueue$ = new Subject<unknown>();\n  saveInOrder$ = this.saveQueue$.pipe(\n    concatMap(payload => this.api.save(payload))\n  );\n\n  // 4) Parallel work: independent calls => mergeMap\n  private events$ = new Subject<string>();\n  trackEvents$ = this.events$.pipe(\n    mergeMap(name => this.api.analytics(name))\n  );\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior pitfall #1: race conditions with mergeMap</strong><br><br>If you use <code>mergeMap</code> for UI state that should reflect the latest request, you can get <em>out-of-order overwrites</em>: request A starts, then request B starts, B returns first (UI shows B), then A returns later and overwrites the UI with stale data. That’s why typeahead/search is almost always <code>switchMap</code>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior pitfall #2: thinking switchMap “cancels the server”</strong><br><br><code>switchMap</code> unsubscribes from the previous inner Observable. For Angular <code>HttpClient</code>, unsubscribing typically aborts the underlying request (via browser APIs). But if the server already processed it, cancellation won’t rewind time—it mainly prevents your app from handling stale results."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior pitfall #3: exhaustMap dropping user intent</strong><br><br><code>exhaustMap</code> ignores new triggers while busy. Great for preventing double submits, but if you need “last click wins after current finishes”, use a different strategy (e.g., disable button in UI, or use <code>switchMap</code> with careful semantics)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Angular scenario",
+            "Best operator",
+            "Reason"
+          ],
+          "rows": [
+            [
+              "Search field / autocomplete",
+              "<code>switchMap</code>",
+              "Only latest input should win; old requests must be ignored."
+            ],
+            [
+              "Submit / payment / login button",
+              "<code>exhaustMap</code>",
+              "Block duplicates until completion."
+            ],
+            [
+              "Queueing writes (save draft events, ordered commands)",
+              "<code>concatMap</code>",
+              "Guarantees order and prevents overlapping state changes."
+            ],
+            [
+              "Load independent resources (A, B, C in parallel)",
+              "<code>mergeMap</code>",
+              "Parallelism improves speed; ordering doesn’t matter."
+            ]
+          ],
+          "caption": "Operator picks interviewers expect you to justify"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><br><br><code>switchMap</code> = latest wins (search, route changes). <code>mergeMap</code> = run all in parallel (independent work). <code>concatMap</code> = queue sequentially (ordered saves). <code>exhaustMap</code> = ignore spam until done (submit buttons). The “correct” choice is the one that matches how you want to handle overlapping triggers."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
+    "title": "How Do You Prevent Memory Leaks in Angular? All Real-World Unsubscribe Patterns Explained",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "Memory leaks in Angular almost always come from forgotten subscriptions, long-lived streams, or global listeners. The correct fixes include using the async pipe, takeUntilDestroyed/DestroyRef, takeUntil with a Subject, and understanding which streams complete automatically and which never do.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>Angular itself does not magically clean up your RxJS subscriptions. If a stream does not complete by itself and you keep a subscription alive after the component is destroyed, you leak memory, CPU, and sometimes network activity. <strong>Most Angular memory leaks come from forgotten subscriptions or global listeners.</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Source type",
+            "Does it auto-complete?",
+            "Needs manual unsubscribe?",
+            "Why"
+          ],
+          "rows": [
+            [
+              "<code>HttpClient</code> request",
+              "✅ Yes",
+              "❌ No",
+              "HTTP observables complete after one response."
+            ],
+            [
+              "<code>ActivatedRoute</code> params, <code>valueChanges</code>, Subjects",
+              "❌ No",
+              "✅ Yes",
+              "They are long-lived streams tied to app lifetime."
+            ],
+            [
+              "<code>interval</code>, <code>fromEvent</code>, WebSocket",
+              "❌ No",
+              "✅ Yes",
+              "They never complete unless you stop them."
+            ],
+            [
+              "<code>async</code> pipe",
+              "—",
+              "❌ No",
+              "Angular unsubscribes automatically on destroy."
+            ]
+          ],
+          "caption": "Which subscriptions leak if you forget to clean them up?"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Pattern #1: Use the async pipe (best default)</strong><br><br>The <code>async</code> pipe automatically subscribes and unsubscribes when the component is destroyed. It also integrates perfectly with <code>OnPush</code> change detection."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Component({\n  selector: 'app-users',\n  template: `\n    <ul>\n      <li *ngFor=\"let u of users$ | async\">{{ u.name }}</li>\n    </ul>\n  `,\n  changeDetection: ChangeDetectionStrategy.OnPush\n})\nexport class UsersComponent {\n  users$ = this.api.loadUsers(); // no manual subscribe\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Pattern #2: takeUntilDestroyed (modern Angular, recommended)</strong><br><br>This is the cleanest way to auto-unsubscribe in code in Angular 16+ using <code>DestroyRef</code>."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, DestroyRef, inject } from '@angular/core';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\n\n@Component({ selector: 'app-demo', template: '' })\nexport class DemoComponent {\n  private destroyRef = inject(DestroyRef);\n\n  ngOnInit() {\n    this.someStream$\n      .pipe(takeUntilDestroyed(this.destroyRef))\n      .subscribe(value => {\n        // safe: auto-unsubscribed on destroy\n      });\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Pattern #3: Classic takeUntil + Subject (works in all Angular versions)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, OnDestroy } from '@angular/core';\nimport { Subject } from 'rxjs';\nimport { takeUntil } from 'rxjs/operators';\n\n@Component({ selector: 'app-demo', template: '' })\nexport class DemoComponent implements OnDestroy {\n  private destroy$ = new Subject<void>();\n\n  ngOnInit() {\n    this.someStream$\n      .pipe(takeUntil(this.destroy$))\n      .subscribe(value => {\n        // safe\n      });\n  }\n\n  ngOnDestroy() {\n    this.destroy$.next();\n    this.destroy$.complete();\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Pattern #4: Manual Subscription aggregation (old-school)</strong><br><br>Works, but easy to forget to add new subscriptions. Not recommended for large components."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, OnDestroy } from '@angular/core';\nimport { Subscription } from 'rxjs';\n\n@Component({ selector: 'app-demo', template: '' })\nexport class DemoComponent implements OnDestroy {\n  private sub = new Subscription();\n\n  ngOnInit() {\n    this.sub.add(this.someStream$.subscribe());\n    this.sub.add(this.otherStream$.subscribe());\n  }\n\n  ngOnDestroy() {\n    this.sub.unsubscribe();\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Non-RxJS leaks: event listeners & timers</strong><br><br>Leaks don’t only come from Observables. <code>addEventListener</code>, <code>setInterval</code>, and 3rd-party libraries must also be cleaned up in <code>ngOnDestroy</code>."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "ngOnInit() {\n  window.addEventListener('resize', this.onResize);\n  this.timer = setInterval(() => {}, 1000);\n}\n\nngOnDestroy() {\n  window.removeEventListener('resize', this.onResize);\n  clearInterval(this.timer);\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Pattern",
+            "When to use",
+            "Why"
+          ],
+          "rows": [
+            [
+              "<code>async</code> pipe",
+              "Template-driven streams",
+              "Safest, zero-leak, integrates with OnPush."
+            ],
+            [
+              "<code>takeUntilDestroyed</code>",
+              "Subscriptions in component code (Angular 16+)",
+              "Modern, concise, no boilerplate."
+            ],
+            [
+              "<code>takeUntil + Subject</code>",
+              "Older Angular or shared base classes",
+              "Battle-tested and explicit."
+            ],
+            [
+              "Manual Subscription",
+              "Very small/simple components",
+              "Easy to forget and cause leaks."
+            ]
+          ],
+          "caption": "Which unsubscribe strategy should you pick?"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior pitfalls</strong><br><br>• Assuming Angular auto-unsubscribes everything (it doesn’t)<br>• Forgetting that <code>ActivatedRoute</code>, <code>valueChanges</code>, Subjects never complete<br>• Subscribing in services that live forever (root scope)<br>• Leaking intervals, event listeners, and WebSocket connections"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>To prevent memory leaks in Angular: prefer the <code>async</code> pipe in templates, use <code>takeUntilDestroyed</code> (or <code>takeUntil</code> + Subject) in code, know which Observables complete automatically (HTTP) and which don’t, and always clean up timers and event listeners in <code>ngOnDestroy</code>."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
+    "title": "What Is ControlValueAccessor in Angular and Why Is It Better Than Custom Two-Way Binding?",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling—unlike custom two-way binding which only syncs values and breaks form integration.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br><code>ControlValueAccessor</code> (CVA) is the interface that tells Angular Forms how to <strong>write a value into your component</strong> and how your component <strong>reports changes back</strong>. If you want a custom input component to work with <code>ngModel</code>, <code>formControl</code>, or <code>formControlName</code>, you must implement CVA."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why not just use custom two-way binding?</strong><br><br>Two-way binding like <code>[(value)]</code> only synchronizes a value. It does <strong>not</strong> integrate with Angular Forms, so you lose validation, touched/dirty states, disabled state, and form-level APIs. CVA plugs your component into the <em>entire forms ecosystem</em>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Capability",
+            "Custom [(value)] binding",
+            "ControlValueAccessor"
+          ],
+          "rows": [
+            [
+              "Works with Reactive Forms / ngModel",
+              "❌ No",
+              "✅ Yes"
+            ],
+            [
+              "Supports validators",
+              "❌ No",
+              "✅ Yes"
+            ],
+            [
+              "Tracks touched / dirty / pristine",
+              "❌ No",
+              "✅ Yes"
+            ],
+            [
+              "Supports disabled state",
+              "❌ Manual hacks",
+              "✅ Built-in via setDisabledState"
+            ],
+            [
+              "Integrates with FormGroup / FormControl",
+              "❌ No",
+              "✅ Yes"
+            ]
+          ],
+          "caption": "Two-way binding vs ControlValueAccessor"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Minimal CVA implementation</strong><br><br>A CVA has four responsibilities:<br>• <code>writeValue</code>: Angular → component<br>• <code>registerOnChange</code>: component → Angular<br>• <code>registerOnTouched</code>: mark as touched<br>• <code>setDisabledState</code>: handle disabled"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "import { Component, forwardRef } from '@angular/core';\nimport { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';\n\n@Component({\n  selector: 'app-rating',\n  template: `\n    <button *ngFor=\"let n of [1,2,3,4,5]\" (click)=\"set(n)\" [disabled]=\"disabled\">\n      {{ n }}\n    </button>\n  `,\n  providers: [\n    {\n      provide: NG_VALUE_ACCESSOR,\n      useExisting: forwardRef(() => RatingComponent),\n      multi: true\n    }\n  ]\n})\nexport class RatingComponent implements ControlValueAccessor {\n  value = 0;\n  disabled = false;\n\n  private onChange = (v: number) => {};\n  private onTouched = () => {};\n\n  writeValue(v: number): void {\n    this.value = v ?? 0;\n  }\n\n  registerOnChange(fn: (v: number) => void): void {\n    this.onChange = fn;\n  }\n\n  registerOnTouched(fn: () => void): void {\n    this.onTouched = fn;\n  }\n\n  setDisabledState(isDisabled: boolean): void {\n    this.disabled = isDisabled;\n  }\n\n  set(v: number) {\n    if (this.disabled) return;\n    this.value = v;\n    this.onChange(v);   // notify Angular Forms\n    this.onTouched();   // mark as touched\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Using it like a real form control</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<form [formGroup]=\"form\">\n  <app-rating formControlName=\"rating\"></app-rating>\n</form>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this is strictly better than custom two-way binding</strong><br><br>With CVA, your component becomes a <strong>first-class Angular form control</strong>. It participates in validation, form submission, reset, disabled state propagation, and form-level state tracking. Two-way binding only moves a value around—it does not integrate into the forms system."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Real-world requirement",
+            "Without CVA",
+            "With CVA"
+          ],
+          "rows": [
+            [
+              "Disable the whole form",
+              "❌ You must wire every input manually",
+              "✅ setDisabledState is called automatically"
+            ],
+            [
+              "Mark control as touched",
+              "❌ Manual hacks",
+              "✅ Angular handles it"
+            ],
+            [
+              "Show validation errors",
+              "❌ Not integrated",
+              "✅ Works via FormControl"
+            ],
+            [
+              "Reset the form",
+              "❌ Manual reset logic",
+              "✅ Angular resets automatically"
+            ]
+          ],
+          "caption": "Why CVA scales in real apps"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Forgetting to call <code>onTouched()</code> (control never becomes touched)<br>• Not implementing <code>setDisabledState</code> (disabled forms don’t work)<br>• Mutating internal state without calling <code>onChange</code><br>• Using custom two-way binding for components that should be form controls"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br><code>ControlValueAccessor</code> is Angular’s official way to make a custom component behave like a real form control. It integrates with Reactive Forms and ngModel, supports validation, touched/dirty state, disabled handling, and form APIs. Custom two-way binding only syncs a value and does not integrate with Angular Forms, which makes it unsuitable for serious form components."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-template-driven-vs-reactive-forms-which-scales",
+    "title": "Template-Driven vs Reactive Forms in Angular: Which One Scales and Why?",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "Template-driven forms rely on directives in the template and implicit state, while reactive forms define the entire form model in TypeScript. Reactive forms scale better because they are explicit, testable, composable, and predictable for complex validation and dynamic form structures.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>Both approaches create the same thing in the end (a <code>FormGroup</code> tree). The difference is <strong>where the form model lives</strong>:<br><br>• <strong>Template-driven</strong>: the form is inferred from the template.<br>• <strong>Reactive</strong>: the form is declared explicitly in TypeScript.<br><br>The more complex the form becomes, the more valuable the explicit model of reactive forms becomes."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Dimension",
+            "Template-Driven Forms",
+            "Reactive Forms"
+          ],
+          "rows": [
+            [
+              "Where the model lives",
+              "In the template (via directives like ngModel)",
+              "In TypeScript (FormGroup/FormControl)"
+            ],
+            [
+              "Data flow",
+              "Mostly implicit, two-way binding",
+              "Explicit, unidirectional data flow"
+            ],
+            [
+              "Validation",
+              "Template-based (attributes, directives)",
+              "Function-based, composable, testable"
+            ],
+            [
+              "Dynamic forms",
+              "❌ Hard to do",
+              "✅ First-class support (FormArray, dynamic controls)"
+            ],
+            [
+              "Testability",
+              "❌ Hard (need to render template)",
+              "✅ Easy (pure TS objects)"
+            ],
+            [
+              "Predictability",
+              "⚠️ Lower (implicit state & timing)",
+              "✅ High (explicit model)"
+            ]
+          ],
+          "caption": "Template-driven vs Reactive forms"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Template-driven example (simple, but limited)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<form #f=\"ngForm\">\n  <input name=\"email\" ngModel required email />\n  <button [disabled]=\"f.invalid\">Save</button>\n</form>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Reactive example (explicit and scalable)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "form = new FormGroup({\n  email: new FormControl('', [Validators.required, Validators.email])\n});"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<form [formGroup]=\"form\">\n  <input formControlName=\"email\" />\n  <button [disabled]=\"form.invalid\">Save</button>\n</form>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why Reactive Forms scale better</strong><br><br>In real applications you eventually need:<br>• Dynamic fields (add/remove rows)<br>• Cross-field validation<br>• Conditional enable/disable logic<br>• Programmatic resets, patches, partial updates<br>• Testable validation logic<br><br>All of these are <strong>natural</strong> in reactive forms and <strong>awkward</strong> in template-driven forms."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Real-world requirement",
+            "Template-driven",
+            "Reactive"
+          ],
+          "rows": [
+            [
+              "Dynamic rows (FormArray)",
+              "❌ Very hard",
+              "✅ Built-in support"
+            ],
+            [
+              "Cross-field validation",
+              "⚠️ Awkward",
+              "✅ Clean validator functions"
+            ],
+            [
+              "Conditional fields",
+              "⚠️ Hacky",
+              "✅ Simple enable/disable APIs"
+            ],
+            [
+              "Unit testing",
+              "❌ Requires TestBed + template",
+              "✅ Pure TypeScript tests"
+            ],
+            [
+              "Complex state transitions",
+              "❌ Hard to reason about",
+              "✅ Predictable and explicit"
+            ]
+          ],
+          "caption": "Why reactive forms dominate in large apps"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Performance and architecture considerations</strong><br><br>Reactive forms fit naturally with:<br>• <code>OnPush</code> change detection<br>• Immutable update patterns<br>• Observable-based workflows<br>• CVA-based custom controls<br><br>Template-driven forms rely heavily on directives and two-way binding, which becomes harder to control and reason about at scale."
+        },
+        {
+          "type": "text",
+          "text": "<strong>When template-driven forms are still OK</strong><br><br>• Very small forms (login, newsletter signup)<br>• Prototypes, admin panels, quick internal tools<br>• When you want minimal boilerplate and don’t need complex logic"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Mixing template-driven and reactive approaches in the same form<br>• Using template-driven forms for dynamic or complex workflows<br>• Putting business logic in templates instead of validators/services"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>Template-driven forms are fine for simple cases, but <strong>reactive forms scale better</strong> because the form model is explicit, testable, composable, and predictable. Any serious Angular application with dynamic fields, complex validation, or non-trivial workflows should default to reactive forms."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
+    "title": "What Is shareReplay in RxJS and How Can It Silently Break Your Angular App?",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "shareReplay is an RxJS operator that turns a cold observable into a shared hot one and caches the last emitted values. Used incorrectly, it can cause memory leaks, stale data bugs, and unexpected behavior—especially in Angular services and HTTP streams.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br><code>shareReplay</code> does two things at once:<br>• It <strong>shares</strong> a single subscription among multiple subscribers.<br>• It <strong>replays</strong> the last N emitted values to new subscribers.<br><br>This is extremely useful for caching HTTP calls—but also extremely easy to misuse."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The classic Angular use-case</strong><br><br>You want multiple components to consume the same HTTP data without triggering multiple requests."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "users$ = this.http.get<User[]>('/api/users').pipe(\n  shareReplay(1)\n);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What problem does this solve?</strong><br><br>Without <code>shareReplay</code>, every <code>subscribe()</code> or <code>async</code> pipe would trigger a <em>new HTTP request</em>. With <code>shareReplay(1)</code>, the first request is cached and reused."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Behavior",
+            "Without shareReplay",
+            "With shareReplay(1)"
+          ],
+          "rows": [
+            [
+              "Second subscriber",
+              "Triggers new HTTP request",
+              "Gets cached value"
+            ],
+            [
+              "Third subscriber",
+              "Triggers new HTTP request",
+              "Gets cached value"
+            ],
+            [
+              "Network usage",
+              "Many duplicate calls",
+              "Single call"
+            ]
+          ],
+          "caption": "Why people use shareReplay"
+        },
+        {
+          "type": "text",
+          "text": "<strong>How shareReplay can silently break your app</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Problem",
+            "Why it happens",
+            "Symptom in real apps"
+          ],
+          "rows": [
+            [
+              "Memory leaks",
+              "By default, shareReplay keeps the source subscribed forever.",
+              "Services never released, websockets/intervals never stop."
+            ],
+            [
+              "Stale data",
+              "Cached value is reused even when data should refresh.",
+              "User navigates away/back and sees outdated data."
+            ],
+            [
+              "Error caching",
+              "If the source errors, the error is also replayed.",
+              "Stream is permanently broken until reload."
+            ],
+            [
+              "Unexpected global state",
+              "shareReplay turns cold streams into hot singletons.",
+              "Components influence each other indirectly."
+            ]
+          ],
+          "caption": "The hidden dangers"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The most important option: refCount</strong><br><br>Modern RxJS lets you write:"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "users$ = this.http.get<User[]>('/api/users').pipe(\n  shareReplay({ bufferSize: 1, refCount: true })\n);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What does <code>refCount: true</code> do?</strong><br><br>It tells RxJS: “When there are no subscribers left, <strong>unsubscribe from the source</strong> and free resources.” Without this, the source stays alive forever."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Configuration",
+            "When last subscriber unsubscribes",
+            "Memory behavior"
+          ],
+          "rows": [
+            [
+              "shareReplay(1)",
+              "Source stays subscribed",
+              "❌ Potential leak"
+            ],
+            [
+              "shareReplay({ bufferSize: 1, refCount: true })",
+              "Source unsubscribes",
+              "✅ Safe cleanup"
+            ]
+          ],
+          "caption": "Why refCount matters"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Another subtle trap: error caching</strong><br><br>If the HTTP call errors once, <code>shareReplay</code> will replay that error forever. All future subscribers instantly get the error, and the stream never retries unless you rebuild it or add <code>retry</code> logic."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "users$ = this.http.get<User[]>('/api/users').pipe(\n  retry(1),\n  shareReplay({ bufferSize: 1, refCount: true })\n);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior rule of thumb</strong><br><br>• Use <code>shareReplay</code> for caching expensive or shared streams.<br>• Prefer <code>{ bufferSize: 1, refCount: true }</code> unless you intentionally want a forever-alive cache.<br>• Be explicit about refresh/invalidation semantics.<br>• Never blindly slap <code>shareReplay(1)</code> everywhere."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Angular scenario",
+            "Should you use shareReplay?",
+            "How"
+          ],
+          "rows": [
+            [
+              "Config loaded once at app startup",
+              "✅ Yes",
+              "shareReplay(1) without refCount may be OK"
+            ],
+            [
+              "User-specific API data",
+              "⚠️ Be careful",
+              "Use refCount or explicit refresh trigger"
+            ],
+            [
+              "WebSocket / interval stream",
+              "❌ Usually dangerous",
+              "You probably want manual lifecycle control"
+            ],
+            [
+              "HTTP list used by many components",
+              "✅ Yes",
+              "shareReplay({ bufferSize: 1, refCount: true })"
+            ]
+          ],
+          "caption": "When to use shareReplay in Angular"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br><code>shareReplay</code> shares a single subscription and caches the last values. It is great for avoiding duplicate HTTP calls, but can cause memory leaks, stale data, and permanent error states if used carelessly. In Angular, the safe default is <code>shareReplay({ bufferSize: 1, refCount: true })</code> and a clear cache invalidation strategy."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-http-what-actually-cancels-request",
+    "title": "What Actually Cancels an HTTP Request in Angular?",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request—some only ignore the result.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>An Angular <code>HttpClient</code> request is just an Observable wrapper around a browser request. <strong>The only thing that can actually cancel it is unsubscribing from that Observable</strong>. When you unsubscribe, Angular tells the browser to abort the underlying request (via <code>AbortController</code> or XHR abort)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Action",
+            "Does it cancel the network request?",
+            "What really happens"
+          ],
+          "rows": [
+            [
+              "Unsubscribe from HttpClient Observable",
+              "✅ Yes",
+              "Browser request is aborted."
+            ],
+            [
+              "switchMap to a new request",
+              "✅ Yes",
+              "Previous inner subscription is unsubscribed."
+            ],
+            [
+              "takeUntil emits",
+              "✅ Yes",
+              "Subscription is torn down → request aborted."
+            ],
+            [
+              "Component destroyed (async pipe)",
+              "✅ Yes",
+              "AsyncPipe unsubscribes automatically."
+            ],
+            [
+              "Using mergeMap",
+              "❌ No",
+              "Old requests keep running in parallel."
+            ],
+            [
+              "Ignoring the result in code",
+              "❌ No",
+              "Network still continues; you just drop the response."
+            ]
+          ],
+          "caption": "What truly cancels HTTP in Angular?"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The classic search example</strong><br><br>When users type quickly, you want to cancel old requests and only keep the latest one."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "this.results$ = this.searchControl.valueChanges.pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  switchMap(term => this.http.get(`/api/search?q=${term}`))\n);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this cancels old requests</strong><br><br><code>switchMap</code> unsubscribes from the previous inner Observable when a new value arrives. Since <code>HttpClient</code> cancels requests on unsubscribe, the browser request is aborted."
+        },
+        {
+          "type": "text",
+          "text": "<strong>takeUntil pattern (component lifecycle)</strong>"
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "this.http.get('/api/data').pipe(\n  takeUntil(this.destroy$)\n).subscribe();\n\nngOnDestroy() {\n  this.destroy$.next();\n  this.destroy$.complete();\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What does NOT cancel the request</strong><br><br>Many devs think these cancel HTTP, but they don’t:"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Myth",
+            "Reality"
+          ],
+          "rows": [
+            [
+              "“I used mergeMap, so old requests are gone”",
+              "❌ mergeMap runs everything in parallel. Nothing is canceled."
+            ],
+            [
+              "“I navigated away from the page”",
+              "❌ Unless you unsubscribed (async pipe or takeUntil), request keeps running."
+            ],
+            [
+              "“I ignored the result in subscribe”",
+              "❌ The network request still completes."
+            ],
+            [
+              "“The server will stop anyway”",
+              "❌ The server may continue processing even if client aborts."
+            ]
+          ],
+          "caption": "Common misconceptions"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Important nuance: canceling the browser request vs canceling server work</strong><br><br>When Angular aborts the request, the <em>browser connection</em> is closed. The server may or may not stop processing—this depends entirely on server implementation. From the frontend point of view, however, the request is gone."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Angular pattern",
+            "Does it cancel HTTP?",
+            "Why"
+          ],
+          "rows": [
+            [
+              "AsyncPipe in template",
+              "✅ Yes",
+              "Auto-unsubscribes when component is destroyed."
+            ],
+            [
+              "switchMap",
+              "✅ Yes",
+              "Unsubscribes previous inner Observable."
+            ],
+            [
+              "takeUntil / takeUntilDestroyed",
+              "✅ Yes",
+              "Unsubscribe is triggered by notifier or lifecycle."
+            ],
+            [
+              "mergeMap",
+              "❌ No",
+              "No cancellation semantics."
+            ],
+            [
+              "shareReplay",
+              "⚠️ Depends",
+              "May keep the request alive if refCount is false."
+            ]
+          ],
+          "caption": "Cancellation behavior by pattern"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior-level pitfall</strong><br><br>Using <code>shareReplay</code> without <code>refCount</code> can keep an HTTP request (or its subscription) alive forever, making it impossible to cancel later even if components unsubscribe."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>In Angular, <strong>only unsubscribing</strong> cancels an HTTP request. Operators like <code>switchMap</code>, <code>takeUntil</code>, and the <code>async</code> pipe cancel requests because they unsubscribe. Operators like <code>mergeMap</code> do not cancel anything—they just ignore or parallelize results. Real cancellation = unsubscribe."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
+  },
+  {
+    "id": "angular-hierarchical-dependency-injection-real-bug",
+    "title": "Explain Hierarchical Dependency Injection in Angular With a Real Bug Example",
+    "technology": "angular",
+    "difficulty": "advanced",
+    "importance": 5,
+    "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>Angular does not have a single global injector. It has a <strong>tree of injectors</strong>. When Angular resolves a dependency, it starts from the current component’s injector and walks <em>up the tree</em> until it finds a provider. This means <strong>where you provide a service changes how many instances exist</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>The real-world bug</strong><br><br>“Why does my shared state reset when I navigate?” or “Why does my cache disappear in some components but not others?” The usual answer: <strong>you accidentally created multiple instances of the same service</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Where you provide the service",
+            "How many instances exist",
+            "Typical use"
+          ],
+          "rows": [
+            [
+              "<code>providedIn: 'root'</code>",
+              "1 for the whole app",
+              "Global singleton (auth, config, global cache)"
+            ],
+            [
+              "In a lazy-loaded route or module",
+              "1 per lazy-loaded subtree",
+              "Feature-scoped state"
+            ],
+            [
+              "In a component’s <code>providers</code>",
+              "1 per component instance",
+              "Local, isolated state"
+            ]
+          ],
+          "caption": "Where you provide a service determines its lifetime and scope"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The bug in code</strong><br><br>You think you have one cache service, but you accidentally created many."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class UserCacheService {\n  users: string[] = [];\n}\n\n@Component({\n  selector: 'app-user-list',\n  template: `...`,\n  // ❌ BUG: this creates a NEW instance just for this component\n  providers: [UserCacheService]\n})\nexport class UserListComponent {\n  constructor(public cache: UserCacheService) {}\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>What goes wrong</strong><br><br>Other parts of the app inject the <em>root</em> instance of <code>UserCacheService</code>, but <code>UserListComponent</code> gets its <em>own private copy</em>. Now state, caches, and flags are silently out of sync."
+        },
+        {
+          "type": "text",
+          "text": "<strong>How Angular resolves the dependency</strong><br><br>1) Check the component’s injector<br>2) If not found, check parent component injectors<br>3) Then module/route injectors<br>4) Finally root injector<br><br>The <strong>first match wins</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Injection site",
+            "Which instance you get",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Component with its own providers",
+              "Component-scoped instance",
+              "Local provider shadows parent/root"
+            ],
+            [
+              "Child of that component",
+              "Same component-scoped instance",
+              "Injector tree inheritance"
+            ],
+            [
+              "Some other component elsewhere",
+              "Root instance",
+              "Different injector branch"
+            ]
+          ],
+          "caption": "How the injector tree affects instance sharing"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Another common real bug: lazy-loaded modules</strong><br><br>If you provide a service in a lazy-loaded route/module, you get a <strong>separate instance</strong> from the rest of the app. This often breaks auth state, caches, or WebSocket connections."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "export const routes: Routes = [\n  {\n    path: 'admin',\n    loadComponent: () => import('./admin.component'),\n    providers: [AdminStateService] // feature-scoped instance\n  }\n];"
+        },
+        {
+          "type": "text",
+          "text": "<strong>When component-level providers are actually correct</strong><br><br>• Reusable UI widgets with isolated state<br>• Temporary, per-instance state machines<br>• Editable rows, dialogs, or dynamic components that must not share state"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Goal",
+            "Where to provide",
+            "Why"
+          ],
+          "rows": [
+            [
+              "Global shared state (auth, config, cache)",
+              "<code>providedIn: 'root'</code>",
+              "Single instance for entire app"
+            ],
+            [
+              "Feature-isolated state",
+              "Route/module providers",
+              "Scoped lifetime"
+            ],
+            [
+              "Per-component isolated state",
+              "Component <code>providers</code>",
+              "New instance per component"
+            ]
+          ],
+          "caption": "Correct scoping strategy"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Accidentally re-providing a root service in a component<br>• Breaking caches or auth state via lazy-loaded module providers<br>• Assuming “service = singleton” without checking injector scope<br>• Debugging “state randomly resets” for hours"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview summary</strong><br><br>Angular DI is hierarchical: services are resolved by walking up the injector tree. Where you provide a service determines how many instances exist. Many real-world bugs come from accidentally creating multiple instances by providing a service in a component or lazy-loaded route when you expected a singleton."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia"
   }
 ]
