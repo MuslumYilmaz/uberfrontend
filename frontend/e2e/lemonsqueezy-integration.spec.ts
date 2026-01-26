@@ -316,7 +316,7 @@ test.describe('lemonsqueezy integration (local)', () => {
         body: JSON.stringify(user),
       });
     });
-    await page.route('**/api/billing/manage-url', async (route) => {
+    await page.route(/\/api\/billing\/manage-url(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -437,7 +437,7 @@ test.describe('lemonsqueezy integration (local)', () => {
     await page.goto('/profile');
     await page.getByRole('button', { name: 'Billing' }).click();
 
-    await expect(page.getByText('Lifetime')).toBeVisible();
+    await expect(page.getByText('Lifetime', { exact: true })).toBeVisible();
     await expect(page.getByTestId('pro-start-date')).toBeVisible();
     await expect(page.getByTestId('pro-end-date')).toHaveCount(0);
   });
