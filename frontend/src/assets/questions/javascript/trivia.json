@@ -3524,5 +3524,307 @@
       ]
     },
     "access": "free"
+  },
+  {
+    "id": "js-secure-cors-handling",
+    "title": "How would you securely handle CORS issues in a frontend application?",
+    "description": "Explain why CORS errors happen (Same-Origin Policy) and how to fix cross-origin requests safely: server-set Access-Control-Allow-Origin/Methods/Headers, correct preflight handling, or a backend proxy/BFF. The frontend alone cannot bypass CORS.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "cors",
+      "security",
+      "http",
+      "headers",
+      "web-apis",
+      "cookies",
+      "preflight",
+      "same-origin",
+      "proxy",
+      "bff",
+      "fetch"
+    ],
+    "importance": 4,
+    "companies": [
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield'></i> <strong>Key principle</strong>\n\nCORS is part of the <strong>Same-Origin Policy</strong> enforced by the browser. If the API response doesn’t include the right CORS headers, the browser blocks your JavaScript from reading it. The fix is almost always <strong>server-side</strong> (or via a trusted proxy/BFF)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Frontend action",
+            "What it does (and doesn’t do)"
+          ],
+          "rows": [
+            [
+              "Use same-origin URLs (call your own domain)",
+              "Avoids CORS entirely if the API is served from the same origin."
+            ],
+            [
+              "Remove custom headers / use simple requests",
+              "May avoid preflight, but still won’t bypass CORS if the server disallows the origin."
+            ],
+            [
+              "Set <code>credentials: 'include'</code>",
+              "Sends cookies, but requires server to allow credentials and a specific origin."
+            ],
+            [
+              "Use <code>mode: 'no-cors'</code>",
+              "Does <strong>not</strong> fix CORS; response becomes opaque and unusable."
+            ]
+          ],
+          "caption": "What the frontend can and cannot control"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Header",
+            "Purpose"
+          ],
+          "rows": [
+            [
+              "<code>Access-Control-Allow-Origin</code>",
+              "Allow only trusted origins (never use <code>*</code> with credentials)."
+            ],
+            [
+              "<code>Access-Control-Allow-Methods</code>",
+              "Explicitly list allowed methods (GET, POST, etc.)."
+            ],
+            [
+              "<code>Access-Control-Allow-Headers</code>",
+              "Allow only required headers (e.g., Authorization, Content-Type)."
+            ],
+            [
+              "<code>Access-Control-Allow-Credentials</code>",
+              "Needed for cookies; requires a specific origin (not <code>*</code>)."
+            ],
+            [
+              "<code>Access-Control-Max-Age</code>",
+              "Cache preflight responses to reduce latency."
+            ],
+            [
+              "<code>Vary: Origin</code>",
+              "Prevents caches from mixing responses across origins."
+            ]
+          ],
+          "caption": "Core CORS headers you should understand"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-route'></i> <strong>Preflight (OPTIONS) requests</strong>\n\nBrowsers send a preflight when a request is not “simple” (custom headers, non-GET/POST, or JSON content type). Your server must respond to <code>OPTIONS</code> with the same CORS headers or the real request will be blocked."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Express example (server-side)\napp.use((req, res, next) => {\n  const allowed = ['https://app.example.com'];\n  const origin = req.headers.origin || '';\n\n  if (allowed.includes(origin)) {\n    res.setHeader('Access-Control-Allow-Origin', origin);\n    res.setHeader('Vary', 'Origin');\n    res.setHeader('Access-Control-Allow-Credentials', 'true');\n  }\n\n  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');\n  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');\n\n  if (req.method === 'OPTIONS') return res.sendStatus(204);\n  next();\n});"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-network-wired'></i> <strong>When you can’t change the API</strong>\n\nUse a backend proxy/BFF: your frontend calls your own server, and your server calls the third-party API. This avoids CORS, keeps API keys private, and lets you enforce auth, logging, and rate limits."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Avoid these</strong>\n\n- Disabling CORS in the browser or using extensions (not a real fix).\n- Using <code>mode: 'no-cors'</code> (opaque responses you cannot read).\n- Setting <code>Access-Control-Allow-Origin: *</code> with credentials."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview-ready answer</strong>\n\nYou don’t “fix CORS” in the frontend; you configure the API (or a proxy/BFF) to allow trusted origins with the right CORS headers, handle preflight correctly, and avoid wildcard origins when credentials are involved."
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "content-delivery-caching-strategies-streaming",
+    "title": "How would you design caching and content delivery for a streaming platform like Netflix?",
+    "description": "High-scale content platforms like Netflix rely on multiple layers of caching and content delivery strategies: browser cache, service workers, CDN edge caches, regional caches, and origin servers. The goal is to minimize latency, bandwidth, and server load while delivering large video files and metadata reliably at global scale.",
+    "type": "trivia",
+    "technology": "web",
+    "difficulty": "hard",
+    "tags": [
+      "performance",
+      "caching",
+      "cdn",
+      "http-cache",
+      "service-worker",
+      "streaming",
+      "system-design",
+      "web-performance"
+    ],
+    "importance": 5,
+    "companies": [
+      "netflix"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The big idea</strong>\n\nA streaming platform is basically a <strong>content delivery machine</strong>. The entire game is:\n\n<strong>\"How do we serve huge files to millions of users with the lowest latency and lowest cost?\"</strong>\n\nThe answer is: <strong>multi-layer caching + smart distribution</strong>.\n\nYou never want every user hitting your main servers."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>The caching layers (from closest to farthest)</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Layer",
+            "What it caches",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Browser cache",
+              "Images, JS, metadata, even video segments",
+              "Instant reuse, zero network cost"
+            ],
+            [
+              "Service Worker cache",
+              "App shell, API responses, some media chunks",
+              "Offline support, instant loads, custom cache logic"
+            ],
+            [
+              "CDN edge cache",
+              "Video segments, images, static assets",
+              "Serves content from nearest geographic location"
+            ],
+            [
+              "Regional cache",
+              "Popular content in a region",
+              "Avoids hitting origin for hot content"
+            ],
+            [
+              "Origin servers",
+              "The source of truth",
+              "Only hit when cache misses happen"
+            ]
+          ],
+          "caption": "Performance improves as you serve content closer to the user."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-film'></i> <strong>How video streaming actually works</strong>\n\nNetflix-style platforms do <strong>not</strong> stream one huge video file.\n\nThey:\n- Split videos into <strong>small chunks (segments)</strong>\n- Encode them in <strong>multiple qualities</strong> (240p, 480p, 1080p, 4K...)\n- The player downloads chunks dynamically based on network speed\n\nEach chunk is:\n- A static file\n- Perfect for CDN caching\n- Reusable across millions of users"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-cloud'></i> <strong>CDN strategy (the real MVP)</strong>\n\n- Put video segments on <strong>global CDN edge servers</strong>\n- Users download from the <strong>nearest location</strong>\n- Popular content stays hot in cache\n- Cache headers like:\n  - <code>Cache-Control: public, max-age=31536000, immutable</code>\n\nResult:\n✅ Ultra-low latency\n✅ Massive origin offload\n✅ Huge cost savings"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-desktop'></i> <strong>Client-side caching strategies</strong>\n\nOn the frontend:\n\n- Use <strong>HTTP caching</strong> for static assets & metadata\n- Use <strong>Service Workers</strong> for:\n  - App shell caching\n  - Prefetching\n  - Offline / instant reloads\n- Cache:\n  - Thumbnails\n  - Metadata responses\n  - UI bundles\n\nVideo chunks are usually left to the browser + CDN, not manually managed."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-rotate'></i> <strong>Cache invalidation (the hard part)</strong>\n\nStrategies:\n\n- Versioned URLs: <code>/movie/abc/segment-123.v3.ts</code>\n- New deploy = new URLs = old cache becomes irrelevant\n- Metadata APIs use:\n  - <code>ETag</code>\n  - <code>stale-while-revalidate</code>\n\nRule of thumb:\n<strong>Never \"update\" cached content. Change the URL.</strong>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>What you optimize for</strong>\n\n- <strong>Startup time</strong> (time to first frame)\n- <strong>Rebuffering rate</strong>\n- <strong>CDN hit ratio</strong>\n- <strong>Origin load</strong>\n- <strong>Cost per GB served</strong>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common mistakes</strong>\n\n- Serving video from origin directly\n- Not using immutable caching\n- Caching personalized content at CDN level\n- Trying to \"micro-manage\" video cache in JS\n- No versioning strategy"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"I would use multi-layer caching: browser + service worker for app data, CDN edge caches for video segments with immutable URLs, regional caches for hot content, and keep origin servers as a last resort — while streaming chunked, multi-bitrate video optimized for cache reuse.\""
+        }
+      ]
+    },
+    "access": "free"
+  },
+  {
+    "id": "debounce-vs-throttle-search-input",
+    "title": "Debounce vs Throttle in JavaScript: Which One Should You Use for Search Inputs?",
+    "description": "Debounce and throttle are two core JavaScript performance optimization techniques for controlling how often a function runs in response to frequent events like typing, scrolling, or resizing. A very common frontend interview question is designing a live search input: should you debounce or throttle the API call, and is 200ms a good debounce value?",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "debounce",
+      "throttle",
+      "performance",
+      "events",
+      "search",
+      "user-input",
+      "rate-limiting",
+      "optimization",
+      "frontend-interview"
+    ],
+    "importance": 5,
+    "companies": ["netflix"],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The real interview problem</strong>\n\nThis question is <strong>not</strong> about definitions. It's about this:\n\n<strong>\"How do you prevent expensive work from running too often when the user types?\"</strong>\n\nTyping in a search input can easily trigger <strong>10–20 events per second</strong>. Calling an API on each keystroke is wasteful, slow, and can even get you rate-limited."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-stopwatch'></i> <strong>Debounce vs Throttle — the mental model</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Technique",
+            "Mental model",
+            "What it does"
+          ],
+          "rows": [
+            [
+              "Debounce",
+              "\"Wait until the user stops typing\"",
+              "Runs the function only after no events happened for N ms"
+            ],
+            [
+              "Throttle",
+              "\"Run at most once every N ms\"",
+              "Runs the function at a fixed maximum rate"
+            ]
+          ],
+          "caption": "Both reduce frequency, but they solve different UX problems."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-magnifying-glass'></i> <strong>Which one should you use for search?</strong>\n\nAlmost always: <strong>Debounce</strong>.\n\nWhy?\n- You only care about the <strong>final query</strong>\n- Intermediate keystrokes produce <strong>useless requests</strong>\n- Debounce waits until the user pauses, then sends <strong>one clean request</strong>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Is 200ms a good debounce value?</strong>\n\nUsually yes — as a <strong>starting point</strong>.\n\n- Common range: <strong>150–300ms</strong>\n- <strong>200ms</strong> often feels instant to humans\n- But still cuts request volume massively\n\nTrade-off:\n- Too small → still spams API\n- Too big → UI feels laggy\n\n<strong>Senior answer:</strong> \"We should measure and tune this based on UX and backend cost.\""
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Simple debounce implementation</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function debounce(fn, delay) {\n  let timer;\n  return function (...args) {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn.apply(this, args), delay);\n  };\n}\n\nconst onSearch = debounce((query) => {\n  fetch(`/api/search?q=${query}`);\n}, 200);"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>The real-world bug: race conditions</strong>\n\nEven with debounce, this can happen:\n\n1) User searches \"rea\"\n2) Then quickly searches \"react\"\n3) The \"rea\" request returns <strong>after</strong> the \"react\" request\n4) UI shows <strong>wrong results</strong>\n\n<strong>Solution:</strong>\n- Cancel in-flight requests (AbortController)\n- Or track request IDs and ignore stale responses"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>When should you use throttle instead?</strong>\n\nThrottle is better for <strong>continuous signals</strong>:\n\n- Scroll handlers\n- Resize events\n- Mouse move / drag\n- Analytics sampling\n\nIn those cases you want <strong>regular updates</strong>, not just the final value."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-skull-crossbones'></i> <strong>Common mistakes</strong>\n\n- Using throttle for search → sends half-baked queries\n- Debouncing too aggressively → UI feels broken\n- Not cancelling previous requests\n- Letting stale responses overwrite fresh ones"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"For search inputs I would use <strong>debounce</strong>, not throttle, because I only care about the final query — and <strong>~200ms</strong> is a good starting point that should be tuned based on UX and backend cost, plus I’d handle request cancellation to avoid race conditions.\""
+        }
+      ]
+    },
+    "access": "free"
   }
 ]

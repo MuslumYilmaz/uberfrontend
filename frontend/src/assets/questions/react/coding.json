@@ -1813,7 +1813,84 @@
       "storageKey": "v1:ui:react:react-dynamic-counter-buttons"
     },
     "solutionAsset": "assets/sb/react/solution/react-dynamic-counter-buttons-solution.v1.json",
-    "companies": ["amazon"],
+    "companies": [
+      "amazon"
+    ],
+    "access": "premium"
+  },
+  {
+    "id": "react-debug-double-render",
+    "title": "Debug: Component Renders Twice on Every Update",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "tags": [
+      "react",
+      "debugging",
+      "rendering",
+      "state",
+      "effects"
+    ],
+    "description": {
+      "summary": "Fix a React component that renders twice on every update. Identify the redundant state update and refactor derived state so each click triggers a single render (in production).",
+      "specs": {
+        "requirements": [
+          "Work in `src/App.tsx`.",
+          "Keep the UI structure and existing styles.",
+          "Clicking \"Increment\" should increase the count by 1.",
+          "The parity label must remain correct (even/odd).",
+          "A single click should result in only one additional render (render count increases by 1)."
+        ],
+        "expectedBehavior": [
+          "Count increases by 1 when Increment is clicked.",
+          "Parity updates correctly to \"even\" or \"odd\".",
+          "Render count increases by 1 per click (not 2).",
+          "Reset returns the counter to 0 and parity to even."
+        ],
+        "implementationNotes": [
+          "Avoid syncing derived state with `useEffect`.",
+          "Compute derived values directly from state (or memoize) instead of storing them in state.",
+          "StrictMode can double-invoke renders in development; the real fix is removing redundant updates."
+        ],
+        "techFocus": [
+          "React state and derived values",
+          "useEffect debugging",
+          "Render behavior and performance"
+        ]
+      }
+    },
+    "solutionBlock": {
+      "overview": "The extra render is caused by updating derived state in a `useEffect`. Each click updates `count`, then the effect runs and updates `parity`, which triggers a second render. The fix is to remove the derived `parity` state and compute it directly from `count` in render (or via `useMemo`).\n\n**Test cases**\n- Increment increases count by 1.\n- Parity stays correct.\n- Render count increases by 1 per click.\n- Reset returns to 0 and even.",
+      "approaches": [
+        {
+          "title": "Derive parity from count",
+          "prose": "Remove the `parity` state and `useEffect`. Compute `const parity = count % 2 === 0 ? 'even' : 'odd'` directly in render. This eliminates the extra state update and the second render.",
+          "codeJs": "import React, { useRef, useState } from 'react';\nimport './App.css';\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n  const parity = count % 2 === 0 ? 'even' : 'odd';\n\n  const renders = useRef(0);\n  renders.current += 1;\n\n  const increment = () => setCount((c) => c + 1);\n  const reset = () => setCount(0);\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Debug Double Render</h1>\n        <p className=\"subtitle\">Fix the component so each click causes only one render.</p>\n\n        <div className=\"stats\">\n          <div className=\"stat\"><div className=\"k\">Count</div><div className=\"v\">{count}</div></div>\n          <div className=\"stat\"><div className=\"k\">Parity</div><div className=\"v\">{parity}</div></div>\n          <div className=\"stat\"><div className=\"k\">Renders</div><div className=\"v\">{renders.current}</div></div>\n        </div>\n\n        <div className=\"actions\">\n          <button className=\"btn\" onClick={increment}>Increment</button>\n          <button className=\"btn ghost\" onClick={reset}>Reset</button>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Keeping derived state in sync with an effect.",
+          "Calling `setState` twice for the same user action.",
+          "Chasing dev-only StrictMode behavior instead of fixing the real update."
+        ],
+        "techniques": [
+          "Derive values from state instead of duplicating state.",
+          "Keep effects for side effects only.",
+          "Use functional updates for counters."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-debug-double-render.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v2:ui:react:react-debug-double-render"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-debug-double-render-solution.v1.json",
+    "companies": [
+      "netflix"
+    ],
     "access": "premium"
   }
 ]

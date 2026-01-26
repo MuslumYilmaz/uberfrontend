@@ -4241,6 +4241,80 @@
     "access": "free"
   },
   {
+    "id": "js-recover-bst-swapped-nodes",
+    "title": "Recover a BST with Two Swapped Nodes",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "tree",
+      "bst",
+      "algorithms",
+      "traversal",
+      "recursion"
+    ],
+    "description": {
+      "summary": "Two nodes in a Binary Search Tree were swapped by mistake. Implement `recoverBST(root)` to fix the tree **in-place** (swap the two values back) and return the original root.\n\nThis is a classic medium algorithm problem (often seen in interviews). A common follow-up is: how would you apply the same idea to a real system when a \"sorted\" data structure gets corrupted (e.g., a ranking list or cached order)?",
+      "arguments": [
+        {
+          "name": "root",
+          "type": "TreeNode | null",
+          "desc": "Root of a BST where exactly two nodes have their values swapped."
+        }
+      ],
+      "returns": {
+        "type": "TreeNode | null",
+        "desc": "The same root reference, after fixing the swapped values."
+      },
+      "examples": [
+        "// Tree (BST) inorder should be sorted: [1,2,3,4]\n// Suppose values 2 and 4 are swapped:\n// inorder becomes [1,4,3,2]\n// After recoverBST(root), inorder is [1,2,3,4]"
+      ]
+    },
+    "starterCode": "export default function recoverBST(root) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type TreeNode = {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n};\n\nexport default function recoverBST(root: TreeNode | null): TreeNode | null {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "In a valid BST, an inorder traversal yields a sorted sequence. If two nodes are swapped, the inorder sequence will have **two inversions** (or one inversion if the swapped nodes are adjacent in inorder). Track the previous node during inorder traversal and record the two nodes that violate sorted order. Then swap their values.\n\n**Complexity**\n- Time: O(n)\n- Space: O(h) recursion stack (or O(1) with Morris traversal, optional)\n\n**Follow-up (Netflix-style)**\nDiscuss how you’d detect and repair a swapped order in a production list: find the two out-of-order entries in a nearly-sorted ranking and fix them without a full re-sort.",
+      "approaches": [
+        {
+          "title": "Inorder traversal with two-pointer fix",
+          "prose": "Walk the tree in-order, keeping a `prev` pointer. When `prev.val > curr.val`, it’s an inversion. The first time this happens, mark `first = prev` and `second = curr`. If it happens again, update `second = curr`. After traversal, swap `first.val` and `second.val`.",
+          "codeJs": "export default function recoverBST(root) {\n  if (!root) return root;\n\n  let first = null;\n  let second = null;\n  let prev = null;\n\n  const dfs = (node) => {\n    if (!node) return;\n    dfs(node.left);\n\n    if (prev && prev.val > node.val) {\n      if (!first) first = prev;\n      second = node;\n    }\n    prev = node;\n\n    dfs(node.right);\n  };\n\n  dfs(root);\n\n  if (first && second) {\n    const tmp = first.val;\n    first.val = second.val;\n    second.val = tmp;\n  }\n\n  return root;\n}\n",
+          "codeTs": "type TreeNode = {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n};\n\nexport default function recoverBST(root: TreeNode | null): TreeNode | null {\n  if (!root) return root;\n\n  let first: TreeNode | null = null;\n  let second: TreeNode | null = null;\n  let prev: TreeNode | null = null;\n\n  const dfs = (node: TreeNode | null) => {\n    if (!node) return;\n    dfs(node.left);\n\n    if (prev && prev.val > node.val) {\n      if (!first) first = prev;\n      second = node;\n    }\n    prev = node;\n\n    dfs(node.right);\n  };\n\n  dfs(root);\n\n  if (first && second) {\n    const tmp = first.val;\n    first.val = second.val;\n    second.val = tmp;\n  }\n\n  return root;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Only capturing the first inversion and forgetting the second (non-adjacent swap).",
+          "Swapping nodes instead of values (unnecessary for this task).",
+          "Assuming the tree is balanced (it may be skewed)."
+        ],
+        "edgeCases": [
+          "Swapped nodes are adjacent in inorder (only one inversion).",
+          "Swapped node includes the root.",
+          "Tree has 0 or 1 node (no-op)."
+        ],
+        "techniques": [
+          "Inorder traversal and inversion detection",
+          "Tracking `prev` node to detect order breaks"
+        ]
+      },
+      "followUpQuestions": [],
+      "resources": [
+        {
+          "title": "BST inorder traversal (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Tree_traversal"
+        }
+      ]
+    },
+    "tests": "import recoverBST from './file';\n\nclass TreeNode {\n  constructor(val, left = null, right = null) {\n    this.val = val;\n    this.left = left;\n    this.right = right;\n  }\n}\n\nfunction inorderVals(root, out = []) {\n  if (!root) return out;\n  inorderVals(root.left, out);\n  out.push(root.val);\n  inorderVals(root.right, out);\n  return out;\n}\n\nfunction buildSampleBST() {\n  // Perfect BST with values 1..7\n  const n1 = new TreeNode(1);\n  const n2 = new TreeNode(2);\n  const n3 = new TreeNode(3);\n  const n4 = new TreeNode(4);\n  const n5 = new TreeNode(5);\n  const n6 = new TreeNode(6);\n  const n7 = new TreeNode(7);\n  n4.left = n2; n4.right = n6;\n  n2.left = n1; n2.right = n3;\n  n6.left = n5; n6.right = n7;\n  return { root: n4, nodes: { n1, n2, n3, n4, n5, n6, n7 } };\n}\n\ndescribe('recoverBST', () => {\n  test('fixes non-adjacent swapped nodes', () => {\n    const { root, nodes } = buildSampleBST();\n    // Swap 3 and 6 (non-adjacent in inorder)\n    const tmp = nodes.n3.val;\n    nodes.n3.val = nodes.n6.val;\n    nodes.n6.val = tmp;\n\n    const out = recoverBST(root);\n    expect(out).toBe(root);\n    expect(inorderVals(root)).toEqual([1, 2, 3, 4, 5, 6, 7]);\n  });\n\n  test('fixes adjacent swapped nodes', () => {\n    const { root, nodes } = buildSampleBST();\n    // Swap 2 and 3 (adjacent in inorder)\n    const tmp = nodes.n2.val;\n    nodes.n2.val = nodes.n3.val;\n    nodes.n3.val = tmp;\n\n    recoverBST(root);\n    expect(inorderVals(root)).toEqual([1, 2, 3, 4, 5, 6, 7]);\n  });\n\n  test('handles swap involving root', () => {\n    const { root, nodes } = buildSampleBST();\n    // Swap root (4) with leaf (1)\n    const tmp = nodes.n4.val;\n    nodes.n4.val = nodes.n1.val;\n    nodes.n1.val = tmp;\n\n    recoverBST(root);\n    expect(inorderVals(root)).toEqual([1, 2, 3, 4, 5, 6, 7]);\n  });\n\n  test('handles null or single-node trees', () => {\n    expect(recoverBST(null)).toBe(null);\n    const solo = new TreeNode(5);\n    recoverBST(solo);\n    expect(inorderVals(solo)).toEqual([5]);\n  });\n});\n",
+    "testsTs": "import recoverBST from './file';\n\ntype TreeNode = {\n  val: number;\n  left: TreeNode | null;\n  right: TreeNode | null;\n};\n\nfunction makeNode(val: number, left: TreeNode | null = null, right: TreeNode | null = null): TreeNode {\n  return { val, left, right };\n}\n\nfunction inorderVals(root: TreeNode | null, out: number[] = []): number[] {\n  if (!root) return out;\n  inorderVals(root.left, out);\n  out.push(root.val);\n  inorderVals(root.right, out);\n  return out;\n}\n\nfunction buildSampleBST() {\n  const n1 = makeNode(1);\n  const n2 = makeNode(2);\n  const n3 = makeNode(3);\n  const n4 = makeNode(4);\n  const n5 = makeNode(5);\n  const n6 = makeNode(6);\n  const n7 = makeNode(7);\n  n4.left = n2; n4.right = n6;\n  n2.left = n1; n2.right = n3;\n  n6.left = n5; n6.right = n7;\n  return { root: n4, nodes: { n1, n2, n3, n4, n5, n6, n7 } };\n}\n\ndescribe('recoverBST (TypeScript)', () => {\n  it('fixes non-adjacent swapped nodes', () => {\n    const { root, nodes } = buildSampleBST();\n    const tmp = nodes.n3.val;\n    nodes.n3.val = nodes.n6.val;\n    nodes.n6.val = tmp;\n\n    recoverBST(root);\n    expect(inorderVals(root)).toEqual([1, 2, 3, 4, 5, 6, 7]);\n  });\n\n  it('fixes adjacent swapped nodes', () => {\n    const { root, nodes } = buildSampleBST();\n    const tmp = nodes.n2.val;\n    nodes.n2.val = nodes.n3.val;\n    nodes.n3.val = tmp;\n\n    recoverBST(root);\n    expect(inorderVals(root)).toEqual([1, 2, 3, 4, 5, 6, 7]);\n  });\n\n  it('handles null tree', () => {\n    expect(recoverBST(null)).toBe(null);\n  });\n});\n",
+    "companies": [
+      "netflix"
+    ],
+    "access": "premium"
+  },
+  {
     "id": "js-selector-polyfill-closest-2",
     "title": "Selector Polyfill 2: Implement `closestSimple`",
     "type": "coding",
