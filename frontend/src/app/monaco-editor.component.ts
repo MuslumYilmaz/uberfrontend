@@ -280,8 +280,13 @@ export class MonacoEditorComponent implements AfterViewInit, OnChanges, OnDestro
       this.ready.emit();
       return;
     }
-    if (attempt > 120) return; // keep lite overlay if editor never becomes visible
-    requestAnimationFrame(() => this.scheduleReadyEmit(attempt + 1));
+    // Hidden tabs (display:none) can keep size at 0 for a while. After the fast
+    // rAF loop, fall back to a slow poll so we still emit when it becomes visible.
+    if (attempt <= 120) {
+      requestAnimationFrame(() => this.scheduleReadyEmit(attempt + 1));
+      return;
+    }
+    setTimeout(() => this.scheduleReadyEmit(attempt + 1), 250);
   }
 
   /** Resize host height to content (and clamp to maxHeight if provided). */
