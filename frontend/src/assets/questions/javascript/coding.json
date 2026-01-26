@@ -868,6 +868,401 @@
     "access": "free"
   },
   {
+    "id": "js-shallow-clone",
+    "title": "Shallow Clone (Object or Array)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "clone",
+      "objects",
+      "arrays",
+      "immutability",
+      "basics"
+    ],
+    "description": {
+      "summary": "Implement `shallowClone(value)` that returns a shallow copy of an object or array. Nested objects/arrays should be shared (no deep copy). Throw a TypeError for non-object/array inputs.",
+      "arguments": [
+        {
+          "name": "value",
+          "type": "Object | Array",
+          "desc": "The object or array to clone."
+        }
+      ],
+      "returns": {
+        "type": "Object | Array",
+        "desc": "A new shallow-cloned object or array."
+      },
+      "examples": [
+        "// Object example\nconst obj = { a: 1, b: { c: 2 } };\nconst copy = shallowClone(obj);\ncopy !== obj; // true\ncopy.b === obj.b; // true (shallow)",
+        "// Array example\nconst arr = [1, { x: 2 }];\nconst out = shallowClone(arr);\nout !== arr; // true\nout[1] === arr[1]; // true (shallow)"
+      ]
+    },
+    "starterCode": "export default function shallowClone(value) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: return a new container that copies only the first level of an object or array. Nested references remain shared to keep it shallow.",
+      "approaches": [
+        {
+          "title": "Approach: Branch on array vs object",
+          "prose": "1. If `Array.isArray(value)` is true, return a shallow copy with `value.slice()` (or `[...value]`).\n2. Else if `value` is a non-null object, return a shallow copy with `{ ...value }`.\n3. Otherwise throw a `TypeError` to signal invalid input.\n\nWhy use it: minimal branching, O(n) time, and clearly communicates shallow vs deep copying.",
+          "codeJs": "export default function shallowClone(value) {\n  if (Array.isArray(value)) return value.slice();\n  if (value && typeof value === 'object') return { ...value };\n  throw new TypeError('Expected object or array');\n}\n",
+          "codeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  if (Array.isArray(value)) return value.slice() as T;\n  if (value && typeof value === 'object') return { ...(value as any) } as T;\n  throw new TypeError('Expected object or array');\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "This is a shallow clone: nested objects and arrays are still shared by reference.",
+          "`null` is an object in JS, so always guard with `value && typeof value === \"object\"`.",
+          "Object spread does not preserve prototypes or non-enumerable properties."
+        ],
+        "edgeCases": [
+          "`[]` returns a new empty array (different reference).",
+          "`{}` returns a new empty object (different reference).",
+          "Nested objects remain the same reference in the clone."
+        ],
+        "techniques": [
+          "Array copying with `.slice()` or spread.",
+          "Object copying with spread or `Object.assign`."
+        ]
+      },
+      "followUpQuestions": [
+        "js-deep-clone"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Object.assign()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign"
+        },
+        {
+          "title": "MDN – Array.prototype.slice()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"
+        }
+      ]
+    },
+    "tests": "import shallowClone from './file';\n\ndescribe('shallowClone', () => {\n  test('clones arrays shallowly', () => {\n    const arr = [1, { x: 2 }];\n    const copy = shallowClone(arr);\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n    expect(copy[1]).toBe(arr[1]);\n  });\n\n  test('clones objects shallowly', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const copy = shallowClone(obj);\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n    expect(copy.b).toBe(obj.b);\n  });\n\n  test('throws for non-object/array', () => {\n    expect(() => shallowClone(42)).toThrow(TypeError);\n    expect(() => shallowClone('x')).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import shallowClone from './file';\n\ndescribe('shallowClone (TypeScript)', () => {\n  it('clones arrays shallowly', () => {\n    const arr = [1, { x: 2 }];\n    const copy = shallowClone(arr);\n    expect(copy).toEqual(arr);\n    expect(copy === arr).toBe(false);\n  });\n\n  it('clones objects shallowly', () => {\n    const obj = { a: 1, b: { c: 2 } };\n    const copy = shallowClone(obj);\n    expect(copy).toEqual(obj);\n    expect(copy === obj).toBe(false);\n  });\n});\n",
+    "access": "free"
+  },
+  {
+    "id": "js-sleep",
+    "title": "Sleep / Delay Promise",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 2,
+    "difficulty": "easy",
+    "tags": [
+      "timing",
+      "timers",
+      "async",
+      "promise",
+      "basics"
+    ],
+    "description": {
+      "summary": "Implement `sleep(ms)` that returns a Promise which resolves after `ms` milliseconds.",
+      "arguments": [
+        {
+          "name": "ms",
+          "type": "number",
+          "desc": "The delay in milliseconds."
+        }
+      ],
+      "returns": {
+        "type": "Promise<void>",
+        "desc": "A promise that resolves after the delay."
+      },
+      "examples": [
+        "// Usage with async/await\nawait sleep(50);\nconsole.log('done');",
+        "// Usage with then\nsleep(20).then(() => console.log('ready'));"
+      ]
+    },
+    "starterCode": "export default function sleep(ms) {\n  // TODO: return a Promise that resolves after ms milliseconds\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function sleep(ms: number): Promise<void> {\n  // TODO: return a Promise that resolves after ms milliseconds\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: wrap `setTimeout` in a Promise so callers can `await` a delay.",
+      "approaches": [
+        {
+          "title": "Approach: Promise + setTimeout",
+          "prose": "Create a new Promise and resolve it inside `setTimeout` after `ms` milliseconds. This creates a simple `await`-able delay.\n\nWhy use it: tiny, readable, and mirrors how delays are typically expressed in async code.",
+          "codeJs": "export default function sleep(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n",
+          "codeTs": "export default function sleep(ms: number): Promise<void> {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Don't forget to return the Promise (otherwise callers cannot await it).",
+          "`setTimeout` returns a timer id, not a Promise.",
+          "Negative or NaN delays are treated as 0 by most environments."
+        ],
+        "edgeCases": [
+          "`ms = 0` resolves on the next tick.",
+          "Very large delays may be clamped by the environment."
+        ],
+        "techniques": [
+          "Promise construction around callback-based APIs.",
+          "Basic async timing utilities."
+        ]
+      },
+      "followUpQuestions": [
+        "js-debounce",
+        "js-add-two-promises"
+      ],
+      "resources": [
+        {
+          "title": "MDN – setTimeout()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"
+        },
+        {
+          "title": "MDN – Promise",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+        }
+      ]
+    },
+    "tests": "import sleep from './file';\n\ndescribe('sleep', () => {\n  test('returns a promise', () => {\n    const p = sleep(1);\n    expect(p && typeof p.then).toBe('function');\n  });\n\n  test('resolves after at least the delay', async () => {\n    const start = Date.now();\n    await sleep(25);\n    const elapsed = Date.now() - start;\n    expect(elapsed >= 20).toBe(true);\n  });\n});\n",
+    "testsTs": "import sleep from './file';\n\ndescribe('sleep (TypeScript)', () => {\n  it('returns a promise', () => {\n    const p = sleep(1);\n    expect(p && typeof p.then).toBe('function');\n  });\n});\n",
+    "access": "free"
+  },
+  {
+    "id": "js-once",
+    "title": "Once (Function Wrapper)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "higher-order",
+      "functions",
+      "closure",
+      "basics"
+    ],
+    "description": {
+      "summary": "Implement `once(fn)` that returns a new function which calls `fn` only on its first invocation. Later calls return the first result without re-running `fn`.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "Function",
+          "desc": "The function to call once."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A wrapped function that only calls `fn` once."
+      },
+      "examples": [
+        "const addOnce = once((a, b) => a + b);\naddOnce(1, 2); // 3\naddOnce(5, 6); // still 3",
+        "const obj = { x: 2, get: once(function (n) { return this.x + n; }) };\nobj.get(3); // 5"
+      ]
+    },
+    "starterCode": "export default function once(fn) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function once<F extends (...args: any[]) => any>(fn: F): F {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: return a wrapper that remembers whether `fn` has already been called and caches its first result.",
+      "approaches": [
+        {
+          "title": "Approach: Closure with a called flag",
+          "prose": "Keep `called` and `result` inside a closure. The wrapper checks the flag, calls `fn` only the first time, stores the result, and returns the cached value on later calls.\n\nWhy use it: minimal code and a classic closure interview pattern.",
+          "codeJs": "export default function once(fn) {\n  let called = false;\n  let result;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      result = fn.apply(this, args);\n    }\n    return result;\n  };\n}\n",
+          "codeTs": "export default function once<F extends (...args: any[]) => any>(fn: F): F {\n  let called = false;\n  let result: ReturnType<F>;\n  return function (this: any, ...args: Parameters<F>) {\n    if (!called) {\n      called = true;\n      result = fn.apply(this, args);\n    }\n    return result;\n  } as F;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Preserve `this` by using `fn.apply(this, args)`.",
+          "Subsequent calls return the first result, even with different arguments.",
+          "If `fn` throws, this implementation still marks it as called."
+        ],
+        "edgeCases": [
+          "Functions that return `undefined` still count as called.",
+          "Wrapper should work with any number of arguments."
+        ],
+        "techniques": [
+          "Closures for private state.",
+          "Higher-order functions."
+        ]
+      },
+      "followUpQuestions": [
+        "js-memoize-function"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Closures",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures"
+        },
+        {
+          "title": "MDN – Function.prototype.apply()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply"
+        }
+      ]
+    },
+    "tests": "import once from './file';\n\ndescribe('once', () => {\n  test('calls the function only once', () => {\n    let calls = 0;\n    const fn = once(() => { calls += 1; return calls; });\n    expect(fn()).toBe(1);\n    expect(fn()).toBe(1);\n    expect(calls).toBe(1);\n  });\n\n  test('returns the first result on later calls', () => {\n    const add = once((a, b) => a + b);\n    expect(add(1, 2)).toBe(3);\n    expect(add(5, 6)).toBe(3);\n  });\n\n  test('preserves this context', () => {\n    const obj = { x: 2, get: once(function (n) { return this.x + n; }) };\n    expect(obj.get(3)).toBe(5);\n  });\n});\n",
+    "testsTs": "import once from './file';\n\ndescribe('once (TypeScript)', () => {\n  it('calls only once', () => {\n    let calls = 0;\n    const fn = once(() => { calls += 1; return calls; });\n    fn();\n    fn();\n    expect(calls).toBe(1);\n  });\n});\n",
+    "access": "free"
+  },
+  {
+    "id": "js-object-create",
+    "title": "Create Object with Prototype",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 3,
+    "difficulty": "easy",
+    "tags": [
+      "object-creation",
+      "prototypes",
+      "objects",
+      "inheritance"
+    ],
+    "description": {
+      "summary": "Implement `createObject(proto, props?)` that creates an object with the given prototype and copies own enumerable properties from `props` onto it.",
+      "arguments": [
+        {
+          "name": "proto",
+          "type": "Object | null",
+          "desc": "The prototype for the new object."
+        },
+        {
+          "name": "props",
+          "type": "Object (optional)",
+          "desc": "Own enumerable properties to copy onto the new object."
+        }
+      ],
+      "returns": {
+        "type": "Object",
+        "desc": "A new object with the specified prototype and properties."
+      },
+      "examples": [
+        "const proto = { greet() { return 'hi'; } };\nconst obj = createObject(proto, { name: 'Ada' });\nObject.getPrototypeOf(obj) === proto; // true\nobj.name; // 'Ada'\nobj.greet(); // 'hi'",
+        "const bare = createObject(null);\nObject.getPrototypeOf(bare) === null; // true"
+      ]
+    },
+    "starterCode": "export default function createObject(proto, props) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function createObject(proto: object | null, props?: Record<string, any>): object {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: use `Object.create` to set the prototype and `Object.assign` to copy properties.",
+      "approaches": [
+        {
+          "title": "Approach: Object.create + Object.assign",
+          "prose": "1. Validate `proto` is an object/function or `null`.\n2. Create the new object with `Object.create(proto)`.\n3. If `props` is provided, copy its own enumerable properties with `Object.assign`.\n4. Return the new object.\n\nWhy use it: concise, uses standard APIs, and avoids `__proto__` mutation.",
+          "codeJs": "export default function createObject(proto, props) {\n  const validProto = proto === null || typeof proto === 'object' || typeof proto === 'function';\n  if (!validProto) throw new TypeError('proto must be an object or null');\n\n  const obj = Object.create(proto);\n  if (props != null) {\n    if (typeof props !== 'object') throw new TypeError('props must be an object');\n    Object.assign(obj, props);\n  }\n  return obj;\n}\n",
+          "codeTs": "export default function createObject(proto: object | null, props?: Record<string, any>): object {\n  const validProto = proto === null || typeof proto === 'object' || typeof proto === 'function';\n  if (!validProto) throw new TypeError('proto must be an object or null');\n\n  const obj = Object.create(proto);\n  if (props != null) {\n    if (typeof props !== 'object') throw new TypeError('props must be an object');\n    Object.assign(obj, props);\n  }\n  return obj;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Avoid assigning to `__proto__` directly; use `Object.create`.",
+          "If `props` is `null` or non-object, decide whether to ignore or throw (here we throw).",
+          "Objects created with `null` prototype do not inherit `toString`, `hasOwnProperty`, etc."
+        ],
+        "edgeCases": [
+          "`proto = null` should create a null-prototype object.",
+          "`props` omitted should still create an object with the right prototype."
+        ],
+        "techniques": [
+          "`Object.create` for prototype wiring.",
+          "`Object.assign` for shallow property copy."
+        ]
+      },
+      "followUpQuestions": [
+        "js-deep-clone"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Object.create()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create"
+        },
+        {
+          "title": "MDN – Object.getPrototypeOf()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf"
+        }
+      ]
+    },
+    "tests": "import createObject from './file';\n\ndescribe('createObject', () => {\n  test('sets the prototype and copies props', () => {\n    const proto = { greet() { return 'hi'; } };\n    const obj = createObject(proto, { name: 'Ada' });\n    expect(Object.getPrototypeOf(obj)).toBe(proto);\n    expect(obj.name).toBe('Ada');\n    expect(obj.greet()).toBe('hi');\n  });\n\n  test('supports null prototype', () => {\n    const obj = createObject(null);\n    expect(Object.getPrototypeOf(obj)).toBe(null);\n  });\n\n  test('throws on invalid prototype', () => {\n    expect(() => createObject(42, {})).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import createObject from './file';\n\ndescribe('createObject (TypeScript)', () => {\n  it('creates object with prototype', () => {\n    const proto = { x: 1 };\n    const obj = createObject(proto, { y: 2 });\n    expect(Object.getPrototypeOf(obj)).toBe(proto);\n  });\n});\n",
+    "access": "free"
+  },
+  {
+    "id": "js-update-at-index",
+    "title": "Update Array at Index (Immutable)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 2,
+    "difficulty": "easy",
+    "tags": [
+      "arrays",
+      "immutability",
+      "basics"
+    ],
+    "description": {
+      "summary": "Implement `updateAt(arr, index, value)` that returns a new array with `value` written at `index` without mutating the original. If `index` is out of range, return a shallow copy unchanged.",
+      "arguments": [
+        {
+          "name": "arr",
+          "type": "any[]",
+          "desc": "The input array."
+        },
+        {
+          "name": "index",
+          "type": "number",
+          "desc": "The index to update."
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "desc": "The new value to write."
+        }
+      ],
+      "returns": {
+        "type": "any[]",
+        "desc": "A new array with the update applied (or a copy if out of range)."
+      },
+      "examples": [
+        "updateAt([1, 2, 3], 1, 9); // => [1, 9, 3]",
+        "updateAt([1, 2], 5, 9); // => [1, 2]"
+      ]
+    },
+    "starterCode": "export default function updateAt(arr, index, value) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function updateAt<T>(arr: T[], index: number, value: T): T[] {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Goal: return a new array without mutating the input. Copy first, then update if the index is valid.",
+      "approaches": [
+        {
+          "title": "Approach: Clone then assign",
+          "prose": "1. Validate the input is an array.\n2. Create a shallow copy with `slice()`.\n3. If `index` is within bounds, write the new value into the copy.\n4. Return the copy.\n\nWhy use it: very simple, keeps immutability, and runs in O(n).",
+          "codeJs": "export default function updateAt(arr, index, value) {\n  if (!Array.isArray(arr)) throw new TypeError('Expected array');\n  const copy = arr.slice();\n  if (index < 0 || index >= copy.length) return copy;\n  copy[index] = value;\n  return copy;\n}\n",
+          "codeTs": "export default function updateAt<T>(arr: T[], index: number, value: T): T[] {\n  if (!Array.isArray(arr)) throw new TypeError('Expected array');\n  const copy = arr.slice();\n  if (index < 0 || index >= copy.length) return copy;\n  copy[index] = value;\n  return copy;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Don't mutate the original array in-place.",
+          "Be explicit about out-of-range indices.",
+          "Returning the original array would break immutability expectations."
+        ],
+        "edgeCases": [
+          "Empty array returns a new empty array.",
+          "Negative or too-large index returns an unchanged copy.",
+          "Index 0 and last index should work normally."
+        ],
+        "techniques": [
+          "Array copying with `.slice()`.",
+          "Immutable update patterns."
+        ]
+      },
+      "followUpQuestions": [
+        "js-set-by-path-2"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Array.prototype.slice()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"
+        }
+      ]
+    },
+    "tests": "import updateAt from './file';\n\ndescribe('updateAt', () => {\n  test('updates a value immutably', () => {\n    const arr = [1, 2, 3];\n    const out = updateAt(arr, 1, 9);\n    expect(out).toEqual([1, 9, 3]);\n    expect(out === arr).toBe(false);\n    expect(arr).toEqual([1, 2, 3]);\n  });\n\n  test('returns unchanged copy when out of range', () => {\n    const arr = [1, 2];\n    const out = updateAt(arr, 5, 9);\n    expect(out).toEqual([1, 2]);\n    expect(out === arr).toBe(false);\n  });\n\n  test('throws on non-array input', () => {\n    expect(() => updateAt('x', 0, 'y')).toThrow(TypeError);\n  });\n});\n",
+    "testsTs": "import updateAt from './file';\n\ndescribe('updateAt (TypeScript)', () => {\n  it('updates immutably', () => {\n    const arr = [1, 2, 3];\n    const out = updateAt(arr, 2, 5);\n    expect(out).toEqual([1, 2, 5]);\n    expect(out === arr).toBe(false);\n  });\n});\n",
+    "access": "free"
+  },
+  {
     "id": "js-debounce",
     "title": "Debounce Function",
     "type": "coding",
