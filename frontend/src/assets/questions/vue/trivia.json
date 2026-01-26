@@ -2742,5 +2742,1074 @@
     },
     "access": "free",
     "type": "trivia"
+  },
+  {
+    "id": "vue-slots-default-named-scoped-slot-props",
+    "title": "Explain Slots in Vue: default vs named vs scoped slots — and how slot props enable child-to-parent data flow",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "Explain how Vue slots work (default, named, and scoped slots), what problem they solve, and how slot props allow a child component to pass data back to the parent’s template while still keeping one-way data flow.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Core idea</strong><br><br>Slots are Vue’s way of letting a <strong>parent inject template content into a child</strong> — while the child controls <em>where</em> and <em>how</em> that content is rendered. With <strong>scoped slots (slot props)</strong>, the child can also <strong>expose data to the parent’s slot template</strong>, enabling a powerful, explicit, and safe form of child → parent data flow."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Slot type",
+            "What it does",
+            "When you use it"
+          ],
+          "rows": [
+            [
+              "Default slot",
+              "Injects unnamed content into a child component",
+              "Simple wrapper components (Card, Modal, Layout, etc.)"
+            ],
+            [
+              "Named slot",
+              "Lets you target multiple insertion points",
+              "Complex layouts (header/body/footer, actions, sidebars)"
+            ],
+            [
+              "Scoped slot (slot props)",
+              "Child exposes data to the parent’s slot template",
+              "Reusable logic components (List, Table, Fetcher, Virtualizer)"
+            ]
+          ],
+          "caption": "The three kinds of slots in Vue"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Default slot</strong><br><br>The simplest case: the parent passes some markup, and the child decides where to render it."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Card.vue -->\n<template>\n  <div class=\"card\">\n    <slot />\n  </div>\n</template>\n\n<!-- Parent.vue -->\n<Card>\n  <h2>Hello</h2>\n  <p>This goes into the default slot</p>\n</Card>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Named slots</strong><br><br>When a component has multiple insertion points, you name them."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Modal.vue -->\n<template>\n  <div class=\"modal\">\n    <header><slot name=\"header\" /></header>\n    <main><slot /></main>\n    <footer><slot name=\"footer\" /></footer>\n  </div>\n</template>\n\n<!-- Parent.vue -->\n<Modal>\n  <template #header>\n    <h2>Confirm</h2>\n  </template>\n\n  Are you sure?\n\n  <template #footer>\n    <button>OK</button>\n  </template>\n</Modal>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>The real power: scoped slots (slot props)</strong><br><br>Normally, slot content is compiled in the <em>parent’s scope</em>. But sometimes the <strong>child has the data</strong> (e.g., a list, fetched results, virtualized rows). Scoped slots let the <strong>child expose data to the parent’s slot template</strong> explicitly."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- ListRenderer.vue -->\n<template>\n  <ul>\n    <li v-for=\"item in items\" :key=\"item.id\">\n      <slot :item=\"item\" :index=\"item.id\" />\n    </li>\n  </ul>\n</template>\n\n<script setup>\nconst props = defineProps({\n  items: { type: Array, required: true }\n});\n</script>"
+        },
+        {
+          "type": "text",
+          "text": "Now the parent can <strong>decide how each item is rendered</strong>, using data provided by the child:"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- Parent.vue -->\n<ListRenderer :items=\"users\">\n  <template #default=\"{ item }\">\n    <strong>{{ item.name }}</strong> ({{ item.email }})\n  </template>\n</ListRenderer>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why this is not “breaking” one-way data flow</strong><br><br>The child is <em>not mutating parent state</em>. It is only <strong>exposing data</strong>. The parent still decides what to render and what to do with that data. This is <em>inversion of control</em>, not two-way binding."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Without scoped slots",
+            "With scoped slots"
+          ],
+          "rows": [
+            [
+              "Child controls both logic and rendering",
+              "Child controls logic, parent controls rendering"
+            ],
+            [
+              "Low flexibility",
+              "Highly reusable and customizable components"
+            ],
+            [
+              "Hard to generalize components",
+              "Enables headless / renderless components"
+            ]
+          ],
+          "caption": "Why scoped slots are a big deal"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Common real-world use cases</strong><br><br>- Table components (you provide column templates)\n- List / virtual scroller components\n- Data fetcher components\n- Form builders\n- Headless UI components"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview-ready takeaway</strong><br><br>Default slots inject content, named slots target multiple regions, and scoped slots let the <em>child pass data into the parent’s slot template</em>. This enables highly reusable components where the child owns the logic, the parent owns the rendering — without breaking one-way data flow."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "components",
+      "template-syntax",
+      "props",
+      "inputs-outputs",
+      "slots"
+    ]
+  },
+  {
+    "id": "vue-provide-inject-vs-prop-drilling-tradeoffs",
+    "title": "Provide / Inject in Vue: when should you use it instead of prop drilling, and what are the hidden trade-offs?",
+    "technology": "vue",
+    "difficulty": "hard",
+    "importance": 4,
+    "description": "Explain how provide/inject works in Vue, what problem it solves (prop drilling), when it is appropriate to use, and the architectural trade-offs and pitfalls compared to explicit props and state management.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br><code>provide</code> / <code>inject</code> lets an ancestor component <strong>make values available to all descendants</strong> without passing them through every intermediate component as props. It solves <em>prop drilling</em>, but it also introduces <strong>implicit dependencies</strong> that can make your component tree harder to understand, refactor, and test."
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. The Problem: Prop Drilling</strong><br><br>Sometimes data is needed deep in the component tree, but intermediate components do not care about it. With props, you end up passing the same value through many layers just to reach the real consumer."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- App.vue -->\n<Layout :theme=\"theme\" />\n\n<!-- Layout.vue -->\n<Sidebar :theme=\"theme\" />\n\n<!-- Sidebar.vue -->\n<SidebarItem :theme=\"theme\" />\n\n<!-- SidebarItem.vue -->\n<div :class=\"theme\">Item</div>"
+        },
+        {
+          "type": "text",
+          "text": "This is called <strong>prop drilling</strong>: noisy, repetitive, and fragile to refactors."
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. How provide / inject Works</strong><br><br>An ancestor <code>provides</code> a value, and any descendant (no matter how deep) can <code>inject</code> it — without intermediate components knowing anything about it."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- App.vue -->\n<script setup>\nimport { provide, ref } from 'vue';\n\nconst theme = ref('dark');\nprovide('theme', theme);\n</script>\n\n<template>\n  <Layout />\n</template>\n\n<!-- SidebarItem.vue -->\n<script setup>\nimport { inject } from 'vue';\n\nconst theme = inject('theme');\n</script>\n\n<template>\n  <div :class=\"theme\">Item</div>\n</template>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. When provide / inject is a Good Fit</strong><br><br>It is best for <strong>cross-cutting, infrastructural concerns</strong> that are not really part of your app’s business data flow:"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Good use case",
+            "Why it fits"
+          ],
+          "rows": [
+            [
+              "Design system / UI library internals",
+              "Deep component trees need shared config (theme, size, density, locale)"
+            ],
+            [
+              "Form / field registration systems",
+              "Inputs register themselves to a parent form"
+            ],
+            [
+              "Plugins and framework-like features",
+              "Router, i18n, feature flags, permissions"
+            ],
+            [
+              "Headless / compound components",
+              "Parent provides behavior, children consume it implicitly"
+            ]
+          ],
+          "caption": "Legitimate use cases for provide / inject"
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. The Hidden Trade-Off: Implicit Coupling</strong><br><br>With props, a component’s dependencies are <strong>explicit</strong> in its API. With <code>inject</code>, dependencies become <strong>invisible</strong>: you can no longer tell what a component needs just by looking at its props."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What you gain",
+            "What you lose"
+          ],
+          "rows": [
+            [
+              "No prop drilling",
+              "Hidden dependencies"
+            ],
+            [
+              "Cleaner intermediate components",
+              "Harder to reuse components in isolation"
+            ],
+            [
+              "Flexible deep access",
+              "Harder to refactor and trace data flow"
+            ],
+            [
+              "Less boilerplate",
+              "Harder to test (you must mock providers)"
+            ]
+          ],
+          "caption": "The real cost of provide / inject"
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. Another Subtle Issue: It Bypasses Your State Architecture</strong><br><br>If you start using provide/inject for <em>business state</em>, you effectively create a <strong>hidden global-ish state system</strong> that is harder to reason about than props, emits, or a proper store (Pinia/Vuex)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Reactivity Gotcha</strong><br><br><code>provide</code> / <code>inject</code> does <strong>not automatically make things reactive</strong>. You must provide a <code>ref</code>, <code>reactive</code> object, or computed value if you want updates to propagate."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// GOOD\nconst theme = ref('dark');\nprovide('theme', theme);\n\n// BAD (not reactive)\nprovide('theme', 'dark');"
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. Decision Rule (Practical Heuristic)</strong><br><br>- If this is <strong>business data</strong> → use props / emits or a store.\n- If this is <strong>app infrastructure or component-internal wiring</strong> → provide/inject is OK.\n- If you feel tempted to use provide/inject to \"avoid wiring\" → that’s a code smell."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> A good mental model: <strong>provide/inject is dependency injection, not state management.</strong>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Interview-ready summary</strong><br><br>Provide/inject solves prop drilling by letting ancestors expose dependencies to deep children. It’s ideal for framework-like, cross-cutting concerns (themes, forms, plugins, compound components). But it introduces implicit coupling, hides dependencies, complicates testing and refactoring, and should <strong>not</strong> be used as a general replacement for props or stores."
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "dependency-injection",
+      "context",
+      "state-management",
+      "architecture"
+    ]
+  },
+  {
+    "id": "vue-why-declare-emits-type-safety-maintenance",
+    "title": "Why should you declare emits in Vue? What breaks if you don’t, and how does it affect type safety and maintenance?",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "Explain why Vue encourages declaring emitted events (emits option / defineEmits), what can go wrong when events are not declared (silent typos, confusing APIs, missing validation), and how emits declarations improve type safety, refactoring, and long-term maintainability—especially in Vue 3 + TypeScript.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br>Declaring <code>emits</code> makes a component’s event API <strong>explicit</strong>. It prevents accidental event typos, enables runtime validation (optional), improves tooling/autocomplete, and gives you strong TypeScript inference for event names + payloads. If you don’t declare emits, you’re basically saying: “this component might emit anything, anytime,” which is a maintenance trap."
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. What “declaring emits” means</strong><br><br>In Vue 3 you typically declare events with <code>defineEmits()</code> in <code>&lt;script setup&gt;</code> (or with the <code>emits</code> option in Options API). This defines the event names and (optionally) validates payloads."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- ChildButton.vue (script setup) -->\n<script setup lang=\"ts\">\nconst emit = defineEmits<{ \n  (e: 'save'): void;\n  (e: 'update:count', value: number): void;\n}>();\n\nfunction onSave() {\n  emit('save');\n}\n\nfunction inc(current: number) {\n  emit('update:count', current + 1);\n}\n</script>\n\n<template>\n  <button @click=\"onSave\">Save</button>\n</template>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. What breaks if you don’t declare emits?</strong><br><br>Sometimes nothing “crashes” immediately — and that’s the problem. The bugs are subtle: wrong event names, wrong payload shapes, and broken refactors that only show up in QA (or in production 😬)."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "If emits is NOT declared…",
+            "What breaks",
+            "Why it hurts"
+          ],
+          "rows": [
+            [
+              "You typo an event name (emit('udpate:modelValue'))",
+              "Parent listener never runs",
+              "Silent failure: everything looks wired, but nothing happens"
+            ],
+            [
+              "Payload type/shape changes",
+              "Parent code breaks at runtime (or behaves incorrectly)",
+              "No compile-time signal; you discover it late"
+            ],
+            [
+              "You refactor event names",
+              "You miss call sites",
+              "Events aren’t part of an explicit contract, so refactoring is risky"
+            ],
+            [
+              "You ship reusable components",
+              "Consumers don’t know the public event API",
+              "Poor discoverability: people read the source or guess"
+            ]
+          ],
+          "caption": "Common failure modes when emits isn’t declared"
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. The biggest win: Type safety (Vue 3 + TypeScript)</strong><br><br>With declared emits, TypeScript can enforce both the <strong>event name</strong> and the <strong>payload type</strong>. Without it, <code>emit</code> is effectively untyped, so mistakes sneak through."
+        },
+        {
+          "type": "code",
+          "language": "typescript",
+          "code": "// ✅ With declared emits\nconst emit = defineEmits<{ (e: 'submit', payload: { id: string }): void }>();\nemit('submit', { id: '123' });\n\n// ❌ These become compile errors:\n// emit('subimt', { id: '123' });          // typo\n// emit('submit', { id: 123 });            // wrong type\n// emit('submit');                         // missing payload\n\n// 🚫 Without declared emits, these can slip through as 'any'."
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. Maintenance: emits = component contract</strong><br><br>Think of <code>emits</code> like documenting a component’s public API. Props define what comes <em>in</em>; emits define what goes <em>out</em>. When both are explicit, the component becomes easier to reuse, test, and refactor."
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. Runtime validation (optional but helpful)</strong><br><br>Vue lets you validate emitted payloads at runtime if you use the <code>emits</code> option style (or declare validators). This is especially useful when TypeScript isn’t present everywhere (or for library components)."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Options API style (runtime validation)\nexport default {\n  emits: {\n    submit(payload) {\n      return payload && typeof payload.id === 'string';\n    }\n  },\n  methods: {\n    onSubmit() {\n      this.$emit('submit', { id: '123' });\n    }\n  }\n};"
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Security-ish / correctness-ish: listener fallthrough control</strong><br><br>In Vue 3, declaring <code>emits</code> helps Vue distinguish between component events and native DOM listeners passed to the root element. This reduces confusing edge cases where you think you’re listening to a component event but you’re actually attaching a DOM listener (or vice versa)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. Practical heuristics (when to be strict)</strong><br><br>- For app code: always declare emits for components that are reused or shared across features.<br>- For UI library components: be extra strict; emits is part of your public API.<br>- For tiny one-off components: still worth it in Vue 3 + TS because it costs almost nothing and saves refactor pain later."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> Quick mental model: <strong>props are inputs, emits are outputs</strong>. If you wouldn’t ship a function without typing its parameters, don’t ship a component without declaring its emitted events."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li>Declaring <code>emits</code> makes event APIs explicit and discoverable.</li><li>Without it, typos and payload mismatches can fail silently and are harder to refactor.</li><li>With Vue 3 + TypeScript, declared emits gives strong typing for event names and payloads.</li><li>Optional runtime validation can catch incorrect payloads even without TS.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "event-binding",
+      "outputs",
+      "components",
+      "best-practices"
+    ]
+  },
+  {
+    "id": "vue-ref-vs-reactive-difference-traps",
+    "title": "ref vs reactive in Vue: what’s the real difference, when should you use each, and what are the common reactivity traps?",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain the real difference between ref() and reactive() in Vue 3’s Composition API, when each is the better choice (primitives vs objects, replacement vs mutation, destructuring, template unwrapping), and the most common traps that lead to “why isn’t this updating?” bugs.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br><code>ref()</code> wraps a value in an object with a <code>.value</code> property, while <code>reactive()</code> returns a Proxy of an object. The practical difference is: <strong>use ref for single values (especially primitives) and for values you’ll replace</strong>; <strong>use reactive for “state objects” you mostly mutate</strong>. Most bugs come from <em>destructuring</em>, <em>replacing reactive objects</em>, and <em>losing reactivity by pulling values out of proxies</em>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "ref()",
+            "reactive()"
+          ],
+          "rows": [
+            [
+              "Works with primitives",
+              "✅ Yes (recommended)",
+              "🚫 No (expects object)"
+            ],
+            [
+              "Return value",
+              "{ value: ... } wrapper",
+              "Proxy of the object"
+            ],
+            [
+              "Update style",
+              "Replace via <code>.value = ...</code> or mutate nested objects",
+              "Mutate properties (e.g. <code>state.count++</code>)"
+            ],
+            [
+              "Replacement",
+              "✅ Easy (just set <code>.value</code>)",
+              "⚠️ Reassigning loses reactivity if you overwrite the variable"
+            ],
+            [
+              "Template usage",
+              "Auto-unwraps <code>.value</code> in templates",
+              "Used directly"
+            ]
+          ],
+          "caption": "High-level differences between ref() and reactive()"
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. ref(): best for primitives and replaceable values</strong><br><br>If the thing is a single value (number, string, boolean) or something you regularly replace (API result object, selected item, current tab), <code>ref</code> keeps it predictable."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref } from 'vue';\n\nconst count = ref(0);\ncount.value++;\n\nconst user = ref(null);\nuser.value = { id: 1, name: 'Ada' }; // easy replacement"
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. reactive(): best for state objects you mutate</strong><br><br>If you naturally think in “state object with fields” and you mostly mutate properties, <code>reactive</code> is ergonomic."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({\n  count: 0,\n  filters: { q: '', sort: 'asc' }\n});\n\nstate.count++;\nstate.filters.q = 'vue';"
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. Trap #1: destructuring reactive breaks reactivity</strong><br><br>This is the #1 “why isn’t my UI updating?” moment. When you destructure from a reactive object, you pull out plain values and lose tracking."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// ❌ Trap: loses reactivity\nconst { count } = state;\n\nstate.count++; // state changes\nconsole.log(count); // still 0 (stale)\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix:</strong> use <code>toRefs()</code> (or <code>toRef()</code>) so destructured fields stay reactive."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0 });\nconst { count } = toRefs(state);\n\ncount.value++;     // updates state.count\nstate.count++;     // updates count.value\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. Trap #2: replacing a reactive object breaks consumers</strong><br><br>With <code>reactive</code>, the Proxy identity matters. If you reassign the variable, anything holding the old proxy won’t see the new object."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive } from 'vue';\n\nlet state = reactive({ items: [] });\n\n// ❌ Trap: you replaced the proxy reference\nstate = reactive({ items: [1, 2, 3] });\n\n// Anything that captured the old 'state' won't update as you expect."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix options:</strong><br>• Prefer <code>ref</code> if you need to replace wholesale.<br>• Or mutate the existing reactive object instead of replacing it."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Option A: use ref for replaceable objects\nimport { ref } from 'vue';\nconst state = ref({ items: [] });\nstate.value = { items: [1, 2, 3] };\n\n// Option B: mutate reactive object in place\nimport { reactive } from 'vue';\nconst s = reactive({ items: [] });\ns.items.splice(0, s.items.length, 1, 2, 3);"
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. Trap #3: forgetting .value in script (but not in templates)</strong><br><br>Templates auto-unwrap refs, but JavaScript does not. People mix the two mental models and end up comparing or assigning the wrapper object."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<script setup>\nimport { ref } from 'vue';\nconst count = ref(0);\n\n// ❌ Trap\n// if (count > 0) {}\n\n// ✅ Correct\nif (count.value > 0) {}\n</script>\n\n<template>\n  <!-- ✅ Auto-unwrap in templates -->\n  <p>{{ count }}</p>\n</template>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Trap #4: reactive + arrays, maps, and sets (mutation is fine, identity matters)</strong><br><br>Vue tracks mutations like <code>push</code>, <code>splice</code>, and property sets. The trap is when you expect reactivity after pulling values out and working with raw copies."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ items: [1, 2] });\nstate.items.push(3); // ✅ reactive\n\nconst itemsCopy = state.items.slice();\nitemsCopy.push(4);   // 🚫 not reactive (it's a copy)\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. Practical decision rules</strong><br><br><ul><li><strong>Use ref</strong> for primitives, DOM refs, and anything you replace (API results, selected entity, current step).</li><li><strong>Use reactive</strong> for cohesive state objects you mutate (form state, filter state).</li><li>If you want to destructure properties, use <code>toRefs()</code>.</li><li>If you keep wanting to replace the whole state object, you probably want <code>ref</code>, not <code>reactive</code>.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of it like this: <strong>ref is a box</strong> (you replace what’s inside), <strong>reactive is a smart object</strong> (you mutate fields). Most reactivity traps are basically “I took the value out and expected the magic to follow me.”"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li><code>ref()</code> wraps a value and updates via <code>.value</code> (best for primitives + replacements).</li><li><code>reactive()</code> returns a Proxy and updates via property mutation (best for state objects).</li><li>Common traps: destructuring reactive, reassigning reactive objects, forgetting <code>.value</code> in script, and mutating copies instead of the reactive source.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "composition-api",
+      "reactivity",
+      "state",
+      "primitives",
+      "objects"
+    ]
+  },
+  {
+    "id": "vue-destructuring-breaks-reactivity-toRefs-toRef",
+    "title": "Why does destructuring break reactivity in Vue? Explain toRefs, toRef, and how to safely extract reactive state",
+    "technology": "vue",
+    "difficulty": "hard",
+    "importance": 4,
+    "description": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue’s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br>In Vue 3, <code>reactive()</code> returns a <strong>Proxy</strong> that tracks property access and mutation. When you destructure properties from that object, you <strong>pull plain values out of the Proxy</strong>, so Vue can no longer track reads or writes. The fix is to use <code>toRefs()</code> or <code>toRef()</code>, which keep each extracted property <em>linked</em> to the original reactive source."
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. The core problem: how Vue tracks reactivity</strong><br><br>Vue tracks reactivity by intercepting <em>property access</em> and <em>property mutation</em> on a Proxy. If you stop reading or writing through the Proxy, Vue can’t see what you’re doing anymore."
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. The classic bug: destructuring a reactive object</strong><br><br>This looks innocent, but it breaks the reactive connection:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// ❌ Trap: destructuring pulls out a plain number\nconst { count } = state;\n\nstate.count++;      // state updates\nconsole.log(count); // still 0 (stale)\n"
+        },
+        {
+          "type": "text",
+          "text": "Why? Because <code>count</code> is now just a <strong>number</strong>, not a reactive reference. Vue is no longer involved."
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. The mental model</strong><br><br>- <code>reactive()</code> = a <strong>smart object (Proxy)</strong> that Vue watches.<br>- Destructuring = <strong>copying values out</strong> of that object.<br>- Copies are not reactive, so Vue loses the connection."
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. The solution: toRefs()</strong><br><br><code>toRefs()</code> converts each property of a reactive object into a <strong>ref</strong> that stays connected to the original object."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Safe: each field is now a ref linked to state\nconst { count, name } = toRefs(state);\n\ncount.value++;       // updates state.count\nstate.count++;       // updates count.value\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. toRef(): when you only need one property</strong><br><br>If you only want to extract a single property, use <code>toRef()</code> instead of converting everything."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { reactive, toRef } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Create a single reactive ref linked to state.count\nconst count = toRef(state, 'count');\n\ncount.value++;    // updates state.count\nstate.count++;    // updates count.value\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Common place this bites people: composables</strong><br><br>If a composable returns a <code>reactive</code> object and you destructure it in the consumer, you silently lose reactivity."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// useCounter.js\nimport { reactive } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return state;\n}\n\n// ❌ In component\nconst { count } = useCounter(); // loses reactivity\n"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Fix:</strong> either return <code>toRefs(state)</code> from the composable, or wrap the result with <code>toRefs()</code> at the call site."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// useCounter.js (better)\nimport { reactive, toRefs } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return toRefs(state);\n}\n\n// In component\nconst { count } = useCounter(); // ✅ stays reactive"
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. How this relates to ref()</strong><br><br><code>ref</code>s are <em>already safe to destructure</em> because the reactivity lives in <code>.value</code>, not in a Proxy identity."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref } from 'vue';\n\nconst count = ref(0);\nconst { value } = count; // just a number copy\n\n// But normally you pass around the ref itself, not destructure .value"
+        },
+        {
+          "type": "text",
+          "text": "<strong>8. Practical rules of thumb</strong><br><br><ul><li>Never destructure a <code>reactive()</code> object directly.</li><li>If you want to extract fields: use <code>toRefs()</code> or <code>toRef()</code>.</li><li>If you want to freely destructure and pass values around, consider using <code>ref</code>s instead of a single reactive object.</li><li>Composables should usually return <code>toRefs(state)</code>, not the raw reactive object.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> Intuition: <strong>reactivity lives in the Proxy, not in the values</strong>. Destructuring takes the values and leaves the magic behind."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li>Destructuring breaks reactivity because it extracts plain values from Vue’s Proxy.</li><li><code>toRefs()</code> converts each property into a ref that stays linked to the source object.</li><li><code>toRef()</code> creates a single linked ref for one property.</li><li>Use these helpers whenever you need to extract or return pieces of reactive state safely.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "composition-api",
+      "reactivity",
+      "objects",
+      "state",
+      "best-practices"
+    ]
+  },
+  {
+    "id": "vue-watch-vs-watcheffect-differences-infinite-loops",
+    "title": "watch vs watchEffect in Vue: what’s the difference, when does each run, and how can you accidentally create infinite loops?",
+    "technology": "vue",
+    "difficulty": "hard",
+    "importance": 4,
+    "description": "Explain the difference between watch() and watchEffect() in Vue 3, when each one runs, how dependency tracking works (explicit vs automatic), and the common patterns that accidentally cause infinite update loops.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br><code>watch()</code> and <code>watchEffect()</code> both run side effects in response to reactive changes, but they work very differently: <strong>watch is explicit and lazy</strong> (you choose what to watch), while <strong>watchEffect is automatic and eager</strong> (Vue tracks everything you touch inside). Most bugs come from not realizing <em>what is being tracked</em> and from <em>mutating the same state you’re watching</em>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Aspect",
+            "watch()",
+            "watchEffect()"
+          ],
+          "rows": [
+            [
+              "Dependency tracking",
+              "Explicit (you pass the source)",
+              "Automatic (tracks what you read inside)"
+            ],
+            [
+              "When it runs first time",
+              "Only on change (unless immediate: true)",
+              "Runs immediately once"
+            ],
+            [
+              "Access to old/new value",
+              "✅ Yes (newVal, oldVal)",
+              "❌ No (no diff info)"
+            ],
+            [
+              "Typical use",
+              "React to a specific piece of state",
+              "Run an effect that depends on many things"
+            ],
+            [
+              "Predictability",
+              "High",
+              "Lower (depends on what gets accessed)"
+            ]
+          ],
+          "caption": "watch() vs watchEffect() at a glance"
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. watch(): explicit, targeted, predictable</strong><br><br>You tell Vue exactly what to watch. It runs only when that source changes."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref, watch } from 'vue';\n\nconst query = ref('');\n\nwatch(query, (newVal, oldVal) => {\n  console.log('query changed from', oldVal, 'to', newVal);\n  // e.g. fetchData(newVal)\n});"
+        },
+        {
+          "type": "text",
+          "text": "By default, this does <strong>not</strong> run on mount. You can opt in:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "watch(query, () => { /* ... */ }, { immediate: true });"
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. watchEffect(): automatic, eager, convenient</strong><br><br>Vue runs the function immediately, tracks every reactive value you <em>touch</em>, and re-runs it when any of them changes."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref, watchEffect } from 'vue';\n\nconst query = ref('');\nconst page = ref(1);\n\nwatchEffect(() => {\n  // Vue automatically tracks: query.value and page.value\n  fetchData(query.value, page.value);\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. When should you use which?</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Situation",
+            "Prefer"
+          ],
+          "rows": [
+            [
+              "React to one specific value changing",
+              "watch()"
+            ],
+            [
+              "Need old vs new value",
+              "watch()"
+            ],
+            [
+              "Effect depends on many reactive values",
+              "watchEffect()"
+            ],
+            [
+              "You want it to run immediately",
+              "watchEffect() (or watch + immediate)"
+            ],
+            [
+              "You want maximum predictability",
+              "watch()"
+            ]
+          ],
+          "caption": "Practical decision table"
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. The #1 footgun: creating an infinite loop</strong><br><br>If your watcher <strong>mutates the same reactive state that it depends on</strong>, you can easily create a self-triggering loop."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref, watchEffect } from 'vue';\n\nconst count = ref(0);\n\n// ❌ Infinite loop\nwatchEffect(() => {\n  if (count.value < 10) {\n    count.value++; // This mutation retriggers the effect\n  }\n});"
+        },
+        {
+          "type": "text",
+          "text": "The same bug can happen with <code>watch()</code> if you write back to the watched source without guarding:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "watch(count, (v) => {\n  // ❌ This will loop forever\n  count.value = v + 1;\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. How to avoid infinite loops</strong><br><br><ul><li>Don’t mutate the same source you are watching.</li><li>If you must, add guards (if conditions, equality checks).</li><li>Prefer deriving state with <code>computed</code> instead of syncing state with watchers.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Subtle watchEffect trap: accidental dependencies</strong><br><br>Because <code>watchEffect</code> tracks everything you read, even a <code>console.log(someRef.value)</code> or a debug read can become a dependency and retrigger the effect."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "watchEffect(() => {\n  console.log(debugFlag.value); // now this is a dependency\n  fetchData(query.value);\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. Cleanup and async effects</strong><br><br>Both APIs support cleanup via <code>onCleanup</code>, which is critical for cancelling requests or timers."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "watchEffect((onCleanup) => {\n  const controller = new AbortController();\n  fetch(url.value, { signal: controller.signal });\n\n  onCleanup(() => controller.abort());\n});"
+        },
+        {
+          "type": "text",
+          "text": "<strong>8. Practical rule of thumb</strong><br><br>- If you can describe the dependency in one sentence: use <code>watch()</code>.<br>- If the dependency is “whatever I touch in here”: use <code>watchEffect()</code>.<br>- If you’re syncing state: ask yourself if this should be a <code>computed</code> instead."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>watch is declarative (“watch this”)</strong>, <strong>watchEffect is reactive magic (“rerun when anything I use changes”)</strong>. Magic is convenient — and that’s why it’s easier to shoot yourself in the foot."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li><code>watch()</code> is explicit, lazy, and gives you old/new values.</li><li><code>watchEffect()</code> is automatic, eager, and tracks dependencies implicitly.</li><li>Infinite loops happen when the effect mutates the same state it depends on.</li><li>Prefer <code>computed</code> for derived state, and use guards when mutating inside watchers.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "watch",
+      "effects",
+      "reactivity",
+      "performance"
+    ]
+  },
+  {
+    "id": "vue-nexttick-dom-update-queue",
+    "title": "What does nextTick() do in Vue, and why are DOM measurements wrong immediately after a state change?",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "Explain what nextTick() does in Vue, how Vue batches and schedules DOM updates asynchronously, why the DOM is not updated immediately after reactive state changes, and when you must wait for nextTick() to safely read layout or measure elements.",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br>In Vue, <strong>state changes do not update the DOM synchronously</strong>. Vue batches multiple reactive updates and applies them in the next render cycle for performance. <code>nextTick()</code> lets you <strong>wait until Vue has flushed all pending DOM updates</strong>. If you measure the DOM immediately after changing state, you often read the <em>old layout</em>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. The core idea: Vue updates are async and batched</strong><br><br>When you change reactive state, Vue does <em>not</em> patch the DOM immediately. It queues the component for re-render and processes all changes together in the next microtask tick."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { ref, nextTick } from 'vue';\n\nconst open = ref(false);\n\nfunction show() {\n  open.value = true;\n  // ❌ DOM is NOT updated yet\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. The classic bug: measuring too early</strong><br><br>This is why DOM measurements right after a state change are often wrong:"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function show() {\n  open.value = true;\n\n  const h = panelRef.value.offsetHeight;\n  console.log(h); // ❌ Often 0 or old value\n}"
+        },
+        {
+          "type": "text",
+          "text": "The template has not been re-rendered yet, so the element is still in its previous state."
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. nextTick(): wait until the DOM is updated</strong><br><br><code>nextTick()</code> returns a Promise that resolves <strong>after Vue has finished flushing the DOM updates</strong> for the current batch."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "import { nextTick } from 'vue';\n\nasync function show() {\n  open.value = true;\n\n  await nextTick();\n  // ✅ Now the DOM reflects the new state\n  const h = panelRef.value.offsetHeight;\n  console.log(h); // correct value\n}"
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. What nextTick() actually means</strong><br><br>It does <em>not</em> mean “wait one frame” or “wait some time”. It means: <strong>wait until Vue’s pending render queue is flushed</strong>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "What happens"
+          ],
+          "rows": [
+            [
+              "1. You change reactive state",
+              "Vue marks components as dirty and queues an update"
+            ],
+            [
+              "2. Your synchronous code continues",
+              "DOM is still old"
+            ],
+            [
+              "3. Vue flushes the update queue (microtask)",
+              "Virtual DOM re-renders and patches the real DOM"
+            ],
+            [
+              "4. nextTick() resolves",
+              "DOM is now up-to-date"
+            ]
+          ],
+          "caption": "The Vue update cycle simplified"
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. Why Vue does this (performance)</strong><br><br>If Vue updated the DOM immediately on every state change, multiple changes in one tick would cause <strong>multiple layouts, reflows, and repaints</strong>. By batching them, Vue can update the DOM <strong>once</strong> per tick."
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Common real-world cases where you need nextTick()</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Scenario",
+            "Why nextTick is needed"
+          ],
+          "rows": [
+            [
+              "Opening/closing a panel or modal",
+              "You need to measure its size after it appears"
+            ],
+            [
+              "v-if / v-for changes",
+              "The element does not exist in the DOM yet"
+            ],
+            [
+              "Scrolling to a newly rendered item",
+              "The element is not in the DOM until after render"
+            ],
+            [
+              "Integrating with non-Vue libraries",
+              "They expect the DOM to already be updated"
+            ]
+          ],
+          "caption": "Typical nextTick() use cases"
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. nextTick vs setTimeout / requestAnimationFrame</strong><br><br><code>nextTick()</code> waits for <strong>Vue’s render flush</strong>, not for a timer or the next frame. It is more precise and faster than <code>setTimeout(..., 0)</code> hacks."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// ❌ Hacky and less precise\nsetTimeout(() => measure(), 0);\n\n// ✅ Correct\nawait nextTick();\nmeasure();"
+        },
+        {
+          "type": "text",
+          "text": "<strong>8. Subtle case: multiple state changes</strong><br><br>Even if you change state multiple times synchronously, Vue will still only update the DOM once, and <code>nextTick()</code> waits for that single final result."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "count.value++;\ncount.value++;\ncount.value++;\n\nawait nextTick();\n// DOM is updated once with the final value"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>state changes schedule a render, nextTick waits for that render to finish</strong>."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li>Vue batches DOM updates and applies them asynchronously.</li><li>Right after a state change, the DOM is still in the old state.</li><li><code>nextTick()</code> waits until Vue has flushed the pending DOM updates.</li><li>Use it whenever you need to read layout, measure elements, or interact with DOM that depends on the new state.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "timing",
+      "dom",
+      "performance",
+      "reactivity"
+    ]
+  },
+  {
+    "id": "vue-v-for-keys-why-not-index",
+    "title": "Why are keys critical in v-for? What exactly breaks when you use array index as a key?",
+    "technology": "vue",
+    "difficulty": "intermediate",
+    "importance": 5,
+    "description": "Explain why keys are required in v-for, how Vue uses them during virtual DOM diffing, and what subtle but serious bugs happen when you use array index as a key (state reuse, wrong DOM nodes, broken animations, and input mix-ups).",
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<strong>Overview</strong><br><br>Keys are how Vue <strong>identifies which virtual DOM node corresponds to which real DOM node</strong> across renders. If keys are stable and unique, Vue can correctly <em>reuse, move, or destroy</em> elements. If keys are wrong (or you use the array index), Vue will <strong>reuse the wrong DOM nodes</strong>, causing bugs like inputs swapping values, components keeping the wrong state, and animations glitching."
+        },
+        {
+          "type": "text",
+          "text": "<strong>1. What Vue actually does when a list changes</strong><br><br>When a list rendered with <code>v-for</code> changes, Vue does not recreate the whole DOM. It <strong>diffs the old list and the new list</strong> and tries to match items using their <code>key</code>."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "With good keys",
+            "With bad keys (or index)"
+          ],
+          "rows": [
+            [
+              "Vue moves the correct DOM nodes",
+              "Vue reuses DOM nodes for the wrong items"
+            ],
+            [
+              "Component state stays with the right item",
+              "Component state gets attached to the wrong item"
+            ],
+            [
+              "Minimal DOM operations",
+              "Unpredictable patches and visual glitches"
+            ]
+          ],
+          "caption": "How keys affect Vue’s diffing behavior"
+        },
+        {
+          "type": "text",
+          "text": "<strong>2. The correct pattern</strong><br><br>Always use a <strong>stable, unique ID</strong> that represents the identity of the item, not its position."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<li v-for=\"todo in todos\" :key=\"todo.id\">\n  <TodoItem :todo=\"todo\" />\n</li>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>3. The tempting but dangerous pattern</strong><br><br>Using the array index looks fine… until the list changes."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<!-- ❌ Bad -->\n<li v-for=\"(todo, index) in todos\" :key=\"index\">\n  <TodoItem :todo=\"todo\" />\n</li>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>4. What exactly breaks when you use index as key?</strong>"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Operation",
+            "What you expect",
+            "What actually happens with index key"
+          ],
+          "rows": [
+            [
+              "Insert item at top",
+              "New DOM node is created at top",
+              "Vue reuses every existing DOM node and just shifts data"
+            ],
+            [
+              "Remove an item",
+              "That item’s DOM and component state are destroyed",
+              "A different item’s DOM gets reused and keeps stale state"
+            ],
+            [
+              "Reorder list (sort, drag & drop)",
+              "Items move with their DOM and state",
+              "DOM stays in place, only data changes → state mismatch"
+            ],
+            [
+              "Edit inputs in a list",
+              "Each input keeps its own value",
+              "Values appear to jump to other rows"
+            ]
+          ],
+          "caption": "Concrete bugs caused by index as key"
+        },
+        {
+          "type": "text",
+          "text": "<strong>5. The classic horror demo: inputs swapping values</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<div v-for=\"(user, i) in users\" :key=\"i\">\n  <input v-model=\"user.name\" />\n</div>\n\n<button @click=\"users.unshift({ name: '' })\">Add to top</button>"
+        },
+        {
+          "type": "text",
+          "text": "When you click the button, <strong>the text you typed appears to move to a different row</strong>. Vue reused DOM nodes by position, not by identity."
+        },
+        {
+          "type": "text",
+          "text": "<strong>6. Why Vue can’t magically fix this</strong><br><br>Vue has no way to know whether an item at index 0 is “the same logical item as before” or a different one. The <code>key</code> is the <strong>only identity signal</strong> you give to the diffing algorithm."
+        },
+        {
+          "type": "text",
+          "text": "<strong>7. When is index as key actually safe?</strong><br><br>Almost never — but technically OK if <strong>all of these are true</strong>:<ul><li>The list is static (no insert/remove/reorder).</li><li>The list items have no internal state (no inputs, no components with state).</li><li>You will never filter or sort it.</li></ul>In practice: for real apps, just don’t."
+        },
+        {
+          "type": "text",
+          "text": "<strong>8. How this relates to performance</strong><br><br>Good keys don’t just fix bugs — they also make updates <strong>faster</strong> because Vue can move nodes instead of destroying and recreating them."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>keys tell Vue “who is who”</strong>. If you lie about identity (using index), Vue will faithfully do the wrong thing — very efficiently."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Summary</strong><ul><li>Keys define the identity of list items for Vue’s diffing algorithm.</li><li>Using index as key ties identity to position, not to the actual item.</li><li>This causes state to stick to the wrong DOM nodes: broken inputs, wrong component state, glitchy animations.</li><li>Always use a stable, unique ID from the data itself.</li></ul>"
+        }
+      ]
+    },
+    "access": "free",
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "lists",
+      "iteration",
+      "performance",
+      "structure",
+      "keys"
+    ]
   }
 ]

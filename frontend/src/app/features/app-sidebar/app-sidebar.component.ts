@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, HostListener, Input, signal } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { TooltipModule } from 'primeng/tooltip';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { apiUrl } from '../../core/utils/api-base';
 
 interface LinkItem {
@@ -41,7 +42,7 @@ type NavItem = LinkItem | GroupItem;
   templateUrl: './app-sidebar.component.html',
   styleUrls: ['./app-sidebar.component.css'],
 })
-export class AppSidebarComponent {
+export class AppSidebarComponent implements OnInit, OnDestroy {
   @Input() collapsed = false;
   drawerOpen = signal(false);
 
@@ -51,7 +52,9 @@ export class AppSidebarComponent {
   submitOk = false;
   currentUrl = '';
 
-  constructor(private http: HttpClient) {}
+  private navSub?: Subscription;
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   isLink = (i: NavItem): i is LinkItem => i.type === 'link';
   isGroup = (i: NavItem): i is GroupItem => i.type === 'group';
@@ -110,12 +113,33 @@ export class AppSidebarComponent {
   ];
 
   toggleGroup(i: number) {
+    const wasCollapsed = this.collapsed;
+    if (wasCollapsed) {
+      this.collapsed = false;
+      document.body.classList.remove('sidebar-mini');
+    }
     this.nav.forEach((item, idx) => {
-      if (this.isGroup(item)) item.open = idx === i ? !item.open : false;
+      if (!this.isGroup(item)) return;
+      if (idx === i) {
+        item.open = wasCollapsed ? true : !item.open;
+      } else {
+        item.open = false;
+      }
     });
   }
 
   toggleDrawer() { this.drawerOpen.update(v => !v); }
+
+  ngOnInit(): void {
+    this.applyDefaultOpen(this.router.url);
+    this.navSub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => this.applyDefaultOpen(e.urlAfterRedirects || e.url));
+  }
+
+  ngOnDestroy(): void {
+    if (this.navSub?.unsubscribe) this.navSub.unsubscribe();
+  }
 
   toggleCollapsed() {
     this.collapsed = !this.collapsed;
@@ -158,6 +182,16 @@ export class AppSidebarComponent {
       alert('Failed to send bug report. Please try again.');
     } finally {
       this.submitting = false;
+    }
+  }
+
+  private applyDefaultOpen(url: string) {
+    const path = (url || '').split('?')[0].split('#')[0];
+    if (path === '/dashboard') {
+      this.nav.forEach((item, idx) => {
+        if (!this.isGroup(item)) return;
+        item.open = idx === 1;
+      });
     }
   }
 
