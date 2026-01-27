@@ -412,6 +412,38 @@ export class CodingListComponent implements OnInit, OnDestroy {
       const t = (term || '').toLowerCase();
       const isFormats = this.isFormatsMode();
 
+      if (isFormats && selectedCategory === 'system') {
+        const sysBase = (questions ?? []).filter((q: any) => (q as any).__sd === true);
+        const sysFiltered = sysBase.filter((q: any) =>
+          (q.title?.toLowerCase()?.includes(t) ?? false) &&
+          (!companySlug || ((q as any).companies ?? []).includes(companySlug)) &&
+          (selTags.length === 0
+            ? true
+            : (this.tagMatchMode === 'all'
+              ? selTags.every(tag => (q.tags || []).includes(tag))
+              : selTags.some(tag => (q.tags || []).includes(tag))
+            )
+          )
+        );
+
+        const cmp = this.makeComparator(sortKey as SortKey);
+        const deduped = this.dedupeFrameworkRows(sysFiltered);
+        const warmupFirst = (a: any, b: any) => {
+          if (this.source === 'global-coding') {
+            const aPremium = this.isPremiumQuestion(a);
+            const bPremium = this.isPremiumQuestion(b);
+            if (aPremium !== bPremium) return aPremium ? 1 : -1;
+          }
+
+          const aw = this.isWarmupTitle(a?.title);
+          const bw = this.isWarmupTitle(b?.title);
+          if (aw !== bw) return aw ? -1 : 1;
+          return cmp(a, b);
+        };
+
+        return deduped.slice().sort(warmupFirst);
+      }
+
       const filtered = (questions ?? []).filter((q: any) =>
         (q.title?.toLowerCase()?.includes(t) ?? false) &&
 
@@ -439,16 +471,6 @@ export class CodingListComponent implements OnInit, OnDestroy {
           )
         )
       );
-
-      // Ensure system design items are always retained when that category is selected
-      if (isFormats && selectedCategory === 'system') {
-        const sys = filtered.filter((q: any) => (q as any).__sd === true);
-        if (sys.length === 0) {
-          // fallback: ignore filters except category to avoid accidental empty state
-          return (questions ?? []).filter((q: any) => (q as any).__sd === true);
-        }
-        return sys;
-      }
 
       const cmp = this.makeComparator(sortKey as SortKey);
       const deduped = this.dedupeFrameworkRows(filtered);
