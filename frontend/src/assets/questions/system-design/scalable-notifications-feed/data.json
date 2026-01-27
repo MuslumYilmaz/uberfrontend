@@ -1,0 +1,60 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Your data model should include **notification entities**, **feed state**, and **cursor/unread tracking** so the UI can stay in sync across sessions and reconnects."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type Notification = {\n  id: string;\n  type: 'mention' | 'comment' | 'system';\n  title?: string;\n  text: string;\n  createdAt: number;\n  read: boolean;\n  actor?: { id: string; name: string; avatarUrl?: string };\n  link?: string;\n};\n\ntype FeedState = {\n  items: Notification[];\n  unreadCount: number;\n  lastSeenCursor: number | null; // timestamp or server cursor\n  maxItems: number;\n  isConnected: boolean;\n  lastError?: string;\n};\n" 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Fields that matter",
+                            "items": [
+                                "`id`: dedupe across reconnects",
+                                "`createdAt`: sorting/ordering",
+                                "`read`: unread badge + UI",
+                                "`type`: filtering (mentions vs system)",
+                                "`link`: deep-link into the product"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "State you should track",
+                            "items": [
+                                "`unreadCount` (fast badge render)",
+                                "`lastSeenCursor` for reconciliation",
+                                "`maxItems` to bound memory",
+                                "connection + error state",
+                                "in-flight buffer size (for backpressure)"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "text",
+            "text": "If you mention **server cursors** (e.g., lastSeenId), it shows you can reconcile missed events after reconnect." 
+        }
+    ]
+}

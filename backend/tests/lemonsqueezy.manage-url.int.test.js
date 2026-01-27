@@ -47,7 +47,7 @@ function authHeader(userId) {
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  process.env.MONGO_URL = mongoServer.getUri();
+  process.env.MONGO_URL_TEST = mongoServer.getUri();
   process.env.JWT_SECRET = JWT_SECRET;
   process.env.BILLING_PROVIDER = 'lemonsqueezy';
 

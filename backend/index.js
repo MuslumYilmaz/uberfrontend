@@ -16,7 +16,13 @@ const app = express();
 
 // ---- Config ----
 const PORT = process.env.PORT || 3001;
-const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/myapp';
+const isTest = process.env.NODE_ENV === 'test' || !!process.env.JEST_WORKER_ID;
+const MONGO_URL = isTest
+    ? process.env.MONGO_URL_TEST
+    : (process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/myapp');
+if (isTest && !process.env.MONGO_URL_TEST) {
+    throw new Error('MONGO_URL_TEST is required when running tests');
+}
 const SERVER_BASE = resolveServerBase();
 const ALLOWED_FRONTEND_ORIGINS = resolveAllowedFrontendOrigins();
 const BUG_REPORT_WINDOW_MS = Number(process.env.BUG_REPORT_WINDOW_MS || 60 * 60 * 1000); // 1h

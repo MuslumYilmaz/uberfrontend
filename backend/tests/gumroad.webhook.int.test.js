@@ -37,7 +37,7 @@ async function seedUser() {
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  process.env.MONGO_URL = mongoServer.getUri();
+  process.env.MONGO_URL_TEST = mongoServer.getUri();
   process.env.GUMROAD_WEBHOOK_SECRET = SECRET;
 
   jest.resetModules();
