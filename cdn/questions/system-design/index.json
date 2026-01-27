@@ -33,6 +33,20 @@
     "access": "free"
   },
   {
+    "id": "scalable-notifications-feed",
+    "title": "Scalable Notifications Feed (Real-time)",
+    "description": "Design a real-time notifications feed that can handle very high update volume without overwhelming the UI. Focus on ingestion strategy (WebSocket/SSE/polling), buffering + batching, unread count logic, list virtualization, and smooth rendering under bursts.\n\nKey considerations include: deduping by id, ordering by timestamp, keeping memory bounded (latest N), avoiding re-render storms, reconnect + backoff logic, and fallbacks when realtime is unavailable.",
+    "tags": [
+      "notifications",
+      "real-time",
+      "performance",
+      "virtualization",
+      "streams"
+    ],
+    "type": "system-design",
+    "access": "premium"
+  },
+  {
     "id": "multi-step-form-autosave",
     "title": "Multi-step Form with Autosave",
     "description": "Design a 4-step form with validation, step transitions, a progress bar, and automatic autosave to localStorage. Users should be able to refresh or leave the page and continue where they left off. Key considerations include form architecture, throttled/debounced autosave, inline vs submit validation, dirty-state tracking, and restoring from saved drafts.",

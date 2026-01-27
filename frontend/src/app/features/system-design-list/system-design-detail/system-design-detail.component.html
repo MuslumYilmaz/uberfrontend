@@ -2,7 +2,7 @@
 <div class="sdl-root">
     <div class="sdl-main">
         <!-- LEFT : fixed rail -->
-        <aside class="left">
+        <aside class="sdl-left">
             <div class="left-inner">
                 <div class="left-head">
                     <h1 class="title" [title]="title()">{{ title() }}</h1>
@@ -25,7 +25,7 @@
         </aside>
 
         <!-- CENTER : article -->
-        <main class="center" #centerEl>
+        <main class="sdl-center" #centerEl>
             <ng-container *ngFor="let s of sections()">
                 <section class="sd-section" [attr.id]="anchorId(s.key)">
                     <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
@@ -166,7 +166,7 @@
         </main>
 
         <!-- RIGHT : fixed TOC -->
-        <nav class="right">
+        <nav class="sdl-right">
             <div class="toc">
                 <div class="toc-head">On this page</div>
                 <ul class="toc-list">

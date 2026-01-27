@@ -9,14 +9,19 @@
   --foot-h: 56px;
 }
 
-.sdl-main{ padding: var(--gap); }
+.sdl-main{
+  padding: var(--gap);
+  display: grid;
+  grid-template-columns: var(--left-w) minmax(0, 1fr) var(--right-w);
+  gap: var(--gap);
+  align-items: start;
+}
 
 /* ---------- LEFT: FIXED rail ---------- */
-.left{
-  position: fixed;
-  left: var(--gap);
+.sdl-left{
+  position: sticky;
   top: var(--top-off);
-  bottom: var(--foot-h);
+  height: calc(100vh - var(--foot-h) - var(--top-off));
   width: var(--left-w);
   z-index: 1;
 }
@@ -28,10 +33,26 @@
   border:1px solid rgba(255,255,255,.08);
   border-radius:10px;
 }
-.left-head{ padding:14px 16px; background:#141416; border-bottom:1px solid rgba(255,255,255,.06); }
-.title{ margin:0; font-size:18px; font-weight:700; color:#f3f5f7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.left-head{ padding:14px 16px; background:#141416; border-bottom:1px solid rgba(255,255,255,.06); overflow:hidden; }
+.title{
+  margin:0;
+  display:block;
+  width:100%;
+  max-width:100%;
+  font-size:18px;
+  font-weight:700;
+  color:#f3f5f7;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .left-body{ overflow:auto; padding:14px 16px; color:#cfd6dd; font-size:13px; }
-.desc{ white-space:pre-line; line-height:1.5; }
+.desc{
+  white-space:pre-line;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
 .tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
 :host ::ng-deep .p-chip.custom-chip{ background:#1f2937; color:#e5e7eb; border-radius:9999px; font-size:12px; padding:2px 8px; }
 .left-foot{ border-top:1px solid rgba(255,255,255,.06); padding:10px 12px; }
@@ -39,10 +60,8 @@
 .guide a{ color:#9ad1ff; text-decoration:underline; }
 
 /* ---------- CENTER ---------- */
-.center{
+.sdl-center{
   min-width:0;
-  margin-left: calc(var(--left-w) + var(--gap));
-  margin-right: calc(var(--right-w) + var(--gap));
 }
 .sd-section{ padding:10px 6px 22px 6px; border-bottom:1px solid rgba(255,255,255,.06); }
 .sd-h2{
@@ -380,11 +399,10 @@
 }
 
 /* ---------- RIGHT: FIXED TOC ---------- */
-.right{
-  position: fixed;
-  right: var(--gap);
+.sdl-right{
+  position: sticky;
   top: var(--top-off);
-  bottom: var(--foot-h);
+  height: calc(100vh - var(--foot-h) - var(--top-off));
   width: var(--right-w);
   z-index: 1;
 }
@@ -410,9 +428,10 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1200px){
-  .left, .right{ position:static; width:auto; height:auto; }
-  .right{ display:none; }
-  .center{ margin:0; }
+  .sdl-main{ display: block; }
+  .sdl-left, .sdl-right{ position:static; width:auto; height:auto; }
+  .sdl-right{ display:none; }
+  .sdl-center{ margin:0; }
   .left-inner{ height:auto; }
 }
 

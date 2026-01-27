@@ -1,0 +1,92 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "The deep dive is about protecting UI performance under heavy streams. Mention **batching**, **virtualization**, and **backpressure** as first‑class strategies." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Optimization levers",
+            "columns": [
+                "Problem",
+                "Technique",
+                "Why it helps"
+            ],
+            "rows": [
+                [
+                    "Re-render storm",
+                    "Batch updates every 100–250ms",
+                    "Coalesces many events into a single state update."
+                ],
+                [
+                    "Huge DOM",
+                    "Virtualized list + windowing",
+                    "Only renders visible rows, keeps DOM small."
+                ],
+                [
+                    "Unbounded memory",
+                    "Trim to last N items / time window",
+                    "Prevents feed from growing forever."
+                ],
+                [
+                    "Burst load",
+                    "Backpressure buffer + drop policy",
+                    "Avoids flooding UI; can drop low-priority events."
+                ],
+                [
+                    "Main-thread jank",
+                    "Defer heavy work (rAF / Worker)",
+                    "Keeps scrolling and input responsive."
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Performance best practices",
+                            "items": [
+                                "Use `requestAnimationFrame` for UI updates when visible.",
+                                "Memoize row components; avoid rerendering unchanged rows.",
+                                "Use stable keys and avoid re-sorting large arrays on every tick.",
+                                "Compute unread count incrementally, not by scanning whole list.",
+                                "Pause rendering when the panel is closed (only increment badge)."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Failure / recovery strategies",
+                            "items": [
+                                "Exponential backoff + jitter on reconnect.",
+                                "Fetch missed notifications using cursor or timestamp.",
+                                "Fallback to polling when sockets are blocked.",
+                                "Surface a subtle banner when realtime is degraded."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Common pitfalls",
+            "text": "Updating the UI for every single message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance." 
+        }
+    ]
+}

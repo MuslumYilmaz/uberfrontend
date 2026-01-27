@@ -1,0 +1,53 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Define a small client‑side API that the rest of the app can use. It should support **subscribe**, **mark read**, and **filters**, without exposing internal buffering details."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// Client-side feed API\ninterface NotificationsClient {\n  connect(): void;\n  disconnect(): void;\n  subscribe(cb: (batch: Notification[]) => void): () => void;\n  markRead(ids: string[]): Promise<void>;\n  markAllRead(): Promise<void>;\n  setFilter(filter: 'all' | 'mentions' | 'system'): void;\n}\n\n// REST + realtime example\nGET /api/notifications?limit=50&cursor=...\nPOST /api/notifications/read { ids: [...] }\nGET /api/notifications/stream (SSE)\nWS /notifications (WebSocket)\n" 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "API behaviors to call out",
+                            "items": [
+                                "Subscription returns an **unsubscribe** cleanup fn.",
+                                "Live stream only pushes deltas, not full list.",
+                                "`markAllRead` updates local state optimistically.",
+                                "Filters should not mutate the raw store (derive view)."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Error and reconnect behavior",
+                            "items": [
+                                "Reconnect with exponential backoff.",
+                                "On reconnect, fetch deltas since `lastSeenCursor`.",
+                                "If stream unavailable, fall back to polling."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

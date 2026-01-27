@@ -1,0 +1,91 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "You should show a clean pipeline: **Realtime source → Ingest buffer → Store → Virtualized UI**. The key is **decoupling ingestion from rendering** so bursts of updates do not trigger a full UI repaint each time." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Suggested framing:**\n\"I’d subscribe to a WebSocket/SSE stream and push events into a short in‑memory queue. A scheduler drains the queue every 100–250ms, merges into the feed store, updates unread counts, and then the UI renders a virtualized list from that store.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear separation of **ingest vs render**.\n- Bounded list + virtualization.\n- Reconnect strategy and fallback.\n- Deduping by id + ordering by timestamp.\n- Backpressure / batching decisions." 
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Diagram you should draw",
+            "text": "Source (WS/SSE) → Buffer/Queue → FeedStore (bounded list + unread state) → VirtualizedList → UI. Add a small \"Scheduler\" block that drains the buffer on an interval or rAF." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "Realtime source",
+                    "Push notifications to the client (WS/SSE/polling).",
+                    "\"Prefer WebSocket/SSE for push. Polling is fallback when sockets fail.\""
+                ],
+                [
+                    "Ingest buffer",
+                    "Short queue for incoming events.",
+                    "\"Buffer events to batch UI updates and handle bursts.\""
+                ],
+                [
+                    "Scheduler",
+                    "Drains the buffer on a cadence.",
+                    "\"Every 100–250ms we merge queued items into state, so we don’t re-render per event.\""
+                ],
+                [
+                    "Feed store",
+                    "Owns the canonical list + unread state.",
+                    "\"Keeps only the last N items, dedupes by id, tracks unreadCount and lastSeenCursor.\""
+                ],
+                [
+                    "Virtualized list",
+                    "Renders only visible rows.",
+                    "\"Keeps DOM size small even if the feed contains hundreds/thousands.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type Notification = {\n  id: string;\n  type: 'comment' | 'mention' | 'system';\n  text: string;\n  createdAt: number;\n  read: boolean;\n};\n\ninterface FeedState {\n  items: Notification[];\n  unreadCount: number;\n  lastSeenCursor: number | null;\n  maxItems: number;\n}\n\nclass IngestBuffer {\n  private queue: Notification[] = [];\n  push(n: Notification) { this.queue.push(n); }\n  drain(): Notification[] {\n    const batch = this.queue;\n    this.queue = [];\n    return batch;\n  }\n}\n\nfunction mergeBatch(state: FeedState, batch: Notification[]): FeedState {\n  const map = new Map(state.items.map(n => [n.id, n]));\n  batch.forEach(n => map.set(n.id, n));\n  const merged = Array.from(map.values()).sort((a,b) => b.createdAt - a.createdAt);\n  const trimmed = merged.slice(0, state.maxItems);\n  const unread = trimmed.filter(n => !n.read).length;\n  return { ...state, items: trimmed, unreadCount: unread };\n}\n" 
+        },
+        {
+            "type": "text",
+            "text": "Important: ingestion can be **much faster** than rendering. The scheduler is what keeps the UI stable." 
+        }
+    ]
+}
