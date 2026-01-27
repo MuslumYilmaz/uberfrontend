@@ -44,6 +44,28 @@
       "streams"
     ],
     "type": "system-design",
+    "access": "premium",
+    "companies": [
+      "netflix"
+    ]
+  },
+  {
+    "id": "netflix-scale-expansion",
+    "title": "Netflix-Scale Expansion (Front-End System Design)",
+    "companies": [
+      "netflix"
+    ],
+    "description": "Expand a working feature to Netflix scale in a front-end system design interview. Discuss UI architecture, microfrontends, caching, performance budgets, and safe rollout.\n\nKey considerations include: module boundaries, rendering strategy, edge/client caching, experiment flags, observability, and graceful fallback.",
+    "tags": [
+      "frontend-architecture",
+      "architecture",
+      "performance",
+      "caching",
+      "services",
+      "optimization",
+      "system-design"
+    ],
+    "type": "system-design",
     "access": "premium"
   },
   {
@@ -62,7 +84,7 @@
   {
     "id": "realtime-search-debounce-cache",
     "title": "Real-time Search with Debounce & Caching",
-    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query → results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
+    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query \u2192 results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
     "tags": [
       "search",
       "debounce",
@@ -129,7 +151,7 @@
     "companies": [
       "amazon"
     ],
-    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server–client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
+    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server\u2013client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
     "tags": [
       "flashcards",
       "language-learning",

@@ -1,0 +1,44 @@
+{
+    "id": "netflix-scale-expansion",
+    "title": "Netflix-Scale Expansion (Front-End System Design)",
+    "description": "Take a working feature and expand it to Netflix scale. This is a front-end system design prompt about UI architecture, microfrontends, performance budgets, caching, and experimentation. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on how you keep the UI fast across devices and regions, how you define module boundaries, how you protect the rendering pipeline from bursts, and how you roll out safely with feature flags and metrics.\n\nFunctional requirements:\n- Keep the original feature behavior intact while scaling it.\n- Support high concurrency and bursty traffic without UI regressions.\n- Allow gradual rollout (flags, canary, A/B).\n- Provide consistent behavior across devices and regions.\n\nNon-functional:\n- Clear ownership boundaries between UI modules.\n- Predictable performance (no re-render storms).\n- Safe failure modes with graceful degradation.\n- Strong observability for UX and API health.\n",
+    "companies": [
+        "netflix"
+    ],
+    "tags": [
+        "frontend-architecture",
+        "architecture",
+        "performance",
+        "caching",
+        "services",
+        "optimization",
+        "system-design"
+    ],
+    "sections": [
+        {
+            "key": "R",
+            "title": "Reflect & Requirements",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}

@@ -1,0 +1,66 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "At Netflix scale, the UI architecture must keep the rendering pipeline stable while teams ship independently. The core is a composable UI shell with isolated feature modules, a shared design system, and a predictable data layer." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Client architecture**\n- App shell + feature modules (or microfrontends).\n- Shared design system + tokens for consistent UI.\n- Route-level code splitting + lazy data fetching.\n- Error boundaries to isolate failures." 
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Data & integration**\n- Frontend-facing BFF for stable UI contracts.\n- Caching at edge + client cache with TTL.\n- Experiment config served early for consistent UI.\n- Device-aware payloads (TV vs mobile vs desktop)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "success",
+            "title": "Key message",
+            "text": "Scaling the UI is about controlling boundaries, reducing rendering cost, and shipping safely — not adding more UI complexity."
+        },
+        {
+            "type": "table",
+            "title": "Architecture decisions to explain",
+            "columns": [
+                "Decision",
+                "Why it matters for frontend scale"
+            ],
+            "rows": [
+                [
+                    "Module boundaries",
+                    "Allow independent deploys without breaking the shell"
+                ],
+                [
+                    "Rendering strategy",
+                    "Balance SSR/CSR to hit performance budgets"
+                ],
+                [
+                    "Caching layers",
+                    "Reduce network churn and stabilize UI"
+                ],
+                [
+                    "Experiment config",
+                    "Avoid UI flicker between variants"
+                ]
+            ]
+        }
+    ]
+}

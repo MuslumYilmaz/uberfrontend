@@ -1,0 +1,46 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "APIs should be UI-friendly: stable, versioned, and optimized for rendering. The BFF contract exists to protect the UI from backend churn."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "http",
+            "code": "GET /api/ui/feature?region=us-east&device=tv\n\n200 OK\n{\n  \"configVersion\": \"v42\",\n  \"experiments\": { \"hero_variant\": \"B\" },\n  \"items\": [\n    { \"id\": \"item_1\", \"type\": \"card\", \"payload\": { ... } }\n  ],\n  \"cursor\": \"next-page-token\"\n}\n"
+        },
+        {
+            "type": "table",
+            "title": "API design notes",
+            "columns": [
+                "Decision",
+                "Reason"
+            ],
+            "rows": [
+                [
+                    "Versioned response",
+                    "Allows safe rollout of UI changes"
+                ],
+                [
+                    "Device-aware payloads",
+                    "Reduce over-fetching and rendering cost"
+                ],
+                [
+                    "Experiment config included",
+                    "Prevent UI flicker across variants"
+                ]
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Interview tip",
+            "text": "Emphasize that the UI contract is stable and versioned, even if backend services evolve independently."
+        }
+    ]
+}

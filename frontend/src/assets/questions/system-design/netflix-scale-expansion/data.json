@@ -1,0 +1,56 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "The client data model should be stable, versioned, and optimized for rendering. Keep a clear separation between server data and UI view models."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "checklist",
+            "title": "Core client entities",
+            "items": [
+                "FeatureConfig: flags, experiments, rollout percent",
+                "UserContext: region, device, locale, entitlements",
+                "EntityMap: normalized items keyed by id",
+                "ViewModel: ordered list, UI metadata, derived state",
+                "TelemetryEvent: metric name, timing, error payload"
+            ]
+        },
+        {
+            "type": "table",
+            "title": "State you should keep on the client",
+            "columns": [
+                "State",
+                "Why",
+                "Notes"
+            ],
+            "rows": [
+                [
+                    "Normalized data",
+                    "Avoid duplication and re-renders",
+                    "Stable ids and referential equality"
+                ],
+                [
+                    "View models",
+                    "Render-ready list + UI flags",
+                    "Keep derived state explicit"
+                ],
+                [
+                    "Cache metadata",
+                    "TTL + versioning",
+                    "Invalidate on config change"
+                ]
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Common pitfall",
+            "text": "Mixing server payloads directly into the UI state makes performance tuning and caching much harder at scale."
+        }
+    ]
+}

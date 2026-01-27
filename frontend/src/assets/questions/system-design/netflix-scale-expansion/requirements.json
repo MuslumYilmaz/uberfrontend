@@ -1,0 +1,106 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "You already built a correct feature. Now an interviewer asks: ‘How would this work at Netflix scale?’ This is a front-end system design question about UI architecture, performance budgets, and safe rollout — not backend scaling." 
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Use RADIO",
+            "text": "**R**eflect (restate the problem + success metrics), **A**ssumptions (scale, devices, regions), **D**ecide (UI boundaries + data flow), **I**mplement (frontend plan), **O**utcome (metrics, rollout, risks)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nTake an existing UI feature (search, recommendations, notifications, etc.) and make it scale to millions of users without changing the core UX. You must keep the UI fast, resilient, and easy to evolve." 
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Can you define **module boundaries** (feature modules or microfrontends)?\n- Do you understand **performance budgets** (LCP/INP/TTI)?\n- Can you prevent **re-render storms** and keep UI smooth?\n- Do you know how to **roll out safely** (flags, canary, A/B)?\n- Can you explain **observability** for UX and data health?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "RADIO flow (how to speak)",
+            "steps": [
+                {
+                    "title": "1) Reflect",
+                    "text": "Restate the feature and define success metrics (LCP, INP, error rate, conversion)."
+                },
+                {
+                    "title": "2) Assumptions",
+                    "text": "Scale assumptions: peak concurrency, device mix, regions, latency targets."
+                },
+                {
+                    "title": "3) Decide",
+                    "text": "Pick UI boundaries, data flow, caching layers, and rendering strategy."
+                },
+                {
+                    "title": "4) Implement",
+                    "text": "Describe the frontend plan: code splitting, state model, data fetching, rollout controls."
+                },
+                {
+                    "title": "5) Outcome",
+                    "text": "Explain how you measure success and roll out safely with monitoring and rollback."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions",
+                            "items": [
+                                "Which feature is being expanded (search, recs, notifications)?",
+                                "What are the performance budgets (LCP/INP/TTI)?",
+                                "What devices and regions are highest priority?",
+                                "Is personalization/experimentation required?",
+                                "What is the rollback strategy if UX degrades?",
+                                "What metrics define success?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations",
+                            "items": [
+                                "Stable UX under heavy load.",
+                                "Clear module ownership and API contracts.",
+                                "Graceful fallback when data is slow or missing.",
+                                "Consistent behavior across devices and regions.",
+                                "Strong observability for UX + data health.",
+                                "Safe rollout and fast rollback."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

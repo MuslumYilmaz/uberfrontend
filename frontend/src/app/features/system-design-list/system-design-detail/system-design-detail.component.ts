@@ -118,6 +118,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   q: WritableSignal<SDQuestion | null> = signal(null);
   all: SDQuestion[] = [];
   idx = 0;
+  private forceListRefreshTried = false;
 
   // content
   title = computed(() => this.q()?.title ?? '');
@@ -331,6 +332,17 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
         setTimeout(() => this.updateActiveFromPositions(), 0);
       });
 
+      return;
+    }
+
+    // Cache can be stale: try a one-time refresh before 404
+    if (!this.forceListRefreshTried) {
+      this.forceListRefreshTried = true;
+      this.qs.clearCache();
+      this.qs.loadSystemDesign().subscribe((list) => {
+        this.all = (list as SDQuestion[]) ?? [];
+        this.setCurrentById(id, /*allowPending*/ false);
+      });
       return;
     }
 
