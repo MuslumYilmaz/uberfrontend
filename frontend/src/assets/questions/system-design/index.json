@@ -16,6 +16,27 @@
     "access": "free"
   },
   {
+    "id": "endless-short-video-feed",
+    "title": "Endless Short-Video Feed (TikTok-Style)",
+    "companies": [
+      "bytedance"
+    ],
+    "description": "Design a TikTok-style endless short-video feed for a front-end system design interview. Focus on fast first play, smooth scrolling, preloading the next videos, and handling variable network conditions.\n\nKey considerations include: CDN delivery, adaptive quality, caching strategy, viewport-based prefetching, memory control, and graceful degradation on slow networks.",
+    "tags": [
+      "infinite-scroll",
+      "virtualization",
+      "performance",
+      "cdn",
+      "streaming",
+      "caching",
+      "loading-states",
+      "responsive-ui",
+      "system-design"
+    ],
+    "type": "system-design",
+    "access": "premium"
+  },
+  {
     "id": "notification-toast-system",
     "title": "Notification Toast System",
     "companies": [
@@ -50,10 +71,32 @@
     ]
   },
   {
+    "id": "live-comments-global-stream",
+    "title": "Live Comments for Global Streams (Real-time)",
+    "companies": [
+      "bytedance"
+    ],
+    "description": "Design a real-time live comments system for a global livestream. This is a front-end system design interview question: how to render comments with low latency, handle bursts, and keep the UI responsive.\n\nKey considerations include: WebSocket/SSE updates, buffering and batching, virtualization, moderation UI, and graceful degradation under load.",
+    "tags": [
+      "real-time",
+      "streams",
+      "performance",
+      "virtualization",
+      "caching",
+      "events",
+      "state-management",
+      "frontend-architecture",
+      "system-design"
+    ],
+    "type": "system-design",
+    "access": "premium"
+  },
+  {
     "id": "netflix-scale-expansion",
     "title": "Netflix-Scale Expansion (Front-End System Design)",
     "companies": [
-      "netflix"
+      "netflix",
+      "bytedance"
     ],
     "description": "Expand a working feature to Netflix scale in a front-end system design interview. Discuss UI architecture, microfrontends, caching, performance budgets, and safe rollout.\n\nKey considerations include: module boundaries, rendering strategy, edge/client caching, experiment flags, observability, and graceful fallback.",
     "tags": [
@@ -91,7 +134,10 @@
       "caching"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "companies": [
+      "bytedance"
+    ]
   },
   {
     "id": "dashboard-widgets-draggable-resizable",

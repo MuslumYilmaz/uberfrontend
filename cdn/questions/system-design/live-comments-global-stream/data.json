@@ -1,0 +1,50 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Keep comment entities normalized and separate from UI state (visibility, moderation, scroll position)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "checklist",
+            "title": "Core entities",
+            "items": [
+                "Comment: id, userId, text, createdAt, flags",
+                "FeedState: ordered ids, cursor, hasMore",
+                "ModerationState: mutedUsers, hiddenComments",
+                "BufferQueue: pending comments with timestamps",
+                "NetworkState: reconnectAttempts, lastSeenCursor"
+            ]
+        },
+        {
+            "type": "table",
+            "title": "State you should keep on the client",
+            "columns": [
+                "State",
+                "Why",
+                "Notes"
+            ],
+            "rows": [
+                [
+                    "Normalized comments",
+                    "Avoid duplication and re-render",
+                    "Stable ids"
+                ],
+                [
+                    "Buffer queue",
+                    "Batch apply updates",
+                    "Flush every 100–250ms"
+                ],
+                [
+                    "Scroll intent",
+                    "Prevent auto-scroll fighting user",
+                    "Track if user is at bottom"
+                ]
+            ]
+        }
+    ]
+}

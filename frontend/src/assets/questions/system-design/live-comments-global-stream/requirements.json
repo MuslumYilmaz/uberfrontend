@@ -1,0 +1,105 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This is a front-end system design problem about live comments on a global livestream. The interviewer wants to see how you handle high‑frequency updates, ordering, and UI performance without overwhelming the DOM." 
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Use RADIO",
+            "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, regions, devices), **D**ecide (data flow + rendering), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nA comment stream that updates in real time during a live video. It must stay readable, ordered, and fast even during spikes (e.g., a big moment in the stream)." 
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Real-time delivery (WebSocket/SSE)\n- Buffering + batching to avoid re-render storms\n- Virtualized list rendering\n- Moderation UX (hide/mute/delete)\n- Reconnect and error handling"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "RADIO flow (how to speak)",
+            "steps": [
+                {
+                    "title": "1) Reflect",
+                    "text": "Define success: low latency, readable stream, stable scroll." 
+                },
+                {
+                    "title": "2) Assumptions",
+                    "text": "Peak comments/sec, regions, device mix, and acceptable delay." 
+                },
+                {
+                    "title": "3) Decide",
+                    "text": "Choose transport, buffering window, ordering rules, and UI layout." 
+                },
+                {
+                    "title": "4) Implement",
+                    "text": "Outline component structure, state model, and render pipeline." 
+                },
+                {
+                    "title": "5) Outcome",
+                    "text": "Define metrics: end-to-end latency, dropped frames, error rate." 
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions",
+                            "items": [
+                                "How many comments per second at peak?",
+                                "Do we need strict ordering or eventual ordering?",
+                                "Should comments auto-scroll or pause on user scroll?",
+                                "What moderation actions are required?",
+                                "What is the acceptable delay (e.g., < 500ms)?",
+                                "Should we collapse spam or duplicate messages?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations",
+                            "items": [
+                                "Stable 60 FPS scrolling under bursts.",
+                                "Bounded DOM size via virtualization.",
+                                "Graceful fallback on slow networks.",
+                                "Consistent UX across devices.",
+                                "Observable latency + error metrics."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

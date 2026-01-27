@@ -1,0 +1,105 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This is a front-end system design question about a TikTok-style short-video feed. The interviewer wants to see how you keep playback fast, scrolling smooth, and memory bounded while millions of users watch videos simultaneously." 
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Use RADIO",
+            "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, devices, networks), **D**ecide (architecture + caching), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nAn endless short-video feed with fast first play, preloading, and smooth scrolling. The UI must adapt to slow networks and avoid memory leaks over long sessions."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Fast first play and prefetch strategy\n- Handling variable networks and devices\n- Virtualization and memory control\n- Caching and CDN awareness\n- UI performance budgets and observability"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "RADIO flow (how to speak)",
+            "steps": [
+                {
+                    "title": "1) Reflect",
+                    "text": "Define the UX: instant playback, smooth scroll, consistent controls."
+                },
+                {
+                    "title": "2) Assumptions",
+                    "text": "Traffic, device mix, bandwidth, and acceptable startup latency."
+                },
+                {
+                    "title": "3) Decide",
+                    "text": "Pick preloading strategy, caching layers, virtualization, and error handling."
+                },
+                {
+                    "title": "4) Implement",
+                    "text": "Explain component structure, data flow, and render pipeline."
+                },
+                {
+                    "title": "5) Outcome",
+                    "text": "Define success metrics: time-to-first-frame, dropped frames, error rate."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Clarifying questions",
+                            "items": [
+                                "Target devices (mobile, TV, desktop)?",
+                                "What is acceptable time-to-first-frame?",
+                                "How many videos should be preloaded?",
+                                "Should videos autoplay on cellular by default?",
+                                "Is offline/low-bandwidth mode required?",
+                                "What metrics define success?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations",
+                            "items": [
+                                "Stable 60 FPS scroll on mid-range devices.",
+                                "Bounded memory usage over long sessions.",
+                                "Graceful fallback on slow networks.",
+                                "Consistent UI across regions and devices.",
+                                "Strong observability for playback failures."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

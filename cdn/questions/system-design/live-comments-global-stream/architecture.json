@@ -1,0 +1,66 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "The architecture should prevent re-render storms while keeping comments near real time. Use a streaming transport, a client buffer, and a virtualized list to keep DOM size bounded." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Client architecture**\n- Comment stream manager (WebSocket/SSE)\n- Buffer queue + batch apply\n- Virtualized list (latest N)\n- Moderation UI (mute/delete/report)" 
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Delivery pipeline**\n- Real-time transport with reconnect\n- Server-side fanout\n- Optional CDN for static assets\n- Backpressure signaling (client can drop/slow)"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Architecture decisions to explain",
+            "columns": [
+                "Decision",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "Batch window size",
+                    "Balances latency vs render cost"
+                ],
+                [
+                    "Ordering policy",
+                    "Controls UX consistency"
+                ],
+                [
+                    "Virtualization",
+                    "Prevents DOM growth"
+                ],
+                [
+                    "Auto-scroll rules",
+                    "Avoids fighting the user"
+                ]
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "success",
+            "title": "Key message",
+            "text": "For live comments, buffering + virtualization is the difference between smooth UX and a frozen page."
+        }
+    ]
+}

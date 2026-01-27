@@ -1,0 +1,66 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "The architecture must keep playback fast and scrolling smooth. Use a feed shell with virtualized items, a video prefetch queue, and a cache-aware media loader tied to viewport visibility." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Client architecture**\n- Feed shell + virtualized list\n- Video card component with lifecycle hooks\n- Preload queue (next 1–3)\n- Visibility-based autoplay/pause" 
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**Delivery pipeline**\n- CDN for video segments\n- Adaptive bitrate (ABR)\n- Client cache with TTL\n- Retry + fallback for slow networks"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Architecture decisions to explain",
+            "columns": [
+                "Decision",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "Prefetch window size",
+                    "Balances startup speed vs memory"
+                ],
+                [
+                    "Virtualization strategy",
+                    "Limits DOM and keeps scroll smooth"
+                ],
+                [
+                    "Playback lifecycle",
+                    "Prevents multiple videos playing"
+                ],
+                [
+                    "Adaptive quality",
+                    "Improves UX on weak networks"
+                ]
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "success",
+            "title": "Key message",
+            "text": "The UI must feel instant even on bad networks, so the design centers on prefetch, virtualization, and adaptive playback."
+        }
+    ]
+}

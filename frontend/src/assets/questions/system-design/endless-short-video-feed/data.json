@@ -1,0 +1,50 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Keep the data model optimized for rendering and playback state. Separate raw media metadata from UI state (playback, progress, visibility)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "checklist",
+            "title": "Core entities",
+            "items": [
+                "VideoItem: id, src, poster, duration, bitrate options",
+                "FeedState: ordered ids, cursor, hasMore",
+                "PlaybackState: isPlaying, progress, muted",
+                "NetworkState: bandwidth class, connection type",
+                "CacheEntry: url, ttl, lastAccess"
+            ]
+        },
+        {
+            "type": "table",
+            "title": "State you should keep on the client",
+            "columns": [
+                "State",
+                "Why",
+                "Notes"
+            ],
+            "rows": [
+                [
+                    "Normalized video items",
+                    "Avoid duplication and re-render",
+                    "Use stable ids"
+                ],
+                [
+                    "Viewport visibility",
+                    "Control autoplay and pause",
+                    "IntersectionObserver"
+                ],
+                [
+                    "Playback buffer",
+                    "Smooth playback on scroll",
+                    "Drop oldest when moving"
+                ]
+            ]
+        }
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Optimizations should protect the render pipeline and reduce playback stalls. Aim for measurable performance goals." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "checklist",
+            "title": "Frontend performance strategies",
+            "items": [
+                "Prefetch next N videos using idle time",
+                "Virtualize offscreen items",
+                "Pause video when out of view",
+                "Downshift bitrate on slow networks",
+                "Use poster placeholders before playback"
+            ]
+        },
+        {
+            "type": "checklist",
+            "title": "Reliability and rollout",
+            "items": [
+                "Feature flags for autoplay experiments",
+                "Fallback to low-res on failures",
+                "Monitor time-to-first-frame and drop rate",
+                "Graceful behavior when CDN misses",
+                "Rollback if metrics regress"
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Time to first frame",
+                    "value": "< 1.0s",
+                    "helperText": "Target for perceived instant playback"
+                },
+                {
+                    "label": "Prefetch window",
+                    "value": "2–3 videos",
+                    "helperText": "Balance speed vs memory"
+                },
+                {
+                    "label": "Scroll budget",
+                    "value": "16ms",
+                    "helperText": "Keep UI responsive"
+                }
+            ]
+        }
+    ]
+}

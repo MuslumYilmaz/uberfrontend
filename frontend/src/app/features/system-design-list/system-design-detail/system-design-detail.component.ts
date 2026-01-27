@@ -346,8 +346,30 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       return;
     }
 
-    // Bütün liste geldiyse ve id hâlâ yoksa 404'e
-    if (this.all.length) this.navTo404();
+    // If the list is still missing the id, try loading detail directly
+    this.qs.loadSystemDesignQuestion(id).subscribe(detail => {
+      if (!detail) {
+        if (this.all.length) this.navTo404();
+        return;
+      }
+
+      const merged: SDQuestion = {
+        id,
+        title: detail.title ?? id,
+        description: detail.description ?? '',
+        tags: detail.tags ?? [],
+        type: detail.type ?? 'system-design',
+        access: (detail as any).access ?? 'free',
+        ...(detail as Partial<SDQuestion>),
+      };
+
+      this.q.set(merged);
+      this.updateSeo(merged);
+
+      const secs = this.sections();
+      this.activeKey.set(secs[0]?.key ?? null);
+      setTimeout(() => this.updateActiveFromPositions(), 0);
+    });
   }
 
   /** Send the user to the NotFound page with the missing URL preserved. */

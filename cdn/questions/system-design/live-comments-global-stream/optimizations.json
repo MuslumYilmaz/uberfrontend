@@ -1,0 +1,55 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Optimizations should focus on preventing UI overload during comment spikes while keeping latency low." 
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "checklist",
+            "title": "Frontend performance strategies",
+            "items": [
+                "Batch updates every 100–250ms",
+                "Virtualize list to cap DOM size",
+                "Drop or collapse spam bursts",
+                "Pause auto-scroll when user is reading",
+                "Lazy-render avatars and badges"
+            ]
+        },
+        {
+            "type": "checklist",
+            "title": "Reliability and rollout",
+            "items": [
+                "Reconnect with exponential backoff",
+                "Fallback to polling if stream fails",
+                "Feature flags for moderation UI",
+                "Monitor latency + drop rate",
+                "Rollback if UX degrades"
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "End-to-end latency",
+                    "value": "< 500ms",
+                    "helperText": "Goal for live feel"
+                },
+                {
+                    "label": "Batch window",
+                    "value": "100–250ms",
+                    "helperText": "Balances latency vs render cost"
+                },
+                {
+                    "label": "DOM cap",
+                    "value": "500–1000",
+                    "helperText": "Keep list responsive"
+                }
+            ]
+        }
+    ]
+}

@@ -1,7 +1,7 @@
 {
     "id": "realtime-search-debounce-cache",
     "title": "Real-time Search",
-    "description": "Design a real-time search module where results update as the user types, but you only focus on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations:\n- Use debounce (and explain why) so we don’t trigger a new search on every keystroke.\n- Discuss debounce vs throttle and when each would be appropriate.\n- Maintain a client-side cache of query → results so repeated queries are instant.\n- Simulate request cancelation: ignore late responses for outdated queries.\n- Handle slow typers vs fast typers and avoid flickering or stale results.\n- Design UX states: empty query, loading, no results, and error.\n\nYou should be prepared to talk about: memoization/caching strategy, cache invalidation (when to clear/expire entries), how to model a \"pending request\" to cancel in the UI layer, and how to structure the search component’s state to keep the experience smooth.",
+    "description": "Design a real-time search module where results update as the user types, but you only focus on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations:\n- Use debounce (and explain why) so we don\u2019t trigger a new search on every keystroke.\n- Discuss debounce vs throttle and when each would be appropriate.\n- Maintain a client-side cache of query \u2192 results so repeated queries are instant.\n- Simulate request cancelation: ignore late responses for outdated queries.\n- Handle slow typers vs fast typers and avoid flickering or stale results.\n- Design UX states: empty query, loading, no results, and error.\n\nYou should be prepared to talk about: memoization/caching strategy, cache invalidation (when to clear/expire entries), how to model a \"pending request\" to cancel in the UI layer, and how to structure the search component\u2019s state to keep the experience smooth.",
     "tags": [
         "search",
         "debounce",
@@ -34,5 +34,8 @@
             "title": "Optimizations and deep dive",
             "file": "optimizations.json"
         }
+    ],
+    "companies": [
+        "bytedance"
     ]
 }

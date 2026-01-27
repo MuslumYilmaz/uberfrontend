@@ -1,0 +1,46 @@
+{
+    "id": "live-comments-global-stream",
+    "title": "Live Comments for Global Streams (Real-time)",
+    "description": "Design a real-time live comments system for a global livestream. This is a front-end system design interview question: how to keep comments fast, ordered, and readable under bursts. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on streaming updates (WebSocket/SSE), buffering + batching, virtualization, moderation UX, and performance budgets. Explain how the UI stays responsive across regions and slow devices.\n\nFunctional requirements:\n- Show new comments in real time with minimal delay.\n- Keep ordering consistent while handling bursts.\n- Support basic moderation controls (mute, delete, report).\n- Render large volumes without UI freezes.\n- Provide retry / reconnect behavior.\n\nNon-functional:\n- Stable frame rate during bursts.\n- Bounded DOM and memory usage.\n- Graceful degradation on slow networks.\n- Observability for latency and error rate.\n",
+    "companies": [
+        "bytedance"
+    ],
+    "tags": [
+        "real-time",
+        "streams",
+        "performance",
+        "virtualization",
+        "caching",
+        "events",
+        "state-management",
+        "frontend-architecture",
+        "system-design"
+    ],
+    "sections": [
+        {
+            "key": "R",
+            "title": "Reflect & Requirements",
+            "file": "requirements.json"
+        },
+        {
+            "key": "A",
+            "title": "Architecture / High-level design",
+            "file": "architecture.json"
+        },
+        {
+            "key": "D",
+            "title": "Data model",
+            "file": "data.json"
+        },
+        {
+            "key": "I",
+            "title": "Interface definition (API)",
+            "file": "interfaces.json"
+        },
+        {
+            "key": "O",
+            "title": "Optimizations and deep dive",
+            "file": "optimizations.json"
+        }
+    ]
+}
