@@ -1,0 +1,32 @@
+name: SEO Prerender Sitemap Guard
+
+on:
+  pull_request:
+
+jobs:
+  prerender-sitemap-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate sitemap + prerender routes (clean)
+        run: npm run gen:data
+
+      - name: Check prerender vs sitemap
+        run: npm run check:prerender-sitemap
