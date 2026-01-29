@@ -9,9 +9,19 @@ const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.regi
 const OUT_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
 
 function normalizeRoute(route) {
-  if (!route) return '/';
-  const withSlash = route.startsWith('/') ? route : `/${route}`;
-  const clean = withSlash.replace(/\/+$/, '');
+  const raw = String(route || '').trim();
+  if (!raw) return '/';
+  let path = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      path = new URL(raw).pathname || '/';
+    } catch {
+      path = raw;
+    }
+  }
+  const withSlash = path.startsWith('/') ? path : `/${path}`;
+  const stripped = withSlash.split('?')[0].split('#')[0];
+  const clean = stripped.replace(/\/+$/, '');
   return clean === '' ? '/' : clean;
 }
 
@@ -65,7 +75,6 @@ function buildRoutes() {
     '/',
     '/coding',
     '/pricing',
-    '/guides',
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',

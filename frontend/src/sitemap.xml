@@ -310,9 +310,6 @@
     <loc>https://frontendatlas.com/css/trivia/css-z-index</loc>
   </url>
   <url>
-    <loc>https://frontendatlas.com/guides</loc>
-  </url>
-  <url>
     <loc>https://frontendatlas.com/guides/behavioral</loc>
   </url>
   <url>
@@ -934,6 +931,9 @@
     <loc>https://frontendatlas.com/system-design/dashboard-widgets-draggable-resizable</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/system-design/endless-short-video-feed</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/system-design/flashcard-language-trainer</loc>
   </url>
   <url>
@@ -946,13 +946,22 @@
     <loc>https://frontendatlas.com/system-design/live-chart-high-frequency-updates</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/system-design/live-comments-global-stream</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/system-design/multi-step-form-autosave</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/netflix-scale-expansion</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/notification-toast-system</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/realtime-search-debounce-cache</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/scalable-notifications-feed</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>

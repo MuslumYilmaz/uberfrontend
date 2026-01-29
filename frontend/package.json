@@ -2,7 +2,8 @@
   "name": "frontendatlas",
   "version": "0.0.0",
   "scripts": {
-    "gen:data": "node scripts/gen-sentry-env.mjs && node scripts/gen-data-version.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs",
+    "gen:data": "node scripts/gen-sentry-env.mjs && node scripts/gen-data-version.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-prerender-routes.mjs && node scripts/prerender-sitemap-diff.mjs",
+    "check:prerender-sitemap": "node scripts/prerender-sitemap-diff.mjs",
     "gen:prerender": "node scripts/generate-prerender-routes.mjs",
     "lint:tags": "node scripts/lint-tags.mjs",
     "lint:tags:fix": "node scripts/lint-tags.mjs --fix",
@@ -23,7 +24,8 @@
     "e2e:ui": "playwright test --ui",
     "e2e:perf": "playwright test e2e/perf --project=chromium",
     "postinstall": "patch-package",
-    "postbuild": "node scripts/sentry-release.mjs"
+    "postbuild": "node scripts/sentry-release.mjs",
+    "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs"
   },
   "private": true,
   "dependencies": {
