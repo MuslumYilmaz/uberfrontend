@@ -5,7 +5,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "React solves predictable UI rendering from state with a component model and reconciliation. It does not provide routing, data fetching, or state management out of the box.",
+    "description": "React solves predictable UI rendering from state with a component model and reconciliation. It does not provide routing, data fetching, or state management out of the box. This clarity guides architecture decisions; the trade-off is adding routing or state libraries and testing their integration.",
     "answer": {
       "blocks": [
         {
@@ -100,6 +100,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>React solves: <em>predictable UI updates from state</em> using declarative components + reconciliation. React does NOT solve: routing, data fetching strategy, global state architecture, forms, styling, or build/SSR tooling \u2014 those are intentionally left to the ecosystem."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Building a dashboard, React handles UI state and rendering while you choose routing and data-fetching libraries for navigation and cache.<br><br><strong>Common pitfalls</strong><br><ul><li>Expecting React to provide routing or global state out of the box.</li><li>Mixing view state with server-cache concerns.</li><li>Ignoring performance and testing needs for large component trees.</li></ul><strong>Trade-off or test tip</strong><br>The lean core is flexible but requires architecture decisions. Test by listing missing pieces (routing, data fetching, auth) before you build.</strong>"
         }
       ]
     },
@@ -119,7 +123,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React expects rendering to be a pure computation (UI = f(props, state, context)) and why side effects must be moved to effects/event handlers. Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation.",
+    "description": "Explain why React expects rendering to be a pure computation (UI = f(props, state, context)) and why side effects must be moved to effects/event handlers. Connect it to render vs commit, Concurrent Rendering, StrictMode double-invocation, memoization, and predictable reconciliation. Pure rendering improves predictability and testing, but side effects must live in effects/hooks. Test with StrictMode and rerenders.",
     "answer": {
       "blocks": [
         {
@@ -209,6 +213,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>React expects components to be pure so it can re-run rendering freely (including retries/aborts), apply concurrent scheduling, and reconcile efficiently. Side effects in render break determinism and lead to duplicated work and inconsistent UI; move them to effects/event handlers where React guarantees timing relative to commits."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A product card renders purely from props and local state, while data fetching happens in effects.<br><br><strong>Common pitfalls</strong><br><ul><li>Triggering side effects during render.</li><li>Deriving state incorrectly from props.</li><li>Relying on mutable props.</li></ul><strong>Trade-off or test tip</strong><br>Pure renders are predictable but require disciplined effects. Test with StrictMode and snapshot behavior.</strong>"
         }
       ]
     },
@@ -228,7 +236,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Functional components are plain functions with hooks for state and lifecycle. Class components use this.state and lifecycle methods. Modern React favors function components with hooks.",
+    "description": "Functional components are plain functions with hooks for state and lifecycle. Class components use this.state and lifecycle methods. Modern React favors function components with hooks. Trade-offs matter: hooks simplify composition, but legacy code still uses classes, so test lifecycle and performance behavior.",
     "answer": {
       "blocks": [
         {
@@ -359,6 +367,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Function components are the modern default: state and lifecycle behavior are expressed with Hooks (especially <code>useState</code>/<code>useEffect</code>) and logic reuse is done via custom hooks. Class components express the same ideas via <code>this</code>, <code>this.state</code>/<code>setState</code>, and lifecycle methods. React still supports classes, but new React code is typically hook-first."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You migrate a class-based form to hooks to share validation logic across components.<br><br><strong>Common pitfalls</strong><br><ul><li>Trying to use <code>this</code> or lifecycle methods directly in a function component.</li><li>Missing <code>useEffect</code> dependencies, causing stale state.</li><li>Overusing hooks in complex components without refactoring.</li></ul><strong>Trade-off or test tip</strong><br>Hooks are flexible but rely on rules. Test lifecycle behavior and add lint rules for hooks.</strong>"
         }
       ]
     },
@@ -378,7 +390,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly). Mention the two JSX runtimes (classic createElement vs automatic react/jsx-runtime) and the practical implications (React import, tooling, and why JSX isn\u2019t HTML).",
+    "description": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly). Mention the two JSX runtimes (classic createElement vs automatic react/jsx-runtime) and the practical implications (React import, tooling, and why JSX isn\u2019t HTML). Modern JSX transform removes the explicit React import, but tooling must be configured. Test build output and lint rules.",
     "answer": {
       "blocks": [
         {
@@ -473,6 +485,10 @@
         {
           "type": "text",
           "text": "<strong>Interview framing</strong><br><br>Say: \u201cJSX is syntax sugar compiled by Babel/TS into element-creation calls (classic <code>createElement</code> or automatic <code>jsx/jsxs</code>). React doesn\u2019t require JSX because it only consumes React elements \u2014 JSX never reaches React as JSX.\u201d"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You upgrade to React 17+ and remove <code>import React</code> from files using JSX.<br><br><strong>Common pitfalls</strong><br><ul><li>Tooling not configured for the new JSX transform.</li><li>Babel/TS settings inconsistent across packages.</li><li>Lint rules still expecting React in scope.</li></ul><strong>Trade-off or test tip</strong><br>New transform reduces boilerplate but needs config. Test build output and update linters.</strong>"
         }
       ]
     },
@@ -492,7 +508,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what makes React treat a function as a component (element type), the JSX naming rule (Uppercase vs lowercase), what it must return, and the practical rules around calling it (don\u2019t call directly if it uses Hooks). Include common runtime errors and gotchas.",
+    "description": "Explain what makes React treat a function as a component (element type), the JSX naming rule (Uppercase vs lowercase), what it must return, and the practical rules around calling it (don\u2019t call directly if it uses Hooks). Include common runtime errors and gotchas. Uppercase naming and hook rules are common edge cases, so add tests for warnings and invalid returns.",
     "answer": {
       "blocks": [
         {
@@ -593,6 +609,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>A function is treated as a React component when React sees it as the element type (<code>&lt;MyComp /&gt;</code> / <code>createElement(MyComp)</code>), it\u2019s capitalized in JSX, and it returns a valid React node. If it uses Hooks, it must only be invoked by React\u2019s render pipeline (not called directly)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You create a reusable <code>UserCard</code> component and render it in a list with JSX.<br><br><strong>Common pitfalls</strong><br><ul><li>Using a lowercase name so React treats it as a DOM tag.</li><li>Calling the function directly instead of using JSX, breaking hook rules.</li><li>Returning invalid values or fragments without a wrapper.</li></ul><strong>Trade-off or test tip</strong><br>Component naming and hook rules are strict but predictable. Test for warnings in dev and add lint rules.</strong>"
         }
       ]
     },
@@ -746,7 +766,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "React renders nothing when a component returns null, false, or an empty fragment. This is useful for conditional UI without extra wrapper nodes.",
+    "description": "React renders nothing when a component returns null, false, or an empty fragment. This is useful for conditional UI without extra wrapper nodes. Covers: react, rendering, null, conditional, components. Return null/false for no UI, and keep layout stable. This affects conditional rendering, accessibility, and testing of empty states.",
     "answer": {
       "blocks": [
         {
@@ -852,6 +872,14 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>React renders whatever your component returns as a <code>ReactNode</code>. Returning <code>null</code>/<code>false</code> is a valid way to render nothing. The most common accidental \u201crenders nothing\u201d bug is returning <code>undefined</code> (missing <code>return</code>), especially with arrow functions and <code>map()</code> callbacks."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You conditionally hide an empty recommendations section when there are no items.<br><br><strong>Common pitfalls</strong><br><ul><li>Returning <code>undefined</code> or an empty object instead of <code>null</code>.</li><li>Using empty strings and still leaving layout gaps.</li><li>Forgetting accessibility announcements when content disappears.</li></ul><strong>Trade-off or test tip</strong><br>Prefer <code>null</code> for no render. Test that DOM nodes are absent and screen readers don\u2019t announce hidden content.</strong>"
         }
       ]
     },
@@ -1408,7 +1436,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Controlled components in React are those whose form data is managed by React state, while uncontrolled components manage their own state internally through the DOM. Controlled components offer more predictable, testable, and synchronized data flow, whereas uncontrolled components are simpler but less flexible.",
+    "description": "Controlled components in React are those whose form data is managed by React state, while uncontrolled components manage their own state internally through the DOM. Controlled components offer more predictable, testable, and synchronized data flow, whereas uncontrolled components are simpler but less flexible. Controlled inputs enable validation and state sync but can be verbose; uncontrolled inputs are simpler but harder to test. Test with form reset and validation.",
     "answer": {
       "blocks": [
         {
@@ -1456,6 +1484,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Controlled components store input values in React state.</li><li>Uncontrolled components rely on DOM references.</li><li>Controlled inputs are ideal for validation, while uncontrolled are simpler but less powerful.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A login form needs validation and error messages, so inputs are controlled by React state.<br><br><strong>Common pitfalls</strong><br><ul><li>Mixing controlled and uncontrolled inputs in the same field.</li><li>Forgetting defaultValue when using uncontrolled inputs.</li><li>Causing re-render lag on large forms.</li></ul><strong>Trade-off or test tip</strong><br>Controlled inputs are testable but verbose. Test form reset and validation flows.</strong>"
         }
       ]
     },
@@ -1475,7 +1507,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn\u2019t actually a component.",
+    "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn\u2019t actually a component. This often shows up as a runtime crash, so testing and lint rules are critical.",
     "answer": {
       "blocks": [
         {
@@ -1570,6 +1602,10 @@
         {
           "type": "text",
           "text": "<strong>Best practice</strong><br><br>Pick a team convention and enforce it with lint rules. Many teams prefer <em>named exports</em> for components (easier refactors + consistent imports), and reserve <em>default exports</em> for special cases (single main export modules). Consistency reduces these runtime failures."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You import a component from a shared UI library and see \"Element type is invalid\" at runtime due to export mismatch.<br><br><strong>Common pitfalls</strong><br><ul><li>Mixing default and named exports in barrel files.</li><li>Refactoring exports without updating all imports.</li><li>Circular imports hiding the real error.</li></ul><strong>Trade-off or test tip</strong><br>Named exports improve clarity but require consistent usage. Test with type checks and component render tests.</strong>"
         }
       ]
     },
@@ -1589,7 +1625,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Common patterns include ternaries, && short-circuit, early returns, and mapping arrays. Choose based on readability and avoid deeply nested conditionals.",
+    "description": "Conditional rendering in React means showing different UI based on state or props. Common patterns include && for simple toggles, ternaries for two branches, and early returns for guards. This keeps rendering logic explicit and makes components easier to read. Conditional UI affects accessibility and layout stability. Test empty states, transitions, and focus behavior.",
     "answer": {
       "blocks": [
         {
@@ -1734,6 +1770,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Conditional rendering is simply returning different <code>ReactNode</code> outputs based on conditions. Choose a pattern by complexity: guard clauses for gating, ternaries for two options, and mappings/switches for multiple states. Be careful with <code>&&</code> when the condition might be a non-boolean (especially <code>0</code>). Finally, remember that mount/unmount controls whether local component state is preserved or reset (and <code>key</code> can force a reset when needed)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Show a loading spinner until data arrives, then replace it with content.<br><br><strong>Common pitfalls</strong><br><ul><li>Layout jump when components mount/unmount.</li><li>Focus loss when elements are removed.</li><li>Rendering heavy components unnecessarily.</li></ul><strong>Trade-off or test tip</strong><br>Conditional render is simple but can cause UX shifts. Test loading transitions and focus retention.</strong>"
         }
       ]
     },
@@ -2331,7 +2371,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what typically breaks when a component treats the same piece of data as both \u201cprops-owned\u201d and \u201cstate-owned\u201d (multiple sources of truth). Cover common symptoms (stale UI, input jumps, infinite loops, memo bugs) and the correct patterns (single source of truth, controlled vs uncontrolled, derived state).",
+    "description": "Explain what typically breaks when a component treats the same piece of data as both \u201cprops-owned\u201d and \u201cstate-owned\u201d (multiple sources of truth). Cover common symptoms (stale UI, input jumps, infinite loops, memo bugs) and the correct patterns (single source of truth, controlled vs uncontrolled, derived state). Confusing state vs props leads to bugs and re-render issues. Test with prop changes and derived state updates.",
     "answer": {
       "blocks": [
         {
@@ -2428,6 +2468,10 @@
         {
           "type": "text",
           "text": "<strong>Rule of thumb</strong><br><br>If two different places can write the \u201csame\u201d value, you will eventually get drift, overwrites, loops, or UI jumps. Decide who owns it (parent via props, or child via local state/DOM), then design the API around that ownership."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A child component both receives user data as props and stores local edits, creating conflicts.<br><br><strong>Common pitfalls</strong><br><ul><li>Duplicating source of truth in props and state.</li><li>Out-of-sync updates when props change.</li><li>Unnecessary re-renders from derived state.</li></ul><strong>Trade-off or test tip</strong><br>Keep a single source of truth. Test by changing props and verifying UI updates correctly.</strong>"
         }
       ]
     },
@@ -2447,7 +2491,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Lifting state up means moving shared state to the closest common ancestor and passing it down via props. This keeps siblings in sync and avoids duplicated state.",
+    "description": "Lifting state up means moving shared state to the closest common ancestor and passing it down via props. This keeps siblings in sync and avoids duplicated state. The trade-off is prop drilling vs shared state, so test updates from each child and consider performance and memoization.",
     "answer": {
       "blocks": [
         {
@@ -2496,6 +2540,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Lifting state up moves shared data to a common ancestor.</li><li>Children communicate changes via callbacks.</li><li>It promotes consistency and unidirectional data flow in React.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Two sibling components need to stay in sync (e.g., a slider and a numeric input), so you move shared state to their parent.<br><br><strong>Common pitfalls</strong><br><ul><li>Excessive prop drilling as the tree grows.</li><li>Duplicating derived state in multiple places, causing inconsistencies.</li><li>Triggering unnecessary re-renders for unrelated children.</li></ul><strong>Trade-off or test tip</strong><br>Lifting state improves consistency but can increase coupling. Test by updating each child and verifying the other reflects changes immediately."
         }
       ]
     },
@@ -2515,7 +2563,7 @@
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They\u2019re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code.",
+    "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They\u2019re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code. HOCs enable reuse but can complicate debugging and typing. Test prop collisions and display names.",
     "answer": {
       "blocks": [
         {
@@ -2664,6 +2712,10 @@
             ]
           ],
           "caption": "Summary"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Wrap components with an auth HOC that injects user info and guards rendering.<br><br><strong>Common pitfalls</strong><br><ul><li>Prop name collisions between HOC and wrapped component.</li><li>Losing static methods or display names.</li><li>Over-nesting HOCs and reducing readability.</li></ul><strong>Trade-off or test tip</strong><br>HOCs are powerful but add indirection. Test prop passing and component names in DevTools.</strong>"
         }
       ]
     },
@@ -2852,7 +2904,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "React.StrictMode runs extra checks in development to surface unsafe lifecycles, deprecated APIs, and side-effect bugs. It does not affect production output.",
+    "description": "React.StrictMode runs extra checks in development to surface unsafe lifecycles, deprecated APIs, and side-effect bugs. It does not affect production output. StrictMode catches unsafe patterns by double-invoking in dev; ensure effects are idempotent and tested.",
     "answer": {
       "blocks": [
         {
@@ -2910,6 +2962,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>StrictMode helps detect side effects, deprecated APIs, and unsafe lifecycles.</li><li>It runs additional checks in development without affecting production.</li><li>Useful for ensuring your React app is ready for future updates and concurrent rendering.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>In development, you notice effects running twice; StrictMode is intentionally exposing unsafe side effects.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming double-invocation happens in production (it does not).</li><li>Writing non-idempotent effects that break when re-run.</li><li>Doing side effects directly in render.</li></ul><strong>Trade-off or test tip</strong><br>StrictMode makes dev noisier but catches bugs early. Test by making effects idempotent and verifying cleanup works."
         }
       ]
     },
@@ -3174,7 +3230,7 @@
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling.",
+    "description": "Portals render children into a DOM node outside the parent hierarchy, useful for modals, tooltips, and overlays while preserving React event bubbling. Portals help overlays but require focus management and accessibility checks; test event bubbling and scroll lock.",
     "answer": {
       "blocks": [
         {
@@ -3232,6 +3288,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>React Portals render children outside the parent DOM hierarchy.</li><li>Used for modals, overlays, and tooltips to avoid CSS stacking issues.</li><li>They preserve React context and event bubbling despite DOM separation.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A modal and tooltip must render above the app shell, so you render them into a portal root outside the main DOM tree.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing focus management and keyboard trapping.</li><li>Assuming event bubbling changes (it still bubbles through React tree).</li><li>Forgetting to lock background scroll.</li></ul><strong>Trade-off or test tip</strong><br>Portals solve layering but add accessibility work. Test with keyboard navigation and focus return.</strong>"
         }
       ]
     },
@@ -3335,7 +3395,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React Hooks must be called unconditionally and in the same order, how React internally matches Hook calls to state slots, and what breaks when that order changes.",
+    "description": "Explain why React Hooks must be called unconditionally and in the same order, how React internally matches Hook calls to state slots, and what breaks when that order changes. Hooks rely on call order, so violations cause subtle bugs. Test with lint rules and ensure stable hook order.",
     "answer": {
       "blocks": [
         {
@@ -3401,6 +3461,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Hooks must be called in the same order on every render. React relies on call order to map Hook calls to internal state slots. Conditional Hooks break this mapping, causing state and effects to shift between variables and produce unpredictable bugs."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A hook is called inside a conditional and breaks state order across renders.<br><br><strong>Common pitfalls</strong><br><ul><li>Calling hooks inside loops or conditionals.</li><li>Using hooks in non-component functions.</li><li>Suppressing lint rules and masking bugs.</li></ul><strong>Trade-off or test tip</strong><br>Rules enforce consistency. Test with eslint-plugin-react-hooks and avoid conditional calls.</strong>"
         }
       ]
     },

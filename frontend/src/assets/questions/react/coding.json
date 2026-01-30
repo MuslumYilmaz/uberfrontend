@@ -14,7 +14,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a React counter with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values.",
+      "summary": "Build a React counter with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics.",
       "specs": {
         "requirements": [
           "Render a <Counter /> as the main UI.",
@@ -40,11 +40,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "A single count state drives the UI. Increment adds 1, decrement subtracts 1 but clamps at 0. Disabling the minus button at zero communicates the rule to users and prevents invalid negative values. This is a clean example of state-driven UI and controlled updates.",
+      "overview": "A single count state drives the UI. Increment adds 1, decrement subtracts 1 but clamps at 0. Disabling the minus button at zero communicates the rule to users and prevents invalid negative values. This is a clean example of state-driven UI and controlled updates. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single component with guarded decrement",
-          "prose": "Initialize `count` with `useState(0)`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the decrement button\u2019s `disabled` prop when `count === 0`, and render the count in the UI so every click immediately reflects the new state.",
+          "prose": "Initialize `count` with `useState(0)`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the decrement button\u2019s `disabled` prop when `count === 0`, and render the count in the UI so every click immediately reflects the new state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates.",
           "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
         }
       ],
@@ -327,7 +327,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics.",
+      "summary": "Implement tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -401,7 +401,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Filter a user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist.",
+      "summary": "Filter a user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main UI.",
@@ -975,7 +975,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
+      "summary": "Implement a reusable &lt;StarRating /&gt; widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
       "specs": {
         "requirements": [
           "Render a <StarRating /> component as part of the main UI.",
@@ -1289,7 +1289,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected.",
+      "summary": "Build a transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1452,7 +1452,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement a custom hook `useEffectOnce(effect)` that runs the provided effect callback only once during the component lifecycle (mount). If the effect returns a cleanup function, it must run on unmount.",
+      "summary": "This hook should run the effect only on mount and clean up on unmount, even under React StrictMode development behavior. Concepts: react, hooks, effects, lifecycle, components. Mention StrictMode double-invocation, cleanup idempotency, and tests for unexpected reruns or stale closures.",
       "specs": {
         "requirements": [
           "Implement `useEffectOnce(effect)` in `useEffectOnce.ts`.",
@@ -1480,11 +1480,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Create a `useEffectOnce` hook that runs an effect only on mount and runs cleanup on unmount. The simplest implementation uses `useEffect` with an empty dependency array, but the hook should also guard against accidental re-entry in dev StrictMode and handle cleanup reliably.",
+      "overview": "StrictMode can double-invoke effects in development, so the hook needs a ref guard to prevent accidental double side-effects while still allowing cleanup to run once. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "useEffect + useRef guard",
-          "prose": "Implementation:\n- Use `useEffect(() => { ... }, [])` to run once per mount.\n- Store a `didRunRef` so the body runs only once even if invoked twice in StrictMode (development).\n- Capture the cleanup function in a ref and return a cleanup handler that runs it once on unmount.\n\nThis ensures effects are not double-applied and cleanup remains predictable."
+          "prose": "Store a didRun ref and a cleanup ref. If didRun is true, return early. Otherwise, run the effect, store cleanup, and return a cleanup function that runs the stored cleanup once. This keeps behavior deterministic across dev and prod. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1525,7 +1525,7 @@
       "conditional-rendering"
     ],
     "description": {
-      "summary": "Build a Like button in React that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates.",
+      "summary": "Build a Like button in React that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1556,11 +1556,11 @@
     },
     "starterCodeHint": "Implement `toggleLike()` and update both `liked` and `count`. Ensure the count never drops below 0.",
     "solutionBlock": {
-      "overview": "Model two pieces of state: whether the item is liked and the current count. On click, flip the liked flag and update the count accordingly. Use functional state updates so the logic is resilient to React batching, and clamp the count at zero to avoid negative values.",
+      "overview": "Model two pieces of state: whether the item is liked and the current count. On click, flip the liked flag and update the count accordingly. Use functional state updates so the logic is resilient to React batching, and clamp the count at zero to avoid negative values. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single component with guarded toggle",
-          "prose": "Use `useState` for `liked` (boolean) and `count` (number). In the click handler, update both via functional setters: `setLiked(prev => !prev)` and `setCount(prev => prev + (liked ? -1 : 1))`. If unliking would go negative, clamp with `Math.max(0, prev - 1)`. Render the button text based on `liked` and display the count next to it."
+          "prose": "Use `useState` for `liked` (boolean) and `count` (number). In the click handler, update both via functional setters: `setLiked(prev => !prev)` and `setCount(prev => prev + (liked ? -1 : 1))`. If unliking would go negative, clamp with `Math.max(0, prev - 1)`. Render the button text based on `liked` and display the count next to it. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1601,7 +1601,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a progress bar for values 0\u2013100 with +10%/\u221210% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red <34, orange 34\u201366, green >66). Show the numeric percentage and keep the UI in sync with state.",
+      "summary": "Build a progress bar for values 0\u2013100 with +10%/\u221210% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34\u201366, green &gt;66). Show the numeric percentage and keep the UI in sync with state.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1759,7 +1759,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently. Concepts: react, state, arrays.",
+      "summary": "Users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: react, state, arrays, event handlers, dynamic ui.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main screen.",
@@ -1789,11 +1789,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Keep an array of counts in state. Render one button per entry. On click, copy the array, increment the clicked index, then push a new 0 at the end, and set the new array.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0] Key concepts: react, state, arrays.",
+      "overview": "This combines list state and counter state. Keep step values in an array, render them with map, and update the count with functional state updates. The UI should reflect edits immediately. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single component with counts[] array",
-          "prose": "1) Initialize `counts` as `[0]`.\n2) Render: `counts.map((c,i) => <button ...>{c}</button>)`.\n3) `onClick(i)`: clone array, increment clone[i], push(0), setCounts(clone).\n\nThis matches the spec exactly and stays small."
+          "prose": "Use controlled inputs for new steps and append them immutably to the steps list. Render buttons from the list and update count with setCount(c => c + step). Optionally allow negative steps for decrement buttons and validate input. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1835,7 +1835,7 @@
       "effects"
     ],
     "description": {
-      "summary": "Fix a component that renders twice per click because it stores derived state in `useEffect`. The correct fix is to remove the derived `parity` state and compute it directly from `count` during render, preventing the extra state update and render.",
+      "summary": "Fix a component that renders twice per click because it stores derived state in `useEffect`. The correct fix is to remove the derived `parity` state and compute it directly from `count` during render, preventing the extra state update and render. Explain StrictMode double-invocation, idempotent effects, and testing for unintended side effects; use profiling for performance.",
       "specs": {
         "requirements": [
           "Work in `src/App.tsx`.",

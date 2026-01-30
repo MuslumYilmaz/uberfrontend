@@ -5,7 +5,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "CSS stands for Cascading Style Sheets. It controls the visual presentation of HTML, including layout, spacing, colors, typography, and responsive behavior across devices and screen sizes.",
+    "description": "CSS stands for Cascading Style Sheets. It controls the visual presentation of HTML, including layout, spacing, colors, typography, and responsive behavior across devices and screen sizes. In practice, CSS decisions affect accessibility and performance, so test layout and contrast across breakpoints.",
     "answer": {
       "blocks": [
         {
@@ -58,6 +58,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>CSS = Cascading Style Sheets.</li><li>Controls the presentation and layout of web pages.</li><li>Uses rules made of selectors and declarations.</li><li>Provides flexibility, consistency, and separation between content and design.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Designing a marketing landing page, you use CSS to separate content (HTML) from presentation, add responsive layout rules, and keep typography consistent across sections.<br><br><strong>Common pitfalls</strong><br><ul><li>Sprinkling inline styles everywhere, which makes maintenance and reuse harder.</li><li>Letting specificity conflicts creep in (later overrides that are hard to trace).</li><li>Forgetting box sizing or base styles, causing inconsistent spacing.</li></ul><strong>Trade-off or test tip</strong><br>External stylesheets improve caching and reuse, but can cause FOUC if loaded late. Test with throttled network and check computed styles in DevTools."
         }
       ]
     },
@@ -77,16 +81,16 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "Link an external CSS file with <link rel=\"stylesheet\" href=\"...\"> inside the HTML <head>. This loads the stylesheet and applies styles globally across the page.",
+    "description": "Link an external CSS file with &lt;link rel=\"stylesheet\" href=\"...\"&gt; inside the HTML &lt;head&gt;. This loads the stylesheet and applies styles globally across the page. Loading CSS early avoids FOUC and improves perceived performance. Test with throttled network and verify caching.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The most common way to apply CSS to a webpage is by linking an external stylesheet using the <link> tag. This tag connects your HTML document to a .css file, allowing the browser to load styles before rendering the page."
+          "text": "<strong>Overview</strong><br><br>The most common way to apply CSS to a webpage is by linking an external stylesheet using the &lt;link&gt; tag. This tag connects your HTML document to a .css file, allowing the browser to load styles before rendering the page."
         },
         {
           "type": "text",
-          "text": "<strong>Syntax</strong><br><br>The <link> tag must be placed inside the <head> section and typically includes three attributes: <code>rel</code>, <code>href</code>, and <code>type</code>."
+          "text": "<strong>Syntax</strong><br><br>The &lt;link&gt; tag must be placed inside the &lt;head&gt; section and typically includes three attributes: <code>rel</code>, <code>href</code>, and <code>type</code>."
         },
         {
           "type": "list",
@@ -125,7 +129,7 @@
         },
         {
           "type": "text",
-          "text": "Here, <code>styles.css</code> is an external file that defines how elements like <h1> should appear."
+          "text": "Here, <code>styles.css</code> is an external file that defines how elements like &lt;h1&gt; should appear."
         },
         {
           "type": "text",
@@ -133,11 +137,15 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <link> tag as giving your HTML a <em>fashion consultant</em> \u2014 it points to a file that tells the page how to dress up."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the &lt;link&gt; tag as giving your HTML a <em>fashion consultant</em> \u2014 it points to a file that tells the page how to dress up."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <link rel=\"stylesheet\" href=\"file.css\"> inside <head>.</li><li>The browser downloads and applies the stylesheet automatically.</li><li>External CSS promotes modular and clean code.</li><li>Always ensure the correct path to the CSS file.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Use &lt;link rel=\"stylesheet\" href=\"file.css\"&gt; inside &lt;head&gt;.</li><li>The browser downloads and applies the stylesheet automatically.</li><li>External CSS promotes modular and clean code.</li><li>Always ensure the correct path to the CSS file.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You move styles into a shared stylesheet so multiple pages share the same design and cache benefits.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting <code>rel=\"stylesheet\"</code> so the file is ignored.</li><li>Using the wrong path and silently failing to load.</li><li>Placing the link too late, causing a flash of unstyled content.</li></ul><strong>Trade-off or test tip</strong><br>External CSS helps caching, but can delay first paint. Test with network throttling and confirm the stylesheet is loaded early."
         }
       ]
     },
@@ -157,12 +165,12 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a <style> tag in the <head>, and external CSS is loaded from a separate .css file via <link>. External styles are reusable and best for maintainability.",
+    "description": "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a &lt;style&gt; tag in the &lt;head&gt;, and external CSS is loaded from a separate .css file via &lt;link&gt;. External styles are reusable and best for maintainability.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a <style> block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
+          "text": "<strong>Overview</strong><br><br>CSS can be written directly inside HTML (inline), embedded within a &lt;style&gt; block (internal), or stored in a separate file (external). Understanding their differences is key to managing scalability, performance, and consistency in design."
         },
         {
           "type": "list",
@@ -218,7 +226,7 @@
         },
         {
           "type": "text",
-          "text": "Internal CSS is written within the <head> section and applies only to that single HTML document."
+          "text": "Internal CSS is written within the &lt;head&gt; section and applies only to that single HTML document."
         },
         {
           "type": "text",
@@ -263,12 +271,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the <body> element, it changes the entire page\u2019s background color.",
+    "description": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the &lt;body&gt; element, it changes the entire page\u2019s background color. Backgrounds affect contrast and readability. Test with dark mode and accessibility contrast checks.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>background-color</code> property is one of the most fundamental styling tools in CSS. It defines the color that appears behind an element\u2019s content and padding. You can apply it to the <body> element to color the entire page, or to specific containers like <div> or <section> for localized visual effects."
+          "text": "<strong>Overview</strong><br><br>The <code>background-color</code> property is one of the most fundamental styling tools in CSS. It defines the color that appears behind an element\u2019s content and padding. You can apply it to the &lt;body&gt; element to color the entire page, or to specific containers like &lt;div&gt; or &lt;section&gt; for localized visual effects."
         },
         {
           "type": "list",
@@ -317,7 +325,7 @@
         },
         {
           "type": "text",
-          "text": "This code sets the background of the entire webpage to a soft lavender color by targeting the <body> element."
+          "text": "This code sets the background of the entire webpage to a soft lavender color by targeting the &lt;body&gt; element."
         },
         {
           "type": "text",
@@ -330,7 +338,7 @@
         },
         {
           "type": "text",
-          "text": "Here, a gradient is applied to a <div> with class 'hero'. Although <code>background-color</code> supports solid colors only, CSS allows gradients using the <code>background</code> shorthand."
+          "text": "Here, a gradient is applied to a &lt;div&gt; with class 'hero'. Although <code>background-color</code> supports solid colors only, CSS allows gradients using the <code>background</code> shorthand."
         },
         {
           "type": "text",
@@ -342,7 +350,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Use <code>background-color</code> to define background hues for any element.</li><li>Supports multiple color systems like HEX, RGB, and HSL.</li><li>Applying it to <body> colors the entire page.</li><li>Combine with gradients or images using the <code>background</code> shorthand.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Use <code>background-color</code> to define background hues for any element.</li><li>Supports multiple color systems like HEX, RGB, and HSL.</li><li>Applying it to &lt;body&gt; colors the entire page.</li><li>Combine with gradients or images using the <code>background</code> shorthand.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Set a card background to highlight selected items in a list.<br><br><strong>Common pitfalls</strong><br><ul><li>Low contrast with text or icons.</li><li>Forgetting background affects stacking and opacity overlays.</li><li>Using hard-coded colors instead of tokens.</li></ul><strong>Trade-off or test tip</strong><br>Tokens ease theming but need maintenance. Test contrast and dark mode.</strong>"
         }
       ]
     },
@@ -362,7 +374,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The color property in CSS controls the color of text content. It affects inline text and can be defined using various color formats such as names, hexadecimal, RGB, RGBA, or HSL. It is one of the most widely used CSS properties for visual styling.",
+    "description": "The color property in CSS controls the color of text content. It affects inline text and can be defined using various color formats such as names, hexadecimal, RGB, RGBA, or HSL. It is one of the most widely used CSS properties for visual styling. Text color must meet contrast ratios and theming needs. Test with different backgrounds and user zoom.",
     "answer": {
       "blocks": [
         {
@@ -442,6 +454,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>The <code>color</code> property defines text color for an element.</li><li>Accepts multiple formats: named colors, HEX, RGB(A), and HSL.</li><li>Influences readability, accessibility, and visual hierarchy.</li><li>Should complement background colors for contrast and clarity.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Use color to show error messages and success states in forms.<br><br><strong>Common pitfalls</strong><br><ul><li>Failing contrast ratios for accessibility.</li><li>Forgetting inherited colors in nested elements.</li><li>Using color alone to convey meaning.</li></ul><strong>Trade-off or test tip</strong><br>Use icons or text labels alongside color. Test with contrast tools and color-blind simulators.</strong>"
         }
       ]
     },
@@ -461,7 +477,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The text-align property in CSS is used to align text content horizontally within its container. Setting text-align: center aligns inline-level content such as text and inline elements to the center of their parent container.",
+    "description": "The text-align property in CSS is used to align text content horizontally within its container. Setting text-align: center aligns inline-level content such as text and inline elements to the center of their parent container. Centering text affects readability and responsive layout, so test across breakpoints and line lengths.",
     "answer": {
       "blocks": [
         {
@@ -510,7 +526,7 @@
         },
         {
           "type": "text",
-          "text": "All inline content within the <div> \u2014 such as text and inline images \u2014 will be horizontally centered."
+          "text": "All inline content within the &lt;div&gt; \u2014 such as text and inline images \u2014 will be horizontally centered."
         },
         {
           "type": "text",
@@ -527,7 +543,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Important Notes</strong><br><ul><li><code>text-align</code> affects inline content, not the container itself.</li><li>To center a block-level element (like a <div>), use <code>margin: 0 auto;</code> instead.</li><li>Combining <code>text-align: center;</code> with <code>display: flex;</code> offers even more control in modern layouts.</li></ul>"
+          "text": "<strong>Important Notes</strong><br><ul><li><code>text-align</code> affects inline content, not the container itself.</li><li>To center a block-level element (like a &lt;div&gt;), use <code>margin: 0 auto;</code> instead.</li><li>Combining <code>text-align: center;</code> with <code>display: flex;</code> offers even more control in modern layouts.</li></ul>"
         },
         {
           "type": "text",
@@ -536,6 +552,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Use <code>text-align: center;</code> to center text horizontally within a block container.</li><li>Applies to inline-level content like text and inline images.</li><li>Does not center block-level elements themselves.</li><li>Combine with flexbox or grid for advanced alignment control.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Center a hero heading and call-to-action text on a landing page.<br><br><strong>Common pitfalls</strong><br><ul><li>Centering container instead of text, causing misalignment.</li><li>Ignoring line wrapping and making text hard to read.</li><li>Using <code>text-align</code> where alignment should be handled by layout.</li></ul><strong>Trade-off or test tip</strong><br>Centered text can reduce readability for long paragraphs. Test with long strings and responsive widths.</strong>"
         }
       ]
     },
@@ -620,7 +640,7 @@
         },
         {
           "type": "text",
-          "text": "This snippet loads the 'Poppins' font from Google Fonts and applies it to all <h1> elements."
+          "text": "This snippet loads the 'Poppins' font from Google Fonts and applies it to all &lt;h1&gt; elements."
         },
         {
           "type": "text",
@@ -648,7 +668,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Add a border with the shorthand: border: 1px solid #333;. You can also set border-width, border-style, and border-color separately for finer control.",
+    "description": "Add a border with the shorthand: border: 1px solid #333;. You can also set border-width, border-style, and border-color separately for finer control. In UI validation and focus states, borders signal errors; watch layout shifts and accessibility contrast, and test across browsers.",
     "answer": {
       "blocks": [
         {
@@ -697,7 +717,7 @@
         },
         {
           "type": "text",
-          "text": "This creates a 3px solid green border around a <div> while adding internal padding and a light background."
+          "text": "This creates a 3px solid green border around a &lt;div&gt; while adding internal padding and a light background."
         },
         {
           "type": "text",
@@ -727,6 +747,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Use <code>border</code> to define a visual frame around elements.</li><li>Combine width, style, and color in one shorthand rule.</li><li>Customize each side with individual border properties.</li><li>Enhance design with <code>border-radius</code> for curved edges.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Add a red border to invalid inputs or a subtle outline around cards for separation.<br><br><strong>Common pitfalls</strong><br><ul><li>Adding borders on hover/focus that change element size (layout shift).</li><li>Forgetting <code>box-sizing</code> so border changes width.</li><li>Misordering shorthand values (width, style, color).</li></ul><strong>Trade-off or test tip</strong><br>Use <code>outline</code> to avoid layout shifts, but note it does not affect layout. Test focus styles with keyboard navigation."
         }
       ]
     },
@@ -745,7 +769,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Margin controls the space outside an element\u2019s border, separating it from neighbors. It does not affect the element\u2019s internal content (use padding for that).",
+    "description": "Margin controls the space outside an element\u2019s border, separating it from neighbors. It does not affect the element\u2019s internal content (use padding for that). Margins can collapse in edge cases and affect layout flow; test nested elements and breakpoints.",
     "answer": {
       "blocks": [
         {
@@ -829,7 +853,7 @@
         },
         {
           "type": "text",
-          "text": "The <div> element is centered in its parent container using <code>margin: 0 auto;</code> \u2014 a common layout pattern for centered designs."
+          "text": "The &lt;div&gt; element is centered in its parent container using <code>margin: 0 auto;</code> \u2014 a common layout pattern for centered designs."
         },
         {
           "type": "text",
@@ -838,6 +862,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Margins create space outside an element\u2019s border.</li><li>Use <code>margin</code> shorthand for efficiency (top, right, bottom, left).</li><li>Supports <code>auto</code> for horizontal centering.</li><li>Essential for spacing, alignment, and clean design layouts.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Space cards in a list or add breathing room around a section heading.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Margin collapse between parent/child elements causing unexpected spacing.</li><li>Negative margins that create overlap or overflow.</li><li>Using margin for alignment instead of layout tools like flex or grid.</li></ul><strong>Trade-off or test tip</strong><br>Use <code>gap</code> in flex/grid for predictable spacing. Test spacing inside nested containers and across breakpoints."
         }
       ]
     },
@@ -857,7 +885,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away.",
+    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away. Covers: css, padding, box model, layout, spacing.",
     "answer": {
       "blocks": [
         {
@@ -932,6 +960,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Padding adds inner space inside the element\u2019s border.</li><li>It affects the element\u2019s perceived size and background area.</li><li>Works with box-sizing to determine how widths are calculated.</li><li>Great for improving readability and tap-target sizes.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
     },
@@ -951,7 +983,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 5,
-    "description": "Margin creates space outside an element\u2019s border (separating it from neighbors), while padding creates space inside the border (pushing the content inward). Understanding this distinction is central to mastering layout and the CSS box model.",
+    "description": "Margin creates space outside an element\u2019s border (separating it from neighbors), while padding creates space inside the border (pushing the content inward). Understanding this distinction is central to mastering layout and the CSS box model. Margins affect external spacing and can collapse; padding affects internal spacing and background painting. Test layout changes across breakpoints.",
     "answer": {
       "blocks": [
         {
@@ -996,7 +1028,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Visual Example</strong><br>Consider a <div class=\"card\"> with a border:<br>- <em>Padding</em> pushes the text inward, making the card look roomier.<br>- <em>Margin</em> pushes other elements away from the card, creating separation."
+          "text": "<strong>Visual Example</strong><br>Consider a &lt;div class=\"card\"&gt; with a border:<br>- <em>Padding</em> pushes the text inward, making the card look roomier.<br>- <em>Margin</em> pushes other elements away from the card, creating separation."
         },
         {
           "type": "text",
@@ -1026,6 +1058,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Padding = inner spacing; Margin = outer spacing.</li><li>Padding affects background area; margin is always transparent.</li><li>Margins can collapse vertically; padding cannot.</li><li>Choose based on whether you\u2019re spacing inside the component or between components.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Space out cards (margin) and add breathing room inside cards (padding).<br><br><strong>Common pitfalls</strong><br><ul><li>Margin collapse causing unexpected spacing.</li><li>Padding affecting background and size calculations.</li><li>Using margin for alignment instead of layout.</li></ul><strong>Trade-off or test tip</strong><br>Gap in flex/grid is often safer for spacing. Test with nested layouts and responsive widths.</strong>"
         }
       ]
     },
@@ -1045,7 +1081,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "Make text bold with font-weight, e.g., font-weight: bold or font-weight: 700. The actual weight depends on what the font family provides.",
+    "description": "Make text bold with font-weight, e.g., font-weight: bold or font-weight: 700. The actual weight depends on what the font family provides. Use font-weight carefully for readability and accessibility; test variable fonts and fallback weights.",
     "answer": {
       "blocks": [
         {
@@ -1124,6 +1160,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Bold text is controlled via <code>font-weight</code> (e.g., 700 or bold).</li><li>Numeric ranges offer finer control, especially with variable fonts.</li><li>Prefer semantic HTML for meaning and CSS for presentation.</li><li>Use bold sparingly to maintain clear visual hierarchy.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Emphasize headings and error labels by increasing font weight without changing layout.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Fonts missing intermediate weights (e.g., 600) leading to fallback.</li><li>Bold text causing layout shifts when width changes.</li><li>Using <code>&lt;b&gt;</code> instead of semantic CSS.</li></ul><strong>Trade-off or test tip</strong><br>Variable fonts offer smooth weights but require font support. Test with real fonts and verify contrast for accessibility.</strong>"
         }
       ]
     },
@@ -1142,7 +1182,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "You can control the size of text using the font-size property in CSS. This property defines how large or small the text content appears on a web page and supports both absolute and relative units for flexible design scaling.",
+    "description": "You can control the size of text using the font-size property in CSS. This property defines how large or small the text content appears on a web page and supports both absolute and relative units for flexible design scaling. Font sizing impacts accessibility and layout, so test with user zoom and different root sizes.",
     "answer": {
       "blocks": [
         {
@@ -1209,6 +1249,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Use <code>font-size</code> to control text height.</li><li>Prefer relative units (<code>rem</code>, <code>em</code>) for accessibility.</li><li>Use <code>clamp()</code> for fluid, responsive text.</li><li>Adjust font-size to maintain visual hierarchy and readability.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Adjust typography for a card title and body text across breakpoints.<br><br><strong>Common pitfalls</strong><br><ul><li>Setting fixed px sizes that ignore user zoom.</li><li>Using <code>em</code> and accidentally compounding sizes.</li><li>Not testing line-height alongside font-size.</li></ul><strong>Trade-off or test tip</strong><br>Rem keeps sizes consistent but less local. Test with root font-size changes and accessibility zoom.</strong>"
         }
       ]
     },
@@ -1318,7 +1362,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The color property sets the foreground text color of an element (not the background). It accepts named colors, hex, rgb/rgba, hsl/hsla, and currentColor.",
+    "description": "The color property sets the foreground text color of an element (not the background). It accepts named colors, hex, rgb/rgba, hsl/hsla, and currentColor. Color choices must meet accessibility contrast and be tested across themes and backgrounds.",
     "answer": {
       "blocks": [
         {
@@ -1389,6 +1433,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li><code>color</code> changes text color and inline content color.</li><li>Supports various color models (Hex, RGB, HSL, etc.).</li><li>Vital for design consistency and accessibility.</li><li>Combine with <code>background-color</code> for complete visual control.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Display success/error messages where text color conveys status and must remain readable on different backgrounds.<br><br><strong>Common pitfalls</strong><br><ul><li>Low contrast ratios that fail accessibility guidelines.</li><li>Forgetting inherited color can affect nested elements unexpectedly.</li><li>Hard-coding colors instead of using design tokens.</li></ul><strong>Trade-off or test tip</strong><br>Semantic colors aid UX but must pass contrast checks. Test with a contrast checker and in dark mode themes."
         }
       ]
     },
@@ -1412,7 +1460,7 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The CSS box model is the foundation of web layout design. Every element in a webpage is represented as a rectangular box composed of four layers: content, padding, border, and margin. Understanding this model is essential for controlling spacing, alignment, and element sizing accurately.",
+    "description": "The CSS box model is the foundation of web layout design. Every element in a webpage is represented as a rectangular box composed of four layers: content, padding, border, and margin. Understanding this model is essential for controlling spacing, alignment, and element sizing accurately. The box model drives layout, spacing, and layout performance, so test with box-sizing and different breakpoints.",
     "answer": {
       "blocks": [
         {
@@ -1478,6 +1526,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li>Every element is a box with content, padding, border, and margin.</li><li>Box model defines total element dimensions and spacing.</li><li><code>box-sizing</code> affects how width and height are computed.</li><li>Understanding it is key for mastering responsive layouts.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Space cards inside a grid using padding and borders without breaking layout widths.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting <code>box-sizing: border-box</code> and causing overflow.</li><li>Mixing margin and padding inconsistently.</li><li>Assuming border width doesn\u2019t affect layout.</li></ul><strong>Trade-off or test tip</strong><br>Border-box is simpler but must be applied consistently. Test with different paddings and fixed widths.</strong>"
         }
       ]
     },
@@ -1589,7 +1641,7 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and pins it to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for sticky UI like headers.",
+    "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and pins it to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for sticky UI like headers. Positioning affects stacking, layout flow, and performance; test scrolling and overlap edge cases.",
     "answer": {
       "blocks": [
         {
@@ -1654,6 +1706,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li><code>relative</code> moves an element without removing it from flow.</li><li><code>absolute</code> removes the element and positions it freely.</li><li><code>fixed</code> locks the element relative to the viewport for persistent visibility.</li><li>Choosing the right positioning is essential for precise UI layouts and responsive design.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Pin a badge to a card corner and a header to the top on scroll.<br><br><strong>Common pitfalls</strong><br><ul><li>Absolute elements escaping because the parent isn\u2019t positioned.</li><li>Fixed elements causing overlay or z-index conflicts.</li><li>Ignoring mobile viewport and safe areas.</li></ul><strong>Trade-off or test tip</strong><br>Absolute positioning is simple but brittle. Test on scroll, resize, and mobile viewports.</strong>"
         }
       ]
     },
@@ -1755,7 +1811,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "z-index controls stacking order for positioned elements within the same stacking context. Higher values appear on top, but only for elements that create/participate in a stacking context (e.g., position with z-index, opacity, transform).",
+    "description": "z-index controls stacking order for positioned elements within the same stacking context. Higher values appear on top, but only for elements that create/participate in a stacking context (e.g., position with z-index, opacity, transform). Stacking contexts cause most bugs, so test layering with position, opacity, and transforms.",
     "answer": {
       "blocks": [
         {
@@ -1820,6 +1876,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li><code>z-index</code> controls visual stacking of positioned elements.</li><li>Works only inside stacking contexts.</li><li>Higher values appear above lower ones.</li><li>Context isolation can cause seemingly incorrect overlaps \u2014 always check parent elements.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Ensure a dropdown appears above a sticky header and modal overlay.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting z-index only works on positioned elements.</li><li>Creating new stacking contexts with transforms or opacity.</li><li>Using huge z-index values without a scale.</li></ul><strong>Trade-off or test tip</strong><br>Central z-index scales reduce chaos. Test overlays in combination (dropdown + modal).</strong>"
         }
       ]
     },
@@ -1918,7 +1978,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The float and clear properties are part of CSS's early layout system used to wrap text around images and create multi-column designs before flexbox and grid. The float property allows elements to shift to the left or right of their container, while the clear property prevents elements from wrapping around floated elements.",
+    "description": "The float and clear properties are part of CSS's early layout system used to wrap text around images and create multi-column designs before flexbox and grid. The float property allows elements to shift to the left or right of their container, while the clear property prevents elements from wrapping around floated elements. Floats still appear in legacy layouts and can break layout flow; test clearing and responsive wrapping.",
     "answer": {
       "blocks": [
         {
@@ -1987,6 +2047,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><ul><li><code>float</code> positions elements left or right, letting text wrap around them.</li><li><code>clear</code> stops wrapping on specified sides.</li><li>Useful for images, text flows, and minor alignments \u2014 not complex layouts.</li><li>Modern layouts prefer flexbox or grid for greater control.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Legacy content uses floats for image alignment next to text.<br><br><strong>Common pitfalls</strong><br><ul><li>Parent collapsing because floats are removed from flow.</li><li>Clearfix hacks missing in nested layouts.</li><li>Mixing floats with flex/grid causing unpredictable results.</li></ul><strong>Trade-off or test tip</strong><br>Floats are legacy; prefer flex/grid. Test old layouts for wrapping and clearing.</strong>"
         }
       ]
     },
@@ -2197,7 +2261,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>A responsive element <em>resizes and reflows</em> gracefully across devices. CSS enables this with fluid units (%, vw, rem), max-width constraints, flexible media (<img>, <video>), layout primitives (flexbox, grid), and conditional rules (media or container queries). The goal is to avoid fixed dimensions and let the element <em>adapt</em> to its environment."
+          "text": "<strong>Overview</strong><br><br>A responsive element <em>resizes and reflows</em> gracefully across devices. CSS enables this with fluid units (%, vw, rem), max-width constraints, flexible media (&lt;img&gt;, &lt;video&gt;), layout primitives (flexbox, grid), and conditional rules (media or container queries). The goal is to avoid fixed dimensions and let the element <em>adapt</em> to its environment."
         },
         {
           "type": "list",
@@ -2321,7 +2385,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Images: srcset & sizes (bonus)</strong><br>For <img>, supply multiple resolutions so the browser picks the best fit for the current layout."
+          "text": "<strong>Images: srcset & sizes (bonus)</strong><br>For &lt;img&gt;, supply multiple resolutions so the browser picks the best fit for the current layout."
         },
         {
           "type": "code",
@@ -2358,7 +2422,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "CSS provides multiple units to define sizes, each with unique reference points and use cases. Understanding how em, rem, %, and px differ is essential for creating flexible, responsive layouts that behave consistently across devices and containers.",
+    "description": "CSS provides multiple units to define sizes, each with unique reference points and use cases. Understanding how em, rem, %, and px differ is essential for creating flexible, responsive layouts that behave consistently across devices and containers. Choose units based on accessibility and layout needs, and test edge cases in nested containers. Choosing units impacts accessibility and layout; test nested containers and root font-size changes.",
     "answer": {
       "blocks": [
         {
@@ -2413,6 +2477,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>em</code> as \u2018relative to the element,\u2019 <code>rem</code> as \u2018relative to the root,\u2019 <code>%</code> as \u2018relative to the parent,\u2019 and <code>px</code> as \u2018fixed and absolute.\u2019"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A responsive card layout uses rem for typography, % for container width, and px for hairline borders.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>em</code> for layout and getting compounded scaling.</li><li>Forgetting % depends on the parent size.</li><li>Relying only on px and losing accessibility scaling.</li></ul><strong>Trade-off or test tip</strong><br>Rem is consistent but less local; em is flexible but can compound. Test by changing root font size.</strong>"
         }
       ]
     },
@@ -2432,7 +2500,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The CSS cascade resolves conflicts by comparing importance (!important), origin (user vs author), specificity, and source order. More specific selectors win; if specificity ties, later rules take precedence.",
+    "description": "The CSS cascade resolves conflicts by comparing importance (!important), origin (user vs author), specificity, and source order. More specific selectors win; if specificity ties, later rules take precedence. Edge cases like !important and inline styles can override expectations; test computed styles.",
     "answer": {
       "blocks": [
         {
@@ -2486,6 +2554,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> The cascade is like a courtroom: importance is the judge, specificity is the lawyer\u2019s strength, and source order is who speaks last."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A component library sets button styles, and your app needs overrides. The cascade order determines whether your app styles actually win.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming later rules always win without checking specificity.</li><li>Overusing <code>!important</code> and making future overrides impossible.</li><li>Forgetting inline styles beat most stylesheet rules.</li></ul><strong>Trade-off or test tip</strong><br>Lower specificity is easier to maintain but may lose to library styles. Use DevTools to inspect the winning rule in the computed panel."
         }
       ]
     },
@@ -2506,7 +2578,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "CSS custom properties (variables) are declared with --name and read with var(--name). They inherit, can be scoped, and enable theming or design tokens without preprocessors.",
+    "description": "CSS custom properties (variables) are declared with --name and read with var(--name). They inherit, can be scoped, and enable theming or design tokens without preprocessors. Great for theming, but fallbacks and inheritance are edge cases; test dynamic theme toggles.",
     "answer": {
       "blocks": [
         {
@@ -2547,6 +2619,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> Custom properties are like CSS \u2018globals\u2019 that react dynamically to context \u2014 perfect for modern design systems and theme engines."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Implement light/dark themes by switching CSS variables on <code>:root</code> and letting components react automatically.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing fallbacks when variables are undefined.</li><li>Confusing CSS variables (runtime) with preprocessor variables (build-time).</li><li>Scoping variables too narrowly so children cannot inherit them.</li></ul><strong>Trade-off or test tip</strong><br>Variables allow runtime theming but require careful defaults. Test by toggling themes and verifying contrast and inheritance."
         }
       ]
     },

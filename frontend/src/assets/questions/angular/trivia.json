@@ -501,7 +501,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Standalone components remove the need for NgModules for most app composition, routing, and DI setup. NgModules still solve a few practical problems: packaging legacy (non-standalone) declarations, consuming module-based third-party libraries (forRoot/forChild), and providing a single import/export \u201cbundle\u201d boundary that some teams and libraries still rely on.",
+    "description": "Standalone components remove the need for NgModules for most app composition, routing, and DI setup. NgModules still solve a few practical problems: packaging legacy (non-standalone) declarations, consuming module-based third-party libraries (forRoot/forChild), and providing a single import/export \u201cbundle\u201d boundary that some teams and libraries still rely on. Covers: angular, modules, standalone, architecture, basics.",
     "answer": {
       "blocks": [
         {
@@ -585,6 +585,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Standalone components cover most of what NgModules were used for (composition, routing, DI setup). NgModules still \u201cwin\u201d mainly for <strong>legacy/non-standalone declarations</strong> and <strong>module-shaped third-party APIs</strong> (especially <code>forRoot</code>/<code>forChild</code>). In a greenfield app with modern libs, you usually don\u2019t need to write new NgModules."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
     },
@@ -604,7 +608,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "With standalone, AppModule is no longer the central \u201cassembly point\u201d. Template scope moves from NgModule declarations/imports to each standalone component\u2019s imports, and app-wide configuration moves to bootstrapApplication(...) (or an ApplicationConfig) and route-level providers. AppModule often disappears in greenfield apps, but NgModules still exist for legacy code and module-shaped libraries.",
+    "description": "With standalone, AppModule is no longer the central \u201cassembly point\u201d. Template scope moves from NgModule declarations/imports to each standalone component\u2019s imports, and app-wide configuration moves to bootstrapApplication(...) (or an ApplicationConfig) and route-level providers. AppModule often disappears in greenfield apps, but NgModules still exist for legacy code and module-shaped libraries. The trade-off is simpler bootstrapping versus managing provider scope per component; test DI boundaries when migrating.",
     "answer": {
       "blocks": [
         {
@@ -748,6 +752,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Standalone doesn\u2019t delete NgModules, but it removes the need for an AppModule as the app\u2019s \u201cwiring center\u201d. Template scope moves to standalone component <code>imports</code>. App-wide wiring moves to <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) and can be further scoped via route-level providers. AppModule becomes optional: common to remove in new apps, common to keep temporarily during migrations."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Migrating a legacy Angular app to standalone components, you move imports and providers from AppModule into each feature component.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to add required imports to a standalone component.</li><li>Provider scope changes causing unexpected singleton behavior.</li><li>Mixing module-based libraries without clear boundaries.</li></ul><strong>Trade-off or test tip</strong><br>Standalone simplifies bootstrapping but shifts responsibility to each component. Test DI scopes and route-level providers after migration.</strong>"
         }
       ]
     },
@@ -767,7 +775,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with the component instance (state).",
+    "description": "Angular turns your component template into generated render/update instructions (AOT or JIT). At runtime, change detection re-runs the update phase so bindings (text, properties, attributes, events) stay in sync with the component instance (state). Covers: angular, templates, compilation, data binding, basics.",
     "answer": {
       "blocks": [
         {
@@ -950,6 +958,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Angular compiles templates into Ivy render instructions with a <em>create</em> and <em>update</em> phase. The <em>update</em> phase re-reads values from the component instance and patches the DOM during change detection, which is how bindings stay synced with component state."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
     },
@@ -1147,7 +1159,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the practical difference: interpolation ({{ }}) writes strings into text nodes (and can do string attribute interpolation), while property binding ([...]) sets real DOM properties (booleans/numbers/objects) and is the correct choice for element state (disabled, checked, value, src). Include the common interview trap: interpolation in boolean-ish attributes can produce wrong behavior.",
+    "description": "Explain the practical difference: interpolation ({{ }}) writes strings into text nodes (and can do string attribute interpolation), while property binding ([...]) sets real DOM properties (booleans/numbers/objects) and is the correct choice for element state (disabled, checked, value, src). Include the common interview trap: interpolation in boolean-ish attributes can produce wrong behavior. Property binding avoids string coercion edge cases; test boolean attributes and template performance.",
     "answer": {
       "blocks": [
         {
@@ -1255,6 +1267,10 @@
               "Know the nuance: [attr.*] is for attributes (especially ARIA); [class.*]/[style.*] are the right tools for styling."
             ]
           ]
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You need to disable a submit button and bind a numeric input value from component state.<br><br><strong>Common pitfalls</strong><br><ul><li>Using interpolation for boolean attributes, resulting in \"false\" strings.</li><li>Binding strings instead of real DOM properties.</li><li>Inconsistent updates when values are objects or arrays.</li></ul><strong>Trade-off or test tip</strong><br>Property binding is correct for DOM properties. Test by toggling booleans and verifying real DOM values.</strong>"
         }
       ]
     },
@@ -1274,7 +1290,7 @@
     "technology": "angular",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Angular event binding uses the (event) syntax to listen to either native DOM events (click, input, submit, keydown, etc.) or custom events emitted by child components via @Output(). When the event fires, Angular runs the bound template statement/method with access to $event, and (in typical setups) triggers change detection for affected views.",
+    "description": "Angular event binding uses the (event) syntax to listen to either native DOM events (click, input, submit, keydown, etc.) or custom events emitted by child components via @Output(). When the event fires, Angular runs the bound template statement/method with access to $event, and (in typical setups) triggers change detection for affected views. Events trigger change detection, so test performance under rapid input and large templates.",
     "answer": {
       "blocks": [
         {
@@ -1372,6 +1388,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br><code>(event)</code> binds template events to component logic. For DOM events, <code>$event</code> is a DOM event object; for <code>@Output()</code>, <code>$event</code> is the emitted payload. Keep handlers typed, keep templates thin, and be deliberate about default behaviors and propagation."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A parent listens to a child component's <code>@Output</code> and a native button click in the same template.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to pass or use <code>$event</code>.</li><li>Misnaming outputs and silently missing events.</li><li>Expensive handlers causing performance issues under rapid input.</li></ul><strong>Trade-off or test tip</strong><br>Events trigger change detection. Test with rapid clicks and consider OnPush for performance.</strong>"
         }
       ]
     },
@@ -1391,7 +1411,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "A directive is a class that Angular attaches to an element (or an <ng-template>) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories, how structural directives desugar from * syntax into <ng-template>, and how to build safe custom directives (HostBinding/HostListener, Renderer2, TemplateRef/ViewContainerRef).",
+    "description": "A directive is a class that Angular attaches to an element (or an &lt;ng-template&gt;) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories, how structural directives desugar from * syntax into &lt;ng-template&gt;, and how to build safe custom directives (HostBinding/HostListener, Renderer2, TemplateRef/ViewContainerRef).",
     "answer": {
       "blocks": [
         {
@@ -1556,7 +1576,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Structural directives change the rendered template tree by creating/destroying embedded views (real DOM + component instances). Attribute directives do not change the tree; they modify an existing element\u2019s properties/classes/styles/behavior. Key interview nuance: the * syntax is just sugar for <ng-template> + directive inputs.",
+    "description": "Structural directives change the rendered template tree by creating/destroying embedded views (real DOM + component instances). Attribute directives do not change the tree; they modify an existing element\u2019s properties/classes/styles/behavior. Key interview nuance: the * syntax is just sugar for &lt;ng-template&gt; + directive inputs. Structural directives change the DOM tree, so test lifecycle, performance, and accessibility side effects.",
     "answer": {
       "blocks": [
         {
@@ -1655,6 +1675,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br><strong>Structural</strong> directives change the rendered tree by creating/destroying embedded views (real lifecycle + state effects). <strong>Attribute</strong> directives keep the tree and modify the host element\u2019s behavior/appearance. The <code>*</code> is just sugar for <code>&lt;ng-template&gt;</code> + directive inputs\u2014knowing that is the senior signal."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Use <code>*ngIf</code> to conditionally render a panel and <code>[ngClass]</code> to style it.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming structural directives only hide elements (they remove them).</li><li>Losing component state when DOM nodes are destroyed.</li><li>Overusing <code>*ngIf</code> for show/hide instead of <code>[hidden]</code>.</li></ul><strong>Trade-off or test tip</strong><br>Structural directives save work but reset state. Test with toggling and lifecycle hooks.</strong>"
         }
       ]
     },
@@ -1835,7 +1859,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "trackBy tells Angular how to uniquely identify items in an *ngFor list so it can reuse existing DOM nodes and component instances when the array changes. Without it (or with a bad trackBy), Angular may destroy and recreate rows unnecessarily, which hurts performance and can reset UI state like input values, focus, and child component state.",
+    "description": "trackBy tells Angular how to uniquely identify items in an *ngFor list so it can reuse existing DOM nodes and component instances when the array changes. Without it (or with a bad trackBy), Angular may destroy and recreate rows unnecessarily, which hurts performance and can reset UI state like input values, focus, and child component state. TrackBy preserves DOM state and performance; test with reorders and large lists.",
     "answer": {
       "blocks": [
         {
@@ -1957,6 +1981,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br><code>trackBy</code> is important because it gives Angular a stable key per item so it can reuse and move existing rows instead of recreating them. Without it (especially when data refresh creates new object references), you pay in performance and you lose UI state (inputs, focus, child component state). Use a stable unique id; avoid index unless the list is truly static."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A table with editable rows should preserve input focus when new data arrives from the server.<br><br><strong>Common pitfalls</strong><br><ul><li>Using index as trackBy, which breaks on reorders.</li><li>Returning non-unique ids, causing UI glitches.</li><li>Skipping trackBy and forcing full DOM re-creation.</li></ul><strong>Trade-off or test tip</strong><br>TrackBy improves performance but requires stable ids. Test by reordering and verifying focus retention.</strong>"
         }
       ]
     },
@@ -2141,7 +2169,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular dependency injection (DI) is the framework mechanism that creates and supplies dependencies (services/config/values) to classes (components, directives, pipes, other services) based on providers. Instead of constructing dependencies manually, you register providers (how to build a value for a token) and Angular resolves them through a hierarchical injector tree. Interview focus: provider configuration, token types (class vs InjectionToken), scoping/lifetime (root vs component), and common pitfalls (multiple instances, circular deps, Optional/Self/SkipSelf).",
+    "description": "Angular dependency injection (DI) is the framework mechanism that creates and supplies dependencies (services/config/values) to classes (components, directives, pipes, other services) based on providers. Instead of constructing dependencies manually, you register providers (how to build a value for a token) and Angular resolves them through a hierarchical injector tree. Interview focus: provider configuration, token types (class vs InjectionToken), scoping/lifetime (root vs component), and common pitfalls (multiple instances, circular deps, Optional/Self/SkipSelf). DI affects testability and architecture; test with mocks and scope providers carefully.",
     "answer": {
       "blocks": [
         {
@@ -2307,6 +2335,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Angular DI resolves dependencies by <strong>token</strong> using <strong>providers</strong> in a <strong>hierarchical injector tree</strong> (closest provider wins). Providers define how to create a value (<code>useClass</code>/<code>useValue</code>/<code>useFactory</code>/<code>useExisting</code>). Where you provide controls lifetime (root singleton vs component-scoped). For non-class deps use <code>InjectionToken</code>. Multi providers collect values into arrays (e.g., interceptors). Common pitfalls are accidental multiple instances, wrong tokens, and circular deps."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Inject a logging service and an API client across multiple features, then swap a mock in tests.<br><br><strong>Common pitfalls</strong><br><ul><li>Providing a service at the wrong level and creating extra instances.</li><li>Circular dependencies causing runtime errors.</li><li>Hard-coding dependencies that make testing hard.</li></ul><strong>Trade-off or test tip</strong><br>DI improves testability but needs clear provider scope. Test with mocks and verify singleton behavior.</strong>"
         }
       ]
     },
@@ -2326,7 +2358,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). Put Angular-dependent initialization (inputs, data streams, side effects) in ngOnInit, not in the constructor.",
+    "description": "Constructor runs when the class instance is created (mainly for DI + trivial field setup). ngOnInit() runs once after Angular has set initial @Input() bindings (after the first ngOnChanges). Put Angular-dependent initialization (inputs, data streams, side effects) in ngOnInit, not in the constructor. Covers: angular, lifecycle, hooks, components, basics.",
     "answer": {
       "blocks": [
         {
@@ -2426,6 +2458,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br><code>constructor</code> = DI + trivial setup (no inputs, no side effects). <code>ngOnInit</code> = initialization that depends on Angular bindings (<code>@Input</code>) and starting side effects (streams/data loading). If you must react to input changes over time, use <code>ngOnChanges</code> (or an input setter). DOM/ViewChild work usually belongs in <code>ngAfterViewInit</code>."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
     },
@@ -2638,7 +2674,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Custom two-way binding uses an @Input() value and a paired @Output() valueChange event. The binding syntax [(value)] listens to valueChange and updates value. Mismatched names or missing emitters break the binding.",
+    "description": "Custom two-way binding uses an @Input() value and a paired @Output() valueChange event. The binding syntax [(value)] listens to valueChange and updates value. Mismatched names or missing emitters break the binding. Covers: angular, two way binding, input, output, components, forms.",
     "answer": {
       "blocks": [
         {
@@ -2713,6 +2749,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Custom two-way binding is just <code>[prop]</code> + <code>(propChange)</code>. Implement <code>@Input() prop</code> and <code>@Output() propChange</code>, emit on user interaction, avoid mutating inputs as your update mechanism, and use ControlValueAccessor when the component is a real form control."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
     },

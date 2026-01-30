@@ -261,7 +261,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Vue, component data must be a function so each instance gets its own state object. If it were a shared object, multiple instances would mutate the same reference and leak state between components.",
+    "description": "In Vue, component data must be a function so each instance gets its own state object. If it were a shared object, multiple instances would mutate the same reference and leak state between components. This avoids shared state bugs and makes components safer to reuse and test.",
     "answer": {
       "blocks": [
         {
@@ -336,6 +336,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><br><br>Vue requires <code>data()</code> in component definitions because components are instantiated multiple times. A function returns a fresh object per instance. If <code>data</code> is a plain object, state becomes shared, causing cross-instance bugs and (in SSR) even cross-user data leaks."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Rendering a list of card components, each needs isolated local state for toggles and counters.<br><br><strong>Common pitfalls</strong><br><ul><li>Using a shared object for data and leaking state between instances.</li><li>Mutating data outside the component and causing side effects.</li><li>Assuming reactivity works the same for shared references.</li></ul><strong>Trade-off or test tip</strong><br>Returning a function is slightly more boilerplate but safer. Test two instances to ensure state stays isolated.</strong>"
         }
       ]
     },
@@ -1071,7 +1075,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Computed properties are cached, reactive getters that recompute only when their dependencies change. Use them for derived state instead of methods to avoid unnecessary recalculation.",
+    "description": "Computed properties are cached, reactive getters that recompute only when their dependencies change. Use them for derived state instead of methods to avoid unnecessary recalculation. Computed values improve performance by caching, so test dependency changes and edge cases.",
     "answer": {
       "blocks": [
         {
@@ -1150,6 +1154,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><ul><li>Computed properties calculate values based on reactive data.</li><li>They are cached until dependencies change.</li><li>Useful for derived state and transformations.</li><li>Support both getters and setters for two-way interaction.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You compute a cart total from line items and want it to update only when inputs change.<br><br><strong>Common pitfalls</strong><br><ul><li>Using methods instead of computed, causing unnecessary recalculation.</li><li>Mutating state inside computed getters.</li><li>Forgetting computed must return a value.</li></ul><strong>Trade-off or test tip</strong><br>Computed values are cached but should remain pure. Test updates when dependencies change.</strong>"
         }
       ]
     },
@@ -1268,7 +1276,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the difference between native DOM events (click/input/submit...) and component events emitted with $emit/emit in Vue. Cover what happens when you write @click on a real element vs on a component tag, how propagation differs (DOM bubbling vs parent-only emits), and the Vue 2 .native vs Vue 3 fallthrough/emits behavior.",
+    "description": "Explain the difference between native DOM events (click/input/submit...) and component events emitted with $emit/emit in Vue. Cover what happens when you write @click on a real element vs on a component tag, how propagation differs (DOM bubbling vs parent-only emits), and the Vue 2 .native vs Vue 3 fallthrough/emits behavior. Explicit emits improve clarity; test propagation and accessibility of custom components.",
     "answer": {
       "blocks": [
         {
@@ -1398,6 +1406,10 @@
         {
           "type": "text",
           "text": "<strong>Interview-ready takeaway</strong><br><br><strong>Native event</strong> = browser event on a real element (bubbles in DOM).<br><strong>Component event</strong> = explicit <code>emit</code> from child to parent (no DOM bubbling).<br>On a component tag, <code>@event</code> primarily means \u201clisten for an emitted event\u201d, except Vue 3 can also treat undeclared listeners as fallthrough attributes to the root element."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A custom <code>BaseButton</code> should emit <code>click</code> to parent components while still handling native DOM events internally.<br><br><strong>Common pitfalls</strong><br><ul><li>Using native events on component tags without emitting.</li><li>Relying on Vue 2 <code>.native</code> behavior in Vue 3.</li><li>Not declaring <code>emits</code>, which hides event contracts.</li></ul><strong>Trade-off or test tip</strong><br>Explicit emits add clarity but more boilerplate. Test both DOM and emitted events with unit tests.</strong>"
         }
       ]
     },
@@ -1540,7 +1552,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Computed properties and watchers both react to reactive changes, but they solve different problems: <strong>computed</strong> is for <strong>derived state</strong> (cached, declarative), while <strong>watch</strong> is for <strong>side effects</strong> (async/imperative work triggered by changes).",
+    "description": "Computed properties and watchers both react to reactive changes, but they solve different problems: &lt;strong&gt;computed&lt;/strong&gt; is for &lt;strong&gt;derived state&lt;/strong&gt; (cached, declarative), while &lt;strong&gt;watch&lt;/strong&gt; is for &lt;strong&gt;side effects&lt;/strong&gt; (async/imperative work triggered by changes).",
     "answer": {
       "blocks": [
         {
@@ -2159,6 +2171,10 @@
             ]
           ],
           "caption": "What interviewers want you to highlight"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You want to reuse form validation across multiple Vue components, choosing between a composable or a mixin.<br><br><strong>Common pitfalls</strong><br><ul><li>Mixin name collisions that silently override component methods.</li><li>Hidden dependencies in mixins that are hard to trace.</li><li>Overusing composables and making data flow harder to follow.</li></ul><strong>Trade-off or test tip</strong><br>Composition API is explicit but can be more verbose. Test by reusing the logic in two components and confirming reactivity works the same."
         }
       ]
     },
@@ -2188,7 +2204,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections \u2014 <template>, <script>, and <style>. They provide a modular, maintainable way to build complex applications."
+          "text": "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections \u2014 &lt;template&gt;, &lt;script&gt;, and &lt;style&gt;. They provide a modular, maintainable way to build complex applications."
         },
         {
           "type": "code",
@@ -2377,7 +2393,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading.",
+    "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading. Routing impacts UX and data fetching; test guards, async navigation, and scroll restoration.",
     "answer": {
       "blocks": [
         {
@@ -2465,7 +2481,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Vue Router maps URL paths to components for single-page navigation.</li><li>Use <router-link> for navigation and <router-view> to display views.</li><li>Supports dynamic, nested, and programmatic navigation.</li><li>Navigation guards help manage route access and user flow.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Vue Router maps URL paths to components for single-page navigation.</li><li>Use &lt;router-link&gt; for navigation and &lt;router-view&gt; to display views.</li><li>Supports dynamic, nested, and programmatic navigation.</li><li>Navigation guards help manage route access and user flow.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Protect a dashboard route behind auth and redirect unauthenticated users to login.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to return/next in async guards.</li><li>Triggering infinite redirect loops.</li><li>Not handling scroll behavior on navigation.</li></ul><strong>Trade-off or test tip</strong><br>Guards improve security but add complexity. Test navigation timing and back-button behavior.</strong>"
         }
       ]
     },
@@ -2704,7 +2724,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Vuex is a centralized state management pattern for large Vue apps. It provides a single store, predictable mutations, and devtools time-travel debugging.",
+    "description": "Vuex is a centralized state management pattern for large Vue apps. It provides a single store, predictable mutations, and devtools time-travel debugging. Centralized state helps predictability and debugging, but it adds boilerplate and affects test setup and performance.",
     "answer": {
       "blocks": [
         {
@@ -2791,6 +2811,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><ul><li>Vuex provides a centralized, predictable state management system.</li><li>Components share data through a single source of truth \u2014 the store.</li><li>Mutations update state synchronously; actions handle async operations.</li><li>Ideal for large-scale apps where multiple components depend on shared state.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A large app shares auth state, preferences, and cached API results across many pages, so you centralize them in Vuex.<br><br><strong>Common pitfalls</strong><br><ul><li>Storing UI-local state globally, bloating the store.</li><li>Overusing mutations/actions for trivial changes.</li><li>Hard-to-test modules due to side effects.</li></ul><strong>Trade-off or test tip</strong><br>Global state improves consistency but adds complexity. Test modules in isolation and watch performance on large updates.</strong>"
         }
       ]
     },
@@ -2811,7 +2835,7 @@
     "technology": "vue",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance.",
+    "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable identity matter for performance and correctness.",
     "answer": {
       "blocks": [
         {
@@ -2919,6 +2943,10 @@
         {
           "type": "text",
           "text": "<strong>Summary</strong><ul><li>The virtual DOM is a lightweight JS representation of the UI.</li><li>Vue\u2019s diffing algorithm compares new and old virtual trees to detect changes.</li><li>Only the changed parts of the DOM are updated (patching).</li><li>Batching and compiler optimizations ensure smooth and efficient rendering.</li><li>This system enables Vue to maintain high performance even with complex UIs.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A list reorders frequently; diffing decides which DOM nodes to reuse to keep scrolling smooth.<br><br><strong>Common pitfalls</strong><br><ul><li>Missing or unstable keys, causing DOM reuse bugs.</li><li>Assuming diffing always minimizes DOM work.</li><li>Mutating arrays in place and confusing diffing heuristics.</li></ul><strong>Trade-off or test tip</strong><br>Stable keys improve correctness but require unique ids. Test list reorders and focus retention.</strong>"
         }
       ]
     },

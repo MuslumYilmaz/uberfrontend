@@ -1311,7 +1311,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent.",
+      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1475,7 +1475,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Create a Like button with toggle state and a counter in Angular. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The template should reflect state immediately and apply an active class when liked.",
+      "summary": "Create a Like button with toggle state and a counter in Angular. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The template should reflect state immediately and apply an active class when liked. Concepts: components, event binding, state, conditional rendering, styling.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1505,11 +1505,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Store `liked` and `count` on the component. The click handler flips `liked` and updates the count by +1 or -1, clamping at zero. Bind the button class to `liked` so the UI responds to state changes. This mirrors common toggle-with-count UI patterns.",
+      "overview": "Store `liked` and `count` on the component. The click handler flips `liked` and updates the count by +1 or -1, clamping at zero. Bind the button class to `liked` so the UI responds to state changes. This mirrors common toggle-with-count UI patterns. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Single standalone component with class-based state",
-          "prose": "In `AppComponent`, define `liked = false` and `count = 0`. Implement `toggleLike()` to update both values, using `Math.max(0, count - 1)` when unliking. In the template, bind `(click)` to the handler, display the count, and use `[class.active]=\"liked\"` (or `[ngClass]`) to style the active state."
+          "prose": "In `AppComponent`, define `liked = false` and `count = 0`. Implement `toggleLike()` to update both values, using `Math.max(0, count - 1)` when unliking. In the template, bind `(click)` to the handler, display the count, and use `[class.active]=\"liked\"` (or `[ngClass]`) to style the active state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1550,7 +1550,7 @@
       "template-syntax"
     ],
     "description": {
-      "summary": "Build a reusable Angular child component that supports @Input/@Output, property binding, event emitters, and two-way binding. The parent must pass data to the child and receive changes back.",
+      "summary": "Expose a value input and a valueChange output to support two-way binding, and keep the child component stateless so the parent owns the source of truth. Concepts: components, inputs outputs, binding, event binding, template syntax.",
       "specs": {
         "requirements": [
           "Create a reusable child component (standalone) that receives `value` via @Input.",
@@ -1582,11 +1582,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Implement a child component that accepts `value` and `label` via `@Input`. To support Angular two-way binding, expose `@Output() valueChange` and emit the new value when the user types. Also expose another output like `submit` to demonstrate emitting discrete events. The parent binds `[(value)]` to keep state synchronized and listens for `(submit)` to track events.",
+      "overview": "Angular\u2019s two-way binding is syntactic sugar for [value] and (valueChange). The child emits updates and the parent updates its own state. This keeps data flow explicit and testable. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Two-way binding via value/valueChange + submit output",
-          "prose": "Child:\n- `@Input() value: string` and `@Output() valueChange = new EventEmitter<string>()`.\n- Emit on input: `valueChange.emit(next)`.\n- Provide `@Output() submit = new EventEmitter<void>()` for button clicks.\n\nParent:\n- Store `name` and `submitCount`.\n- Use `<app-child [(value)]=\"name\" (submit)=\"onSubmit()\" [label]=\"...\" />`.\n- Show `name` and `submitCount` in parent UI.\n- Add a parent button to programmatically set the value."
+          "prose": "Define @Input() value and @Output() valueChange. Emit valueChange when the user edits. In the parent, use [(value)] to wire it up. Avoid mutating @Input inside the child, and keep validation in the parent if needed. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {
@@ -1628,7 +1628,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build an Angular progress bar for values 0\u2013100 with +10/\u221210 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event-binding, state.",
+      "summary": "Build an Angular progress bar for values 0\u2013100 with +10/\u221210 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1663,11 +1663,11 @@
     },
     "starterCodeHint": "Implement `inc()` and `dec()` to add/subtract 10 and clamp. Bind `[style.width.%]` to progress and return a threshold-based class string from `barClass`.",
     "solutionBlock": {
-      "overview": "Use a single progress value in the component and derive width, label, and color from it. The bar should clamp between 0 and 100, display the percentage, and change color based on thresholds. This keeps the UI declarative, avoids duplicated state, and makes the component easy to test.",
+      "overview": "Use a single progress value in the component and derive width, label, and color from it. The bar should clamp between 0 and 100, display the percentage, and change color based on thresholds. This keeps the UI declarative, avoids duplicated state, and makes the component easy to test. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls Use derived state to compute the color class from the numeric value and keep styling declarative in the template.",
       "approaches": [
         {
           "title": "Standalone component with clamped progress and threshold class",
-          "prose": "Store progress = 0. Create inc/dec handlers that clamp values using Math.min/Math.max. Bind the fill width with [style.width.%]=progress and expose a getter that returns a color class based on thresholds. Render the numeric percentage so users always see the exact value and the color change is obvious."
+          "prose": "Store progress = 0. Create inc/dec handlers that clamp values using Math.min/Math.max. Bind the fill width with [style.width.%]=progress and expose a getter that returns a color class based on thresholds. Render the numeric percentage so users always see the exact value and the color change is obvious. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates This emphasizes component styling plus derived state rather than mutating DOM classes directly."
         }
       ],
       "notes": {
@@ -1787,7 +1787,7 @@
       "arrays"
     ],
     "description": {
-      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently. Concepts: components, event-binding, state.",
+      "summary": "Users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: components, event binding, state, ng for, arrays.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",
@@ -1817,11 +1817,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Keep an array of counts. Render a button for each count. When a button is clicked, increment that specific index, then append a new 0 at the end. This naturally grows the UI while preserving each button\u2019s independent value.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0]",
+      "overview": "This combines list state and counter state. Keep step values in an array, render buttons for each, and update the count on click. Inputs should update the steps array immutably to keep change detection predictable. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Standalone component + counts[] array",
-          "prose": "1) Initialize `counts = [0]`.\n2) Template: `*ngFor=\"let c of counts; let i = index\"`.\n3) Button click: `onClick(i)`.\n4) In `onClick(i)`: `this.counts[i] += 1; this.counts.push(0);`.\n\nThis is minimal and matches the spec exactly."
+          "prose": "Use a count variable plus an array of steps. Render buttons with *ngFor, update count += step, and add new steps via a form input. Validate input and prevent empty steps to keep UX clean and avoid NaN. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates."
         }
       ],
       "notes": {

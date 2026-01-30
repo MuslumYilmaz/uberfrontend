@@ -281,7 +281,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement flattenOnce(arr) that removes exactly one level of nesting while preserving order. Handle mixed primitives/arrays and avoid recursion; this mirrors Array.prototype.flat(1) and should run in linear time.",
+      "summary": "This should not deep-flatten; only the first nesting level is removed, matching Array.prototype.flat(1). Use it to normalize API data; edge cases include sparse arrays and mixed types. Performance should stay linear, and tests should ensure order is preserved.",
       "arguments": [
         {
           "name": "arr",
@@ -302,11 +302,11 @@
     "starterCode": "export default function flattenOnce(arr) {\n  // TODO: Flatten one level deep\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function flattenOnce(arr: any[]): any[] {\n  // TODO: Flatten one level deep\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Flatten one level by iterating through the array and expanding only direct child arrays. This mirrors `Array.prototype.flat(1)` and preserves element order without recursion. The result is a new array, leaving the original intact.",
+      "overview": "Because only one level is flattened, you can implement it with a single pass and no recursion while preserving order and immutability.",
       "approaches": [
         {
           "title": "Approach 1: Iterative spread (explicit and clear)",
-          "prose": "Algorithm:\n- Create an empty result array.\n- For each element: if it\u2019s an array, push its items into result (spread or loop). Otherwise, push the element itself.\n- Return the result array.\n\nComplexity: O(n) time across all elements, O(n) space for the new array.",
+          "prose": "Mention that non-array values are pushed as-is and that nested arrays deeper than one level remain nested. This helps clarify expected behavior and prevents over-flattening.",
           "codeJs": "export default function flattenOnce(arr) {\n  const result = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n",
           "codeTs": "export default function flattenOnce(arr: any[]): any[] {\n  const result: any[] = [];\n  for (const el of arr) {\n    if (Array.isArray(el)) {\n      result.push(...el);\n    } else {\n      result.push(el);\n    }\n  }\n  return result;\n}\n"
         },
@@ -459,7 +459,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Find the most frequent character in a string using a frequency map. Track counts as you scan and return the character with the highest count. If the string is empty, return an empty string. This introduces hash-map counting and tie handling.",
+      "summary": "Find the most frequent character in a string using a frequency map. Track counts in one pass and return the character with the highest count (first winner on ties), handling empty strings safely.",
       "arguments": [
         {
           "name": "str",
@@ -478,11 +478,11 @@
     "starterCode": "export default function maxChar(str) {\n  // TODO: Return the most frequent character in the string\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function maxChar(str: string): string {\n  // TODO: Return the most frequent character in the string\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Count each character in a single pass and track the current max. This is the classic frequency-map pattern used for anagrams and counting problems, and it runs in linear time.",
+      "overview": "This is a classic frequency counting pattern. Build a map of counts while scanning the string, track the current max, and return the winner. It runs in linear time and is robust for repeated characters and long inputs.",
       "approaches": [
         {
           "title": "Approach 1: Frequency map with a loop (efficient and clear)",
-          "prose": "Steps:\n1) Return `''` for an empty string.\n2) Build a `counts` object while iterating through the string.\n3) Track `max` and `maxChar` as you increment counts.\n4) If a new count exceeds `max`, update the winner.\n5) Return `maxChar` at the end.\n\nComplexity: O(n) time, O(k) space where k is the number of unique characters.",
+          "prose": "If the string is empty, return ''. Otherwise iterate through each character, increment its count, and update max/maxChar when a new maximum is found. Return maxChar at the end. Complexity is O(n) time and O(k) space.",
           "codeJs": "export default function maxChar(str) {\n  if (!str) return '';\n  const charCount = {};\n  let max = 0;\n  let maxChar = '';\n\n  for (const ch of str) {\n    charCount[ch] = (charCount[ch] || 0) + 1;\n    if (charCount[ch] > max) {\n      max = charCount[ch];\n      maxChar = ch;\n    }\n  }\n\n  return maxChar;\n}\n",
           "codeTs": "export default function maxChar(str: string): string {\n  if (!str) return '';\n  const charCount: Record<string, number> = {};\n  let max = 0;\n  let maxChar = '';\n\n  for (const ch of str) {\n    charCount[ch] = (charCount[ch] || 0) + 1;\n    if (charCount[ch] > max) {\n      max = charCount[ch];\n      maxChar = ch;\n    }\n  }\n\n  return maxChar;\n}\n"
         },
@@ -1988,7 +1988,7 @@
       "utilities"
     ],
     "description": {
-      "summary": "Implement `compose(...fns)` that returns a new function applying the provided functions from **right to left**. The rightmost function may accept multiple arguments; every other function is unary and receives the previous result. If no functions are provided, return an identity function `(x) => x`.",
+      "summary": "Implement `compose(...fns)` that returns a new function applying the provided functions from **right to left**. The rightmost function may accept multiple arguments; every other function is unary and receives the previous result. If no functions are provided, return an identity function `(x) =&gt; x`.",
       "arguments": [
         {
           "name": "fns",
@@ -2473,7 +2473,7 @@
       "text-decoder"
     ],
     "description": {
-      "summary": "Build a streaming NDJSON parser using Web Streams. Read chunks, split by newlines, parse JSON per line, and handle partial lines across chunks. This tests streaming APIs, buffering, and error isolation.",
+      "summary": "Build an NDJSON streaming parser that reads chunked text and emits JSON objects line by line. Handle partial lines across chunks, ignore empty lines, and surface parse errors without crashing the stream. This mirrors real-time log ingestion and SSE pipelines.",
       "arguments": [
         {
           "name": "stream",
@@ -2497,11 +2497,11 @@
     "starterCode": "/*\n * parseNDJSON(stream, onError?)\n * - Consume a ReadableStream<Uint8Array> using a reader\n * - Use TextDecoder with { stream: true } to correctly handle UTF-8 boundaries\n * - Accumulate into a string buffer; split by \"\\n\" to get complete lines\n * - Keep the trailing partial line in the buffer and prepend the next chunk\n * - For each non-empty line, JSON.parse; on error, call onError(line, err) and continue\n * - After the stream ends, flush the decoder and process the final buffer\n */\nexport default async function parseNDJSON(stream, onError) {\n  // TODO: implement as described above\n}\n\n// CommonJS fallback for runners that require module.exports\ntry { if (typeof module !== 'undefined') module.exports = parseNDJSON; } catch (_) {}\n",
     "starterCodeTs": "export default async function parseNDJSON(\n  stream: ReadableStream<Uint8Array>,\n  onError?: (line: string, err: any) => void\n): Promise<any[]> {\n  // TODO: implement\n  return []\n}\n\n// CommonJS fallback\n// @ts-ignore\ntry { if (typeof module !== 'undefined') (module as any).exports = parseNDJSON; } catch (_) {}\n",
     "solutionBlock": {
-      "overview": "Use a TransformStream that accumulates chunk text, splits on newlines, and parses each complete line as JSON. Keep the remainder buffer for the next chunk, and surface errors per-line without breaking the entire stream.",
+      "overview": "NDJSON streams require incremental parsing: buffer incomplete lines, split on newlines, and parse each full line into JSON. The key is to handle chunk boundaries gracefully so objects aren\u2019t dropped or duplicated. This is a common pattern in streaming APIs and log ingestion.",
       "approaches": [
         {
           "title": "Approach 1: Built-ins pipeline (easiest)",
-          "prose": "Use `TextDecoderStream` to handle UTF-8 boundaries and a tiny `TransformStream` to split lines.\n\nSolving steps:\n1. Build a line-splitting `TransformStream` that keeps an internal buffer string. For each incoming chunk, append it, split on `\"\\n\"`, keep the last partial line in the buffer, and enqueue trimmed, non-empty full lines.\n2. Pipe the byte stream through `new TextDecoderStream()` and then through the line splitter to get a stream of text lines.\n3. Get a reader from this line stream.\n4. In a loop, `await reader.read()`. For each `value`, attempt `JSON.parse(value)` and push the result into an output array; on parse error, call `onError?.(value, err)` and continue.\n5. When `done` is true, release the reader lock and return the collected output array.\n\nWhy it works: `TextDecoderStream` handles UTF-8 boundaries, the transform isolates whole lines across chunk boundaries, and per-line try/catch keeps the stream robust in the face of malformed records.",
+          "prose": "Maintain a string buffer. For each chunk, append to the buffer and split by '\n'. Parse all complete lines (except the last partial line) with JSON.parse and emit results. Keep the final partial line in the buffer for the next chunk. On stream end, parse any remaining non-empty line. Guard against empty lines and handle JSON.parse errors explicitly.",
           "codeJs": "export default async function parseNDJSON(stream, onError){\n  if (!stream?.pipeThrough) throw new Error('ReadableStream expected');\n  const lineSplitter = new TransformStream({\n    start(){ this.buf = ''; },\n    transform(chunk, controller){\n      this.buf += chunk; const parts = this.buf.split('\\n');\n      this.buf = parts.pop() ?? '';\n      for (const line of parts){ const t=line.trim(); if (t) controller.enqueue(t); }\n    },\n    flush(controller){ const t = this.buf.trim(); if (t) controller.enqueue(t); }\n  });\n\n  const out = [];\n  const reader = stream\n    .pipeThrough(new TextDecoderStream())\n    .pipeThrough(lineSplitter)\n    .getReader();\n\n  while (true){\n    const { value, done } = await reader.read(); if (done) break;\n    try { out.push(JSON.parse(value)); } catch (e){ onError?.(value, e); }\n  }\n  try{ reader.releaseLock(); }catch{}\n  return out;\n}",
           "codeTs": "export default async function parseNDJSON(\n  stream: ReadableStream<Uint8Array>,\n  onError?: (line: string, err: unknown) => void\n): Promise<any[]> {\n  if (!('pipeThrough' in stream)) throw new Error('ReadableStream expected');\n\n  const lineSplitter = new TransformStream<string, string>({\n    start() { (this as any).buf = ''; },\n    transform(chunk, controller) {\n      (this as any).buf += chunk;\n      const parts = (this as any).buf.split('\\n');\n      (this as any).buf = parts.pop() ?? '';\n      for (const line of parts) {\n        const t = line.trim();\n        if (t) controller.enqueue(t);\n      }\n    },\n    flush(controller) {\n      const t = ((this as any).buf as string).trim();\n      if (t) controller.enqueue(t);\n    }\n  });\n\n  const out: any[] = [];\n  const reader = stream\n    .pipeThrough(new TextDecoderStream())\n    .pipeThrough(lineSplitter)\n    .getReader();\n\n  while (true) {\n    const { value, done } = await reader.read();\n    if (done) break;\n    try { out.push(JSON.parse(value)); } catch (e) { onError?.(value, e); }\n  }\n  try { reader.releaseLock(); } catch {}\n  return out;\n}"
         },
@@ -2894,7 +2894,7 @@
       "edge-cases"
     ],
     "description": {
-      "summary": "Write an `arrayForEach(arr, callbackFn, thisArg?)` helper (do NOT touch prototypes). It must iterate left\u2192right over indices `0..len-1` where `len` is snapshotted once at the start, **skip holes**, bind `thisArg` for non-arrow callbacks, and return `undefined`. It must not visit elements appended beyond the initial length, and it must skip elements deleted before their index is reached.",
+      "summary": "You should also ensure the callback is invoked with the correct thisArg and that the method returns undefined like the native API. Edge cases include sparse arrays and thisArg binding; test callback order and performance with large arrays.",
       "arguments": [
         {
           "name": "arr",
@@ -2925,11 +2925,11 @@
     "starterCode": "export default function arrayForEach(arr, callbackFn, thisArg) {\n  // Requirements:\n  // - Snapshot initial length (do not visit appended elements beyond initial length)\n  // - Skip holes (sparse slots)\n  // - Skip elements deleted before their index is reached\n  // - Bind thisArg using .call\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function arrayForEach<T>(\n  arr: (T | undefined)[],\n  callbackFn: (value: T, index: number, array: (T | undefined)[]) => void,\n  thisArg?: any,\n): void {\n  // Requirements:\n  // - Snapshot initial length (do not visit appended elements beyond initial length)\n  // - Skip holes (sparse slots)\n  // - Skip elements deleted before their index is reached\n  // - Bind thisArg using .call\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Behave like native `Array.prototype.forEach` (but as a helper): snapshot `length` once, iterate left\u2192right, call the callback only for existing indices (skip holes), bind `thisArg`, and return `undefined`.",
+      "overview": "A correct polyfill mirrors the ECMAScript behavior: skip holes, use length snapshotting, and validate the callback before iterating.",
       "approaches": [
         {
           "title": "Single approach: length snapshot + own-property check (recommended)",
-          "prose": "Core lesson = native iteration semantics.\n\nRules implemented:\n- Snapshot `len = arr.length` once.\n- For each `i` in `0..len-1`, only call the callback if the index exists (not a hole).\n- If an element is deleted before its turn, it becomes a hole and is skipped.\n- Elements appended beyond the initial `len` are not visited.\n\nWhy it works:\n- `hasOwnProperty` checks existence at the time of visit (captures delete-before-visit behavior).\n- Snapshot length prevents chasing new pushes.",
+          "prose": "If length changes during iteration, native forEach uses the original length; you can mention this even if the simplified solution doesn\u2019t implement it fully. Include a note about converting array-like values with Object(this).",
           "codeJs": "export default function arrayForEach(arr, callbackFn, thisArg) {\n  if (!Array.isArray(arr)) throw new TypeError('arr must be an array');\n  if (typeof callbackFn !== 'function') throw new TypeError('callbackFn must be a function');\n\n  const len = arr.length; // snapshot once\n  const hasOwn = Object.prototype.hasOwnProperty;\n\n  for (let i = 0; i < len; i++) {\n    if (hasOwn.call(arr, i)) {\n      callbackFn.call(thisArg, arr[i], i, arr);\n    }\n  }\n\n  return undefined;\n}\n",
           "codeTs": "export default function arrayForEach<T>(\n  arr: (T | undefined)[],\n  callbackFn: (value: T, index: number, array: (T | undefined)[]) => void,\n  thisArg?: any,\n): void {\n  if (!Array.isArray(arr)) throw new TypeError('arr must be an array');\n  if (typeof callbackFn !== 'function') throw new TypeError('callbackFn must be a function');\n\n  const len = arr.length; // snapshot once\n  const hasOwn = Object.prototype.hasOwnProperty;\n\n  for (let i = 0; i < len; i++) {\n    if (hasOwn.call(arr, i)) {\n      callbackFn.call(thisArg, arr[i] as T, i, arr);\n    }\n  }\n}\n"
         }
@@ -3081,7 +3081,7 @@
       "state"
     ],
     "description": {
-      "summary": "Implement `createCounter(n)` that returns a counter function. The **first** call should return `n`, the next call `n + 1`, then `n + 2`, and so on. Each counter instance must keep its own state via a closure. This tests closure scope and persistent state handling.",
+      "summary": "Support an optional initial value and keep the API simple so consumers can call inc/dec/get without exposing the internal state. Mention closure behavior, edge cases like negative increments, and tests for independent counters and performance.",
       "arguments": [
         {
           "name": "n",
@@ -3101,11 +3101,11 @@
     "starterCode": "export default function createCounter(n) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function createCounter(n: number): () => number {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: use a closure so each call to `createCounter` produces an independent function that remembers its own `n`, returns the current value, and then increments `n` for the next call.",
+      "overview": "This is a classic closure exercise: the state lives in the outer scope, and only the returned functions can mutate or read it.",
       "approaches": [
         {
           "title": "Approach: Closure-based counter (recommended)",
-          "prose": "Idea\nCapture the starting value `n` in the outer function, and have the inner function both read and update it. Each call returns the current value and then increments `n`.\n\nHow it works\n1) `createCounter` takes `n` and defines an inner function.\n2) Inside the inner function, store the current value in a local `current`.\n3) Increment `n` so the next call sees `n + 1`.\n4) Return `current`.\n\nWhy it works\n- JavaScript closures let the inner function keep access to `n` even after `createCounter` has returned.\n- Each call to `createCounter` creates a new `n` binding, so counters are independent.\n\nComplexity\n- Time: O(1) per call.\n- Space: O(1) per counter (just the captured number).",
+          "prose": "Optionally allow a reset method if the prompt mentions it. Emphasize that the counter is deterministic: the same sequence of calls always produces the same values. Complexity is O(1) per call.",
           "codeJs": "export default function createCounter(n) {\n  return function() {\n    const current = n;\n    n += 1;\n    return current;\n  };\n}\n",
           "codeTs": "export default function createCounter(n: number): () => number {\n  return function(): number {\n    const current = n;\n    n += 1;\n    return current;\n  };\n}\n"
         }
@@ -3243,7 +3243,7 @@
       "async-await"
     ],
     "description": {
-      "summary": "Implement addTwoPromises(p1, p2) that takes two promises resolving to numbers and returns a new promise resolving to their sum. Use Promise.all or async/await and handle ordering safely.",
+      "summary": "This is a small async composition task and should return a Promise that resolves to the numeric sum once both inputs settle successfully.",
       "arguments": [
         {
           "name": "promise1",
@@ -3268,11 +3268,11 @@
     "starterCode": "export default async function addTwoPromises(promise1, promise2) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default async function addTwoPromises(promise1: Promise<number>, promise2: Promise<number>): Promise<number> {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: combine two async numeric results into a single sum. Await both promises (via Promise.all or async/await), then return a promise that resolves to a + b. This tests basic promise orchestration and avoids nested then-chains.",
+      "overview": "Promise.all keeps both requests in flight and avoids unnecessary latency compared to awaiting sequentially.",
       "approaches": [
         {
           "title": "Approach: Resolve both concurrently using Promise.all",
-          "prose": "1. **Wait for both promises:** Use `Promise.all()` so both resolve in parallel.\n2. **Destructure results:** Extract the resolved values `[a, b]` from the array returned by `Promise.all()`.\n3. **Sum and return:** Add the numbers and return the result \u2014 wrapped automatically in a promise since the function is `async`.\n4. **Performance:** Both promises run concurrently, so total time equals the slower one\u2019s resolution.",
+          "prose": "If you prefer, you can show an alternate sequential version to explain the trade-off, but keep the final implementation parallel. Make sure to return the Promise so callers can await it in async functions or chain .then.",
           "codeJs": "export default async function addTwoPromises(promise1, promise2) {\n  const [a, b] = await Promise.all([promise1, promise2]);\n  return a + b;\n}\n",
           "codeTs": "export default async function addTwoPromises(promise1: Promise<number>, promise2: Promise<number>): Promise<number> {\n  const [a, b] = await Promise.all([promise1, promise2]);\n  return a + b;\n}\n"
         }
@@ -4140,7 +4140,7 @@
       "polyfills"
     ],
     "description": {
-      "summary": "Implement a small selector engine: `queryAll(root, selector)` that returns all matching nodes in **document order** from a **DOM-like** tree.\n\nThis is a classic \"build a tiny `querySelectorAll`\" interview task.\n\nDOM-like node shape:\n- `nodeType`: `1` for element, `3` for text\n- `tagName`: string for elements (case-insensitive)\n- `id?`: string\n- `className?`: string with space-separated classes\n- `childNodes?`: array of children\n\nSelector support (single selector, no commas):\n1) Tag: `div`\n2) Class: `.item`\n3) Id: `#main`\n4) Tag + class: `button.primary`\n5) Descendant combinator (one or more spaces): `div .item` or `#main button.primary`\n\nRequirements:\n1) Only element nodes (`nodeType === 1`) can match.\n2) Traverse the tree without using real DOM (`document` not allowed).\n3) Return matches as an array in document order.\n4) Throw `TypeError` if `root` is missing/invalid or selector is not a non-empty string.\n\nNotes:\n- Ignore pseudo-classes, attributes, `>`, `+`, `~`, `:not`, `,`.\n- Input is controlled; you can assume `tagName` exists for element nodes.\n\nThis tests traversal + selector parsing + ancestor reasoning.",
+      "summary": "Implement a small selector engine: `queryAll(root, selector)` that returns all matching nodes in **document order** from a **DOM-like** tree.\n\nThis is a classic \"build a tiny `querySelectorAll`\" interview task.\n\nDOM-like node shape:\n- `nodeType`: `1` for element, `3` for text\n- `tagName`: string for elements (case-insensitive)\n- `id?`: string\n- `className?`: string with space-separated classes\n- `childNodes?`: array of children\n\nSelector support (single selector, no commas):\n1) Tag: `div`\n2) Class: `.item`\n3) Id: `#main`\n4) Tag + class: `button.primary`\n5) Descendant combinator (one or more spaces): `div .item` or `#main button.primary`\n\nRequirements:\n1) Only element nodes (`nodeType === 1`) can match.\n2) Traverse the tree without using real DOM (`document` not allowed).\n3) Return matches as an array in document order.\n4) Throw `TypeError` if `root` is missing/invalid or selector is not a non-empty string.\n\nNotes:\n- Ignore pseudo-classes, attributes, `&gt;`, `+`, `~`, `:not`, `,`.\n- Input is controlled; you can assume `tagName` exists for element nodes.\n\nThis tests traversal + selector parsing + ancestor reasoning.",
       "arguments": [
         {
           "name": "root",
@@ -4217,7 +4217,7 @@
       "polyfills"
     ],
     "description": {
-      "summary": "Implement `matchesSimple(node, selector)` \u2014 a tiny subset of `Element.matches()`.\n\nThis is extremely common in frontend interviews because it underpins event delegation and DOM utilities.\n\nNode shape (DOM-like, not real DOM):\n- `tagName: string` (case-insensitive)\n- `id?: string`\n- `className?: string` (space-separated classes)\n\nSelector support (single selector only):\n1) Tag: `div`\n2) Id: `#main`\n3) Class: `.item`\n4) Tag + class: `button.primary`\n\nRequirements:\n- Return `true` if the node matches the selector, else `false`.\n- Must be defensive: nullish node or invalid selector => `false`.\n- No `document`, no real DOM.\n\nThis tests CSS selector basics and practical matching logic.",
+      "summary": "Implement `matchesSimple(node, selector)` \u2014 a tiny subset of `Element.matches()`.\n\nThis is extremely common in frontend interviews because it underpins event delegation and DOM utilities.\n\nNode shape (DOM-like, not real DOM):\n- `tagName: string` (case-insensitive)\n- `id?: string`\n- `className?: string` (space-separated classes)\n\nSelector support (single selector only):\n1) Tag: `div`\n2) Id: `#main`\n3) Class: `.item`\n4) Tag + class: `button.primary`\n\nRequirements:\n- Return `true` if the node matches the selector, else `false`.\n- Must be defensive: nullish node or invalid selector =&gt; `false`.\n- No `document`, no real DOM.\n\nThis tests CSS selector basics and practical matching logic.",
       "arguments": [
         {
           "name": "node",
@@ -4369,7 +4369,7 @@
       "tree"
     ],
     "description": {
-      "summary": "Implement `closestSimple(node, selector)` \u2014 a DOM-like polyfill for `Element.closest()` using **only** `parentNode` traversal.\n\nWhy this is common: closest() is used constantly in event delegation and component boundary checks.\n\nNode shape (DOM-like, not real DOM):\n- `tagName: string` (case-insensitive)\n- `id?: string`\n- `className?: string` (space-separated classes)\n- `parentNode?: Node | null`\n\nSelector support (single selector only):\n1) Tag: `div`\n2) Id: `#main`\n3) Class: `.item`\n4) Tag + class: `button.primary`\n\nRequirements:\n1) Start at `node` itself; if it matches, return it.\n2) Otherwise, walk up via `parentNode` and return the first matching ancestor.\n3) If nothing matches, return `null`.\n4) Defensive: if `node` is nullish or selector is invalid/empty => return `null`.\n5) No real DOM usage (`document` forbidden).\n\nThis tests selector matching + ancestor traversal.",
+      "summary": "Implement `closestSimple(node, selector)` \u2014 a DOM-like polyfill for `Element.closest()` using **only** `parentNode` traversal.\n\nWhy this is common: closest() is used constantly in event delegation and component boundary checks.\n\nNode shape (DOM-like, not real DOM):\n- `tagName: string` (case-insensitive)\n- `id?: string`\n- `className?: string` (space-separated classes)\n- `parentNode?: Node | null`\n\nSelector support (single selector only):\n1) Tag: `div`\n2) Id: `#main`\n3) Class: `.item`\n4) Tag + class: `button.primary`\n\nRequirements:\n1) Start at `node` itself; if it matches, return it.\n2) Otherwise, walk up via `parentNode` and return the first matching ancestor.\n3) If nothing matches, return `null`.\n4) Defensive: if `node` is nullish or selector is invalid/empty =&gt; return `null`.\n5) No real DOM usage (`document` forbidden).\n\nThis tests selector matching + ancestor traversal.",
       "arguments": [
         {
           "name": "node",
@@ -4448,7 +4448,7 @@
       "recursion"
     ],
     "description": {
-      "summary": "Implement `queryAllSimple(root, selector)` \u2014 a DOM-like polyfill for `querySelectorAll`.\n\nThis is a high-likelihood frontend interview task because it combines traversal + selector matching + descendant chain logic.\n\nDOM-like node shape (NOT real DOM):\n- `nodeType`: `1` for element, `3` for text\n- `tagName`: string (case-insensitive) for elements\n- `id?`: string\n- `className?`: string with space-separated classes\n- `childNodes?`: array of children (elements or text)\n\nSelector support (single selector, no commas):\n1) Tag: `div`\n2) Class: `.item`\n3) Id: `#main`\n4) Tag + class: `button.primary`\n5) Descendant combinator (whitespace): `div .item`, `#main button.primary`, `.a .b`\n\nRequirements:\n1) Return matching **element** nodes (nodeType === 1) in **document order**.\n2) Must include `root` itself if it matches.\n3) Must be DOM-less: no `document`, no real DOM APIs.\n4) Throw `TypeError` if `root` is not an element node or selector is not a non-empty string.\n5) Ignore unsupported syntax (`>`, `+`, `~`, `:`, `[attr]`, `,`). You may treat them as invalid and throw.\n\nThis tests: parsing, DFS traversal, and ancestor reasoning for descendant selectors.",
+      "summary": "Implement `queryAllSimple(root, selector)` \u2014 a DOM-like polyfill for `querySelectorAll`.\n\nThis is a high-likelihood frontend interview task because it combines traversal + selector matching + descendant chain logic.\n\nDOM-like node shape (NOT real DOM):\n- `nodeType`: `1` for element, `3` for text\n- `tagName`: string (case-insensitive) for elements\n- `id?`: string\n- `className?`: string with space-separated classes\n- `childNodes?`: array of children (elements or text)\n\nSelector support (single selector, no commas):\n1) Tag: `div`\n2) Class: `.item`\n3) Id: `#main`\n4) Tag + class: `button.primary`\n5) Descendant combinator (whitespace): `div .item`, `#main button.primary`, `.a .b`\n\nRequirements:\n1) Return matching **element** nodes (nodeType === 1) in **document order**.\n2) Must include `root` itself if it matches.\n3) Must be DOM-less: no `document`, no real DOM APIs.\n4) Throw `TypeError` if `root` is not an element node or selector is not a non-empty string.\n5) Ignore unsupported syntax (`&gt;`, `+`, `~`, `:`, `[attr]`, `,`). You may treat them as invalid and throw.\n\nThis tests: parsing, DFS traversal, and ancestor reasoning for descendant selectors.",
       "arguments": [
         {
           "name": "root",
@@ -4848,7 +4848,7 @@
       "web-apis"
     ],
     "description": {
-      "summary": "Implement `stringifyQueryString(params)` that converts an object into a URL querystring.\n\nThis is common in FE screens (building filter URLs, pagination links, deep links).\n\nRules (Medium version):\n1) `params` is a plain object with values of type `string | number | boolean | null | undefined | (string|number|boolean)[]`.\n2) Skip keys whose value is `undefined`.\n3) Include keys whose value is `null` as `key=` (empty value).\n4) For arrays: repeat the key for each item in order (e.g. `{ tag: ['a','b'] }` -> `tag=a&tag=b`).\n5) Encode with `encodeURIComponent`.\n6) Use `=` always (even for empty string): `{ flag: '' }` -> `flag=`.\n7) Stable output: keys should be serialized in **lexicographic order**.\n8) Return the querystring **without** leading `?`.\n\nNo nested objects in this version.",
+      "summary": "Implement `stringifyQueryString(params)` that converts an object into a URL querystring.\n\nThis is common in FE screens (building filter URLs, pagination links, deep links).\n\nRules (Medium version):\n1) `params` is a plain object with values of type `string | number | boolean | null | undefined | (string|number|boolean)[]`.\n2) Skip keys whose value is `undefined`.\n3) Include keys whose value is `null` as `key=` (empty value).\n4) For arrays: repeat the key for each item in order (e.g. `{ tag: ['a','b'] }` -&gt; `tag=a&tag=b`).\n5) Encode with `encodeURIComponent`.\n6) Use `=` always (even for empty string): `{ flag: '' }` -&gt; `flag=`.\n7) Stable output: keys should be serialized in **lexicographic order**.\n8) Return the querystring **without** leading `?`.\n\nNo nested objects in this version.",
       "arguments": [
         {
           "name": "params",
@@ -4925,7 +4925,7 @@
       "web-apis"
     ],
     "description": {
-      "summary": "Implement `parseQueryStringAdvanced(qs)` that converts a URL querystring into a **nested** object structure.\n\nThis mirrors real-world FE usage (filters, search forms, pagination state) and is a classic hard interview question.\n\nSupported syntax:\n1) Basic: `a=1` => { a: '1' }\n2) Repeated keys become arrays: `a=1&a=2` => { a: ['1','2'] }\n3) Bracket arrays: `a[]=1&a[]=2` => { a: ['1','2'] }\n4) Nested objects: `user[name]=john&user[age]=30` => { user: { name: 'john', age: '30' } }\n5) Nested + arrays: `filters[tag][]=a&filters[tag][]=b` => { filters: { tag: ['a','b'] } }\n6) Mixed forms accumulate: `a=1&a=2&a[]=3` => { a: ['1','2','3'] }\n\nGeneral rules:\n- Leading `?` is optional.\n- Decode with `decodeURIComponent` and treat `+` as space.\n- Missing `=` means empty string.\n- Empty keys are ignored.\n- If structure conflicts (primitive vs object), convert to object or array to preserve all data.\n\nNo usage of `URLSearchParams`.",
+      "summary": "Implement `parseQueryStringAdvanced(qs)` that converts a URL querystring into a **nested** object structure.\n\nThis mirrors real-world FE usage (filters, search forms, pagination state) and is a classic hard interview question.\n\nSupported syntax:\n1) Basic: `a=1` =&gt; { a: '1' }\n2) Repeated keys become arrays: `a=1&a=2` =&gt; { a: ['1','2'] }\n3) Bracket arrays: `a[]=1&a[]=2` =&gt; { a: ['1','2'] }\n4) Nested objects: `user[name]=john&user[age]=30` =&gt; { user: { name: 'john', age: '30' } }\n5) Nested + arrays: `filters[tag][]=a&filters[tag][]=b` =&gt; { filters: { tag: ['a','b'] } }\n6) Mixed forms accumulate: `a=1&a=2&a[]=3` =&gt; { a: ['1','2','3'] }\n\nGeneral rules:\n- Leading `?` is optional.\n- Decode with `decodeURIComponent` and treat `+` as space.\n- Missing `=` means empty string.\n- Empty keys are ignored.\n- If structure conflicts (primitive vs object), convert to object or array to preserve all data.\n\nNo usage of `URLSearchParams`.",
       "arguments": [
         {
           "name": "qs",

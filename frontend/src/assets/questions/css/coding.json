@@ -182,7 +182,7 @@
       "inline-block"
     ],
     "description": {
-      "summary": "Center inline or inline-block content horizontally within a container. Use text-align on the parent and ensure child elements align consistently across sizes. Explain when to use line-height vs flex for vertical alignment and how whitespace affects inline layout.",
+      "summary": "This is a horizontal alignment task, so avoid flex unless vertical alignment is explicitly required by the prompt. Use text-align for inline/inline-block content, watch edge cases like wrapping and whitespace gaps, and test with long labels; trade-off vs flex when only horizontal alignment is needed.",
       "arguments": [
         {
           "name": "text-align",
@@ -215,11 +215,11 @@
       "starterCss": "/* TODOs:\\n  1) Center the chips as a group using text-align: center (on .chips or .box).\\n  2) Make .tag inline-block with padding 8px/12px and radius 6px.\\n  3) Create ~8px horizontal gaps between tags using margin-right.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.box {\\n  background: #222;\\n  color: #fff;\\n  padding: 20px;\\n  border: 1px solid #444;\\n  border-radius: 10px;\\n  max-width: 600px;\\n  margin: 0 auto; /* optional: centers the box in the viewport */\\n}\\n\\n.chips {\\n  margin-top: 12px;\\n  /* Add text-align: center here */\\n}\\n\\n.tag {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Add display, padding, radius, and spacing here */\\n}\\n\\n/* Hint: use .tag:last-child { margin-right: 0; } to remove the final gap */"
     },
     "solutionBlock": {
-      "overview": "Center inline or inline-block elements by applying `text-align: center` to the parent. This centers the inline formatting context as a group, while keeping the children inline-block so padding and border-radius work correctly.",
+      "overview": "text-align affects the inline formatting context, so it\u2019s the simplest way to center inline content without changing document flow.",
       "approaches": [
         {
           "title": "Approach \u2014 text-align Center + Inline-Block Chips",
-          "prose": "Set `text-align: center` on the container. Make each chip `display: inline-block` and add consistent horizontal margins for spacing. If vertical alignment is needed, use `line-height` for single-line text or switch to flex only when the requirement asks for vertical centering. Keep whitespace in mind: inline elements respect spaces/newlines in the HTML.",
+          "prose": "Add that inline-block items respect line-height, so you can adjust vertical alignment with line-height or vertical-align if needed. If the design is sensitive to whitespace gaps, remove them with HTML formatting or font-size: 0 on the parent.",
           "codeHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
           "codeCss": ".box {\\n  background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto;\\n}\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }"
         }
@@ -264,7 +264,7 @@
       "absolute"
     ],
     "description": {
-      "summary": "Create a card with a corner badge using relative/absolute positioning. The parent establishes a positioning context, and the badge is offset from the top-right. Explain stacking context, z-index, and how to keep the badge responsive on different card sizes.",
+      "summary": "This pattern is used in notifications, status indicators, and card metadata, so the badge should remain anchored even as content size changes. Edge cases include long titles and responsive cards; test overlap and ensure accessible contrast. Trade-off: absolute positioning is simple but can break if parent sizing changes.",
       "arguments": [
         {
           "name": ".product { position: relative }",
@@ -296,11 +296,11 @@
       "starterCss": "/* TODOs:\\n  1) Make .product a positioned container (position: relative).\\n  2) Absolutely position .badge inside it using top/right offsets.\\n  3) Add padding, border-radius, and a red background for visibility.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.product {\\n  display: inline-block;\\n}\\n\\n.badge {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Your positioning and spacing here */\\n}\\n\\nimg {\\n  display: block;\\n  max-width: 100%;\\n  border-radius: 8px;\\n}"
     },
     "solutionBlock": {
-      "overview": "To pin a badge to a specific corner of an element, make the parent `.product` relatively positioned so it establishes a local coordinate system. Then, absolutely position the `.badge` in the top-right with a small offset and apply visual styles for clarity.",
+      "overview": "Absolute positioning within a relatively positioned parent keeps the badge anchored to the card corner while removing it from normal flow.",
       "approaches": [
         {
           "title": "Approach \u2014 Relative Parent + Absolute Child",
-          "prose": "Use `position: relative` on the `.product` container. This allows the `.badge` to be positioned absolutely within it. Apply `top` and `right` offsets to anchor the badge to the top-right corner. Add padding, border-radius, and a red background for visibility.",
+          "prose": "Use top/right offsets and a small translate if you want the badge to overlap the corner. Ensure the badge is readable (contrast, padding) and doesn\u2019t shift layout because it\u2019s absolutely positioned.",
           "codeHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
           "codeCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }"
         }
@@ -744,7 +744,7 @@
       "cascade"
     ],
     "description": {
-      "summary": "Create a themeable panel using ONLY CSS custom properties. Define light defaults on :root, redefine the SAME variables for OS dark mode via @media (prefers-color-scheme: dark), then add a manual override using html.theme-dark that is declared AFTER the media query so it always wins. Toggle by manually adding class=\"theme-dark\" to the <html> element (no JavaScript).",
+      "summary": "Create a themeable panel using ONLY CSS custom properties. Define light defaults on :root, redefine the SAME variables for OS dark mode via @media (prefers-color-scheme: dark), then add a manual override using html.theme-dark that is declared AFTER the media query so it always wins. Toggle by manually adding class=\"theme-dark\" to the &lt;html&gt; element (no JavaScript).",
       "arguments": [
         {
           "name": ":root variables (light defaults)",

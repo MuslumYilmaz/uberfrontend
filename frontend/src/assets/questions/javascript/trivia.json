@@ -204,7 +204,7 @@
   {
     "id": "js-this-keyword",
     "title": "Explain the `this` keyword in JavaScript",
-    "description": "The value of `this` in JavaScript depends on how a function is called \u2014 not where it\u2019s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions.",
+    "description": "The value of `this` in JavaScript depends on how a function is called \u2014 not where it\u2019s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions. The value of this depends on call site, strict mode, and arrow functions. Misbinding is a common source of bugs; test with call/apply/bind.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -305,6 +305,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>this</code> as the person holding the phone \ud83d\udcf1 \u2014 not the number you dialed. The number (function) stays the same, but who picks up (the object that calls it) decides what <code>this</code> will be."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A class method passed as a callback loses <code>this</code>, breaking access to instance state.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to bind methods in constructors.</li><li>Using arrow functions and expecting dynamic this.</li><li>Calling functions without a receiver in strict mode.</li></ul><strong>Trade-off or test tip</strong><br>Binding is explicit but creates new functions. Test with call/apply/bind and verify this values.</strong>"
         }
       ]
     },
@@ -648,7 +652,7 @@
   {
     "id": "js-event-delegation",
     "title": "Explain Event Delegation in JavaScript",
-    "description": "Event delegation is a technique where a single event listener on a parent element handles events for multiple child elements by using event bubbling and checking the event target.",
+    "description": "Event delegation is a technique where a single event listener on a parent element handles events for multiple child elements by using event bubbling and checking the event target. Edge cases include stopPropagation and nested targets; test performance in large lists.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -727,6 +731,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine a restaurant. Instead of each waiter (child) taking orders, there\u2019s one manager (parent) who hears all requests and decides who called \u2014 that\u2019s **event delegation**!"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A long, dynamic list of comments can be handled with a single click listener on the list container.<br><br><strong>Common pitfalls</strong><br><ul><li>Using <code>event.target</code> directly instead of <code>closest()</code> to find the intended item.</li><li>Forgetting that <code>stopPropagation</code> can block delegation.</li><li>Not handling keyboard events, so accessibility suffers.</li></ul><strong>Trade-off or test tip</strong><br>Delegation saves memory but adds selector logic. Test by adding/removing items dynamically and ensuring handlers still work."
         }
       ]
     },
@@ -837,7 +845,7 @@
   {
     "id": "js-equality-vs-strict-equality",
     "title": "What is the difference between == and === in JavaScript?",
-    "description": "In JavaScript, `==` is the loose equality operator that compares values after type conversion, while `===` is the strict equality operator that compares both value and type without conversion.",
+    "description": "In JavaScript, `==` is the loose equality operator that compares values after type conversion, while `===` is the strict equality operator that compares both value and type without conversion. Edge cases include null/undefined and NaN, so prefer explicit conversion and add tests.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -918,6 +926,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine two people named Alex:\n- Using <strong>==</strong> is like saying \u201cthey have the same name\u201d \u2014 even if one is human and one is a robot.\n- Using <strong>===</strong> is like saying \u201csame name <em>and</em> same species\u201d \u2014 no confusion at all."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Compare query parameters or form values (strings) to numbers and booleans in validation logic.<br><br><strong>Common pitfalls</strong><br><ul><li><code>==</code> coercion producing surprising results like <code>'' == 0</code> or <code>null == undefined</code>.</li><li>Forgetting <code>NaN</code> is never equal to itself.</li><li>Relying on loose equality in code that should be type-safe.</li></ul><strong>Trade-off or test tip</strong><br>Use <code>===</code> by default; convert types explicitly when needed. Add tests for <code>null</code>, <code>undefined</code>, and <code>NaN</code>."
         }
       ]
     },
@@ -1228,7 +1240,7 @@
   {
     "id": "js-call-apply-bind",
     "title": "What is the difference between call(), apply(), and bind() in JavaScript?",
-    "description": "All three methods are used to control the value of `this` when calling a function. The difference is how they pass arguments and when the function is executed.",
+    "description": "All three methods are used to control the value of `this` when calling a function. The difference is how they pass arguments and when the function is executed. These affect this-binding and performance, so test with bound handlers and avoid unnecessary allocations.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1328,6 +1340,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like renting a car:\n- <strong>call()</strong> \u2192 You rent and drive it right away.\n- <strong>apply()</strong> \u2192 You rent and drive it right away, but hand over your passengers list (array).\n- <strong>bind()</strong> \u2192 You book it for later \u2014 the car is reserved and ready to use when you need it."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Borrow a method from another object (e.g., <code>Array.prototype.slice</code>) or fix <code>this</code> in a callback.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting to bind, causing <code>this</code> to be <code>undefined</code> in strict mode.</li><li>Using <code>apply</code> with very large arrays and hitting argument limits.</li><li>Binding inside render loops and creating new functions each time.</li></ul><strong>Trade-off or test tip</strong><br><code>bind</code> is clear but allocates a new function; reuse bound handlers where possible. Test by calling the function with a mocked <code>this</code>."
         }
       ]
     },
@@ -1336,7 +1352,7 @@
   {
     "id": "js-foreach-vs-map",
     "title": "Can you describe the main difference between Array.forEach() and Array.map() methods and why you would pick one versus the other?",
-    "description": "Both forEach() and map() loop through array elements, but map() creates and returns a new array, while forEach() simply executes a function for each element without returning anything.",
+    "description": "Both forEach() and map() loop through array elements, but map() creates and returns a new array, while forEach() simply executes a function for each element without returning anything. Map is for transforms while forEach is for side effects; test immutability and return values.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -1424,6 +1440,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine sorting mail:\n- <strong>forEach()</strong> \u2192 you open each envelope and read it.\n- <strong>map()</strong> \u2192 you open each envelope, copy the letter, and build a new stack of letters \u2014 the transformed result."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Transform API data into UI rows: use <code>map</code> to return a new array, and <code>forEach</code> only for side effects.<br><br><strong>Common pitfalls</strong><br><ul><li>Expecting <code>forEach</code> to return a transformed array.</li><li>Mutating the original array inside <code>map</code>.</li><li>Ignoring return values and creating unused arrays.</li></ul><strong>Trade-off or test tip</strong><br><code>map</code> is declarative but allocates a new array. Test immutability and verify return values.</strong>"
         }
       ]
     },
@@ -1432,7 +1452,7 @@
   {
     "id": "js-cookie-sessionstorage-localstorage",
     "title": "Describe the difference between a cookie, sessionStorage and localStorage in browsers",
-    "description": "Cookies, sessionStorage, and localStorage all store data in the browser, but they differ in size limits, expiration, and how they are sent to the server.",
+    "description": "Cookies, sessionStorage, and localStorage all store data in the browser, but they differ in size limits, expiration, and how they are sent to the server. Security and expiration differ, so choose carefully; test storage limits and cross-tab behavior.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1522,6 +1542,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of them like hotel storage options:\n- **Cookies:** Front desk storage \u2014 accessible by staff (server) and you (browser).\n- **localStorage:** Your personal locker \u2014 data stays even if you leave and come back later.\n- **sessionStorage:** Your room table \u2014 data disappears when you check out (close the tab)."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You need to persist a theme preference and an auth flag, deciding between cookies and Web Storage based on security and lifetime.<br><br><strong>Common pitfalls</strong><br><ul><li>Storing sensitive tokens in <code>localStorage</code> (XSS risk).</li><li>Forgetting cookies are sent with every request.</li><li>Assuming <code>sessionStorage</code> persists across tabs.</li></ul><strong>Trade-off or test tip</strong><br>Cookies are better for server auth; Web Storage is client-only. Test storage limits and SameSite settings.</strong>"
         }
       ]
     },
@@ -1530,7 +1554,7 @@
   {
     "id": "js-prototypal-inheritance",
     "title": "Explain how prototypal inheritance works in JavaScript",
-    "description": "Prototypal inheritance means that objects in JavaScript can inherit properties and methods from other objects through a prototype chain.",
+    "description": "Prototypal inheritance means objects inherit from other objects via the prototype chain. Methods defined on a prototype are shared across instances, which saves memory and enables behavior reuse. Use Object.create or function prototypes to link objects without copying methods.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1646,7 +1670,7 @@
   {
     "id": "js-data-types",
     "title": "What are the various data types in JavaScript?",
-    "description": "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object). Understanding which values are primitive vs object helps with comparisons, copying, and mutation behavior.",
+    "description": "JavaScript has eight main data types: seven primitives (string, number, bigint, boolean, undefined, symbol, null) and one non-primitive type (object). Understanding which values are primitive vs object helps with comparisons, copying, and mutation behavior. This affects state updates, copying, and performance; test typeof null and array detection.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -1754,6 +1778,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of primitives as single paper notes \u2014 once written, they can\u2019t be changed. Objects are like folders \u2014 you can add, remove, or edit their contents anytime."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>An API returns mixed values; you need to detect primitives vs objects before cloning or updating state.<br><br><strong>Common pitfalls</strong><br><ul><li>Assuming <code>typeof null</code> is \"object\" for valid checks.</li><li>Treating arrays as plain objects without <code>Array.isArray</code>.</li><li>Mutating objects when you meant to copy.</li></ul><strong>Trade-off or test tip</strong><br>Primitives are predictable, objects are flexible but mutable. Test <code>typeof</code>, <code>Array.isArray</code>, and reference equality.</strong>"
         }
       ]
     },
@@ -1762,7 +1790,7 @@
   {
     "id": "js-nan-property",
     "title": "What is the NaN property in JavaScript?",
-    "description": "NaN stands for 'Not-a-Number'. It represents a value that is not a valid number result in JavaScript.",
+    "description": "NaN stands for Not-a-Number and is the only value in JavaScript that is not equal to itself. Use Number.isNaN to check for it reliably, because global isNaN coerces values. This is important for numeric validation and edge cases. Edge cases include empty strings and non-numeric input; test with Number.isNaN.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -1828,6 +1856,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>NaN</code> like a 'broken calculator' output \u2014 the operation ran, but the result doesn\u2019t make mathematical sense, so JavaScript gives you NaN instead of crashing."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>A numeric input can return <code>''</code> or <code>'foo'</code>; you need to detect NaN before calculations.\n<br><br><strong>Common pitfalls</strong><br><ul><li>Using global <code>isNaN</code>, which coerces values.</li><li>Assuming <code>NaN === NaN</code> is true.</li><li>Mixing <code>parseInt</code> and <code>Number</code> without checks.</li></ul><strong>Trade-off or test tip</strong><br>Prefer <code>Number.isNaN</code> for accuracy. Test empty strings, <code>null</code>, and non-numeric inputs.</strong>"
         }
       ]
     },
@@ -1836,7 +1868,7 @@
   {
     "id": "js-currying",
     "title": "What is currying in JavaScript?",
-    "description": "Currying is a functional programming technique in JavaScript where a function is transformed into a sequence of functions, each taking a single argument.",
+    "description": "Currying is a functional programming technique in JavaScript where a function is transformed into a sequence of functions, each taking a single argument. Trade-offs include readability vs reuse, so test partial application and edge cases.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -1898,6 +1930,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of currying like a vending machine: instead of inserting all coins at once, you insert them one by one \u2014 and after the last coin, you finally get your snack."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>You build an API client where you first fix the base URL, then inject auth, then pass endpoint params: <code>api(baseUrl)(token)(path)</code>.<br><br><strong>Common pitfalls</strong><br><ul><li>Losing <code>this</code> context when curried functions call methods.</li><li>Over-currying for simple cases, which hurts readability.</li><li>Confusing currying with default parameters or partial application.</li></ul><strong>Trade-off or test tip</strong><br>Currying improves reuse but adds layers of functions. Unit-test each partial step to ensure the right value is captured."
         }
       ]
     },
@@ -1906,7 +1942,7 @@
   {
     "id": "js-callbacks",
     "title": "What are callbacks in JavaScript?",
-    "description": "A callback is a function passed as an argument to another function to be executed later, often after a task is completed.",
+    "description": "A callback is a function passed as an argument to another function to be executed later, often after a task is completed. Covers: async, callbacks, event loop, functions, higher order functions.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -1972,6 +2008,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like leaving your phone number with someone: you don\u2019t wait on the line \u2014 they\u2019ll call you <em>back</em> when they\u2019re ready."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Practical notes</strong>\n\nWatch for edge case behavior, common pitfalls, and trade-offs between clarity and performance. Mention accessibility and testing considerations when the concept affects UI output or event timing."
         }
       ]
     },
@@ -1980,7 +2020,7 @@
   {
     "id": "js-arrow-functions",
     "title": "What are arrow functions in JavaScript?",
-    "description": "Arrow functions are a shorter syntax for writing functions in JavaScript, introduced in ES6. They don\u2019t have their own `this`, `arguments`, or `prototype`.",
+    "description": "Arrow functions are a shorter syntax for writing functions in JavaScript, introduced in ES6. They don\u2019t have their own `this`, `arguments`, or `prototype`. Use them for callbacks, but watch edge cases with this binding and constructor usage; add tests for behavior.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -2055,6 +2095,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of arrow functions as assistants \u2014 they don\u2019t have their own <code>this</code>; they simply use their boss\u2019s <code>this</code> from the outer scope."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Using arrow functions inside <code>map</code> or React event handlers to keep callbacks concise.<br><br><strong>Common pitfalls</strong><br><ul><li>Arrow functions do not have their own <code>this</code>, so methods relying on <code>this</code> can break.</li><li>They cannot be used as constructors with <code>new</code>.</li><li>Implicit returns can hide logic mistakes when you switch to a block body.</li></ul><strong>Trade-off or test tip</strong><br>Prefer arrows for short callbacks, but use named functions for clarity and debugging. Test both behavior and <code>this</code> binding."
         }
       ]
     },
@@ -3322,7 +3366,7 @@
   {
     "id": "js-array-sort-pitfalls",
     "title": "Array.sort Pitfalls in JavaScript (Lexicographic Sorting, Mutation, Comparator)",
-    "description": "Array.prototype.sort has several traps: it sorts elements as strings by default, mutates the original array, and requires a correct comparator function for numeric or custom sorting. These pitfalls cause many subtle bugs in real-world code and interviews.",
+    "description": "Array.prototype.sort has several traps: it sorts elements as strings by default, mutates the original array, and requires a correct comparator function for numeric or custom sorting. These pitfalls cause many subtle bugs in real-world code and interviews. Sorting is in-place and lexicographic by default; test numeric comparisons and stability for performance.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -3399,6 +3443,10 @@
         {
           "type": "text",
           "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong><code>Array.sort()</code></strong> sorts <strong>in place</strong> and compares items as <strong>strings by default</strong>, so you must clone the array for immutability and provide a <strong>correct numeric or custom comparator</strong> to avoid subtle bugs."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Practical scenario</strong><br>Sort prices or dates before rendering a table; a numeric comparator is required to avoid lexicographic order.<br><br><strong>Common pitfalls</strong><br><ul><li>Forgetting <code>sort</code> mutates the original array.</li><li>Using an inconsistent comparator that breaks ordering.</li><li>Assuming default sort is numeric.</li></ul><strong>Trade-off or test tip</strong><br>Copy before sorting to keep immutability. Test with negative numbers and verify stability for performance-sensitive lists.</strong>"
         }
       ]
     },

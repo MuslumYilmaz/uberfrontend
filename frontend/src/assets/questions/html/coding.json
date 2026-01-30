@@ -13,7 +13,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Build a valid HTML document skeleton with `<!doctype html>`, `<html>`, `<head>`, and `<body>`. Include a `<meta charset>` and `<title>` in the head, and visible content (like an `<h1>`) in the body to prove the structure is correct and semantic.",
+      "summary": "Build a valid HTML document skeleton with `&lt;!doctype html&gt;`, `&lt;html&gt;`, `&lt;head&gt;`, and `&lt;body&gt;`. Include a `&lt;meta charset&gt;` and `&lt;title&gt;` in the head, and visible content (like an `&lt;h1&gt;`) in the body to prove the structure is correct and semantic.",
       "arguments": [
         {
           "name": "<!DOCTYPE>",
@@ -302,7 +302,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Build a semantic navigation bar using `nav > ul > li > a` with hash links. Use CSS `:target` to show only one section at a time without JavaScript, and ensure the Home section is visible by default when no hash is present.",
+      "summary": "Build a semantic navigation bar using `nav &gt; ul &gt; li &gt; a` with hash links. Use CSS `:target` to show only one section at a time without JavaScript, and ensure the Home section is visible by default when no hash is present.",
       "arguments": [
         {
           "name": "<nav>",
@@ -488,7 +488,7 @@
       "structure"
     ],
     "description": {
-      "summary": "Create an accessible table using `<caption>`, `<thead>`, `<tbody>`, and `<th scope>`. The goal is to make header-to-cell relationships clear for screen readers while keeping the table semantically correct and easy to scan.",
+      "summary": "The goal is to provide a semantic table that screen readers can navigate, with a clear caption and correct header associations. Add headers with scope, captions, and keyboard considerations; test with screen readers and complex tables.",
       "arguments": [
         {
           "name": "<table>",
@@ -529,11 +529,11 @@
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
     },
     "solutionBlock": {
-      "overview": "This task emphasizes table semantics and accessibility. Use a caption to describe the table, group headers in `<thead>`, put data rows in `<tbody>`, and use `<th scope=\"col\">` (or `scope=\"row\"`) so assistive tech can announce the correct header for each cell.",
+      "overview": "Assistive tech relies on th scope to announce headers correctly. Without proper thead/tbody structure and caption, users lose context when navigating cell by cell.",
       "approaches": [
         {
           "title": "Approach 1 \u2013 Accessible Employee Table",
-          "prose": "Build a `<table>` with a short `<caption>` for context. Place column headers inside a `<thead>` row using `<th scope=\"col\">`. Put data rows in `<tbody>`. If you have row headers, mark them with `<th scope=\"row\">`. This structure enables screen readers to associate each data cell with its header.",
+          "prose": "Include a caption describing the dataset, use thead for column headers, and tbody for data rows. If rows have headers, mark them with th scope='row'. Avoid layout tables and keep the markup purely semantic.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
         }
@@ -585,7 +585,7 @@
       "labels"
     ],
     "description": {
-      "summary": "A support page needs a contact form. Write HTML that works well with keyboard and screen readers: use real <label> elements paired via for/id, correct input types, and required fields. Show an on-page success message only after a VALID submit (HTML validation must run; no JavaScript). You do NOT need to touch the CSS.",
+      "summary": "The success message should only appear after a valid submit, so native validation must be enabled and the form action should target the success section. Consider edge cases like invalid email and required fields; test accessibility by associating labels and using native validation.",
       "arguments": [
         {
           "name": "<form action=\"#thanks\">",
@@ -616,11 +616,11 @@
       "starterCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n/* CSS-only success message */\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n"
     },
     "solutionBlock": {
-      "overview": "Leverage native HTML constraint validation: required fields and type=\"email\" prevent invalid submission. By setting action=\"#thanks\", the browser only navigates to the success fragment after a valid submit, letting CSS :target reveal the success message without JavaScript.",
+      "overview": "Native HTML validation is enough here: required fields and input types block invalid submissions, and the CSS :target pattern reveals the success state. This keeps the solution accessible and JS-free.",
       "approaches": [
         {
           "title": "Approach 1 \u2013 Valid submit reveals success via :target",
-          "prose": "Use real <label for=\"\"> elements tied to matching input ids. Add required to all mandatory fields and type=\"email\" for the email input so the browser validates format. Keep the form action=\"#thanks\" so a valid submit targets the success section and triggers the existing CSS. Do not add novalidate.",
+          "prose": "Ensure each input has a label and a unique id, add required to mandatory fields, and use type=email for the email field. Keep the form action pointing to #thanks so the success message becomes visible only after validation passes.",
           "codeHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
           "codeCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n"
         }
@@ -773,7 +773,7 @@
       "charset"
     ],
     "description": {
-      "summary": "You\u2019re given a simple marketing page that renders fine in the browser, but it\u2019s missing production-grade <head> metadata. Update ONLY the <head> so the page has correct encoding, mobile-friendly viewport behavior, a descriptive title, and a meta description. Do not change the <body>. No CSS/JS changes are needed.",
+      "summary": "You\u2019re given a simple marketing page that renders fine in the browser, but it\u2019s missing production-grade &lt;head&gt; metadata. Update ONLY the &lt;head&gt; so the page has correct encoding, mobile-friendly viewport behavior, a descriptive title, and a meta description. Do not change the &lt;body&gt;. No CSS/JS changes are needed.",
       "arguments": [
         {
           "name": "<meta charset=\"utf-8\">",
@@ -874,7 +874,7 @@
       "html"
     ],
     "description": {
-      "summary": "Build a native confirm dialog for deleting a project using the HTML <dialog> element. The dialog must be accessible (proper name + description) and must be visible in the preview without JavaScript. Only edit HTML. Do not change CSS.",
+      "summary": "Build a native confirm dialog for deleting a project using the HTML &lt;dialog&gt; element. The dialog must be accessible (proper name + description) and must be visible in the preview without JavaScript. Only edit HTML. Do not change CSS.",
       "arguments": [
         {
           "name": "<dialog open>",
