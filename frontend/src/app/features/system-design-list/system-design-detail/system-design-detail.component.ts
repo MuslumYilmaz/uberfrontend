@@ -101,6 +101,12 @@ type SDQuestion = {
   operations?: string;
 };
 
+type RelatedItem = {
+  id: string;
+  title: string;
+  access?: 'free' | 'premium';
+};
+
 @Component({
   selector: 'app-system-design-detail',
   standalone: true,
@@ -175,6 +181,37 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     if (item.interface) out.push({ key: 'I', title: 'Interfaces & APIs', content: item.interface });
     if (item.operations) out.push({ key: 'O', title: 'Operations & Trade-offs', content: item.operations });
     return out.map(normalize);
+  });
+
+  /** Related system design questions based on shared tags (top 4). */
+  relatedItems = computed<RelatedItem[]>(() => {
+    const current = this.q();
+    if (!current || !this.all.length) return [];
+    const baseTags = Array.isArray(current.tags) ? current.tags.map(t => t.toLowerCase()) : [];
+    if (!baseTags.length) return [];
+    const baseSet = new Set(baseTags);
+
+    const scored = this.all
+      .filter((q) => q.id !== current.id)
+      .map((q) => {
+        const tags = Array.isArray(q.tags) ? q.tags.map(t => t.toLowerCase()) : [];
+        let score = 0;
+        for (const tag of tags) if (baseSet.has(tag)) score += 1;
+        return score ? { q, score } : null;
+      })
+      .filter(Boolean) as Array<{ q: SDQuestion; score: number }>;
+
+    scored.sort((a, b) =>
+      b.score - a.score
+      || ((a.q.access === 'free') === (b.q.access === 'free') ? 0 : (a.q.access === 'free' ? -1 : 1))
+      || (a.q.title || '').localeCompare(b.q.title || '')
+    );
+
+    return scored.slice(0, 4).map(({ q }) => ({
+      id: q.id,
+      title: q.title,
+      access: q.access ?? 'free',
+    }));
   });
 
   /** Active TOC key (scroll spy) */

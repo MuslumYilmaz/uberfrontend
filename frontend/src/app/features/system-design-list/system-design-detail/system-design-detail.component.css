@@ -62,6 +62,7 @@
 /* ---------- CENTER ---------- */
 .sdl-center{
   min-width:0;
+  padding-bottom: calc(var(--foot-h) + 24px);
 }
 .sd-section{ padding:10px 6px 22px 6px; border-bottom:1px solid rgba(255,255,255,.06); }
 .sd-h2{
@@ -383,6 +384,52 @@
   margin-left: 4px;
 }
 
+/* Related questions */
+.sd-related{
+  margin: 16px 6px 24px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: #0f1116;
+}
+.sd-related-head{
+  font-size: 13px;
+  font-weight: 700;
+  color: #e6eaee;
+  margin-bottom: 8px;
+}
+.sd-related-list{
+  display: grid;
+  gap: 8px;
+}
+.sd-related-item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+  color: #d6dde5;
+  text-decoration: none;
+  background: #11151c;
+  gap: 8px;
+}
+.sd-related-item:hover{
+  background: #151b24;
+  border-color: rgba(255,255,255,.12);
+}
+.sd-related-title{
+  font-size: 13px;
+}
+.sd-related-pill{
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  color: #e5e7eb;
+  flex-shrink: 0;
+}
+
 /* Mobile tweaks */
 @media (max-width: 768px) {
   .sd-steps-row {
@@ -511,4 +558,49 @@
   gap: 12px;
   justify-content: center;
   margin-top: 6px;
+}
+
+.locked-related{
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-text-primary) 6%);
+  display: grid;
+  gap: 8px;
+}
+.locked-related__title{
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--uf-text-primary);
+}
+.locked-related__list{
+  display: grid;
+  gap: 8px;
+}
+.locked-related__item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--uf-border-subtle);
+  color: var(--uf-text-primary);
+  text-decoration: none;
+}
+.locked-related__item:hover{
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 70%, var(--uf-text-primary) 30%);
+}
+.locked-related__text{
+  font-size: 13px;
+  color: var(--uf-text-primary);
+}
+.locked-related__pill{
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--uf-accent) 25%, transparent);
+  color: var(--uf-text-primary);
+  flex-shrink: 0;
 }

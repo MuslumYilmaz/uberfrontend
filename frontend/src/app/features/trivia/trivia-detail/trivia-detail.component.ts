@@ -434,6 +434,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/trivia/${q.id}`);
     const description = this.questionDescription(q);
     const keywords = this.questionKeywords(q);
+    const isLocked = isQuestionLockedForTier(q, this.auth.user());
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -471,13 +472,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       keywords: keywords.join(', '),
     };
 
+    const faq = this.buildFaqSchema(q, canonical, isLocked);
+    const jsonLd = faq ? [breadcrumb, article, faq] : [breadcrumb, article];
+
     this.seo.updateTags({
       title: q.title,
       description,
       keywords,
       canonical,
       ogType: 'article',
-      jsonLd: [breadcrumb, article],
+      jsonLd,
     });
   }
 
@@ -636,6 +640,51 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&');
+  }
+
+  private normalizeForSchema(text: string): string {
+    return this.decodeHtmlEntities(text || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/`+/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private answerPlainText(q: Question): string {
+    const answer: any = q.answer;
+    if (answer && typeof answer === 'object' && Array.isArray(answer.blocks)) {
+      const blocks = (answer.blocks as AnswerBlock[])
+        .filter((b) => b.type === 'text')
+        .filter((b) => !this.isExtraHelpBlock(b) && !this.isSummaryBlock(b))
+        .map((b) => (b as BlockText).text || '');
+      return this.normalizeForSchema(blocks.join(' '));
+    }
+    if (typeof q.answer === 'string') return this.normalizeForSchema(q.answer);
+    return '';
+  }
+
+  private buildFaqSchema(q: Question, canonical: string, locked: boolean): Record<string, any> | null {
+    const questionName = String(q.title || '').trim();
+    const quick = this.normalizeForSchema(this.questionDescription(q));
+    const answer = locked ? '' : this.answerPlainText(q);
+    const finalAnswer = (answer || quick).trim();
+    if (!questionName || !finalAnswer) return null;
+
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: questionName,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: this.trimWords(finalAnswer, 90),
+          },
+        },
+      ],
+    };
   }
 
   private scrollMainToTop() {

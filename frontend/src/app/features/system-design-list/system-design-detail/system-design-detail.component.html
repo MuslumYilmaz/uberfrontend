@@ -163,6 +163,17 @@
                     </ng-template>
                 </section>
             </ng-container>
+
+            <section class="sd-related" *ngIf="relatedItems().length">
+                <div class="sd-related-head">Similar questions</div>
+                <div class="sd-related-list">
+                    <a class="sd-related-item" *ngFor="let item of relatedItems()"
+                        [routerLink]="['/system-design', item.id]">
+                        <span class="sd-related-title">{{ item.title }}</span>
+                        <span class="sd-related-pill" *ngIf="item.access === 'premium'">Premium</span>
+                    </a>
+                </div>
+            </section>
         </main>
 
         <!-- RIGHT : fixed TOC -->
@@ -201,6 +212,16 @@
                 </ul>
             </div>
             <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
+            <div class="locked-related" *ngIf="relatedItems().length">
+                <div class="locked-related__title">Related questions</div>
+                <div class="locked-related__list">
+                    <a class="locked-related__item" *ngFor="let item of relatedItems()"
+                        [routerLink]="['/system-design', item.id]">
+                        <span class="locked-related__text">{{ item.title }}</span>
+                        <span class="locked-related__pill" *ngIf="item.access === 'premium'">Premium</span>
+                    </a>
+                </div>
+            </div>
             <p class="locked-copy">
                 <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
                     You're on the free tier. Upgrade to access this system design scenario.

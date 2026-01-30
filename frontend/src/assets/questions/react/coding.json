@@ -1,7 +1,7 @@
 [
   {
     "id": "react-counter",
-    "title": "Counter (Component with Guarded Decrement)",
+    "title": "React Counter (Guarded Decrement)",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -14,7 +14,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a React counter with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics.",
+      "summary": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics.",
       "specs": {
         "requirements": [
           "Render a <Counter /> as the main UI.",
@@ -44,7 +44,7 @@
       "approaches": [
         {
           "title": "Single component with guarded decrement",
-          "prose": "Initialize `count` with `useState(0)`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the decrement button\u2019s `disabled` prop when `count === 0`, and render the count in the UI so every click immediately reflects the new state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates.",
+          "prose": "Initialize `count` with `useState(0)`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the decrement button’s `disabled` prop when `count === 0`, and render the count in the UI so every click immediately reflects the new state. Edge cases & testing: cover invalid inputs, ensure predictable reactivity, and keep the UI stable under rapid updates.",
           "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
         }
       ],
@@ -83,7 +83,7 @@
       "user-input"
     ],
     "description": {
-      "summary": "Build a contact form using a React component with controlled inputs and basic validation. You will only work in `src/App.tsx` \u2013 the HTML shell and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
+      "summary": "Build a contact form using a React component with controlled inputs and basic validation. You will only work in `src/App.tsx` – the HTML shell and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
       "specs": {
         "requirements": [
           "Work only inside `src/App.tsx` (the CSS in `App.css` and `public/index.html` are already wired up to the expected classes).",
@@ -109,7 +109,7 @@
           "Derive a boolean like `formIsValid` from the current values and use it (plus `isSubmitting`) to control the disabled state of the submit button.",
           "Use the built-in `fetch` API to send a `POST` request to `https://jsonplaceholder.typicode.com/posts` with a JSON body `{ name, email, message }`.",
           "Always clear previous `successMessage` / `errorMessage` at the start of the submit handler so only the latest result is visible.",
-          "Keep everything inside `App` in `App.tsx`; you don\u2019t need additional components or state management libraries for this exercise."
+          "Keep everything inside `App` in `App.tsx`; you don’t need additional components or state management libraries for this exercise."
         ],
         "techFocus": [
           "React `useState` and controlled form inputs",
@@ -124,7 +124,7 @@
         {
           "title": "Single React component with controlled inputs and fetch",
           "prose": "Keep everything inside a single `App` component. Use `useState` to store `name`, `email`, `message`, `isSubmitting`, `successMessage`, `errorMessage`, and three touched flags (one per field). Derive `nameIsValid`, `emailIsValid`, and `messageIsValid`, then combine them into `formIsValid`. The JSX uses controlled inputs bound to these state values and `onChange` handlers, plus `onBlur` to mark fields as touched. Error messages are conditionally rendered based on `touchedX` and the validity booleans. The submit handler is an `async` function that prevents default, marks all fields as touched, checks `formIsValid`, and if valid, sends a `fetch` POST to `https://jsonplaceholder.typicode.com/posts`. It sets the exact success and error messages required by the exercise and always toggles `isSubmitting` appropriately.\n\nThis mirrors the Angular exercise but using idiomatic React patterns (controlled components, local state, and `fetch`).",
-          "codeJs": "import React from 'react';\nimport './App.css';\n\nexport default function App() {\n  const [name, setName] = React.useState('');\n  const [email, setEmail] = React.useState('');\n  const [message, setMessage] = React.useState('');\n\n  const [touchedName, setTouchedName] = React.useState(false);\n  const [touchedEmail, setTouchedEmail] = React.useState(false);\n  const [touchedMessage, setTouchedMessage] = React.useState(false);\n\n  const [isSubmitting, setIsSubmitting] = React.useState(false);\n  const [successMessage, setSuccessMessage] = React.useState('');\n  const [errorMessage, setErrorMessage] = React.useState('');\n\n  const nameIsValid = name.trim().length > 0;\n  const emailIsValid = /\\S+@\\S+\\.\\S+/.test(email);\n  const messageIsValid = message.trim().length >= 10;\n  const formIsValid = nameIsValid && emailIsValid && messageIsValid;\n\n  const handleSubmit = async (event) => {\n    event.preventDefault();\n\n    setTouchedName(true);\n    setTouchedEmail(true);\n    setTouchedMessage(true);\n\n    setSuccessMessage('');\n    setErrorMessage('');\n\n    if (!formIsValid) {\n      return;\n    }\n\n    setIsSubmitting(true);\n\n    try {\n      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({ name, email, message }),\n      });\n\n      if (!response.ok) {\n        throw new Error('Request failed');\n      }\n\n      setSuccessMessage('Your message has been sent. Thank you!');\n      setName('');\n      setEmail('');\n      setMessage('');\n      setTouchedName(false);\n      setTouchedEmail(false);\n      setTouchedMessage(false);\n    } catch (err) {\n      setErrorMessage('Something went wrong. Please try again.');\n    } finally {\n      setIsSubmitting(false);\n    }\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Contact Us</h1>\n\n        <form className=\"panel\" noValidate onSubmit={handleSubmit}>\n          <div className=\"field\">\n            <label htmlFor=\"name\">Name</label>\n            <input\n              id=\"name\"\n              type=\"text\"\n              value={name}\n              onChange={(e) => setName(e.target.value)}\n              onBlur={() => setTouchedName(true)}\n            />\n            {touchedName && !nameIsValid && (\n              <p className=\"error\">Name is required.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"email\">Email</label>\n            <input\n              id=\"email\"\n              type=\"email\"\n              value={email}\n              onChange={(e) => setEmail(e.target.value)}\n              onBlur={() => setTouchedEmail(true)}\n            />\n            {touchedEmail && !email && (\n              <p className=\"error\">Email is required.</p>\n            )}\n            {touchedEmail && email && !emailIsValid && (\n              <p className=\"error\">Enter a valid email address.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"message\">Message</label>\n            <textarea\n              id=\"message\"\n              rows={4}\n              value={message}\n              onChange={(e) => setMessage(e.target.value)}\n              onBlur={() => setTouchedMessage(true)}\n            />\n            {touchedMessage && !message && (\n              <p className=\"error\">Message is required.</p>\n            )}\n            {touchedMessage && message && !messageIsValid && (\n              <p className=\"error\">Message should be at least 10 characters.</p>\n            )}\n          </div>\n\n          <button\n            type=\"submit\"\n            className=\"primary\"\n            disabled={!formIsValid || isSubmitting}\n          >\n            {isSubmitting ? 'Sending\u2026' : 'Send message'}\n          </button>\n\n          {successMessage && <p className=\"success\">{successMessage}</p>}\n          {errorMessage && <p className=\"error\">{errorMessage}</p>}\n        </form>\n      </section>\n    </main>\n  );\n}\n"
+          "codeJs": "import React from 'react';\nimport './App.css';\n\nexport default function App() {\n  const [name, setName] = React.useState('');\n  const [email, setEmail] = React.useState('');\n  const [message, setMessage] = React.useState('');\n\n  const [touchedName, setTouchedName] = React.useState(false);\n  const [touchedEmail, setTouchedEmail] = React.useState(false);\n  const [touchedMessage, setTouchedMessage] = React.useState(false);\n\n  const [isSubmitting, setIsSubmitting] = React.useState(false);\n  const [successMessage, setSuccessMessage] = React.useState('');\n  const [errorMessage, setErrorMessage] = React.useState('');\n\n  const nameIsValid = name.trim().length > 0;\n  const emailIsValid = /\\S+@\\S+\\.\\S+/.test(email);\n  const messageIsValid = message.trim().length >= 10;\n  const formIsValid = nameIsValid && emailIsValid && messageIsValid;\n\n  const handleSubmit = async (event) => {\n    event.preventDefault();\n\n    setTouchedName(true);\n    setTouchedEmail(true);\n    setTouchedMessage(true);\n\n    setSuccessMessage('');\n    setErrorMessage('');\n\n    if (!formIsValid) {\n      return;\n    }\n\n    setIsSubmitting(true);\n\n    try {\n      const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n        },\n        body: JSON.stringify({ name, email, message }),\n      });\n\n      if (!response.ok) {\n        throw new Error('Request failed');\n      }\n\n      setSuccessMessage('Your message has been sent. Thank you!');\n      setName('');\n      setEmail('');\n      setMessage('');\n      setTouchedName(false);\n      setTouchedEmail(false);\n      setTouchedMessage(false);\n    } catch (err) {\n      setErrorMessage('Something went wrong. Please try again.');\n    } finally {\n      setIsSubmitting(false);\n    }\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Contact Us</h1>\n\n        <form className=\"panel\" noValidate onSubmit={handleSubmit}>\n          <div className=\"field\">\n            <label htmlFor=\"name\">Name</label>\n            <input\n              id=\"name\"\n              type=\"text\"\n              value={name}\n              onChange={(e) => setName(e.target.value)}\n              onBlur={() => setTouchedName(true)}\n            />\n            {touchedName && !nameIsValid && (\n              <p className=\"error\">Name is required.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"email\">Email</label>\n            <input\n              id=\"email\"\n              type=\"email\"\n              value={email}\n              onChange={(e) => setEmail(e.target.value)}\n              onBlur={() => setTouchedEmail(true)}\n            />\n            {touchedEmail && !email && (\n              <p className=\"error\">Email is required.</p>\n            )}\n            {touchedEmail && email && !emailIsValid && (\n              <p className=\"error\">Enter a valid email address.</p>\n            )}\n          </div>\n\n          <div className=\"field\">\n            <label htmlFor=\"message\">Message</label>\n            <textarea\n              id=\"message\"\n              rows={4}\n              value={message}\n              onChange={(e) => setMessage(e.target.value)}\n              onBlur={() => setTouchedMessage(true)}\n            />\n            {touchedMessage && !message && (\n              <p className=\"error\">Message is required.</p>\n            )}\n            {touchedMessage && message && !messageIsValid && (\n              <p className=\"error\">Message should be at least 10 characters.</p>\n            )}\n          </div>\n\n          <button\n            type=\"submit\"\n            className=\"primary\"\n            disabled={!formIsValid || isSubmitting}\n          >\n            {isSubmitting ? 'Sending…' : 'Send message'}\n          </button>\n\n          {successMessage && <p className=\"success\">{successMessage}</p>}\n          {errorMessage && <p className=\"error\">{errorMessage}</p>}\n        </form>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
       "notes": {
@@ -315,7 +315,7 @@
   },
   {
     "id": "react-tabs-switcher",
-    "title": "Tabs / Multi-View Switcher",
+    "title": "React Tabs / Multi-View Switcher",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -327,7 +327,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels.",
+      "summary": "Implement React tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -388,7 +388,7 @@
   },
   {
     "id": "react-filterable-user-list",
-    "title": "Filterable / Searchable User List",
+    "title": "React Filterable / Searchable User List",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
@@ -401,7 +401,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Filter a user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets.",
+      "summary": "Filter a React user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main UI.",
@@ -468,7 +468,7 @@
   },
   {
     "id": "react-accordion-faq",
-    "title": "Accordion / FAQ Component",
+    "title": "React Accordion / FAQ Component",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
@@ -481,10 +481,10 @@
       "lifting-state"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) UI in React that renders 3\u20134 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "summary": "Build a simple FAQ (accordion) UI in React using component state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
       "specs": {
         "requirements": [
-          "Render a main <App /> component that shows a FAQ card with 3\u20134 FAQ items.",
+          "Render a main <App /> component that shows a FAQ card with 3–4 FAQ items.",
           "Each FAQ item has a question (header) and an answer (body).",
           "Clicking a question toggles its answer open/closed.",
           "In the default mode, only one FAQ item can be open at a time.",
@@ -517,7 +517,7 @@
       "approaches": [
         {
           "title": "Parent-controlled openIndexes with a child <FaqItem /> component",
-          "prose": "Use a top-level <App /> component that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` piece of state controlled by a checkbox.\n3. An array `openIndexes: number[]` held in state to track which items are currently open.\n\nExpose helper functions:\n- `isItemOpen(index)` \u2192 whether `openIndexes` includes the given index.\n- `onItemToggle(index)` \u2192 updates `openIndexes` differently depending on `allowMultiple`.\n\nIn multi-open mode, `onItemToggle` behaves like a set toggle: if the index is present, remove it; otherwise add it. In single-open mode, the logic becomes radio-like: the array is either `[index]` or empty. The child <FaqItem /> component remains stateless: it receives `isOpen` and calls `onToggle` when clicked. This shows clearly how to lift state and centralize control in one place.",
+          "prose": "Use a top-level <App /> component that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` piece of state controlled by a checkbox.\n3. An array `openIndexes: number[]` held in state to track which items are currently open.\n\nExpose helper functions:\n- `isItemOpen(index)` → whether `openIndexes` includes the given index.\n- `onItemToggle(index)` → updates `openIndexes` differently depending on `allowMultiple`.\n\nIn multi-open mode, `onItemToggle` behaves like a set toggle: if the index is present, remove it; otherwise add it. In single-open mode, the logic becomes radio-like: the array is either `[index]` or empty. The child <FaqItem /> component remains stateless: it receives `isOpen` and calls `onToggle` when clicked. This shows clearly how to lift state and centralize control in one place.",
           "codeJs": "import React from 'react';\n\nconst faqItems = [\n  {\n    question: 'Lorem ipsum dolor sit amet?',\n    answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n  },\n  {\n    question: 'Curabitur blandit tempus porttitor?',\n    answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n  },\n  {\n    question: 'Aenean lacinia bibendum nulla sed consectetur?',\n    answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n  },\n  {\n    question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n    answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n  }\n];\n\nfunction FaqItem({ question, answer, isOpen, onToggle }) {\n  const handleClick = () => {\n    onToggle();\n  };\n\n  return (\n    <article className={\"faq-item\" + (isOpen ? \" open\" : \"\") }>\n      <button\n        type=\"button\"\n        className=\"faq-header\"\n        onClick={handleClick}\n        aria-expanded={isOpen}\n      >\n        <span className=\"question\">{question}</span>\n        <span className=\"indicator\">{isOpen ? '-' : '+'}</span>\n      </button>\n      {isOpen && (\n        <div className=\"faq-body\">\n          <p>{answer}</p>\n        </div>\n      )}\n    </article>\n  );\n}\n\nexport default function App() {\n  const [allowMultiple, setAllowMultiple] = React.useState(false);\n  const [openIndexes, setOpenIndexes] = React.useState([]); // number[]\n\n  const isItemOpen = (index) => openIndexes.includes(index);\n\n  const onItemToggle = (index) => {\n    const currentlyOpen = isItemOpen(index);\n\n    if (allowMultiple) {\n      setOpenIndexes((prev) =>\n        currentlyOpen ? prev.filter((i) => i !== index) : [...prev, index]\n      );\n      return;\n    }\n\n    if (currentlyOpen) {\n      setOpenIndexes([]);\n    } else {\n      setOpenIndexes([index]);\n    }\n  };\n\n  const onToggleAllowMultiple = () => {\n    setAllowMultiple((prev) => {\n      const next = !prev;\n      if (!next && openIndexes.length > 1) {\n        // When going back to single-open, keep only the first open item\n        setOpenIndexes((current) => (current.length ? [current[0]] : []));\n      }\n      return next;\n    });\n  };\n\n  return (\n    <main className=\"app-root\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1>FAQ</h1>\n          <label className=\"mode-toggle\">\n            <input\n              type=\"checkbox\"\n              checked={allowMultiple}\n              onChange={onToggleAllowMultiple}\n            />\n            <span>Allow multiple open</span>\n          </label>\n        </header>\n\n        <div className=\"faq-list\">\n          {faqItems.map((item, index) => (\n            <FaqItem\n              key={item.question}\n              question={item.question}\n              answer={item.answer}\n              isOpen={isItemOpen(index)}\n              onToggle={() => onItemToggle(index)}\n            />\n          ))}\n        </div>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
@@ -545,7 +545,7 @@
   },
   {
     "id": "react-pagination-table",
-    "title": "Paginated Data Table",
+    "title": "React Paginated Data Table",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
@@ -591,7 +591,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise revolves around a single piece of state: the current page index. The full users array stays static in a separate module. From that, you derive the slice of users to display, the total page count, and booleans for whether you're on the first or last page.\n\n**Core ideas**\n- Use `useState(0)` for a 0-based `currentPage`.\n- Keep a constant `PAGE_SIZE = 5`.\n- Compute `totalPages` with `Math.ceil(USERS.length / PAGE_SIZE)`.\n- Derive `pagedUsers` with `USERS.slice(start, end)`, where `start = currentPage * PAGE_SIZE`.\n- Use `isFirstPage` / `isLastPage` flags to drive button disabled state and guard navigation.\n\n**Test cases**\n- Initial render \u2192 first 5 users, label shows `Page 1 of N`, Previous is disabled.\n- Repeatedly clicking Next moves through the list and disables Next on the last page.\n- Repeatedly clicking Previous moves back and disables Previous on the first page.\n- The label always stays in sync with the current page index.",
+      "overview": "This exercise revolves around a single piece of state: the current page index. The full users array stays static in a separate module. From that, you derive the slice of users to display, the total page count, and booleans for whether you're on the first or last page.\n\n**Core ideas**\n- Use `useState(0)` for a 0-based `currentPage`.\n- Keep a constant `PAGE_SIZE = 5`.\n- Compute `totalPages` with `Math.ceil(USERS.length / PAGE_SIZE)`.\n- Derive `pagedUsers` with `USERS.slice(start, end)`, where `start = currentPage * PAGE_SIZE`.\n- Use `isFirstPage` / `isLastPage` flags to drive button disabled state and guard navigation.\n\n**Test cases**\n- Initial render → first 5 users, label shows `Page 1 of N`, Previous is disabled.\n- Repeatedly clicking Next moves through the list and disables Next on the last page.\n- Repeatedly clicking Previous moves back and disables Previous on the first page.\n- The label always stays in sync with the current page index.",
       "approaches": [
         {
           "title": "Single React component with derived pagination slice",
@@ -624,7 +624,7 @@
   },
   {
     "id": "react-theme-toggle",
-    "title": "Theme Toggle with Persisted Light/Dark Mode (React)",
+    "title": "React Theme Toggle with Persisted Light/Dark Mode",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
@@ -638,7 +638,7 @@
       "components"
     ],
     "description": {
-      "summary": "Add a global light/dark theme toggle in the top-right of the page using React Context. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "summary": "Add a global light/dark theme toggle using React Context. The selected theme should be stored in localStorage and restored when the page reloads.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner (UI is already provided via CSS).",
@@ -652,7 +652,7 @@
         "expectedBehavior": [
           "By default, the app starts in light mode if there is no previous theme stored.",
           "If the user toggles to dark mode, the page background, text, and card colors change.",
-          "Reloading the page keeps the user\u2019s last theme selection (light or dark).",
+          "Reloading the page keeps the user’s last theme selection (light or dark).",
           "The toggle UI (label and emoji) always reflects the actual current theme.",
           "Switching themes is instant and does not require a full reload."
         ],
@@ -671,12 +671,12 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting theme state into a React Context and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") inside a `ThemeProvider`, read an initial value from localStorage when the provider initializes, and apply that value to the `<html>` element via a `data-theme` attribute. The `App` component is wrapped in this provider, uses a `useTheme()` hook to read `theme` and call `toggleTheme()`, and renders a toggle button in the top-right.\n\nThe provided CSS in `App.css` already listens to `data-theme` using `:root[data-theme='dark']` selectors to switch page, card, and toggle colors, so the React code is only responsible for state and side-effects.\n\n**Test cases**\n- First visit with empty localStorage \u2192 app starts in light mode and shows the light theme.\n- Click the toggle once \u2192 app switches to dark mode, the background becomes dark, and the toggle shows the moon icon and \"Dark\" label.\n- Reload the page after switching to dark mode \u2192 app initializes in dark mode, with `data-theme=\"dark\"` already applied.\n- Toggle back to light \u2192 theme changes immediately, `data-theme` updates, and localStorage is updated.",
+      "overview": "This exercise is about lifting theme state into a React Context and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") inside a `ThemeProvider`, read an initial value from localStorage when the provider initializes, and apply that value to the `<html>` element via a `data-theme` attribute. The `App` component is wrapped in this provider, uses a `useTheme()` hook to read `theme` and call `toggleTheme()`, and renders a toggle button in the top-right.\n\nThe provided CSS in `App.css` already listens to `data-theme` using `:root[data-theme='dark']` selectors to switch page, card, and toggle colors, so the React code is only responsible for state and side-effects.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the background becomes dark, and the toggle shows the moon icon and \"Dark\" label.\n- Reload the page after switching to dark mode → app initializes in dark mode, with `data-theme=\"dark\"` already applied.\n- Toggle back to light → theme changes immediately, `data-theme` updates, and localStorage is updated.",
       "approaches": [
         {
           "title": "ThemeProvider + `useTheme()` with `data-theme` on `<html>`",
-          "prose": "Use React Context as the global source of truth for the theme.\n\n1. In `/src/theme.tsx`, define a `Theme` type (`'light' | 'dark'`), a storage key, and a `ThemeContext` that exposes `{ theme, setTheme, toggleTheme }`.\n2. Implement a `ThemeProvider` that:\n   - Uses `useState` with a lazy initializer to read the initial theme from localStorage (defaulting to `'light'`).\n   - Applies the chosen initial theme to `document.documentElement` via `setAttribute('data-theme', theme)`.\n   - Uses `useEffect` to write the theme back to localStorage and keep `data-theme` in sync whenever `theme` changes.\n3. Export a `useTheme()` hook that reads the context and throws if used outside the provider.\n4. In `/src/App.tsx`, wrap the page in `<ThemeProvider>...</ThemeProvider>` and create a `Page` component that calls `useTheme()`.\n5. Derive `isDark` from `theme === 'dark'` and wire the button\u2019s `onClick` to `toggleTheme()`. Use `isDark` to switch between \u2600\ufe0f/\ud83c\udf19 and \"Light\"/\"Dark\".\n6. Leave `App.css` untouched; it relies on `:root[data-theme='dark']` to adjust `.main`, `.card`, and `.theme-toggle` colors.\n\nThis keeps theme logic in one place (Context), makes UI components thin, and demonstrates how React state, side-effects, and DOM-level theming work together.",
-          "codeJs": "import React from 'react';\nimport './App.css';\nimport { ThemeProvider, useTheme } from './theme';\n\nfunction Page() {\n  const { theme, toggleTheme } = useTheme();\n  const isDark = theme === 'dark';\n\n  const handleToggleClick = () => {\n    toggleTheme();\n  };\n\n  return (\n    <main className=\"main\">\n      <header className=\"app-header\">\n        <h1 className=\"app-title\">Theme Toggle (React)</h1>\n        <button\n          type=\"button\"\n          className=\"theme-toggle\"\n          onClick={handleToggleClick}\n          aria-label=\"Toggle theme\"\n        >\n          <span className=\"icon\" aria-hidden=\"true\">{isDark ? '\ud83c\udf19' : '\u2600\ufe0f'}</span>\n          <span className=\"label\">{isDark ? 'Dark' : 'Light'}</span>\n        </button>\n      </header>\n\n      <section className=\"content\">\n        <div className=\"card\">\n          <h2>Preview area</h2>\n          <p>\n            This card reacts to the current theme via CSS. Toggle between light and dark\n            and refresh the page to confirm your choice is persisted.\n          </p>\n        </div>\n      </section>\n    </main>\n  );\n}\n\nexport default function App() {\n  return (\n    <ThemeProvider>\n      <Page />\n    </ThemeProvider>\n  );\n}\n"
+          "prose": "Use React Context as the global source of truth for the theme.\n\n1. In `/src/theme.tsx`, define a `Theme` type (`'light' | 'dark'`), a storage key, and a `ThemeContext` that exposes `{ theme, setTheme, toggleTheme }`.\n2. Implement a `ThemeProvider` that:\n   - Uses `useState` with a lazy initializer to read the initial theme from localStorage (defaulting to `'light'`).\n   - Applies the chosen initial theme to `document.documentElement` via `setAttribute('data-theme', theme)`.\n   - Uses `useEffect` to write the theme back to localStorage and keep `data-theme` in sync whenever `theme` changes.\n3. Export a `useTheme()` hook that reads the context and throws if used outside the provider.\n4. In `/src/App.tsx`, wrap the page in `<ThemeProvider>...</ThemeProvider>` and create a `Page` component that calls `useTheme()`.\n5. Derive `isDark` from `theme === 'dark'` and wire the button’s `onClick` to `toggleTheme()`. Use `isDark` to switch between ☀️/🌙 and \"Light\"/\"Dark\".\n6. Leave `App.css` untouched; it relies on `:root[data-theme='dark']` to adjust `.main`, `.card`, and `.theme-toggle` colors.\n\nThis keeps theme logic in one place (Context), makes UI components thin, and demonstrates how React state, side-effects, and DOM-level theming work together.",
+          "codeJs": "import React from 'react';\nimport './App.css';\nimport { ThemeProvider, useTheme } from './theme';\n\nfunction Page() {\n  const { theme, toggleTheme } = useTheme();\n  const isDark = theme === 'dark';\n\n  const handleToggleClick = () => {\n    toggleTheme();\n  };\n\n  return (\n    <main className=\"main\">\n      <header className=\"app-header\">\n        <h1 className=\"app-title\">Theme Toggle (React)</h1>\n        <button\n          type=\"button\"\n          className=\"theme-toggle\"\n          onClick={handleToggleClick}\n          aria-label=\"Toggle theme\"\n        >\n          <span className=\"icon\" aria-hidden=\"true\">{isDark ? '🌙' : '☀️'}</span>\n          <span className=\"label\">{isDark ? 'Dark' : 'Light'}</span>\n        </button>\n      </header>\n\n      <section className=\"content\">\n        <div className=\"card\">\n          <h2>Preview area</h2>\n          <p>\n            This card reacts to the current theme via CSS. Toggle between light and dark\n            and refresh the page to confirm your choice is persisted.\n          </p>\n        </div>\n      </section>\n    </main>\n  );\n}\n\nexport default function App() {\n  return (\n    <ThemeProvider>\n      <Page />\n    </ThemeProvider>\n  );\n}\n"
         }
       ],
       "notes": {
@@ -790,7 +790,7 @@
   },
   {
     "id": "react-shopping-cart",
-    "title": "Shopping Cart Mini",
+    "title": "React Shopping Cart Mini",
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
@@ -819,7 +819,7 @@
           "Clicking \"Add to cart\" for a product that is not yet in the cart adds it with quantity `1`.",
           "Clicking \"Add to cart\" again for the same product increases its quantity by `1`.",
           "Clicking the \"+\" button in the cart increases that item's quantity by `1`.",
-          "Clicking the \"\u2212\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart (or left out entirely).",
+          "Clicking the \"−\" button decreases quantity by `1`. When quantity would drop below `1`, the item is removed from the cart (or left out entirely).",
           "Clicking \"Remove\" immediately removes that item from the cart.",
           "Total item count and total price update correctly whenever the cart changes."
         ],
@@ -876,7 +876,7 @@
   },
   {
     "id": "react-debounced-search",
-    "title": "Debounced Search with Fake API",
+    "title": "React Debounced Search with Fake API",
     "type": "coding",
     "technology": "react",
     "difficulty": "hard",
@@ -890,7 +890,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Implement a debounced search input with fake API calls. Use setTimeout/cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects.",
+      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -933,7 +933,7 @@
         {
           "title": "Single component with useEffect debounce",
           "prose": "Keep all state and logic in the `App` component. Use `useState` for `query`, `results`, `isLoading`, and `error`. In a `useEffect` that depends on `query`, handle three cases:\n\n1. If `query.trim()` is empty, clear results and reset flags, then return early.\n2. Otherwise, set `isLoading` to `true`, clear any previous error, and start a `setTimeout` with 500ms delay.\n3. In the timeout callback, call `fakeApiSearch(query)` which returns a Promise. On success, update `results` and set `isLoading` to `false`. On failure, set `error`, clear `results`, and set `isLoading` to `false`.\n\nUse a cleanup function to clear the pending timeout and mark the effect as stale so that earlier requests cannot update state after a later keystroke.",
-          "codeJs": "import React from 'react';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nexport default function App() {\n  const [query, setQuery] = React.useState('');\n  const [results, setResults] = React.useState([]);\n  const [isLoading, setIsLoading] = React.useState(false);\n  const [error, setError] = React.useState(null);\n\n  React.useEffect(() => {\n    let isCurrent = true;\n\n    const trimmed = query.trim();\n    if (!trimmed) {\n      setResults([]);\n      setIsLoading(false);\n      setError(null);\n      return;\n    }\n\n    setIsLoading(true);\n    setError(null);\n\n    const timeoutId = window.setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          if (!isCurrent) return;\n          setResults(data);\n          setIsLoading(false);\n        })\n        .catch((err) => {\n          if (!isCurrent) return;\n          setResults([]);\n          setIsLoading(false);\n          setError(err instanceof Error ? err.message : 'Something went wrong.');\n        });\n    }, 500);\n\n    return () => {\n      isCurrent = false;\n      window.clearTimeout(timeoutId);\n    };\n  }, [query]);\n\n  const handleChange = (event) => {\n    setQuery(event.target.value);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Debounced Search</h1>\n          <p className=\"subtitle\">\n            Type to search a fake user directory. Search runs 500ms after you stop typing.\n          </p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"search-input\">Search</label>\n          <input\n            id=\"search-input\"\n            className=\"input\"\n            type=\"text\"\n            value={query}\n            onChange={handleChange}\n            placeholder=\"Start typing a name or email...\"\n            autoComplete=\"off\"\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {isLoading && <span className=\"status status--loading\">Searching\u2026</span>}\n          {!isLoading && !error && query && (\n            <span className=\"status\">Showing {results.length} result(s) for \"{query}\"</span>\n          )}\n          {!isLoading && !error && !query && (\n            <span className=\"status status--muted\">Start typing to search.</span>\n          )}\n          {error && <span className=\"status status--error\">{error}</span>}\n        </div>\n\n        {results.length > 0 && (\n          <ul className=\"results\">\n            {results.map((r) => (\n              <li key={r.id} className=\"result-row\">\n                <div className=\"result-name\">{r.name}</div>\n                <div className=\"result-email\">{r.email}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n\n        {!results.length && !isLoading && query && !error && (\n          <p className=\"empty\">No results found for \"{query}\".</p>\n        )}\n      </section>\n    </main>\n  );\n}\n"
+          "codeJs": "import React from 'react';\n\nconst FAKE_DATA = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie Kim', email: 'charlie@example.com' },\n  { id: 4, name: 'Diana Lopez', email: 'diana@example.com' },\n  { id: 5, name: 'Ethan Brown', email: 'ethan@example.com' },\n  { id: 6, name: 'Fiona Patel', email: 'fiona@example.com' }\n];\n\nfunction fakeApiSearch(term) {\n  const trimmed = term.trim().toLowerCase();\n  const delayMs = 600;\n\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      if (!trimmed) {\n        resolve([]);\n        return;\n      }\n\n      if (trimmed === 'error') {\n        reject(new Error('Fake API error'));\n        return;\n      }\n\n      const filtered = FAKE_DATA.filter((item) => {\n        const name = item.name.toLowerCase();\n        const email = item.email.toLowerCase();\n        return name.includes(trimmed) || email.includes(trimmed);\n      });\n\n      resolve(filtered);\n    }, delayMs);\n  });\n}\n\nexport default function App() {\n  const [query, setQuery] = React.useState('');\n  const [results, setResults] = React.useState([]);\n  const [isLoading, setIsLoading] = React.useState(false);\n  const [error, setError] = React.useState(null);\n\n  React.useEffect(() => {\n    let isCurrent = true;\n\n    const trimmed = query.trim();\n    if (!trimmed) {\n      setResults([]);\n      setIsLoading(false);\n      setError(null);\n      return;\n    }\n\n    setIsLoading(true);\n    setError(null);\n\n    const timeoutId = window.setTimeout(() => {\n      fakeApiSearch(trimmed)\n        .then((data) => {\n          if (!isCurrent) return;\n          setResults(data);\n          setIsLoading(false);\n        })\n        .catch((err) => {\n          if (!isCurrent) return;\n          setResults([]);\n          setIsLoading(false);\n          setError(err instanceof Error ? err.message : 'Something went wrong.');\n        });\n    }, 500);\n\n    return () => {\n      isCurrent = false;\n      window.clearTimeout(timeoutId);\n    };\n  }, [query]);\n\n  const handleChange = (event) => {\n    setQuery(event.target.value);\n  };\n\n  return (\n    <main className=\"main\">\n      <section className=\"card\">\n        <header className=\"header\">\n          <h1 className=\"title\">Debounced Search</h1>\n          <p className=\"subtitle\">\n            Type to search a fake user directory. Search runs 500ms after you stop typing.\n          </p>\n        </header>\n\n        <div className=\"field\">\n          <label className=\"label\" htmlFor=\"search-input\">Search</label>\n          <input\n            id=\"search-input\"\n            className=\"input\"\n            type=\"text\"\n            value={query}\n            onChange={handleChange}\n            placeholder=\"Start typing a name or email...\"\n            autoComplete=\"off\"\n          />\n        </div>\n\n        <div className=\"status-row\">\n          {isLoading && <span className=\"status status--loading\">Searching…</span>}\n          {!isLoading && !error && query && (\n            <span className=\"status\">Showing {results.length} result(s) for \"{query}\"</span>\n          )}\n          {!isLoading && !error && !query && (\n            <span className=\"status status--muted\">Start typing to search.</span>\n          )}\n          {error && <span className=\"status status--error\">{error}</span>}\n        </div>\n\n        {results.length > 0 && (\n          <ul className=\"results\">\n            {results.map((r) => (\n              <li key={r.id} className=\"result-row\">\n                <div className=\"result-name\">{r.name}</div>\n                <div className=\"result-email\">{r.email}</div>\n              </li>\n            ))}\n          </ul>\n        )}\n\n        {!results.length && !isLoading && query && !error && (\n          <p className=\"empty\">No results found for \"{query}\".</p>\n        )}\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
       "notes": {
@@ -962,7 +962,7 @@
   },
   {
     "id": "react-star-rating",
-    "title": "Star Rating Widget",
+    "title": "React Star Rating Widget",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -975,7 +975,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement a reusable &lt;StarRating /&gt; widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
+      "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
       "specs": {
         "requirements": [
           "Render a <StarRating /> component as part of the main UI.",
@@ -1011,7 +1011,7 @@
         {
           "title": "Controlled <StarRating /> component with lifted state",
           "prose": "Keep the rating state in the parent component and let <StarRating /> be a controlled widget. <StarRating /> knows how to render stars and which ones are filled, but the parent decides what the current rating is.\n\n1. In <App />, store `currentRating` with `useState(0)`.\n2. Render `<StarRating rating={currentRating} onChange={setCurrentRating} />`.\n3. In <StarRating />, accept `rating`, `max = 5`, and `onChange` props.\n4. Build a stars array with `Array.from({ length: max }, (_, i) => i + 1)`.\n5. For each star, render a button. Use `star <= rating` to decide if it should have the `filled` class.\n6. On click, call `onChange(star)`.\n\nThis keeps behavior predictable, easy to test, and reusable across different parents.",
-          "codeJs": "import React from 'react';\n\nfunction StarRating({ max = 5, rating, onChange }) {\n  const stars = React.useMemo(\n    () => Array.from({ length: max }, (_, i) => i + 1),\n    [max]\n  );\n\n  return (\n    <div className=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      {stars.map((star) => (\n        <button\n          key={star}\n          type=\"button\"\n          className={\"star\" + (star <= rating ? \" filled\" : \"\")}\n          onClick={() => onChange(star)}\n          aria-label={`${star} out of ${max}`}\n          aria-pressed={star <= rating}\n        >\n          \u2605\n        </button>\n      ))}\n    </div>\n  );\n}\n\nexport default function App() {\n  const [currentRating, setCurrentRating] = React.useState(0);\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Star Rating Widget</h1>\n        <div className=\"panel\">\n          <StarRating rating={currentRating} onChange={setCurrentRating} />\n          <p className=\"hint\">Current rating: {currentRating} / 5</p>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
+          "codeJs": "import React from 'react';\n\nfunction StarRating({ max = 5, rating, onChange }) {\n  const stars = React.useMemo(\n    () => Array.from({ length: max }, (_, i) => i + 1),\n    [max]\n  );\n\n  return (\n    <div className=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      {stars.map((star) => (\n        <button\n          key={star}\n          type=\"button\"\n          className={\"star\" + (star <= rating ? \" filled\" : \"\")}\n          onClick={() => onChange(star)}\n          aria-label={`${star} out of ${max}`}\n          aria-pressed={star <= rating}\n        >\n          ★\n        </button>\n      ))}\n    </div>\n  );\n}\n\nexport default function App() {\n  const [currentRating, setCurrentRating] = React.useState(0);\n\n  return (\n    <main className=\"main\">\n      <section className=\"section\">\n        <h1>Star Rating Widget</h1>\n        <div className=\"panel\">\n          <StarRating rating={currentRating} onChange={setCurrentRating} />\n          <p className=\"hint\">Current rating: {currentRating} / 5</p>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
       "notes": {
@@ -1040,7 +1040,7 @@
   },
   {
     "id": "react-dynamic-table",
-    "title": "Dynamic Table (Rows \u00d7 Columns)",
+    "title": "React Dynamic Table (Rows × Columns)",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -1054,7 +1054,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Generate a dynamic table from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers.",
+      "summary": "Generate a dynamic table in React from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers.",
       "specs": {
         "requirements": [
           "Render a main <App /> UI that contains the dynamic table controls.",
@@ -1115,7 +1115,7 @@
   },
   {
     "id": "react-nested-checkboxes",
-    "title": "Nested Checkbox Tree (Parent\u2013Child Sync)",
+    "title": "React Nested Checkbox Tree (Parent–Child Sync)",
     "type": "coding",
     "technology": "react",
     "difficulty": "intermediate",
@@ -1135,15 +1135,15 @@
           "Checking the parent selects all children.",
           "Unchecking the parent clears all children.",
           "When children are toggled individually:",
-          "- If all are checked \u2192 parent is checked.",
-          "- If none are checked \u2192 parent is unchecked.",
-          "- If some are checked \u2192 parent is indeterminate.",
+          "- If all are checked → parent is checked.",
+          "- If none are checked → parent is unchecked.",
+          "- If some are checked → parent is indeterminate.",
           "Keep everything in a single <App /> component."
         ],
         "expectedBehavior": [
           "Each child checkbox toggles independently.",
           "The parent reflects the aggregate state of the children.",
-          "The parent\u2019s visual state shows indeterminate when selection is mixed.",
+          "The parent’s visual state shows indeterminate when selection is mixed.",
           "No external component libraries are required."
         ],
         "implementationNotes": [
@@ -1170,7 +1170,7 @@
       ],
       "notes": {
         "pitfalls": [
-          "Trying to control `indeterminate` via JSX (e.g. `<input indeterminate={...} />`) \u2014 it must be set on the DOM node via a ref.",
+          "Trying to control `indeterminate` via JSX (e.g. `<input indeterminate={...} />`) — it must be set on the DOM node via a ref.",
           "Giving the parent its own independent `useState` instead of deriving it from the children.",
           "Forgetting to recompute and apply parent state after each child toggle."
         ],
@@ -1207,12 +1207,12 @@
       "keyboard"
     ],
     "description": {
-      "summary": "Build an **autocomplete search bar** in React. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, keyboard navigation (\u2191/\u2193/Enter/Escape), and close-on-outside-click.",
+      "summary": "Build an **autocomplete search bar** in React. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, keyboard navigation (↑/↓/Enter/Escape), and close-on-outside-click.",
       "specs": {
         "requirements": [
           "Render a single `<App />` as the main UI.",
           "Show an input with a dropdown of suggestions filtered by the current query (case-insensitive, substring match).",
-          "Debounce input changes (e.g. 250\u2013400ms) before searching.",
+          "Debounce input changes (e.g. 250–400ms) before searching.",
           "Support mouse selection (mousedown on an option selects it, closes dropdown, resets active index).",
           "Support keyboard navigation: ArrowDown/ArrowUp moves active option (wrap-around), Enter selects, Escape closes.",
           "Close the dropdown when clicking outside the component.",
@@ -1242,7 +1242,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Use `query`, `results`, `isOpen`, and `activeIndex` state. Debounce changes to `query` in an effect, then call an async `search()` that filters a local dataset and resolves after ~150ms. Open the dropdown when the query is non-empty, close it when empty or on Escape/outside click. For keyboard navigation, update `activeIndex` with wrap-around and select on Enter. Use `(onMouseDown)` on options so selection happens before input blur/click-outside closes.\n\n**Test cases**\n- Type \"san\" \u2192 after debounce, results include \"San Francisco\" / \"San Jose\".\n- Type \"\" \u2192 dropdown closes.\n- ArrowDown/ArrowUp wraps.\n- Enter selects active option.\n- Escape closes.\n- Outside click closes.\n- MouseDown on option selects and closes.",
+      "overview": "Use `query`, `results`, `isOpen`, and `activeIndex` state. Debounce changes to `query` in an effect, then call an async `search()` that filters a local dataset and resolves after ~150ms. Open the dropdown when the query is non-empty, close it when empty or on Escape/outside click. For keyboard navigation, update `activeIndex` with wrap-around and select on Enter. Use `(onMouseDown)` on options so selection happens before input blur/click-outside closes.\n\n**Test cases**\n- Type \"san\" → after debounce, results include \"San Francisco\" / \"San Jose\".\n- Type \"\" → dropdown closes.\n- ArrowDown/ArrowUp wraps.\n- Enter selects active option.\n- Escape closes.\n- Outside click closes.\n- MouseDown on option selects and closes.",
       "approaches": [
         {
           "title": "Hooks + debounced effect + outside click",
@@ -1276,7 +1276,7 @@
   },
   {
     "id": "react-transfer-list",
-    "title": "Transfer List (Select + Move Between Two Lists)",
+    "title": "React Transfer List (Select + Move Between Two Lists)",
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
@@ -1289,19 +1289,19 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer.",
+      "summary": "Build a React transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
           "Each list shows items with a checkbox to select.",
-          "Provide two transfer buttons between lists: \"\u2193\" moves selected Top items to Bottom; \"\u2191\" moves selected Bottom items to Top.",
-          "Disable \"\u2193\" when no Top items are selected; disable \"\u2191\" when no Bottom items are selected.",
+          "Provide two transfer buttons between lists: \"↓\" moves selected Top items to Bottom; \"↑\" moves selected Bottom items to Top.",
+          "Disable \"↓\" when no Top items are selected; disable \"↑\" when no Bottom items are selected.",
           "After transfer, moved items must be unselected in the destination list.",
           "Preserve item order within each list (append moved items to the end of destination list)."
         ],
         "expectedBehavior": [
-          "Selecting items in Top and clicking \"\u2193\" removes them from Top and appends them to Bottom.",
-          "Selecting items in Bottom and clicking \"\u2191\" removes them from Bottom and appends them to Top.",
+          "Selecting items in Top and clicking \"↓\" removes them from Top and appends them to Bottom.",
+          "Selecting items in Bottom and clicking \"↑\" removes them from Bottom and appends them to Top.",
           "Buttons do nothing when disabled.",
           "Selections are tracked by stable `id` and cleared after transfer."
         ],
@@ -1326,7 +1326,7 @@
         {
           "title": "Two arrays + two selection sets",
           "prose": "Implementation plan: store `topItems`, `bottomItems`, `topSelected`, and `bottomSelected` in state. Use a `Set` to track checked ids and update it with functional state updates. On transfer, build `moved` and `remaining` by filtering the source list based on the selection set, update destination with `setDest([...dest, ...moved])`, update source with `setSource(remaining)`, and reset the selection set to empty. Disable the transfer buttons when the corresponding selection set is empty.",
-          "codeJs": "import React, { useMemo, useState } from 'react';\nimport './App.css';\n\ntype Item = { id: string; label: string };\n\nexport default function App() {\n  const [topItems, setTopItems] = useState<Item[]>([\n    { id: 'a', label: 'Alpha' },\n    { id: 'b', label: 'Beta' },\n    { id: 'c', label: 'Gamma' },\n    { id: 'd', label: 'Delta' },\n    { id: 'e', label: 'Epsilon' }\n  ]);\n\n  const [bottomItems, setBottomItems] = useState<Item[]>([\n    { id: 'x', label: 'Xenon' },\n    { id: 'y', label: 'Yttrium' },\n    { id: 'z', label: 'Zinc' }\n  ]);\n\n  const [topSelected, setTopSelected] = useState<Set<string>>(() => new Set());\n  const [bottomSelected, setBottomSelected] = useState<Set<string>>(() => new Set());\n\n  const canMoveDown = topSelected.size > 0;\n  const canMoveUp = bottomSelected.size > 0;\n\n  const toggleTop = (id: string, checked: boolean) => {\n    setTopSelected((prev) => {\n      const next = new Set(prev);\n      if (checked) next.add(id);\n      else next.delete(id);\n      return next;\n    });\n  };\n\n  const toggleBottom = (id: string, checked: boolean) => {\n    setBottomSelected((prev) => {\n      const next = new Set(prev);\n      if (checked) next.add(id);\n      else next.delete(id);\n      return next;\n    });\n  };\n\n  const moveDown = () => {\n    if (!canMoveDown) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of topItems) {\n      if (topSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    setTopItems(remaining);\n    setBottomItems((prev) => [...prev, ...moved]);\n    setTopSelected(new Set());\n  };\n\n  const moveUp = () => {\n    if (!canMoveUp) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of bottomItems) {\n      if (bottomSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    setBottomItems(remaining);\n    setTopItems((prev) => [...prev, ...moved]);\n    setBottomSelected(new Set());\n  };\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Transfer List</h1>\n        <p className=\"subtitle\">Select items and move them between lists.</p>\n\n        <div className=\"layout\">\n          <section className=\"listCard\">\n            <div className=\"listTitle\">Top</div>\n            <ul className=\"list\" role=\"list\">\n              {topItems.map((item) => (\n                <li key={item.id} className=\"row\">\n                  <label className=\"rowLabel\">\n                    <input\n                      type=\"checkbox\"\n                      checked={topSelected.has(item.id)}\n                      onChange={(e) => toggleTop(item.id, e.target.checked)}\n                    />\n                    <span>{item.label}</span>\n                  </label>\n                </li>\n              ))}\n              {topItems.length === 0 && <li className=\"empty\">Empty</li>}\n            </ul>\n          </section>\n\n          <section className=\"controls\">\n            <button className=\"btn\" onClick={moveDown} disabled={!canMoveDown} aria-label=\"move down\">\n              \u2193\n            </button>\n            <button className=\"btn\" onClick={moveUp} disabled={!canMoveUp} aria-label=\"move up\">\n              \u2191\n            </button>\n          </section>\n\n          <section className=\"listCard\">\n            <div className=\"listTitle\">Bottom</div>\n            <ul className=\"list\" role=\"list\">\n              {bottomItems.map((item) => (\n                <li key={item.id} className=\"row\">\n                  <label className=\"rowLabel\">\n                    <input\n                      type=\"checkbox\"\n                      checked={bottomSelected.has(item.id)}\n                      onChange={(e) => toggleBottom(item.id, e.target.checked)}\n                    />\n                    <span>{item.label}</span>\n                  </label>\n                </li>\n              ))}\n              {bottomItems.length === 0 && <li className=\"empty\">Empty</li>}\n            </ul>\n          </section>\n        </div>\n\n        <p className=\"hint\">Tip: selections are per-list. Move clears selection of moved items.</p>\n      </section>\n    </main>\n  );\n}\n"
+          "codeJs": "import React, { useMemo, useState } from 'react';\nimport './App.css';\n\ntype Item = { id: string; label: string };\n\nexport default function App() {\n  const [topItems, setTopItems] = useState<Item[]>([\n    { id: 'a', label: 'Alpha' },\n    { id: 'b', label: 'Beta' },\n    { id: 'c', label: 'Gamma' },\n    { id: 'd', label: 'Delta' },\n    { id: 'e', label: 'Epsilon' }\n  ]);\n\n  const [bottomItems, setBottomItems] = useState<Item[]>([\n    { id: 'x', label: 'Xenon' },\n    { id: 'y', label: 'Yttrium' },\n    { id: 'z', label: 'Zinc' }\n  ]);\n\n  const [topSelected, setTopSelected] = useState<Set<string>>(() => new Set());\n  const [bottomSelected, setBottomSelected] = useState<Set<string>>(() => new Set());\n\n  const canMoveDown = topSelected.size > 0;\n  const canMoveUp = bottomSelected.size > 0;\n\n  const toggleTop = (id: string, checked: boolean) => {\n    setTopSelected((prev) => {\n      const next = new Set(prev);\n      if (checked) next.add(id);\n      else next.delete(id);\n      return next;\n    });\n  };\n\n  const toggleBottom = (id: string, checked: boolean) => {\n    setBottomSelected((prev) => {\n      const next = new Set(prev);\n      if (checked) next.add(id);\n      else next.delete(id);\n      return next;\n    });\n  };\n\n  const moveDown = () => {\n    if (!canMoveDown) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of topItems) {\n      if (topSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    setTopItems(remaining);\n    setBottomItems((prev) => [...prev, ...moved]);\n    setTopSelected(new Set());\n  };\n\n  const moveUp = () => {\n    if (!canMoveUp) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of bottomItems) {\n      if (bottomSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    setBottomItems(remaining);\n    setTopItems((prev) => [...prev, ...moved]);\n    setBottomSelected(new Set());\n  };\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Transfer List</h1>\n        <p className=\"subtitle\">Select items and move them between lists.</p>\n\n        <div className=\"layout\">\n          <section className=\"listCard\">\n            <div className=\"listTitle\">Top</div>\n            <ul className=\"list\" role=\"list\">\n              {topItems.map((item) => (\n                <li key={item.id} className=\"row\">\n                  <label className=\"rowLabel\">\n                    <input\n                      type=\"checkbox\"\n                      checked={topSelected.has(item.id)}\n                      onChange={(e) => toggleTop(item.id, e.target.checked)}\n                    />\n                    <span>{item.label}</span>\n                  </label>\n                </li>\n              ))}\n              {topItems.length === 0 && <li className=\"empty\">Empty</li>}\n            </ul>\n          </section>\n\n          <section className=\"controls\">\n            <button className=\"btn\" onClick={moveDown} disabled={!canMoveDown} aria-label=\"move down\">\n              ↓\n            </button>\n            <button className=\"btn\" onClick={moveUp} disabled={!canMoveUp} aria-label=\"move up\">\n              ↑\n            </button>\n          </section>\n\n          <section className=\"listCard\">\n            <div className=\"listTitle\">Bottom</div>\n            <ul className=\"list\" role=\"list\">\n              {bottomItems.map((item) => (\n                <li key={item.id} className=\"row\">\n                  <label className=\"rowLabel\">\n                    <input\n                      type=\"checkbox\"\n                      checked={bottomSelected.has(item.id)}\n                      onChange={(e) => toggleBottom(item.id, e.target.checked)}\n                    />\n                    <span>{item.label}</span>\n                  </label>\n                </li>\n              ))}\n              {bottomItems.length === 0 && <li className=\"empty\">Empty</li>}\n            </ul>\n          </section>\n        </div>\n\n        <p className=\"hint\">Tip: selections are per-list. Move clears selection of moved items.</p>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
       "notes": {
@@ -1372,7 +1372,7 @@
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
-          "Render a 3\u00d73 board (9 cells).",
+          "Render a 3×3 board (9 cells).",
           "Alternate turns between 'X' and 'O'.",
           "Clicking an empty cell places the current player's mark (only if the game is not over).",
           "Detect a winner (3 in a row) and stop further moves.",
@@ -1512,7 +1512,7 @@
   },
   {
     "id": "react-like-button",
-    "title": "Like Button (Facebook-style Toggle + Counter)",
+    "title": "React Like Button (Toggle + Counter)",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -1525,7 +1525,7 @@
       "conditional-rendering"
     ],
     "description": {
-      "summary": "Build a Like button in React that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering.",
+      "summary": "Build a React Like button that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1588,7 +1588,7 @@
   },
   {
     "id": "react-progress-bar-thresholds",
-    "title": "Progress Bar (0\u2013100 with Threshold Colors)",
+    "title": "React Progress Bar (0–100 with Threshold Colors)",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -1601,7 +1601,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a progress bar for values 0\u2013100 with +10%/\u221210% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34\u201366, green &gt;66). Show the numeric percentage and keep the UI in sync with state.",
+      "summary": "Build a React progress bar for values 0–100 with +10%/−10% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34–66, green &gt;66). Show the numeric percentage and keep the UI in sync with state.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1615,7 +1615,7 @@
           "Clicking \"+10%\" increases progress by 10 up to 100.",
           "Clicking \"-10%\" decreases progress by 10 down to 0.",
           "Progress never renders below 0% or above 100%.",
-          "Bar color changes by thresholds (example: <34 red, 34\u201366 orange, >66 green)."
+          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
         ],
         "implementationNotes": [
           "Use React state (`useState`) to store progress.",
@@ -1632,13 +1632,13 @@
         ]
       }
     },
-    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (<34 red, 34\u201366 orange, >66 green) and bind width via `style={{ width: progress + '%' }}`.",
+    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (<34 red, 34–66 orange, >66 green) and bind width via `style={{ width: progress + '%' }}`.",
     "solutionBlock": {
       "overview": "Use a single `progress` state value and derive the UI from it: the fill width is `progress%`, the text shows the percentage, and the color class is computed from threshold rules. Button handlers should use `Math.min/Math.max` to clamp the value so it never leaves [0, 100].",
       "approaches": [
         {
           "title": "Single component with clamped progress and threshold class",
-          "prose": "Store `progress` with `useState(0)`. Implement `inc()` and `dec()` as functional updates that clamp at 0 and 100. Derive `colorClass` based on the thresholds (for example: <34 red, 34\u201366 orange, >66 green). Render a track + fill where the fill width is `progress + '%'` and the class controls the color. This keeps all display logic derived from a single source of truth."
+          "prose": "Store `progress` with `useState(0)`. Implement `inc()` and `dec()` as functional updates that clamp at 0 and 100. Derive `colorClass` based on the thresholds (for example: <34 red, 34–66 orange, >66 green). Render a track + fill where the fill width is `progress + '%'` and the class controls the color. This keeps all display logic derived from a single source of truth."
         }
       ],
       "notes": {
@@ -1667,7 +1667,7 @@
   },
   {
     "id": "react-nested-comments",
-    "title": "Nested Comments (Infinite Replies, Single Active Reply Input)",
+    "title": "React Nested Comments (Infinite Replies, Single Active Reply Input)",
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
@@ -1681,7 +1681,7 @@
       "controlled-inputs"
     ],
     "description": {
-      "summary": "Build a nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation.",
+      "summary": "Build a React nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation.",
       "specs": {
         "requirements": [
           "Render a nested comments UI as the main screen.",
@@ -1746,7 +1746,7 @@
   },
   {
     "id": "react-dynamic-counter-buttons",
-    "title": "Dynamic Counter Buttons (Grow-on-Click)",
+    "title": "React Dynamic Counter Buttons (Grow-on-Click)",
     "type": "coding",
     "technology": "react",
     "difficulty": "medium",
@@ -1759,19 +1759,19 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: react, state, arrays, event handlers, dynamic ui.",
+      "summary": "In React, let users add or remove step buttons dynamically, and have each button update the counter by its own step value. Use state arrays and event handlers to keep the UI in sync. Concepts: react, state, arrays, event handlers, dynamic ui.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main screen.",
           "Initially render exactly 1 counter button with value 0.",
-          "Clicking any button increments ONLY that button\u2019s value by 1.",
+          "Clicking any button increments ONLY that button’s value by 1.",
           "After each click, append a NEW button at the bottom with value 0.",
           "All buttons keep their own values independently."
         ],
         "expectedBehavior": [
           "Initial UI: one button showing 0.",
-          "Click first button once \u2192 first becomes 1, and a second button (0) appears below.",
-          "Click second button twice \u2192 second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Click first button once → first becomes 1, and a second button (0) appears below.",
+          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
           "Existing button values never reset when new buttons appear."
         ],
         "implementationNotes": [

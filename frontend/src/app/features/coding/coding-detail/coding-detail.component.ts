@@ -876,14 +876,82 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       keywords: keywords.join(', '),
     };
 
+    const howTo = this.buildHowToSchema(q, canonical);
+    const jsonLd = howTo ? [breadcrumb, article, howTo] : [breadcrumb, article];
+
     this.seo.updateTags({
       title: q.title,
       description,
       keywords,
       canonical,
       ogType: 'article',
-      jsonLd: [breadcrumb, article],
+      jsonLd,
     });
+  }
+
+  private buildHowToSchema(q: Question, canonical: string): Record<string, any> | null {
+    // Avoid exposing premium solutions; keep steps derived from prompt-level fields only.
+    const steps = this.buildHowToSteps(q);
+    if (!steps.length) return null;
+
+    return {
+      '@type': 'HowTo',
+      '@id': `${canonical}#howto`,
+      name: q.title,
+      description: this.questionDescription(q),
+      inLanguage: 'en',
+      step: steps.map((text, idx) => ({
+        '@type': 'HowToStep',
+        position: idx + 1,
+        name: this.trimWords(text, 12),
+        text,
+      })),
+    };
+  }
+
+  private buildHowToSteps(q: Question): string[] {
+    const steps: string[] = [];
+    const desc = q.description as any;
+    const add = (value?: string) => {
+      const normalized = this.normalizePreviewText(value || '');
+      if (normalized) steps.push(normalized);
+    };
+
+    const summary = typeof desc === 'string'
+      ? desc
+      : (desc && typeof desc === 'object' ? (desc as StructuredDescription).summary || '' : '');
+    add(summary);
+
+    const specs = (desc && typeof desc === 'object') ? (desc as any).specs : null;
+    if (specs) {
+      const pushList = (items?: string[]) => {
+        if (!Array.isArray(items)) return;
+        items.forEach((item) => add(item));
+      };
+      pushList(specs.requirements);
+      pushList(specs.expectedBehavior);
+      pushList(specs.implementationNotes);
+    } else if (desc && typeof desc === 'object') {
+      const args = (desc as StructuredDescription).arguments || [];
+      if (args.length) {
+        add(`Inputs: ${args.map((a) => a.name).join(', ')}`);
+      }
+      const returns = (desc as StructuredDescription).returns;
+      if (returns?.desc || returns?.type) {
+        add(`Return: ${returns?.desc || returns?.type}`);
+      }
+    }
+
+    const unique: string[] = [];
+    const seen = new Set<string>();
+    for (const s of steps) {
+      const key = s.toLowerCase();
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      unique.push(this.trimWords(s, 22));
+    }
+
+    return unique.slice(0, 8);
   }
 
   // ---------- Load question ----------
