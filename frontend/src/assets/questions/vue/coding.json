@@ -253,7 +253,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Create a basic image slider with next/prev controls and an active index. Guard the index at bounds, update the displayed image and label, and keep disabled states in sync with index.",
+      "summary": "Create a basic image slider with next/prev controls and an active index. Guard the index at bounds, update the displayed image and label, and keep disabled states in sync with index. Concepts: vue, components, reactivity.",
       "specs": {
         "requirements": [
           "Render the image slider UI as the main component.",
@@ -288,7 +288,7 @@
     },
     "starterCodeHint": "Define a `slides` array in `<script setup>` and track the current slide index in a `ref(0)`. Use `computed` values for the current slide, total slide count, and whether previous/next are allowed. Implement `goTo`, `prev`, and `next` to update the index safely.",
     "solutionBlock": {
-      "overview": "Model the image slider as an array of slide objects and a single reactive index stored in a `ref`. Use `computed` properties to derive the current slide, total slide count, and whether the user can go to the previous or next slide. Expose three handlers: `goTo(index)` for jumping to a specific slide (guarded by bounds), `prev()` for moving one step left when possible, and `next()` for moving one step right when possible.\n\n**Key ideas**\n- Store only the current index as reactive state; everything else is derived.\n- Use `computed` for `currentSlide`, `canGoPrev`, and `canGoNext` so the template stays simple.\n- Guard navigation so the index never goes out of range.",
+      "overview": "Model the image slider as an array of slide objects and a single reactive index stored in a `ref`. Use `computed` properties to derive the current slide, total slide count, and whether the user can go to the previous or next slide. Expose three handlers: `goTo(index)` for jumping to a specific slide (guarded by bounds), `prev()` for moving one step left when possible, and `next()` for moving one step right when possible.\n\n**Key ideas**\n- Store only the current index as reactive state; everything else is derived.\n- Use `computed` for `currentSlide`, `canGoPrev`, and `canGoNext` so the template stays simple.\n- Guard navigation so the index never goes out of range. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component slider with derived navigation state",
@@ -334,7 +334,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics.",
+      "summary": "Implement tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics. Concepts: vue, components, reactivity.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -363,7 +363,7 @@
     },
     "starterCodeHint": "Implement the tab state and handlers inside `<script setup>`. Use `ref('overview')` for the active tab and a small helper like `isActive(tab)` to decide which tab is highlighted and which panel is shown.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with a single `ref` holding the active tab id. The tab buttons update that ref when clicked, and a helper like `isActive(tab)` is used in the template for both styling and conditional rendering.\n\n**Key ideas**\n- Store the active tab id in a single `ref`.\n- Drive the active pill style and visible panel from the same source of truth.\n- Keep all logic colocated with the component template using `<script setup>`.",
+      "overview": "Use Vue 3's Composition API with a single `ref` holding the active tab id. The tab buttons update that ref when clicked, and a helper like `isActive(tab)` is used in the template for both styling and conditional rendering.\n\n**Key ideas**\n- Store the active tab id in a single `ref`.\n- Drive the active pill style and visible panel from the same source of truth.\n- Keep all logic colocated with the component template using `<script setup>`. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with `activeTab` ref and helper function",
@@ -407,7 +407,7 @@
       "filtering"
     ],
     "description": {
-      "summary": "Build a filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match.",
+      "summary": "Build a filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match. Concepts: vue, components, reactivity.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main component.",
@@ -441,7 +441,7 @@
     },
     "starterCodeHint": "Define a constant USERS array with name, role, and active. Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`, and derive `filteredUsers` in a `computed` that applies all three filters.",
     "solutionBlock": {
-      "overview": "The core of this exercise is combining three filters (search text, role selection, and an \"only active\" toggle) into a single derived list without mutating the original user data.\n\n**Key ideas**\n- Keep the base `USERS` list as a plain constant.\n- Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`.\n- Use a `computed` `filteredUsers` that applies all filters in sequence.\n- Render `filteredUsers` with `v-for`, and show an empty state when it is empty.\n\n**Test cases**\n- Default render shows all users.\n- Typing a partial name filters to matching users.\n- Changing the role filter to `Admin` shows only admins, `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- When filters exclude all users, a \"no users\" message is rendered.",
+      "overview": "The core of this exercise is combining three filters (search text, role selection, and an \"only active\" toggle) into a single derived list without mutating the original user data.\n\n**Key ideas**\n- Keep the base `USERS` list as a plain constant.\n- Use `ref` for `searchTerm`, `selectedRole`, and `showOnlyActive`.\n- Use a `computed` `filteredUsers` that applies all filters in sequence.\n- Render `filteredUsers` with `v-for`, and show an empty state when it is empty.\n\n**Test cases**\n- Default render shows all users.\n- Typing a partial name filters to matching users.\n- Changing the role filter to `Admin` shows only admins, `All` restores all roles.\n- Ticking \"Only active users\" hides inactive users.\n- When filters exclude all users, a \"no users\" message is rendered. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single `<App.vue>` with `ref` state and computed `filteredUsers`",
@@ -898,7 +898,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Implement a debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX.",
+      "summary": "Implement a debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX. Concepts: vue, composition-api, watch.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -936,7 +936,7 @@
     },
     "starterCodeHint": "Use `ref('')` for `query`, `ref([])` for `results`, and a `watch(query, ...)` that starts a 500ms `setTimeout` and clears it in `onInvalidate`. Inside the timeout, call `fakeApiSearch(trimmedQuery)` and update loading, error, and results accordingly.",
     "solutionBlock": {
-      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown.",
+      "overview": "Keep all logic inside `<script setup>` in `App.vue`. Use `ref` for `query`, `results`, `isLoading`, and `error`. Implement a `watch(query, ...)` that debounces the search by 500ms using `setTimeout`. In the watcher:\n\n1. If the trimmed query is empty, immediately clear results and reset flags.\n2. Otherwise, set `isLoading` to `true`, clear `error`, and schedule a 500ms timeout.\n3. In the timeout callback, call `fakeApiSearch(trimmed)` and update `results` and `isLoading` on success or set `error` on failure.\n\nUse `onInvalidate` in the watcher to clear the timeout so older changes cannot trigger stale API calls.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown. Key concepts: vue, composition-api, watch.",
       "approaches": [
         {
           "title": "Single component with `watch` and debounced API call",
@@ -982,7 +982,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a reusable star rating widget with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth.",
+      "summary": "Create a reusable star rating widget with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity.",
       "specs": {
         "requirements": [
           "Render the star rating UI as the main component.",
@@ -1014,7 +1014,7 @@
     },
     "starterCodeHint": "Inside `<script setup>`, use a `ref(0)` for the current rating and a `computed` list of stars. Implement a `handleRate` function that updates the rating when a star is clicked.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars.",
+      "overview": "Use Vue 3's Composition API with a `ref(0)` for `rating` and a `ref(5)` for `max`. Derive a list of star indices (1..max) via `computed`, render them with `v-for`, and apply a `filled` class when `star <= rating`. A `handleRate` function sets `rating.value` to the clicked star index.\n\n**Key ideas**\n- Keep all logic inside `<script setup>` in `App.vue`.\n- Represent the rating as a single `ref`.\n- Generate stars from data instead of hardcoding them.\n- Use class binding to toggle filled vs empty stars. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with reactive rating and computed stars",
@@ -1061,7 +1061,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Generate a dynamic table from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable.",
+      "summary": "Generate a dynamic table from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable. Concepts: vue, components, reactivity.",
       "specs": {
         "requirements": [
           "Render the dynamic table UI as the main component.",
@@ -1092,7 +1092,7 @@
     },
     "starterCodeHint": "Implement the logic inside `<script setup>`. Use `ref(3)` and `ref(4)` for the initial row/column inputs, keep `rows` and `cols` in refs that you rebuild in an `updateTable()` function, and drive the table with nested `v-for` loops over those arrays.",
     "solutionBlock": {
-      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0\u201320) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts.",
+      "overview": "Use Vue 3's Composition API to keep four main reactive values: `rowInput`, `colInput`, `rows`, and `cols`. The numeric inputs use `v-model.number` to update `rowInput` and `colInput`. When the user clicks the \"Generate table\" button, `updateTable()` normalizes those values (e.g. clamp to 0\u201320) and rebuilds `rows` and `cols` with `Array.from`. The template uses nested `v-for` loops to render `<tr>` and `<td>` elements, and each cell displays its 1-based row and column index.\n\n**Key ideas**\n- Separate raw input state from the arrays you actually render.\n- Normalize user input before building the grid.\n- Use nested `v-for` loops for grid-like layouts. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with reactive inputs and `v-for`-driven grid",
@@ -1386,7 +1386,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build Tic\u2011Tac\u2011Toe with reactive board state and clear game flow. Track the current player, prevent overwriting cells, detect wins/draws, and show a status message. Add a reset to restart the game deterministically.",
+      "summary": "Build a Tic-Tac-Toe game in Vue with alternating turns, win/draw detection, and a reset button. Prevent overwriting moves and show clear status messages for current player and outcome so the game is easy to follow.",
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
@@ -1423,11 +1423,11 @@
     },
     "starterCodeHint": "Implement `calculateWinner`, derive `isDraw`, `isGameOver`, and `status` via `computed`, then implement `play(i)` and `reset()` inside `<script setup>`.",
     "solutionBlock": {
-      "overview": "Keep a 9-cell board in a `ref`. Derive winner/draw/game-over and status via `computed`. On click, ignore if game is over or the cell is filled; otherwise place the current player's mark and toggle the player if the game is still ongoing. Provide reset to restore initial state.\n\n**Test cases**\n- Start \u2192 `Next: X`.\n- Moves alternate X/O.\n- Filled cell click \u2192 no-op.\n- Winning line \u2192 `Winner: X|O`, no more moves.\n- Full board with no winner \u2192 `Draw`.\n- Reset \u2192 clears board and sets `Next: X`.",
+      "overview": "Tic-Tac-Toe tests basic state management and derived UI. Track a 9-cell board and the current player, prevent overwriting moves, check for a winner after each move, and declare a draw when the board is full. Provide a reset for a clean restart.",
       "approaches": [
         {
           "title": "Single SFC with refs + computed derived state",
-          "prose": "Use a single `App.vue` with `ref` for `board` and `currentPlayer`. Use `computed` for `winner`, `isDraw`, `isGameOver`, and `status`. Render the grid with `v-for` and disable cells when filled or game over."
+          "prose": "Use ref for the board array and current player. On cell click, guard against filled cells or game over, update the board, compute winner via the 8 combos, and toggle player if no winner. Render status text and a reset button so users always know the game state."
         }
       ],
       "notes": {
@@ -1471,7 +1471,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state.",
+      "summary": "Create a Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state. Concepts: vue, components, reactivity.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1503,7 +1503,7 @@
     },
     "starterCodeHint": "Implement `toggleLike()` and update both `liked` and `count`. Ensure the count never drops below 0.",
     "solutionBlock": {
-      "overview": "Use two reactive refs: `liked` (boolean) and `count` (number). The click handler flips `liked` and adjusts `count` by +1 or -1. Clamp the count to zero on unlike so the UI never goes negative. This is a simple but realistic state-sync exercise.",
+      "overview": "Use two reactive refs: `liked` (boolean) and `count` (number). The click handler flips `liked` and adjusts `count` by +1 or -1. Clamp the count to zero on unlike so the UI never goes negative. This is a simple but realistic state-sync exercise. Key concepts: vue, components, reactivity.",
       "approaches": [
         {
           "title": "Single component with guarded toggle",
@@ -1550,7 +1550,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Vue 3 progress bar for values 0\u2013100 with +10%/\u221210% controls. Clamp the value to [0,100], show the numeric percentage, and change the fill color by thresholds (red/orange/green).",
+      "summary": "Build a Vue 3 progress bar for 0\u2013100 with +10/\u221210 controls. Clamp values, display the percentage, and change the fill color by thresholds (red/orange/green) to communicate status clearly. Keep state in sync with UI at all times.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1582,11 +1582,11 @@
     },
     "starterCodeHint": "Use `const progress = ref(0)`. Implement `inc/dec` with clamping. Compute `barClass` from progress (<34 red, 34\u201366 orange, >66 green). Bind `:style=\"{ width: progress + '%' }\"` on the fill.",
     "solutionBlock": {
-      "overview": "Keep progress in a ref, update it with clamped handlers, and compute the color class based on thresholds. The fill width is derived from the progress value, so the UI stays declarative and always reflects state.",
+      "overview": "A progress bar is a simple state-driven component: one numeric value controls width, label, and color. Clamp the value between 0 and 100, show the percentage, and compute a color class based on thresholds to communicate status clearly and consistently across updates. This keeps the UI declarative and predictable.",
       "approaches": [
         {
           "title": "Single component with clamped progress + computed threshold class",
-          "prose": "In `<script setup>`, define `const progress = ref(0)`. `inc()` and `dec()` update `progress.value` using `Math.min/Math.max`. Use a computed `barClass` that returns `red`, `orange`, or `green` based on the current value (e.g., <34, 34\u201366, >66). Bind the fill width with `:style=\"{ width: progress + '%' }\"` and render the percentage text."
+          "prose": "Define progress = ref(0) and inc/dec handlers that clamp with Math.min/Math.max. Create a computed barClass for threshold colors and bind the fill width with a style binding. Render the numeric percentage so the UI remains transparent to the user, and keep all styling derived from state rather than manual DOM tweaks."
         }
       ],
       "notes": {

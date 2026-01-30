@@ -26,10 +26,12 @@ import { filter, Subject, Subscription } from 'rxjs';
 
 import type { Question, StructuredDescription } from '../../../core/models/question.model';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
+import { buildLockedPreviewForCoding, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { CodeStorageService } from '../../../core/services/code-storage.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { ConsoleEntry, ConsoleLoggerComponent, TestResult } from '../console-logger/console-logger.component';
 
 import type { Tech } from '../../../core/models/user.model';
@@ -96,6 +98,7 @@ type FASolutionBlock = {
     CommonModule, RouterModule, HttpClientModule, ButtonModule, DialogModule,
     MonacoEditorComponent, ConsoleLoggerComponent, FooterComponent,
     CodingJsPanelComponent, CodingWebPanelComponent, CodingFrameworkPanelComponent,
+    LockedPreviewComponent,
     LoginRequiredDialogComponent,
     SafeHtmlPipe,
   ],
@@ -263,6 +266,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       .map((item) => this.trimWords(this.normalizePreviewText(item), 12))
       .filter((item) => item.length > 0)
       .slice(0, 2);
+  });
+  lockedPreview = computed<LockedPreviewData | null>(() => {
+    const q = this.question();
+    if (!q) return null;
+    return buildLockedPreviewForCoding(q, {
+      candidates: this.allQuestions as any,
+      tech: this.tech,
+      kind: 'coding',
+    });
   });
 
   // ✅ UI solved: only true when authenticated

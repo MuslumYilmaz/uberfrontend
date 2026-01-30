@@ -14,7 +14,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a React counter with increment/decrement buttons and a zero floor. Use state to keep the count, disable decrement at zero, and ensure the UI always reflects the current value.",
+      "summary": "Build a React counter with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values.",
       "specs": {
         "requirements": [
           "Render a <Counter /> as the main UI.",
@@ -40,11 +40,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "A single `count` state drives the UI. Increment adds one, decrement subtracts one but clamps at zero. Disabling the minus button at zero makes the state rules explicit and prevents negative values.",
+      "overview": "A single count state drives the UI. Increment adds 1, decrement subtracts 1 but clamps at 0. Disabling the minus button at zero communicates the rule to users and prevents invalid negative values. This is a clean example of state-driven UI and controlled updates.",
       "approaches": [
         {
           "title": "Single component with guarded decrement",
-          "prose": "Use `useState(0)` for `count`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the minus button\u2019s `disabled` prop when `count === 0` and render the current count in the UI.",
+          "prose": "Initialize `count` with `useState(0)`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the decrement button\u2019s `disabled` prop when `count === 0`, and render the count in the UI so every click immediately reflects the new state.",
           "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
         }
       ],
@@ -890,7 +890,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Implement a debounced search input with fake API calls. Use setTimeout/cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX.",
+      "summary": "Implement a debounced search input with fake API calls. Use setTimeout/cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -928,7 +928,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Use a controlled input for the query and keep `results`, `isLoading`, and `error` in state. In a `useEffect` that depends on `query`, start a 500ms timeout. Inside the timeout callback, call `fakeApiSearch(query)` and update state on success or failure. Clear results and flags immediately when the query becomes empty.\n\nTo avoid race conditions, clear the timeout and mark the effect as stale in the cleanup function so older requests can't overwrite newer state.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown.",
+      "overview": "Use a controlled input for the query and keep `results`, `isLoading`, and `error` in state. In a `useEffect` that depends on `query`, start a 500ms timeout. Inside the timeout callback, call `fakeApiSearch(query)` and update state on success or failure. Clear results and flags immediately when the query becomes empty.\n\nTo avoid race conditions, clear the timeout and mark the effect as stale in the cleanup function so older requests can't overwrite newer state.\n\n**Test cases**\n- Typing quickly does not fire a request until 500ms after typing stops.\n- Clearing the input clears results and stops loading.\n- Query `\"ali\"` returns users whose name or email contains that substring.\n- Query `\"error\"` triggers the fake API rejection and shows the error message.\n- With no matches, a 'no results' message is shown. Key concepts: react, state, effects.",
       "approaches": [
         {
           "title": "Single component with useEffect debounce",
@@ -1054,7 +1054,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Generate a dynamic table from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions.",
+      "summary": "Generate a dynamic table from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers.",
       "specs": {
         "requirements": [
           "Render a main <App /> UI that contains the dynamic table controls.",
@@ -1083,7 +1083,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Use React state to hold four values: rowInput, colInput, rows, and cols. The numeric inputs store raw values (rowInput, colInput). When the user clicks a \"Generate\" button, you normalize these values, then rebuild rows and cols arrays using something like Array.from({ length: n }). The component renders an HTML table using nested map calls over rows and cols, printing a label such as R1C1 in each cell.\n\n**Test cases**\n- With rowInput = 2 and colInput = 3, after clicking \"Generate\", the table has 2 <tr> rows and each row has 3 <td> cells.\n- Updating rowInput to 4 and clicking again updates the table to 4 rows.\n- Updating colInput to 1 and clicking again updates the table to 1 column per row.\n- When rows or columns are set to 0 (or negative), the implementation either renders no table or clamps to 0/1 consistently.",
+      "overview": "Use React state to hold four values: rowInput, colInput, rows, and cols. The numeric inputs store raw values (rowInput, colInput). When the user clicks a \"Generate\" button, you normalize these values, then rebuild rows and cols arrays using something like Array.from({ length: n }). The component renders an HTML table using nested map calls over rows and cols, printing a label such as R1C1 in each cell.\n\n**Test cases**\n- With rowInput = 2 and colInput = 3, after clicking \"Generate\", the table has 2 <tr> rows and each row has 3 <td> cells.\n- Updating rowInput to 4 and clicking again updates the table to 4 rows.\n- Updating colInput to 1 and clicking again updates the table to 1 column per row.\n- When rows or columns are set to 0 (or negative), the implementation either renders no table or clamps to 0/1 consistently. Key concepts: react, state, event-handlers.",
       "approaches": [
         {
           "title": "Single component with derived row/column arrays",
@@ -1759,7 +1759,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently.",
+      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently. Concepts: react, state, arrays.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main screen.",
@@ -1789,7 +1789,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Keep an array of counts in state. Render one button per entry. On click, copy the array, increment the clicked index, then push a new 0 at the end, and set the new array.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0]",
+      "overview": "Keep an array of counts in state. Render one button per entry. On click, copy the array, increment the clicked index, then push a new 0 at the end, and set the new array.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0] Key concepts: react, state, arrays.",
       "approaches": [
         {
           "title": "Single component with counts[] array",

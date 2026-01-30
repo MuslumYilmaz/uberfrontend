@@ -15,7 +15,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Style a small hero header using BOTH element selectors and class selectors. Goal: set a clean base text style via element selectors, then override specific parts using classes (headline, tagline, highlight). This is a common interview check for basic selector targeting + readable typography.",
+      "summary": "Style a small hero header using both element and class selectors. Establish base typography on element selectors, then override specific parts with classes for emphasis and hierarchy. This checks selector targeting, cascade behavior, and readable type scale for a real UI snippet.",
       "arguments": [
         {
           "name": "Element selectors",
@@ -49,11 +49,11 @@
       "starterCss": "/* Base styles (do not remove) */\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 2rem;\n  line-height: 1.6;\n}\n\n/* TASK\n  Use BOTH element selectors and class selectors.\n\n  1) Element selectors:\n     - Style h1: set font-size and remove default margin.\n     - Style p: set a base color and line-height, and add top margin.\n\n  2) Class selectors (overrides):\n     - .tagline: override the base p color to a softer gray.\n     - .highlight: emphasize the word \"text\" using color + font-weight.\n\n  Notes:\n    - Don't change the HTML.\n    - Keep it simple: only typography + spacing.\n*/"
     },
     "solutionBlock": {
-      "overview": "Set base typography using element selectors, then override specific pieces with class selectors. This demonstrates cascade and specificity in a clean, realistic UI snippet.",
+      "overview": "Use element selectors to set the baseline rhythm across the hero (font size, line-height, margin, and color). Then apply class selectors for targeted emphasis like a muted tagline or a highlighted word. This demonstrates clean cascade usage, minimal specificity, and intentional visual hierarchy without over-nesting selectors or relying on ids.",
       "approaches": [
         {
           "title": "Approach \u2014 Base Elements + Targeted Class Overrides",
-          "prose": "Style `h1` and `p` directly for base font size, line height, and spacing. Then apply `.tagline` to adjust tone (color/weight) and `.highlight` to emphasize one word. Keep specificity low so class overrides remain simple and readable.",
+          "prose": "First, style `h1` and `p` directly to create the default typography system: size, line height, spacing, and base color. Next, apply a `.tagline` class to soften contrast or weight for secondary copy so hierarchy is visible. Finally, wrap the emphasized word in a span with `.highlight` to raise contrast or weight. Keep selectors flat so later overrides remain predictable and maintainable.",
           "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style <span class='highlight'>text</span>, layouts, and more.</p>",
           "codeCss": "h1 {\n  font-size: 2rem;\n  margin: 0;\n  color: #111;\n}\n\np {\n  margin: 0.5rem 0 0;\n  line-height: 1.6;\n  color: #333;\n}\n\n.tagline {\n  color: #555;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
         }
@@ -345,7 +345,7 @@
       "navbar"
     ],
     "description": {
-      "summary": "Build a responsive navbar using flexbox. Align logo, links, and actions with justify-content and align-items, and handle wrapping or stacking on small screens. Call out spacing strategy (gap vs margin) and hover/active states.",
+      "summary": "Build a responsive navbar using Flexbox. Align brand left, links center or right, and actions to the end. Use gap for spacing, keep items aligned on one row, and ensure the layout wraps cleanly on small screens without overlapping text or buttons.",
       "arguments": [
         {
           "name": ".nav { display: flex; align-items: center }",
@@ -378,11 +378,11 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens \u2264480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}"
     },
     "solutionBlock": {
-      "overview": "Flexbox makes it simple to align navbar elements horizontally and adapt to small screens. The logo stays left, links expand and center themselves, and the CTA sits at the right. On mobile, the nav stacks neatly with centered alignment.",
+      "overview": "A navbar is a classic flexbox layout: align items horizontally, keep consistent spacing, and push actions to the end. Flexbox lets you keep the brand on the left, links in the middle, and CTAs on the right with minimal markup. Responsive behavior is handled by wrapping or small breakpoint tweaks, not extra containers.",
       "approaches": [
         {
           "title": "Approach \u2014 Flex Container with Responsive Direction",
-          "prose": "Use `display: flex` on `.nav` with `align-items: center`. Give `.links` `flex: 1` and `display: flex; justify-content: center` to center them while pushing the CTA right. Add `gap` for spacing. A media query changes `.nav` to `flex-direction: column` under 480px for vertical stacking.",
+          "prose": "Set the container to display:flex and align-items:center. Use gap for predictable spacing between links, and apply margin-left:auto to the right-side group so actions align to the end. Add flex-wrap: wrap so items flow on small screens, or switch to a stacked layout at a breakpoint while preserving readable spacing and tap targets.",
           "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
           "codeCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
         }
@@ -427,7 +427,7 @@
       "gallery"
     ],
     "description": {
-      "summary": "Create a responsive card gallery using CSS Grid that adapts from 2 to 4 columns. Use grid-template-columns with repeat/minmax and gap for spacing, and explain how grid auto-flow handles additional cards.",
+      "summary": "Create a responsive card gallery using CSS Grid that adapts from 2 to 4 columns. Use `repeat()` with `minmax()` for flexible tracks, and `gap` for consistent spacing. Demonstrate how the grid naturally flows extra cards without manual positioning.",
       "arguments": [
         {
           "name": ".gallery { display: grid }",
@@ -459,11 +459,11 @@
       "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths \u22651024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}"
     },
     "solutionBlock": {
-      "overview": "Build a responsive gallery with CSS Grid that adapts columns based on viewport size. `repeat` + `minmax` creates flexible tracks, and `gap` handles spacing without extra margins.",
+      "overview": "CSS Grid is ideal for galleries because you declare the column structure once and let the layout engine flow items. Use `repeat(minmax())` to create fluid columns that shrink and grow, then switch to more columns at a larger breakpoint. This yields predictable alignment, uniform spacing, and clean responsiveness without extra wrapper elements.",
       "approaches": [
         {
           "title": "Approach \u2014 Responsive Grid Columns",
-          "prose": "Set the container to `display: grid` with `grid-template-columns: repeat(2, minmax(0, 1fr))` for small screens and a `gap` for spacing. At a larger breakpoint (e.g., 1024px), switch to `repeat(4, minmax(0, 1fr))`. This keeps cards aligned and responsive.",
+          "prose": "Define a `.gallery` container with `display: grid`, a `gap`, and `grid-template-columns: repeat(2, minmax(0, 1fr))` for small screens. Add a media query around 1024px to use `repeat(4, minmax(0, 1fr))` for desktop. Keep cards as direct children so grid auto-placement handles ordering and wrapping automatically without additional markup.",
           "codeHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
           "codeCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
         }
@@ -508,7 +508,7 @@
       "clamp"
     ],
     "description": {
-      "summary": "Implement fluid typography and spacing with clamp(). Use clamp(min, preferred, max) to scale values across viewport sizes while enforcing readable bounds. Explain why clamp is better than pure vw scaling and how to pick sensible min/max.",
+      "summary": "Implement fluid typography and spacing with `clamp()`. Use `clamp(min, preferred, max)` to scale values across viewport sizes while keeping readable bounds. Explain why clamp is safer than raw `vw` scaling and reduces the need for extra media queries.",
       "arguments": [
         {
           "name": "Fluid type with clamp()",
@@ -540,11 +540,11 @@
       "starterCss": "/* Base page styles */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 0;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n/* Visual container */\\n.hero {\\n  background: #222;\\n  color: #fff;\\n  /* TODO: Use clamp() to make horizontal padding scale with viewport width */\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  /* TODO: Use clamp() to make font-size scale smoothly */\\n}\\n\\n.hero p {\\n  margin: 0;\\n  opacity: 0.9;\\n}"
     },
     "solutionBlock": {
-      "overview": "Use `clamp()` for fluid sizing that scales with the viewport but stays within readable bounds. It\u2019s ideal for typography and spacing because it blends responsiveness with accessibility.",
+      "overview": "`clamp()` blends fluid scaling with guardrails, which is perfect for headings and padding. The preferred value can use `vw` so the size grows with the screen, while min and max ensure legibility on small devices and prevent oversized type on large monitors. This keeps layouts responsive without brittle breakpoints or hard jumps.",
       "approaches": [
         {
           "title": "Approach \u2014 clamp() for Type & Padding",
-          "prose": "Apply `clamp(min, preferred, max)` to the heading font size and horizontal padding. Use a `vw`-based preferred value so it scales with screen width, while `min` and `max` keep it from getting too small or too large.",
+          "prose": "Apply `clamp()` to a hero heading (e.g. `clamp(1.75rem, 3vw, 3rem)`) and to horizontal padding like `padding-inline: clamp(16px, 4vw, 48px)`. Choose the min value for phone readability and the max for desktop balance. The middle value uses `vw` to scale smoothly between the bounds.",
           "codeHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
           "codeCss": ".hero {\\n  background: #222;\\n  color: #fff;\\n  padding-inline: clamp(1rem, 4vw, 3rem);\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  font-size: clamp(1.5rem, 3vw + 1rem, 3rem);\\n}\\n.hero p { margin: 0; opacity: 0.9; }"
         }

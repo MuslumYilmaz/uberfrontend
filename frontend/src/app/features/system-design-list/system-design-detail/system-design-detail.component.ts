@@ -9,9 +9,11 @@ import { ChipModule } from 'primeng/chip';
 import { QuestionService } from '../../../core/services/question.service';
 import { MonacoEditorComponent } from '../../../monaco-editor.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
+import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 
 type Block =
   | { type: 'text'; text: string }
@@ -102,7 +104,7 @@ type SDQuestion = {
 @Component({
   selector: 'app-system-design-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ChipModule, MonacoEditorComponent, FooterComponent],
+  imports: [CommonModule, RouterModule, ChipModule, MonacoEditorComponent, FooterComponent, LockedPreviewComponent],
   templateUrl: './system-design-detail.component.html',
   styleUrls: ['./system-design-detail.component.css']
 })
@@ -142,6 +144,19 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       .map((s) => this.trimWords(this.normalizePreviewText(s.title), 8))
       .filter((item) => item.length > 0)
       .slice(0, 2);
+  });
+  lockedPreview = computed<LockedPreviewData | null>(() => {
+    const q = this.q();
+    if (!q) return null;
+    return buildLockedPreviewForSystemDesign({
+      id: q.id,
+      title: q.title,
+      description: this.sdDescription(q),
+      tags: q.tags || [],
+      sectionTitles: this.sections().map((s) => s.title),
+    }, {
+      candidates: this.all as any,
+    });
   });
 
   sections = computed<Required<RadioSection>[]>(() => {

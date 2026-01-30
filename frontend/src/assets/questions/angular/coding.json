@@ -251,7 +251,7 @@
       "ui"
     ],
     "description": {
-      "summary": "Build an image slider with next/prev controls, a current index, and disabled states at bounds. Keep the template state-driven and update the active slide label as the index changes.",
+      "summary": "Build an image slider with next/prev controls, a current index, and disabled states at bounds. Keep the template state-driven and update the active slide label as the index changes. Concepts: components, event-binding, ng-for.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -285,7 +285,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Model the slider as a small view model on the component: a readonly `slides` array and a `currentIndex` number. Use getters to derive `currentSlide`, `totalSlides`, and convenience flags like `canGoPrev` and `canGoNext`. The template shows the active slide and wires buttons and dot indicators to simple methods that update `currentIndex`.\n\n**Test cases**\n- Initial render shows the first slide, with \"Previous\" disabled and the first dot highlighted.\n- Clicking \"Next\" repeatedly walks through the slides and disables itself on the last slide.\n- Clicking \"Previous\" from the middle moves backward one slide at a time.\n- Clicking a dot jumps directly to that slide and updates the heading, image, and helper text.\n- The slider never goes out of range (no index smaller than 0 or greater than `slides.length - 1`).",
+      "overview": "Model the slider as a small view model on the component: a readonly `slides` array and a `currentIndex` number. Use getters to derive `currentSlide`, `totalSlides`, and convenience flags like `canGoPrev` and `canGoNext`. The template shows the active slide and wires buttons and dot indicators to simple methods that update `currentIndex`.\n\n**Test cases**\n- Initial render shows the first slide, with \"Previous\" disabled and the first dot highlighted.\n- Clicking \"Next\" repeatedly walks through the slides and disables itself on the last slide.\n- Clicking \"Previous\" from the middle moves backward one slide at a time.\n- Clicking a dot jumps directly to that slide and updates the heading, image, and helper text.\n- The slider never goes out of range (no index smaller than 0 or greater than `slides.length - 1`). Key concepts: components, event-binding, ng-for.",
       "approaches": [
         {
           "title": "Standalone component with index-based navigation",
@@ -487,7 +487,7 @@
       "interactivity"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) component in Angular that renders 3\u20134 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "summary": "Build a simple FAQ (accordion) component in Angular that renders 3\u20134 questions. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. Concepts: components, inputs, outputs.",
       "specs": {
         "requirements": [
           "Use a standalone root component and at least one child component for a single FAQ item.",
@@ -519,7 +519,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question \u2192 its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode \u2192 currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes.",
+      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question \u2192 its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode \u2192 currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes. Key concepts: components, inputs, outputs.",
       "approaches": [
         {
           "title": "Parent-controlled open indexes with a child FAQ item component",
@@ -563,7 +563,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -597,7 +597,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render \u2192 shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled.",
+      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render \u2192 shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled. Key concepts: components, state, pagination.",
       "approaches": [
         {
           "title": "Standalone component with derived pagination slice",
@@ -645,7 +645,7 @@
       "theming"
     ],
     "description": {
-      "summary": "Implement a light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions.",
+      "summary": "Implement a light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
@@ -680,7 +680,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage \u2192 app starts in light mode and shows the light theme.\n- Click the toggle once \u2192 app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode \u2192 app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light \u2192 theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme.",
+      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage \u2192 app starts in light mode and shows the light theme.\n- Click the toggle once \u2192 app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode \u2192 app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light \u2192 theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme. Key concepts: components, services, dependency-injection.",
       "approaches": [
         {
           "title": "Global ThemeService with `data-theme` on `<html>`",
@@ -813,7 +813,7 @@
       "change-detection"
     ],
     "description": {
-      "summary": "Build a small shopping cart UI using an Angular standalone component. Render a product list with \"Add to cart\" buttons and a cart section where you can increase/decrease quantities, remove items, and show derived totals.",
+      "summary": "Build a small shopping cart UI using an Angular standalone component. Render a product list with \"Add to cart\" buttons and a cart section where you can increase/decrease quantities, remove items, and show derived totals. Concepts: components, state, derived-state.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -989,7 +989,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes.",
+      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding.",
       "specs": {
         "requirements": [
           "Create a standalone `StarRatingComponent` that renders a row of stars.",
@@ -1069,7 +1069,7 @@
       "template-syntax"
     ],
     "description": {
-      "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and `*ngFor` loops to generate the table structure.",
+      "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and `*ngFor` loops to generate the table structure. Concepts: components, dynamic-ui, forms.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1145,7 +1145,7 @@
       "ui-logic"
     ],
     "description": {
-      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states.",
+      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Concepts: components, dom, forms.",
       "specs": {
         "requirements": [
           "Render one parent checkbox and several child checkboxes.",
@@ -1311,7 +1311,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a \"Transfer List\" component that moves selected items between two lists (top and bottom). Users select items via checkboxes, then use arrow buttons to transfer the selected items to the other list.",
+      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1344,11 +1344,11 @@
     },
     "starterCodeHint": "Track selections with `Set<string>` per list. On transfer, split source into (moved, remaining) by `selected.has(item.id)`, then append moved to destination and clear selection set.",
     "solutionBlock": {
-      "overview": "Use two arrays (`topItems`, `bottomItems`) of `{ id, label }`. Track selected ids with `topSelected` and `bottomSelected` as `Set<string>`. Toggling a checkbox adds/removes the item id from the relevant Set. The transfer buttons call `moveDown()` and `moveUp()` which: (1) build `moved` and `remaining`, (2) update both arrays, (3) clear the selection Set.\n\n**Test cases**\n- Select 2 items in Top \u2192 \"\u2193\" enabled \u2192 click \u2192 items appear at end of Bottom and removed from Top.\n- Select items in Bottom \u2192 \"\u2191\" enabled \u2192 click \u2192 items move to end of Top.\n- After move, moved items are not selected anymore.\n- Buttons disabled when no selection in their source list.",
+      "overview": "A transfer list has two collections and selection state for each side. The key is to move selected items while preserving order, then clear selection to avoid stale UI. This models real admin UIs where items are assigned between groups or buckets and selection state must be consistent.",
       "approaches": [
         {
           "title": "Two arrays + two selection sets",
-          "prose": "Keep state in the root component: `topItems`, `bottomItems`, and `topSelected` / `bottomSelected`. Use small helpers to toggle selection, check if selected, and to split arrays based on selection. Always clear the selection set after a successful transfer."
+          "prose": "Maintain topItems and bottomItems arrays plus Set selections. On transfer, split the source list into moved and remaining using the selection set, append moved to the destination, update both lists immutably, and reset the selection set. Disable the transfer button when the selection set is empty to prevent no-op clicks."
         }
       ],
       "notes": {
@@ -1390,7 +1390,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a 3x3 Tic-Tac-Toe game in an Angular standalone component. Alternate X/O turns, prevent overwrites, detect wins and draws, and offer a reset to start a new game.",
+      "summary": "Build a 3x3 Tic-Tac-Toe game in an Angular standalone component. Alternate X/O turns, prevent overwrites, detect wins and draws, and offer a reset to start a new game. Concepts: components, state, event-binding.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1628,7 +1628,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build a progress bar from 0\u2013100 with +10/\u221210 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green).",
+      "summary": "Build an Angular progress bar for values 0\u2013100 with +10/\u221210 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event-binding, state.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1663,11 +1663,11 @@
     },
     "starterCodeHint": "Implement `inc()` and `dec()` to add/subtract 10 and clamp. Bind `[style.width.%]` to progress and return a threshold-based class string from `barClass`.",
     "solutionBlock": {
-      "overview": "Use a single `progress` number on the component. Button handlers update it with clamping, and the template derives both the width and the color class from that value. This keeps the UI fully driven by component state.",
+      "overview": "Use a single progress value in the component and derive width, label, and color from it. The bar should clamp between 0 and 100, display the percentage, and change color based on thresholds. This keeps the UI declarative, avoids duplicated state, and makes the component easy to test.",
       "approaches": [
         {
           "title": "Standalone component with clamped progress and threshold class",
-          "prose": "Set `progress = 0`. Implement `inc()` and `dec()` with `Math.min/Math.max`. Bind the fill width via `[style.width.%]=\"progress\"`. Compute a getter for the color class (e.g., <34 red, 34\u201366 orange, >66 green) and apply it to the fill element."
+          "prose": "Store progress = 0. Create inc/dec handlers that clamp values using Math.min/Math.max. Bind the fill width with [style.width.%]=progress and expose a getter that returns a color class based on thresholds. Render the numeric percentage so users always see the exact value and the color change is obvious."
         }
       ],
       "notes": {
@@ -1707,7 +1707,7 @@
       "state"
     ],
     "description": {
-      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation.",
+      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Concepts: components, recursion, tree.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",
@@ -1787,7 +1787,7 @@
       "arrays"
     ],
     "description": {
-      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently.",
+      "summary": "Build a counter UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments that button's own counter AND appends a brand-new button below it with value 0. Every button must keep its own click count independently. Concepts: components, event-binding, state.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",

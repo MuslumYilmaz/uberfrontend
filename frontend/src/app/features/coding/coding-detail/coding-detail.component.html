@@ -530,6 +530,7 @@
           <li *ngFor="let item of lockedBullets()">{{ item }}</li>
         </ul>
       </div>
+      <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
       <p class="locked-copy">
         <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
           You're on the free tier. Upgrade to unlock this challenge.

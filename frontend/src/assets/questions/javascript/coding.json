@@ -14,7 +14,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement clamp(value, lower, upper) to keep a number within an inclusive range. If the value is below the lower bound, return the lower bound; if above the upper bound, return the upper bound. This is a tiny but common utility for sliders, percentages, and animations.",
+      "summary": "Implement clamp(value, lower, upper) to keep a number within an inclusive range. If the value is below the lower bound, return the lower bound; if above the upper bound, return the upper bound. This is a tiny but common utility for sliders, percentages, and animations. Concepts: numbers, math, boundaries, utilities.",
       "arguments": [
         {
           "name": "value",
@@ -43,7 +43,7 @@
     "starterCode": "export default function clamp(value, lower, upper) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function clamp(value: number, lower: number, upper: number): number {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Clamp is a three-branch check that guarantees a value stays inside [lower, upper]. It is intentionally simple and predictable: values below the range snap to the lower bound, values above snap to the upper bound, and in-range values are returned unchanged.",
+      "overview": "Clamp is a three-branch check that guarantees a value stays inside [lower, upper]. It is intentionally simple and predictable: values below the range snap to the lower bound, values above snap to the upper bound, and in-range values are returned unchanged. Key concepts: numbers, math, boundaries.",
       "approaches": [
         {
           "title": "Approach 1: Branching (readable baseline)",
@@ -107,7 +107,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Reverse a string by iterating from the end to the start and building a new string, without using `Array.prototype.reverse()` in the main solution. This highlights string immutability and careful index traversal.",
+      "summary": "Reverse a string by iterating from the end to the start and building a new string, without using `Array.prototype.reverse()` in the main solution. This highlights string immutability and careful index traversal. Concepts: strings, iteration, loops.",
       "arguments": [
         {
           "name": "str",
@@ -128,7 +128,7 @@
     "starterCode": "export default function reverseString(str) {\n  // TODO: Implement without using Array.prototype.reverse()\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function reverseString(str: string): string {\n  // TODO: Implement without using Array.prototype.reverse()\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Walk the string backwards and build a new string character by character. This is the simplest way to reverse without relying on array conversion helpers, and it reinforces that strings are immutable in JavaScript.",
+      "overview": "Walk the string backwards and build a new string character by character. This is the simplest way to reverse without relying on array conversion helpers, and it reinforces that strings are immutable in JavaScript. Key concepts: strings, iteration, loops.",
       "approaches": [
         {
           "title": "Approach 1: Manual loop (explicit and clear)",
@@ -193,7 +193,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement countVowels(str) that returns how many vowels appear in a string. Normalize case, decide whether to include 'y', and handle empty input safely. Use a Set for O(1) membership checks and a single O(n) pass.",
+      "summary": "Implement countVowels(str) that returns how many vowels appear in a string. Normalize case, decide whether to include 'y', and handle empty input safely. Use a Set for O(1) membership checks and a single O(n) pass. Concepts: strings, iteration, counting, sets.",
       "arguments": [
         {
           "name": "str",
@@ -215,7 +215,7 @@
     "starterCode": "export default function countVowels(str) {\n  // TODO: Return how many vowels (a, e, i, o, u) are in the string\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function countVowels(str: string): number {\n  // TODO: Return how many vowels (a, e, i, o, u) are in the string\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Scan the string once, normalize case, and count only characters that belong to a vowel set. This keeps the solution O(n), handles empty input gracefully, and avoids tricky regex edge cases. It\u2019s a classic example of membership checks with a Set.",
+      "overview": "Scan the string once, normalize case, and count only characters that belong to a vowel set. This keeps the solution O(n), handles empty input gracefully, and avoids tricky regex edge cases. It\u2019s a classic example of membership checks with a Set. Key concepts: strings, iteration, counting.",
       "approaches": [
         {
           "title": "Approach 1: Iterative counting (explicit and clear)",
@@ -367,7 +367,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement uniqueArray(arr) that removes duplicates while preserving order. Use a Set for O(n) time and clarify how to treat objects by reference, NaN, and mixed types so behavior is explicit and predictable.",
+      "summary": "Implement uniqueArray(arr) that removes duplicates while preserving order. Use a Set for O(n) time and clarify how to treat objects by reference, NaN, and mixed types so behavior is explicit and predictable. Concepts: arrays, sets, deduplication, iteration.",
       "arguments": [
         {
           "name": "arr",
@@ -388,7 +388,7 @@
     "starterCode": "export default function unique(arr) {\n  // TODO: Return new array with duplicates removed\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function unique<T>(arr: T[]): T[] {\n  // TODO: Return new array with duplicates removed\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Return a new array containing only the first occurrence of each value. Use a Set to track seen values and push into the result only when a value appears for the first time. This preserves order and runs in linear time.",
+      "overview": "Return a new array containing only the first occurrence of each value. Use a Set to track seen values and push into the result only when a value appears for the first time. This preserves order and runs in linear time. Key concepts: arrays, sets, deduplication.",
       "approaches": [
         {
           "title": "Approach 1: Using a Set to track seen values (explicit control)",
@@ -543,7 +543,7 @@
       "iteration"
     ],
     "description": {
-      "summary": "Capitalize the first letter of every word while preserving spacing. Handle multiple spaces and punctuation without collapsing the original string, and keep non-letter characters intact. This tests string parsing and careful output formatting.",
+      "summary": "Capitalize the first letter of every word while preserving spacing. Handle multiple spaces and punctuation without collapsing the original string, and keep non-letter characters intact. This tests string parsing and careful output formatting. Concepts: strings, transforms, arrays, iteration.",
       "arguments": [
         {
           "name": "sentence",
@@ -568,7 +568,7 @@
     "starterCode": "export default function capitalizeWords(sentence) {\n  // TODO: Capitalize first letter of each word\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function capitalizeWords(sentence: string): string {\n  // TODO: Capitalize first letter of each word\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: ensure each word in a sentence starts with an uppercase letter while preserving spacing and keeping the rest of the letters lowercase. If the input is empty, return `''`. This builds practical mastery over string splitting, mapping, joining, and basic character processing.",
+      "overview": "Goal: ensure each word in a sentence starts with an uppercase letter while preserving spacing and keeping the rest of the letters lowercase. If the input is empty, return `''`. This builds practical mastery over string splitting, mapping, joining, and basic character processing. Key concepts: strings, transforms, arrays.",
       "approaches": [
         {
           "title": "Approach 1: Split\u2013Map\u2013Join (clean and readable)",
@@ -732,7 +732,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Remove all falsy values (false, 0, '', null, undefined, NaN) from an array while preserving order. This checks truthiness knowledge and careful filtering without mutating the original array or dropping truthy values by mistake.",
+      "summary": "Remove all falsy values from an array while preserving order. Use a boolean filter to drop false, 0, empty string, null, undefined, and NaN without mutating the input. Concepts: arrays, filtering, truthy-falsy, functional.",
       "arguments": [
         {
           "name": "arr",
@@ -754,11 +754,11 @@
     "starterCode": "export default function compact(arr) {\n  // TODO: Remove all falsy values from the array\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function compact(arr: any[]): any[] {\n  // TODO: Remove all falsy values from the array\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: remove all falsy values (`false`, `0`, `''`, `null`, `undefined`, `NaN`) from an array while preserving order. This task reinforces truthy/falsy coercion and the use of functional array methods like `filter()`.",
+      "overview": "Use the Boolean constructor as a predicate to filter out falsy values. This keeps only truthy entries, preserves order, and avoids manual checks for null, undefined, or empty strings. It\u2019s a concise, idiomatic solution that\u2019s easy to read and easy to explain in interviews. Key concepts: arrays, filtering, truthy-falsy.",
       "approaches": [
         {
           "title": "Approach 1: Using filter(Boolean) (concise and expressive)",
-          "prose": "Idea: rely on JavaScript's truthy/falsy evaluation \u2014 falsy values convert to `false` in boolean contexts, so `filter(Boolean)` automatically removes them.\n\nHow it works:\n1. Call `arr.filter(Boolean)` (equivalent to `arr.filter(value => Boolean(value))`).\n2. The `Boolean` function converts each value to a boolean: truthy values become `true`, falsy values become `false`.\n3. `filter` keeps only the values for which the callback returns `true`, so all falsy values are dropped and the remaining truthy values keep their original order.\n\nWhy use it: clean, idiomatic, and short. Runs in O(n) time and uses O(n) space for the new array while preserving order.",
+          "prose": "Return arr.filter(Boolean) (or arr.filter(v => Boolean(v))). This keeps values like 1, '0', and {} while removing false, 0, '', null, undefined, and NaN. The method returns a new array, so the original is not mutated, and the runtime is linear in the array length.",
           "codeJs": "export default function compact(arr) {\n  return arr.filter(Boolean);\n}\n",
           "codeTs": "export default function compact(arr: any[]): any[] {\n  return arr.filter(Boolean);\n}\n"
         },
@@ -919,7 +919,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a shallow copy of an array or object. Arrays should be copied with `slice()` or spread, objects with `Object.assign` or spread. Emphasize that nested objects are still shared references, which is the key limitation of shallow cloning.",
+      "summary": "Create a shallow copy of an array or object. Copy top-level properties but keep nested references intact, and document that limitation clearly. This clarifies the difference between shallow and deep cloning and helps avoid accidental mutation bugs.",
       "arguments": [
         {
           "name": "value",
@@ -939,11 +939,11 @@
     "starterCode": "export default function shallowClone(value) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Shallow cloning copies only the top-level container while leaving nested references intact. Detect arrays vs objects, return a new container with the same immediate values, and throw for invalid inputs. This clarifies the difference between shallow and deep copying.",
+      "overview": "A shallow clone copies only the top-level container and its immediate properties. Nested objects and arrays remain shared references, which is the key limitation to call out. This is still valuable for state updates that only change top-level fields or for defensive copying in reducers.",
       "approaches": [
         {
           "title": "Approach: Branch on array vs object",
-          "prose": "Implementation:\n- If `Array.isArray(value)`, return `value.slice()` or `[...value]`.\n- Else if it\u2019s a non-null object, return `{ ...value }`.\n- Otherwise throw a TypeError.\n\nComplexity: O(n) time and space for the top-level properties/elements.",
+          "prose": "Check if the input is an array; if so, return value.slice() or [...value]. If it\u2019s a non-null object, return { ...value } or Object.assign({}, value). For non-objects, throw a TypeError. This is O(n) for top-level properties and preserves nested references by design.",
           "codeJs": "export default function shallowClone(value) {\n  if (Array.isArray(value)) return value.slice();\n  if (value && typeof value === 'object') return { ...value };\n  throw new TypeError('Expected object or array');\n}\n",
           "codeTs": "export default function shallowClone<T extends Record<string, any> | any[]>(value: T): T {\n  if (Array.isArray(value)) return value.slice() as T;\n  if (value && typeof value === 'object') return { ...(value as any) } as T;\n  throw new TypeError('Expected object or array');\n}\n"
         }
@@ -990,14 +990,14 @@
     "importance": 2,
     "difficulty": "easy",
     "tags": [
-      "timing",
-      "timers",
       "async",
-      "promise",
+      "promises",
+      "timers",
+      "utilities",
       "basics"
     ],
     "description": {
-      "summary": "Implement sleep(ms) that returns a Promise resolving after ms milliseconds. Use it to pause async flows (e.g., retries, backoff, UI delays) without blocking the main thread. Clarify that it is purely async and should be awaited.",
+      "summary": "Implement sleep(ms) that returns a Promise resolving after ms milliseconds. Use it to pause async flows like retries, exponential backoff, UI delays, or test helpers without blocking the event loop or freezing the UI thread.",
       "arguments": [
         {
           "name": "ms",
@@ -1017,11 +1017,11 @@
     "starterCode": "export default function sleep(ms) {\n  // TODO: return a Promise that resolves after ms milliseconds\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function sleep(ms: number): Promise<void> {\n  // TODO: return a Promise that resolves after ms milliseconds\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Create a Promise-based delay utility that integrates with async/await. Wrap `setTimeout` so callers can `await sleep(ms)` to pause without blocking the event loop. This is common in retries, backoff, and test helpers.",
+      "overview": "This utility wraps setTimeout in a Promise so you can pause async control flow without blocking. It\u2019s a common primitive for polling, retry logic, exponential backoff, and UI timing. The function should integrate cleanly with async/await, return a Promise every time, and behave predictably for zero or negative delays.",
       "approaches": [
         {
           "title": "Approach: Promise + setTimeout",
-          "prose": "Implementation:\n- Return `new Promise(resolve => setTimeout(resolve, ms))`.\n- Ensure you return the Promise so callers can await it.\n- Treat negative or NaN delays as 0 (timer behavior).\n\nComplexity: O(1) time and space; the timer runs asynchronously.",
+          "prose": "Return new Promise(resolve => setTimeout(resolve, ms)). Ensure you return the Promise so callers can await it or chain then. If ms is negative or NaN, setTimeout resolves immediately, which is acceptable for this helper. Keep the function tiny and deterministic; it should never block the main thread.",
           "codeJs": "export default function sleep(ms) {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n",
           "codeTs": "export default function sleep(ms: number): Promise<void> {\n  return new Promise(resolve => setTimeout(resolve, ms));\n}\n"
         }
@@ -1074,7 +1074,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement once(fn) that returns a wrapper which executes `fn` only on the first call. Cache and return the result on subsequent calls without re-invoking `fn`. This tests closures, memoization, and side-effect control.",
+      "summary": "Implement once(fn) that returns a wrapper which executes `fn` only on the first call. Cache and return the result on subsequent calls without re-invoking `fn`. This tests closures, memoization, and side-effect control. Concepts: higher-order, functions, closure.",
       "arguments": [
         {
           "name": "fn",
@@ -1094,7 +1094,7 @@
     "starterCode": "export default function once(fn) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function once<F extends (...args: any[]) => any>(fn: F): F {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Wrap a function with a closure that tracks whether it has been called and stores its return value. The first call executes the original function; every later call returns the cached result. This pattern is common for one-time initialization and idempotent setup.",
+      "overview": "Wrap a function with a closure that tracks whether it has been called and stores its return value. The first call executes the original function; every later call returns the cached result. This pattern is common for one-time initialization and idempotent setup. Key concepts: higher-order, functions, closure.",
       "approaches": [
         {
           "title": "Approach: Closure with a called flag",
@@ -1228,10 +1228,12 @@
     "tags": [
       "arrays",
       "immutability",
-      "basics"
+      "state",
+      "basics",
+      "utilities"
     ],
     "description": {
-      "summary": "Return a new array with a single index updated, leaving the original array untouched. This is the core immutability pattern used in React state updates: copy the array, replace the value at the target index if it\u2019s in range, and return the copy.",
+      "summary": "Return a new array with one index updated, leaving the original array untouched. This is the core immutable update pattern used in reducers, React state updates, and UI list editing, and it prevents accidental mutation.",
       "arguments": [
         {
           "name": "arr",
@@ -1261,11 +1263,11 @@
     "starterCode": "export default function updateAt(arr, index, value) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function updateAt<T>(arr: T[], index: number, value: T): T[] {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Create a shallow copy of the array, write the new value at the given index if it exists, and return the copy. If the index is out of bounds, just return the copied array unchanged. This ensures callers never mutate the original input while keeping the logic simple and predictable.",
+      "overview": "This is an immutable update helper: clone the array, update one index, and return the new array. It mirrors reducer patterns used in UI state management. Returning a new array every time avoids accidental mutation and keeps equality checks predictable for change detection and memoization.",
       "approaches": [
         {
           "title": "Approach: Clone then assign",
-          "prose": "Implementation:\n- Validate that the input is an array (or assume it is per the prompt).\n- Clone with `slice()` or spread to avoid mutation.\n- If `index >= 0 && index < arr.length`, set `copy[index] = value`.\n- Return the copy.\n\nComplexity: O(n) time for the copy, O(n) space.",
+          "prose": "Create a shallow copy with slice or spread, validate the index, update the value on the copy, and return the copy. If the index is out of range, return the untouched copy for stability. This keeps the original input unchanged and makes the function safe for shared state.",
           "codeJs": "export default function updateAt(arr, index, value) {\n  if (!Array.isArray(arr)) throw new TypeError('Expected array');\n  const copy = arr.slice();\n  if (index < 0 || index >= copy.length) return copy;\n  copy[index] = value;\n  return copy;\n}\n",
           "codeTs": "export default function updateAt<T>(arr: T[], index: number, value: T): T[] {\n  if (!Array.isArray(arr)) throw new TypeError('Expected array');\n  const copy = arr.slice();\n  if (index < 0 || index >= copy.length) return copy;\n  copy[index] = value;\n  return copy;\n}\n"
         }
@@ -1416,7 +1418,7 @@
       "timing"
     ],
     "description": {
-      "summary": "Implement a function `throttle(fn, interval)` that ensures `fn` is executed at most once during every `interval` milliseconds, no matter how many times it's triggered. In this exercise we use a leading-only throttle: the first call in each interval runs immediately; subsequent calls within that window are ignored.",
+      "summary": "Implement a function `throttle(fn, interval)` that ensures `fn` is executed at most once during every `interval` milliseconds, no matter how many times it's triggered. In this exercise we use a leading-only throttle: the first call in each interval runs immediately; subsequent calls within that window are ignored. Concepts: async, functions, timing.",
       "arguments": [
         {
           "name": "fn",
@@ -1442,7 +1444,7 @@
     "starterCode": "export default function throttle(fn, interval) {\n  // TODO: Execute fn at most once per interval (leading-only)\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function throttle<F extends (...a: any[]) => void>(fn: F, interval: number): F {\n  // TODO: Execute fn at most once per interval (leading-only)\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: ensure a function executes at most once within a defined period \u2014 controlling execution frequency for performance-critical events (scroll, resize, input). The implementations shown here are **leading-only throttles**: the first call in an interval runs immediately; subsequent calls in the same interval are ignored. In real projects you might extend this to combined leading + trailing behavior (like Lodash's `throttle`).",
+      "overview": "Goal: ensure a function executes at most once within a defined period \u2014 controlling execution frequency for performance-critical events (scroll, resize, input). The implementations shown here are **leading-only throttles**: the first call in an interval runs immediately; subsequent calls in the same interval are ignored. In real projects you might extend this to combined leading + trailing behavior (like Lodash's `throttle`). Key concepts: async, functions, timing.",
       "approaches": [
         {
           "title": "Approach 1: Timestamp-based throttle (simple and effective)",
@@ -1808,7 +1810,7 @@
       "higher-order"
     ],
     "description": {
-      "summary": "Implement curry(fn) to transform a multi-argument function into chained calls. Collect arguments across invocations, allow partial application, and invoke the original function once enough args have been provided.",
+      "summary": "Implement curry(fn) to transform a multi-argument function into chained calls. Collect arguments across invocations, allow partial application, and invoke the original function once enough args have been provided. Concepts: closure, currying, functions.",
       "arguments": [
         {
           "name": "fn",
@@ -1830,7 +1832,7 @@
     "starterCode": "export default function curry(fn) {\n  // TODO: Transform fn into a curried version\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function curry(fn: Function): Function {\n  // TODO: Transform fn into a curried version\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Curry returns a function that keeps gathering arguments until it has at least `fn.length`. Once enough arguments are collected, it calls the original function with all arguments in order. This enables partial application while keeping the API flexible.",
+      "overview": "Curry returns a function that keeps gathering arguments until it has at least `fn.length`. Once enough arguments are collected, it calls the original function with all arguments in order. This enables partial application while keeping the API flexible. Key concepts: closure, currying, functions.",
       "approaches": [
         {
           "title": "Approach 1: Variadic accumulator using closures (simplest)",
@@ -2090,7 +2092,7 @@
       "reduction"
     ],
     "description": {
-      "summary": "Group an array of items by a key (function or property). Build an object or Map where each key maps to an array of items, and preserve input order inside each group.",
+      "summary": "Group an array of items by a key (function or property). Build an object or Map where each key maps to an array of items, and preserve input order inside each group. Concepts: arrays, grouping, objects.",
       "arguments": [
         {
           "name": "arr",
@@ -2117,7 +2119,7 @@
     "starterCode": "export default function groupBy(arr, keyFn) {\n  // TODO: Group array elements by keyFn(item)\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function groupBy<T, K extends string | number | symbol>(arr: T[], keyFn: (item: T) => K): Record<K, T[]> {\n  // TODO: Group array elements by keyFn(item)\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: convert a flat list into an object keyed by `keyFn(item)`, where each key stores an array of matching items. All approaches run in O(n) time and O(n) additional space.",
+      "overview": "Goal: convert a flat list into an object keyed by `keyFn(item)`, where each key stores an array of matching items. All approaches run in O(n) time and O(n) additional space. Key concepts: arrays, grouping, objects.",
       "approaches": [
         {
           "title": "Approach 1: Simple loop (clear baseline)",
@@ -2186,7 +2188,7 @@
       "oop"
     ],
     "description": {
-      "summary": "Build a tiny event emitter with on, off, and emit. Store listeners per event, allow multiple listeners, and ensure off removes only the specified handler without breaking others. This tests data structures and event flow.",
+      "summary": "Build a tiny event emitter with on, off, and emit. Store listeners per event, allow multiple listeners, and ensure off removes only the specified handler without breaking others. This tests data structures and event flow. Concepts: async, design-patterns, oop.",
       "arguments": [],
       "returns": {
         "type": "Emitter",
@@ -2199,7 +2201,7 @@
     "starterCode": "export default class Emitter {\n  constructor() {\n    // TODO: Initialize event storage, e.g. this.events = {}\n  }\n\n  on(event, listener) {\n    // TODO: Add listener to event\n  }\n\n  off(event, listener) {\n    // TODO: Remove listener from event\n  }\n\n  emit(event, ...args) {\n    // TODO: Call all listeners for event\n  }\n}\n",
     "starterCodeTs": "export default class Emitter {\n  private events: Record<string, Array<(...args: any[]) => void>>\n\n  constructor() {\n    // TODO: Initialize event storage\n  }\n\n  on(event: string, listener: (...args: any[]) => void): void {\n    // TODO: Add listener to event\n  }\n\n  off(event: string, listener: (...args: any[]) => void): void {\n    // TODO: Remove listener from event\n  }\n\n  emit(event: string, ...args: any[]): void {\n    // TODO: Call all listeners for event\n  }\n}\n",
     "solutionBlock": {
-      "overview": "Goal: implement a simple publish/subscribe system that allows components to communicate through events without tight coupling. The emitter is synchronous: when you call `emit`, all listeners run immediately in registration order (even if those listeners themselves return promises).",
+      "overview": "Goal: implement a simple publish/subscribe system that allows components to communicate through events without tight coupling. The emitter is synchronous: when you call `emit`, all listeners run immediately in registration order (even if those listeners themselves return promises). Key concepts: async, design-patterns, oop.",
       "approaches": [
         {
           "title": "Approach 1: Object-based event registry (baseline)",
@@ -2671,7 +2673,7 @@
       "Throwing on empty arrays without an initial value"
     ],
     "description": {
-      "summary": "Recreate the native `.reduce()` method **without using it**. Your `myReduce` must call the reducer with `(accumulator, currentValue, index, array)` only for existing indices, handle an optional `initialValue`, and return the final accumulator. If no `initialValue` is provided, use the **first existing element** as the initial accumulator. If there is **no existing element** and no `initialValue`, throw a `TypeError`.",
+      "summary": "Recreate the native `.reduce()` method **without using it**. Your `myReduce` must call the reducer with `(accumulator, currentValue, index, array)` only for existing indices, handle an optional `initialValue`, and return the final accumulator. If no `initialValue` is provided, use the **first existing element** as the initial accumulator. If there is **no existing element** and no `initialValue`, throw a `TypeError`. Concepts: arrays, callbacks, iteration.",
       "arguments": [
         {
           "name": "callbackFn",
@@ -2697,7 +2699,7 @@
     "starterCode": "/* Boilerplate \u2014 replace the throw with a correct implementation */\nArray.prototype.myReduce = function (callbackFn, initialValue) {\n  throw 'Not implemented!';\n};\n",
     "starterCodeTs": "declare global {\n  interface Array<T> {\n    myReduce<U>(\n      callbackFn: (accumulator: U, currentValue: T, index: number, array: Array<T>) => U,\n      initialValue: U\n    ): U;\n    myReduce(\n      callbackFn: (accumulator: T, currentValue: T, index: number, array: Array<T>) => T\n    ): T;\n  }\n}\n\nArray.prototype.myReduce = function (callbackFn: any, initialValue?: any) {\n  throw 'Not implemented!';\n};\n",
     "solutionBlock": {
-      "overview": "What a correct `.reduce()` must do: (1) Work on the receiver and read its `length` directly. (2) If `initialValue` is provided, start with it; otherwise find the first existing element as the initial accumulator (skip holes) or throw on empty. (3) For each existing index, call `callbackFn(acc, value, index, array)` and store back to `acc`. (4) Skip holes using an own-property check (or `k in O` for spec-leaning behavior). (5) Return the final `acc`.",
+      "overview": "What a correct `.reduce()` must do: (1) Work on the receiver and read its `length` directly. (2) If `initialValue` is provided, start with it; otherwise find the first existing element as the initial accumulator (skip holes) or throw on empty. (3) For each existing index, call `callbackFn(acc, value, index, array)` and store back to `acc`. (4) Skip holes using an own-property check (or `k in O` for spec-leaning behavior). (5) Return the final `acc`. Key concepts: arrays, callbacks, iteration.",
       "approaches": [
         {
           "title": "Approach 1: Simple for-loop (practical baseline)",
@@ -2984,7 +2986,7 @@
       "sorting"
     ],
     "description": {
-      "summary": "Implement a function `sortNumbers(arr, ascending = true)` that returns a **new array** of numbers sorted numerically in ascending or descending order. The original array must not be mutated, and you should use `Array.prototype.sort()` correctly with a compare function.",
+      "summary": "Implement a function `sortNumbers(arr, ascending = true)` that returns a **new array** of numbers sorted numerically in ascending or descending order. The original array must not be mutated, and you should use `Array.prototype.sort()` correctly with a compare function. Concepts: arrays, sorting.",
       "arguments": [
         {
           "name": "arr",
@@ -3011,7 +3013,7 @@
     "starterCode": "export default function sortNumbers(arr, ascending = true) {\n  // TODO:\n  // 1. Do NOT mutate the original array.\n  // 2. Use Array.prototype.sort() with a numeric compare function.\n  // 3. Respect the `ascending` flag.\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function sortNumbers(arr: number[], ascending = true): number[] {\n  // TODO:\n  // 1. Do NOT mutate the original array.\n  // 2. Use Array.prototype.sort() with a numeric compare function.\n  // 3. Respect the `ascending` flag.\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: sort an array of numbers **numerically**, not lexicographically, using `Array.prototype.sort()` \u2014 and return a **new** sorted array without mutating the original.\n\nThis tests understanding of:\n- How `.sort()` works by default (string/lexicographic behavior).\n- Writing a numeric compare function (`(a, b) => a - b`).\n- Avoiding mutation by cloning the input first.",
+      "overview": "Goal: sort an array of numbers **numerically**, not lexicographically, using `Array.prototype.sort()` \u2014 and return a **new** sorted array without mutating the original.\n\nThis tests understanding of:\n- How `.sort()` works by default (string/lexicographic behavior).\n- Writing a numeric compare function (`(a, b) => a - b`).\n- Avoiding mutation by cloning the input first. Key concepts: arrays, sorting.",
       "approaches": [
         {
           "title": "Approach 1: Clone + numeric compare function (canonical)",
@@ -3156,7 +3158,7 @@
       "validation"
     ],
     "description": {
-      "summary": "Implement `isEmpty(obj)` that returns `true` only if the input is an object or array with no own keys/elements, and `false` otherwise. For non-object/array inputs (like numbers or strings), the function should throw a `TypeError`.",
+      "summary": "Implement `isEmpty(obj)` that returns `true` only if the input is an object or array with no own keys/elements, and `false` otherwise. For non-object/array inputs (like numbers or strings), the function should throw a `TypeError`. Concepts: objects, arrays, validation.",
       "arguments": [
         {
           "name": "obj",
@@ -3178,7 +3180,7 @@
     "starterCode": "export default function isEmpty(obj) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function isEmpty(obj: Record<string, any> | any[]): boolean {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: implement `isEmpty(obj)` so that it returns `true` only when the input is an array with length 0 or an object whose own enumerable keys list is empty, and throws a `TypeError` for non-object/array inputs.",
+      "overview": "Goal: implement `isEmpty(obj)` so that it returns `true` only when the input is an array with length 0 or an object whose own enumerable keys list is empty, and throws a `TypeError` for non-object/array inputs. Key concepts: objects, arrays, validation.",
       "approaches": [
         {
           "title": "Approach: Handle arrays and objects separately",
@@ -3505,7 +3507,7 @@
       "objects"
     ],
     "description": {
-      "summary": "Implement `myNew(Constructor, ...args)` that behaves like the JavaScript `new` operator.\n\nRequirements:\n1) Create a new object whose internal prototype links to `Constructor.prototype`.\n2) Call `Constructor` with `this` set to that new object.\n3) If `Constructor` returns an object (or function), return that object; otherwise return the newly created object.\n\nThis tests prototype mechanics, constructor invocation, and the `new` operator return rules.",
+      "summary": "Implement a myNew helper that mimics the new operator. Create an object linked to the constructor prototype, call the constructor with this, and return the constructor\u2019s object result if provided. This tests prototype linkage and constructor behavior. Concepts: prototypes, object-creation, functions.",
       "arguments": [
         {
           "name": "Constructor",
@@ -3531,11 +3533,11 @@
     "starterCode": "export default function myNew(Constructor, ...args) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function myNew<T extends new (...args: any[]) => any>(\n  Constructor: T,\n  ...args: ConstructorParameters<T>\n): InstanceType<T> {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Recreate `new` by constructing an object, linking its prototype, calling the constructor with `this`, and returning either the constructed object or the constructor\u2019s explicit object return. This shows how constructor functions work under the hood.",
+      "overview": "Recreating new clarifies how constructor functions work: an object is created, its prototype is set to Constructor.prototype, the constructor is called with that object as this, and an explicit object return overrides the created object. This mirrors the built-in operator\u2019s contract exactly. Key concepts: prototypes, object-creation, functions.",
       "approaches": [
         {
           "title": "Approach: Object.create + apply (recommended)",
-          "prose": "Steps:\n1) Create a new object whose prototype is `Constructor.prototype` (e.g., `Object.create`).\n2) Call `Constructor.apply(obj, args)`.\n3) If the constructor returns an object/function, return that; otherwise return the newly created object.\n\nComplexity: O(1) time and space.",
+          "prose": "Create obj with Object.create(Constructor.prototype). Call Constructor.apply(obj, args). If the return value is an object or function, return it; otherwise return obj. This handles both typical constructors and ones that return their own object, matching native behavior in all cases.",
           "codeJs": "export default function myNew(Constructor, ...args) {\n  if (typeof Constructor !== 'function') {\n    throw new TypeError('myNew: Constructor must be a function');\n  }\n\n  const instance = Object.create(Constructor.prototype);\n  const result = Constructor.apply(instance, args);\n\n  const isObject = result !== null && (typeof result === 'object' || typeof result === 'function');\n  return isObject ? result : instance;\n}\n",
           "codeTs": "export default function myNew<T extends new (...args: any[]) => any>(\n  Constructor: T,\n  ...args: ConstructorParameters<T>\n): InstanceType<T> {\n  const instance = Object.create((Constructor as any).prototype);\n  const result = (Constructor as any).apply(instance, args);\n\n  const isObject = result !== null && (typeof result === 'object' || typeof result === 'function');\n  return (isObject ? result : instance) as InstanceType<T>;\n}\n"
         }
@@ -3586,12 +3588,13 @@
     "difficulty": "intermediate",
     "tags": [
       "prototypes",
-      "object-oriented",
       "objects",
-      "inheritance"
+      "inheritance",
+      "basics",
+      "runtime"
     ],
     "description": {
-      "summary": "Recreate the behavior of `instanceof` by walking an object's prototype chain and checking whether it ever equals `Constructor.prototype`. This tests understanding of prototypes, `Object.getPrototypeOf`, and how inheritance works at runtime.",
+      "summary": "Recreate `instanceof` by walking the prototype chain and checking if it reaches `Constructor.prototype`. Handle null/primitive inputs safely and stop when the chain ends. This tests knowledge of prototypes and runtime inheritance.",
       "arguments": [
         {
           "name": "obj",
@@ -3617,11 +3620,11 @@
     "starterCode": "export default function myInstanceOf(obj, Constructor) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function myInstanceOf(\n  obj: any,\n  Constructor: Function\n): boolean {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Walk the prototype chain with `Object.getPrototypeOf` and check for a match against `Constructor.prototype`. This is the essence of `instanceof`: is the constructor\u2019s prototype in the object\u2019s chain?",
+      "overview": "`instanceof` works by checking whether the constructor\u2019s prototype appears in the object\u2019s prototype chain. Implement this by repeatedly calling `Object.getPrototypeOf` until you either hit the target prototype or reach `null`. This keeps the logic explicit, avoids mutation, and mirrors the engine\u2019s behavior.",
       "approaches": [
         {
           "title": "Approach: Prototype chain traversal (recommended)",
-          "prose": "Algorithm:\n- Validate that `obj` is an object/function and `Constructor.prototype` is an object.\n- Set `cur = Object.getPrototypeOf(obj)` and loop upward.\n- If `cur === Constructor.prototype`, return true; if `cur` becomes null, return false.\n\nComplexity: O(d) time, O(1) space.",
+          "prose": "Validate that the left value is an object/function and that `Constructor.prototype` is truthy. Set `target = Constructor.prototype`. Loop upward with `cur = Object.getPrototypeOf(obj)`; if `cur === target` return true; if `cur` becomes null return false. This runs in O(depth) time and O(1) space, with predictable behavior for edge cases.",
           "codeJs": "export default function myInstanceOf(obj, Constructor) {\n  if (obj === null || obj === undefined) return false;\n\n  const t = typeof obj;\n  if (t !== 'object' && t !== 'function') return false;\n\n  if (typeof Constructor !== 'function') {\n    throw new TypeError('myInstanceOf: Constructor must be a function');\n  }\n\n  const targetProto = Constructor.prototype;\n  if (targetProto === null || (typeof targetProto !== 'object' && typeof targetProto !== 'function')) {\n    // Very rare, but keep behavior predictable.\n    return false;\n  }\n\n  let current = Object.getPrototypeOf(obj);\n  while (current !== null) {\n    if (current === targetProto) return true;\n    current = Object.getPrototypeOf(current);\n  }\n\n  return false;\n}\n",
           "codeTs": "export default function myInstanceOf(obj: any, Constructor: Function): boolean {\n  if (obj === null || obj === undefined) return false;\n\n  const t = typeof obj;\n  if (t !== 'object' && t !== 'function') return false;\n\n  if (typeof Constructor !== 'function') {\n    throw new TypeError('myInstanceOf: Constructor must be a function');\n  }\n\n  const targetProto: any = (Constructor as any).prototype;\n  if (targetProto === null || (typeof targetProto !== 'object' && typeof targetProto !== 'function')) {\n    return false;\n  }\n\n  let current: any = Object.getPrototypeOf(obj);\n  while (current !== null) {\n    if (current === targetProto) return true;\n    current = Object.getPrototypeOf(current);\n  }\n\n  return false;\n}\n"
         }
@@ -3872,7 +3875,7 @@
       "selectors"
     ],
     "description": {
-      "summary": "Implement `delegate(root, eventType, selector, handler, options?)` with **delegation + filtering + explicit boundaries + stop-propagation**.\n\nRequirements:\n1) Attach exactly **one** event listener to `root`.\n2) Resolve the starting element from `event.target`:\n   - If `event.target.nodeType === 1` use it.\n   - If it's a Text node (`nodeType === 3`), start from `event.target.parentElement`.\n   - Otherwise do nothing.\n3) Find the delegated match by walking up from the start element using **only** `parentElement` + `matches()`.\n4) Traversal order and boundaries (must be deterministic): for each current node `cur` while walking upward:\n   a) If `options.until` is set and `cur.matches(options.until)` is true, **stop immediately and treat as no match**.\n   b) If `cur.matches(selector)` is true, this is the match (closest hit) and traversal stops.\n   c) If `cur === root`, stop after evaluating (a) and (b) for `root`.\n   d) Otherwise continue with `cur.parentElement`.\n5) Only invoke `handler(event, matchedEl)` when a match is found following the rules above.\n6) Support `options.capture` (register listener in capture phase).\n7) Support `options.once` (remove listener after the first **successful** match).\n8) Support `options.ignore` selector (ancestor-inclusive):\n   - If **any** node on the path from the start element up to `root` (inclusive), **before** a match is chosen, matches `options.ignore`, do nothing.\n   - `until` still wins: if you hit `until`, stop traversal (no match, no ignore beyond it).\n9) Support `options.stop`:\n   - When a match is found, call `event.stopPropagation()` **before** invoking `handler`.\n\nConstraints:\n- Do NOT reference `document`.\n- Use only `parentElement` + `matches()` for traversal.\n\nEvaluation (what tests will assert):\n- Exactly one listener is attached to `root`.\n- `matchedEl` is the **closest** ancestor matching `selector` (including the start element).\n- `until` prevents matching above it.\n- `ignore` prevents handler calls when any ancestor on the path matches it.\n- `once` removes only after a successful match.\n- `capture` is passed consistently to add/remove.\n- Text node targets are handled by starting from `parentElement`.",
+      "summary": "Implement delegated event handling: attach one listener to a parent, match events by selector, and call the handler with the matched element. Ensure boundary checks so events outside the root don\u2019t trigger callbacks.",
       "arguments": [
         {
           "name": "root",
@@ -3911,11 +3914,11 @@
     "starterCode": "export default function delegate(root, eventType, selector, handler, options) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function delegate(\n  root: Element,\n  eventType: string,\n  selector: string,\n  handler: (event: Event, matchedEl: Element) => void,\n  options?: { capture?: boolean; once?: boolean; ignore?: string; until?: string; stop?: boolean }\n): () => void {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Goal: robust event delegation without relying on `document`. Traverse ancestors via `parentElement`, enforce deterministic boundaries (`until` wins), support capture/once, ignore zones, text-node targets, and optional stopPropagation.",
+      "overview": "Event delegation attaches one listener to a parent and handles events for many children. The logic is: find the closest matching element, ensure it is within the root boundary, then call the handler. This saves memory, supports dynamic DOM, and is common in front-end interview tasks.",
       "approaches": [
         {
           "title": "Approach: Manual ancestor walk with deterministic boundaries (recommended)",
-          "prose": "Key helpers\n1) `startFromTarget(target)` normalizes Text nodes by returning `target.parentElement`.\n2) `closestWithin(start, selector, root, until)` returns the closest match, but stops immediately if it hits `until`.\n3) `isIgnored(start, ignoreSelector, root, until)` checks ancestor-inclusive ignore, without crossing `until`.\n\nMain listener\n- Normalize start.\n- If ignored => return.\n- Find match (closest) within boundary.\n- If `stop`, call `event.stopPropagation()`.\n- Call handler.\n- If `once`, cleanup.\n\nComplexity\n- Time: O(h) per event.\n- Space: O(1).",
+          "prose": "Attach root.addEventListener(eventType, listener). Inside the listener, compute matched = target.closest(selector). If matched exists and root.contains(matched), call handler(event, matched). Return a cleanup function that removes the listener to prevent leaks. The matching step is O(h) where h is the DOM depth.",
           "codeJs": "function startFromTarget(target) {\n  if (!target) return null;\n  if (target.nodeType === 1) return target;\n  if (target.nodeType === 3) return target.parentElement || null; // Text\n  return null;\n}\n\nfunction closestWithin(start, selector, root, until) {\n  let cur = start;\n  while (cur) {\n    if (until && cur.matches && cur.matches(until)) return null;\n    if (cur.matches && cur.matches(selector)) return cur;\n    if (cur === root) break;\n    cur = cur.parentElement;\n  }\n  return null;\n}\n\nfunction isIgnored(start, ignoreSelector, root, until) {\n  let cur = start;\n  while (cur) {\n    if (until && cur.matches && cur.matches(until)) return false;\n    if (cur.matches && cur.matches(ignoreSelector)) return true;\n    if (cur === root) break;\n    cur = cur.parentElement;\n  }\n  return false;\n}\n\nexport default function delegate(root, eventType, selector, handler, options) {\n  if (!root || typeof root.addEventListener !== 'function') {\n    throw new TypeError('delegate: root must be an Element');\n  }\n  if (typeof eventType !== 'string') {\n    throw new TypeError('delegate: eventType must be a string');\n  }\n  if (typeof selector !== 'string') {\n    throw new TypeError('delegate: selector must be a string');\n  }\n  if (typeof handler !== 'function') {\n    throw new TypeError('delegate: handler must be a function');\n  }\n\n  const capture = !!options?.capture;\n  const once = !!options?.once;\n  const ignore = options?.ignore;\n  const until = options?.until;\n  const stop = !!options?.stop;\n\n  let removed = false;\n  const cleanup = () => {\n    if (removed) return;\n    removed = true;\n    root.removeEventListener(eventType, listener, capture);\n  };\n\n  const listener = (event) => {\n    const start = startFromTarget(event && event.target);\n    if (!start) return;\n\n    if (ignore && isIgnored(start, ignore, root, until)) return;\n\n    const matched = closestWithin(start, selector, root, until);\n    if (!matched) return;\n\n    if (stop && event && typeof event.stopPropagation === 'function') {\n      event.stopPropagation();\n    }\n\n    handler(event, matched);\n    if (once) cleanup();\n  };\n\n  root.addEventListener(eventType, listener, capture);\n  return cleanup;\n}\n",
           "codeTs": "function startFromTarget(target: any): any {\n  if (!target) return null;\n  if (target.nodeType === 1) return target;\n  if (target.nodeType === 3) return target.parentElement || null;\n  return null;\n}\n\nfunction closestWithin(start: any, selector: string, root: any, until?: string): any {\n  let cur: any = start;\n  while (cur) {\n    if (until && cur.matches && cur.matches(until)) return null;\n    if (cur.matches && cur.matches(selector)) return cur;\n    if (cur === root) break;\n    cur = cur.parentElement;\n  }\n  return null;\n}\n\nfunction isIgnored(start: any, ignoreSelector: string, root: any, until?: string): boolean {\n  let cur: any = start;\n  while (cur) {\n    if (until && cur.matches && cur.matches(until)) return false;\n    if (cur.matches && cur.matches(ignoreSelector)) return true;\n    if (cur === root) break;\n    cur = cur.parentElement;\n  }\n  return false;\n}\n\nexport default function delegate(\n  root: Element,\n  eventType: string,\n  selector: string,\n  handler: (event: Event, matchedEl: Element) => void,\n  options?: { capture?: boolean; once?: boolean; ignore?: string; until?: string; stop?: boolean }\n): () => void {\n  const anyRoot: any = root as any;\n  if (!root || typeof anyRoot.addEventListener !== 'function') {\n    throw new TypeError('delegate: root must be an Element');\n  }\n  if (typeof eventType !== 'string') {\n    throw new TypeError('delegate: eventType must be a string');\n  }\n  if (typeof selector !== 'string') {\n    throw new TypeError('delegate: selector must be a string');\n  }\n  if (typeof handler !== 'function') {\n    throw new TypeError('delegate: handler must be a function');\n  }\n\n  const capture = !!options?.capture;\n  const once = !!options?.once;\n  const ignore = options?.ignore;\n  const until = options?.until;\n  const stop = !!options?.stop;\n\n  let removed = false;\n  const cleanup = () => {\n    if (removed) return;\n    removed = true;\n    root.removeEventListener(eventType, listener as any, capture as any);\n  };\n\n  const listener = (event: Event) => {\n    const start = startFromTarget((event as any)?.target);\n    if (!start) return;\n\n    if (ignore && isIgnored(start, ignore, root as any, until)) return;\n\n    const matched = closestWithin(start, selector, root as any, until);\n    if (!matched) return;\n\n    if (stop && (event as any) && typeof (event as any).stopPropagation === 'function') {\n      (event as any).stopPropagation();\n    }\n\n    handler(event, matched);\n    if (once) cleanup();\n  };\n\n  root.addEventListener(eventType, listener as any, capture as any);\n  return cleanup;\n}\n"
         }
@@ -4610,7 +4613,7 @@
       "utilities"
     ],
     "description": {
-      "summary": "Implement setByPath(obj, path, value) that returns a new object/array tree with the value written at the nested path. Normalize dot or segment paths, create missing containers based on numeric segments, and never mutate the original input. Empty paths should return the value directly, and primitives along the way should be replaced with the correct container type.",
+      "summary": "Implement setByPath(obj, path, value) that returns a new object/array tree with the value written at the nested path. Normalize dot or segment paths, create missing containers based on numeric segments, and never mutate the original input. Empty paths should return the value directly, and primitives along the way should be replaced with the correct container type. Concepts: objects, arrays, immutability.",
       "arguments": [
         {
           "name": "obj",
@@ -4639,7 +4642,7 @@
     "starterCode": "export default function setByPath(obj, path, value) {\n  throw new Error('Not implemented');\n}\n",
     "starterCodeTs": "export default function setByPath(\n  obj: any,\n  path: string | Array<string | number>,\n  value: any\n): any {\n  throw new Error('Not implemented');\n}\n",
     "solutionBlock": {
-      "overview": "Build an immutable path setter that updates only the branch you touch. Normalize the path into segments, then clone-on-write through objects/arrays while creating missing containers (array for numeric segment, object otherwise). This mirrors how state updates work in Redux/React: untouched branches keep their references, the updated branch is new, and an empty path just becomes the value.",
+      "overview": "Build an immutable path setter that updates only the branch you touch. Normalize the path into segments, then clone-on-write through objects/arrays while creating missing containers (array for numeric segment, object otherwise). This mirrors how state updates work in Redux/React: untouched branches keep their references, the updated branch is new, and an empty path just becomes the value. Key concepts: objects, arrays, immutability.",
       "approaches": [
         {
           "title": "Approach: Clone-on-write along the path (recommended)",

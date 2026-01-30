@@ -1,0 +1,69 @@
+.locked-preview-rich {
+  margin-top: 18px;
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.locked-preview-rich__section {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.locked-preview-rich__title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5f5f5;
+}
+
+.locked-preview-rich__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+  overflow-wrap: anywhere;
+}
+
+.locked-preview-rich__list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+  overflow-wrap: anywhere;
+}
+
+.locked-preview-rich__code {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #e5e7eb;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.locked-preview-rich__links {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.locked-preview-rich__links a {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.locked-preview-rich__links a:hover {
+  text-decoration: underline;
+}

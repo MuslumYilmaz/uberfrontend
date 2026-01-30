@@ -12,12 +12,14 @@ import { Tech } from '../../../core/models/user.model';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import { QuestionService } from '../../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
+import { buildLockedPreviewForTrivia, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
+import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import tagRegistry from '../../../../assets/questions/tag-registry.json';
 import topicRegistry from '../../../../assets/questions/topic-registry.json';
@@ -87,6 +89,7 @@ function buildTagRegex(tag: string): RegExp {
     DialogModule,
     LoginRequiredDialogComponent,
     FooterComponent,
+    LockedPreviewComponent,
     PrismHighlightDirective,
     SafeHtmlPipe,
   ],
@@ -143,6 +146,15 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       .map((item) => this.trimWords(this.normalizePreviewText(item), 12))
       .filter((item) => item.length > 0)
       .slice(0, 2);
+  });
+  lockedPreview = computed<LockedPreviewData | null>(() => {
+    const q = this.question();
+    if (!q) return null;
+    return buildLockedPreviewForTrivia(q, {
+      candidates: this.questionsList as any,
+      tech: this.tech,
+      kind: 'trivia',
+    });
   });
 
   // footer helpers
