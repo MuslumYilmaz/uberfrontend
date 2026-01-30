@@ -1658,7 +1658,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources.",
+    "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
     "answer": {
       "blocks": [
         {
@@ -1773,7 +1773,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events.",
+    "description": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
     "answer": {
       "blocks": [
         {

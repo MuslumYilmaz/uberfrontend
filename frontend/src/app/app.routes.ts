@@ -588,6 +588,20 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'editorial-policy',
+        loadComponent: () =>
+          import('./features/legal/editorial/editorial.component').then(
+            (m) => m.EditorialPolicyComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Editorial Policy',
+            description: 'How FrontendAtlas creates, reviews, and updates learning content.',
+            robots: 'index,follow',
+          },
+        },
+      },
+      {
         path: 'terms',
         loadComponent: () =>
           import('./features/legal/terms/terms.component').then((m) => m.TermsComponent),

@@ -13,7 +13,7 @@
       "components"
     ],
     "description": {
-      "summary": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics.",
+      "summary": "Build a React counter component with increment/decrement and a zero floor. Use state for the count, disable decrement at zero, and keep UI text in sync with state changes so the user always sees valid values. Concepts: react, state, event handlers, components, basics. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a <Counter /> as the main UI.",
@@ -83,7 +83,7 @@
       "user-input"
     ],
     "description": {
-      "summary": "Build a contact form using a React component with controlled inputs and basic validation. You will only work in `src/App.tsx` – the HTML shell and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
+      "summary": "Build a contact form using a React component with controlled inputs and basic validation. You will only work in `src/App.tsx` – the HTML shell and CSS are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Work only inside `src/App.tsx` (the CSS in `App.css` and `public/index.html` are already wired up to the expected classes).",
@@ -169,7 +169,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Build a small Todo List using a single React component. Users can add tasks, mark them as done with a checkbox, remove individual tasks, and clear all completed tasks.",
+      "summary": "Build a small Todo List using a single React component. Users can add tasks, mark them as done with a checkbox, remove individual tasks, and clear all completed tasks. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a Todo List UI as the main component.",
@@ -249,7 +249,7 @@
       "ui"
     ],
     "description": {
-      "summary": "Build a simple React image slider with previous/next buttons and dot navigation. Show the current slide, its title, and the slide index (e.g. \"Slide 1 of 3\"). Disable navigation buttons when you reach the start or end.",
+      "summary": "Build a simple React image slider with previous/next buttons and dot navigation. Show the current slide, its title, and the slide index (e.g. \"Slide 1 of 3\"). Disable navigation buttons when you reach the start or end. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render an <App /> component as the main UI.",
@@ -330,7 +330,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement React tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels. React focus: keep a single activeTab state and render panels conditionally.",
+      "summary": "Implement React tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels. React focus: keep a single activeTab state and render panels conditionally. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -405,7 +405,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Filter a React user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets. React focus: derive filtered lists in render or useMemo without mutating source data.",
+      "summary": "Filter a React user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets. React focus: derive filtered lists in render or useMemo without mutating source data. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main UI.",
@@ -486,7 +486,7 @@
       "lifting-state"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) UI in React using component state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. React focus: lift open state to the parent and pass isOpen/onToggle props to items.",
+      "summary": "Build a simple FAQ (accordion) UI in React using component state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. React focus: lift open state to the parent and pass isOpen/onToggle props to items. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a main <App /> component that shows a FAQ card with 3–4 FAQ items.",
@@ -564,7 +564,7 @@
       "components"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in React that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. React focus: keep page index in state and derive page slices.",
+      "summary": "Build a simple paginated data table in React that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. React focus: keep page index in state and derive page slices. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a main <App /> component that shows a table of users.",
@@ -645,7 +645,7 @@
       "components"
     ],
     "description": {
-      "summary": "Add a global light/dark theme toggle using React Context. The selected theme should be stored in localStorage and restored when the page reloads. React focus: use Context to persist theme in localStorage and sync the DOM attribute.",
+      "summary": "Add a global light/dark theme toggle using React Context. The selected theme should be stored in localStorage and restored when the page reloads. React focus: use Context to persist theme in localStorage and sync the DOM attribute. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner (UI is already provided via CSS).",
@@ -813,7 +813,7 @@
       "ecommerce"
     ],
     "description": {
-      "summary": "Build a small shopping cart UI in React. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. React focus: use immutable updates for cart lines and derived totals.",
+      "summary": "Build a small shopping cart UI in React. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. React focus: use immutable updates for cart lines and derived totals. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a list of products with name, price, and an \"Add to cart\" button for each.",
@@ -900,7 +900,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React focus: debounce with useEffect + setTimeout cleanup, and manage loading/error state.",
+      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React focus: debounce with useEffect + setTimeout cleanup, and manage loading/error state. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -986,7 +986,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes. React focus: build a controlled component and notify parent on change.",
+      "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes. React focus: build a controlled component and notify parent on change. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a <StarRating /> component as part of the main UI.",
@@ -1066,7 +1066,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Generate a dynamic table in React from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers. React focus: generate rows/cols with map and keep inputs controlled.",
+      "summary": "Generate a dynamic table in React from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers. React focus: generate rows/cols with map and keep inputs controlled. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a main <App /> UI that contains the dynamic table controls.",
@@ -1141,7 +1141,7 @@
       "dom"
     ],
     "description": {
-      "summary": "Build a small React UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate). React focus: compute parent indeterminate state from child selections.",
+      "summary": "Build a small React UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate). React focus: compute parent indeterminate state from child selections. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
@@ -1221,7 +1221,7 @@
       "keyboard"
     ],
     "description": {
-      "summary": "Build an **autocomplete search bar** in React. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, keyboard navigation (↑/↓/Enter/Escape), and close-on-outside-click.",
+      "summary": "Build an **autocomplete search bar** in React. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, keyboard navigation (↑/↓/Enter/Escape), and close-on-outside-click. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a single `<App />` as the main UI.",
@@ -1304,7 +1304,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a React transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer. React focus: manage selected ids and list state immutably across two panels.",
+      "summary": "Build a React transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer. React focus: manage selected ids and list state immutably across two panels. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1384,7 +1384,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a simple 3×3 Tic-Tac-Toe game in React. Two players take turns placing X and O. Detect wins/draws and allow resetting the game.",
+      "summary": "Build a simple 3×3 Tic-Tac-Toe game in React. Two players take turns placing X and O. Detect wins/draws and allow resetting the game. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
@@ -1542,7 +1542,7 @@
       "conditional-rendering"
     ],
     "description": {
-      "summary": "Build a React Like button that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering. React focus: keep liked/count in state and guard against negative values.",
+      "summary": "Build a React Like button that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering. React focus: keep liked/count in state and guard against negative values. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1619,7 +1619,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a React progress bar for values 0–100 with +10%/−10% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34–66, green &gt;66). Show the numeric percentage and keep the UI in sync with state. React focus: derive classes from state and clamp values before render.",
+      "summary": "Build a React progress bar for values 0–100 with +10%/−10% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34–66, green &gt;66). Show the numeric percentage and keep the UI in sync with state. React focus: derive classes from state and clamp values before render. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1700,7 +1700,7 @@
       "controlled-inputs"
     ],
     "description": {
-      "summary": "Build a React nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. React focus: render recursive components and keep a single active reply id.",
+      "summary": "Build a React nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. React focus: render recursive components and keep a single active reply id. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render a nested comments UI as the main screen.",
@@ -1779,7 +1779,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "In React, let users add or remove step buttons dynamically, and have each button update the counter by its own step value. Use state arrays and event handlers to keep the UI in sync. Concepts: react, state, arrays, event handlers, dynamic ui. React focus: store step buttons in state arrays and update immutably.",
+      "summary": "In React, let users add or remove step buttons dynamically, and have each button update the counter by its own step value. Use state arrays and event handlers to keep the UI in sync. Concepts: react, state, arrays, event handlers, dynamic ui. React focus: store step buttons in state arrays and update immutably. Framework focus: React hooks (useState/useEffect), JSX event handling, and one-way props/state flow.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main screen.",

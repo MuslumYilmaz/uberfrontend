@@ -14,7 +14,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a Vue 3 counter component with increment/decrement and a zero floor. Use reactive state and guard the decrement so it never goes negative. Call out disabled states and clean template logic. Concepts: vue, components, reactivity, event handlers, basics.",
+      "summary": "Build a Vue 3 counter component with increment/decrement and a zero floor. Use reactive state and guard the decrement so it never goes negative. Call out disabled states and clean template logic. Concepts: vue, components, reactivity, event handlers, basics. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the counter UI as the main component.",
@@ -89,7 +89,7 @@
       "user-input"
     ],
     "description": {
-      "summary": "Build a contact form in a Vue 3 single file component using the Composition API. You will only work inside &lt;script setup&gt; in App.vue. The template and styles are already provided for you. Validate the user's input and send the form data with a POST request to https://jsonplaceholder.typicode.com/posts, showing loading, success, and error states.",
+      "summary": "Build a contact form in a Vue 3 single file component using the Composition API. You will only work inside &lt;script setup&gt; in App.vue. The template and styles are already provided for you. Validate the user's input and send the form data with a POST request to https://jsonplaceholder.typicode.com/posts, showing loading, success, and error states. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Use Vue 3's Composition API in a single-file component (App.vue).",
@@ -172,7 +172,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Build a small Todo List in Vue 3 using the Composition API and &lt;script setup&gt;. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks.",
+      "summary": "Build a small Todo List in Vue 3 using the Composition API and &lt;script setup&gt;. Users should be able to add tasks, mark them as completed, remove individual tasks, and clear all completed tasks. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a Todo List as the main UI in App.vue.",
@@ -256,7 +256,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Create a basic image slider with next/prev controls and an active index. Guard the index at bounds, update the displayed image and label, and keep disabled states in sync with index. Concepts: vue, components, reactivity.",
+      "summary": "Create a basic image slider with next/prev controls and an active index. Guard the index at bounds, update the displayed image and label, and keep disabled states in sync with index. Concepts: vue, components, reactivity. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the image slider UI as the main component.",
@@ -338,7 +338,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement Vue 3 tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics. Concepts: vue, components, reactivity. Vue focus: keep activeTab in a ref and render with v-if.",
+      "summary": "Implement Vue 3 tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics. Concepts: vue, components, reactivity. Vue focus: keep activeTab in a ref and render with v-if. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -412,7 +412,7 @@
       "filtering"
     ],
     "description": {
-      "summary": "Build a Vue 3 filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match. Concepts: vue, components, reactivity. Vue focus: derive filtered lists with computed properties.",
+      "summary": "Build a Vue 3 filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match. Concepts: vue, components, reactivity. Vue focus: derive filtered lists with computed properties. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main component.",
@@ -493,7 +493,7 @@
       "state-management"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) UI in Vue 3 using reactive state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. Vue focus: manage open state with refs and emit toggle events from item components.",
+      "summary": "Build a simple FAQ (accordion) UI in Vue 3 using reactive state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. Vue focus: manage open state with refs and emit toggle events from item components. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Use Vue 3 with a single <App.vue> root component as the main entry.",
@@ -572,7 +572,7 @@
       "arrays"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Vue focus: keep page index in a ref and derive page slices with computed.",
+      "summary": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Vue focus: keep page index in a ref and derive page slices with computed. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the table UI as the main <App.vue> component.",
@@ -651,7 +651,7 @@
       "theming"
     ],
     "description": {
-      "summary": "Add a global light/dark theme toggle in the top-right of the page using Vue 3. The selected theme should be stored in localStorage and restored when the page reloads. Vue focus: use a global ref/composable to persist theme in localStorage and apply a root attribute.",
+      "summary": "Add a global light/dark theme toggle in the top-right of the page using Vue 3. The selected theme should be stored in localStorage and restored when the page reloads. Vue focus: use a global ref/composable to persist theme in localStorage and apply a root attribute. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
@@ -825,7 +825,7 @@
       "ecommerce"
     ],
     "description": {
-      "summary": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. Vue focus: use reactive arrays and computed totals.",
+      "summary": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. Vue focus: use reactive arrays and computed totals. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a list of products with name, price, and an \"Add to cart\" button for each.",
@@ -909,7 +909,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Implement a Vue 3 debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX. Concepts: vue, composition-api, watch. Vue focus: debounce with watch + timeout cleanup and reactive loading state.",
+      "summary": "Implement a Vue 3 debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX. Concepts: vue, composition-api, watch. Vue focus: debounce with watch + timeout cleanup and reactive loading state. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -994,7 +994,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity. Vue focus: use props/emits for a controlled rating component.",
+      "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity. Vue focus: use props/emits for a controlled rating component. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the star rating UI as the main component.",
@@ -1074,7 +1074,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Generate a dynamic table in Vue 3 from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable. Concepts: vue, components, reactivity. Vue focus: generate rows/cols with v-for and computed helpers.",
+      "summary": "Generate a dynamic table in Vue 3 from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable. Concepts: vue, components, reactivity. Vue focus: generate rows/cols with v-for and computed helpers. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the dynamic table UI as the main component.",
@@ -1151,7 +1151,7 @@
       "dom"
     ],
     "description": {
-      "summary": "Build a small Vue 3 UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate). Vue focus: compute parent checked/indeterminate state via computed properties.",
+      "summary": "Build a small Vue 3 UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate). Vue focus: compute parent checked/indeterminate state via computed properties. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
@@ -1325,7 +1325,7 @@
       "inputs"
     ],
     "description": {
-      "summary": "This UI should keep item order stable, clear selection after transfer, and avoid no-op actions when nothing is selected. Concepts: vue, components, reactivity, derived state, event handlers, lists, inputs. Vue focus: manage selection with reactive arrays and computed helpers.",
+      "summary": "This UI should keep item order stable, clear selection after transfer, and avoid no-op actions when nothing is selected. Concepts: vue, components, reactivity, derived state, event handlers, lists, inputs. Vue focus: manage selection with reactive arrays and computed helpers. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1403,7 +1403,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a Tic-Tac-Toe game in Vue with alternating turns, win/draw detection, and a reset button. Prevent overwriting moves and show clear status messages for current player and outcome so the game is easy to follow. Concepts: vue, composition api, reactivity, event handlers, derived state, arrays, control flow.",
+      "summary": "Build a Tic-Tac-Toe game in Vue with alternating turns, win/draw detection, and a reset button. Prevent overwriting moves and show clear status messages for current player and outcome so the game is easy to follow. Concepts: vue, composition api, reactivity, event handlers, derived state, arrays, control flow. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
@@ -1489,7 +1489,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a Vue 3 Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state. Concepts: vue, components, reactivity. Include keyboard and ARIA considerations, edge cases like rapid clicks, and tests for optimistic UI or throttling. Vue focus: keep liked/count in refs and guard against negative values.",
+      "summary": "Create a Vue 3 Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state. Concepts: vue, components, reactivity. Include keyboard and ARIA considerations, edge cases like rapid clicks, and tests for optimistic UI or throttling. Vue focus: keep liked/count in refs and guard against negative values. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1569,7 +1569,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Vue 3 progress bar for 0–100 with +10/−10 controls. Clamp values, display the percentage, and change the fill color by thresholds (red/orange/green) to communicate status clearly. Keep state in sync with UI at all times. Include accessibility notes (contrast, text labels), edge cases (clamping at 0/100), and tests for threshold boundaries and performance on rapid clicks. Vue focus: use computed classes and clamp values in reactive state.",
+      "summary": "Build a Vue 3 progress bar for 0–100 with +10/−10 controls. Clamp values, display the percentage, and change the fill color by thresholds (red/orange/green) to communicate status clearly. Keep state in sync with UI at all times. Include accessibility notes (contrast, text labels), edge cases (clamping at 0/100), and tests for threshold boundaries and performance on rapid clicks. Vue focus: use computed classes and clamp values in reactive state. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1646,7 +1646,7 @@
       "controlled-inputs"
     ],
     "description": {
-      "summary": "Build a Vue 3 nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. Concepts: vue, composition api, recursion, tree, event handlers, controlled inputs. Vue focus: render recursive components and keep a single active reply id.",
+      "summary": "Build a Vue 3 nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. Concepts: vue, composition api, recursion, tree, event handlers, controlled inputs. Vue focus: render recursive components and keep a single active reply id. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render a nested comments UI as the main screen.",
@@ -1723,7 +1723,7 @@
       "lists"
     ],
     "description": {
-      "summary": "In Vue 3, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: vue, components, reactivity, event handlers, lists. Vue focus: store step buttons in reactive arrays and update with v-for.",
+      "summary": "In Vue 3, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: vue, components, reactivity, event handlers, lists. Vue focus: store step buttons in reactive arrays and update with v-for. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main component.",

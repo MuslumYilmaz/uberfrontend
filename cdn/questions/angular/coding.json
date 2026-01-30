@@ -83,7 +83,7 @@
       "user-input"
     ],
     "description": {
-      "summary": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states.",
+      "summary": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Work only inside the standalone root component in `src/app/app.component.ts` (template and styles are already provided).",
@@ -336,7 +336,7 @@
       "tabs"
     ],
     "description": {
-      "summary": "Create an Angular tab switcher using a single activeTab value. Buttons update the value, *ngIf renders only the active panel, and active styles clearly indicate the current tab. Keep labels and click targets accessible. Angular focus: keep activeTab in the component and render with *ngIf.",
+      "summary": "Create an Angular tab switcher using a single activeTab value. Buttons update the value, *ngIf renders only the active panel, and active styles clearly indicate the current tab. Keep labels and click targets accessible. Angular focus: keep activeTab in the component and render with *ngIf. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -412,7 +412,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist. Angular focus: derive filtered lists in a getter or a pure pipe.",
+      "summary": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist. Angular focus: derive filtered lists in a getter or a pure pipe. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -570,7 +570,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices.",
+      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -653,7 +653,7 @@
       "theming"
     ],
     "description": {
-      "summary": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element.",
+      "summary": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
@@ -914,7 +914,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation.",
+      "summary": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1001,7 +1001,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding. Angular focus: use @Input/@Output for a controlled rating component.",
+      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding. Angular focus: use @Input/@Output for a controlled rating component. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Create a standalone `StarRatingComponent` that renders a row of stars.",
@@ -1159,7 +1159,7 @@
       "ui-logic"
     ],
     "description": {
-      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states.",
+      "summary": "Build a standalone Angular component that renders a parent checkbox with multiple child checkboxes. Toggling the parent should check/uncheck all children. Toggling children should update the parent to checked, unchecked, or indeterminate depending on the child states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Render one parent checkbox and several child checkboxes.",
@@ -1240,7 +1240,7 @@
       "keyboard"
     ],
     "description": {
-      "summary": "Build an **autocomplete search bar** in Angular. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, and keyboard navigation (↑/↓/Enter/Escape).",
+      "summary": "Build an **autocomplete search bar** in Angular. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, and keyboard navigation (↑/↓/Enter/Escape). Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1327,7 +1327,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use *ngFor with checkbox bindings.",
+      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use *ngFor with checkbox bindings. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1493,7 +1493,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Facebook-style Like button as an Angular standalone component. Clicking toggles the liked state, updates the count (+1 / -1), and changes the button style.",
+      "summary": "Build a Facebook-style Like button as an Angular standalone component. Clicking toggles the liked state, updates the count (+1 / -1), and changes the button style. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1648,7 +1648,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles.",
+      "summary": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1728,7 +1728,7 @@
       "state"
     ],
     "description": {
-      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation.",
+      "summary": "Build a nested comments panel that supports infinite-depth replies. Users can add top-level comments and reply to any comment. Clicking Reply should open an input only for that specific comment (others unaffected). Render comments hierarchically with indentation. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",
@@ -1809,7 +1809,7 @@
       "arrays"
     ],
     "description": {
-      "summary": "In Angular, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: components, event binding, state, ng for, arrays. Angular focus: store step buttons in arrays and render with *ngFor.",
+      "summary": "In Angular, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: components, event binding, state, ng for, arrays. Angular focus: store step buttons in arrays and render with *ngFor. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",

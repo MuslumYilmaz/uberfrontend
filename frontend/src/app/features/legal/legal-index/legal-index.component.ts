@@ -18,6 +18,15 @@ import { RouterModule } from '@angular/router';
       </header>
 
       <div class="cards">
+        <a class="card fa-card" [routerLink]="['/legal/editorial-policy']">
+          <div class="card-head">
+            <span class="pill">Trust</span>
+            <span class="hint">Editorial</span>
+          </div>
+          <h2>Editorial Policy</h2>
+          <p>How we create, review, and update learning content on FrontendAtlas.</p>
+        </a>
+
         <a class="card fa-card" [routerLink]="['/legal/terms']">
           <div class="card-head">
             <span class="pill">Policy</span>

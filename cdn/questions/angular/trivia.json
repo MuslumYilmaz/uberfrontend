@@ -1331,7 +1331,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "A directive is a class that Angular attaches to an element (or an <ng-template>) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories, how structural directives desugar from * syntax into <ng-template>, and how to build safe custom directives (HostBinding/HostListener, Renderer2, TemplateRef/ViewContainerRef).",
+    "description": "A directive is a class that Angular attaches to an element (or an <ng-template>) to add behavior, change styling, or control whether a chunk of template exists at all. Interview focus: the 3 directive categories, how structural directives desugar from * syntax into <ng-template>, and how to build safe custom directives (HostBinding/HostListener, Renderer2, TemplateRef/ViewContainerRef). Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
     "answer": {
       "blocks": [
         {
@@ -2618,7 +2618,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Angular lifecycle hooks are framework callbacks on components/directives that run at specific moments (creation, input changes, content/view init + checks, destruction). Interviewers care less about memorizing names and more about choosing the correct hook for inputs, DOM/ViewChild, content projection, change-detection edge cases, and cleanup.",
+    "description": "Angular lifecycle hooks are framework callbacks on components/directives that run at specific moments (creation, input changes, content/view init + checks, destruction). Interviewers care less about memorizing names and more about choosing the correct hook for inputs, DOM/ViewChild, content projection, change-detection edge cases, and cleanup. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
     "answer": {
       "blocks": [
         {
