@@ -5,7 +5,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "CSS stands for Cascading Style Sheets. It is a stylesheet language used to describe the visual presentation of HTML elements on a webpage, controlling layout, colors, fonts, and overall design.",
+    "description": "CSS stands for Cascading Style Sheets. It is the language used to control the presentation of HTML, including layout, spacing, colors, typography, and responsive behavior.",
     "answer": {
       "blocks": [
         {
@@ -62,7 +62,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "basics",
+      "definition",
+      "styles",
+      "html"
+    ]
   },
   {
     "id": "css-link-html",
@@ -70,7 +77,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "You link a CSS file to an HTML document using the <link> tag inside the <head> section. This allows the browser to load and apply external styles from a separate stylesheet file.",
+    "description": "Link an external CSS file by placing a <link rel=\"stylesheet\" href=\"...\"> tag inside the HTML <head>. This loads the stylesheet and applies it to the page.",
     "answer": {
       "blocks": [
         {
@@ -135,7 +142,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "html",
+      "link",
+      "external-stylesheet",
+      "head"
+    ]
   },
   {
     "id": "css-inline-internal-external",
@@ -143,7 +157,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "CSS can be applied in three ways: inline, internal, and external. Each method differs in scope, maintainability, and how styles are loaded and applied.",
+    "description": "Inline CSS is written directly on an element via the style attribute, internal CSS lives in a <style> tag in the <head>, and external CSS is loaded from a separate .css file via <link>. External styles are reusable and best for maintainability.",
     "answer": {
       "blocks": [
         {
@@ -234,7 +248,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "inline",
+      "internal",
+      "external",
+      "stylesheets"
+    ]
   },
   {
     "id": "css-background-color",
@@ -599,7 +620,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The border property in CSS is used to draw a line around an element’s content, padding, and background. It helps define visual boundaries, emphasize sections, or enhance design aesthetics.",
+    "description": "You add a border with the border shorthand (width, style, color), e.g., border: 1px solid #333;. You can also set border-width, border-style, and border-color individually.",
     "answer": {
       "blocks": [
         {
@@ -682,7 +703,13 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "border",
+      "box-model",
+      "styles"
+    ]
   },
   {
     "id": "css-margin-property",
@@ -690,7 +717,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The margin property in CSS defines the outer spacing around an element. It controls the distance between the element’s border (or edge) and surrounding elements, helping manage layout and visual separation.",
+    "description": "Margin controls the space outside an element’s border, separating it from neighboring elements. It does not affect the element’s internal content; use padding for inner spacing.",
     "answer": {
       "blocks": [
         {
@@ -787,7 +814,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "margin",
+      "box-model",
+      "layout",
+      "spacing"
+    ]
   },
   {
     "id": "css-padding-property",
@@ -795,7 +829,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "The padding property controls the inner spacing between an element’s content and its border. It creates breathing room inside the element without affecting the distance to surrounding elements.",
+    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without affecting neighboring elements like margin does.",
     "answer": {
       "blocks": [
         {
@@ -874,7 +908,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "padding",
+      "box-model",
+      "layout",
+      "spacing"
+    ]
   },
   {
     "id": "css-margin-vs-padding",
@@ -969,7 +1010,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "Use the font-weight property to control text thickness. Common values include normal (400) and bold (700), but modern fonts may support a wider numeric range for fine-grained control.",
+    "description": "Make text bold using font-weight, e.g., font-weight: 700 or font-weight: bold. The actual weight depends on the font’s available weights.",
     "answer": {
       "blocks": [
         {
@@ -1052,7 +1093,13 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "typography",
+      "font-weight",
+      "text"
+    ]
   },
   {
     "id": "css-change-text-size",
@@ -1139,7 +1186,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 5,
-    "description": "Both id and class are selectors in CSS used to style elements, but they differ in usage, specificity, and reusability. Understanding their distinctions is essential for writing maintainable and efficient CSS.",
+    "description": "An id is unique on a page and selected with #id; a class can be reused and selected with .class. IDs have higher specificity and are often used for anchors or JS hooks, while classes are for styling groups.",
     "answer": {
       "blocks": [
         {
@@ -1214,7 +1261,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "selectors",
+      "id",
+      "class",
+      "specificity"
+    ]
   },
   {
     "id": "css-color-property",
@@ -1222,7 +1276,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The color property in CSS defines the foreground color of text content and inline elements. It is essential for creating visual contrast, brand identity, and accessibility in web design.",
+    "description": "The color property sets the foreground text color of an element (not the background). It accepts named colors, hex, rgb/rgba, hsl/hsla, and currentColor.",
     "answer": {
       "blocks": [
         {
@@ -1297,7 +1351,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "color",
+      "typography",
+      "text",
+      "values"
+    ]
   },
   {
     "id": "css-box-model",

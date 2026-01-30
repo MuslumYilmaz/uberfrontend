@@ -13,7 +13,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Create a minimal HTML document that includes a title, a main heading, and a paragraph.",
+      "summary": "Build a minimal, valid HTML document skeleton. Include doctype, html, head, and body, plus a title and basic meta tags. The goal is to show correct structure and semantics.",
       "arguments": [
         {
           "name": "<!DOCTYPE>",
@@ -54,10 +54,10 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}"
     },
     "solutionBlock": {
-      "overview": "This warm-up introduces the structure of an HTML document: doctype, head, and body. You\u2019ll create a simple page with a title, one heading, and one paragraph.",
+      "overview": "This warm-up checks that you can write a valid HTML document structure. A strong answer includes <!doctype html>, <html lang>, a <head> with <meta charset> and <title>, and a <body> with visible content.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Basic HTML Skeleton",
+          "title": "Approach 1 – Basic HTML Skeleton",
           "prose": "Start with `<!DOCTYPE html>` to declare HTML5. Wrap everything in `<html>`. Inside `<head>`, add a `<title>`. Place visible content inside `<body>`, including `<h1>` and `<p>`.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }"
@@ -75,15 +75,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 HTML basics",
+          "title": "MDN – HTML basics",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics"
         },
         {
-          "title": "MDN \u2013 The <head> element",
+          "title": "MDN – The <head> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"
         },
         {
-          "title": "MDN \u2013 The <title> element",
+          "title": "MDN – The <title> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"
         }
       ]
@@ -206,7 +206,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Create a clickable image link that is secure (target=_blank + rel) and accessible (non-empty alt). Note: in a sandboxed preview, opening a new tab may be blocked \u2014 tests focus on correct markup.",
+      "summary": "Create a clickable image link that is secure (target=_blank + rel) and accessible (non-empty alt). Note: in a sandboxed preview, opening a new tab may be blocked — tests focus on correct markup.",
       "arguments": [
         {
           "name": "<a>",
@@ -239,7 +239,7 @@
         "desc": "A clickable image link with target='_blank', rel='noopener noreferrer', and a non-empty alt."
       },
       "examples": [
-        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked \u2014 that's expected.</p>\\n  </body>\\n</html>"
+        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked — that's expected.</p>\\n  </body>\\n</html>"
       ]
     },
     "web": {
@@ -247,10 +247,10 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}\\n.note {\\n  font-size: .9rem;\\n  opacity: .75;\\n  margin-top: 1rem;\\n}"
     },
     "solutionBlock": {
-      "overview": "Wrap the image in an <a> to make it clickable. Use target='_blank' plus rel='noopener noreferrer' for safe external links, and provide a non-empty alt for accessibility. In sandboxed previews, opening a new tab may be blocked \u2014 tests validate the markup instead of actual navigation.",
+      "overview": "Wrap the image in an <a> to make it clickable. Use target='_blank' plus rel='noopener noreferrer' for safe external links, and provide a non-empty alt for accessibility. In sandboxed previews, opening a new tab may be blocked — tests validate the markup instead of actual navigation.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Secure clickable image link",
+          "title": "Approach 1 – Secure clickable image link",
           "prose": "The <a> wraps the <img>, making it clickable. target='_blank' opens a new tab in normal browsers, while rel='noopener noreferrer' prevents window.opener access and reduces tab-napping risk. The alt text stays non-empty for screen readers.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }"
@@ -270,15 +270,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <a> element",
+          "title": "MDN – <a> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"
         },
         {
-          "title": "MDN \u2013 <img> element",
+          "title": "MDN – <img> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
         },
         {
-          "title": "MDN \u2013 Security considerations with target=\"_blank\"",
+          "title": "MDN – Security considerations with target=\"_blank\"",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#security_and_privacy_concerns"
         }
       ]
@@ -488,7 +488,7 @@
       "structure"
     ],
     "description": {
-      "summary": "Create an accessible table listing employees with proper structure and semantics using <table>, <thead>, <tbody>, <th>, and <caption>.",
+      "summary": "Create an accessible HTML table with proper headers and captions. Use <thead>, <tbody>, <th scope>, and a <caption> so screen readers can understand relationships.",
       "arguments": [
         {
           "name": "<table>",
@@ -498,7 +498,7 @@
         {
           "name": "<caption>",
           "type": "descriptive element",
-          "desc": "Provides a concise description of the table\u2019s contents for accessibility."
+          "desc": "Provides a concise description of the table’s contents for accessibility."
         },
         {
           "name": "<thead> and <tbody>",
@@ -529,10 +529,10 @@
       "starterCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
     },
     "solutionBlock": {
-      "overview": "Use semantic table markup to ensure both visual clarity and accessibility. The <caption> summarizes the table, <thead> groups header cells, and <th scope='col'> defines relationships for assistive technologies.",
+      "overview": "This task focuses on semantic table structure and accessibility. A strong solution uses <caption> for context, <th scope> for headers, and groups rows in <thead>/<tbody> so assistive tech can announce headers correctly.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Accessible Employee Table",
+          "title": "Approach 1 – Accessible Employee Table",
           "prose": "Use <caption> to describe the data, <thead> for the column headers, and <tbody> for the content rows. Each header cell should have scope='col' to help screen readers associate data cells correctly.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
@@ -542,7 +542,7 @@
         "pitfalls": [
           "Forgetting to add a <caption> makes the table less accessible to screen readers.",
           "Leaving out scope attributes can confuse assistive technologies.",
-          "Avoid using tables for layout purposes \u2014 use them only for structured data."
+          "Avoid using tables for layout purposes — use them only for structured data."
         ],
         "techniques": [
           "Use <thead> and <tbody> to separate structure from content.",
@@ -552,15 +552,15 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <table> element",
+          "title": "MDN – <table> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"
         },
         {
-          "title": "MDN \u2013 <caption> element",
+          "title": "MDN – <caption> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"
         },
         {
-          "title": "MDN \u2013 Using the scope attribute",
+          "title": "MDN – Using the scope attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th#scope"
         }
       ]
