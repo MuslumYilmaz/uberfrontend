@@ -53,24 +53,6 @@
                 </div>
             </section>
 
-            <!-- Guides -->
-            <section class="card">
-                <div class="card-head">Guides</div>
-                <div class="card-body">
-                    <ul class="guide-links">
-                        <li>
-                            <a [routerLink]="['/guides/interview-blueprint/fundamentals-check']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
-                        </li>
-                        <li>
-                            <a [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
-                        </li>
-                        <li>
-                            <a [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-
             <!-- Answer -->
             <section class="card">
                 <div class="card-head">Answer</div>
@@ -158,6 +140,24 @@
                 <div class="card-head">Summary</div>
                 <div class="card-body">
                     <div class="content" [innerHTML]="summaryHelp() | safeHtml"></div>
+                </div>
+            </section>
+
+            <!-- Guides -->
+            <section class="card">
+                <div class="card-head">Guides</div>
+                <div class="card-body">
+                    <ul class="guide-links">
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/quiz']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
+                        </li>
+                    </ul>
                 </div>
             </section>
 
