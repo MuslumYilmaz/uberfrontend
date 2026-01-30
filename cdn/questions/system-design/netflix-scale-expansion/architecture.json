@@ -1,99 +1,154 @@
 {
-    "key": "A",
-    "title": "Architecture / High-level design",
-    "blocks": [
+  "key": "A",
+  "title": "Architecture / High-level design",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "At Netflix scale, the UI architecture for a concrete feature (the Home Continue Watching row) must keep the rendering pipeline stable while teams ship independently. The core is a composable UI shell with isolated feature modules, a shared design system, and a predictable client data layer."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "At Netflix scale, the UI architecture for a concrete feature (the Home Continue Watching row) must keep the rendering pipeline stable while teams ship independently. The core is a composable UI shell with isolated feature modules, a shared design system, and a predictable client data layer."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Client architecture**\n- App shell + feature modules (or microfrontends)\n- Shared design system + tokens\n- Route-level code splitting + lazy data fetching\n- Error boundaries to isolate failures"
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**Client architecture**\n- App shell + feature modules (or microfrontends)\n- Shared design system + tokens\n- Route-level code splitting + lazy data fetching\n- Error boundaries to isolate failures"
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**Data & integration**\n- Frontend-facing BFF for stable UI contracts\n- Request flow: edge cached shell -> BFF -> client cache -> view model -> render module\n- Caching at edge + client cache with TTL\n- Experiment config served early for consistent UI"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Architecture decisions to explain",
-            "columns": [
-                "Decision",
-                "Why it matters for frontend scale"
-            ],
-            "rows": [
-                [
-                    "Module boundaries",
-                    "Allow independent deploys without breaking the shell"
-                ],
-                [
-                    "Rendering strategy",
-                    "Balance SSR/CSR to hit performance budgets"
-                ],
-                [
-                    "Caching layers",
-                    "Reduce network churn and stabilize UI"
-                ],
-                [
-                    "Data flow contract",
-                    "Keeps feature rendering predictable under load"
-                ],
-                [
-                    "Experiment config",
-                    "Avoid UI flicker between variants"
-                ]
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "High-level data flow",
-            "steps": [
-                {
-                    "title": "1) Shell",
-                    "text": "Serve the app shell from edge cache; keep it stable and fast."
-                },
-                {
-                    "title": "2) Feature data",
-                    "text": "Request Continue Watching data from a BFF with device-aware payloads."
-                },
-                {
-                    "title": "3) Client cache",
-                    "text": "Store a normalized response and build a view model for the carousel."
-                },
-                {
-                    "title": "4) Render",
-                    "text": "Render a virtualized carousel with memoized cards and stable keys."
-                },
-                {
-                    "title": "5) Observe",
-                    "text": "Capture LCP/INP and feature-specific errors to gate rollout."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "success",
-            "title": "Key message",
-            "text": "Scaling the UI is about controlling boundaries, reducing rendering cost, and shipping safely - not adding more UI complexity."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Data & integration**\n- Frontend-facing BFF for stable UI contracts\n- Request flow: edge cached shell -> BFF -> client cache -> view model -> render module\n- Caching at edge + client cache with TTL\n- Experiment config served early for consistent UI"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Architecture decisions to explain",
+      "columns": [
+        "Decision",
+        "Why it matters for frontend scale"
+      ],
+      "rows": [
+        [
+          "Module boundaries",
+          "Allow independent deploys without breaking the shell"
+        ],
+        [
+          "Rendering strategy",
+          "Balance SSR/CSR to hit performance budgets"
+        ],
+        [
+          "Caching layers",
+          "Reduce network churn and stabilize UI"
+        ],
+        [
+          "Data flow contract",
+          "Keeps feature rendering predictable under load"
+        ],
+        [
+          "Experiment config",
+          "Avoid UI flicker between variants"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "High-level data flow",
+      "steps": [
+        {
+          "title": "1) Shell",
+          "text": "Serve the app shell from edge cache; keep it stable and fast."
+        },
+        {
+          "title": "2) Feature data",
+          "text": "Request Continue Watching data from a BFF with device-aware payloads."
+        },
+        {
+          "title": "3) Client cache",
+          "text": "Store a normalized response and build a view model for the carousel."
+        },
+        {
+          "title": "4) Render",
+          "text": "Render a virtualized carousel with memoized cards and stable keys."
+        },
+        {
+          "title": "5) Observe",
+          "text": "Capture LCP/INP and feature-specific errors to gate rollout."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "success",
+      "title": "Key message",
+      "text": "Scaling the UI is about controlling boundaries, reducing rendering cost, and shipping safely - not adding more UI complexity."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Component boundaries to call out",
+      "columns": [
+        "Boundary",
+        "Reason"
+      ],
+      "rows": [
+        [
+          "UI shell vs feature module",
+          "Independent deploys and safe rollouts"
+        ],
+        [
+          "Ingest vs render",
+          "Prevents re-render storms"
+        ],
+        [
+          "Cache vs view model",
+          "Keeps UI deterministic"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Explain the data flow",
+      "text": "State the pipeline explicitly: fetch -> normalize -> cache -> view model -> render. This shows you understand front-end architecture beyond UI widgets."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Ordering strategy**\nUse server timestamps and stable IDs; resolve minor out-of-order arrivals with a small client buffer before rendering."
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Auto-scroll rules**\nIf the user scrolls up, pause auto-scroll and show a badge; resume only when they return to the bottom."
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

@@ -10,10 +10,11 @@
       "react",
       "state",
       "event-handlers",
-      "components"
+      "components",
+      "basics"
     ],
     "description": {
-      "summary": "Build a simple <Counter /> component that displays a value and has '+' and '-' buttons. The count must never go below 0.",
+      "summary": "Build a React counter with increment/decrement buttons and a zero floor. Use state to keep the count, disable decrement at zero, and ensure the UI always reflects the current value.",
       "specs": {
         "requirements": [
           "Render a <Counter /> as the main UI.",
@@ -39,11 +40,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Use a single piece of state managed with `useState(0)` to store the count. The '+' button increments by 1. The '-' button should call `setCount` with `Math.max(0, count - 1)` (or equivalent) so the value never goes negative.\n\n**Key ideas**\n- Co-locate state in the component.\n- Use click handlers for both buttons.\n- Always guard the decrement.\n\n**Test cases**\n- Initial render shows `0`.\n- Clicking '+' increments.\n- Clicking '-' at 0 leaves the value at 0.\n- From a positive value, clicking '-' decrements by 1 but never below 0.",
+      "overview": "A single `count` state drives the UI. Increment adds one, decrement subtracts one but clamps at zero. Disabling the minus button at zero makes the state rules explicit and prevents negative values.",
       "approaches": [
         {
           "title": "Single component with guarded decrement",
-          "prose": "Store `count` in state and provide two handlers: one to increment, one to decrement. The decrement handler uses `Math.max(0, count - 1)` so the count never becomes negative.",
+          "prose": "Use `useState(0)` for `count`. Implement `inc` as `setCount(c => c + 1)` and `dec` as `setCount(c => Math.max(0, c - 1))`. Bind the minus button\u2019s `disabled` prop when `count === 0` and render the current count in the UI.",
           "codeJs": "import React, { useState } from 'react';\n\nexport default function Counter() {\n  const [count, setCount] = useState(0);\n\n  const inc = () => setCount(count + 1);\n  const dec = () => setCount(Math.max(0, count - 1));\n\n  return (\n    <main style={{ fontFamily: 'system-ui', padding: 16 }}>\n      <h1>Counter</h1>\n      <p data-testid=\"value\">{count}</p>\n      <button onClick={dec} aria-label=\"decrement\">-</button>\n      <button onClick={inc} aria-label=\"increment\">+</button>\n    </main>\n  );\n}\n"
         }
       ],
@@ -167,7 +168,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Build a small Todo List using a single React component. Users can add tasks, mark them as done with a checkbox, remove individual tasks, and clear all completed tasks.",
+      "summary": "Create a local-state todo list: add, toggle, and remove items. Keep input state controlled, generate stable ids, and update the todos array immutably so React can detect changes and re-render correctly.",
       "specs": {
         "requirements": [
           "Render a Todo List UI as the main component.",
@@ -326,7 +327,7 @@
       "components"
     ],
     "description": {
-      "summary": "Build a simple tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+      "summary": "Implement tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -400,7 +401,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Build a React component that renders a user list with a search box, role filter, and \"only active\" checkbox.",
+      "summary": "Filter a user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main UI.",
@@ -889,7 +890,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Build a debounced search box that calls a fake API 500ms after the user stops typing, and shows loading, results, empty, and error states.",
+      "summary": "Implement a debounced search input with fake API calls. Use setTimeout/cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -1053,7 +1054,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Given user input for the number of rows and columns, render a table grid dynamically using a React component.",
+      "summary": "Generate a dynamic table from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions.",
       "specs": {
         "requirements": [
           "Render a main <App /> UI that contains the dynamic table controls.",
@@ -1288,7 +1289,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a \"Transfer List\" UI that moves selected items between two lists (Top and Bottom). Users select items via checkboxes, then use arrow buttons to transfer selected items to the other list.",
+      "summary": "Build a transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1320,11 +1321,11 @@
     },
     "starterCodeHint": "Use two `Set<string>` selections. On move: split source list into `moved` and `remaining` by `selected.has(id)`, then update both arrays and clear that selection set.",
     "solutionBlock": {
-      "overview": "Use two arrays (`topItems`, `bottomItems`) of `{id,label}` plus two selection sets (`topSelected`, `bottomSelected`). Checkboxes toggle membership in the relevant Set. On transfer, build `moved` and `remaining` from the source list. Update destination with `setDest([...dest, ...moved])`, update source with `setSource(remaining)`, and clear the selection set.\n\n**Test cases**\n- Select multiple in Top \u2192 click \u2193 \u2192 moved appended to Bottom and removed from Top.\n- Select multiple in Bottom \u2192 click \u2191 \u2192 moved appended to Top and removed from Bottom.\n- Buttons disabled with no selection.\n- Moved items are unselected after transfer.",
+      "overview": "Keep two arrays of items (top/bottom) and two selection sets for checked ids. Toggling a checkbox adds/removes the id from the correct set. When transferring, split the source list into `moved` and `remaining`, append `moved` to the destination list, and clear the selection. This mirrors common dual-list pickers in admin UIs.",
       "approaches": [
         {
           "title": "Two arrays + two selection sets",
-          "prose": "Keep all state in `App`. Use `Set` for selection toggles and array splitting for transfer.",
+          "prose": "Implementation plan: store `topItems`, `bottomItems`, `topSelected`, and `bottomSelected` in state. Use a `Set` to track checked ids and update it with functional state updates. On transfer, build `moved` and `remaining` by filtering the source list based on the selection set, update destination with `setDest([...dest, ...moved])`, update source with `setSource(remaining)`, and reset the selection set to empty. Disable the transfer buttons when the corresponding selection set is empty.",
           "codeJs": "import React, { useMemo, useState } from 'react';\nimport './App.css';\n\ntype Item = { id: string; label: string };\n\nexport default function App() {\n  const [topItems, setTopItems] = useState<Item[]>([\n    { id: 'a', label: 'Alpha' },\n    { id: 'b', label: 'Beta' },\n    { id: 'c', label: 'Gamma' },\n    { id: 'd', label: 'Delta' },\n    { id: 'e', label: 'Epsilon' }\n  ]);\n\n  const [bottomItems, setBottomItems] = useState<Item[]>([\n    { id: 'x', label: 'Xenon' },\n    { id: 'y', label: 'Yttrium' },\n    { id: 'z', label: 'Zinc' }\n  ]);\n\n  const [topSelected, setTopSelected] = useState<Set<string>>(() => new Set());\n  const [bottomSelected, setBottomSelected] = useState<Set<string>>(() => new Set());\n\n  const canMoveDown = topSelected.size > 0;\n  const canMoveUp = bottomSelected.size > 0;\n\n  const toggleTop = (id: string, checked: boolean) => {\n    setTopSelected((prev) => {\n      const next = new Set(prev);\n      if (checked) next.add(id);\n      else next.delete(id);\n      return next;\n    });\n  };\n\n  const toggleBottom = (id: string, checked: boolean) => {\n    setBottomSelected((prev) => {\n      const next = new Set(prev);\n      if (checked) next.add(id);\n      else next.delete(id);\n      return next;\n    });\n  };\n\n  const moveDown = () => {\n    if (!canMoveDown) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of topItems) {\n      if (topSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    setTopItems(remaining);\n    setBottomItems((prev) => [...prev, ...moved]);\n    setTopSelected(new Set());\n  };\n\n  const moveUp = () => {\n    if (!canMoveUp) return;\n\n    const moved: Item[] = [];\n    const remaining: Item[] = [];\n\n    for (const it of bottomItems) {\n      if (bottomSelected.has(it.id)) moved.push(it);\n      else remaining.push(it);\n    }\n\n    setBottomItems(remaining);\n    setTopItems((prev) => [...prev, ...moved]);\n    setBottomSelected(new Set());\n  };\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Transfer List</h1>\n        <p className=\"subtitle\">Select items and move them between lists.</p>\n\n        <div className=\"layout\">\n          <section className=\"listCard\">\n            <div className=\"listTitle\">Top</div>\n            <ul className=\"list\" role=\"list\">\n              {topItems.map((item) => (\n                <li key={item.id} className=\"row\">\n                  <label className=\"rowLabel\">\n                    <input\n                      type=\"checkbox\"\n                      checked={topSelected.has(item.id)}\n                      onChange={(e) => toggleTop(item.id, e.target.checked)}\n                    />\n                    <span>{item.label}</span>\n                  </label>\n                </li>\n              ))}\n              {topItems.length === 0 && <li className=\"empty\">Empty</li>}\n            </ul>\n          </section>\n\n          <section className=\"controls\">\n            <button className=\"btn\" onClick={moveDown} disabled={!canMoveDown} aria-label=\"move down\">\n              \u2193\n            </button>\n            <button className=\"btn\" onClick={moveUp} disabled={!canMoveUp} aria-label=\"move up\">\n              \u2191\n            </button>\n          </section>\n\n          <section className=\"listCard\">\n            <div className=\"listTitle\">Bottom</div>\n            <ul className=\"list\" role=\"list\">\n              {bottomItems.map((item) => (\n                <li key={item.id} className=\"row\">\n                  <label className=\"rowLabel\">\n                    <input\n                      type=\"checkbox\"\n                      checked={bottomSelected.has(item.id)}\n                      onChange={(e) => toggleBottom(item.id, e.target.checked)}\n                    />\n                    <span>{item.label}</span>\n                  </label>\n                </li>\n              ))}\n              {bottomItems.length === 0 && <li className=\"empty\">Empty</li>}\n            </ul>\n          </section>\n        </div>\n\n        <p className=\"hint\">Tip: selections are per-list. Move clears selection of moved items.</p>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
@@ -1367,7 +1368,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a simple 3\u00d73 Tic-Tac-Toe game in React. Two players take turns placing X and O. Detect wins/draws and allow resetting the game.",
+      "summary": "Build Tic-Tac-Toe with React state: a 9-cell board, alternating turns, win/draw detection, and a reset button. Prevent overwriting a filled cell and stop play once the game is over. Show a clear status message for next player, winner, or draw.",
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
@@ -1403,11 +1404,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Store a 9-cell board in state and track the current player. On click, ignore if game is over or the cell is filled; otherwise place the mark. After placing, check the winner via the 8 winning line combinations; if none and the board is full, it\u2019s a draw. Provide reset to restore initial state.\n\n**Test cases**\n- Start \u2192 `Next: X`.\n- Moves alternate X/O.\n- Filled cell click \u2192 no-op.\n- Winning line \u2192 `Winner: X|O`, no more moves.\n- Full board with no winner \u2192 `Draw`.\n- Reset \u2192 clears board and sets `Next: X`.",
+      "overview": "Store the board as a 9-element array and track the current player. When a cell is clicked, ignore the action if the cell is already filled or the game is over. After each move, compute a winner from the 8 possible line combinations; if none and the board is full, declare a draw. Provide a reset to restore the initial state.",
       "approaches": [
         {
           "title": "Single component with board array + winner helper",
-          "prose": "Keep board, current player, and winner in component state. Render 9 buttons using `map`. Disable buttons when the game is over or the cell is already filled. Use a `calculateWinner` helper to check the 8 line combinations.",
+          "prose": "Implementation plan: keep `board`, `current`, and `winner` in state. Render 9 buttons with `map`. In the click handler, guard against filled cells or a winner, then set `board[i]` to the current mark and swap the player. After each move, run `calculateWinner(board)` to update `winner` or detect a draw. Show a status line and a reset button that clears the board and sets `current` back to 'X'.",
           "codeTsx": "import React, { useMemo, useState } from 'react';\nimport './App.css';\n\ntype Cell = 'X' | 'O' | null;\n\nconst EMPTY_BOARD: Cell[] = Array.from({ length: 9 }, () => null);\n\nfunction calculateWinner(b: Cell[]): 'X' | 'O' | null {\n  const lines: number[][] = [\n    [0, 1, 2],\n    [3, 4, 5],\n    [6, 7, 8],\n    [0, 3, 6],\n    [1, 4, 7],\n    [2, 5, 8],\n    [0, 4, 8],\n    [2, 4, 6]\n  ];\n\n  for (const [a, c, d] of lines) {\n    const v = b[a];\n    if (v && v === b[c] && v === b[d]) return v;\n  }\n  return null;\n}\n\nexport default function App() {\n  const [board, setBoard] = useState<Cell[]>(EMPTY_BOARD);\n  const [currentPlayer, setCurrentPlayer] = useState<'X' | 'O'>('X');\n  const [winner, setWinner] = useState<'X' | 'O' | null>(null);\n\n  const isDraw = useMemo(() => !winner && board.every((c) => c !== null), [board, winner]);\n  const isGameOver = !!winner || isDraw;\n\n  const status = useMemo(() => {\n    if (winner) return `Winner: ${winner}`;\n    if (isDraw) return 'Draw';\n    return `Next: ${currentPlayer}`;\n  }, [currentPlayer, isDraw, winner]);\n\n  const play = (i: number) => {\n    if (isGameOver) return;\n    if (board[i] !== null) return;\n\n    const next = board.slice();\n    next[i] = currentPlayer;\n    setBoard(next);\n\n    const w = calculateWinner(next);\n    if (w) {\n      setWinner(w);\n      return;\n    }\n\n    // if not over, switch player\n    if (!next.every((c) => c !== null)) {\n      setCurrentPlayer((p) => (p === 'X' ? 'O' : 'X'));\n    }\n  };\n\n  const reset = () => {\n    setBoard(Array.from({ length: 9 }, () => null));\n    setCurrentPlayer('X');\n    setWinner(null);\n  };\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Tic-Tac-Toe</h1>\n        <p className=\"subtitle\">Two players take turns. First to 3 in a row wins.</p>\n\n        <div className=\"status\" aria-live=\"polite\">{status}</div>\n\n        <div className=\"board\" role=\"grid\" aria-label=\"tic tac toe board\">\n          {board.map((cell, i) => (\n            <button\n              key={i}\n              className=\"cell\"\n              type=\"button\"\n              onClick={() => play(i)}\n              disabled={isGameOver || cell !== null}\n              aria-label={`cell ${i}`}\n            >\n              {cell ?? ''}\n            </button>\n          ))}\n        </div>\n\n        <div className=\"actions\">\n          <button className=\"ghost\" type=\"button\" onClick={reset}>\n            Reset\n          </button>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],
@@ -1447,6 +1448,7 @@
       "react",
       "hooks",
       "effects",
+      "lifecycle",
       "components"
     ],
     "description": {
@@ -1478,11 +1480,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Build `useEffectOnce` as a thin wrapper around `useEffect` that ensures the callback runs once per mounted component instance and its cleanup runs once on unmount.\n\nKey idea: use `useRef` flags to prevent accidental re-entry and to store cleanup safely.\n\n**Test cases**\n- Effect runs on first mount only.\n- Re-renders do not trigger the effect.\n- Cleanup runs on unmount.\n- Under StrictMode (dev), the hook should avoid doubling real side-effects after initial mount.",
+      "overview": "Create a `useEffectOnce` hook that runs an effect only on mount and runs cleanup on unmount. The simplest implementation uses `useEffect` with an empty dependency array, but the hook should also guard against accidental re-entry in dev StrictMode and handle cleanup reliably.",
       "approaches": [
         {
           "title": "useEffect + useRef guard",
-          "prose": "Use `useEffect(() => { ... }, [])` and guard the body with a `didRunRef`. Store cleanup in a ref and invoke it during the effect cleanup phase exactly once."
+          "prose": "Implementation:\n- Use `useEffect(() => { ... }, [])` to run once per mount.\n- Store a `didRunRef` so the body runs only once even if invoked twice in StrictMode (development).\n- Capture the cleanup function in a ref and return a cleanup handler that runs it once on unmount.\n\nThis ensures effects are not double-applied and cleanup remains predictable."
         }
       ],
       "notes": {
@@ -1523,7 +1525,7 @@
       "conditional-rendering"
     ],
     "description": {
-      "summary": "Build a Facebook-style Like button in React. Clicking toggles the liked state and updates a like counter (+1 when liking, -1 when unliking). The count must never go below 0.",
+      "summary": "Build a Like button in React that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1554,11 +1556,11 @@
     },
     "starterCodeHint": "Implement `toggleLike()` and update both `liked` and `count`. Ensure the count never drops below 0.",
     "solutionBlock": {
-      "overview": "Store `liked` and `count` in React state. When the user clicks the button, flip `liked` and update `count`: +1 when liking, -1 when unliking. Clamp the count to never go below 0.",
+      "overview": "Model two pieces of state: whether the item is liked and the current count. On click, flip the liked flag and update the count accordingly. Use functional state updates so the logic is resilient to React batching, and clamp the count at zero to avoid negative values.",
       "approaches": [
         {
           "title": "Single component with guarded toggle",
-          "prose": "Use two state variables: `liked` (boolean) and `count` (number). In `toggleLike()`, update both using functional state updates so the code is resilient to batching. When unliking, clamp with `Math.max(0, n - 1)`."
+          "prose": "Use `useState` for `liked` (boolean) and `count` (number). In the click handler, update both via functional setters: `setLiked(prev => !prev)` and `setCount(prev => prev + (liked ? -1 : 1))`. If unliking would go negative, clamp with `Math.max(0, prev - 1)`. Render the button text based on `liked` and display the count next to it."
         }
       ],
       "notes": {
@@ -1586,7 +1588,7 @@
   },
   {
     "id": "react-progress-bar-thresholds",
-    "title": "Progress Bar (0–100 with Threshold Colors)",
+    "title": "Progress Bar (0\u2013100 with Threshold Colors)",
     "type": "coding",
     "technology": "react",
     "difficulty": "easy",
@@ -1599,7 +1601,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a progress bar that visualizes a value from 0 to 100. Add +10% / −10% buttons, clamp the value to [0, 100], and change the bar color by thresholds (red/orange/green).",
+      "summary": "Build a progress bar for values 0\u2013100 with +10%/\u221210% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red <34, orange 34\u201366, green >66). Show the numeric percentage and keep the UI in sync with state.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1613,7 +1615,7 @@
           "Clicking \"+10%\" increases progress by 10 up to 100.",
           "Clicking \"-10%\" decreases progress by 10 down to 0.",
           "Progress never renders below 0% or above 100%.",
-          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
+          "Bar color changes by thresholds (example: <34 red, 34\u201366 orange, >66 green)."
         ],
         "implementationNotes": [
           "Use React state (`useState`) to store progress.",
@@ -1630,13 +1632,13 @@
         ]
       }
     },
-    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (<34 red, 34–66 orange, >66 green) and bind width via `style={{ width: progress + '%' }}`.",
+    "starterCodeHint": "Keep `progress` in `useState(0)`. Implement `inc/dec` with functional updates and clamping. Compute `barClass` from progress (<34 red, 34\u201366 orange, >66 green) and bind width via `style={{ width: progress + '%' }}`.",
     "solutionBlock": {
-      "overview": "Use a single `progress` state value. +10/−10 handlers update progress with clamping to [0, 100]. Render a track with a fill whose width is `progress%`. Compute the fill color class from thresholds (red/orange/green).",
+      "overview": "Use a single `progress` state value and derive the UI from it: the fill width is `progress%`, the text shows the percentage, and the color class is computed from threshold rules. Button handlers should use `Math.min/Math.max` to clamp the value so it never leaves [0, 100].",
       "approaches": [
         {
           "title": "Single component with clamped progress and threshold class",
-          "prose": "Store `progress` in state. `inc()` uses `setProgress(p => Math.min(100, p + 10))`. `dec()` uses `setProgress(p => Math.max(0, p - 10))`. Compute `barClass` from progress and apply it to the fill. Bind width with `style={{ width: progress + '%' }}`."
+          "prose": "Store `progress` with `useState(0)`. Implement `inc()` and `dec()` as functional updates that clamp at 0 and 100. Derive `colorClass` based on the thresholds (for example: <34 red, 34\u201366 orange, >66 green). Render a track + fill where the fill width is `progress + '%'` and the class controls the color. This keeps all display logic derived from a single source of truth."
         }
       ],
       "notes": {
@@ -1762,14 +1764,14 @@
         "requirements": [
           "Render the dynamic counter buttons UI as the main screen.",
           "Initially render exactly 1 counter button with value 0.",
-          "Clicking any button increments ONLY that button’s value by 1.",
+          "Clicking any button increments ONLY that button\u2019s value by 1.",
           "After each click, append a NEW button at the bottom with value 0.",
           "All buttons keep their own values independently."
         ],
         "expectedBehavior": [
           "Initial UI: one button showing 0.",
-          "Click first button once → first becomes 1, and a second button (0) appears below.",
-          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Click first button once \u2192 first becomes 1, and a second button (0) appears below.",
+          "Click second button twice \u2192 second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
           "Existing button values never reset when new buttons appear."
         ],
         "implementationNotes": [
@@ -1787,7 +1789,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Keep an array of counts in state. Render one button per entry. On click, copy the array, increment the clicked index, then push a new 0 at the end, and set the new array.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "overview": "Keep an array of counts in state. Render one button per entry. On click, copy the array, increment the clicked index, then push a new 0 at the end, and set the new array.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0]",
       "approaches": [
         {
           "title": "Single component with counts[] array",
@@ -1833,7 +1835,7 @@
       "effects"
     ],
     "description": {
-      "summary": "Fix a React component that renders twice on every update. Identify the redundant state update and refactor derived state so each click triggers a single render (in production).",
+      "summary": "Fix a component that renders twice per click because it stores derived state in `useEffect`. The correct fix is to remove the derived `parity` state and compute it directly from `count` during render, preventing the extra state update and render.",
       "specs": {
         "requirements": [
           "Work in `src/App.tsx`.",
@@ -1861,11 +1863,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "The extra render is caused by updating derived state in a `useEffect`. Each click updates `count`, then the effect runs and updates `parity`, which triggers a second render. The fix is to remove the derived `parity` state and compute it directly from `count` in render (or via `useMemo`).\n\n**Test cases**\n- Increment increases count by 1.\n- Parity stays correct.\n- Render count increases by 1 per click.\n- Reset returns to 0 and even.",
+      "overview": "The double render happens because `count` updates, then `useEffect` runs and sets `parity`, which triggers another render. Derived values should be computed from source state during render (or via `useMemo` if expensive), not stored as separate state. Removing the effect eliminates the redundant render.",
       "approaches": [
         {
           "title": "Derive parity from count",
-          "prose": "Remove the `parity` state and `useEffect`. Compute `const parity = count % 2 === 0 ? 'even' : 'odd'` directly in render. This eliminates the extra state update and the second render.",
+          "prose": "Remove the `parity` state and the `useEffect` that updates it. Compute `const parity = count % 2 === 0 ? 'even' : 'odd'` inside the component render and display it. This keeps a single source of truth (`count`) and prevents the extra state update that was causing double renders.",
           "codeJs": "import React, { useRef, useState } from 'react';\nimport './App.css';\n\nexport default function App() {\n  const [count, setCount] = useState(0);\n  const parity = count % 2 === 0 ? 'even' : 'odd';\n\n  const renders = useRef(0);\n  renders.current += 1;\n\n  const increment = () => setCount((c) => c + 1);\n  const reset = () => setCount(0);\n\n  return (\n    <main className=\"page\">\n      <section className=\"card\">\n        <h1 className=\"title\">Debug Double Render</h1>\n        <p className=\"subtitle\">Fix the component so each click causes only one render.</p>\n\n        <div className=\"stats\">\n          <div className=\"stat\"><div className=\"k\">Count</div><div className=\"v\">{count}</div></div>\n          <div className=\"stat\"><div className=\"k\">Parity</div><div className=\"v\">{parity}</div></div>\n          <div className=\"stat\"><div className=\"k\">Renders</div><div className=\"v\">{renders.current}</div></div>\n        </div>\n\n        <div className=\"actions\">\n          <button className=\"btn\" onClick={increment}>Increment</button>\n          <button className=\"btn ghost\" onClick={reset}>Reset</button>\n        </div>\n      </section>\n    </main>\n  );\n}\n"
         }
       ],

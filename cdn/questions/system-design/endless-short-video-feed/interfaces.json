@@ -1,40 +1,73 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
-        {
-            "type": "text",
-            "text": "The API should be cursor-based and optimized for video playback. Include CDN-backed URLs, poster images, and bitrate options." 
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "http",
-            "code": "GET /api/feed?cursor=next&device=mobile\n\n200 OK\n{\n  \"items\": [\n    {\n      \"id\": \"vid_123\",\n      \"poster\": \"https://cdn.example.com/posters/vid_123.jpg\",\n      \"sources\": [\n        { \"url\": \"https://cdn.example.com/vid_123_360p.mp4\", \"bitrate\": 800 },\n        { \"url\": \"https://cdn.example.com/vid_123_720p.mp4\", \"bitrate\": 2000 }\n      ],\n      \"durationMs\": 18000\n    }\n  ],\n  \"nextCursor\": \"...\"\n}\n"
-        },
-        {
-            "type": "table",
-            "title": "API design notes",
-            "columns": [
-                "Decision",
-                "Reason"
-            ],
-            "rows": [
-                [
-                    "Cursor pagination",
-                    "Stable ordering for endless feeds"
-                ],
-                [
-                    "CDN URLs",
-                    "Low-latency media delivery"
-                ],
-                [
-                    "Multiple bitrates",
-                    "Adaptive playback under slow networks"
-                ]
-            ]
-        }
-    ]
+  "key": "I",
+  "title": "Interface definition (API)",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The API should be cursor-based and optimized for video playback. Include CDN-backed URLs, poster images, and bitrate options."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "GET /api/feed?cursor=next&device=mobile\n\n200 OK\n{\n  \"items\": [\n    {\n      \"id\": \"vid_123\",\n      \"poster\": \"https://cdn.example.com/posters/vid_123.jpg\",\n      \"sources\": [\n        { \"url\": \"https://cdn.example.com/vid_123_360p.mp4\", \"bitrate\": 800 },\n        { \"url\": \"https://cdn.example.com/vid_123_720p.mp4\", \"bitrate\": 2000 }\n      ],\n      \"durationMs\": 18000\n    }\n  ],\n  \"nextCursor\": \"...\"\n}\n"
+    },
+    {
+      "type": "table",
+      "title": "API design notes",
+      "columns": [
+        "Decision",
+        "Reason"
+      ],
+      "rows": [
+        [
+          "Cursor pagination",
+          "Stable ordering for endless feeds"
+        ],
+        [
+          "CDN URLs",
+          "Low-latency media delivery"
+        ],
+        [
+          "Multiple bitrates",
+          "Adaptive playback under slow networks"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "API fields you should call out",
+      "columns": [
+        "Field",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "id",
+          "Stable keys for virtualization and diffing"
+        ],
+        [
+          "cursor/next",
+          "Pagination and recovery"
+        ],
+        [
+          "media/metadata",
+          "Render pipeline inputs"
+        ],
+        [
+          "experiment flags",
+          "Safe rollout"
+        ],
+        [
+          "timestamps",
+          "Ordering and latency"
+        ]
+      ]
+    }
+  ]
 }

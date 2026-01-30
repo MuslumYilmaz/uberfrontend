@@ -1,45 +1,45 @@
 {
-    "id": "netflix-scale-expansion",
-    "title": "Netflix-Scale Expansion (Front-End System Design)",
-    "description": "Take a working feature and expand it to Netflix scale. Anchor the discussion to a specific feature: assume the Home \"Continue Watching\" row (personalized carousel) must serve millions of users across regions and devices without changing the UX. This is a front-end system design prompt about UI architecture, data flow, caching, performance budgets, and experimentation. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on the client data flow (edge cache + BFF -> client cache -> view model -> render), how you keep the UI fast across devices and regions, how you define module boundaries, how you protect the rendering pipeline from bursts, and how you roll out safely with feature flags and metrics.\n\nFunctional requirements:\n- Keep the original feature behavior intact while scaling it.\n- Serve personalized data quickly across regions.\n- Support gradual rollout (flags, canary, A/B) and experiments.\n- Provide graceful fallback when data is slow or missing.\n- Maintain consistent behavior across devices and locales.\n\nNon-functional:\n- Performance budgets: LCP <= 2.5s, INP <= 200ms on mid-range devices.\n- 60 FPS interaction budget during carousel scroll and hover.\n- Predictable rendering (no re-render storms) and bounded memory.\n- Strong observability for UX and API health.\n",
-    "companies": [
-        "netflix",
-        "bytedance"
-    ],
-    "tags": [
-        "frontend-architecture",
-        "architecture",
-        "performance",
-        "caching",
-        "services",
-        "optimization",
-        "system-design"
-    ],
-    "sections": [
-        {
-            "key": "R",
-            "title": "Reflect & Requirements",
-            "file": "requirements.json"
-        },
-        {
-            "key": "A",
-            "title": "Architecture / High-level design",
-            "file": "architecture.json"
-        },
-        {
-            "key": "D",
-            "title": "Data model",
-            "file": "data.json"
-        },
-        {
-            "key": "I",
-            "title": "Interface definition (API)",
-            "file": "interfaces.json"
-        },
-        {
-            "key": "O",
-            "title": "Optimizations and deep dive",
-            "file": "optimizations.json"
-        }
-    ]
+  "id": "netflix-scale-expansion",
+  "title": "Netflix-Scale Expansion (Front-End System Design)",
+  "description": "Take a working feature and expand it to Netflix scale. Anchor the discussion to a specific feature: assume the Home \"Continue Watching\" row (personalized carousel) must serve millions of users across regions and devices without changing the UX. This is a front-end system design prompt about UI architecture, data flow, caching, performance budgets, and experimentation. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on the client data flow (edge cache + BFF -> client cache -> view model -> render), how you keep the UI fast across devices and regions, how you define module boundaries, how you protect the rendering pipeline from bursts, and how you roll out safely with feature flags and metrics.\n\nFunctional requirements:\n- Keep the original feature behavior intact while scaling it.\n- Serve personalized data quickly across regions.\n- Support gradual rollout (flags, canary, A/B) and experiments.\n- Provide graceful fallback when data is slow or missing.\n- Maintain consistent behavior across devices and locales.\n\nNon-functional:\n- Performance budgets: LCP <= 2.5s, INP <= 200ms on mid-range devices.\n- 60 FPS interaction budget during carousel scroll and hover.\n- Predictable rendering (no re-render storms) and bounded memory.\n- Strong observability for UX and API health.\n\nAdditional constraints to mention: device-specific payload sizes, personalization variance, and the need for safe rollout with fast rollback. Call out success metrics (LCP/INP, error rate, and carousel FPS) and make the data flow explicit.\nAdd UX constraints: maintain consistent layout across locales, protect the carousel from content shifts, and keep interaction latency predictable even under experiments.",
+  "companies": [
+    "netflix",
+    "bytedance"
+  ],
+  "tags": [
+    "frontend-architecture",
+    "architecture",
+    "performance",
+    "caching",
+    "services",
+    "optimization",
+    "system-design"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Reflect & Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ]
 }

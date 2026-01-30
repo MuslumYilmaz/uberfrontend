@@ -5,12 +5,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "CSS stands for Cascading Style Sheets. It is the language used to control the presentation of HTML, including layout, spacing, colors, typography, and responsive behavior.",
+    "description": "CSS stands for Cascading Style Sheets. It controls the visual presentation of HTML, including layout, spacing, colors, typography, and responsive behavior across devices and screen sizes.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS stands for <strong>Cascading Style Sheets</strong>. It defines how HTML elements are displayed on screen, paper, or other media. The term 'cascading' refers to the priority order in which multiple styles are applied — meaning styles can override one another based on specificity and source order."
+          "text": "<strong>Overview</strong><br><br>CSS stands for <strong>Cascading Style Sheets</strong>. It defines how HTML elements are displayed on screen, paper, or other media. The term 'cascading' refers to the priority order in which multiple styles are applied \u2014 meaning styles can override one another based on specificity and source order."
         },
         {
           "type": "list",
@@ -25,7 +25,7 @@
             ],
             [
               "<strong>Style</strong>",
-              "Defines how content appears — including color, font, spacing, and layout."
+              "Defines how content appears \u2014 including color, font, spacing, and layout."
             ],
             [
               "<strong>Sheets</strong>",
@@ -45,7 +45,7 @@
         },
         {
           "type": "text",
-          "text": "In this example, CSS styles define the background color, text font, and heading color and alignment — changing the presentation without altering HTML content."
+          "text": "In this example, CSS styles define the background color, text font, and heading color and alignment \u2014 changing the presentation without altering HTML content."
         },
         {
           "type": "text",
@@ -53,7 +53,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of CSS as the <em>fashion designer</em> of your webpage — HTML is the structure, and CSS dresses it up beautifully."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of CSS as the <em>fashion designer</em> of your webpage \u2014 HTML is the structure, and CSS dresses it up beautifully."
         },
         {
           "type": "text",
@@ -77,7 +77,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "Link an external CSS file by placing a <link rel=\"stylesheet\" href=\"...\"> tag inside the HTML <head>. This loads the stylesheet and applies it to the page.",
+    "description": "Link an external CSS file with <link rel=\"stylesheet\" href=\"...\"> inside the HTML <head>. This loads the stylesheet and applies styles globally across the page.",
     "answer": {
       "blocks": [
         {
@@ -98,7 +98,7 @@
           "rows": [
             [
               "<code>rel</code>",
-              "Specifies the relationship — usually 'stylesheet'.",
+              "Specifies the relationship \u2014 usually 'stylesheet'.",
               "<code>rel=\"stylesheet\"</code>"
             ],
             [
@@ -108,7 +108,7 @@
             ],
             [
               "<code>type</code>",
-              "Specifies the file type — optional in HTML5.",
+              "Specifies the file type \u2014 optional in HTML5.",
               "<code>type=\"text/css\"</code>"
             ]
           ],
@@ -133,7 +133,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <link> tag as giving your HTML a <em>fashion consultant</em> — it points to a file that tells the page how to dress up."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <link> tag as giving your HTML a <em>fashion consultant</em> \u2014 it points to a file that tells the page how to dress up."
         },
         {
           "type": "text",
@@ -175,7 +175,7 @@
           "rows": [
             [
               "<strong>Inline CSS</strong>",
-              "Inside an element’s <code>style</code> attribute",
+              "Inside an element\u2019s <code>style</code> attribute",
               "Affects one element only",
               "Quick one-off styling or testing"
             ],
@@ -263,12 +263,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the <body> element, it changes the entire page’s background color.",
+    "description": "The background-color property in CSS sets the background color of an element or the entire webpage. It supports multiple color formats including named colors, hexadecimal, RGB, RGBA, and HSL. When applied to the <body> element, it changes the entire page\u2019s background color.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>background-color</code> property is one of the most fundamental styling tools in CSS. It defines the color that appears behind an element’s content and padding. You can apply it to the <body> element to color the entire page, or to specific containers like <div> or <section> for localized visual effects."
+          "text": "<strong>Overview</strong><br><br>The <code>background-color</code> property is one of the most fundamental styling tools in CSS. It defines the color that appears behind an element\u2019s content and padding. You can apply it to the <body> element to color the entire page, or to specific containers like <div> or <section> for localized visual effects."
         },
         {
           "type": "list",
@@ -291,7 +291,7 @@
             [
               "RGB",
               "background-color: rgb(255, 200, 100);",
-              "Specifies color using numeric red, green, and blue components (0–255)."
+              "Specifies color using numeric red, green, and blue components (0\u2013255)."
             ],
             [
               "RGBA",
@@ -338,7 +338,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>background-color</code> as your page’s <em>canvas color</em> — it sets the tone and mood for everything layered on top."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>background-color</code> as your page\u2019s <em>canvas color</em> \u2014 it sets the tone and mood for everything layered on top."
         },
         {
           "type": "text",
@@ -347,7 +347,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "colors",
+      "background",
+      "properties",
+      "basics"
+    ]
   },
   {
     "id": "css-text-color",
@@ -383,7 +390,7 @@
             [
               "RGB",
               "color: rgb(255, 165, 0);",
-              "Defines red, green, and blue values between 0–255."
+              "Defines red, green, and blue values between 0\u2013255."
             ],
             [
               "RGBA",
@@ -430,7 +437,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <code>color</code> property as the <em>ink</em> of your digital page — it decides what shade your text is printed in."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <code>color</code> property as the <em>ink</em> of your digital page \u2014 it decides what shade your text is printed in."
         },
         {
           "type": "text",
@@ -439,7 +446,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "colors",
+      "text",
+      "properties",
+      "basics"
+    ]
   },
   {
     "id": "css-center-text",
@@ -452,7 +466,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>text-align</code> property controls the horizontal alignment of inline or inline-block elements inside a block-level container. By setting it to <code>center</code>, text and other inline content are positioned in the middle of the element’s width."
+          "text": "<strong>Overview</strong><br><br>The <code>text-align</code> property controls the horizontal alignment of inline or inline-block elements inside a block-level container. By setting it to <code>center</code>, text and other inline content are positioned in the middle of the element\u2019s width."
         },
         {
           "type": "list",
@@ -496,7 +510,7 @@
         },
         {
           "type": "text",
-          "text": "All inline content within the <div> — such as text and inline images — will be horizontally centered."
+          "text": "All inline content within the <div> \u2014 such as text and inline images \u2014 will be horizontally centered."
         },
         {
           "type": "text",
@@ -517,7 +531,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine a box filled with text — <code>text-align: center;</code> tells everything inside to stand neatly in the middle of that box."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine a box filled with text \u2014 <code>text-align: center;</code> tells everything inside to stand neatly in the middle of that box."
         },
         {
           "type": "text",
@@ -526,7 +540,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "text",
+      "alignment",
+      "layout",
+      "basics"
+    ]
   },
   {
     "id": "css-font-family",
@@ -539,7 +560,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>font-family</code> property determines which typeface is used for rendering text on a webpage. It can list multiple font names in a prioritized order, known as a font stack, to ensure consistent display even if some fonts are unavailable on a user’s device."
+          "text": "<strong>Overview</strong><br><br>The <code>font-family</code> property determines which typeface is used for rendering text on a webpage. It can list multiple font names in a prioritized order, known as a font stack, to ensure consistent display even if some fonts are unavailable on a user\u2019s device."
         },
         {
           "type": "list",
@@ -556,7 +577,7 @@
             ],
             [
               "Fallback Fonts",
-              "Alternatives that load if the primary font isn’t available.",
+              "Alternatives that load if the primary font isn\u2019t available.",
               "'Helvetica', 'Arial'"
             ],
             [
@@ -578,7 +599,7 @@
         },
         {
           "type": "text",
-          "text": "This rule specifies several fallback fonts — the browser uses the first available option in the stack."
+          "text": "This rule specifies several fallback fonts \u2014 the browser uses the first available option in the stack."
         },
         {
           "type": "text",
@@ -586,7 +607,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Always include fallback fonts for better cross-platform compatibility.</li><li>Web-safe fonts (like Arial or Verdana) ensure consistent rendering across browsers.</li><li>For custom web fonts, use the <code>@font-face</code> rule or Google Fonts.</li><li>Match font styles to content purpose — readability for paragraphs, distinction for headers.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Always include fallback fonts for better cross-platform compatibility.</li><li>Web-safe fonts (like Arial or Verdana) ensure consistent rendering across browsers.</li><li>For custom web fonts, use the <code>@font-face</code> rule or Google Fonts.</li><li>Match font styles to content purpose \u2014 readability for paragraphs, distinction for headers.</li></ul>"
         },
         {
           "type": "text",
@@ -603,16 +624,23 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>font-family</code> as your webpage’s <em>voice</em> — it sets the tone and personality for how your content communicates."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>font-family</code> as your webpage\u2019s <em>voice</em> \u2014 it sets the tone and personality for how your content communicates."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>font-family</code> controls the text’s visual style.</li><li>Use multiple font names for fallbacks.</li><li>Generic families ensure graceful degradation.</li><li>Choose readable fonts for accessibility and brand consistency.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li><code>font-family</code> controls the text\u2019s visual style.</li><li>Use multiple font names for fallbacks.</li><li>Generic families ensure graceful degradation.</li><li>Choose readable fonts for accessibility and brand consistency.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "typography",
+      "fonts",
+      "properties",
+      "basics"
+    ]
   },
   {
     "id": "css-border-property",
@@ -620,12 +648,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "You add a border with the border shorthand (width, style, color), e.g., border: 1px solid #333;. You can also set border-width, border-style, and border-color individually.",
+    "description": "Add a border with the shorthand: border: 1px solid #333;. You can also set border-width, border-style, and border-color separately for finer control.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>border</code> property allows developers to define the style, thickness, and color of borders around elements. You can specify each side’s border individually or use the shorthand form to apply all at once."
+          "text": "<strong>Overview</strong><br><br>The <code>border</code> property allows developers to define the style, thickness, and color of borders around elements. You can specify each side\u2019s border individually or use the shorthand form to apply all at once."
         },
         {
           "type": "list",
@@ -642,7 +670,7 @@
             ],
             [
               "border-style",
-              "Defines the border’s line pattern.",
+              "Defines the border\u2019s line pattern.",
               "border-style: solid;"
             ],
             [
@@ -686,7 +714,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Border Styles</strong><br><ul><li><code>solid</code> – A continuous line.</li><li><code>dashed</code> – Broken dashes.</li><li><code>dotted</code> – Circular dots.</li><li><code>double</code> – Two parallel lines.</li><li><code>groove</code>, <code>ridge</code>, <code>inset</code>, <code>outset</code> – 3D effects based on color shading.</li></ul>"
+          "text": "<strong>Border Styles</strong><br><ul><li><code>solid</code> \u2013 A continuous line.</li><li><code>dashed</code> \u2013 Broken dashes.</li><li><code>dotted</code> \u2013 Circular dots.</li><li><code>double</code> \u2013 Two parallel lines.</li><li><code>groove</code>, <code>ridge</code>, <code>inset</code>, <code>outset</code> \u2013 3D effects based on color shading.</li></ul>"
         },
         {
           "type": "text",
@@ -694,7 +722,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of a border like the <em>frame around a picture</em> — it separates your content from the rest of the page and draws attention where needed."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of a border like the <em>frame around a picture</em> \u2014 it separates your content from the rest of the page and draws attention where needed."
         },
         {
           "type": "text",
@@ -717,12 +745,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Margin controls the space outside an element’s border, separating it from neighboring elements. It does not affect the element’s internal content; use padding for inner spacing.",
+    "description": "Margin controls the space outside an element\u2019s border, separating it from neighbors. It does not affect the element\u2019s internal content (use padding for that).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>margin</code> property specifies the space outside an element’s border. It ensures that elements don’t touch each other and maintains a consistent layout structure. Margins are transparent and do not affect an element’s background color or border."
+          "text": "<strong>Overview</strong><br><br>The <code>margin</code> property specifies the space outside an element\u2019s border. It ensures that elements don\u2019t touch each other and maintains a consistent layout structure. Margins are transparent and do not affect an element\u2019s background color or border."
         },
         {
           "type": "list",
@@ -784,7 +812,7 @@
         },
         {
           "type": "text",
-          "text": "This shorthand adds 40px above the heading, 20px below, and 0 on the sides — perfect for vertical spacing control in typography."
+          "text": "This shorthand adds 40px above the heading, 20px below, and 0 on the sides \u2014 perfect for vertical spacing control in typography."
         },
         {
           "type": "text",
@@ -801,15 +829,15 @@
         },
         {
           "type": "text",
-          "text": "The <div> element is centered in its parent container using <code>margin: 0 auto;</code> — a common layout pattern for centered designs."
+          "text": "The <div> element is centered in its parent container using <code>margin: 0 auto;</code> \u2014 a common layout pattern for centered designs."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>margin</code> as the <em>breathing room</em> around an element — it pushes other elements away without affecting the element’s size or appearance."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>margin</code> as the <em>breathing room</em> around an element \u2014 it pushes other elements away without affecting the element\u2019s size or appearance."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Margins create space outside an element’s border.</li><li>Use <code>margin</code> shorthand for efficiency (top, right, bottom, left).</li><li>Supports <code>auto</code> for horizontal centering.</li><li>Essential for spacing, alignment, and clean design layouts.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Margins create space outside an element\u2019s border.</li><li>Use <code>margin</code> shorthand for efficiency (top, right, bottom, left).</li><li>Supports <code>auto</code> for horizontal centering.</li><li>Essential for spacing, alignment, and clean design layouts.</li></ul>"
         }
       ]
     },
@@ -829,7 +857,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 4,
-    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without affecting neighboring elements like margin does.",
+    "description": "Padding controls the space inside an element, between its content and border. It increases the clickable/visual area without pushing neighboring elements away.",
     "answer": {
       "blocks": [
         {
@@ -851,7 +879,7 @@
             ],
             [
               "padding-right",
-              "Space to the content’s right",
+              "Space to the content\u2019s right",
               "padding-right: 12px;"
             ],
             [
@@ -861,7 +889,7 @@
             ],
             [
               "padding-left",
-              "Space to the content’s left",
+              "Space to the content\u2019s left",
               "padding-left: 12px;"
             ],
             [
@@ -887,7 +915,7 @@
         },
         {
           "type": "text",
-          "text": "The button’s text gains extra room, increasing touch target size and improving usability."
+          "text": "The button\u2019s text gains extra room, increasing touch target size and improving usability."
         },
         {
           "type": "text",
@@ -899,11 +927,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine your element as a framed photo: <em>padding</em> is the mat inside the frame that keeps the picture from touching the frame’s edges."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Imagine your element as a framed photo: <em>padding</em> is the mat inside the frame that keeps the picture from touching the frame\u2019s edges."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Padding adds inner space inside the element’s border.</li><li>It affects the element’s perceived size and background area.</li><li>Works with box-sizing to determine how widths are calculated.</li><li>Great for improving readability and tap-target sizes.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Padding adds inner space inside the element\u2019s border.</li><li>It affects the element\u2019s perceived size and background area.</li><li>Works with box-sizing to determine how widths are calculated.</li><li>Great for improving readability and tap-target sizes.</li></ul>"
         }
       ]
     },
@@ -923,7 +951,7 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 5,
-    "description": "Margin creates space outside an element’s border (separating it from neighbors), while padding creates space inside the border (pushing the content inward). Understanding this distinction is central to mastering layout and the CSS box model.",
+    "description": "Margin creates space outside an element\u2019s border (separating it from neighbors), while padding creates space inside the border (pushing the content inward). Understanding this distinction is central to mastering layout and the CSS box model.",
     "answer": {
       "blocks": [
         {
@@ -946,7 +974,7 @@
             [
               "Affects Background",
               "Transparent (no background color)",
-              "Shares the element’s background"
+              "Shares the element\u2019s background"
             ],
             [
               "Layout Impact",
@@ -993,16 +1021,23 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of a gift box: <strong>padding</strong> is the protective bubble wrap <em>inside</em> the box; <strong>margin</strong> is the space you leave <em>around</em> the box so it doesn’t bump into others."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of a gift box: <strong>padding</strong> is the protective bubble wrap <em>inside</em> the box; <strong>margin</strong> is the space you leave <em>around</em> the box so it doesn\u2019t bump into others."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Padding = inner spacing; Margin = outer spacing.</li><li>Padding affects background area; margin is always transparent.</li><li>Margins can collapse vertically; padding cannot.</li><li>Choose based on whether you’re spacing inside the component or between components.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Padding = inner spacing; Margin = outer spacing.</li><li>Padding affects background area; margin is always transparent.</li><li>Margins can collapse vertically; padding cannot.</li><li>Choose based on whether you\u2019re spacing inside the component or between components.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "box-model",
+      "margin",
+      "padding",
+      "basics"
+    ]
   },
   {
     "id": "css-make-text-bold",
@@ -1010,12 +1045,12 @@
     "technology": "css",
     "difficulty": "easy",
     "importance": 3,
-    "description": "Make text bold using font-weight, e.g., font-weight: 700 or font-weight: bold. The actual weight depends on the font’s available weights.",
+    "description": "Make text bold with font-weight, e.g., font-weight: bold or font-weight: 700. The actual weight depends on what the font family provides.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS uses the <code>font-weight</code> property to adjust the thickness of glyphs. You can use keywords like <code>normal</code> and <code>bold</code> or numeric weights like 100–900 when the chosen font supports them."
+          "text": "<strong>Overview</strong><br><br>CSS uses the <code>font-weight</code> property to adjust the thickness of glyphs. You can use keywords like <code>normal</code> and <code>bold</code> or numeric weights like 100\u2013900 when the chosen font supports them."
         },
         {
           "type": "list",
@@ -1041,7 +1076,7 @@
               "Browser computes based on available faces"
             ],
             [
-              "100–900",
+              "100\u2013900",
               "Numeric weights",
               "Requires corresponding font faces to render accurately"
             ]
@@ -1059,7 +1094,7 @@
         },
         {
           "type": "text",
-          "text": "This sets headings to a typical bold weight (700). If the font doesn’t include a 700 face, the browser may simulate bold."
+          "text": "This sets headings to a typical bold weight (700). If the font doesn\u2019t include a 700 face, the browser may simulate bold."
         },
         {
           "type": "text",
@@ -1084,7 +1119,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>font-weight</code> is your <em>volume knob</em> for text — turn it up to make headings stand out, down for body copy comfort."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>font-weight</code> is your <em>volume knob</em> for text \u2014 turn it up to make headings stand out, down for body copy comfort."
         },
         {
           "type": "text",
@@ -1130,7 +1165,7 @@
             [
               "em",
               "Relative",
-              "Scales based on the parent element’s font size."
+              "Scales based on the parent element\u2019s font size."
             ],
             [
               "rem",
@@ -1140,12 +1175,12 @@
             [
               "%",
               "Relative",
-              "Percentage relative to the parent’s font size."
+              "Percentage relative to the parent\u2019s font size."
             ],
             [
               "vw / vh",
               "Viewport",
-              "Scales with viewport width or height — great for responsive text."
+              "Scales with viewport width or height \u2014 great for responsive text."
             ]
           ],
           "caption": "Common font-size units and their behavior"
@@ -1165,11 +1200,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Responsive Typography Tip</strong><br>Modern CSS allows <code>clamp()</code> for fluid scaling:<br><code>font-size: clamp(1rem, 2vw, 2rem);</code> — ensures text stays readable across devices."
+          "text": "<strong>Responsive Typography Tip</strong><br>Modern CSS allows <code>clamp()</code> for fluid scaling:<br><code>font-size: clamp(1rem, 2vw, 2rem);</code> \u2014 ensures text stays readable across devices."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>font-size</code> as a zoom level for your text — pixels are rigid, but <code>rem</code> and <code>em</code> scale flexibly with user preferences and layouts."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>font-size</code> as a zoom level for your text \u2014 pixels are rigid, but <code>rem</code> and <code>em</code> scale flexibly with user preferences and layouts."
         },
         {
           "type": "text",
@@ -1178,7 +1213,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "typography",
+      "font-size",
+      "properties",
+      "basics"
+    ]
   },
   {
     "id": "css-id-vs-class",
@@ -1244,7 +1286,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>id</code> for elements that occur only once (like navigation bars or main headers).</li><li>Use <code>class</code> for groups of similar elements that share styling.</li><li>Avoid overusing IDs in CSS — they increase specificity and reduce maintainability.</li><li>Use <code>class</code> selectors in component-based systems like React or Angular for modularity.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>id</code> for elements that occur only once (like navigation bars or main headers).</li><li>Use <code>class</code> for groups of similar elements that share styling.</li><li>Avoid overusing IDs in CSS \u2014 they increase specificity and reduce maintainability.</li><li>Use <code>class</code> selectors in component-based systems like React or Angular for modularity.</li></ul>"
         },
         {
           "type": "text",
@@ -1252,7 +1294,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>id</code> as your unique name (only one of you), and <code>class</code> as your role or group — many people can share the same role."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>id</code> as your unique name (only one of you), and <code>class</code> as your role or group \u2014 many people can share the same role."
         },
         {
           "type": "text",
@@ -1342,7 +1384,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>The <code>color</code> property is simply your text’s paintbrush — pick any hue, opacity, or tone to match your design’s mood."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>The <code>color</code> property is simply your text\u2019s paintbrush \u2014 pick any hue, opacity, or tone to match your design\u2019s mood."
         },
         {
           "type": "text",
@@ -1375,7 +1417,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The CSS box model describes how browsers calculate the size and spacing of elements on a web page. Every visible element is treated as a rectangular box consisting of four nested layers — <em>content, padding, border,</em> and <em>margin</em> — which together define how much space an element occupies and how it interacts with surrounding elements."
+          "text": "<strong>Overview</strong><br><br>The CSS box model describes how browsers calculate the size and spacing of elements on a web page. Every visible element is treated as a rectangular box consisting of four nested layers \u2014 <em>content, padding, border,</em> and <em>margin</em> \u2014 which together define how much space an element occupies and how it interacts with surrounding elements."
         },
         {
           "type": "list",
@@ -1388,29 +1430,29 @@
             [
               "Content",
               "The area where text, images, or child elements are displayed.",
-              "✅ Yes"
+              "\u2705 Yes"
             ],
             [
               "Padding",
               "Space between content and the border; increases inner spacing.",
-              "✅ Yes"
+              "\u2705 Yes"
             ],
             [
               "Border",
               "A visible line that wraps the padding and content.",
-              "✅ Yes"
+              "\u2705 Yes"
             ],
             [
               "Margin",
               "Space between the element and its neighbors; external spacing.",
-              "❌ No"
+              "\u274c No"
             ]
           ],
           "caption": "The four layers of the CSS box model"
         },
         {
           "type": "text",
-          "text": "<strong>Visual Concept</strong><br>Imagine concentric boxes:<br><em>Content</em> → surrounded by <em>Padding</em> → wrapped by <em>Border</em> → finally separated by <em>Margin</em>.<br><br>This structure determines both visual appearance and layout flow."
+          "text": "<strong>Visual Concept</strong><br>Imagine concentric boxes:<br><em>Content</em> \u2192 surrounded by <em>Padding</em> \u2192 wrapped by <em>Border</em> \u2192 finally separated by <em>Margin</em>.<br><br>This structure determines both visual appearance and layout flow."
         },
         {
           "type": "code",
@@ -1419,7 +1461,7 @@
         },
         {
           "type": "text",
-          "text": "In this example:<br><ul><li>Content width = 200px</li><li>Total horizontal space = 200 + (20×2) + (5×2) + (15×2) = 280px</li></ul>"
+          "text": "In this example:<br><ul><li>Content width = 200px</li><li>Total horizontal space = 200 + (20\u00d72) + (5\u00d72) + (15\u00d72) = 280px</li></ul>"
         },
         {
           "type": "text",
@@ -1440,7 +1482,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "box-model",
+      "layout",
+      "basics",
+      "spacing"
+    ]
   },
   {
     "id": "css-pseudo-classes-elements",
@@ -1487,7 +1536,7 @@
         },
         {
           "type": "text",
-          "text": "These respond dynamically to user actions — hover changes color, focus highlights inputs, and first-child styles specific items in a list."
+          "text": "These respond dynamically to user actions \u2014 hover changes color, focus highlights inputs, and first-child styles specific items in a list."
         },
         {
           "type": "text",
@@ -1496,7 +1545,7 @@
         {
           "type": "code",
           "language": "css",
-          "code": "p::first-line {\n  font-weight: bold;\n}\np::before {\n  content: '💡 Note: ';\n  color: #f59e0b;\n}\np::after {\n  content: ' ✔';\n  color: #16a34a;\n}"
+          "code": "p::first-line {\n  font-weight: bold;\n}\np::before {\n  content: '\ud83d\udca1 Note: ';\n  color: #f59e0b;\n}\np::after {\n  content: ' \u2714';\n  color: #16a34a;\n}"
         },
         {
           "type": "text",
@@ -1504,7 +1553,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Notable Differences</strong><br><ul><li>Pseudo-classes use a single colon (<code>:</code>), e.g. <code>:hover</code>.</li><li>Pseudo-elements use a double colon (<code>::</code>) to distinguish structural parts, e.g. <code>::before</code>.</li><li>They can be combined — for instance: <code>a:hover::after</code> adds content only when hovered.</li></ul>"
+          "text": "<strong>Notable Differences</strong><br><ul><li>Pseudo-classes use a single colon (<code>:</code>), e.g. <code>:hover</code>.</li><li>Pseudo-elements use a double colon (<code>::</code>) to distinguish structural parts, e.g. <code>::before</code>.</li><li>They can be combined \u2014 for instance: <code>a:hover::after</code> adds content only when hovered.</li></ul>"
         },
         {
           "type": "text",
@@ -1512,7 +1561,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <strong>pseudo-classes</strong> as describing <em>when</em> an element behaves differently, and <strong>pseudo-elements</strong> as describing <em>which part</em> of it you’re styling or creating."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <strong>pseudo-classes</strong> as describing <em>when</em> an element behaves differently, and <strong>pseudo-elements</strong> as describing <em>which part</em> of it you\u2019re styling or creating."
         },
         {
           "type": "text",
@@ -1521,7 +1570,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "selectors",
+      "pseudo-classes",
+      "pseudo-elements",
+      "basics"
+    ]
   },
   {
     "id": "css-position-relative-absolute-fixed",
@@ -1533,7 +1589,7 @@
     ],
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The position property determines how an element is placed in the document flow. The relative, absolute, and fixed values define how the element’s coordinates are calculated and how it interacts with its surroundings.",
+    "description": "Position: relative keeps the element in normal flow but allows offsetting it; absolute removes it from flow and positions it relative to the nearest positioned ancestor; fixed removes it from flow and pins it to the viewport. Use relative for anchoring children, absolute for overlays, and fixed for sticky UI like headers.",
     "answer": {
       "blocks": [
         {
@@ -1552,19 +1608,19 @@
             [
               "relative",
               "Itself (original position)",
-              "✅ Yes",
+              "\u2705 Yes",
               "Small offsets without removing from layout."
             ],
             [
               "absolute",
               "Nearest positioned ancestor (or the document if none)",
-              "❌ No",
+              "\u274c No",
               "Tooltips, popovers, or overlays positioned freely."
             ],
             [
               "fixed",
               "Viewport (browser window)",
-              "❌ No",
+              "\u274c No",
               "Sticky headers, floating buttons, or navigation bars that stay in view."
             ]
           ],
@@ -1589,7 +1645,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Use Cases</strong><br><ul><li><code>relative</code>: fine-tune an element’s position for minor alignment.</li><li><code>absolute</code>: create dropdown menus or tooltips detached from normal layout flow.</li><li><code>fixed</code>: keep navigation bars or chat buttons visible during scrolling.</li></ul>"
+          "text": "<strong>Use Cases</strong><br><ul><li><code>relative</code>: fine-tune an element\u2019s position for minor alignment.</li><li><code>absolute</code>: create dropdown menus or tooltips detached from normal layout flow.</li><li><code>fixed</code>: keep navigation bars or chat buttons visible during scrolling.</li></ul>"
         },
         {
           "type": "text",
@@ -1602,7 +1658,17 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "position",
+      "layout",
+      "relative",
+      "absolute",
+      "fixed",
+      "stacking",
+      "offsets"
+    ]
   },
   {
     "id": "css-display-flex",
@@ -1653,11 +1719,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Key Flexbox Properties</strong><br><ul><li><code>flex-direction</code> — Sets item flow (row, column, row-reverse, column-reverse).</li><li><code>justify-content</code> — Aligns items along the main axis (start, center, space-between, etc.).</li><li><code>align-items</code> — Aligns items along the cross axis.</li><li><code>flex-wrap</code> — Allows items to wrap onto multiple lines when space runs out.</li><li><code>align-content</code> — Controls spacing between wrapped lines.</li></ul>"
+          "text": "<strong>Key Flexbox Properties</strong><br><ul><li><code>flex-direction</code> \u2014 Sets item flow (row, column, row-reverse, column-reverse).</li><li><code>justify-content</code> \u2014 Aligns items along the main axis (start, center, space-between, etc.).</li><li><code>align-items</code> \u2014 Aligns items along the cross axis.</li><li><code>flex-wrap</code> \u2014 Allows items to wrap onto multiple lines when space runs out.</li><li><code>align-content</code> \u2014 Controls spacing between wrapped lines.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Advanced: The Flex Shorthand</strong><br><code>flex: 1 1 200px;</code> expands to <code>flex-grow</code>, <code>flex-shrink</code>, and <code>flex-basis</code> respectively.<br><ul><li><code>flex-grow</code>: how much an item can expand relative to siblings.</li><li><code>flex-shrink</code>: how much an item can shrink when space is tight.</li><li><code>flex-basis</code>: the item’s default size before flexing.</li></ul>"
+          "text": "<strong>Advanced: The Flex Shorthand</strong><br><code>flex: 1 1 200px;</code> expands to <code>flex-grow</code>, <code>flex-shrink</code>, and <code>flex-basis</code> respectively.<br><ul><li><code>flex-grow</code>: how much an item can expand relative to siblings.</li><li><code>flex-shrink</code>: how much an item can shrink when space is tight.</li><li><code>flex-basis</code>: the item\u2019s default size before flexing.</li></ul>"
         },
         {
           "type": "text",
@@ -1674,7 +1740,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "layout",
+      "flexbox",
+      "display",
+      "basics"
+    ]
   },
   {
     "id": "css-z-index",
@@ -1682,7 +1755,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The z-index property controls the stacking order of overlapping elements. It determines which elements appear above or below others along the z-axis — the imaginary vertical axis perpendicular to the screen.",
+    "description": "z-index controls stacking order for positioned elements within the same stacking context. Higher values appear on top, but only for elements that create/participate in a stacking context (e.g., position with z-index, opacity, transform).",
     "answer": {
       "blocks": [
         {
@@ -1734,7 +1807,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common Pitfalls</strong><br><ul><li>Setting <code>z-index</code> on an element without a positioning context (e.g., <code>position: static</code>) has no effect.</li><li>Nested stacking contexts can cause confusion — an element may appear behind another even if it has a higher z-index, depending on its parent’s context.</li></ul>"
+          "text": "<strong>Common Pitfalls</strong><br><ul><li>Setting <code>z-index</code> on an element without a positioning context (e.g., <code>position: static</code>) has no effect.</li><li>Nested stacking contexts can cause confusion \u2014 an element may appear behind another even if it has a higher z-index, depending on its parent\u2019s context.</li></ul>"
         },
         {
           "type": "text",
@@ -1742,16 +1815,24 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of z-index like layers in Photoshop — each element lives on a sheet. The higher the z-index, the closer to your eyes it appears. But if it's in a different folder (stacking context), it can’t overlap layers in another folder."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of z-index like layers in Photoshop \u2014 each element lives on a sheet. The higher the z-index, the closer to your eyes it appears. But if it's in a different folder (stacking context), it can\u2019t overlap layers in another folder."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>z-index</code> controls visual stacking of positioned elements.</li><li>Works only inside stacking contexts.</li><li>Higher values appear above lower ones.</li><li>Context isolation can cause seemingly incorrect overlaps — always check parent elements.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li><code>z-index</code> controls visual stacking of positioned elements.</li><li>Works only inside stacking contexts.</li><li>Higher values appear above lower ones.</li><li>Context isolation can cause seemingly incorrect overlaps \u2014 always check parent elements.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "z-index",
+      "stacking-context",
+      "position",
+      "layering",
+      "layout"
+    ]
   },
   {
     "id": "css-visibility-vs-display",
@@ -1778,14 +1859,14 @@
             [
               "visibility: hidden",
               "Element is invisible but still occupies space",
-              "✅ Yes, layout remains intact",
-              "✅ Yes (opacity transitions possible)"
+              "\u2705 Yes, layout remains intact",
+              "\u2705 Yes (opacity transitions possible)"
             ],
             [
               "display: none",
               "Element is completely removed from layout flow",
-              "❌ No space reserved",
-              "❌ No (toggle only on re-render)"
+              "\u274c No space reserved",
+              "\u274c No (toggle only on re-render)"
             ]
           ],
           "caption": "Comparison of visibility: hidden vs display: none"
@@ -1813,7 +1894,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>visibility: hidden</code> is like making a ghost — you can’t see it, but it still exists in the room. <code>display: none</code> is like removing the object from the room entirely."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>visibility: hidden</code> is like making a ghost \u2014 you can\u2019t see it, but it still exists in the room. <code>display: none</code> is like removing the object from the room entirely."
         },
         {
           "type": "text",
@@ -1822,7 +1903,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "layout",
+      "visibility",
+      "display",
+      "basics"
+    ]
   },
   {
     "id": "css-float-clear",
@@ -1894,16 +1982,23 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>float</code> is like placing a photo in a newspaper column — text wraps around it. <code>clear</code> tells the next paragraph, “don’t sit beside the photo; start below it.”"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br><code>float</code> is like placing a photo in a newspaper column \u2014 text wraps around it. <code>clear</code> tells the next paragraph, \u201cdon\u2019t sit beside the photo; start below it.\u201d"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>float</code> positions elements left or right, letting text wrap around them.</li><li><code>clear</code> stops wrapping on specified sides.</li><li>Useful for images, text flows, and minor alignments — not complex layouts.</li><li>Modern layouts prefer flexbox or grid for greater control.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li><code>float</code> positions elements left or right, letting text wrap around them.</li><li><code>clear</code> stops wrapping on specified sides.</li><li>Useful for images, text flows, and minor alignments \u2014 not complex layouts.</li><li>Modern layouts prefer flexbox or grid for greater control.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "layout",
+      "float",
+      "clear",
+      "basics"
+    ]
   },
   {
     "id": "css-specificity-hierarchy",
@@ -1919,7 +2014,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When multiple CSS rules apply to the same element, the browser resolves conflicts using <em>specificity</em>. Specificity is calculated based on the selector’s type — IDs, classes, attributes, and element names each contribute differently to its weight."
+          "text": "<strong>Overview</strong><br><br>When multiple CSS rules apply to the same element, the browser resolves conflicts using <em>specificity</em>. Specificity is calculated based on the selector\u2019s type \u2014 IDs, classes, attributes, and element names each contribute differently to its weight."
         },
         {
           "type": "list",
@@ -1976,7 +2071,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Calculation Formula</strong><br>Specificity is commonly represented as a four-part value (a,b,c,d):<br><ul><li><strong>a</strong> – Inline styles (1 if present)</li><li><strong>b</strong> – Number of IDs</li><li><strong>c</strong> – Number of classes, attributes, pseudo-classes</li><li><strong>d</strong> – Number of element names and pseudo-elements</li></ul><br>Example: <code>#nav .menu li:hover</code> → (0,1,2,1) → Specificity = 121."
+          "text": "<strong>Calculation Formula</strong><br>Specificity is commonly represented as a four-part value (a,b,c,d):<br><ul><li><strong>a</strong> \u2013 Inline styles (1 if present)</li><li><strong>b</strong> \u2013 Number of IDs</li><li><strong>c</strong> \u2013 Number of classes, attributes, pseudo-classes</li><li><strong>d</strong> \u2013 Number of element names and pseudo-elements</li></ul><br>Example: <code>#nav .menu li:hover</code> \u2192 (0,1,2,1) \u2192 Specificity = 121."
         },
         {
           "type": "text",
@@ -1984,7 +2079,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of specificity like a ranking system — inline styles are presidents, IDs are generals, classes are officers, and element selectors are soldiers. The higher rank always wins the battle for styling control."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of specificity like a ranking system \u2014 inline styles are presidents, IDs are generals, classes are officers, and element selectors are soldiers. The higher rank always wins the battle for styling control."
         },
         {
           "type": "text",
@@ -1993,7 +2088,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "selectors",
+      "specificity",
+      "cascade",
+      "basics"
+    ]
   },
   {
     "id": "css-media-queries",
@@ -2006,7 +2108,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Media queries enable developers to define different styles depending on the device’s capabilities. This allows webpages to look and function optimally across desktops, tablets, and smartphones, forming the backbone of responsive design."
+          "text": "<strong>Overview</strong><br><br>Media queries enable developers to define different styles depending on the device\u2019s capabilities. This allows webpages to look and function optimally across desktops, tablets, and smartphones, forming the backbone of responsive design."
         },
         {
           "type": "list",
@@ -2054,7 +2156,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Combining Conditions</strong><br>Media queries can combine multiple conditions using logical operators:<br><ul><li><code>and</code> – combine features (<code>@media (min-width: 600px) and (orientation: landscape)</code>).</li><li><code>not</code> – exclude specific conditions.</li><li><code>only</code> – prevent older browsers from applying the rule.</li></ul>"
+          "text": "<strong>Combining Conditions</strong><br>Media queries can combine multiple conditions using logical operators:<br><ul><li><code>and</code> \u2013 combine features (<code>@media (min-width: 600px) and (orientation: landscape)</code>).</li><li><code>not</code> \u2013 exclude specific conditions.</li><li><code>only</code> \u2013 prevent older browsers from applying the rule.</li></ul>"
         },
         {
           "type": "text",
@@ -2066,7 +2168,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of media queries as smart CSS switches — they turn on or off specific styles depending on the screen’s size or features, just like adaptive headlights adjusting to road conditions."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of media queries as smart CSS switches \u2014 they turn on or off specific styles depending on the screen\u2019s size or features, just like adaptive headlights adjusting to road conditions."
         },
         {
           "type": "text",
@@ -2075,7 +2177,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "responsive",
+      "media-queries",
+      "layout",
+      "basics"
+    ]
   },
   {
     "id": "css-make-element-responsive",
@@ -2160,7 +2269,7 @@
         },
         {
           "type": "text",
-          "text": "Using <code>auto-fit</code> and <code>minmax</code>, the gallery naturally fills the row with as many columns as fit, collapsing to fewer columns on small screens — no media queries required."
+          "text": "Using <code>auto-fit</code> and <code>minmax</code>, the gallery naturally fills the row with as many columns as fit, collapsing to fewer columns on small screens \u2014 no media queries required."
         },
         {
           "type": "text",
@@ -2177,7 +2286,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Example 4: Container Queries (Element-Driven)</strong><br><em>Requires browsers with container query support.</em> Wrap the element in a queryable container so it adapts to its parent’s size rather than the viewport."
+          "text": "<strong>Example 4: Container Queries (Element-Driven)</strong><br><em>Requires browsers with container query support.</em> Wrap the element in a queryable container so it adapts to its parent\u2019s size rather than the viewport."
         },
         {
           "type": "code",
@@ -2234,7 +2343,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "responsive",
+      "layout",
+      "units",
+      "basics"
+    ]
   },
   {
     "id": "css-units-em-rem-percent-px",
@@ -2260,14 +2376,14 @@
           "rows": [
             [
               "px",
-              "Pixel — absolute unit representing a device-independent pixel",
+              "Pixel \u2014 absolute unit representing a device-independent pixel",
               "Screen pixel grid",
               "Precise layouts, borders, or icons"
             ],
             [
               "em",
               "Relative to the font size of the current element",
-              "Parent element’s font size",
+              "Parent element\u2019s font size",
               "Padding, spacing, or text sizing that scales with parent"
             ],
             [
@@ -2279,7 +2395,7 @@
             [
               "%",
               "Relative to the size of the parent container",
-              "Parent’s width or height",
+              "Parent\u2019s width or height",
               "Fluid layouts, widths, or positioning"
             ]
           ],
@@ -2292,16 +2408,23 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>rem</code> for typography — it ensures consistent scaling across components.</li><li>Use <code>em</code> when nested scaling is desired (e.g., buttons inheriting parent font size).</li><li>Use <code>%</code> for flexible containers that resize with viewport or parent.</li><li>Use <code>px</code> only when precision is required (borders, shadows, small icons).</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>rem</code> for typography \u2014 it ensures consistent scaling across components.</li><li>Use <code>em</code> when nested scaling is desired (e.g., buttons inheriting parent font size).</li><li>Use <code>%</code> for flexible containers that resize with viewport or parent.</li><li>Use <code>px</code> only when precision is required (borders, shadows, small icons).</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>em</code> as ‘relative to the element,’ <code>rem</code> as ‘relative to the root,’ <code>%</code> as ‘relative to the parent,’ and <code>px</code> as ‘fixed and absolute.’"
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>em</code> as \u2018relative to the element,\u2019 <code>rem</code> as \u2018relative to the root,\u2019 <code>%</code> as \u2018relative to the parent,\u2019 and <code>px</code> as \u2018fixed and absolute.\u2019"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "units",
+      "responsive",
+      "typography",
+      "basics"
+    ]
   },
   {
     "id": "css-cascade-order",
@@ -2309,7 +2432,7 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The CSS cascade determines the final styles applied to an element when multiple rules conflict. It resolves conflicts based on origin, importance, specificity, and source order, ensuring predictable and hierarchical style application.",
+    "description": "The CSS cascade resolves conflicts by comparing importance (!important), origin (user vs author), specificity, and source order. More specific selectors win; if specificity ties, later rules take precedence.",
     "answer": {
       "blocks": [
         {
@@ -2358,16 +2481,24 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Keep selectors consistent and avoid unnecessary complexity.</li><li>Minimize use of <code>!important</code>; rely on proper structure and specificity instead.</li><li>Understand how frameworks (e.g., Bootstrap) use cascade layers and resets.</li><li>Use the browser’s ‘Computed Styles’ panel to debug cascading conflicts.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Keep selectors consistent and avoid unnecessary complexity.</li><li>Minimize use of <code>!important</code>; rely on proper structure and specificity instead.</li><li>Understand how frameworks (e.g., Bootstrap) use cascade layers and resets.</li><li>Use the browser\u2019s \u2018Computed Styles\u2019 panel to debug cascading conflicts.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> The cascade is like a courtroom: importance is the judge, specificity is the lawyer’s strength, and source order is who speaks last."
+          "text": "<i class='fa-solid fa-lightbulb'></i> The cascade is like a courtroom: importance is the judge, specificity is the lawyer\u2019s strength, and source order is who speaks last."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "cascade",
+      "specificity",
+      "!important",
+      "selectors",
+      "order"
+    ]
   },
   {
     "id": "css-custom-properties",
@@ -2375,12 +2506,12 @@
     "technology": "css",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "CSS custom properties, also known as variables, let developers define reusable values that can be dynamically updated and inherited across components. They enable theme systems, runtime customization, and cleaner maintainable code.",
+    "description": "CSS custom properties (variables) are declared with --name and read with var(--name). They inherit, can be scoped, and enable theming or design tokens without preprocessors.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>CSS custom properties are variables defined with the <code>--</code> prefix and accessed using the <code>var()</code> function. They differ from preprocessor variables (like SASS or LESS) because they’re live in the browser — inheritable, changeable with JavaScript, and scoped within selectors."
+          "text": "<strong>Overview</strong><br><br>CSS custom properties are variables defined with the <code>--</code> prefix and accessed using the <code>var()</code> function. They differ from preprocessor variables (like SASS or LESS) because they\u2019re live in the browser \u2014 inheritable, changeable with JavaScript, and scoped within selectors."
         },
         {
           "type": "code",
@@ -2415,12 +2546,20 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Custom properties are like CSS ‘globals’ that react dynamically to context — perfect for modern design systems and theme engines."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Custom properties are like CSS \u2018globals\u2019 that react dynamically to context \u2014 perfect for modern design systems and theme engines."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "custom-properties",
+      "variables",
+      "theming",
+      "design-tokens",
+      "var"
+    ]
   },
   {
     "id": "css-grid-vs-flexbox",
@@ -2504,7 +2643,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Example 3: Combining Grid and Flexbox</strong><br>Many modern UIs mix the two systems — for example, using Grid for the page layout and Flexbox inside components for aligning content."
+          "text": "<strong>Example 3: Combining Grid and Flexbox</strong><br>Many modern UIs mix the two systems \u2014 for example, using Grid for the page layout and Flexbox inside components for aligning content."
         },
         {
           "type": "code",
@@ -2513,11 +2652,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>When to Use</strong><br><ul><li>Use <strong>Flexbox</strong> for one-dimensional layouts — e.g., aligning items horizontally in a navbar or vertically stacking cards.</li><li>Use <strong>Grid</strong> when you need both row and column control — e.g., creating structured dashboards or templates.</li><li>Combine both: Grid for overall structure, Flexbox for internal alignment.</li></ul>"
+          "text": "<strong>When to Use</strong><br><ul><li>Use <strong>Flexbox</strong> for one-dimensional layouts \u2014 e.g., aligning items horizontally in a navbar or vertically stacking cards.</li><li>Use <strong>Grid</strong> when you need both row and column control \u2014 e.g., creating structured dashboards or templates.</li><li>Combine both: Grid for overall structure, Flexbox for internal alignment.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Performance & Maintainability Tips</strong><br><ul><li>Prefer Grid for fixed or predictable layouts (e.g., landing pages).</li><li>Prefer Flexbox for components that require content-driven flexibility (e.g., toolbars, media lists).</li><li>Use named grid areas for readability and semantic mapping of layout regions.</li><li>Minimize unnecessary nesting — combining both systems too deeply can complicate debugging.</li></ul>"
+          "text": "<strong>Performance & Maintainability Tips</strong><br><ul><li>Prefer Grid for fixed or predictable layouts (e.g., landing pages).</li><li>Prefer Flexbox for components that require content-driven flexibility (e.g., toolbars, media lists).</li><li>Use named grid areas for readability and semantic mapping of layout regions.</li><li>Minimize unnecessary nesting \u2014 combining both systems too deeply can complicate debugging.</li></ul>"
         },
         {
           "type": "text",
@@ -2525,12 +2664,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><strong>Flexbox:</strong> One-dimensional, best for aligning and distributing items.</li><li><strong>Grid:</strong> Two-dimensional, best for designing structured layouts.</li><li>They are complementary tools — not competitors.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li><strong>Flexbox:</strong> One-dimensional, best for aligning and distributing items.</li><li><strong>Grid:</strong> Two-dimensional, best for designing structured layouts.</li><li>They are complementary tools \u2014 not competitors.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "layout",
+      "grid",
+      "flexbox",
+      "basics"
+    ]
   },
   {
     "id": "css-hardware-acceleration",
@@ -2538,7 +2684,7 @@
     "technology": "css",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Hardware acceleration and compositing layers are critical for smooth, performant animations in CSS. Understanding how the browser's rendering pipeline works — including layout, paint, and composite steps — helps developers optimize animations and avoid costly reflows.",
+    "description": "Hardware acceleration and compositing layers are critical for smooth, performant animations in CSS. Understanding how the browser's rendering pipeline works \u2014 including layout, paint, and composite steps \u2014 helps developers optimize animations and avoid costly reflows.",
     "answer": {
       "blocks": [
         {
@@ -2559,17 +2705,17 @@
           "rows": [
             [
               "Layout-triggering",
-              "Expensive — causes reflow & repaint",
+              "Expensive \u2014 causes reflow & repaint",
               "width, height, margin, padding, top, left"
             ],
             [
               "Paint-triggering",
-              "Moderate — repaints pixels but avoids reflow",
+              "Moderate \u2014 repaints pixels but avoids reflow",
               "background-color, box-shadow, border-radius"
             ],
             [
               "Composite-only",
-              "Fastest — handled on GPU layers",
+              "Fastest \u2014 handled on GPU layers",
               "transform, opacity, filter"
             ]
           ],
@@ -2599,7 +2745,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Animate only <code>transform</code> and <code>opacity</code> when possible.</li><li>Use <code>will-change</code> sparingly and remove it after animation completion.</li><li>Profile performance using Chrome DevTools → Rendering → ‘Paint flashing’ and ‘Layers’ panels.</li><li>Keep composited layers minimal for mobile optimization.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Animate only <code>transform</code> and <code>opacity</code> when possible.</li><li>Use <code>will-change</code> sparingly and remove it after animation completion.</li><li>Profile performance using Chrome DevTools \u2192 Rendering \u2192 \u2018Paint flashing\u2019 and \u2018Layers\u2019 panels.</li><li>Keep composited layers minimal for mobile optimization.</li></ul>"
         },
         {
           "type": "text",
@@ -2616,15 +2762,22 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Hardware acceleration is like giving animations a fast lane — but overusing it can clog the highway. Use it wisely for the smoothest results."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Hardware acceleration is like giving animations a fast lane \u2014 but overusing it can clog the highway. Use it wisely for the smoothest results."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>CSS animations go through layout → paint → composite steps.</li><li>GPU compositing enables smoother transitions using <code>transform</code> and <code>opacity</code>.</li><li><code>will-change</code> and <code>translateZ(0)</code> can promote elements to GPU layers.</li><li>Always test and profile — performance varies across browsers and devices.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>CSS animations go through layout \u2192 paint \u2192 composite steps.</li><li>GPU compositing enables smoother transitions using <code>transform</code> and <code>opacity</code>.</li><li><code>will-change</code> and <code>translateZ(0)</code> can promote elements to GPU layers.</li><li>Always test and profile \u2014 performance varies across browsers and devices.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "css",
+      "performance",
+      "animation",
+      "rendering",
+      "basics"
+    ]
   }
 ]

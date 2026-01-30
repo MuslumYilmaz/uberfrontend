@@ -1,16 +1,16 @@
 [
   {
     "id": "vue-reactivity-vs-react-concepts",
-    "title": "What problems does Vue’s reactivity system solve, and how does Vue differ from React conceptually?",
+    "title": "What problems does Vue\u2019s reactivity system solve, and how does Vue differ from React conceptually?",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what Vue’s reactivity engine (dependency tracking + batched updates) gives you in day-to-day UI work, and contrast Vue’s mental model with React’s render/reconciliation model.",
+    "description": "Vue\u2019s reactivity system tracks data dependencies and updates only the affected DOM bindings, reducing manual state wiring. Compared to React\u2019s explicit state updates and reconciliation, Vue offers automatic dependency tracking with template-level reactivity.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>What Vue reactivity solves (the practical problems)</strong><br><br>In UI code you constantly fight the same issues: keeping DOM in sync with state, updating derived values efficiently, and avoiding “update everything” work. Vue’s reactivity system solves these by automatically tracking what your UI depends on and updating only what’s affected when state changes."
+          "text": "<strong>What Vue reactivity solves (the practical problems)</strong><br><br>In UI code you constantly fight the same issues: keeping DOM in sync with state, updating derived values efficiently, and avoiding \u201cupdate everything\u201d work. Vue\u2019s reactivity system solves these by automatically tracking what your UI depends on and updating only what\u2019s affected when state changes."
         },
         {
           "type": "list",
@@ -21,7 +21,7 @@
           ],
           "rows": [
             [
-              "State → DOM synchronization",
+              "State \u2192 DOM synchronization",
               "Manually set text/classes/attributes or write glue code everywhere",
               "Declarative templates; mutate state and the DOM updates automatically"
             ],
@@ -50,7 +50,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What Vue is doing under the hood (high level)</strong><br><br>Vue 3 wraps state in Proxies. When code runs inside a reactive “effect” (component render, computed, watcher), any reactive <code>get</code> is tracked. When you later <code>set</code> a reactive property, Vue triggers only the effects that previously read that property. Those effects are scheduled and batched, then Vue patches the DOM."
+          "text": "<strong>What Vue is doing under the hood (high level)</strong><br><br>Vue 3 wraps state in Proxies. When code runs inside a reactive \u201ceffect\u201d (component render, computed, watcher), any reactive <code>get</code> is tracked. When you later <code>set</code> a reactive property, Vue triggers only the effects that previously read that property. Those effects are scheduled and batched, then Vue patches the DOM."
         },
         {
           "type": "code",
@@ -59,7 +59,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How Vue differs from React conceptually</strong><br><br>The biggest difference is the update model:<br>• <strong>Vue:</strong> “push” model. Dependency graph decides what to update (<em>who depends on what</em>). Component updates happen because reactive reads were tracked.<br>• <strong>React:</strong> “render-as-a-function” model. State updates schedule a re-render of a component; during re-render React re-executes your component function to compute the next UI, then reconciles."
+          "text": "<strong>How Vue differs from React conceptually</strong><br><br>The biggest difference is the update model:<br>\u2022 <strong>Vue:</strong> \u201cpush\u201d model. Dependency graph decides what to update (<em>who depends on what</em>). Component updates happen because reactive reads were tracked.<br>\u2022 <strong>React:</strong> \u201crender-as-a-function\u201d model. State updates schedule a re-render of a component; during re-render React re-executes your component function to compute the next UI, then reconciles."
         },
         {
           "type": "list",
@@ -114,12 +114,20 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br>Vue’s reactivity exists to remove manual DOM sync and to make updates precise via dependency tracking + batching. React’s core idea is re-running component functions to describe the next UI and reconciling the result. Vue leans on a reactive graph + compiler; React leans on a render cycle + reconciliation, with optimization patterns layered on top."
+          "text": "<strong>Interview-ready takeaway</strong><br><br>Vue\u2019s reactivity exists to remove manual DOM sync and to make updates precise via dependency tracking + batching. React\u2019s core idea is re-running component functions to describe the next UI and reconciling the result. Vue leans on a reactive graph + compiler; React leans on a render cycle + reconciliation, with optimization patterns layered on top."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "reactivity",
+      "react",
+      "state-management",
+      "virtual-dom",
+      "frameworks"
+    ]
   },
   {
     "id": "vue-internal-rendering-pipeline",
@@ -132,7 +140,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Vue doesn’t “poll” your state. It records <em>who read what</em> during render, and when that state changes it re-runs only the affected render effects."
+          "text": "<strong>Core idea</strong><br><br>Vue doesn\u2019t \u201cpoll\u201d your state. It records <em>who read what</em> during render, and when that state changes it re-runs only the affected render effects."
         },
         {
           "type": "list",
@@ -149,12 +157,12 @@
             ],
             [
               "2) Render inside an effect",
-              "Each component render runs inside a reactive “effect” (think: tracked function).",
+              "Each component render runs inside a reactive \u201ceffect\u201d (think: tracked function).",
               "Any reactive reads during render become dependencies."
             ],
             [
               "3) Track dependencies on reads",
-              "On <code>get</code>, Vue calls <code>track(target, key)</code> to link (target,key) → activeEffect.",
+              "On <code>get</code>, Vue calls <code>track(target, key)</code> to link (target,key) \u2192 activeEffect.",
               "Vue learns exactly which component depends on which property."
             ],
             [
@@ -169,11 +177,11 @@
             ],
             [
               "6) Re-render + patch DOM",
-              "Re-run render → new VNode tree → <code>patch(oldVNode, newVNode)</code> updates DOM.",
+              "Re-run render \u2192 new VNode tree \u2192 <code>patch(oldVNode, newVNode)</code> updates DOM.",
               "Virtual DOM diff updates only what changed."
             ]
           ],
-          "caption": "Vue’s internal reactivity → rendering pipeline"
+          "caption": "Vue\u2019s internal reactivity \u2192 rendering pipeline"
         },
         {
           "type": "text",
@@ -186,7 +194,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How “re-render” is actually wired</strong><br><br>Each component has a render effect. When its dependencies trigger, Vue doesn’t immediately run it; it queues it."
+          "text": "<strong>How \u201cre-render\u201d is actually wired</strong><br><br>Each component has a render effect. When its dependencies trigger, Vue doesn\u2019t immediately run it; it queues it."
         },
         {
           "type": "code",
@@ -199,7 +207,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Vue 3 render performance extra</strong><br><br>Vue 3’s compiler adds hints (patch flags + block tree) so the runtime can skip diffing stable parts of the template and focus on dynamic bindings. Reactivity decides <em>which components update</em>; patch flags help decide <em>how much work the DOM patch does</em> within that update."
+          "text": "<strong>Vue 3 render performance extra</strong><br><br>Vue 3\u2019s compiler adds hints (patch flags + block tree) so the runtime can skip diffing stable parts of the template and focus on dynamic bindings. Reactivity decides <em>which components update</em>; patch flags help decide <em>how much work the DOM patch does</em> within that update."
         },
         {
           "type": "list",
@@ -211,7 +219,7 @@
           "rows": [
             [
               "computed()",
-              "Runs as a lazy effect; caches value until a dependency triggers (marks it “dirty”).",
+              "Runs as a lazy effect; caches value until a dependency triggers (marks it \u201cdirty\u201d).",
               "Recomputes on next access, not immediately on every change."
             ],
             [
@@ -229,24 +237,31 @@
         },
         {
           "type": "text",
-          "text": "<strong>Practical implications / common gotchas</strong><br><br>• If you destructure reactive objects (e.g., <code>const { x } = reactiveObj</code>), you may lose tracking because the render no longer reads through the Proxy.<br>• If you mutate many things in a row, expect one render (batched), and use <code>await nextTick()</code> when you need DOM to be updated.<br>• If something doesn’t update, it usually means the render didn’t read that reactive source (no dependency tracked)."
+          "text": "<strong>Practical implications / common gotchas</strong><br><br>\u2022 If you destructure reactive objects (e.g., <code>const { x } = reactiveObj</code>), you may lose tracking because the render no longer reads through the Proxy.<br>\u2022 If you mutate many things in a row, expect one render (batched), and use <code>await nextTick()</code> when you need DOM to be updated.<br>\u2022 If something doesn\u2019t update, it usually means the render didn\u2019t read that reactive source (no dependency tracked)."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Vue tracks reactive reads during render (track), schedules dependent component effects on writes (trigger → queue), then re-renders and patches the DOM in a batched flush. That’s the whole “state change → re-render” loop."
+          "text": "<strong>Summary</strong><br><br>Vue tracks reactive reads during render (track), schedules dependent component effects on writes (trigger \u2192 queue), then re-renders and patches the DOM in a batched flush. That\u2019s the whole \u201cstate change \u2192 re-render\u201d loop."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "rendering",
+      "reactivity",
+      "virtual-dom",
+      "basics"
+    ]
   },
   {
     "id": "vue-data-must-be-function",
-    "title": "Why must data be a function in Vue components, and what breaks if it isn’t?",
+    "title": "Why must data be a function in Vue components, and what breaks if it isn\u2019t?",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Vue’s Options API, component state must be defined with data() returning a fresh object per component instance. Explain why this matters and what bugs appear when data is a plain object.",
+    "description": "In Vue, component data must be a function so each instance gets its own state object. If it were a shared object, multiple instances would mutate the same reference and leak state between components.",
     "answer": {
       "blocks": [
         {
@@ -276,17 +291,17 @@
         },
         {
           "type": "text",
-          "text": "<strong>What breaks if <code>data</code> is an object?</strong><br><br>Nothing “crashes” immediately—Vue can still make it reactive—but your component stops being instance-safe. The bugs show up as state leaking between instances."
+          "text": "<strong>What breaks if <code>data</code> is an object?</strong><br><br>Nothing \u201ccrashes\u201d immediately\u2014Vue can still make it reactive\u2014but your component stops being instance-safe. The bugs show up as state leaking between instances."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- WRONG: shared state across instances -->\n<script>\nconst Counter = {\n  template: `\n    <button @click=\"count++\">Count: {{ count }}</button>\n  `,\n  data: { count: 0 } // ❌ shared reference\n};\n\nexport default {\n  components: { Counter }\n};\n</script>\n\n<template>\n  <Counter />\n  <Counter />\n</template>\n\n<!-- Click one button -> both counters update because they share the same 'count'. -->"
+          "code": "<!-- WRONG: shared state across instances -->\n<script>\nconst Counter = {\n  template: `\n    <button @click=\"count++\">Count: {{ count }}</button>\n  `,\n  data: { count: 0 } // \u274c shared reference\n};\n\nexport default {\n  components: { Counter }\n};\n</script>\n\n<template>\n  <Counter />\n  <Counter />\n</template>\n\n<!-- Click one button -> both counters update because they share the same 'count'. -->"
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- CORRECT: per-instance state -->\n<script>\nconst Counter = {\n  template: `\n    <button @click=\"count++\">Count: {{ count }}</button>\n  `,\n  data() {\n    return { count: 0 }; // ✅ new object per instance\n  }\n};\n\nexport default {\n  components: { Counter }\n};\n</script>\n\n<template>\n  <Counter />\n  <Counter />\n</template>"
+          "code": "<!-- CORRECT: per-instance state -->\n<script>\nconst Counter = {\n  template: `\n    <button @click=\"count++\">Count: {{ count }}</button>\n  `,\n  data() {\n    return { count: 0 }; // \u2705 new object per instance\n  }\n};\n\nexport default {\n  components: { Counter }\n};\n</script>\n\n<template>\n  <Counter />\n  <Counter />\n</template>"
         },
         {
           "type": "list",
@@ -303,7 +318,7 @@
             ],
             [
               "Lists (<code>v-for</code>) of stateful components",
-              "Items “share” state unexpectedly (especially with filtering/sorting)",
+              "Items \u201cshare\u201d state unexpectedly (especially with filtering/sorting)",
               "Instances are supposed to be isolated; shared data violates that"
             ],
             [
@@ -316,7 +331,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br>• If you want <em>instance state</em> (almost always): use <code>data()</code>.<br>• If you want <em>intentionally shared state</em>: don’t “accidentally” share via <code>data: {}</code>—use a store (Pinia) or a clearly named shared module/composable."
+          "text": "<strong>Rule of thumb</strong><br><br>\u2022 If you want <em>instance state</em> (almost always): use <code>data()</code>.<br>\u2022 If you want <em>intentionally shared state</em>: don\u2019t \u201caccidentally\u201d share via <code>data: {}</code>\u2014use a store (Pinia) or a clearly named shared module/composable."
         },
         {
           "type": "text",
@@ -325,7 +340,15 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "data",
+      "components",
+      "state",
+      "instances",
+      "best-practices"
+    ]
   },
   {
     "id": "vue-reactive-interpolation-into-dom",
@@ -338,7 +361,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>The core idea</strong><br><br>Vue doesn’t “re-run the whole DOM.” It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
+          "text": "<strong>The core idea</strong><br><br>Vue doesn\u2019t \u201cre-run the whole DOM.\u201d It compiles <code>{{ ... }}</code> into a render function that creates a Virtual DOM (VNode) tree. During render, Vue tracks which reactive properties were read. When one of those properties changes, Vue schedules the component update, re-runs the render function, diffs old vs new VNodes, and patches only the affected DOM nodes (e.g., a single text node)."
         },
         {
           "type": "list",
@@ -351,7 +374,7 @@
             [
               "1) Compile template",
               "<code>{{ count }}</code> becomes code that produces a text VNode (via <code>toDisplayString(count)</code>).",
-              "Interpolation is not “magic at runtime”; it’s mostly compiler output + runtime patching."
+              "Interpolation is not \u201cmagic at runtime\u201d; it\u2019s mostly compiler output + runtime patching."
             ],
             [
               "2) Mount (first render)",
@@ -370,11 +393,11 @@
             ],
             [
               "5) Patch DOM",
-              "Re-render → new VNodes → diff/patch updates only the dynamic parts (often a single text node).",
+              "Re-render \u2192 new VNodes \u2192 diff/patch updates only the dynamic parts (often a single text node).",
               "Efficient updates without manual DOM manipulation."
             ]
           ],
-          "caption": "Template interpolation → reactive update → DOM patch"
+          "caption": "Template interpolation \u2192 reactive update \u2192 DOM patch"
         },
         {
           "type": "code",
@@ -401,12 +424,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br>Interpolation in Vue is: template compile → render effect tracks reactive reads → state writes trigger scheduled re-render → VDOM diff + patch updates only the dynamic DOM nodes. Templates auto-unwrap refs, and interpolation is HTML-escaped by default."
+          "text": "<strong>Interview-ready takeaway</strong><br><br>Interpolation in Vue is: template compile \u2192 render effect tracks reactive reads \u2192 state writes trigger scheduled re-render \u2192 VDOM diff + patch updates only the dynamic DOM nodes. Templates auto-unwrap refs, and interpolation is HTML-escaped by default."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "reactivity",
+      "templates",
+      "rendering",
+      "basics"
+    ]
   },
   {
     "id": "vue-v-bind-reactive-attributes",
@@ -419,7 +449,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>v-bind</code> (shorthand <code>:</code>) is not a runtime “watcher on attributes”. Vue compiles your template into a render function. During render, Vue <em>reads</em> the reactive values used in bindings (so they get tracked). When those reactive values change, Vue re-runs the component render and then patches only the changed attributes/DOM props on the affected elements."
+          "text": "<strong>Core idea</strong><br><br><code>v-bind</code> (shorthand <code>:</code>) is not a runtime \u201cwatcher on attributes\u201d. Vue compiles your template into a render function. During render, Vue <em>reads</em> the reactive values used in bindings (so they get tracked). When those reactive values change, Vue re-runs the component render and then patches only the changed attributes/DOM props on the affected elements."
         },
         {
           "type": "code",
@@ -460,11 +490,11 @@
               "Only changed attributes/properties are touched."
             ]
           ],
-          "caption": "How a v-bind update flows from state → DOM"
+          "caption": "How a v-bind update flows from state \u2192 DOM"
         },
         {
           "type": "text",
-          "text": "<strong>Attribute vs DOM property (the part interviewers probe)</strong><br><br>Vue’s patcher decides whether a binding should be applied as a DOM <em>property</em> (<code>el.value</code>, <code>el.checked</code>, <code>el.innerHTML</code> etc.) or as an HTML <em>attribute</em> (<code>setAttribute</code>). Most of the time Vue handles this for you, but knowing the difference explains edge cases (especially with form controls and boolean attributes)."
+          "text": "<strong>Attribute vs DOM property (the part interviewers probe)</strong><br><br>Vue\u2019s patcher decides whether a binding should be applied as a DOM <em>property</em> (<code>el.value</code>, <code>el.checked</code>, <code>el.innerHTML</code> etc.) or as an HTML <em>attribute</em> (<code>setAttribute</code>). Most of the time Vue handles this for you, but knowing the difference explains edge cases (especially with form controls and boolean attributes)."
         },
         {
           "type": "list",
@@ -492,7 +522,7 @@
             [
               "Form-related props (e.g. <code>value</code>, <code>checked</code>)",
               "Prefer DOM properties for correctness.",
-              "Attributes don’t always reflect live state; properties do."
+              "Attributes don\u2019t always reflect live state; properties do."
             ],
             [
               "SVG attrs",
@@ -504,7 +534,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What the compiler roughly generates</strong><br><br>The exact output varies, but conceptually <code>:src</code>/<code>:disabled</code>/<code>:class</code> become a props object on the VNode. The runtime uses patch flags / dynamic props so it can update only what’s dynamic."
+          "text": "<strong>What the compiler roughly generates</strong><br><br>The exact output varies, but conceptually <code>:src</code>/<code>:disabled</code>/<code>:class</code> become a props object on the VNode. The runtime uses patch flags / dynamic props so it can update only what\u2019s dynamic."
         },
         {
           "type": "code",
@@ -522,12 +552,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br><code>v-bind</code> works because the template is compiled into a render function that <em>reads</em> reactive state during render (dependency tracking). State changes trigger a scheduled re-render, and Vue patches only the changed VNode props—mapping them to DOM properties or HTML attributes (with special handling for class/style/booleans)."
+          "text": "<strong>Interview-ready takeaway</strong><br><br><code>v-bind</code> works because the template is compiled into a render function that <em>reads</em> reactive state during render (dependency tracking). State changes trigger a scheduled re-render, and Vue patches only the changed VNode props\u2014mapping them to DOM properties or HTML attributes (with special handling for class/style/booleans)."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "directives",
+      "v-bind",
+      "reactivity",
+      "basics"
+    ]
   },
   {
     "id": "vue-v-if-component-creation-destruction",
@@ -540,7 +577,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>v-if</code> controls whether a template branch <em>exists</em>. For plain elements it means “insert/remove DOM”. For components it means “mount/unmount the component instance” — so the instance is created when the condition becomes true and destroyed when it becomes false."
+          "text": "<strong>Core idea</strong><br><br><code>v-if</code> controls whether a template branch <em>exists</em>. For plain elements it means \u201cinsert/remove DOM\u201d. For components it means \u201cmount/unmount the component instance\u201d \u2014 so the instance is created when the condition becomes true and destroyed when it becomes false."
         },
         {
           "type": "list",
@@ -599,10 +636,10 @@
             [
               "Lifecycle hooks",
               "Vue 3: beforeUnmount/unmounted (Vue 2: beforeDestroy/destroyed)",
-              "Interviewers often check that you know it’s actual destruction"
+              "Interviewers often check that you know it\u2019s actual destruction"
             ]
           ],
-          "caption": "What “destroy” really implies with v-if"
+          "caption": "What \u201cdestroy\u201d really implies with v-if"
         },
         {
           "type": "text",
@@ -624,7 +661,7 @@
             [
               "Toggles rarely (auth gate, expensive panel, route-like branches)",
               "v-if",
-              "Don’t pay initial render cost until needed; removes heavy DOM when off"
+              "Don\u2019t pay initial render cost until needed; removes heavy DOM when off"
             ],
             [
               "Must preserve state across toggles but still avoid rendering when hidden",
@@ -655,7 +692,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "directives",
+      "v-if",
+      "lifecycle",
+      "basics"
+    ]
   },
   {
     "id": "vue-v-for-keys",
@@ -681,7 +725,7 @@
             [
               "Insert/remove in the middle",
               "Vue inserts/removes the correct node and keeps other items' DOM/state attached",
-              "Vue reuses DOM nodes by position; DOM/state may “shift” to the wrong item"
+              "Vue reuses DOM nodes by position; DOM/state may \u201cshift\u201d to the wrong item"
             ],
             [
               "Sorting / reordering",
@@ -696,14 +740,14 @@
             [
               "Transitions (<code>&lt;transition-group&gt;</code>)",
               "Correct enter/leave/move animations",
-              "Animations glitch or don’t run correctly (Vue can’t track moves reliably)"
+              "Animations glitch or don\u2019t run correctly (Vue can\u2019t track moves reliably)"
             ]
           ],
           "caption": "What keys enable vs what breaks without them"
         },
         {
           "type": "text",
-          "text": "<strong>What “breaks” in practice</strong><br><br>Typical real bugs when keys are missing or unstable:<br>• <strong>Inputs show the wrong value</strong> after sorting/filtering because the DOM input element is reused for a different item.<br>• <strong>Focus/caret jumps</strong> (typing in an input, list updates, and the focused DOM node is reused/moved incorrectly).<br>• <strong>Checkboxes/toggles flip on the wrong row</strong> (DOM state vs data association breaks).<br>• <strong>Child component local state leaks</strong> (e.g., expanded/collapsed, internal caches, timers) to a different item after reordering.<br>• <strong>Transition-group move animations break</strong> because Vue can’t reliably compute “this node moved from A to B” without keys."
+          "text": "<strong>What \u201cbreaks\u201d in practice</strong><br><br>Typical real bugs when keys are missing or unstable:<br>\u2022 <strong>Inputs show the wrong value</strong> after sorting/filtering because the DOM input element is reused for a different item.<br>\u2022 <strong>Focus/caret jumps</strong> (typing in an input, list updates, and the focused DOM node is reused/moved incorrectly).<br>\u2022 <strong>Checkboxes/toggles flip on the wrong row</strong> (DOM state vs data association breaks).<br>\u2022 <strong>Child component local state leaks</strong> (e.g., expanded/collapsed, internal caches, timers) to a different item after reordering.<br>\u2022 <strong>Transition-group move animations break</strong> because Vue can\u2019t reliably compute \u201cthis node moved from A to B\u201d without keys."
         },
         {
           "type": "code",
@@ -717,7 +761,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Index as key: when it’s wrong vs acceptable</strong><br><br><code>:key=\"index\"</code> is effectively “no stable identity” when the list can reorder, filter, insert, or delete. It tells Vue: “identity is position”, so Vue will keep DOM/state by index, not by data item. It’s only acceptable when the list is truly static (never changes order/length) or when each row has no meaningful state (rare in real apps)."
+          "text": "<strong>Index as key: when it\u2019s wrong vs acceptable</strong><br><br><code>:key=\"index\"</code> is effectively \u201cno stable identity\u201d when the list can reorder, filter, insert, or delete. It tells Vue: \u201cidentity is position\u201d, so Vue will keep DOM/state by index, not by data item. It\u2019s only acceptable when the list is truly static (never changes order/length) or when each row has no meaningful state (rare in real apps)."
         },
         {
           "type": "list",
@@ -733,7 +777,7 @@
               ":key=\"item.id\""
             ],
             [
-              "Don’t use random/unstable keys",
+              "Don\u2019t use random/unstable keys",
               "Forces full destroy/recreate every render (kills performance/state)",
               ":key=\"Math.random()\" (bad)"
             ],
@@ -757,12 +801,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br>Keys aren’t about “performance only”. They’re primarily about <em>correctness</em>: ensuring DOM nodes and component instances stay attached to the same logical data item across updates. Without stable keys (or with index keys), you risk state/DOM mismatches when the list changes."
+          "text": "<strong>Interview-ready takeaway</strong><br><br>Keys aren\u2019t about \u201cperformance only\u201d. They\u2019re primarily about <em>correctness</em>: ensuring DOM nodes and component instances stay attached to the same logical data item across updates. Without stable keys (or with index keys), you risk state/DOM mismatches when the list changes."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "lists",
+      "keys",
+      "rendering",
+      "basics"
+    ]
   },
   {
     "id": "vue-v-model-syntax-sugar-expansion",
@@ -770,12 +821,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why v-model is considered syntax sugar in Vue: it’s compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in Vue 3 (modelValue + update:modelValue). Include how v-model arguments (v-model:foo) and common modifiers (.trim, .number, .lazy) change the expansion.",
+    "description": "Explain why v-model is considered syntax sugar in Vue: it\u2019s compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in Vue 3 (modelValue + update:modelValue). Include how v-model arguments (v-model:foo) and common modifiers (.trim, .number, .lazy) change the expansion.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>v-model</code> is <em>syntax sugar</em> because it doesn’t add a new runtime “two-way binding engine”. Vue’s template compiler rewrites it into:<br>1) a <strong>prop/attribute binding</strong> (state → DOM/component)<br>2) an <strong>event listener</strong> (DOM/component → state)<br><br>So it’s just a shorter way to write “bind value + update on event”."
+          "text": "<strong>Core idea</strong><br><br><code>v-model</code> is <em>syntax sugar</em> because it doesn\u2019t add a new runtime \u201ctwo-way binding engine\u201d. Vue\u2019s template compiler rewrites it into:<br>1) a <strong>prop/attribute binding</strong> (state \u2192 DOM/component)<br>2) an <strong>event listener</strong> (DOM/component \u2192 state)<br><br>So it\u2019s just a shorter way to write \u201cbind value + update on event\u201d."
         },
         {
           "type": "list",
@@ -815,7 +866,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Native input example (the “long form”)</strong>"
+          "text": "<strong>Native input example (the \u201clong form\u201d)</strong>"
         },
         {
           "type": "code",
@@ -824,7 +875,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Checkbox + select (different DOM properties/events)</strong><br><br>People call <code>v-model</code> “smart sugar” because it chooses the correct DOM property and event per form control."
+          "text": "<strong>Checkbox + select (different DOM properties/events)</strong><br><br>People call <code>v-model</code> \u201csmart sugar\u201d because it chooses the correct DOM property and event per form control."
         },
         {
           "type": "code",
@@ -833,12 +884,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>Custom components (Vue 3): modelValue + update:modelValue</strong><br><br>For components, <code>v-model</code> becomes a normal prop + a normal emitted event. The parent “listens” and assigns."
+          "text": "<strong>Custom components (Vue 3): modelValue + update:modelValue</strong><br><br>For components, <code>v-model</code> becomes a normal prop + a normal emitted event. The parent \u201clistens\u201d and assigns."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- Parent.vue -->\n<template>\n  <!-- Sugar -->\n  <UserNameInput v-model=\"name\" />\n\n  <!-- Desugared -->\n  <UserNameInput\n    :modelValue=\"name\"\n    @update:modelValue=\"name = $event\"\n  />\n</template>\n\n<script setup>\nimport { ref } from 'vue';\nimport UserNameInput from './UserNameInput.vue';\n\nconst name = ref('Müslüm');\n</script>\n\n<!-- UserNameInput.vue -->\n<template>\n  <input\n    :value=\"modelValue\"\n    @input=\"$emit('update:modelValue', $event.target.value)\"\n  />\n</template>\n\n<script setup>\ndefineProps({\n  modelValue: { type: String, required: true }\n});\n\ndefineEmits(['update:modelValue']);\n</script>"
+          "code": "<!-- Parent.vue -->\n<template>\n  <!-- Sugar -->\n  <UserNameInput v-model=\"name\" />\n\n  <!-- Desugared -->\n  <UserNameInput\n    :modelValue=\"name\"\n    @update:modelValue=\"name = $event\"\n  />\n</template>\n\n<script setup>\nimport { ref } from 'vue';\nimport UserNameInput from './UserNameInput.vue';\n\nconst name = ref('M\u00fcsl\u00fcm');\n</script>\n\n<!-- UserNameInput.vue -->\n<template>\n  <input\n    :value=\"modelValue\"\n    @input=\"$emit('update:modelValue', $event.target.value)\"\n  />\n</template>\n\n<script setup>\ndefineProps({\n  modelValue: { type: String, required: true }\n});\n\ndefineEmits(['update:modelValue']);\n</script>"
         },
         {
           "type": "text",
@@ -851,7 +902,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Modifiers (.trim, .number, .lazy) change the update expression</strong><br><br>Modifiers don’t change the “prop + event” structure, they change how the incoming value is read/coerced and when updates happen."
+          "text": "<strong>Modifiers (.trim, .number, .lazy) change the update expression</strong><br><br>Modifiers don\u2019t change the \u201cprop + event\u201d structure, they change how the incoming value is read/coerced and when updates happen."
         },
         {
           "type": "list",
@@ -881,12 +932,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br><code>v-model</code> is compile-time sugar for “bind current value + listen and assign updates”. For native inputs it picks the correct DOM property/event. For components in Vue 3 it maps to <code>modelValue</code> + <code>update:modelValue</code> (or <code>v-model:arg</code> → <code>arg</code> + <code>update:arg</code>)."
+          "text": "<strong>Interview-ready takeaway</strong><br><br><code>v-model</code> is compile-time sugar for \u201cbind current value + listen and assign updates\u201d. For native inputs it picks the correct DOM property/event. For components in Vue 3 it maps to <code>modelValue</code> + <code>update:modelValue</code> (or <code>v-model:arg</code> \u2192 <code>arg</code> + <code>update:arg</code>)."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "v-model",
+      "directives",
+      "forms",
+      "basics"
+    ]
   },
   {
     "id": "vue-v-show-vs-v-if-dom-lifecycle",
@@ -894,7 +952,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the DOM-level difference (remove/insert vs CSS hide/show) and the lifecycle/state impact for components when toggling v-if vs v-show. Include performance tradeoffs and when to prefer each.",
+    "description": "v-if adds/removes elements from the DOM (mount/unmount lifecycle), while v-show toggles display via CSS and keeps elements in the DOM. Use v-if for expensive components; v-show for frequent toggles.",
     "answer": {
       "blocks": [
         {
@@ -944,7 +1002,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>DOM behavior (plain elements)</strong><br><br>• <code>v-if</code>: creates/removes the element. If it starts false, it is lazy (nothing is rendered until it becomes true).<br>• <code>v-show</code>: element exists, but Vue sets inline <code>display: none</code> when false (removed from layout and accessibility tree)."
+          "text": "<strong>DOM behavior (plain elements)</strong><br><br>\u2022 <code>v-if</code>: creates/removes the element. If it starts false, it is lazy (nothing is rendered until it becomes true).<br>\u2022 <code>v-show</code>: element exists, but Vue sets inline <code>display: none</code> when false (removed from layout and accessibility tree)."
         },
         {
           "type": "code",
@@ -988,16 +1046,24 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common gotchas interviewers like</strong><br><br>• <code>v-show</code> does not support <code>v-else</code>/<code>v-else-if</code> chains; <code>v-if</code> does.<br>• <code>v-show</code> hides via <code>display:none</code> (not just “invisible”); it won’t take space and won’t be reachable by screen readers while hidden.<br>• Hidden-with-<code>v-show</code> components can still run watchers/computed updates; <code>v-if</code> removes them entirely."
+          "text": "<strong>Common gotchas interviewers like</strong><br><br>\u2022 <code>v-show</code> does not support <code>v-else</code>/<code>v-else-if</code> chains; <code>v-if</code> does.<br>\u2022 <code>v-show</code> hides via <code>display:none</code> (not just \u201cinvisible\u201d); it won\u2019t take space and won\u2019t be reachable by screen readers while hidden.<br>\u2022 Hidden-with-<code>v-show</code> components can still run watchers/computed updates; <code>v-if</code> removes them entirely."
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br><code>v-if</code> changes the DOM tree and component lifecycle (mount/unmount, state resets). <code>v-show</code> keeps the same DOM and instance, only toggling <code>display</code>. Use <code>v-show</code> for frequent toggles; use <code>v-if</code> when the branch is rarely needed or expensive and you want zero cost while it’s off."
+          "text": "<strong>Interview-ready takeaway</strong><br><br><code>v-if</code> changes the DOM tree and component lifecycle (mount/unmount, state resets). <code>v-show</code> keeps the same DOM and instance, only toggling <code>display</code>. Use <code>v-show</code> for frequent toggles; use <code>v-if</code> when the branch is rarely needed or expensive and you want zero cost while it\u2019s off."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "v-if",
+      "v-show",
+      "rendering",
+      "performance",
+      "lifecycle"
+    ]
   },
   {
     "id": "vue-computed-properties",
@@ -1005,12 +1071,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Computed properties in Vue are special properties that automatically update when their dependent data changes. They are primarily used to calculate derived state efficiently, caching results until their dependencies change.",
+    "description": "Computed properties are cached, reactive getters that recompute only when their dependencies change. Use them for derived state instead of methods to avoid unnecessary recalculation.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Computed properties in Vue are a powerful way to define reactive logic that depends on existing data. They act like dynamic properties that automatically re-evaluate when the data they depend on changes — and they cache the result until dependencies are updated again."
+          "text": "<strong>Overview</strong><br><br>Computed properties in Vue are a powerful way to define reactive logic that depends on existing data. They act like dynamic properties that automatically re-evaluate when the data they depend on changes \u2014 and they cache the result until dependencies are updated again."
         },
         {
           "type": "code",
@@ -1040,7 +1106,7 @@
             [
               "Caching",
               "Yes (re-evaluates only when dependencies change)",
-              "No (runs every time it’s called)"
+              "No (runs every time it\u2019s called)"
             ],
             [
               "Use Case",
@@ -1079,7 +1145,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of computed properties as smart variables that know when and how to update — they deliver dynamic results while minimizing unnecessary recalculations."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of computed properties as smart variables that know when and how to update \u2014 they deliver dynamic results while minimizing unnecessary recalculations."
         },
         {
           "type": "text",
@@ -1088,7 +1154,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "computed",
+      "reactivity",
+      "derived-state",
+      "performance"
+    ]
   },
   {
     "id": "vue-methods-in-templates",
@@ -1101,7 +1174,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Anything you reference in a Vue template is evaluated during the component’s <em>render</em>. A method call in the template is just a function call inside the compiled render function. That means:<br>• The method runs on the initial render.<br>• The method runs again on <em>every</em> subsequent re-render of that component.<br><br>Vue will track reactive reads that happen <em>inside</em> the method (because it runs during render), but the <em>result is not cached</em> like a computed property."
+          "text": "<strong>Core idea</strong><br><br>Anything you reference in a Vue template is evaluated during the component\u2019s <em>render</em>. A method call in the template is just a function call inside the compiled render function. That means:<br>\u2022 The method runs on the initial render.<br>\u2022 The method runs again on <em>every</em> subsequent re-render of that component.<br><br>Vue will track reactive reads that happen <em>inside</em> the method (because it runs during render), but the <em>result is not cached</em> like a computed property."
         },
         {
           "type": "list",
@@ -1140,13 +1213,13 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why this can hurt performance</strong><br><br>A component can re-render for many reasons (any reactive dependency used in render changes). If you call a method in the template, it’s executed again even when the method’s “inputs” didn’t change. In lists, it’s worse: a method used inside <code>v-for</code> can run <em>per item</em> per render."
+          "text": "<strong>Why this can hurt performance</strong><br><br>A component can re-render for many reasons (any reactive dependency used in render changes). If you call a method in the template, it\u2019s executed again even when the method\u2019s \u201cinputs\u201d didn\u2019t change. In lists, it\u2019s worse: a method used inside <code>v-for</code> can run <em>per item</em> per render."
         },
         {
           "type": "list",
           "columns": [
             "Pitfall",
-            "What you’ll see",
+            "What you\u2019ll see",
             "Fix"
           ],
           "rows": [
@@ -1167,7 +1240,7 @@
             ],
             [
               "Method depends on params (e.g., format(item))",
-              "You can’t just “convert to computed” 1:1",
+              "You can\u2019t just \u201cconvert to computed\u201d 1:1",
               "Precompute a derived structure (Map/object) via computed; or memoize by key"
             ]
           ],
@@ -1175,12 +1248,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>When it’s OK to use a method in the template</strong><br><br>• It’s cheap (simple string/number formatting).<br>• It’s pure (no state writes, no I/O).<br>• It doesn’t allocate large new structures on every call.<br><br><strong>Rule of thumb</strong>: if you’d be annoyed seeing it run on every render in a profiler, make it a computed (or precomputed data) instead."
+          "text": "<strong>When it\u2019s OK to use a method in the template</strong><br><br>\u2022 It\u2019s cheap (simple string/number formatting).<br>\u2022 It\u2019s pure (no state writes, no I/O).<br>\u2022 It doesn\u2019t allocate large new structures on every call.<br><br><strong>Rule of thumb</strong>: if you\u2019d be annoyed seeing it run on every render in a profiler, make it a computed (or precomputed data) instead."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "templates",
+      "methods",
+      "performance",
+      "basics"
+    ]
   },
   {
     "id": "vue-native-vs-component-events",
@@ -1226,7 +1306,7 @@
             [
               "Default behavior",
               "May have defaults (submit navigates, link navigates, etc.)",
-              "No browser default; it’s app-level messaging"
+              "No browser default; it\u2019s app-level messaging"
             ]
           ],
           "caption": "Native DOM events vs component-emitted events"
@@ -1251,7 +1331,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>The confusing part: @click on a component</strong><br><br>When you write <code>&lt;MyButton @click=... /&gt;</code>, it does <em>not</em> automatically mean “listen to the internal DOM click”. It depends on Vue version and how the component is authored."
+          "text": "<strong>The confusing part: @click on a component</strong><br><br>When you write <code>&lt;MyButton @click=... /&gt;</code>, it does <em>not</em> automatically mean \u201clisten to the internal DOM click\u201d. It depends on Vue version and how the component is authored."
         },
         {
           "type": "list",
@@ -1268,13 +1348,13 @@
             ],
             [
               "Vue 2: <code>@click.native</code>",
-              "Attach a native listener to the component’s root DOM element",
+              "Attach a native listener to the component\u2019s root DOM element",
               "Use <code>.native</code> (Vue 2 only)"
             ],
             [
               "Vue 3: listener fallthrough (single-root component)",
               "If the event name is <em>not</em> declared in <code>emits</code>, Vue treats it as an attribute listener and can pass it to the root element",
-              "Rely on fallthrough only when you really want “wrapper behaves like a DOM element”; otherwise use explicit custom events"
+              "Rely on fallthrough only when you really want \u201cwrapper behaves like a DOM element\u201d; otherwise use explicit custom events"
             ],
             [
               "Vue 3: declared in <code>emits</code>",
@@ -1294,22 +1374,22 @@
           "rows": [
             [
               "Assuming DOM bubbling for component events",
-              "Custom emits don’t bubble through DOM; only parent receives it",
+              "Custom emits don\u2019t bubble through DOM; only parent receives it",
               "If grandparents need it, re-emit upward or use a store"
             ],
             [
               "Using DOM event modifiers on custom events (.stop/.prevent)",
-              "Those call <code>event.stopPropagation()</code>/<code>preventDefault()</code> — only meaningful if your payload is a real Event",
+              "Those call <code>event.stopPropagation()</code>/<code>preventDefault()</code> \u2014 only meaningful if your payload is a real Event",
               "Use modifiers mainly for DOM events; for custom events, design payloads and logic explicitly"
             ],
             [
               "Naming a component event the same as a native event ('click')",
-              "Can be valid but easily confuses “is this DOM or emitted?” (plus fallthrough rules in Vue 3)",
+              "Can be valid but easily confuses \u201cis this DOM or emitted?\u201d (plus fallthrough rules in Vue 3)",
               "Prefer semantic names: <code>press</code>, <code>submit</code>, <code>close</code>, <code>update:modelValue</code>"
             ],
             [
               "Not declaring <code>emits</code> in Vue 3",
-              "Vue can’t validate emitted events and listeners may fall through to DOM unintentionally",
+              "Vue can\u2019t validate emitted events and listeners may fall through to DOM unintentionally",
               "Declare <code>emits</code> for your component API; it prevents accidental fallthrough for those event names"
             ]
           ],
@@ -1317,12 +1397,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br><strong>Native event</strong> = browser event on a real element (bubbles in DOM).<br><strong>Component event</strong> = explicit <code>emit</code> from child to parent (no DOM bubbling).<br>On a component tag, <code>@event</code> primarily means “listen for an emitted event”, except Vue 3 can also treat undeclared listeners as fallthrough attributes to the root element."
+          "text": "<strong>Interview-ready takeaway</strong><br><br><strong>Native event</strong> = browser event on a real element (bubbles in DOM).<br><strong>Component event</strong> = explicit <code>emit</code> from child to parent (no DOM bubbling).<br>On a component tag, <code>@event</code> primarily means \u201clisten for an emitted event\u201d, except Vue 3 can also treat undeclared listeners as fallthrough attributes to the root element."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "events",
+      "components",
+      "emits",
+      "basics"
+    ]
   },
   {
     "id": "vue-architecture-decisions-scalability",
@@ -1335,7 +1422,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>“Scalability” in Vue isn’t just about performance — it’s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
+          "text": "<strong>Overview</strong><br><br>\u201cScalability\u201d in Vue isn\u2019t just about performance \u2014 it\u2019s mainly about keeping complexity manageable as features and teams grow. Early architectural choices determine whether your codebase stays modular, testable, and predictable."
         },
         {
           "type": "list",
@@ -1363,7 +1450,7 @@
             [
               "Routing strategy",
               "Vue Router, nested routes, lazy-loaded route chunks",
-              "Route-level code splitting + clear route boundaries prevents “one giant bundle” and encourages feature isolation."
+              "Route-level code splitting + clear route boundaries prevents \u201cone giant bundle\u201d and encourages feature isolation."
             ],
             [
               "State management",
@@ -1383,7 +1470,7 @@
             [
               "Data access layer",
               "Direct fetch in components vs services/repositories",
-              "Central API layer improves testability, retries/caching, error handling, and consistent DTO↔domain mapping."
+              "Central API layer improves testability, retries/caching, error handling, and consistent DTO\u2194domain mapping."
             ],
             [
               "Validation & forms",
@@ -1408,14 +1495,14 @@
             [
               "Configuration & environments",
               "Env files + runtime config",
-              "Clean env separation prevents “works on my machine” issues and supports multi-environment deployments safely."
+              "Clean env separation prevents \u201cworks on my machine\u201d issues and supports multi-environment deployments safely."
             ]
           ],
           "caption": "Key Vue project architecture decisions and their scalability impact"
         },
         {
           "type": "text",
-          "text": "<strong>Recommended baseline for a scalable Vue 3 app</strong><br><br>• Vite + Vue 3 + TypeScript<br>• Vue Router with lazy-loaded routes<br>• Pinia for true shared state only; keep UI state local<br>• Composition API + composables for shared logic<br>• Feature-based folder structure (domain modules)<br>• Central API layer (services) + consistent error handling<br>• Vitest for unit/component tests + Playwright/Cypress for E2E<br>• ESLint/Prettier + typecheck in CI"
+          "text": "<strong>Recommended baseline for a scalable Vue 3 app</strong><br><br>\u2022 Vite + Vue 3 + TypeScript<br>\u2022 Vue Router with lazy-loaded routes<br>\u2022 Pinia for true shared state only; keep UI state local<br>\u2022 Composition API + composables for shared logic<br>\u2022 Feature-based folder structure (domain modules)<br>\u2022 Central API layer (services) + consistent error handling<br>\u2022 Vitest for unit/component tests + Playwright/Cypress for E2E<br>\u2022 ESLint/Prettier + typecheck in CI"
         },
         {
           "type": "code",
@@ -1429,7 +1516,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common scalability failures</strong><br><br>1) “Everything in the global store” → tight coupling + hard debugging.<br>2) No domain boundaries → circular imports + unclear ownership.<br>3) No API layer → duplicated fetch logic + inconsistent error handling.<br>4) No code splitting → slow initial load as app grows.<br>5) No enforced conventions → PR reviews turn into style/pattern debates."
+          "text": "<strong>Common scalability failures</strong><br><br>1) \u201cEverything in the global store\u201d \u2192 tight coupling + hard debugging.<br>2) No domain boundaries \u2192 circular imports + unclear ownership.<br>3) No API layer \u2192 duplicated fetch logic + inconsistent error handling.<br>4) No code splitting \u2192 slow initial load as app grows.<br>5) No enforced conventions \u2192 PR reviews turn into style/pattern debates."
         },
         {
           "type": "text",
@@ -1438,7 +1525,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "architecture",
+      "scalability",
+      "state-management",
+      "basics"
+    ]
   },
   {
     "id": "vue-computed-vs-watchers",
@@ -1451,7 +1545,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><strong>Computed</strong> = a derived value (like a formula). Vue tracks its dependencies and <strong>caches</strong> the result until one of them changes.<br><strong>Watch</strong> = run code when something changes. It’s meant for <strong>side effects</strong> (fetching, logging, syncing, timers), not for producing values for the template."
+          "text": "<strong>Core idea</strong><br><br><strong>Computed</strong> = a derived value (like a formula). Vue tracks its dependencies and <strong>caches</strong> the result until one of them changes.<br><strong>Watch</strong> = run code when something changes. It\u2019s meant for <strong>side effects</strong> (fetching, logging, syncing, timers), not for producing values for the template."
         },
         {
           "type": "list",
@@ -1518,12 +1612,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br>If the result is a <em>value you want to render</em> (filtering, formatting, totals) → <strong>computed</strong>.<br>If you need to <em>do something</em> when it changes (fetch, sync, log, imperative updates) → <strong>watch</strong>."
+          "text": "<strong>Rule of thumb</strong><br><br>If the result is a <em>value you want to render</em> (filtering, formatting, totals) \u2192 <strong>computed</strong>.<br>If you need to <em>do something</em> when it changes (fetch, sync, log, imperative updates) \u2192 <strong>watch</strong>."
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "computed",
+      "watchers",
+      "reactivity",
+      "basics"
+    ]
   },
   {
     "id": "vue-lifecycle-hooks",
@@ -1531,12 +1632,12 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources.",
+    "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component\u2019s lifecycle \u2014 from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Every Vue component goes through a series of lifecycle stages — creation, mounting, updating, and unmounting. Vue provides lifecycle hooks, which are special functions you can define to run code automatically at these stages."
+          "text": "<strong>Overview</strong><br><br>Every Vue component goes through a series of lifecycle stages \u2014 creation, mounting, updating, and unmounting. Vue provides lifecycle hooks, which are special functions you can define to run code automatically at these stages."
         },
         {
           "type": "code",
@@ -1604,7 +1705,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Lifecycle Hook Flow</strong><br>1️⃣ <code>beforeCreate</code> → 2️⃣ <code>created</code> → 3️⃣ <code>beforeMount</code> → 4️⃣ <code>mounted</code><br>Then for updates: 5️⃣ <code>beforeUpdate</code> → 6️⃣ <code>updated</code><br>And finally for teardown: 7️⃣ <code>beforeUnmount</code> → 8️⃣ <code>unmounted</code>."
+          "text": "<strong>Lifecycle Hook Flow</strong><br>1\ufe0f\u20e3 <code>beforeCreate</code> \u2192 2\ufe0f\u20e3 <code>created</code> \u2192 3\ufe0f\u20e3 <code>beforeMount</code> \u2192 4\ufe0f\u20e3 <code>mounted</code><br>Then for updates: 5\ufe0f\u20e3 <code>beforeUpdate</code> \u2192 6\ufe0f\u20e3 <code>updated</code><br>And finally for teardown: 7\ufe0f\u20e3 <code>beforeUnmount</code> \u2192 8\ufe0f\u20e3 <code>unmounted</code>."
         },
         {
           "type": "text",
@@ -1621,16 +1722,23 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of lifecycle hooks as checkpoints — moments in a component’s journey where you can pause, inspect, or intervene to perform logic, cleanup, or side effects."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of lifecycle hooks as checkpoints \u2014 moments in a component\u2019s journey where you can pause, inspect, or intervene to perform logic, cleanup, or side effects."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Lifecycle hooks run at specific stages of a component’s creation, update, and destruction.</li><li>Commonly used hooks include <code>created()</code>, <code>mounted()</code>, and <code>updated()</code>.</li><li>They’re essential for handling initialization, DOM access, and cleanup logic.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Lifecycle hooks run at specific stages of a component\u2019s creation, update, and destruction.</li><li>Commonly used hooks include <code>created()</code>, <code>mounted()</code>, and <code>updated()</code>.</li><li>They\u2019re essential for handling initialization, DOM access, and cleanup logic.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "lifecycle",
+      "hooks",
+      "components",
+      "basics"
+    ]
   },
   {
     "id": "vue-directives",
@@ -1638,7 +1746,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Vue directives are special HTML attributes prefixed with 'v-' that allow you to bind data, react to events, or manipulate the DOM dynamically. They are the foundation of Vue’s declarative rendering system.",
+    "description": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events.",
     "answer": {
       "blocks": [
         {
@@ -1652,11 +1760,11 @@
         },
         {
           "type": "text",
-          "text": "In this example, three directives are used:<br>• <code>v-if</code> conditionally renders an element.<br>• <code>v-bind</code> dynamically binds a JavaScript value to an attribute.<br>• <code>v-on</code> listens for user events like clicks."
+          "text": "In this example, three directives are used:<br>\u2022 <code>v-if</code> conditionally renders an element.<br>\u2022 <code>v-bind</code> dynamically binds a JavaScript value to an attribute.<br>\u2022 <code>v-on</code> listens for user events like clicks."
         },
         {
           "type": "text",
-          "text": "<strong>How Directives Work</strong><br>When Vue compiles a template, it parses all directives and establishes reactivity links between the DOM and your component data. Whenever the underlying data changes, Vue automatically updates the DOM to reflect the new state — no manual DOM manipulation required."
+          "text": "<strong>How Directives Work</strong><br>When Vue compiles a template, it parses all directives and establishes reactivity links between the DOM and your component data. Whenever the underlying data changes, Vue automatically updates the DOM to reflect the new state \u2014 no manual DOM manipulation required."
         },
         {
           "type": "text",
@@ -1699,7 +1807,7 @@
             ],
             [
               "v-text",
-              "Updates an element’s text content directly."
+              "Updates an element\u2019s text content directly."
             ]
           ],
           "caption": "Common Vue Directives and Their Usage"
@@ -1719,7 +1827,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of directives as instructions for the DOM — they tell Vue what to do with elements when your data changes, keeping everything reactive and declarative."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of directives as instructions for the DOM \u2014 they tell Vue what to do with elements when your data changes, keeping everything reactive and declarative."
         },
         {
           "type": "text",
@@ -1728,11 +1836,19 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "directives",
+      "v-if",
+      "v-for",
+      "v-model",
+      "templates"
+    ]
   },
   {
     "id": "vue-v-bind-v-on-fundamental-template-syntax",
-    "title": "Why are v-bind and v-on fundamental to Vue’s template syntax?",
+    "title": "Why are v-bind and v-on fundamental to Vue\u2019s template syntax?",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
@@ -1741,7 +1857,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Vue templates are mostly static HTML. The two things that make templates <em>dynamic</em> are:<br>• <code>v-bind</code> (shorthand <code>:</code>) — state ➜ DOM (attributes/props/class/style)<br>• <code>v-on</code> (shorthand <code>@</code>) — DOM/component events ➜ code (which usually mutates state)<br><br>Those two directives are “fundamental” because they are the main bridges between your reactive state and the rendered output. Most higher-level conveniences (<code>v-model</code>, component prop/event APIs, many patterns) compile down to some combination of <code>v-bind</code> + <code>v-on</code>."
+          "text": "<strong>Core idea</strong><br><br>Vue templates are mostly static HTML. The two things that make templates <em>dynamic</em> are:<br>\u2022 <code>v-bind</code> (shorthand <code>:</code>) \u2014 state \u279c DOM (attributes/props/class/style)<br>\u2022 <code>v-on</code> (shorthand <code>@</code>) \u2014 DOM/component events \u279c code (which usually mutates state)<br><br>Those two directives are \u201cfundamental\u201d because they are the main bridges between your reactive state and the rendered output. Most higher-level conveniences (<code>v-model</code>, component prop/event APIs, many patterns) compile down to some combination of <code>v-bind</code> + <code>v-on</code>."
         },
         {
           "type": "list",
@@ -1763,8 +1879,8 @@
             ],
             [
               "Together",
-              "UI updates flow: user event ➜ state change ➜ DOM patch",
-              "This is the main “reactive loop” in Vue apps"
+              "UI updates flow: user event \u279c state change \u279c DOM patch",
+              "This is the main \u201creactive loop\u201d in Vue apps"
             ]
           ],
           "caption": "Why templates revolve around v-bind and v-on"
@@ -1799,12 +1915,12 @@
             [
               "Component events",
               "<code>&lt;Child @save=\"onSave\" /&gt;</code>",
-              "Same listener mechanism, but listens to emitted events (child ➜ parent)"
+              "Same listener mechanism, but listens to emitted events (child \u279c parent)"
             ],
             [
               "v-model",
               "Compiles to a prop bind + an update listener",
-              "Explains why v-model is “syntax sugar”"
+              "Explains why v-model is \u201csyntax sugar\u201d"
             ],
             [
               "Object spread binding",
@@ -1836,7 +1952,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "directives",
+      "v-bind",
+      "v-on",
+      "basics"
+    ]
   },
   {
     "id": "vue-child-mutates-prop-directly",
@@ -1849,14 +1972,14 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Props are the parent’s state flowing <em>down</em>. If the child mutates a prop, you lose the “single source of truth” and the update path becomes ambiguous (who changed it, when, and why). Vue will warn in dev, but the bigger issue is correctness + maintainability."
+          "text": "<strong>Core idea</strong><br><br>Props are the parent\u2019s state flowing <em>down</em>. If the child mutates a prop, you lose the \u201csingle source of truth\u201d and the update path becomes ambiguous (who changed it, when, and why). Vue will warn in dev, but the bigger issue is correctness + maintainability."
         },
         {
           "type": "list",
           "columns": [
             "What the child does",
             "What breaks",
-            "Why it’s bad"
+            "Why it\u2019s bad"
           ],
           "rows": [
             [
@@ -1866,13 +1989,13 @@
             ],
             [
               "Mutates a nested field on an object/array prop (e.g. props.user.name = 'x')",
-              "You silently mutate the parent’s object (shared reference) and create “action at a distance” bugs",
+              "You silently mutate the parent\u2019s object (shared reference) and create \u201caction at a distance\u201d bugs",
               "Objects/arrays are passed by reference; child mutation becomes parent mutation"
             ],
             [
               "Uses a prop as local state (editing it directly)",
               "UI can desync (parent re-renders and resets the child), race conditions with async updates",
-              "Parent can re-send the prop anytime; child-local edits aren’t a stable source of truth"
+              "Parent can re-send the prop anytime; child-local edits aren\u2019t a stable source of truth"
             ],
             [
               "Triggers watchers/computed based on mutated prop",
@@ -1889,7 +2012,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- ChildCounter.vue (BAD) -->\n<script setup>\nconst props = defineProps({\n  count: { type: Number, required: true }\n});\n\nfunction inc() {\n  // ❌ anti-pattern: mutating a prop\n  // Vue warns in dev; parent can overwrite on next render.\n  props.count++;\n}\n</script>\n\n<template>\n  <button @click=\"inc\">Count: {{ count }}</button>\n</template>"
+          "code": "<!-- ChildCounter.vue (BAD) -->\n<script setup>\nconst props = defineProps({\n  count: { type: Number, required: true }\n});\n\nfunction inc() {\n  // \u274c anti-pattern: mutating a prop\n  // Vue warns in dev; parent can overwrite on next render.\n  props.count++;\n}\n</script>\n\n<template>\n  <button @click=\"inc\">Count: {{ count }}</button>\n</template>"
         },
         {
           "type": "text",
@@ -1902,16 +2025,16 @@
         },
         {
           "type": "text",
-          "text": "<strong>The tricky case: object/array props</strong><br><br>Even if Vue warns, mutating <code>props.user.name</code> is still mutating the same object the parent passed. This couples child behavior to parent state and makes bugs look “random” because the mutation didn’t go through an explicit parent update."
+          "text": "<strong>The tricky case: object/array props</strong><br><br>Even if Vue warns, mutating <code>props.user.name</code> is still mutating the same object the parent passed. This couples child behavior to parent state and makes bugs look \u201crandom\u201d because the mutation didn\u2019t go through an explicit parent update."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- ChildUserEditor.vue (BAD) -->\n<script setup>\nconst props = defineProps({\n  user: { type: Object, required: true }\n});\n\nfunction rename() {\n  // ❌ Mutates parent-owned object via shared reference\n  props.user.name = 'New Name';\n}\n</script>\n\n<template>\n  <button @click=\"rename\">Rename</button>\n</template>"
+          "code": "<!-- ChildUserEditor.vue (BAD) -->\n<script setup>\nconst props = defineProps({\n  user: { type: Object, required: true }\n});\n\nfunction rename() {\n  // \u274c Mutates parent-owned object via shared reference\n  props.user.name = 'New Name';\n}\n</script>\n\n<template>\n  <button @click=\"rename\">Rename</button>\n</template>"
         },
         {
           "type": "text",
-          "text": "<strong>When you need “editable local state”</strong><br><br>Make a local copy for editing, and emit the final value (or emit on each change)."
+          "text": "<strong>When you need \u201ceditable local state\u201d</strong><br><br>Make a local copy for editing, and emit the final value (or emit on each change)."
         },
         {
           "type": "code",
@@ -1925,7 +2048,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "props",
+      "immutability",
+      "components",
+      "basics"
+    ]
   },
   {
     "id": "vue-composition-api-vs-mixins",
@@ -1933,7 +2063,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the practical problems with mixins in real Vue codebases (implicit behavior, naming collisions, unclear data sources, typing issues), and why Composition API + composables is the preferred alternative for reuse and scalability.",
+    "description": "Vue recommends the Composition API over mixins because it avoids implicit merging and name collisions, improves code organization, and offers better TypeScript inference for reusable logic.",
     "answer": {
       "blocks": [
         {
@@ -1950,7 +2080,7 @@
           "rows": [
             [
               "Implicit sources (\"Where did this come from?\")",
-              "Template/method uses <code>loading</code>/<code>save</code> but you can’t tell if it’s local or from a mixin",
+              "Template/method uses <code>loading</code>/<code>save</code> but you can\u2019t tell if it\u2019s local or from a mixin",
               "You see it: <code>const { loading, save } = useSave()</code> (explicit import + call)"
             ],
             [
@@ -1983,7 +2113,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>The big pain point: collisions and “action at a distance”</strong><br><br>Mixins merge into the component options. If multiple sources define the same key, you can get overrides or merged behavior (hooks). The result: you read a component and can’t confidently tell what runs, in what order, and which definition “wins”."
+          "text": "<strong>The big pain point: collisions and \u201caction at a distance\u201d</strong><br><br>Mixins merge into the component options. If multiple sources define the same key, you can get overrides or merged behavior (hooks). The result: you read a component and can\u2019t confidently tell what runs, in what order, and which definition \u201cwins\u201d."
         },
         {
           "type": "code",
@@ -2025,7 +2155,7 @@
             ],
             [
               "Are mixins forbidden?",
-              "No—still supported, but composables are the recommended default for logic reuse in Vue 3-era apps."
+              "No\u2014still supported, but composables are the recommended default for logic reuse in Vue 3-era apps."
             ]
           ],
           "caption": "What interviewers want you to highlight"
@@ -2033,7 +2163,15 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "composition-api",
+      "mixins",
+      "reuse",
+      "maintainability",
+      "typescript"
+    ]
   },
   {
     "id": "vue-sfc-vs-global-components",
@@ -2050,7 +2188,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections — <template>, <script>, and <style>. They provide a modular, maintainable way to build complex applications."
+          "text": "<strong>Single-File Components (SFCs)</strong><br>Single-File Components are stored in <code>.vue</code> files and include three main sections \u2014 <template>, <script>, and <style>. They provide a modular, maintainable way to build complex applications."
         },
         {
           "type": "code",
@@ -2068,7 +2206,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Global Components</strong><br>Global components, on the other hand, are registered once in your app’s entry point (usually <code>main.js</code>) and can be used anywhere without importing them explicitly."
+          "text": "<strong>Global Components</strong><br>Global components, on the other hand, are registered once in your app\u2019s entry point (usually <code>main.js</code>) and can be used anywhere without importing them explicitly."
         },
         {
           "type": "code",
@@ -2126,7 +2264,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of global components as public utilities — accessible everywhere but should be used sparingly, while SFCs are private blueprints — focused and modular for specific tasks."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of global components as public utilities \u2014 accessible everywhere but should be used sparingly, while SFCs are private blueprints \u2014 focused and modular for specific tasks."
         },
         {
           "type": "text",
@@ -2135,7 +2273,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "components",
+      "sfc",
+      "architecture",
+      "basics"
+    ]
   },
   {
     "id": "vue-conditional-list-rendering",
@@ -2148,7 +2293,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue provides efficient and declarative ways to control rendering using directives like <code>v-if</code>, <code>v-show</code>, and <code>v-for</code>. These directives determine whether elements should appear in the DOM and how lists of elements are dynamically generated and updated. Vue’s virtual DOM efficiently detects what has changed and updates only the affected parts, rather than re-rendering the entire DOM."
+          "text": "<strong>Overview</strong><br><br>Vue provides efficient and declarative ways to control rendering using directives like <code>v-if</code>, <code>v-show</code>, and <code>v-for</code>. These directives determine whether elements should appear in the DOM and how lists of elements are dynamically generated and updated. Vue\u2019s virtual DOM efficiently detects what has changed and updates only the affected parts, rather than re-rendering the entire DOM."
         },
         {
           "type": "text",
@@ -2161,11 +2306,11 @@
         },
         {
           "type": "text",
-          "text": "Here’s how it works:<ul><li><code>v-if</code> adds or removes elements from the DOM completely based on the condition. It’s useful when the condition changes infrequently.</li><li><code>v-show</code> toggles the element’s CSS <code>display</code> property without adding or removing it from the DOM, which is more efficient for frequent toggling.</li></ul>"
+          "text": "Here\u2019s how it works:<ul><li><code>v-if</code> adds or removes elements from the DOM completely based on the condition. It\u2019s useful when the condition changes infrequently.</li><li><code>v-show</code> toggles the element\u2019s CSS <code>display</code> property without adding or removing it from the DOM, which is more efficient for frequent toggling.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>List Rendering</strong><br>Vue’s <code>v-for</code> directive is used to render lists of items efficiently. Each list item is tracked using a <code>key</code>, allowing Vue to reuse and reorder DOM elements instead of re-creating them from scratch."
+          "text": "<strong>List Rendering</strong><br>Vue\u2019s <code>v-for</code> directive is used to render lists of items efficiently. Each list item is tracked using a <code>key</code>, allowing Vue to reuse and reorder DOM elements instead of re-creating them from scratch."
         },
         {
           "type": "code",
@@ -2174,7 +2319,7 @@
         },
         {
           "type": "text",
-          "text": "The <code>:key</code> attribute helps Vue track each item’s identity when updating the DOM. This makes updates more efficient, as Vue can determine what has changed, added, or removed using its virtual DOM diffing algorithm."
+          "text": "The <code>:key</code> attribute helps Vue track each item\u2019s identity when updating the DOM. This makes updates more efficient, as Vue can determine what has changed, added, or removed using its virtual DOM diffing algorithm."
         },
         {
           "type": "list",
@@ -2204,20 +2349,27 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why It’s Efficient</strong><br>Vue uses a <em>virtual DOM</em> to compare the current and previous states of the UI. When changes occur, Vue only updates the parts that differ, instead of re-rendering the entire view. This ensures performance even in large lists or when toggling content rapidly."
+          "text": "<strong>Why It\u2019s Efficient</strong><br>Vue uses a <em>virtual DOM</em> to compare the current and previous states of the UI. When changes occur, Vue only updates the parts that differ, instead of re-rendering the entire view. This ensures performance even in large lists or when toggling content rapidly."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-if</code> as removing or inserting items from a shelf and <code>v-show</code> as simply covering or uncovering them — both are efficient, but suited for different situations."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>v-if</code> as removing or inserting items from a shelf and <code>v-show</code> as simply covering or uncovering them \u2014 both are efficient, but suited for different situations."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li><code>v-if</code> removes or inserts elements into the DOM.</li><li><code>v-show</code> toggles visibility via CSS.</li><li><code>v-for</code> efficiently renders dynamic lists using keys.</li><li>Vue’s virtual DOM minimizes unnecessary DOM updates for smooth performance.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li><code>v-if</code> removes or inserts elements into the DOM.</li><li><code>v-show</code> toggles visibility via CSS.</li><li><code>v-for</code> efficiently renders dynamic lists using keys.</li><li>Vue\u2019s virtual DOM minimizes unnecessary DOM updates for smooth performance.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "directives",
+      "v-if",
+      "v-for",
+      "basics"
+    ]
   },
   {
     "id": "vue-router-navigation",
@@ -2225,7 +2377,7 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Vue Router is the official routing library for Vue.js. It allows developers to create single-page applications (SPAs) with dynamic navigation and component-based routing without reloading the page.",
+    "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading.",
     "answer": {
       "blocks": [
         {
@@ -2261,7 +2413,7 @@
         },
         {
           "type": "text",
-          "text": "Now your application can handle different pages without reloading. The <code>&lt;router-view&gt;</code> element acts as a placeholder that dynamically displays the active route’s component."
+          "text": "Now your application can handle different pages without reloading. The <code>&lt;router-view&gt;</code> element acts as a placeholder that dynamically displays the active route\u2019s component."
         },
         {
           "type": "code",
@@ -2270,7 +2422,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How Navigation Works</strong><br>• <code>&lt;router-link&gt;</code> creates navigable links without refreshing the page.<br>• <code>&lt;router-view&gt;</code> displays the matched component for the current route.<br>• Vue Router automatically updates the browser’s history using the HTML5 History API."
+          "text": "<strong>How Navigation Works</strong><br>\u2022 <code>&lt;router-link&gt;</code> creates navigable links without refreshing the page.<br>\u2022 <code>&lt;router-view&gt;</code> displays the matched component for the current route.<br>\u2022 Vue Router automatically updates the browser\u2019s history using the HTML5 History API."
         },
         {
           "type": "text",
@@ -2305,11 +2457,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Advantages of Vue Router</strong><ul><li>Enables navigation without page reloads.</li><li>Supports nested, dynamic, and lazy-loaded routes.</li><li>Integrates with browser history and back navigation.</li><li>Works seamlessly with Vue’s reactivity system.</li></ul>"
+          "text": "<strong>Advantages of Vue Router</strong><ul><li>Enables navigation without page reloads.</li><li>Supports nested, dynamic, and lazy-loaded routes.</li><li>Integrates with browser history and back navigation.</li><li>Works seamlessly with Vue\u2019s reactivity system.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue Router as the GPS of your application — it knows where you are, where you’re going, and updates the view without ever refreshing the page."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue Router as the GPS of your application \u2014 it knows where you are, where you\u2019re going, and updates the view without ever refreshing the page."
         },
         {
           "type": "text",
@@ -2318,7 +2470,15 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "router",
+      "navigation",
+      "spa",
+      "routes",
+      "guards"
+    ]
   },
   {
     "id": "vue-reactivity-system",
@@ -2331,11 +2491,11 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The Vue reactivity system is what makes Vue applications dynamic and responsive. It allows your UI to automatically update when underlying data changes — without manually manipulating the DOM. In Vue 3, this system is powered by <strong>ES6 Proxies</strong>, which intercept and track operations on reactive objects."
+          "text": "<strong>Overview</strong><br><br>The Vue reactivity system is what makes Vue applications dynamic and responsive. It allows your UI to automatically update when underlying data changes \u2014 without manually manipulating the DOM. In Vue 3, this system is powered by <strong>ES6 Proxies</strong>, which intercept and track operations on reactive objects."
         },
         {
           "type": "text",
-          "text": "<strong>How Vue Reactivity Works</strong><br>Vue’s reactivity is built around three key concepts:<ul><li><strong>Reactive Data</strong>: Data that Vue tracks for changes.</li><li><strong>Dependency Tracking</strong>: Vue keeps track of which components or functions depend on which pieces of data.</li><li><strong>Reactivity Triggers</strong>: When data changes, Vue automatically re-runs or re-renders the parts of the app that depend on that data.</li></ul>"
+          "text": "<strong>How Vue Reactivity Works</strong><br>Vue\u2019s reactivity is built around three key concepts:<ul><li><strong>Reactive Data</strong>: Data that Vue tracks for changes.</li><li><strong>Dependency Tracking</strong>: Vue keeps track of which components or functions depend on which pieces of data.</li><li><strong>Reactivity Triggers</strong>: When data changes, Vue automatically re-runs or re-renders the parts of the app that depend on that data.</li></ul>"
         },
         {
           "type": "text",
@@ -2348,7 +2508,7 @@
         },
         {
           "type": "text",
-          "text": "Here, both <code>state</code> and <code>message</code> become reactive — Vue wraps them in a proxy that intercepts reads and writes to track changes."
+          "text": "Here, both <code>state</code> and <code>message</code> become reactive \u2014 Vue wraps them in a proxy that intercepts reads and writes to track changes."
         },
         {
           "type": "text",
@@ -2378,7 +2538,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. Vue 2 vs Vue 3 Reactivity</strong><br>In Vue 2, reactivity was achieved with <code>Object.defineProperty()</code> — Vue defined getters and setters for each property. However, it couldn’t detect new properties or array index changes easily.<br><br>In Vue 3, the system uses <strong>Proxies</strong>, which can intercept all property operations (get, set, delete, etc.), enabling full reactivity without these limitations."
+          "text": "<strong>4. Vue 2 vs Vue 3 Reactivity</strong><br>In Vue 2, reactivity was achieved with <code>Object.defineProperty()</code> \u2014 Vue defined getters and setters for each property. However, it couldn\u2019t detect new properties or array index changes easily.<br><br>In Vue 3, the system uses <strong>Proxies</strong>, which can intercept all property operations (get, set, delete, etc.), enabling full reactivity without these limitations."
         },
         {
           "type": "list",
@@ -2390,13 +2550,13 @@
           "rows": [
             [
               "Detect new properties",
-              "❌ Not supported",
-              "✅ Supported"
+              "\u274c Not supported",
+              "\u2705 Supported"
             ],
             [
               "Detect array index changes",
-              "❌ Limited",
-              "✅ Fully supported"
+              "\u274c Limited",
+              "\u2705 Fully supported"
             ],
             [
               "Performance",
@@ -2418,32 +2578,39 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive, computed, watch } from 'vue';\n\nconst state = reactive({ count: 0 });\nconst doubled = computed(() => state.count * 2);\n\nwatch(() => state.count, (newVal, oldVal) => {\n  console.log('Count changed:', oldVal, '→', newVal);\n});"
+          "code": "import { reactive, computed, watch } from 'vue';\n\nconst state = reactive({ count: 0 });\nconst doubled = computed(() => state.count * 2);\n\nwatch(() => state.count, (newVal, oldVal) => {\n  console.log('Count changed:', oldVal, '\u2192', newVal);\n});"
         },
         {
           "type": "text",
-          "text": "Here, both <code>computed()</code> and <code>watch()</code> rely on Vue’s dependency tracking to know when <code>state.count</code> changes."
+          "text": "Here, both <code>computed()</code> and <code>watch()</code> rely on Vue\u2019s dependency tracking to know when <code>state.count</code> changes."
         },
         {
           "type": "text",
-          "text": "<strong>6. Virtual DOM Integration</strong><br>When data changes, Vue marks affected components for re-rendering. During the next render cycle, Vue’s virtual DOM efficiently diffs the new and old virtual trees and updates only the changed elements in the real DOM."
+          "text": "<strong>6. Virtual DOM Integration</strong><br>When data changes, Vue marks affected components for re-rendering. During the next render cycle, Vue\u2019s virtual DOM efficiently diffs the new and old virtual trees and updates only the changed elements in the real DOM."
         },
         {
           "type": "text",
-          "text": "<strong>Why It’s Efficient</strong><br>Vue’s reactivity is fine-grained — it tracks dependencies at the property level. This means only the parts of your UI that depend on changed data are updated. Combined with virtual DOM diffing, this provides excellent runtime performance even for large applications."
+          "text": "<strong>Why It\u2019s Efficient</strong><br>Vue\u2019s reactivity is fine-grained \u2014 it tracks dependencies at the property level. This means only the parts of your UI that depend on changed data are updated. Combined with virtual DOM diffing, this provides excellent runtime performance even for large applications."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Vue reactivity system as an intelligent observer — it watches over your data, remembers what depends on it, and instantly updates only what’s necessary when something changes."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Vue reactivity system as an intelligent observer \u2014 it watches over your data, remembers what depends on it, and instantly updates only what\u2019s necessary when something changes."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Vue’s reactivity system tracks dependencies using Proxies and WeakMaps.</li><li>Reactive objects trigger updates only for the affected properties.</li><li>Vue 3’s Proxy-based reactivity is faster, more complete, and easier to maintain than Vue 2’s system.</li><li>Computed properties and watchers build upon the same reactive foundation.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Vue\u2019s reactivity system tracks dependencies using Proxies and WeakMaps.</li><li>Reactive objects trigger updates only for the affected properties.</li><li>Vue 3\u2019s Proxy-based reactivity is faster, more complete, and easier to maintain than Vue 2\u2019s system.</li><li>Computed properties and watchers build upon the same reactive foundation.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "reactivity",
+      "state",
+      "core",
+      "basics"
+    ]
   },
   {
     "id": "vue-composition-api",
@@ -2460,7 +2627,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why the Composition API Was Introduced</strong><br>In large applications, the Options API (using data, methods, computed, etc.) often leads to scattered logic — related code gets separated into different options, making it harder to maintain and reuse. The Composition API solves this by allowing developers to group related logic together using plain JavaScript functions."
+          "text": "<strong>Why the Composition API Was Introduced</strong><br>In large applications, the Options API (using data, methods, computed, etc.) often leads to scattered logic \u2014 related code gets separated into different options, making it harder to maintain and reuse. The Composition API solves this by allowing developers to group related logic together using plain JavaScript functions."
         },
         {
           "type": "code",
@@ -2491,7 +2658,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>3. reactive()</strong><br><code>reactive()</code> creates a reactive object instead of a primitive. It’s ideal for tracking multiple properties within an object or array."
+          "text": "<strong>3. reactive()</strong><br><code>reactive()</code> creates a reactive object instead of a primitive. It\u2019s ideal for tracking multiple properties within an object or array."
         },
         {
           "type": "code",
@@ -2500,7 +2667,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. Combining ref() and reactive()</strong><br>You can combine both approaches — use <code>ref()</code> for single values and <code>reactive()</code> for complex objects. They can also be mixed within the same component for flexibility."
+          "text": "<strong>4. Combining ref() and reactive()</strong><br>You can combine both approaches \u2014 use <code>ref()</code> for single values and <code>reactive()</code> for complex objects. They can also be mixed within the same component for flexibility."
         },
         {
           "type": "code",
@@ -2509,11 +2676,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Advantages of the Composition API</strong><ul><li>Better logic organization and reuse through composable functions.</li><li>Improved TypeScript support and static analysis.</li><li>Cleaner separation of concerns for large components.</li><li>Fully compatible with existing Options API — both can coexist in the same project.</li></ul>"
+          "text": "<strong>Advantages of the Composition API</strong><ul><li>Better logic organization and reuse through composable functions.</li><li>Improved TypeScript support and static analysis.</li><li>Cleaner separation of concerns for large components.</li><li>Fully compatible with existing Options API \u2014 both can coexist in the same project.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Composition API as building blocks: instead of being restricted to predefined sections (data, methods, computed), you freely compose logic like LEGO pieces — reusable, organized, and scalable."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of the Composition API as building blocks: instead of being restricted to predefined sections (data, methods, computed), you freely compose logic like LEGO pieces \u2014 reusable, organized, and scalable."
         },
         {
           "type": "text",
@@ -2522,7 +2689,14 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "composition-api",
+      "hooks",
+      "reactivity",
+      "basics"
+    ]
   },
   {
     "id": "vuex-state-management",
@@ -2530,16 +2704,16 @@
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Vuex is a state management library for Vue.js applications. It provides a centralized store for all components, ensuring predictable state mutations and simplifying data flow across large-scale apps.",
+    "description": "Vuex is a centralized state management pattern for large Vue apps. It provides a single store, predictable mutations, and devtools time-travel debugging.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vuex is Vue’s official <strong>state management pattern and library</strong>. It serves as a centralized store that manages shared data and ensures all components access and modify it in a consistent, predictable way. This is crucial in large-scale applications where multiple components depend on or modify the same state."
+          "text": "<strong>Overview</strong><br><br>Vuex is Vue\u2019s official <strong>state management pattern and library</strong>. It serves as a centralized store that manages shared data and ensures all components access and modify it in a consistent, predictable way. This is crucial in large-scale applications where multiple components depend on or modify the same state."
         },
         {
           "type": "text",
-          "text": "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth — the <strong>store</strong> — from which all components can read or update data in a controlled manner."
+          "text": "<strong>Why Vuex Is Needed</strong><br>In small apps, passing data via <code>props</code> and emitting events (<code>$emit</code>) works fine. However, in large applications with deeply nested components, data flow becomes hard to manage. Vuex solves this by providing a single source of truth \u2014 the <strong>store</strong> \u2014 from which all components can read or update data in a controlled manner."
         },
         {
           "type": "text",
@@ -2596,7 +2770,7 @@
         },
         {
           "type": "text",
-          "text": "Here, the component accesses the store’s <code>state</code> and triggers updates using <code>commit()</code> and <code>dispatch()</code>."
+          "text": "Here, the component accesses the store\u2019s <code>state</code> and triggers updates using <code>commit()</code> and <code>dispatch()</code>."
         },
         {
           "type": "text",
@@ -2604,7 +2778,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Advantages of Vuex</strong><ul><li>Centralized state management — a single source of truth.</li><li>Predictable state transitions through mutations.</li><li>Improved debugging and time-travel debugging via DevTools.</li><li>Easy synchronization between components sharing data.</li></ul>"
+          "text": "<strong>Advantages of Vuex</strong><ul><li>Centralized state management \u2014 a single source of truth.</li><li>Predictable state transitions through mutations.</li><li>Improved debugging and time-travel debugging via DevTools.</li><li>Easy synchronization between components sharing data.</li></ul>"
         },
         {
           "type": "text",
@@ -2612,29 +2786,37 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vuex as a shared control center: instead of each component managing its own data independently, they all communicate with the same centralized store — ensuring consistency and predictability."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vuex as a shared control center: instead of each component managing its own data independently, they all communicate with the same centralized store \u2014 ensuring consistency and predictability."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Vuex provides a centralized, predictable state management system.</li><li>Components share data through a single source of truth — the store.</li><li>Mutations update state synchronously; actions handle async operations.</li><li>Ideal for large-scale apps where multiple components depend on shared state.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Vuex provides a centralized, predictable state management system.</li><li>Components share data through a single source of truth \u2014 the store.</li><li>Mutations update state synchronously; actions handle async operations.</li><li>Ideal for large-scale apps where multiple components depend on shared state.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "vuex",
+      "state-management",
+      "store",
+      "mutations",
+      "architecture"
+    ]
   },
   {
     "id": "vue-virtual-dom-diffing",
-    "title": "How does Vue’s virtual DOM and diffing algorithm optimize updates?",
+    "title": "How does Vue\u2019s virtual DOM and diffing algorithm optimize updates?",
     "technology": "vue",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Vue’s virtual DOM acts as an in-memory representation of the actual DOM. Its diffing algorithm efficiently detects and applies only the necessary updates to the real DOM, reducing reflows and improving performance.",
+    "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Vue’s virtual DOM is a lightweight JavaScript representation of the real DOM. Instead of directly manipulating the browser’s DOM — which is slow — Vue updates a virtual copy in memory and then compares it to the previous version using a process called <strong>diffing</strong>. After detecting the differences, Vue efficiently updates only the parts of the real DOM that have changed, resulting in faster rendering performance."
+          "text": "<strong>Overview</strong><br><br>Vue\u2019s virtual DOM is a lightweight JavaScript representation of the real DOM. Instead of directly manipulating the browser\u2019s DOM \u2014 which is slow \u2014 Vue updates a virtual copy in memory and then compares it to the previous version using a process called <strong>diffing</strong>. After detecting the differences, Vue efficiently updates only the parts of the real DOM that have changed, resulting in faster rendering performance."
         },
         {
           "type": "text",
@@ -2663,12 +2845,12 @@
         },
         {
           "type": "text",
-          "text": "Vue’s diffing algorithm works efficiently using several strategies:<ul><li><strong>Same Type Check:</strong> If two nodes have different tags, Vue replaces the old one entirely.</li><li><strong>Props Diffing:</strong> If two nodes have the same tag, Vue compares their attributes and updates only the changed ones.</li><li><strong>Children Comparison:</strong> For lists or nested elements, Vue compares keys and reuses existing DOM nodes whenever possible.</li></ul>"
+          "text": "Vue\u2019s diffing algorithm works efficiently using several strategies:<ul><li><strong>Same Type Check:</strong> If two nodes have different tags, Vue replaces the old one entirely.</li><li><strong>Props Diffing:</strong> If two nodes have the same tag, Vue compares their attributes and updates only the changed ones.</li><li><strong>Children Comparison:</strong> For lists or nested elements, Vue compares keys and reuses existing DOM nodes whenever possible.</li></ul>"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example of diffing behavior\nconst oldVNode = h('div', { class: 'red' }, 'Hello');\nconst newVNode = h('div', { class: 'blue' }, 'Hello World');\n\n// Vue detects:\n// - class changed from 'red' → 'blue'\n// - text changed from 'Hello' → 'Hello World'\n// Only these updates are applied to the real DOM."
+          "code": "// Example of diffing behavior\nconst oldVNode = h('div', { class: 'red' }, 'Hello');\nconst newVNode = h('div', { class: 'blue' }, 'Hello World');\n\n// Vue detects:\n// - class changed from 'red' \u2192 'blue'\n// - text changed from 'Hello' \u2192 'Hello World'\n// Only these updates are applied to the real DOM."
         },
         {
           "type": "text",
@@ -2728,33 +2910,40 @@
         },
         {
           "type": "text",
-          "text": "<strong>8. Real-World Example</strong><br>When you update a single value in a large list, Vue doesn’t re-render the whole list. Instead, the virtual DOM detects exactly which element changed and only patches that DOM node — often just one line of text."
+          "text": "<strong>8. Real-World Example</strong><br>When you update a single value in a large list, Vue doesn\u2019t re-render the whole list. Instead, the virtual DOM detects exactly which element changed and only patches that DOM node \u2014 often just one line of text."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue’s virtual DOM like a smart editor — it reviews the changes before applying them to the final document, ensuring only the necessary parts are rewritten instead of retyping the entire page."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Vue\u2019s virtual DOM like a smart editor \u2014 it reviews the changes before applying them to the final document, ensuring only the necessary parts are rewritten instead of retyping the entire page."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>The virtual DOM is a lightweight JS representation of the UI.</li><li>Vue’s diffing algorithm compares new and old virtual trees to detect changes.</li><li>Only the changed parts of the DOM are updated (patching).</li><li>Batching and compiler optimizations ensure smooth and efficient rendering.</li><li>This system enables Vue to maintain high performance even with complex UIs.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>The virtual DOM is a lightweight JS representation of the UI.</li><li>Vue\u2019s diffing algorithm compares new and old virtual trees to detect changes.</li><li>Only the changed parts of the DOM are updated (patching).</li><li>Batching and compiler optimizations ensure smooth and efficient rendering.</li><li>This system enables Vue to maintain high performance even with complex UIs.</li></ul>"
         }
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "tags": [
+      "vue",
+      "virtual-dom",
+      "diffing",
+      "performance",
+      "rendering"
+    ]
   },
   {
     "id": "vue-slots-default-named-scoped-slot-props",
-    "title": "Explain Slots in Vue: default vs named vs scoped slots — and how slot props enable child-to-parent data flow",
+    "title": "Explain Slots in Vue: default vs named vs scoped slots \u2014 and how slot props enable child-to-parent data flow",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain how Vue slots work (default, named, and scoped slots), what problem they solve, and how slot props allow a child component to pass data back to the parent’s template while still keeping one-way data flow.",
+    "description": "Explain how Vue slots work (default, named, and scoped slots), what problem they solve, and how slot props allow a child component to pass data back to the parent\u2019s template while still keeping one-way data flow.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Slots are Vue’s way of letting a <strong>parent inject template content into a child</strong> — while the child controls <em>where</em> and <em>how</em> that content is rendered. With <strong>scoped slots (slot props)</strong>, the child can also <strong>expose data to the parent’s slot template</strong>, enabling a powerful, explicit, and safe form of child → parent data flow."
+          "text": "<strong>Core idea</strong><br><br>Slots are Vue\u2019s way of letting a <strong>parent inject template content into a child</strong> \u2014 while the child controls <em>where</em> and <em>how</em> that content is rendered. With <strong>scoped slots (slot props)</strong>, the child can also <strong>expose data to the parent\u2019s slot template</strong>, enabling a powerful, explicit, and safe form of child \u2192 parent data flow."
         },
         {
           "type": "list",
@@ -2776,7 +2965,7 @@
             ],
             [
               "Scoped slot (slot props)",
-              "Child exposes data to the parent’s slot template",
+              "Child exposes data to the parent\u2019s slot template",
               "Reusable logic components (List, Table, Fetcher, Virtualizer)"
             ]
           ],
@@ -2802,7 +2991,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>The real power: scoped slots (slot props)</strong><br><br>Normally, slot content is compiled in the <em>parent’s scope</em>. But sometimes the <strong>child has the data</strong> (e.g., a list, fetched results, virtualized rows). Scoped slots let the <strong>child expose data to the parent’s slot template</strong> explicitly."
+          "text": "<strong>The real power: scoped slots (slot props)</strong><br><br>Normally, slot content is compiled in the <em>parent\u2019s scope</em>. But sometimes the <strong>child has the data</strong> (e.g., a list, fetched results, virtualized rows). Scoped slots let the <strong>child expose data to the parent\u2019s slot template</strong> explicitly."
         },
         {
           "type": "code",
@@ -2820,7 +3009,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why this is not “breaking” one-way data flow</strong><br><br>The child is <em>not mutating parent state</em>. It is only <strong>exposing data</strong>. The parent still decides what to render and what to do with that data. This is <em>inversion of control</em>, not two-way binding."
+          "text": "<strong>Why this is not \u201cbreaking\u201d one-way data flow</strong><br><br>The child is <em>not mutating parent state</em>. It is only <strong>exposing data</strong>. The parent still decides what to render and what to do with that data. This is <em>inversion of control</em>, not two-way binding."
         },
         {
           "type": "list",
@@ -2850,7 +3039,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready takeaway</strong><br><br>Default slots inject content, named slots target multiple regions, and scoped slots let the <em>child pass data into the parent’s slot template</em>. This enables highly reusable components where the child owns the logic, the parent owns the rendering — without breaking one-way data flow."
+          "text": "<strong>Interview-ready takeaway</strong><br><br>Default slots inject content, named slots target multiple regions, and scoped slots let the <em>child pass data into the parent\u2019s slot template</em>. This enables highly reusable components where the child owns the logic, the parent owns the rendering \u2014 without breaking one-way data flow."
         }
       ]
     },
@@ -2893,7 +3082,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>2. How provide / inject Works</strong><br><br>An ancestor <code>provides</code> a value, and any descendant (no matter how deep) can <code>inject</code> it — without intermediate components knowing anything about it."
+          "text": "<strong>2. How provide / inject Works</strong><br><br>An ancestor <code>provides</code> a value, and any descendant (no matter how deep) can <code>inject</code> it \u2014 without intermediate components knowing anything about it."
         },
         {
           "type": "code",
@@ -2902,7 +3091,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>3. When provide / inject is a Good Fit</strong><br><br>It is best for <strong>cross-cutting, infrastructural concerns</strong> that are not really part of your app’s business data flow:"
+          "text": "<strong>3. When provide / inject is a Good Fit</strong><br><br>It is best for <strong>cross-cutting, infrastructural concerns</strong> that are not really part of your app\u2019s business data flow:"
         },
         {
           "type": "list",
@@ -2932,7 +3121,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. The Hidden Trade-Off: Implicit Coupling</strong><br><br>With props, a component’s dependencies are <strong>explicit</strong> in its API. With <code>inject</code>, dependencies become <strong>invisible</strong>: you can no longer tell what a component needs just by looking at its props."
+          "text": "<strong>4. The Hidden Trade-Off: Implicit Coupling</strong><br><br>With props, a component\u2019s dependencies are <strong>explicit</strong> in its API. With <code>inject</code>, dependencies become <strong>invisible</strong>: you can no longer tell what a component needs just by looking at its props."
         },
         {
           "type": "list",
@@ -2975,7 +3164,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>7. Decision Rule (Practical Heuristic)</strong><br><br>- If this is <strong>business data</strong> → use props / emits or a store.\n- If this is <strong>app infrastructure or component-internal wiring</strong> → provide/inject is OK.\n- If you feel tempted to use provide/inject to \"avoid wiring\" → that’s a code smell."
+          "text": "<strong>7. Decision Rule (Practical Heuristic)</strong><br><br>- If this is <strong>business data</strong> \u2192 use props / emits or a store.\n- If this is <strong>app infrastructure or component-internal wiring</strong> \u2192 provide/inject is OK.\n- If you feel tempted to use provide/inject to \"avoid wiring\" \u2192 that\u2019s a code smell."
         },
         {
           "type": "text",
@@ -2983,7 +3172,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-ready summary</strong><br><br>Provide/inject solves prop drilling by letting ancestors expose dependencies to deep children. It’s ideal for framework-like, cross-cutting concerns (themes, forms, plugins, compound components). But it introduces implicit coupling, hides dependencies, complicates testing and refactoring, and should <strong>not</strong> be used as a general replacement for props or stores."
+          "text": "<strong>Interview-ready summary</strong><br><br>Provide/inject solves prop drilling by letting ancestors expose dependencies to deep children. It\u2019s ideal for framework-like, cross-cutting concerns (themes, forms, plugins, compound components). But it introduces implicit coupling, hides dependencies, complicates testing and refactoring, and should <strong>not</strong> be used as a general replacement for props or stores."
         }
       ]
     },
@@ -2999,20 +3188,20 @@
   },
   {
     "id": "vue-why-declare-emits-type-safety-maintenance",
-    "title": "Why should you declare emits in Vue? What breaks if you don’t, and how does it affect type safety and maintenance?",
+    "title": "Why should you declare emits in Vue? What breaks if you don\u2019t, and how does it affect type safety and maintenance?",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "Explain why Vue encourages declaring emitted events (emits option / defineEmits), what can go wrong when events are not declared (silent typos, confusing APIs, missing validation), and how emits declarations improve type safety, refactoring, and long-term maintainability—especially in Vue 3 + TypeScript.",
+    "description": "Explain why Vue encourages declaring emitted events (emits option / defineEmits), what can go wrong when events are not declared (silent typos, confusing APIs, missing validation), and how emits declarations improve type safety, refactoring, and long-term maintainability\u2014especially in Vue 3 + TypeScript.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Declaring <code>emits</code> makes a component’s event API <strong>explicit</strong>. It prevents accidental event typos, enables runtime validation (optional), improves tooling/autocomplete, and gives you strong TypeScript inference for event names + payloads. If you don’t declare emits, you’re basically saying: “this component might emit anything, anytime,” which is a maintenance trap."
+          "text": "<strong>Overview</strong><br><br>Declaring <code>emits</code> makes a component\u2019s event API <strong>explicit</strong>. It prevents accidental event typos, enables runtime validation (optional), improves tooling/autocomplete, and gives you strong TypeScript inference for event names + payloads. If you don\u2019t declare emits, you\u2019re basically saying: \u201cthis component might emit anything, anytime,\u201d which is a maintenance trap."
         },
         {
           "type": "text",
-          "text": "<strong>1. What “declaring emits” means</strong><br><br>In Vue 3 you typically declare events with <code>defineEmits()</code> in <code>&lt;script setup&gt;</code> (or with the <code>emits</code> option in Options API). This defines the event names and (optionally) validates payloads."
+          "text": "<strong>1. What \u201cdeclaring emits\u201d means</strong><br><br>In Vue 3 you typically declare events with <code>defineEmits()</code> in <code>&lt;script setup&gt;</code> (or with the <code>emits</code> option in Options API). This defines the event names and (optionally) validates payloads."
         },
         {
           "type": "code",
@@ -3021,12 +3210,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>2. What breaks if you don’t declare emits?</strong><br><br>Sometimes nothing “crashes” immediately — and that’s the problem. The bugs are subtle: wrong event names, wrong payload shapes, and broken refactors that only show up in QA (or in production 😬)."
+          "text": "<strong>2. What breaks if you don\u2019t declare emits?</strong><br><br>Sometimes nothing \u201ccrashes\u201d immediately \u2014 and that\u2019s the problem. The bugs are subtle: wrong event names, wrong payload shapes, and broken refactors that only show up in QA (or in production \ud83d\ude2c)."
         },
         {
           "type": "list",
           "columns": [
-            "If emits is NOT declared…",
+            "If emits is NOT declared\u2026",
             "What breaks",
             "Why it hurts"
           ],
@@ -3044,15 +3233,15 @@
             [
               "You refactor event names",
               "You miss call sites",
-              "Events aren’t part of an explicit contract, so refactoring is risky"
+              "Events aren\u2019t part of an explicit contract, so refactoring is risky"
             ],
             [
               "You ship reusable components",
-              "Consumers don’t know the public event API",
+              "Consumers don\u2019t know the public event API",
               "Poor discoverability: people read the source or guess"
             ]
           ],
-          "caption": "Common failure modes when emits isn’t declared"
+          "caption": "Common failure modes when emits isn\u2019t declared"
         },
         {
           "type": "text",
@@ -3061,15 +3250,15 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "// ✅ With declared emits\nconst emit = defineEmits<{ (e: 'submit', payload: { id: string }): void }>();\nemit('submit', { id: '123' });\n\n// ❌ These become compile errors:\n// emit('subimt', { id: '123' });          // typo\n// emit('submit', { id: 123 });            // wrong type\n// emit('submit');                         // missing payload\n\n// 🚫 Without declared emits, these can slip through as 'any'."
+          "code": "// \u2705 With declared emits\nconst emit = defineEmits<{ (e: 'submit', payload: { id: string }): void }>();\nemit('submit', { id: '123' });\n\n// \u274c These become compile errors:\n// emit('subimt', { id: '123' });          // typo\n// emit('submit', { id: 123 });            // wrong type\n// emit('submit');                         // missing payload\n\n// \ud83d\udeab Without declared emits, these can slip through as 'any'."
         },
         {
           "type": "text",
-          "text": "<strong>4. Maintenance: emits = component contract</strong><br><br>Think of <code>emits</code> like documenting a component’s public API. Props define what comes <em>in</em>; emits define what goes <em>out</em>. When both are explicit, the component becomes easier to reuse, test, and refactor."
+          "text": "<strong>4. Maintenance: emits = component contract</strong><br><br>Think of <code>emits</code> like documenting a component\u2019s public API. Props define what comes <em>in</em>; emits define what goes <em>out</em>. When both are explicit, the component becomes easier to reuse, test, and refactor."
         },
         {
           "type": "text",
-          "text": "<strong>5. Runtime validation (optional but helpful)</strong><br><br>Vue lets you validate emitted payloads at runtime if you use the <code>emits</code> option style (or declare validators). This is especially useful when TypeScript isn’t present everywhere (or for library components)."
+          "text": "<strong>5. Runtime validation (optional but helpful)</strong><br><br>Vue lets you validate emitted payloads at runtime if you use the <code>emits</code> option style (or declare validators). This is especially useful when TypeScript isn\u2019t present everywhere (or for library components)."
         },
         {
           "type": "code",
@@ -3078,7 +3267,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>6. Security-ish / correctness-ish: listener fallthrough control</strong><br><br>In Vue 3, declaring <code>emits</code> helps Vue distinguish between component events and native DOM listeners passed to the root element. This reduces confusing edge cases where you think you’re listening to a component event but you’re actually attaching a DOM listener (or vice versa)."
+          "text": "<strong>6. Security-ish / correctness-ish: listener fallthrough control</strong><br><br>In Vue 3, declaring <code>emits</code> helps Vue distinguish between component events and native DOM listeners passed to the root element. This reduces confusing edge cases where you think you\u2019re listening to a component event but you\u2019re actually attaching a DOM listener (or vice versa)."
         },
         {
           "type": "text",
@@ -3086,7 +3275,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Quick mental model: <strong>props are inputs, emits are outputs</strong>. If you wouldn’t ship a function without typing its parameters, don’t ship a component without declaring its emitted events."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Quick mental model: <strong>props are inputs, emits are outputs</strong>. If you wouldn\u2019t ship a function without typing its parameters, don\u2019t ship a component without declaring its emitted events."
         },
         {
           "type": "text",
@@ -3106,16 +3295,16 @@
   },
   {
     "id": "vue-ref-vs-reactive-difference-traps",
-    "title": "ref vs reactive in Vue: what’s the real difference, when should you use each, and what are the common reactivity traps?",
+    "title": "ref vs reactive in Vue: what\u2019s the real difference, when should you use each, and what are the common reactivity traps?",
     "technology": "vue",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain the real difference between ref() and reactive() in Vue 3’s Composition API, when each is the better choice (primitives vs objects, replacement vs mutation, destructuring, template unwrapping), and the most common traps that lead to “why isn’t this updating?” bugs.",
+    "description": "Explain the real difference between ref() and reactive() in Vue 3\u2019s Composition API, when each is the better choice (primitives vs objects, replacement vs mutation, destructuring, template unwrapping), and the most common traps that lead to \u201cwhy isn\u2019t this updating?\u201d bugs.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>ref()</code> wraps a value in an object with a <code>.value</code> property, while <code>reactive()</code> returns a Proxy of an object. The practical difference is: <strong>use ref for single values (especially primitives) and for values you’ll replace</strong>; <strong>use reactive for “state objects” you mostly mutate</strong>. Most bugs come from <em>destructuring</em>, <em>replacing reactive objects</em>, and <em>losing reactivity by pulling values out of proxies</em>."
+          "text": "<strong>Overview</strong><br><br><code>ref()</code> wraps a value in an object with a <code>.value</code> property, while <code>reactive()</code> returns a Proxy of an object. The practical difference is: <strong>use ref for single values (especially primitives) and for values you\u2019ll replace</strong>; <strong>use reactive for \u201cstate objects\u201d you mostly mutate</strong>. Most bugs come from <em>destructuring</em>, <em>replacing reactive objects</em>, and <em>losing reactivity by pulling values out of proxies</em>."
         },
         {
           "type": "list",
@@ -3127,8 +3316,8 @@
           "rows": [
             [
               "Works with primitives",
-              "✅ Yes (recommended)",
-              "🚫 No (expects object)"
+              "\u2705 Yes (recommended)",
+              "\ud83d\udeab No (expects object)"
             ],
             [
               "Return value",
@@ -3142,8 +3331,8 @@
             ],
             [
               "Replacement",
-              "✅ Easy (just set <code>.value</code>)",
-              "⚠️ Reassigning loses reactivity if you overwrite the variable"
+              "\u2705 Easy (just set <code>.value</code>)",
+              "\u26a0\ufe0f Reassigning loses reactivity if you overwrite the variable"
             ],
             [
               "Template usage",
@@ -3164,7 +3353,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>2. reactive(): best for state objects you mutate</strong><br><br>If you naturally think in “state object with fields” and you mostly mutate properties, <code>reactive</code> is ergonomic."
+          "text": "<strong>2. reactive(): best for state objects you mutate</strong><br><br>If you naturally think in \u201cstate object with fields\u201d and you mostly mutate properties, <code>reactive</code> is ergonomic."
         },
         {
           "type": "code",
@@ -3173,12 +3362,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>3. Trap #1: destructuring reactive breaks reactivity</strong><br><br>This is the #1 “why isn’t my UI updating?” moment. When you destructure from a reactive object, you pull out plain values and lose tracking."
+          "text": "<strong>3. Trap #1: destructuring reactive breaks reactivity</strong><br><br>This is the #1 \u201cwhy isn\u2019t my UI updating?\u201d moment. When you destructure from a reactive object, you pull out plain values and lose tracking."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// ❌ Trap: loses reactivity\nconst { count } = state;\n\nstate.count++; // state changes\nconsole.log(count); // still 0 (stale)\n"
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// \u274c Trap: loses reactivity\nconst { count } = state;\n\nstate.count++; // state changes\nconsole.log(count); // still 0 (stale)\n"
         },
         {
           "type": "text",
@@ -3191,16 +3380,16 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. Trap #2: replacing a reactive object breaks consumers</strong><br><br>With <code>reactive</code>, the Proxy identity matters. If you reassign the variable, anything holding the old proxy won’t see the new object."
+          "text": "<strong>4. Trap #2: replacing a reactive object breaks consumers</strong><br><br>With <code>reactive</code>, the Proxy identity matters. If you reassign the variable, anything holding the old proxy won\u2019t see the new object."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive } from 'vue';\n\nlet state = reactive({ items: [] });\n\n// ❌ Trap: you replaced the proxy reference\nstate = reactive({ items: [1, 2, 3] });\n\n// Anything that captured the old 'state' won't update as you expect."
+          "code": "import { reactive } from 'vue';\n\nlet state = reactive({ items: [] });\n\n// \u274c Trap: you replaced the proxy reference\nstate = reactive({ items: [1, 2, 3] });\n\n// Anything that captured the old 'state' won't update as you expect."
         },
         {
           "type": "text",
-          "text": "<strong>Fix options:</strong><br>• Prefer <code>ref</code> if you need to replace wholesale.<br>• Or mutate the existing reactive object instead of replacing it."
+          "text": "<strong>Fix options:</strong><br>\u2022 Prefer <code>ref</code> if you need to replace wholesale.<br>\u2022 Or mutate the existing reactive object instead of replacing it."
         },
         {
           "type": "code",
@@ -3214,7 +3403,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<script setup>\nimport { ref } from 'vue';\nconst count = ref(0);\n\n// ❌ Trap\n// if (count > 0) {}\n\n// ✅ Correct\nif (count.value > 0) {}\n</script>\n\n<template>\n  <!-- ✅ Auto-unwrap in templates -->\n  <p>{{ count }}</p>\n</template>"
+          "code": "<script setup>\nimport { ref } from 'vue';\nconst count = ref(0);\n\n// \u274c Trap\n// if (count > 0) {}\n\n// \u2705 Correct\nif (count.value > 0) {}\n</script>\n\n<template>\n  <!-- \u2705 Auto-unwrap in templates -->\n  <p>{{ count }}</p>\n</template>"
         },
         {
           "type": "text",
@@ -3223,7 +3412,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ items: [1, 2] });\nstate.items.push(3); // ✅ reactive\n\nconst itemsCopy = state.items.slice();\nitemsCopy.push(4);   // 🚫 not reactive (it's a copy)\n"
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ items: [1, 2] });\nstate.items.push(3); // \u2705 reactive\n\nconst itemsCopy = state.items.slice();\nitemsCopy.push(4);   // \ud83d\udeab not reactive (it's a copy)\n"
         },
         {
           "type": "text",
@@ -3231,7 +3420,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of it like this: <strong>ref is a box</strong> (you replace what’s inside), <strong>reactive is a smart object</strong> (you mutate fields). Most reactivity traps are basically “I took the value out and expected the magic to follow me.”"
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of it like this: <strong>ref is a box</strong> (you replace what\u2019s inside), <strong>reactive is a smart object</strong> (you mutate fields). Most reactivity traps are basically \u201cI took the value out and expected the magic to follow me.\u201d"
         },
         {
           "type": "text",
@@ -3256,7 +3445,7 @@
     "technology": "vue",
     "difficulty": "hard",
     "importance": 4,
-    "description": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue’s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
+    "description": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue\u2019s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
     "answer": {
       "blocks": [
         {
@@ -3265,7 +3454,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>1. The core problem: how Vue tracks reactivity</strong><br><br>Vue tracks reactivity by intercepting <em>property access</em> and <em>property mutation</em> on a Proxy. If you stop reading or writing through the Proxy, Vue can’t see what you’re doing anymore."
+          "text": "<strong>1. The core problem: how Vue tracks reactivity</strong><br><br>Vue tracks reactivity by intercepting <em>property access</em> and <em>property mutation</em> on a Proxy. If you stop reading or writing through the Proxy, Vue can\u2019t see what you\u2019re doing anymore."
         },
         {
           "type": "text",
@@ -3274,7 +3463,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// ❌ Trap: destructuring pulls out a plain number\nconst { count } = state;\n\nstate.count++;      // state updates\nconsole.log(count); // still 0 (stale)\n"
+          "code": "import { reactive } from 'vue';\n\nconst state = reactive({ count: 0 });\n\n// \u274c Trap: destructuring pulls out a plain number\nconst { count } = state;\n\nstate.count++;      // state updates\nconsole.log(count); // still 0 (stale)\n"
         },
         {
           "type": "text",
@@ -3291,7 +3480,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Safe: each field is now a ref linked to state\nconst { count, name } = toRefs(state);\n\ncount.value++;       // updates state.count\nstate.count++;       // updates count.value\n"
+          "code": "import { reactive, toRefs } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// \u2705 Safe: each field is now a ref linked to state\nconst { count, name } = toRefs(state);\n\ncount.value++;       // updates state.count\nstate.count++;       // updates count.value\n"
         },
         {
           "type": "text",
@@ -3300,7 +3489,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { reactive, toRef } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// ✅ Create a single reactive ref linked to state.count\nconst count = toRef(state, 'count');\n\ncount.value++;    // updates state.count\nstate.count++;    // updates count.value\n"
+          "code": "import { reactive, toRef } from 'vue';\n\nconst state = reactive({ count: 0, name: 'Ada' });\n\n// \u2705 Create a single reactive ref linked to state.count\nconst count = toRef(state, 'count');\n\ncount.value++;    // updates state.count\nstate.count++;    // updates count.value\n"
         },
         {
           "type": "text",
@@ -3309,7 +3498,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// useCounter.js\nimport { reactive } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return state;\n}\n\n// ❌ In component\nconst { count } = useCounter(); // loses reactivity\n"
+          "code": "// useCounter.js\nimport { reactive } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return state;\n}\n\n// \u274c In component\nconst { count } = useCounter(); // loses reactivity\n"
         },
         {
           "type": "text",
@@ -3318,7 +3507,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// useCounter.js (better)\nimport { reactive, toRefs } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return toRefs(state);\n}\n\n// In component\nconst { count } = useCounter(); // ✅ stays reactive"
+          "code": "// useCounter.js (better)\nimport { reactive, toRefs } from 'vue';\nexport function useCounter() {\n  const state = reactive({ count: 0 });\n  return toRefs(state);\n}\n\n// In component\nconst { count } = useCounter(); // \u2705 stays reactive"
         },
         {
           "type": "text",
@@ -3339,7 +3528,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Destructuring breaks reactivity because it extracts plain values from Vue’s Proxy.</li><li><code>toRefs()</code> converts each property into a ref that stays linked to the source object.</li><li><code>toRef()</code> creates a single linked ref for one property.</li><li>Use these helpers whenever you need to extract or return pieces of reactive state safely.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Destructuring breaks reactivity because it extracts plain values from Vue\u2019s Proxy.</li><li><code>toRefs()</code> converts each property into a ref that stays linked to the source object.</li><li><code>toRef()</code> creates a single linked ref for one property.</li><li>Use these helpers whenever you need to extract or return pieces of reactive state safely.</li></ul>"
         }
       ]
     },
@@ -3356,7 +3545,7 @@
   },
   {
     "id": "vue-watch-vs-watcheffect-differences-infinite-loops",
-    "title": "watch vs watchEffect in Vue: what’s the difference, when does each run, and how can you accidentally create infinite loops?",
+    "title": "watch vs watchEffect in Vue: what\u2019s the difference, when does each run, and how can you accidentally create infinite loops?",
     "technology": "vue",
     "difficulty": "hard",
     "importance": 4,
@@ -3365,7 +3554,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>watch()</code> and <code>watchEffect()</code> both run side effects in response to reactive changes, but they work very differently: <strong>watch is explicit and lazy</strong> (you choose what to watch), while <strong>watchEffect is automatic and eager</strong> (Vue tracks everything you touch inside). Most bugs come from not realizing <em>what is being tracked</em> and from <em>mutating the same state you’re watching</em>."
+          "text": "<strong>Overview</strong><br><br><code>watch()</code> and <code>watchEffect()</code> both run side effects in response to reactive changes, but they work very differently: <strong>watch is explicit and lazy</strong> (you choose what to watch), while <strong>watchEffect is automatic and eager</strong> (Vue tracks everything you touch inside). Most bugs come from not realizing <em>what is being tracked</em> and from <em>mutating the same state you\u2019re watching</em>."
         },
         {
           "type": "list",
@@ -3387,8 +3576,8 @@
             ],
             [
               "Access to old/new value",
-              "✅ Yes (newVal, oldVal)",
-              "❌ No (no diff info)"
+              "\u2705 Yes (newVal, oldVal)",
+              "\u274c No (no diff info)"
             ],
             [
               "Typical use",
@@ -3471,7 +3660,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { ref, watchEffect } from 'vue';\n\nconst count = ref(0);\n\n// ❌ Infinite loop\nwatchEffect(() => {\n  if (count.value < 10) {\n    count.value++; // This mutation retriggers the effect\n  }\n});"
+          "code": "import { ref, watchEffect } from 'vue';\n\nconst count = ref(0);\n\n// \u274c Infinite loop\nwatchEffect(() => {\n  if (count.value < 10) {\n    count.value++; // This mutation retriggers the effect\n  }\n});"
         },
         {
           "type": "text",
@@ -3480,11 +3669,11 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "watch(count, (v) => {\n  // ❌ This will loop forever\n  count.value = v + 1;\n});"
+          "code": "watch(count, (v) => {\n  // \u274c This will loop forever\n  count.value = v + 1;\n});"
         },
         {
           "type": "text",
-          "text": "<strong>5. How to avoid infinite loops</strong><br><br><ul><li>Don’t mutate the same source you are watching.</li><li>If you must, add guards (if conditions, equality checks).</li><li>Prefer deriving state with <code>computed</code> instead of syncing state with watchers.</li></ul>"
+          "text": "<strong>5. How to avoid infinite loops</strong><br><br><ul><li>Don\u2019t mutate the same source you are watching.</li><li>If you must, add guards (if conditions, equality checks).</li><li>Prefer deriving state with <code>computed</code> instead of syncing state with watchers.</li></ul>"
         },
         {
           "type": "text",
@@ -3506,11 +3695,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>8. Practical rule of thumb</strong><br><br>- If you can describe the dependency in one sentence: use <code>watch()</code>.<br>- If the dependency is “whatever I touch in here”: use <code>watchEffect()</code>.<br>- If you’re syncing state: ask yourself if this should be a <code>computed</code> instead."
+          "text": "<strong>8. Practical rule of thumb</strong><br><br>- If you can describe the dependency in one sentence: use <code>watch()</code>.<br>- If the dependency is \u201cwhatever I touch in here\u201d: use <code>watchEffect()</code>.<br>- If you\u2019re syncing state: ask yourself if this should be a <code>computed</code> instead."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>watch is declarative (“watch this”)</strong>, <strong>watchEffect is reactive magic (“rerun when anything I use changes”)</strong>. Magic is convenient — and that’s why it’s easier to shoot yourself in the foot."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>watch is declarative (\u201cwatch this\u201d)</strong>, <strong>watchEffect is reactive magic (\u201crerun when anything I use changes\u201d)</strong>. Magic is convenient \u2014 and that\u2019s why it\u2019s easier to shoot yourself in the foot."
         },
         {
           "type": "text",
@@ -3548,7 +3737,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { ref, nextTick } from 'vue';\n\nconst open = ref(false);\n\nfunction show() {\n  open.value = true;\n  // ❌ DOM is NOT updated yet\n}"
+          "code": "import { ref, nextTick } from 'vue';\n\nconst open = ref(false);\n\nfunction show() {\n  open.value = true;\n  // \u274c DOM is NOT updated yet\n}"
         },
         {
           "type": "text",
@@ -3557,7 +3746,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "function show() {\n  open.value = true;\n\n  const h = panelRef.value.offsetHeight;\n  console.log(h); // ❌ Often 0 or old value\n}"
+          "code": "function show() {\n  open.value = true;\n\n  const h = panelRef.value.offsetHeight;\n  console.log(h); // \u274c Often 0 or old value\n}"
         },
         {
           "type": "text",
@@ -3570,11 +3759,11 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "import { nextTick } from 'vue';\n\nasync function show() {\n  open.value = true;\n\n  await nextTick();\n  // ✅ Now the DOM reflects the new state\n  const h = panelRef.value.offsetHeight;\n  console.log(h); // correct value\n}"
+          "code": "import { nextTick } from 'vue';\n\nasync function show() {\n  open.value = true;\n\n  await nextTick();\n  // \u2705 Now the DOM reflects the new state\n  const h = panelRef.value.offsetHeight;\n  console.log(h); // correct value\n}"
         },
         {
           "type": "text",
-          "text": "<strong>4. What nextTick() actually means</strong><br><br>It does <em>not</em> mean “wait one frame” or “wait some time”. It means: <strong>wait until Vue’s pending render queue is flushed</strong>."
+          "text": "<strong>4. What nextTick() actually means</strong><br><br>It does <em>not</em> mean \u201cwait one frame\u201d or \u201cwait some time\u201d. It means: <strong>wait until Vue\u2019s pending render queue is flushed</strong>."
         },
         {
           "type": "list",
@@ -3638,12 +3827,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>7. nextTick vs setTimeout / requestAnimationFrame</strong><br><br><code>nextTick()</code> waits for <strong>Vue’s render flush</strong>, not for a timer or the next frame. It is more precise and faster than <code>setTimeout(..., 0)</code> hacks."
+          "text": "<strong>7. nextTick vs setTimeout / requestAnimationFrame</strong><br><br><code>nextTick()</code> waits for <strong>Vue\u2019s render flush</strong>, not for a timer or the next frame. It is more precise and faster than <code>setTimeout(..., 0)</code> hacks."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Hacky and less precise\nsetTimeout(() => measure(), 0);\n\n// ✅ Correct\nawait nextTick();\nmeasure();"
+          "code": "// \u274c Hacky and less precise\nsetTimeout(() => measure(), 0);\n\n// \u2705 Correct\nawait nextTick();\nmeasure();"
         },
         {
           "type": "text",
@@ -3711,7 +3900,7 @@
               "Unpredictable patches and visual glitches"
             ]
           ],
-          "caption": "How keys affect Vue’s diffing behavior"
+          "caption": "How keys affect Vue\u2019s diffing behavior"
         },
         {
           "type": "text",
@@ -3724,12 +3913,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>3. The tempting but dangerous pattern</strong><br><br>Using the array index looks fine… until the list changes."
+          "text": "<strong>3. The tempting but dangerous pattern</strong><br><br>Using the array index looks fine\u2026 until the list changes."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- ❌ Bad -->\n<li v-for=\"(todo, index) in todos\" :key=\"index\">\n  <TodoItem :todo=\"todo\" />\n</li>"
+          "code": "<!-- \u274c Bad -->\n<li v-for=\"(todo, index) in todos\" :key=\"index\">\n  <TodoItem :todo=\"todo\" />\n</li>"
         },
         {
           "type": "text",
@@ -3750,13 +3939,13 @@
             ],
             [
               "Remove an item",
-              "That item’s DOM and component state are destroyed",
-              "A different item’s DOM gets reused and keeps stale state"
+              "That item\u2019s DOM and component state are destroyed",
+              "A different item\u2019s DOM gets reused and keeps stale state"
             ],
             [
               "Reorder list (sort, drag & drop)",
               "Items move with their DOM and state",
-              "DOM stays in place, only data changes → state mismatch"
+              "DOM stays in place, only data changes \u2192 state mismatch"
             ],
             [
               "Edit inputs in a list",
@@ -3781,23 +3970,23 @@
         },
         {
           "type": "text",
-          "text": "<strong>6. Why Vue can’t magically fix this</strong><br><br>Vue has no way to know whether an item at index 0 is “the same logical item as before” or a different one. The <code>key</code> is the <strong>only identity signal</strong> you give to the diffing algorithm."
+          "text": "<strong>6. Why Vue can\u2019t magically fix this</strong><br><br>Vue has no way to know whether an item at index 0 is \u201cthe same logical item as before\u201d or a different one. The <code>key</code> is the <strong>only identity signal</strong> you give to the diffing algorithm."
         },
         {
           "type": "text",
-          "text": "<strong>7. When is index as key actually safe?</strong><br><br>Almost never — but technically OK if <strong>all of these are true</strong>:<ul><li>The list is static (no insert/remove/reorder).</li><li>The list items have no internal state (no inputs, no components with state).</li><li>You will never filter or sort it.</li></ul>In practice: for real apps, just don’t."
+          "text": "<strong>7. When is index as key actually safe?</strong><br><br>Almost never \u2014 but technically OK if <strong>all of these are true</strong>:<ul><li>The list is static (no insert/remove/reorder).</li><li>The list items have no internal state (no inputs, no components with state).</li><li>You will never filter or sort it.</li></ul>In practice: for real apps, just don\u2019t."
         },
         {
           "type": "text",
-          "text": "<strong>8. How this relates to performance</strong><br><br>Good keys don’t just fix bugs — they also make updates <strong>faster</strong> because Vue can move nodes instead of destroying and recreating them."
+          "text": "<strong>8. How this relates to performance</strong><br><br>Good keys don\u2019t just fix bugs \u2014 they also make updates <strong>faster</strong> because Vue can move nodes instead of destroying and recreating them."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>keys tell Vue “who is who”</strong>. If you lie about identity (using index), Vue will faithfully do the wrong thing — very efficiently."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Mental model: <strong>keys tell Vue \u201cwho is who\u201d</strong>. If you lie about identity (using index), Vue will faithfully do the wrong thing \u2014 very efficiently."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><ul><li>Keys define the identity of list items for Vue’s diffing algorithm.</li><li>Using index as key ties identity to position, not to the actual item.</li><li>This causes state to stick to the wrong DOM nodes: broken inputs, wrong component state, glitchy animations.</li><li>Always use a stable, unique ID from the data itself.</li></ul>"
+          "text": "<strong>Summary</strong><ul><li>Keys define the identity of list items for Vue\u2019s diffing algorithm.</li><li>Using index as key ties identity to position, not to the actual item.</li><li>This causes state to stick to the wrong DOM nodes: broken inputs, wrong component state, glitchy animations.</li><li>Always use a stable, unique ID from the data itself.</li></ul>"
         }
       ]
     },

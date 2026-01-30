@@ -1,50 +1,72 @@
 {
-    "key": "D",
-    "title": "Data model",
-    "blocks": [
-        {
-            "type": "text",
-            "text": "Keep comment entities normalized and separate from UI state (visibility, moderation, scroll position)."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "checklist",
-            "title": "Core entities",
-            "items": [
-                "Comment: id, userId, text, createdAt, flags",
-                "FeedState: ordered ids, cursor, hasMore",
-                "ModerationState: mutedUsers, hiddenComments",
-                "BufferQueue: pending comments with timestamps",
-                "NetworkState: reconnectAttempts, lastSeenCursor"
-            ]
-        },
-        {
-            "type": "table",
-            "title": "State you should keep on the client",
-            "columns": [
-                "State",
-                "Why",
-                "Notes"
-            ],
-            "rows": [
-                [
-                    "Normalized comments",
-                    "Avoid duplication and re-render",
-                    "Stable ids"
-                ],
-                [
-                    "Buffer queue",
-                    "Batch apply updates",
-                    "Flush every 100–250ms"
-                ],
-                [
-                    "Scroll intent",
-                    "Prevent auto-scroll fighting user",
-                    "Track if user is at bottom"
-                ]
-            ]
-        }
-    ]
+  "key": "D",
+  "title": "Data model",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Keep comment entities normalized and separate from UI state (visibility, moderation, scroll position)."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Core entities",
+      "items": [
+        "Comment: id, userId, text, createdAt, flags",
+        "FeedState: ordered ids, cursor, hasMore",
+        "ModerationState: mutedUsers, hiddenComments",
+        "BufferQueue: pending comments with timestamps",
+        "NetworkState: reconnectAttempts, lastSeenCursor"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "State you should keep on the client",
+      "columns": [
+        "State",
+        "Why",
+        "Notes"
+      ],
+      "rows": [
+        [
+          "Normalized comments",
+          "Avoid duplication and re-render",
+          "Stable ids"
+        ],
+        [
+          "Buffer queue",
+          "Batch apply updates",
+          "Flush every 100–250ms"
+        ],
+        [
+          "Scroll intent",
+          "Prevent auto-scroll fighting user",
+          "Track if user is at bottom"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Data considerations to mention",
+      "items": [
+        "Stable IDs for dedupe and ordering.",
+        "Client-side view model for render-ready state.",
+        "Cache metadata (TTL, size cap, eviction).",
+        "Metrics payloads for UX health."
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "View model note",
+      "text": "Keep a render-ready view model separate from raw payloads to avoid expensive transforms on every tick."
+    }
+  ]
 }

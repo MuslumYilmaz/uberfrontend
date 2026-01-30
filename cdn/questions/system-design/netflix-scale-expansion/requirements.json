@@ -1,127 +1,179 @@
 {
-    "key": "R",
-    "title": "Reflect & Requirements",
-    "blocks": [
+  "key": "R",
+  "title": "Reflect & Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "You already built a correct feature. Now an interviewer asks: \"How would this work at Netflix scale?\" Anchor the discussion to a concrete feature: assume the Home \"Continue Watching\" row (personalized carousel). This is a front-end system design question about UI architecture, data flow, performance budgets, and safe rollout - not backend scaling."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Use RADIO",
+      "text": "**R**eflect (restate the problem + success metrics), **A**ssumptions (scale, devices, regions), **D**ecide (UI boundaries + data flow), **I**mplement (frontend plan), **O**utcome (metrics, rollout, risks)."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "You already built a correct feature. Now an interviewer asks: \"How would this work at Netflix scale?\" Anchor the discussion to a concrete feature: assume the Home \"Continue Watching\" row (personalized carousel). This is a front-end system design question about UI architecture, data flow, performance budgets, and safe rollout - not backend scaling."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What you are solving:**\nA personalized Continue Watching carousel that must render quickly on first load, stay smooth while scrolling, and keep the same UX while serving millions of users. Data should flow predictably from edge cache + BFF -> client cache -> view model -> render."
+            }
+          ]
         },
         {
-            "type": "callout",
-            "variant": "info",
-            "title": "Use RADIO",
-            "text": "**R**eflect (restate the problem + success metrics), **A**ssumptions (scale, devices, regions), **D**ecide (UI boundaries + data flow), **I**mplement (frontend plan), **O**utcome (metrics, rollout, risks)."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What you are solving:**\nA personalized Continue Watching carousel that must render quickly on first load, stay smooth while scrolling, and keep the same UX while serving millions of users. Data should flow predictably from edge cache + BFF -> client cache -> view model -> render."
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Can you define module boundaries (feature modules or microfrontends)?\n- Do you understand performance budgets (LCP/INP/TTI)?\n- Can you prevent re-render storms and keep UI smooth?\n- Do you know how to roll out safely (flags, canary, A/B)?\n- Can you explain observability for UX and data health?"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "RADIO flow (how to speak)",
-            "steps": [
-                {
-                    "title": "1) Reflect",
-                    "text": "Restate the feature and define success metrics (LCP, INP, error rate, conversion)."
-                },
-                {
-                    "title": "2) Assumptions",
-                    "text": "Scale assumptions: peak concurrency, device mix, regions, latency targets."
-                },
-                {
-                    "title": "3) Decide",
-                    "text": "Pick UI boundaries, data flow, caching layers, and rendering strategy."
-                },
-                {
-                    "title": "4) Implement",
-                    "text": "Describe the frontend plan: code splitting, state model, data fetching, rollout controls."
-                },
-                {
-                    "title": "5) Outcome",
-                    "text": "Explain how you measure success and roll out safely with monitoring and rollback."
-                }
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Clarifying questions",
-                            "items": [
-                                "Which feature is being expanded (assume Continue Watching if not specified)?",
-                                "What are the performance budgets (e.g., LCP <= 2.5s, INP <= 200ms)?",
-                                "What devices and regions are highest priority?",
-                                "Is personalization/experimentation required?",
-                                "What is the rollback strategy if UX degrades?",
-                                "What metrics define success?"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Non-functional expectations",
-                            "items": [
-                                "Hit LCP <= 2.5s and INP <= 200ms on mid-range devices.",
-                                "Stable UX under heavy load.",
-                                "Clear module ownership and API contracts.",
-                                "Graceful fallback when data is slow or missing.",
-                                "Consistent behavior across devices and regions.",
-                                "Strong observability for UX + data health.",
-                                "Safe rollout and fast rollback."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "LCP budget",
-                    "value": "<= 2.5s",
-                    "helperText": "Primary page load goal."
-                },
-                {
-                    "label": "INP budget",
-                    "value": "<= 200ms",
-                    "helperText": "Interaction responsiveness."
-                },
-                {
-                    "label": "Carousel FPS",
-                    "value": "60 FPS",
-                    "helperText": "Smooth horizontal scroll."
-                }
-            ]
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What the interviewer is testing:**\n- Can you define module boundaries (feature modules or microfrontends)?\n- Do you understand performance budgets (LCP/INP/TTI)?\n- Can you prevent re-render storms and keep UI smooth?\n- Do you know how to roll out safely (flags, canary, A/B)?\n- Can you explain observability for UX and data health?"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "RADIO flow (how to speak)",
+      "steps": [
+        {
+          "title": "1) Reflect",
+          "text": "Restate the feature and define success metrics (LCP, INP, error rate, conversion)."
+        },
+        {
+          "title": "2) Assumptions",
+          "text": "Scale assumptions: peak concurrency, device mix, regions, latency targets."
+        },
+        {
+          "title": "3) Decide",
+          "text": "Pick UI boundaries, data flow, caching layers, and rendering strategy."
+        },
+        {
+          "title": "4) Implement",
+          "text": "Describe the frontend plan: code splitting, state model, data fetching, rollout controls."
+        },
+        {
+          "title": "5) Outcome",
+          "text": "Explain how you measure success and roll out safely with monitoring and rollback."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Clarifying questions",
+              "items": [
+                "Which feature is being expanded (assume Continue Watching if not specified)?",
+                "What are the performance budgets (e.g., LCP <= 2.5s, INP <= 200ms)?",
+                "What devices and regions are highest priority?",
+                "Is personalization/experimentation required?",
+                "What is the rollback strategy if UX degrades?",
+                "What metrics define success?"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Non-functional expectations",
+              "items": [
+                "Hit LCP <= 2.5s and INP <= 200ms on mid-range devices.",
+                "Stable UX under heavy load.",
+                "Clear module ownership and API contracts.",
+                "Graceful fallback when data is slow or missing.",
+                "Consistent behavior across devices and regions.",
+                "Strong observability for UX + data health.",
+                "Safe rollout and fast rollback."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "LCP budget",
+          "value": "<= 2.5s",
+          "helperText": "Primary page load goal."
+        },
+        {
+          "label": "INP budget",
+          "value": "<= 200ms",
+          "helperText": "Interaction responsiveness."
+        },
+        {
+          "label": "Carousel FPS",
+          "value": "60 FPS",
+          "helperText": "Smooth horizontal scroll."
+        }
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Assumptions you should state",
+      "items": [
+        "Device mix (mid-range mobile, low-end Android, desktop).",
+        "Network mix (Wi-Fi vs 4G/5G, high latency regions).",
+        "Concurrency and burst patterns.",
+        "Latency target for first meaningful UI."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Success metrics to mention",
+      "columns": [
+        "Metric",
+        "Target",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "LCP/TTFF",
+          "<= 2.5s / <= 1.0s",
+          "User-perceived speed"
+        ],
+        [
+          "INP",
+          "<= 200ms",
+          "Responsive interaction"
+        ],
+        [
+          "Dropped frames",
+          "< 2%",
+          "Smooth scroll/animation"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "UX constraints to mention",
+      "items": [
+        "Auto-scroll behavior when the user scrolls up.",
+        "Visible new-items indicator or badge.",
+        "Moderation actions that can remove items without breaking layout.",
+        "Clear empty/error states."
+      ]
+    }
+  ]
 }

@@ -1,46 +1,46 @@
 {
-    "id": "endless-short-video-feed",
-    "title": "Endless Short-Video Feed (TikTok-Style)",
-    "description": "Design a TikTok-style endless short-video feed for a front-end system design interview. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on fast first play, smooth scrolling, preloading the next videos, adaptive quality, and graceful handling of slow networks. Discuss caching, CDN delivery, memory control, playback lifecycle, and UI performance budgets.\n\nFunctional requirements:\n- Autoplay the current video with minimal startup delay.\n- Preload the next 1-3 videos without exhausting memory.\n- Support pause/resume, mute, and basic controls.\n- Handle variable network conditions (Wi-Fi vs 4G).\n- Keep the feed responsive during rapid scrolling.\n\nNon-functional:\n- Time-to-first-frame <= 1.0s on Wi-Fi, <= 2.0s on 4G.\n- Stable frame rate (no jank during scroll).\n- Bounded memory usage across long sessions.\n- Graceful degradation on slow networks.\n- Strong observability for playback success and UX.\n",
-    "companies": [
-        "bytedance"
-    ],
-    "tags": [
-        "infinite-scroll",
-        "virtualization",
-        "performance",
-        "cdn",
-        "streaming",
-        "caching",
-        "loading-states",
-        "responsive-ui",
-        "system-design"
-    ],
-    "sections": [
-        {
-            "key": "R",
-            "title": "Reflect & Requirements",
-            "file": "requirements.json"
-        },
-        {
-            "key": "A",
-            "title": "Architecture / High-level design",
-            "file": "architecture.json"
-        },
-        {
-            "key": "D",
-            "title": "Data model",
-            "file": "data.json"
-        },
-        {
-            "key": "I",
-            "title": "Interface definition (API)",
-            "file": "interfaces.json"
-        },
-        {
-            "key": "O",
-            "title": "Optimizations and deep dive",
-            "file": "optimizations.json"
-        }
-    ]
+  "id": "endless-short-video-feed",
+  "title": "Endless Short-Video Feed (TikTok-Style)",
+  "description": "Design a TikTok-style endless short-video feed for a front-end system design interview. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on fast first play, smooth scrolling, preloading the next videos, adaptive quality, and graceful handling of slow networks. Discuss caching, CDN delivery, memory control, playback lifecycle, and UI performance budgets.\n\nFunctional requirements:\n- Autoplay the current video with minimal startup delay.\n- Preload the next 1-3 videos without exhausting memory.\n- Support pause/resume, mute, and basic controls.\n- Handle variable network conditions (Wi-Fi vs 4G).\n- Keep the feed responsive during rapid scrolling.\n\nNon-functional:\n- Time-to-first-frame <= 1.0s on Wi-Fi, <= 2.0s on 4G.\n- Stable frame rate (no jank during scroll).\n- Bounded memory usage across long sessions.\n- Graceful degradation on slow networks.\n- Strong observability for playback success and UX.\n\nAdditional constraints to mention: autoplay policies on mobile, memory limits for long sessions, and cancellation of in-flight prefetches during rapid swipes. Call out telemetry such as TTFF, rebuffer rate, and dropped frames so the interviewer sees concrete success metrics.",
+  "companies": [
+    "bytedance"
+  ],
+  "tags": [
+    "infinite-scroll",
+    "virtualization",
+    "performance",
+    "cdn",
+    "streaming",
+    "caching",
+    "loading-states",
+    "responsive-ui",
+    "system-design"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Reflect & Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ]
 }

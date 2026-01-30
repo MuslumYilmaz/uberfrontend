@@ -1,158 +1,210 @@
 {
-    "key": "R",
-    "title": "Reflect & Requirements",
-    "blocks": [
+  "key": "R",
+  "title": "Reflect & Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "This is a front-end system design problem about live comments on a global livestream. The interviewer wants to see how you handle high-frequency updates, ordering, readability, and UI performance without overwhelming the DOM."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Use RADIO",
+      "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, regions, devices), **D**ecide (data flow + rendering), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "This is a front-end system design problem about live comments on a global livestream. The interviewer wants to see how you handle high-frequency updates, ordering, readability, and UI performance without overwhelming the DOM."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What you are solving:**\nA real-time comment stream beside a live video. It must stay readable, ordered, and responsive during spikes (e.g., big moments), while supporting moderation and user interaction."
+            }
+          ]
         },
         {
-            "type": "callout",
-            "variant": "info",
-            "title": "Use RADIO",
-            "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, regions, devices), **D**ecide (data flow + rendering), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What you are solving:**\nA real-time comment stream beside a live video. It must stay readable, ordered, and responsive during spikes (e.g., big moments), while supporting moderation and user interaction."
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Real-time delivery (WebSocket/SSE)\n- Buffering + batching to avoid re-render storms\n- Virtualized list rendering\n- Ordering + dedupe strategy\n- Auto-scroll vs user scroll behavior\n- Moderation UX and error handling"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "User flow you should describe",
-            "steps": [
-                {
-                    "title": "1) Open stream",
-                    "text": "Load the latest N comments and establish a live connection."
-                },
-                {
-                    "title": "2) Ingest events",
-                    "text": "Buffer incoming comments and batch them into UI state every 100-250ms."
-                },
-                {
-                    "title": "3) Render safely",
-                    "text": "Render a virtualized list and keep DOM size bounded."
-                },
-                {
-                    "title": "4) User scrolls",
-                    "text": "Pause auto-scroll when the user scrolls up; show a “new comments” badge."
-                },
-                {
-                    "title": "5) Moderation",
-                    "text": "Apply hide/mute/delete actions without breaking ordering or unread counts."
-                }
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Clarifying questions",
-                            "items": [
-                                "How many comments per second at peak?",
-                                "Strict ordering vs eventual ordering?",
-                                "Auto-scroll always on, or pause on user scroll?",
-                                "Do we show sender badges, avatars, emojis, GIFs?",
-                                "What moderation actions are required?",
-                                "Acceptable end-to-end delay (e.g., < 500ms)?",
-                                "Any slow-mode or rate-limit rules?"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Non-functional expectations",
-                            "items": [
-                                "Stable 60 FPS scrolling under bursts.",
-                                "DOM size bounded via virtualization.",
-                                "Graceful fallback on slow networks.",
-                                "Consistent UX across devices.",
-                                "Observable latency + error metrics."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Key UI states to call out",
-            "columns": [
-                "State",
-                "What the user sees",
-                "What you track"
-            ],
-            "rows": [
-                [
-                    "Live",
-                    "Auto-scrolls to newest comments",
-                    "isLive, newestCommentId"
-                ],
-                [
-                    "Paused",
-                    "User scrolled up; show “new comments” badge",
-                    "isPaused, newCount"
-                ],
-                [
-                    "Disconnected",
-                    "Banner + retry button",
-                    "connectionState, retryCount"
-                ]
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "End-to-end latency",
-                    "value": "<= 500ms",
-                    "helperText": "Live feel target."
-                },
-                {
-                    "label": "Batch window",
-                    "value": "100-250ms",
-                    "helperText": "Balances latency vs render cost."
-                },
-                {
-                    "label": "DOM cap",
-                    "value": "500-1000 rows",
-                    "helperText": "Keep UI responsive."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Critical trade-off",
-            "text": "Lower latency means more frequent renders. You must justify batching and explain how you avoid re-render storms during spikes."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What the interviewer is testing:**\n- Real-time delivery (WebSocket/SSE)\n- Buffering + batching to avoid re-render storms\n- Virtualized list rendering\n- Ordering + dedupe strategy\n- Auto-scroll vs user scroll behavior\n- Moderation UX and error handling"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "User flow you should describe",
+      "steps": [
+        {
+          "title": "1) Open stream",
+          "text": "Load the latest N comments and establish a live connection."
+        },
+        {
+          "title": "2) Ingest events",
+          "text": "Buffer incoming comments and batch them into UI state every 100-250ms."
+        },
+        {
+          "title": "3) Render safely",
+          "text": "Render a virtualized list and keep DOM size bounded."
+        },
+        {
+          "title": "4) User scrolls",
+          "text": "Pause auto-scroll when the user scrolls up; show a “new comments” badge."
+        },
+        {
+          "title": "5) Moderation",
+          "text": "Apply hide/mute/delete actions without breaking ordering or unread counts."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Clarifying questions",
+              "items": [
+                "How many comments per second at peak?",
+                "Strict ordering vs eventual ordering?",
+                "Auto-scroll always on, or pause on user scroll?",
+                "Do we show sender badges, avatars, emojis, GIFs?",
+                "What moderation actions are required?",
+                "Acceptable end-to-end delay (e.g., < 500ms)?",
+                "Any slow-mode or rate-limit rules?"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Non-functional expectations",
+              "items": [
+                "Stable 60 FPS scrolling under bursts.",
+                "DOM size bounded via virtualization.",
+                "Graceful fallback on slow networks.",
+                "Consistent UX across devices.",
+                "Observable latency + error metrics."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Key UI states to call out",
+      "columns": [
+        "State",
+        "What the user sees",
+        "What you track"
+      ],
+      "rows": [
+        [
+          "Live",
+          "Auto-scrolls to newest comments",
+          "isLive, newestCommentId"
+        ],
+        [
+          "Paused",
+          "User scrolled up; show “new comments” badge",
+          "isPaused, newCount"
+        ],
+        [
+          "Disconnected",
+          "Banner + retry button",
+          "connectionState, retryCount"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "End-to-end latency",
+          "value": "<= 500ms",
+          "helperText": "Live feel target."
+        },
+        {
+          "label": "Batch window",
+          "value": "100-250ms",
+          "helperText": "Balances latency vs render cost."
+        },
+        {
+          "label": "DOM cap",
+          "value": "500-1000 rows",
+          "helperText": "Keep UI responsive."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Critical trade-off",
+      "text": "Lower latency means more frequent renders. You must justify batching and explain how you avoid re-render storms during spikes."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Assumptions you should state",
+      "items": [
+        "Device mix (mid-range mobile, low-end Android, desktop).",
+        "Network mix (Wi-Fi vs 4G/5G, high latency regions).",
+        "Concurrency and burst patterns.",
+        "Latency target for first meaningful UI."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Success metrics to mention",
+      "columns": [
+        "Metric",
+        "Target",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "LCP/TTFF",
+          "<= 2.5s / <= 1.0s",
+          "User-perceived speed"
+        ],
+        [
+          "INP",
+          "<= 200ms",
+          "Responsive interaction"
+        ],
+        [
+          "Dropped frames",
+          "< 2%",
+          "Smooth scroll/animation"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "UX constraints to mention",
+      "items": [
+        "Auto-scroll behavior when the user scrolls up.",
+        "Visible new-items indicator or badge.",
+        "Moderation actions that can remove items without breaking layout.",
+        "Clear empty/error states."
+      ]
+    }
+  ]
 }

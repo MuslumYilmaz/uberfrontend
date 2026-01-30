@@ -1,112 +1,137 @@
 {
-    "key": "O",
-    "title": "Optimizations and deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations and deep dive",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The deep dive is about protecting UI performance under heavy streams. Mention batching, virtualization, and backpressure as first-class strategies."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Optimization levers",
+      "columns": [
+        "Problem",
+        "Technique",
+        "Why it helps"
+      ],
+      "rows": [
+        [
+          "Re-render storm",
+          "Batch updates every 100-250ms",
+          "Coalesces many events into a single state update."
+        ],
+        [
+          "Huge DOM",
+          "Virtualized list + windowing",
+          "Only renders visible rows, keeps DOM small."
+        ],
+        [
+          "Unbounded memory",
+          "Trim to last N items / time window",
+          "Prevents feed from growing forever."
+        ],
+        [
+          "Burst load",
+          "Backpressure buffer + drop policy",
+          "Avoids flooding UI; can drop low-priority events."
+        ],
+        [
+          "Main-thread jank",
+          "Throttle progress and use rAF",
+          "Keeps scrolling and input responsive."
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "The deep dive is about protecting UI performance under heavy streams. Mention batching, virtualization, and backpressure as first-class strategies."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Performance best practices",
+              "items": [
+                "Use requestAnimationFrame for UI updates when visible.",
+                "Memoize row components; avoid rerendering unchanged rows.",
+                "Use stable keys and avoid re-sorting large arrays on every tick.",
+                "Compute unread count incrementally, not by scanning whole list.",
+                "Pause list rendering when the panel is closed."
+              ]
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Optimization levers",
-            "columns": [
-                "Problem",
-                "Technique",
-                "Why it helps"
-            ],
-            "rows": [
-                [
-                    "Re-render storm",
-                    "Batch updates every 100-250ms",
-                    "Coalesces many events into a single state update."
-                ],
-                [
-                    "Huge DOM",
-                    "Virtualized list + windowing",
-                    "Only renders visible rows, keeps DOM small."
-                ],
-                [
-                    "Unbounded memory",
-                    "Trim to last N items / time window",
-                    "Prevents feed from growing forever."
-                ],
-                [
-                    "Burst load",
-                    "Backpressure buffer + drop policy",
-                    "Avoids flooding UI; can drop low-priority events."
-                ],
-                [
-                    "Main-thread jank",
-                    "Throttle progress and use rAF",
-                    "Keeps scrolling and input responsive."
-                ]
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Performance best practices",
-                            "items": [
-                                "Use requestAnimationFrame for UI updates when visible.",
-                                "Memoize row components; avoid rerendering unchanged rows.",
-                                "Use stable keys and avoid re-sorting large arrays on every tick.",
-                                "Compute unread count incrementally, not by scanning whole list.",
-                                "Pause list rendering when the panel is closed."
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Failure / recovery strategies",
-                            "items": [
-                                "Exponential backoff + jitter on reconnect.",
-                                "Fetch missed notifications using cursor or timestamp.",
-                                "Fallback to polling when sockets are blocked.",
-                                "Surface a subtle banner when realtime is degraded."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Interaction budget",
-                    "value": "<= 200ms",
-                    "helperText": "INP goal for open/close."
-                },
-                {
-                    "label": "Batch cadence",
-                    "value": "100-250ms",
-                    "helperText": "Controls render cost."
-                },
-                {
-                    "label": "DOM cap",
-                    "value": "500-1000",
-                    "helperText": "Keeps memory stable."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Common pitfalls",
-            "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Failure / recovery strategies",
+              "items": [
+                "Exponential backoff + jitter on reconnect.",
+                "Fetch missed notifications using cursor or timestamp.",
+                "Fallback to polling when sockets are blocked.",
+                "Surface a subtle banner when realtime is degraded."
+              ]
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Interaction budget",
+          "value": "<= 200ms",
+          "helperText": "INP goal for open/close."
+        },
+        {
+          "label": "Batch cadence",
+          "value": "100-250ms",
+          "helperText": "Controls render cost."
+        },
+        {
+          "label": "DOM cap",
+          "value": "500-1000",
+          "helperText": "Keeps memory stable."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Common pitfalls",
+      "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Deep dive: preventing jank",
+      "steps": [
+        {
+          "title": "1) Batch updates",
+          "text": "Apply updates on a cadence (100-250ms) instead of per event."
+        },
+        {
+          "title": "2) Bound the DOM",
+          "text": "Virtualize long lists or carousels so DOM size stays small."
+        },
+        {
+          "title": "3) Cancel stale work",
+          "text": "Abort prefetches or network work when user intent changes."
+        },
+        {
+          "title": "4) Measure",
+          "text": "Log LCP/INP and feature-specific KPIs to validate rollout."
+        }
+      ]
+    }
+  ]
 }

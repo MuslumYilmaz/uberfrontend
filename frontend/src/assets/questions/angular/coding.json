@@ -12,7 +12,7 @@
       "state"
     ],
     "description": {
-      "summary": "Build a simple counter using an Angular standalone component. Add increment, decrement, and reset buttons. Disable the decrement button when the counter is at zero.",
+      "summary": "Implement a standalone counter with increment, decrement, and reset. Guard the decrement at zero, disable the minus button when the value is 0, and keep state in a single component property for predictable behavior.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -251,7 +251,7 @@
       "ui"
     ],
     "description": {
-      "summary": "Build an image slider in an Angular standalone component. Show one slide at a time with next/previous buttons and clickable dot indicators.",
+      "summary": "Build an image slider with next/prev controls, a current index, and disabled states at bounds. Keep the template state-driven and update the active slide label as the index changes.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -332,7 +332,7 @@
       "tabs"
     ],
     "description": {
-      "summary": "Build a simple tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+      "summary": "Create a tab switcher using a single activeTab value. Buttons update the value, *ngIf renders only the active panel, and active styles clearly indicate the current tab. Keep labels and click targets accessible.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -407,7 +407,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Build an Angular standalone component that renders a list of users with a search box, role filter, and \"only active\" checkbox.",
+      "summary": "Filter a user list by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -645,7 +645,7 @@
       "theming"
     ],
     "description": {
-      "summary": "Add a global light/dark theme toggle in the top-right of the page. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "summary": "Implement a light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
@@ -903,7 +903,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Build a debounced search box in Angular that calls a fake API 500ms after the user stops typing. Show loading and error states while results are being fetched.",
+      "summary": "Implement a debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1390,7 +1390,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a simple 3\u00d73 Tic-Tac-Toe game using an Angular standalone component. Two players take turns placing X and O. Detect wins/draws and allow resetting the game.",
+      "summary": "Build a 3x3 Tic-Tac-Toe game in an Angular standalone component. Alternate X/O turns, prevent overwrites, detect wins and draws, and offer a reset to start a new game.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1431,7 +1431,7 @@
       "approaches": [
         {
           "title": "Single standalone component with board array + winner helper",
-          "prose": "Keep board, current player, and computed game-over state in one component. Render the board with `*ngFor`. On each click, update the cell, compute winner, and toggle current player only if the game continues.",
+          "prose": "Keep `board` as a 9-cell array, `currentPlayer`, and `winner` or `gameOver` state in the component. Render the cells with `*ngFor`. On click, ignore filled cells or finished games, place the current mark, check the 8 winning line combinations, and then toggle the player if no winner. Add a reset method to clear the board and set the player back to X.",
           "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype Cell = 'X' | 'O' | null;\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"page\">\n      <section class=\"card\">\n        <h1 class=\"title\">Tic-Tac-Toe</h1>\n        <p class=\"subtitle\">Two players take turns. First to 3 in a row wins.</p>\n\n        <div class=\"status\" aria-live=\"polite\">{{ status }}</div>\n\n        <div class=\"board\" role=\"grid\" aria-label=\"tic tac toe board\">\n          <button\n            class=\"cell\"\n            *ngFor=\"let cell of board; let i = index\"\n            type=\"button\"\n            (click)=\"play(i)\"\n            [disabled]=\"isGameOver || cell !== null\"\n            [attr.aria-label]=\"'cell ' + i\"\n          >\n            {{ cell ?? '' }}\n          </button>\n        </div>\n\n        <div class=\"actions\">\n          <button class=\"ghost\" type=\"button\" (click)=\"reset()\">Reset</button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `:host{display:block}`,\n    `.page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}`,\n    `.card{width:100%;max-width:520px;background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}`,\n    `.title{margin:0;font-size:18px;font-weight:800;}`,\n    `.subtitle{margin:0;color:#9ca3af;font-size:12px;}`,\n    `.status{padding:10px 12px;border:1px solid #1f2937;border-radius:12px;background:#0a0f1e;font-weight:700;}`,\n    `.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}`,\n    `.cell{aspect-ratio:1/1;border-radius:14px;border:1px solid rgba(31,41,55,.7);background:#0a0f1e;color:#e5e7eb;font-size:34px;font-weight:900;cursor:pointer;display:grid;place-items:center;}`,\n    `.cell:disabled{opacity:.55;cursor:not-allowed;}`,\n    `.actions{display:flex;justify-content:flex-end;}`,\n    `.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;}`\n  ]\n})\nexport class AppComponent {\n  board: Cell[] = Array.from({ length: 9 }, () => null);\n  currentPlayer: 'X' | 'O' = 'X';\n  winner: 'X' | 'O' | null = null;\n\n  get isDraw(): boolean {\n    return !this.winner && this.board.every((c) => c !== null);\n  }\n\n  get isGameOver(): boolean {\n    return !!this.winner || this.isDraw;\n  }\n\n  get status(): string {\n    if (this.winner) return `Winner: ${this.winner}`;\n    if (this.isDraw) return 'Draw';\n    return `Next: ${this.currentPlayer}`;\n  }\n\n  play(i: number): void {\n    if (this.isGameOver) return;\n    if (this.board[i] !== null) return;\n\n    const next = this.board.slice();\n    next[i] = this.currentPlayer;\n    this.board = next;\n\n    const w = this.calculateWinner(this.board);\n    if (w) {\n      this.winner = w;\n      return;\n    }\n\n    if (!this.isDraw) {\n      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';\n    }\n  }\n\n  reset(): void {\n    this.board = Array.from({ length: 9 }, () => null);\n    this.currentPlayer = 'X';\n    this.winner = null;\n  }\n\n  private calculateWinner(b: Cell[]): 'X' | 'O' | null {\n    const lines: number[][] = [\n      [0, 1, 2],\n      [3, 4, 5],\n      [6, 7, 8],\n      [0, 3, 6],\n      [1, 4, 7],\n      [2, 5, 8],\n      [0, 4, 8],\n      [2, 4, 6]\n    ];\n\n    for (const [a, c, d] of lines) {\n      const v = b[a];\n      if (v && v === b[c] && v === b[d]) return v;\n    }\n\n    return null;\n  }\n}\n"
         }
       ],
@@ -1475,7 +1475,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Facebook-style Like button as an Angular standalone component. Clicking toggles the liked state, updates the count (+1 / -1), and changes the button style.",
+      "summary": "Create a Like button with toggle state and a counter in Angular. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The template should reflect state immediately and apply an active class when liked.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1505,11 +1505,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "Store `liked` (boolean) and `count` (number) as component state. The click handler flips `liked` and updates `count` accordingly. Bind a CSS class based on `liked` to change the button appearance. Clamp `count` at 0 to avoid negative values.",
+      "overview": "Store `liked` and `count` on the component. The click handler flips `liked` and updates the count by +1 or -1, clamping at zero. Bind the button class to `liked` so the UI responds to state changes. This mirrors common toggle-with-count UI patterns.",
       "approaches": [
         {
           "title": "Single standalone component with class-based state",
-          "prose": "Keep everything in `AppComponent`. Add `liked = false` and `count = 0` (or any initial value). Implement `toggleLike()`:\n- If currently not liked: set liked=true and count++\n- Else: set liked=false and count=Math.max(0, count-1)\nBind `[class.active]=\"liked\"` in the template."
+          "prose": "In `AppComponent`, define `liked = false` and `count = 0`. Implement `toggleLike()` to update both values, using `Math.max(0, count - 1)` when unliking. In the template, bind `(click)` to the handler, display the count, and use `[class.active]=\"liked\"` (or `[ngClass]`) to style the active state."
         }
       ],
       "notes": {
@@ -1615,7 +1615,7 @@
   },
   {
     "id": "angular-progress-bar-thresholds",
-    "title": "Progress Bar (0–100 with Threshold Colors)",
+    "title": "Progress Bar (0\u2013100 with Threshold Colors)",
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
@@ -1628,7 +1628,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build a progress bar that visualizes a value from 0 to 100. Add +10% / −10% buttons, clamp the value to [0, 100], and change the bar color by thresholds (red/orange/green).",
+      "summary": "Build a progress bar from 0\u2013100 with +10/\u221210 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green).",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1643,7 +1643,7 @@
           "Clicking \"+10%\" increases progress by 10 up to 100.",
           "Clicking \"-10%\" decreases progress by 10 down to 0.",
           "Progress never renders below 0% or above 100%.",
-          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
+          "Bar color changes by thresholds (example: <34 red, 34\u201366 orange, >66 green)."
         ],
         "implementationNotes": [
           "Store progress as a number (e.g., `progress = 0`).",
@@ -1663,11 +1663,11 @@
     },
     "starterCodeHint": "Implement `inc()` and `dec()` to add/subtract 10 and clamp. Bind `[style.width.%]` to progress and return a threshold-based class string from `barClass`.",
     "solutionBlock": {
-      "overview": "Keep a single `progress` number in a standalone component. Use +10/−10 button handlers with clamping. Render a track and a fill element where width is bound to progress percentage. Compute threshold-based classes (red/orange/green) from progress via a getter.",
+      "overview": "Use a single `progress` number on the component. Button handlers update it with clamping, and the template derives both the width and the color class from that value. This keeps the UI fully driven by component state.",
       "approaches": [
         {
           "title": "Standalone component with clamped progress and threshold class",
-          "prose": "Store `progress = 0`. Implement `inc()` as `progress = Math.min(100, progress + 10)` and `dec()` as `progress = Math.max(0, progress - 10)`. Use `[style.width.%]=\"progress\"` on the fill div. Compute the fill class with a getter: `<34` red, `34–66` orange, `>66` green."
+          "prose": "Set `progress = 0`. Implement `inc()` and `dec()` with `Math.min/Math.max`. Bind the fill width via `[style.width.%]=\"progress\"`. Compute a getter for the color class (e.g., <34 red, 34\u201366 orange, >66 green) and apply it to the fill element."
         }
       ],
       "notes": {
@@ -1720,7 +1720,7 @@
         ],
         "expectedBehavior": [
           "Submitting a top-level comment adds it to the list.",
-          "Clicking Reply on one comment toggles only that comment’s reply input.",
+          "Clicking Reply on one comment toggles only that comment\u2019s reply input.",
           "Submitting a reply appends a child comment under the correct parent.",
           "Replies can be nested indefinitely.",
           "UI indentation increases with depth."
@@ -1742,7 +1742,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Model comments as a tree. Use one input for adding top-level comments and a second input for replying. Store `activeReplyId` to ensure only one reply input is open at a time (and only under the clicked comment). Render the tree recursively via an `ng-template` with `ngTemplateOutlet`, passing `depth` to compute indentation.\n\n**Test cases**\n- Add a top-level comment → it appears in the list.\n- Click Reply on comment A → reply input appears only under A.\n- Click Reply on comment B → input moves to B; A’s input disappears.\n- Submit a reply under A → reply is added to A.children.\n- Reply to a reply (depth 2+) → nested indentation increases and tree stays correct.",
+      "overview": "Model comments as a tree. Use one input for adding top-level comments and a second input for replying. Store `activeReplyId` to ensure only one reply input is open at a time (and only under the clicked comment). Render the tree recursively via an `ng-template` with `ngTemplateOutlet`, passing `depth` to compute indentation.\n\n**Test cases**\n- Add a top-level comment \u2192 it appears in the list.\n- Click Reply on comment A \u2192 reply input appears only under A.\n- Click Reply on comment B \u2192 input moves to B; A\u2019s input disappears.\n- Submit a reply under A \u2192 reply is added to A.children.\n- Reply to a reply (depth 2+) \u2192 nested indentation increases and tree stays correct.",
       "approaches": [
         {
           "title": "Single component + recursive template (ngTemplateOutlet)",
@@ -1754,7 +1754,7 @@
         "pitfalls": [
           "Using per-node booleans for reply inputs (hard to manage as tree grows).",
           "Mutating the wrong branch because parent lookup is incorrect.",
-          "Trying to render recursively without `ngTemplateOutlet` (Angular doesn’t allow direct component recursion unless you create a child component)."
+          "Trying to render recursively without `ngTemplateOutlet` (Angular doesn\u2019t allow direct component recursion unless you create a child component)."
         ],
         "techniques": [
           "Tree structure + DFS lookup for insertion.",
@@ -1792,21 +1792,21 @@
         "requirements": [
           "Use a standalone Angular root component.",
           "Initially render exactly 1 counter button with value 0.",
-          "Clicking any button increments ONLY that button’s value by 1.",
+          "Clicking any button increments ONLY that button\u2019s value by 1.",
           "After each click, append a NEW button at the bottom with value 0.",
           "All buttons keep their own values independently."
         ],
         "expectedBehavior": [
           "Initial UI: one button showing 0.",
-          "Click first button once → first becomes 1, and a second button (0) appears below.",
-          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Click first button once \u2192 first becomes 1, and a second button (0) appears below.",
+          "Click second button twice \u2192 second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
           "Existing button values never reset when new buttons appear."
         ],
         "implementationNotes": [
           "Store button values in an array like `counts: number[]`.",
           "Render buttons with `*ngFor`.",
           "On click: increment `counts[i]` and then `counts.push(0)`.",
-          "Keep styling consistent with your dark UI theme (섭: explicit text color)."
+          "Keep styling consistent with your dark UI theme (\uc12d: explicit text color)."
         ],
         "techFocus": [
           "Array state in Angular components",
@@ -1817,7 +1817,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Keep an array of counts. Render a button for each count. When a button is clicked, increment that specific index, then append a new 0 at the end. This naturally grows the UI while preserving each button’s independent value.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "overview": "Keep an array of counts. Render a button for each count. When a button is clicked, increment that specific index, then append a new 0 at the end. This naturally grows the UI while preserving each button\u2019s independent value.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0]",
       "approaches": [
         {
           "title": "Standalone component + counts[] array",

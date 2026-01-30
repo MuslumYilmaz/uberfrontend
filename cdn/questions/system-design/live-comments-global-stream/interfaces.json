@@ -1,40 +1,86 @@
 {
-    "key": "I",
-    "title": "Interface definition (API)",
-    "blocks": [
-        {
-            "type": "text",
-            "text": "The API should support cursor-based history and a real-time stream. The client merges both into a single ordered list." 
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "code",
-            "language": "http",
-            "code": "GET /api/comments?cursor=latest\n\n200 OK\n{\n  \"items\": [\n    { \"id\": \"c1\", \"userId\": \"u1\", \"text\": \"Nice!\", \"createdAt\": 1710000000 }\n  ],\n  \"nextCursor\": \"...\"\n}\n\nWS /comments/stream\n{ \"id\": \"c2\", \"userId\": \"u2\", \"text\": \"🔥\", \"createdAt\": 1710000001 }\n"
-        },
-        {
-            "type": "table",
-            "title": "API design notes",
-            "columns": [
-                "Decision",
-                "Reason"
-            ],
-            "rows": [
-                [
-                    "Cursor pagination",
-                    "Stable ordering + incremental fetch"
-                ],
-                [
-                    "Stream + REST",
-                    "Backfill + live updates"
-                ],
-                [
-                    "Server timestamps",
-                    "Consistent ordering across regions"
-                ]
-            ]
-        }
-    ]
+  "key": "I",
+  "title": "Interface definition (API)",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The API should support cursor-based history and a real-time stream. The client merges both into a single ordered list."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "code",
+      "language": "http",
+      "code": "GET /api/comments?cursor=latest\n\n200 OK\n{\n  \"items\": [\n    { \"id\": \"c1\", \"userId\": \"u1\", \"text\": \"Nice!\", \"createdAt\": 1710000000 }\n  ],\n  \"nextCursor\": \"...\"\n}\n\nWS /comments/stream\n{ \"id\": \"c2\", \"userId\": \"u2\", \"text\": \"🔥\", \"createdAt\": 1710000001 }\n"
+    },
+    {
+      "type": "table",
+      "title": "API design notes",
+      "columns": [
+        "Decision",
+        "Reason"
+      ],
+      "rows": [
+        [
+          "Cursor pagination",
+          "Stable ordering + incremental fetch"
+        ],
+        [
+          "Stream + REST",
+          "Backfill + live updates"
+        ],
+        [
+          "Server timestamps",
+          "Consistent ordering across regions"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "API fields you should call out",
+      "columns": [
+        "Field",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "id",
+          "Stable keys for virtualization and diffing"
+        ],
+        [
+          "cursor/next",
+          "Pagination and recovery"
+        ],
+        [
+          "media/metadata",
+          "Render pipeline inputs"
+        ],
+        [
+          "experiment flags",
+          "Safe rollout"
+        ],
+        [
+          "timestamps",
+          "Ordering and latency"
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Interface details to mention",
+      "items": [
+        "Cursor or lastSeen for delta fetch.",
+        "Event type or priority for filtering.",
+        "Locale + device hints for payload shaping.",
+        "Experiment flags for safe rollout."
+      ]
+    }
+  ]
 }

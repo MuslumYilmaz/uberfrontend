@@ -1,47 +1,47 @@
 {
-    "id": "scalable-notifications-feed",
-    "title": "Real-Time Notifications Feed System Design (WebSocket/SSE)",
-    "description": "Design a real-time notifications feed for a front-end system design interview. Cover feed architecture, WebSocket/SSE/polling subscriptions, buffering and batching to avoid re-render storms, virtualized list rendering for large feeds, and unread state consistency. Explain how the UI stays fast under bursty traffic, reconnects, and slow devices.\n\nFunctional requirements:\n- Receive new notifications in real time (push or polling).\n- Render a scrollable feed with new items appearing at the top.\n- Support read/unread state, clear-all, and basic filtering (e.g., only mentions).\n- Show a badge/count for unseen notifications.\n- Handle network errors and reconnects gracefully.\n\nNon-functional:\n- Avoid re-render storms when bursts of events arrive.\n- Keep memory and DOM size bounded (virtualization, trimming).\n- Maintain smooth scrolling (60 FPS target).\n- Be resilient to slow devices and unstable networks.\n- INP <= 200ms for panel interactions.\n\nData / state considerations:\n- Notification objects include id, type, content, timestamp, read/unread, and optional actions.\n- A small client-side buffer queues incoming events before render.\n- A view model layer maintains a bounded list (latest N) plus metadata like unreadCount and lastSeenCursor.\n",
-    "tags": [
-        "notifications",
-        "real-time",
-        "streams",
-        "performance",
-        "virtualization",
-        "caching",
-        "backpressure",
-        "state-management",
-        "frontend-architecture",
-        "system-design"
-    ],
-    "sections": [
-        {
-            "key": "R",
-            "title": "Reflect & Requirements",
-            "file": "requirements.json"
-        },
-        {
-            "key": "A",
-            "title": "Architecture / High-level design",
-            "file": "architecture.json"
-        },
-        {
-            "key": "D",
-            "title": "Data model",
-            "file": "data.json"
-        },
-        {
-            "key": "I",
-            "title": "Interface definition (API)",
-            "file": "interfaces.json"
-        },
-        {
-            "key": "O",
-            "title": "Optimizations and deep dive",
-            "file": "optimizations.json"
-        }
-    ],
-    "companies": [
-        "netflix"
-    ]
+  "id": "scalable-notifications-feed",
+  "title": "Real-Time Notifications Feed System Design (WebSocket/SSE)",
+  "description": "Design a real-time notifications feed for a front-end system design interview. Cover feed architecture, WebSocket/SSE/polling subscriptions, buffering and batching to avoid re-render storms, virtualized list rendering for large feeds, and unread state consistency. Explain how the UI stays fast under bursty traffic, reconnects, and slow devices.\n\nFunctional requirements:\n- Receive new notifications in real time (push or polling).\n- Render a scrollable feed with new items appearing at the top.\n- Support read/unread state, clear-all, and basic filtering (e.g., only mentions).\n- Show a badge/count for unseen notifications.\n- Handle network errors and reconnects gracefully.\n\nNon-functional:\n- Avoid re-render storms when bursts of events arrive.\n- Keep memory and DOM size bounded (virtualization, trimming).\n- Maintain smooth scrolling (60 FPS target).\n- Be resilient to slow devices and unstable networks.\n- INP <= 200ms for panel interactions.\n\nData / state considerations:\n- Notification objects include id, type, content, timestamp, read/unread, and optional actions.\n- A small client-side buffer queues incoming events before render.\n- A view model layer maintains a bounded list (latest N) plus metadata like unreadCount and lastSeenCursor.\n",
+  "tags": [
+    "notifications",
+    "real-time",
+    "streams",
+    "performance",
+    "virtualization",
+    "caching",
+    "backpressure",
+    "state-management",
+    "frontend-architecture",
+    "system-design"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Reflect & Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "netflix"
+  ]
 }

@@ -1,87 +1,141 @@
 {
-    "key": "O",
-    "title": "Optimizations and deep dive",
-    "blocks": [
+  "key": "O",
+  "title": "Optimizations and deep dive",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Optimizations should focus on preventing UI overload during comment spikes while keeping latency low."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Frontend performance strategies",
+      "items": [
+        "Batch updates every 100-250ms.",
+        "Virtualize list to cap DOM size.",
+        "Collapse spam bursts or rate-limit duplicates.",
+        "Pause auto-scroll when the user scrolls up.",
+        "Lazy-render avatars and badges."
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Reliability and rollout",
+      "items": [
+        "Reconnect with exponential backoff + jitter.",
+        "Fallback to polling if stream fails.",
+        "Use feature flags for moderation UI.",
+        "Monitor latency + drop rate.",
+        "Rollback if UX degrades."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Metrics you can quote",
+      "columns": [
+        "Metric",
+        "Target",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "End-to-end latency",
+          "<= 500ms",
+          "Live feel"
+        ],
+        [
+          "Dropped frames",
+          "< 2%",
+          "Smooth scrolling"
+        ],
+        [
+          "DOM cap",
+          "500-1000",
+          "Avoid memory growth"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
         {
-            "type": "text",
-            "text": "Optimizations should focus on preventing UI overload during comment spikes while keeping latency low."
+          "label": "Batch window",
+          "value": "100-250ms",
+          "helperText": "Balances latency vs render cost."
         },
         {
-            "type": "divider"
+          "label": "Render budget",
+          "value": "16ms",
+          "helperText": "Keep 60 FPS during spikes."
         },
         {
-            "type": "checklist",
-            "title": "Frontend performance strategies",
-            "items": [
-                "Batch updates every 100-250ms.",
-                "Virtualize list to cap DOM size.",
-                "Collapse spam bursts or rate-limit duplicates.",
-                "Pause auto-scroll when the user scrolls up.",
-                "Lazy-render avatars and badges."
-            ]
-        },
-        {
-            "type": "checklist",
-            "title": "Reliability and rollout",
-            "items": [
-                "Reconnect with exponential backoff + jitter.",
-                "Fallback to polling if stream fails.",
-                "Use feature flags for moderation UI.",
-                "Monitor latency + drop rate.",
-                "Rollback if UX degrades."
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Metrics you can quote",
-            "columns": [
-                "Metric",
-                "Target",
-                "Why it matters"
-            ],
-            "rows": [
-                [
-                    "End-to-end latency",
-                    "<= 500ms",
-                    "Live feel"
-                ],
-                [
-                    "Dropped frames",
-                    "< 2%",
-                    "Smooth scrolling"
-                ],
-                [
-                    "DOM cap",
-                    "500-1000",
-                    "Avoid memory growth"
-                ]
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Batch window",
-                    "value": "100-250ms",
-                    "helperText": "Balances latency vs render cost."
-                },
-                {
-                    "label": "Render budget",
-                    "value": "16ms",
-                    "helperText": "Keep 60 FPS during spikes."
-                },
-                {
-                    "label": "Reconnect",
-                    "value": "<= 5s",
-                    "helperText": "Fast recovery target."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Common pitfalls",
-            "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
+          "label": "Reconnect",
+          "value": "<= 5s",
+          "helperText": "Fast recovery target."
         }
-    ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Common pitfalls",
+      "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Deep dive: preventing jank",
+      "steps": [
+        {
+          "title": "1) Batch updates",
+          "text": "Apply updates on a cadence (100-250ms) instead of per event."
+        },
+        {
+          "title": "2) Bound the DOM",
+          "text": "Virtualize long lists or carousels so DOM size stays small."
+        },
+        {
+          "title": "3) Cancel stale work",
+          "text": "Abort prefetches or network work when user intent changes."
+        },
+        {
+          "title": "4) Measure",
+          "text": "Log LCP/INP and feature-specific KPIs to validate rollout."
+        }
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Backpressure policy",
+      "columns": [
+        "Scenario",
+        "Policy",
+        "Why"
+      ],
+      "rows": [
+        [
+          "Burst spikes",
+          "Batch + drop low-priority",
+          "Protect FPS"
+        ],
+        [
+          "Slow device",
+          "Lower render cadence",
+          "Keep UI responsive"
+        ],
+        [
+          "User paused",
+          "Render badge only",
+          "Avoid wasted work"
+        ]
+      ]
+    }
+  ]
 }

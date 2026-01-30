@@ -1,46 +1,46 @@
 {
-    "id": "live-comments-global-stream",
-    "title": "Live Comments for Global Streams (Real-time)",
-    "description": "Design a real-time live comments system for a global livestream. This is a front-end system design interview question about low-latency rendering, ordering, buffering, and moderation UX at scale. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on streaming updates (WebSocket/SSE), buffering + batching, virtualization, moderation workflows, and performance budgets. Explain how the UI stays responsive across regions, devices, and slow networks.\n\nFunctional requirements:\n- Show new comments in real time with minimal delay.\n- Keep ordering consistent while handling bursts.\n- Support basic moderation controls (mute, delete, report).\n- Render large volumes without UI freezes.\n- Provide retry / reconnect behavior.\n\nNon-functional:\n- End-to-end latency <= 500ms.\n- Stable frame rate during bursts.\n- Bounded DOM and memory usage.\n- Graceful degradation on slow networks.\n- Observability for latency and error rate.\n",
-    "companies": [
-        "bytedance"
-    ],
-    "tags": [
-        "real-time",
-        "streams",
-        "performance",
-        "virtualization",
-        "caching",
-        "events",
-        "state-management",
-        "frontend-architecture",
-        "system-design"
-    ],
-    "sections": [
-        {
-            "key": "R",
-            "title": "Reflect & Requirements",
-            "file": "requirements.json"
-        },
-        {
-            "key": "A",
-            "title": "Architecture / High-level design",
-            "file": "architecture.json"
-        },
-        {
-            "key": "D",
-            "title": "Data model",
-            "file": "data.json"
-        },
-        {
-            "key": "I",
-            "title": "Interface definition (API)",
-            "file": "interfaces.json"
-        },
-        {
-            "key": "O",
-            "title": "Optimizations and deep dive",
-            "file": "optimizations.json"
-        }
-    ]
+  "id": "live-comments-global-stream",
+  "title": "Live Comments for Global Streams (Real-time)",
+  "description": "Design a real-time live comments system for a global livestream. This is a front-end system design interview question about low-latency rendering, ordering, buffering, and moderation UX at scale. Use the RADIO approach to structure your answer: Reflect, Assumptions, Decide, Implement, Outcome.\n\nFocus on streaming updates (WebSocket/SSE), buffering + batching, virtualization, moderation workflows, and performance budgets. Explain how the UI stays responsive across regions, devices, and slow networks.\n\nFunctional requirements:\n- Show new comments in real time with minimal delay.\n- Keep ordering consistent while handling bursts.\n- Support basic moderation controls (mute, delete, report).\n- Render large volumes without UI freezes.\n- Provide retry / reconnect behavior.\n\nNon-functional:\n- End-to-end latency <= 500ms.\n- Stable frame rate during bursts.\n- Bounded DOM and memory usage.\n- Graceful degradation on slow networks.\n- Observability for latency and error rate.\n\nAdditional constraints to mention: auto-scroll vs user scroll behavior, spam bursts, and moderation actions that can retroactively remove items. Call out metrics like end-to-end latency, render budget, and drop rate for bursts.\nAdd UX constraints: show a “new comments” pill when users scroll up, keep auto-scroll stable, and ensure moderation actions can remove items without jank.",
+  "companies": [
+    "bytedance"
+  ],
+  "tags": [
+    "real-time",
+    "streams",
+    "performance",
+    "virtualization",
+    "caching",
+    "events",
+    "state-management",
+    "frontend-architecture",
+    "system-design"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Reflect & Requirements",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ]
 }

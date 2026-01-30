@@ -14,7 +14,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a simple Vue 3 counter component that displays a value and has '+' and '\u2212' buttons. The count must never go below 0.",
+      "summary": "Build a Vue counter component with increment/decrement and a zero floor. Use reactive state and guard the decrement so it never goes negative. Call out disabled states and clean template logic.",
       "specs": {
         "requirements": [
           "Render the counter UI as the main component.",
@@ -253,7 +253,7 @@
       "event-handlers"
     ],
     "description": {
-      "summary": "Build a simple Vue 3 image slider that shows one image at a time and lets the user move between slides with Previous/Next buttons and small dot indicators.",
+      "summary": "Create a basic image slider with next/prev controls and an active index. Guard the index at bounds, update the displayed image and label, and keep disabled states in sync with index.",
       "specs": {
         "requirements": [
           "Render the image slider UI as the main component.",
@@ -334,7 +334,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a simple Vue 3 tabbed interface with three tabs (\"Overview\", \"Details\", \"Settings\") that controls which content is visible.",
+      "summary": "Implement tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -407,7 +407,7 @@
       "filtering"
     ],
     "description": {
-      "summary": "Build a Vue 3 component that renders a user list with a search box, role filter, and \"only active\" checkbox.",
+      "summary": "Build a filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main component.",
@@ -898,7 +898,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Build a debounced search box in Vue 3 that calls a fake API 500ms after the user stops typing and shows loading, results, empty, and error states.",
+      "summary": "Implement a debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -982,7 +982,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement a reusable Vue 3 star-rating widget that renders a row of clickable stars, allows the user to select a rating, and displays the current rating value.",
+      "summary": "Create a reusable star rating widget with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth.",
       "specs": {
         "requirements": [
           "Render the star rating UI as the main component.",
@@ -1061,7 +1061,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Given user input for the number of rows and columns, build a Vue 3 component that renders an HTML table grid accordingly.",
+      "summary": "Generate a dynamic table from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable.",
       "specs": {
         "requirements": [
           "Render the dynamic table UI as the main component.",
@@ -1386,7 +1386,7 @@
       "control-flow"
     ],
     "description": {
-      "summary": "Build a simple 3\u00d73 Tic-Tac-Toe game in Vue 3. Two players take turns placing X and O. Detect wins/draws and allow resetting the game.",
+      "summary": "Build Tic\u2011Tac\u2011Toe with reactive board state and clear game flow. Track the current player, prevent overwriting cells, detect wins/draws, and show a status message. Add a reset to restart the game deterministically.",
       "specs": {
         "requirements": [
           "Render the Tic-Tac-Toe UI as the main component.",
@@ -1471,7 +1471,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Build a Facebook-style Like button in Vue 3. Clicking toggles the liked state and updates a like counter (+1 when liking, -1 when unliking). The count must never go below 0.",
+      "summary": "Create a Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1503,11 +1503,11 @@
     },
     "starterCodeHint": "Implement `toggleLike()` and update both `liked` and `count`. Ensure the count never drops below 0.",
     "solutionBlock": {
-      "overview": "Use `ref(false)` for liked and `ref(120)` for count. On click, flip liked and update count: +1 when liking, -1 when unliking, clamped to never go below 0.",
+      "overview": "Use two reactive refs: `liked` (boolean) and `count` (number). The click handler flips `liked` and adjusts `count` by +1 or -1. Clamp the count to zero on unlike so the UI never goes negative. This is a simple but realistic state-sync exercise.",
       "approaches": [
         {
           "title": "Single component with guarded toggle",
-          "prose": "Keep everything in `App.vue` using `<script setup>`. Use `liked` + `count` refs. Implement `toggleLike()` that checks current liked state, updates count accordingly, then flips liked."
+          "prose": "In `<script setup>`, define `const liked = ref(false)` and `const count = ref(0)`. Implement `toggleLike()` that checks the current `liked.value` and updates `count.value` accordingly, using `Math.max(0, count.value - 1)` when unliking. Then flip `liked.value`. Bind the button text to `liked` and render the count next to it."
         }
       ],
       "notes": {
@@ -1536,7 +1536,7 @@
   },
   {
     "id": "vue-progress-bar-thresholds",
-    "title": "Progress Bar (0–100 with Threshold Colors)",
+    "title": "Progress Bar (0\u2013100 with Threshold Colors)",
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
@@ -1550,21 +1550,21 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Vue 3 progress bar that visualizes a value from 0 to 100. Add +10% / −10% buttons, clamp the value to [0, 100], and change the bar color by thresholds (red/orange/green).",
+      "summary": "Build a Vue 3 progress bar for values 0\u2013100 with +10%/\u221210% controls. Clamp the value to [0,100], show the numeric percentage, and change the fill color by thresholds (red/orange/green).",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
           "Display the current progress percentage (e.g., \"40%\").",
-          "Provide \"+10%\" and \"−10%\" buttons to increase/decrease progress by 10.",
+          "Provide \"+10%\" and \"\u221210%\" buttons to increase/decrease progress by 10.",
           "Clamp progress so it never goes below 0 or above 100.",
           "Change the bar color based on thresholds (red/orange/green)."
         ],
         "expectedBehavior": [
           "Initial progress starts at 0%.",
           "Clicking \"+10%\" increases progress by 10 up to 100.",
-          "Clicking \"−10%\" decreases progress by 10 down to 0.",
+          "Clicking \"\u221210%\" decreases progress by 10 down to 0.",
           "Progress never renders below 0% or above 100%.",
-          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
+          "Bar color changes by thresholds (example: <34 red, 34\u201366 orange, >66 green)."
         ],
         "implementationNotes": [
           "Use Vue 3 Composition API with `ref` for the progress state.",
@@ -1580,13 +1580,13 @@
         ]
       }
     },
-    "starterCodeHint": "Use `const progress = ref(0)`. Implement `inc/dec` with clamping. Compute `barClass` from progress (<34 red, 34–66 orange, >66 green). Bind `:style=\"{ width: progress + '%' }\"` on the fill.",
+    "starterCodeHint": "Use `const progress = ref(0)`. Implement `inc/dec` with clamping. Compute `barClass` from progress (<34 red, 34\u201366 orange, >66 green). Bind `:style=\"{ width: progress + '%' }\"` on the fill.",
     "solutionBlock": {
-      "overview": "Store progress in a `ref`. Implement +10/−10 handlers that clamp progress to [0, 100]. Use a computed property for the fill color class based on thresholds and bind width via inline style.",
+      "overview": "Keep progress in a ref, update it with clamped handlers, and compute the color class based on thresholds. The fill width is derived from the progress value, so the UI stays declarative and always reflects state.",
       "approaches": [
         {
           "title": "Single component with clamped progress + computed threshold class",
-          "prose": "Keep everything in `App.vue` with `<script setup>`. `progress` is a `ref(0)`. `inc()` does `progress.value = Math.min(100, progress.value + 10)`. `dec()` does `progress.value = Math.max(0, progress.value - 10)`. `barClass` is a computed string: `bar red` / `bar orange` / `bar green` based on thresholds."
+          "prose": "In `<script setup>`, define `const progress = ref(0)`. `inc()` and `dec()` update `progress.value` using `Math.min/Math.max`. Use a computed `barClass` that returns `red`, `orange`, or `green` based on the current value (e.g., <34, 34\u201366, >66). Bind the fill width with `:style=\"{ width: progress + '%' }\"` and render the percentage text."
         }
       ],
       "notes": {
@@ -1702,19 +1702,19 @@
       "lists"
     ],
     "description": {
-      "summary": "Build a Vue 3 UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments ONLY that button’s own counter AND appends a brand-new button below with value 0. Every button must keep its own click count independently.",
+      "summary": "Build a Vue 3 UI where the number of buttons grows dynamically. Start with a single button labeled \"0\". Each click increments ONLY that button\u2019s own counter AND appends a brand-new button below with value 0. Every button must keep its own click count independently.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main component.",
           "Initially render exactly 1 counter button with value 0.",
-          "Clicking any button increments ONLY that button’s value by 1.",
+          "Clicking any button increments ONLY that button\u2019s value by 1.",
           "After each click, append a NEW button at the bottom with value 0.",
           "All buttons keep their own values independently."
         ],
         "expectedBehavior": [
           "Initial UI: one button showing 0.",
-          "Click first button once → first becomes 1, and a second button (0) appears below.",
-          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Click first button once \u2192 first becomes 1, and a second button (0) appears below.",
+          "Click second button twice \u2192 second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
           "Existing button values never reset when new buttons appear."
         ],
         "implementationNotes": [
@@ -1733,7 +1733,7 @@
     },
     "starterCodeHint": "Use `const counts = ref<number[]>([0])`. Implement `onClick(i)` to increment `counts.value[i]` and then `counts.value.push(0)`.",
     "solutionBlock": {
-      "overview": "Keep an array of counts in a single `ref`. Render one button per entry. On click, increment only the clicked index and append a new `0` at the end.\n\n**Test cases**\n- Start: [0]\n- Click index 0 → [1,0]\n- Click index 1 → [1,1,0]\n- Click index 0 again → [2,1,0,0]",
+      "overview": "Keep an array of counts in a single `ref`. Render one button per entry. On click, increment only the clicked index and append a new `0` at the end.\n\n**Test cases**\n- Start: [0]\n- Click index 0 \u2192 [1,0]\n- Click index 1 \u2192 [1,1,0]\n- Click index 0 again \u2192 [2,1,0,0]",
       "approaches": [
         {
           "title": "Single component with counts[] array",

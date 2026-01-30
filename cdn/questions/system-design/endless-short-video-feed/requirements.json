@@ -1,164 +1,203 @@
 {
-    "key": "R",
-    "title": "Reflect & Requirements",
-    "blocks": [
+  "key": "R",
+  "title": "Reflect & Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "This is a front-end system design question about a TikTok-style short-video feed. The interviewer wants to see how you deliver fast first play, smooth scroll, and reliable playback while keeping memory, CPU, and network usage under control."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Use RADIO",
+      "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, devices, networks), **D**ecide (architecture + caching), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "This is a front-end system design question about a TikTok-style short-video feed. The interviewer wants to see how you deliver fast first play, smooth scroll, and reliable playback while keeping memory, CPU, and network usage under control."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What you are solving:**\nAn endless short-video feed with instant playback, responsive scrolling, and predictable controls. The UI must stay smooth across device classes while handling variable networks, long sessions, and bursty user behavior (fast swipes)."
+            }
+          ]
         },
         {
-            "type": "callout",
-            "variant": "info",
-            "title": "Use RADIO",
-            "text": "**R**eflect (restate the UX goal), **A**ssumptions (traffic, devices, networks), **D**ecide (architecture + caching), **I**mplement (frontend plan), **O**utcome (metrics + rollout)."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What you are solving:**\nAn endless short-video feed with instant playback, responsive scrolling, and predictable controls. The UI must stay smooth across device classes while handling variable networks, long sessions, and bursty user behavior (fast swipes)."
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Fast first play and prefetch strategy\n- Handling variable networks and devices\n- Virtualization + memory control\n- Playback lifecycle (only one active player)\n- CDN/ABR awareness and caching\n- UI performance budgets and observability"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "User flow you should describe",
-            "steps": [
-                {
-                    "title": "1) Open feed",
-                    "text": "Fetch the first page of metadata, render the first card, and show a poster immediately."
-                },
-                {
-                    "title": "2) Fast first play",
-                    "text": "Preconnect to CDN, request video metadata, and start playback for the first visible card."
-                },
-                {
-                    "title": "3) Prefetch next items",
-                    "text": "Queue the next 1-3 videos based on scroll direction and viewport proximity."
-                },
-                {
-                    "title": "4) Rapid scroll",
-                    "text": "Pause offscreen videos, cancel in-flight downloads, and keep only one active decoder."
-                },
-                {
-                    "title": "5) Slow network",
-                    "text": "Downshift quality, show a buffering UI, and resume when bandwidth recovers."
-                }
-            ]
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Clarifying questions",
-                            "items": [
-                                "Target devices (mobile, TV, desktop)?",
-                                "Acceptable time-to-first-frame for Wi-Fi vs 4G?",
-                                "How many videos should be prefetched?",
-                                "Should videos autoplay on cellular by default?",
-                                "Do we need offline or data-saver modes?",
-                                "Any region-specific CDN constraints?",
-                                "What metrics define success?"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "checklist",
-                            "title": "Non-functional expectations",
-                            "items": [
-                                "Stable 60 FPS scroll on mid-range devices.",
-                                "Time-to-first-frame <= 1.0s on Wi-Fi, <= 2.0s on 4G.",
-                                "Bounded memory usage over long sessions.",
-                                "Graceful fallback on slow networks.",
-                                "Consistent UI across regions and devices.",
-                                "Strong observability for playback failures."
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "title": "Key UI states to call out",
-            "columns": [
-                "State",
-                "What the user sees",
-                "What you track"
-            ],
-            "rows": [
-                [
-                    "Idle / Poster",
-                    "Poster image with play affordance",
-                    "isVisible, posterLoaded"
-                ],
-                [
-                    "Playing",
-                    "Video plays with controls",
-                    "activeVideoId, playbackStartTime"
-                ],
-                [
-                    "Buffering",
-                    "Spinner + muted state",
-                    "bufferedRanges, bitrate"
-                ],
-                [
-                    "Error",
-                    "Retry UI or fallback low-res",
-                    "errorCode, retryCount"
-                ]
-            ]
-        },
-        {
-            "type": "stats",
-            "items": [
-                {
-                    "label": "Time to first frame",
-                    "value": "<= 1.0s",
-                    "helperText": "Primary perceived performance goal."
-                },
-                {
-                    "label": "Prefetch window",
-                    "value": "2-3 videos",
-                    "helperText": "Balance speed vs memory."
-                },
-                {
-                    "label": "Scroll budget",
-                    "value": "16ms",
-                    "helperText": "Keep UI responsive under load."
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "warning",
-            "title": "Critical trade-off",
-            "text": "More prefetching improves instant playback but increases memory and bandwidth. You should justify the prefetch window and show how you cancel downloads on rapid scroll."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What the interviewer is testing:**\n- Fast first play and prefetch strategy\n- Handling variable networks and devices\n- Virtualization + memory control\n- Playback lifecycle (only one active player)\n- CDN/ABR awareness and caching\n- UI performance budgets and observability"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "User flow you should describe",
+      "steps": [
+        {
+          "title": "1) Open feed",
+          "text": "Fetch the first page of metadata, render the first card, and show a poster immediately."
+        },
+        {
+          "title": "2) Fast first play",
+          "text": "Preconnect to CDN, request video metadata, and start playback for the first visible card."
+        },
+        {
+          "title": "3) Prefetch next items",
+          "text": "Queue the next 1-3 videos based on scroll direction and viewport proximity."
+        },
+        {
+          "title": "4) Rapid scroll",
+          "text": "Pause offscreen videos, cancel in-flight downloads, and keep only one active decoder."
+        },
+        {
+          "title": "5) Slow network",
+          "text": "Downshift quality, show a buffering UI, and resume when bandwidth recovers."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Clarifying questions",
+              "items": [
+                "Target devices (mobile, TV, desktop)?",
+                "Acceptable time-to-first-frame for Wi-Fi vs 4G?",
+                "How many videos should be prefetched?",
+                "Should videos autoplay on cellular by default?",
+                "Do we need offline or data-saver modes?",
+                "Any region-specific CDN constraints?",
+                "What metrics define success?"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Non-functional expectations",
+              "items": [
+                "Stable 60 FPS scroll on mid-range devices.",
+                "Time-to-first-frame <= 1.0s on Wi-Fi, <= 2.0s on 4G.",
+                "Bounded memory usage over long sessions.",
+                "Graceful fallback on slow networks.",
+                "Consistent UI across regions and devices.",
+                "Strong observability for playback failures."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Key UI states to call out",
+      "columns": [
+        "State",
+        "What the user sees",
+        "What you track"
+      ],
+      "rows": [
+        [
+          "Idle / Poster",
+          "Poster image with play affordance",
+          "isVisible, posterLoaded"
+        ],
+        [
+          "Playing",
+          "Video plays with controls",
+          "activeVideoId, playbackStartTime"
+        ],
+        [
+          "Buffering",
+          "Spinner + muted state",
+          "bufferedRanges, bitrate"
+        ],
+        [
+          "Error",
+          "Retry UI or fallback low-res",
+          "errorCode, retryCount"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Time to first frame",
+          "value": "<= 1.0s",
+          "helperText": "Primary perceived performance goal."
+        },
+        {
+          "label": "Prefetch window",
+          "value": "2-3 videos",
+          "helperText": "Balance speed vs memory."
+        },
+        {
+          "label": "Scroll budget",
+          "value": "16ms",
+          "helperText": "Keep UI responsive under load."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Critical trade-off",
+      "text": "More prefetching improves instant playback but increases memory and bandwidth. You should justify the prefetch window and show how you cancel downloads on rapid scroll."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "checklist",
+      "title": "Assumptions you should state",
+      "items": [
+        "Device mix (mid-range mobile, low-end Android, desktop).",
+        "Network mix (Wi-Fi vs 4G/5G, high latency regions).",
+        "Concurrency and burst patterns.",
+        "Latency target for first meaningful UI."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Success metrics to mention",
+      "columns": [
+        "Metric",
+        "Target",
+        "Why it matters"
+      ],
+      "rows": [
+        [
+          "LCP/TTFF",
+          "<= 2.5s / <= 1.0s",
+          "User-perceived speed"
+        ],
+        [
+          "INP",
+          "<= 200ms",
+          "Responsive interaction"
+        ],
+        [
+          "Dropped frames",
+          "< 2%",
+          "Smooth scroll/animation"
+        ]
+      ]
+    }
+  ]
 }

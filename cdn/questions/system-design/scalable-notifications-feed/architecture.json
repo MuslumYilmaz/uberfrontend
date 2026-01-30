@@ -1,100 +1,131 @@
 {
-    "key": "A",
-    "title": "Architecture / High-level design",
-    "blocks": [
+  "key": "A",
+  "title": "Architecture / High-level design",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "You should show a clean pipeline: Realtime source -> Ingest buffer -> Store -> Virtualized UI. The key is decoupling ingestion from rendering so bursts do not trigger a repaint per event."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
         {
-            "type": "text",
-            "text": "You should show a clean pipeline: Realtime source -> Ingest buffer -> Store -> Virtualized UI. The key is decoupling ingestion from rendering so bursts do not trigger a repaint per event."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Suggested framing:**\n\"I’d subscribe to a WebSocket/SSE stream and push events into a short in-memory queue. A scheduler drains the queue every 100-250ms, merges into the feed store, updates unread counts, and then the UI renders a virtualized list from that store.\""
+            }
+          ]
         },
         {
-            "type": "divider"
-        },
-        {
-            "type": "columns",
-            "columns": [
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**Suggested framing:**\n\"I’d subscribe to a WebSocket/SSE stream and push events into a short in-memory queue. A scheduler drains the queue every 100-250ms, merges into the feed store, updates unread counts, and then the UI renders a virtualized list from that store.\""
-                        }
-                    ]
-                },
-                {
-                    "blocks": [
-                        {
-                            "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Clear separation of ingest vs render.\n- Bounded list + virtualization.\n- Reconnect strategy and fallback.\n- Deduping by id + ordering by timestamp.\n- Backpressure / batching decisions."
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "type": "callout",
-            "variant": "info",
-            "title": "Diagram you should draw",
-            "text": "Source (WS/SSE) -> Buffer/Queue -> FeedStore (bounded list + unread state) -> VirtualizedList -> UI. Add a Scheduler that drains the buffer on an interval or rAF."
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "table",
-            "title": "Core building blocks",
-            "columns": [
-                "Piece",
-                "Responsibility",
-                "How you explain it"
-            ],
-            "rows": [
-                [
-                    "Realtime source",
-                    "Push notifications to the client (WS/SSE/polling).",
-                    "Prefer WebSocket/SSE for push. Polling is fallback when sockets fail."
-                ],
-                [
-                    "Ingest buffer",
-                    "Short queue for incoming events.",
-                    "Buffer events to batch UI updates and handle bursts."
-                ],
-                [
-                    "Scheduler",
-                    "Drains the buffer on a cadence.",
-                    "Every 100-250ms we merge queued items into state, so we don’t re-render per event."
-                ],
-                [
-                    "Feed store",
-                    "Owns the canonical list + unread state.",
-                    "Keeps only the last N items, dedupes by id, tracks unreadCount and lastSeenCursor."
-                ],
-                [
-                    "Virtualized list",
-                    "Renders only visible rows.",
-                    "Keeps DOM size small even if the feed contains hundreds/thousands."
-                ]
-            ]
-        },
-        {
-            "type": "divider"
-        },
-        {
-            "type": "steps",
-            "title": "Panel open vs closed",
-            "steps": [
-                {
-                    "title": "Panel open",
-                    "text": "Render the virtualized list, batch apply updates, update unread counts in state."
-                },
-                {
-                    "title": "Panel closed",
-                    "text": "Stop rendering the list; only increment badge counts and store events."
-                }
-            ]
-        },
-        {
-            "type": "text",
-            "text": "Important: ingestion can be much faster than rendering. The scheduler is what keeps the UI stable."
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What the interviewer listens for:**\n- Clear separation of ingest vs render.\n- Bounded list + virtualization.\n- Reconnect strategy and fallback.\n- Deduping by id + ordering by timestamp.\n- Backpressure / batching decisions."
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Diagram you should draw",
+      "text": "Source (WS/SSE) -> Buffer/Queue -> FeedStore (bounded list + unread state) -> VirtualizedList -> UI. Add a Scheduler that drains the buffer on an interval or rAF."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Core building blocks",
+      "columns": [
+        "Piece",
+        "Responsibility",
+        "How you explain it"
+      ],
+      "rows": [
+        [
+          "Realtime source",
+          "Push notifications to the client (WS/SSE/polling).",
+          "Prefer WebSocket/SSE for push. Polling is fallback when sockets fail."
+        ],
+        [
+          "Ingest buffer",
+          "Short queue for incoming events.",
+          "Buffer events to batch UI updates and handle bursts."
+        ],
+        [
+          "Scheduler",
+          "Drains the buffer on a cadence.",
+          "Every 100-250ms we merge queued items into state, so we don’t re-render per event."
+        ],
+        [
+          "Feed store",
+          "Owns the canonical list + unread state.",
+          "Keeps only the last N items, dedupes by id, tracks unreadCount and lastSeenCursor."
+        ],
+        [
+          "Virtualized list",
+          "Renders only visible rows.",
+          "Keeps DOM size small even if the feed contains hundreds/thousands."
+        ]
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Panel open vs closed",
+      "steps": [
+        {
+          "title": "Panel open",
+          "text": "Render the virtualized list, batch apply updates, update unread counts in state."
+        },
+        {
+          "title": "Panel closed",
+          "text": "Stop rendering the list; only increment badge counts and store events."
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Important: ingestion can be much faster than rendering. The scheduler is what keeps the UI stable."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "table",
+      "title": "Component boundaries to call out",
+      "columns": [
+        "Boundary",
+        "Reason"
+      ],
+      "rows": [
+        [
+          "UI shell vs feature module",
+          "Independent deploys and safe rollouts"
+        ],
+        [
+          "Ingest vs render",
+          "Prevents re-render storms"
+        ],
+        [
+          "Cache vs view model",
+          "Keeps UI deterministic"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Explain the data flow",
+      "text": "State the pipeline explicitly: fetch -> normalize -> cache -> view model -> render. This shows you understand front-end architecture beyond UI widgets."
+    }
+  ]
 }
