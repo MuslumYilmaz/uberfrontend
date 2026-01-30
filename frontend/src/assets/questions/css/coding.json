@@ -52,7 +52,7 @@
       "overview": "Use element selectors to set the baseline rhythm across the hero (font size, line-height, margin, and color). Then apply class selectors for targeted emphasis like a muted tagline or a highlighted word. This demonstrates clean cascade usage, minimal specificity, and intentional visual hierarchy without over-nesting selectors or relying on ids.",
       "approaches": [
         {
-          "title": "Approach \u2014 Base Elements + Targeted Class Overrides",
+          "title": "Approach — Base Elements + Targeted Class Overrides",
           "prose": "First, style `h1` and `p` directly to create the default typography system: size, line height, spacing, and base color. Next, apply a `.tagline` class to soften contrast or weight for secondary copy so hierarchy is visible. Finally, wrap the emphasized word in a span with `.highlight` to raise contrast or weight. Keep selectors flat so later overrides remain predictable and maintainable.",
           "codeHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style <span class='highlight'>text</span>, layouts, and more.</p>",
           "codeCss": "h1 {\n  font-size: 2rem;\n  margin: 0;\n  color: #111;\n}\n\np {\n  margin: 0.5rem 0 0;\n  line-height: 1.6;\n  color: #333;\n}\n\n.tagline {\n  color: #555;\n}\n\n.highlight {\n  color: #3b82f6;\n  font-weight: 600;\n}"
@@ -72,18 +72,19 @@
       },
       "resources": [
         {
-          "title": "MDN \u2014 CSS selectors",
+          "title": "MDN — CSS selectors",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors"
         },
         {
-          "title": "MDN \u2014 Cascade and specificity",
+          "title": "MDN — Cascade and specificity",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity"
         }
       ]
     },
     "webSolutionHtml": "<h1 class='headline'>Welcome to CSS Basics</h1>\n<p class='tagline'>CSS lets you style <span class='highlight'>text</span>, layouts, and more.</p>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nh1 { font-size: 2rem; margin: 0; color: #111; }\np { margin: 0.5rem 0 0; line-height: 1.6; color: #333; }\n.tagline { color: #555; }\n.highlight { color: #3b82f6; font-weight: 600; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-box-model-margin-padding-border",
@@ -136,7 +137,7 @@
       "overview": "This task is about showing the four box layers in action: content, padding, border, and margin. A strong solution sets explicit padding for internal spacing, a visible border for boundaries, and margin to space cards apart, making it obvious how each layer affects layout and sizing.",
       "approaches": [
         {
-          "title": "Approach \u2014 Apply Padding, Border, and Margin",
+          "title": "Approach — Apply Padding, Border, and Margin",
           "prose": "Give each `.card` a fixed or max width, a padding value (e.g. 16px), a subtle border (e.g. 1px solid #ccc), and a margin to separate adjacent cards. Add a small border-radius for readability. The goal is visual clarity: you should be able to point at the padding, border, and margin in the rendered result.",
           "codeHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
           "codeCss": ".card {\n  padding: 16px;\n  border: 1px solid #ccc;\n  border-radius: 8px;\n  margin-bottom: 12px;\n  background: #fff;\n}"
@@ -154,18 +155,19 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 CSS Box Model",
+          "title": "MDN – CSS Box Model",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model"
         },
         {
-          "title": "MDN \u2013 box-sizing",
+          "title": "MDN – box-sizing",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing"
         }
       ]
     },
     "webSolutionHtml": "<div class='card'>Card 1</div>\n<div class='card'>Card 2</div>\n<div class='card'>Card 3</div>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; line-height: 1.6; }\n.card { padding: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 12px; background: #fff; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-inline-centering",
@@ -215,10 +217,10 @@
       "starterCss": "/* TODOs:\\n  1) Center the chips as a group using text-align: center (on .chips or .box).\\n  2) Make .tag inline-block with padding 8px/12px and radius 6px.\\n  3) Create ~8px horizontal gaps between tags using margin-right.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n}\\n\\n.box {\\n  background: #222;\\n  color: #fff;\\n  padding: 20px;\\n  border: 1px solid #444;\\n  border-radius: 10px;\\n  max-width: 600px;\\n  margin: 0 auto; /* optional: centers the box in the viewport */\\n}\\n\\n.chips {\\n  margin-top: 12px;\\n  /* Add text-align: center here */\\n}\\n\\n.tag {\\n  background: #e63946;\\n  color: #fff;\\n  font-weight: 600;\\n  letter-spacing: 0.5px;\\n  /* Add display, padding, radius, and spacing here */\\n}\\n\\n/* Hint: use .tag:last-child { margin-right: 0; } to remove the final gap */"
     },
     "solutionBlock": {
-      "overview": "text-align affects the inline formatting context, so it\u2019s the simplest way to center inline content without changing document flow.",
+      "overview": "text-align affects the inline formatting context, so it’s the simplest way to center inline content without changing document flow.",
       "approaches": [
         {
-          "title": "Approach \u2014 text-align Center + Inline-Block Chips",
+          "title": "Approach — text-align Center + Inline-Block Chips",
           "prose": "Add that inline-block items respect line-height, so you can adjust vertical alignment with line-height or vertical-align if needed. If the design is sensitive to whitespace gaps, remove them with HTML formatting or font-size: 0 on the parent.",
           "codeHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
           "codeCss": ".box {\\n  background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto;\\n}\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }"
@@ -227,7 +229,7 @@
       "notes": {
         "pitfalls": [
           "Only inline-level content is centered by `text-align`. Blocks ignore it unless they are inline or inline-block.",
-          "Forgetting to remove the last chip\u2019s right margin causes visual imbalance."
+          "Forgetting to remove the last chip’s right margin causes visual imbalance."
         ],
         "techniques": [
           "Use `inline-block` for chips to keep a single line while allowing padding and border radius.",
@@ -236,18 +238,19 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 text-align",
+          "title": "MDN – text-align",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/text-align"
         },
         {
-          "title": "MDN \u2013 display",
+          "title": "MDN – display",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/display"
         }
       ]
     },
     "webSolutionHtml": "<div class='box'>\\n  <h2>Centered Content</h2>\\n  <p class='chips'>\\n    <span class='tag'>HTML</span><span class='tag'>CSS</span><span class='tag'>UI</span>\\n  </p>\\n</div>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; }\\n.box { background: #222; color: #fff; padding: 20px; border: 1px solid #444; border-radius: 10px; max-width: 600px; margin: 0 auto; }\\n.chips { text-align: center; margin-top: 12px; }\\n.tag { display: inline-block; padding: 8px 12px; border-radius: 6px; background: #e63946; color: #fff; margin-right: 8px; font-weight: 600; letter-spacing: 0.5px; }\\n.tag:last-child { margin-right: 0; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-positioning-badge",
@@ -299,15 +302,15 @@
       "overview": "Absolute positioning within a relatively positioned parent keeps the badge anchored to the card corner while removing it from normal flow.",
       "approaches": [
         {
-          "title": "Approach \u2014 Relative Parent + Absolute Child",
-          "prose": "Use top/right offsets and a small translate if you want the badge to overlap the corner. Ensure the badge is readable (contrast, padding) and doesn\u2019t shift layout because it\u2019s absolutely positioned.",
+          "title": "Approach — Relative Parent + Absolute Child",
+          "prose": "Use top/right offsets and a small translate if you want the badge to overlap the corner. Ensure the badge is readable (contrast, padding) and doesn’t shift layout because it’s absolutely positioned.",
           "codeHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
           "codeCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }"
         }
       ],
       "notes": {
         "pitfalls": [
-          "If `.product` isn\u2019t positioned relatively, `.badge` will be placed relative to the entire page.",
+          "If `.product` isn’t positioned relatively, `.badge` will be placed relative to the entire page.",
           "Avoid using large pixel offsets that break responsive behavior."
         ],
         "techniques": [
@@ -317,18 +320,19 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 position property",
+          "title": "MDN – position property",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/position"
         },
         {
-          "title": "MDN \u2013 top/right/bottom/left",
+          "title": "MDN – top/right/bottom/left",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/top"
         }
       ]
     },
     "webSolutionHtml": "<div class='product'>\\n  <img src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"320\" height=\"180\"><rect width=\"100%\" height=\"100%\" fill=\"%23ddd\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"%23666\" font-family=\"Arial\" font-size=\"20\">Product</text></svg>' alt='Product'>\\n  <span class='badge'>NEW</span>\\n</div>",
     "webSolutionCss": ".product { position: relative; display: inline-block; }\\n.badge { position: absolute; top: 8px; right: 8px; padding: 4px 8px; border-radius: 6px; background: #e63946; color: #fff; font-weight: 600; letter-spacing: 0.5px; }\\nimg { display: block; max-width: 100%; border-radius: 8px; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-flexbox-navbar",
@@ -360,12 +364,12 @@
         {
           "name": "Responsive layout",
           "type": "media query",
-          "desc": "Stack items vertically on small screens (\u2264480px)."
+          "desc": "Stack items vertically on small screens (≤480px)."
         }
       ],
       "returns": {
         "type": "markup+style",
-        "desc": "A clean, responsive navigation bar that aligns logo\u2013links\u2013CTA in one line on desktop and stacks them neatly on mobile."
+        "desc": "A clean, responsive navigation bar that aligns logo–links–CTA in one line on desktop and stacks them neatly on mobile."
       },
       "examples": [
         ".nav { display: flex; align-items: center; gap: 1rem; }",
@@ -375,13 +379,13 @@
     },
     "web": {
       "starterHtml": "<nav class=\"nav\">\\n  <div class=\"logo\">Brand</div>\\n  <ul class=\"links\">\\n    <li><a href=\"#\">Docs</a></li>\\n    <li><a href=\"#\">Pricing</a></li>\\n    <li><a href=\"#\">Blog</a></li>\\n  </ul>\\n  <a class=\"cta\" href=\"#\">Sign up</a>\\n</nav>",
-      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens \u2264480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}"
+      "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n}\\n\\n/* TODOs:\\n  1) Turn .nav into a flex container and vertically center its items.\\n  2) Make .links expand and center its contents using flex and gap.\\n  3) On screens ≤480px, stack elements vertically with flex-direction: column.\\n*/\\n\\n.nav {\\n  background: #222;\\n  color: #fff;\\n  padding: 12px 16px;\\n  border-radius: 8px;\\n}\\n\\n.logo { font-weight: 700; }\\n\\n.links {\\n  list-style: none;\\n  padding: 0;\\n  margin: 0;\\n}\\n\\n.links a { color: #fff; text-decoration: none; }\\n\\n.cta {\\n  background: #e63946;\\n  color: #fff;\\n  text-decoration: none;\\n  padding: 6px 12px;\\n  border-radius: 6px;\\n  font-weight: 600;\\n}\\n\\n@media (max-width: 480px) {\\n  /* Stack layout here */\\n}"
     },
     "solutionBlock": {
       "overview": "A navbar is a classic flexbox layout: align items horizontally, keep consistent spacing, and push actions to the end. Flexbox lets you keep the brand on the left, links in the middle, and CTAs on the right with minimal markup. Responsive behavior is handled by wrapping or small breakpoint tweaks, not extra containers.",
       "approaches": [
         {
-          "title": "Approach \u2014 Flex Container with Responsive Direction",
+          "title": "Approach — Flex Container with Responsive Direction",
           "prose": "Set the container to display:flex and align-items:center. Use gap for predictable spacing between links, and apply margin-left:auto to the right-side group so actions align to the end. Add flex-wrap: wrap so items flow on small screens, or switch to a stacked layout at a breakpoint while preserving readable spacing and tap targets.",
           "codeHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
           "codeCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }"
@@ -399,22 +403,23 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 Flexbox basics",
+          "title": "MDN – Flexbox basics",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox"
         },
         {
-          "title": "MDN \u2013 Media Queries",
+          "title": "MDN – Media Queries",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries"
         }
       ]
     },
     "webSolutionHtml": "<nav class='nav'>\\n  <div class='logo'>Brand</div>\\n  <ul class='links'>\\n    <li><a href='#'>Docs</a></li>\\n    <li><a href='#'>Pricing</a></li>\\n    <li><a href='#'>Blog</a></li>\\n  </ul>\\n  <a class='cta' href='#'>Sign up</a>\\n</nav>",
     "webSolutionCss": ".nav { display: flex; align-items: center; gap: 1rem; background: #222; color: #fff; padding: 12px 16px; border-radius: 8px; }\\n.logo { font-weight: 700; }\\n.links { flex: 1; display: flex; justify-content: center; gap: 1.5rem; list-style: none; padding: 0; margin: 0; }\\n.links a { color: #fff; text-decoration: none; }\\n.cta { background: #e63946; color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; }\\n@media (max-width: 480px) { .nav { flex-direction: column; text-align: center; } .links { justify-content: center; } }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-grid-card-gallery",
-    "title": "Grid: Card Gallery (2\u21924 Columns)",
+    "title": "Grid: Card Gallery (2→4 Columns)",
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
@@ -440,7 +445,7 @@
           "desc": "Define two equal-width columns by default for small screens."
         },
         {
-          "name": "Media query at \u22651024px",
+          "name": "Media query at ≥1024px",
           "type": "responsive layout",
           "desc": "Switch the grid to four columns for larger screens."
         }
@@ -456,13 +461,13 @@
     },
     "web": {
       "starterHtml": "<section class=\"gallery\">\\n  <article class=\"card\">1</article>\\n  <article class=\"card\">2</article>\\n  <article class=\"card\">3</article>\\n  <article class=\"card\">4</article>\\n  <article class=\"card\">5</article>\\n  <article class=\"card\">6</article>\\n</section>",
-      "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths \u22651024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}"
+      "starterCss": "/* TODOs:\\n  1) Make .gallery use CSS Grid.\\n  2) Add spacing between cards using gap.\\n  3) Default layout: 2 equal-width columns.\\n  4) At screen widths ≥1024px, change to 4 columns.\\n*/\\n\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  background: #fafafa;\\n  line-height: 1.6;\\n}\\n\\n.gallery {\\n  /* Your grid styles here */\\n}\\n\\n.card {\\n  background: #222;\\n  color: #fff;\\n  border-radius: 8px;\\n  padding: 2rem;\\n  text-align: center;\\n  font-weight: 600;\\n}\\n\\n@media (min-width: 1024px) {\\n  /* Adjust the grid for larger screens */\\n}"
     },
     "solutionBlock": {
       "overview": "CSS Grid is ideal for galleries because you declare the column structure once and let the layout engine flow items. Use `repeat(minmax())` to create fluid columns that shrink and grow, then switch to more columns at a larger breakpoint. This yields predictable alignment, uniform spacing, and clean responsiveness without extra wrapper elements.",
       "approaches": [
         {
-          "title": "Approach \u2014 Responsive Grid Columns",
+          "title": "Approach — Responsive Grid Columns",
           "prose": "Define a `.gallery` container with `display: grid`, a `gap`, and `grid-template-columns: repeat(2, minmax(0, 1fr))` for small screens. Add a media query around 1024px to use `repeat(4, minmax(0, 1fr))` for desktop. Keep cards as direct children so grid auto-placement handles ordering and wrapping automatically without additional markup.",
           "codeHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
           "codeCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }"
@@ -480,18 +485,19 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 CSS Grid Layout",
+          "title": "MDN – CSS Grid Layout",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout"
         },
         {
-          "title": "MDN \u2013 repeat()",
+          "title": "MDN – repeat()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/repeat"
         }
       ]
     },
     "webSolutionHtml": "<section class='gallery'>\\n  <article class='card'>1</article>\\n  <article class='card'>2</article>\\n  <article class='card'>3</article>\\n  <article class='card'>4</article>\\n  <article class='card'>5</article>\\n  <article class='card'>6</article>\\n</section>",
     "webSolutionCss": ".gallery { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); }\\n.card { background: #222; color: #fff; border-radius: 8px; padding: 2rem; text-align: center; font-weight: 600; }\\n@media (min-width: 1024px) { .gallery { grid-template-columns: repeat(4, 1fr); } }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-fluid-clamp",
@@ -523,7 +529,7 @@
         {
           "name": "Reasonable bounds",
           "type": "UX",
-          "desc": "Pick sensible min/max so text isn\u2019t tiny on phones or gigantic on desktops."
+          "desc": "Pick sensible min/max so text isn’t tiny on phones or gigantic on desktops."
         }
       ],
       "returns": {
@@ -543,7 +549,7 @@
       "overview": "`clamp()` blends fluid scaling with guardrails, which is perfect for headings and padding. The preferred value can use `vw` so the size grows with the screen, while min and max ensure legibility on small devices and prevent oversized type on large monitors. This keeps layouts responsive without brittle breakpoints or hard jumps.",
       "approaches": [
         {
-          "title": "Approach \u2014 clamp() for Type & Padding",
+          "title": "Approach — clamp() for Type & Padding",
           "prose": "Apply `clamp()` to a hero heading (e.g. `clamp(1.75rem, 3vw, 3rem)`) and to horizontal padding like `padding-inline: clamp(16px, 4vw, 48px)`. Choose the min value for phone readability and the max for desktop balance. The middle value uses `vw` to scale smoothly between the bounds.",
           "codeHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
           "codeCss": ".hero {\\n  background: #222;\\n  color: #fff;\\n  padding-inline: clamp(1rem, 4vw, 3rem);\\n  padding-block: 2rem;\\n  border-bottom: 1px solid #444;\\n}\\n.hero h1 {\\n  margin: 0 0 0.5rem;\\n  font-size: clamp(1.5rem, 3vw + 1rem, 3rem);\\n}\\n.hero p { margin: 0; opacity: 0.9; }"
@@ -561,18 +567,19 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 clamp()",
+          "title": "MDN – clamp()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clamp"
         },
         {
-          "title": "MDN \u2013 CSS Values and Units (vw, rem)",
+          "title": "MDN – CSS Values and Units (vw, rem)",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units"
         }
       ]
     },
     "webSolutionHtml": "<header class='hero'>\\n  <h1>Fluid Headline</h1>\\n  <p>Scales smoothly between small and large screens.</p>\\n</header>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; line-height: 1.6; background: #fafafa; color: #111; }\\n.hero { background: #222; color: #fff; padding-inline: clamp(1rem, 4vw, 3rem); padding-block: 2rem; border-bottom: 1px solid #444; }\\n.hero h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 3vw + 1rem, 3rem); }\\n.hero p { margin: 0; opacity: 0.9; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-forms-pseudoclasses",
@@ -599,7 +606,7 @@
         {
           "name": ":invalid and :required",
           "type": "validation",
-          "desc": "Indicate invalid inputs with a subtle border color; don\u2019t rely on color alone. Optional: style :required."
+          "desc": "Indicate invalid inputs with a subtle border color; don’t rely on color alone. Optional: style :required."
         },
         {
           "name": "::placeholder and :focus-within",
@@ -619,23 +626,24 @@
       ]
     },
     "web": {
-      "starterHtml": "<form class=\"form\" onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type=\"email\" required placeholder=\"you@example.com\">\\n  </label>\\n  <small class=\"hint\">We\u2019ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+      "starterHtml": "<form class=\"form\" onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type=\"email\" required placeholder=\"you@example.com\">\\n  </label>\\n  <small class=\"hint\">We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
       "starterCss": "/* TODOs:\\n  1) Add a visible focus style using :focus-visible (with :focus fallback). Use outline, not only box-shadow.\\n  2) Style :invalid inputs with a subtle border color change.\\n  3) Make ::placeholder lighter; highlight the label group with :focus-within.\\n*/\\n\\n/* Plain starter (intentionally minimal so it doesn't look like the solution) */\\nbody {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  background: #fafafa;\\n  color: #111;\\n}\\n\\n.form {\\n  border: 1px solid #e5e7eb; /* light gray */\\n  padding: 12px;\\n  max-width: 420px;\\n  background: #fff;\\n}\\n\\nlabel {\\n  display: block;\\n  margin-bottom: 8px;\\n}\\n\\ninput {\\n  display: block;\\n  width: 100%;\\n  margin-top: 4px;\\n  padding: 8px 10px;\\n  border: 1px solid #cfcfcf;\\n  border-radius: 4px; /* subtle */\\n  background: #fff;\\n  color: inherit;\\n}\\n\\nbutton {\\n  margin-top: 10px;\\n  padding: 8px 12px;\\n  border: 1px solid #d1d5db;\\n  border-radius: 4px;\\n  background: #f9fafb;\\n  color: #111;\\n}\\n\\n.hint {\\n  display: block;\\n  margin-top: 6px;\\n  color: #6b7280; /* muted */\\n}"
     },
     "solutionBlock": {
       "overview": "Use :focus-visible (with a :focus fallback) to show an outline ring, :invalid to indicate errors, ::placeholder for lighter hint text, and :focus-within on the label to highlight the label+input group. The solution also applies nicer visual styling so it looks clearly different from the starter.",
       "approaches": [
         {
-          "title": "Approach \u2014 Focus Rings + Validation States",
+          "title": "Approach — Focus Rings + Validation States",
           "prose": "Add a visible outline on focus using :focus-visible (and :focus as fallback). Style :invalid to adjust the border color when constraints fail. Use ::placeholder for lighter hint text. Apply :focus-within on the label to add an outline around the group. Extra visual polish (radius, stronger button) is included here so the solution preview is obviously different than the starter.",
-          "codeHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We\u2019ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+          "codeHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
           "codeCss": "/* Base + polish */\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\n\\n/* Accessibility & states */\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; } /* fallback */\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }"
         }
       ]
     },
-    "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We\u2019ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
+    "webSolutionHtml": "<form class='form' onsubmit=\"event.preventDefault(); alert('Form submitted!');\">\\n  <label>\\n    Email\\n    <input type='email' required placeholder='you@example.com'>\\n  </label>\\n  <small class='hint'>We’ll never share your email.</small>\\n  <button>Submit</button>\\n</form>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; background: #fafafa; color: #111; }\\n.form { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; max-width: 420px; }\\nlabel { display: block; margin-bottom: 8px; padding: 6px; border-radius: 8px; }\\ninput { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fff; color: inherit; }\\nbutton { margin-top: 10px; background: #222; color: #fff; border: 0; padding: 8px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }\\n.hint { display: block; margin-top: 4px; color: #6b7280; }\\ninput:focus-visible { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:focus { outline: 2px solid #4c9ffe; outline-offset: 2px; }\\ninput:invalid { border-color: #e63946; }\\ninput::placeholder { color: #9aa0a6; }\\nlabel:focus-within { outline: 2px solid #4c9ffe; outline-offset: 2px; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-transitions-transforms-lift",
@@ -693,7 +701,7 @@
       "overview": "Use `transition` to animate `transform` and `box-shadow`, then apply a small upward translate (and optional scale) on hover. This creates a smooth, GPU-friendly lift effect without triggering reflow. Add a `prefers-reduced-motion` rule to disable the animation for users who prefer less motion.",
       "approaches": [
         {
-          "title": "Approach \u2014 Transition + Hover Transform",
+          "title": "Approach — Transition + Hover Transform",
           "prose": "Set a base card style with a subtle shadow. Add `transition: transform 180ms ease, box-shadow 180ms ease`. On `:hover`, apply `transform: translateY(-4px)` (or a tiny scale) and increase the shadow. For accessibility, wrap a `@media (prefers-reduced-motion: reduce)` rule that removes the transition and transform so the effect is static.",
           "codeHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
           "codeCss": ".lift {\\n  background: #fff;\\n  border: 1px solid #e5e7eb;\\n  border-radius: 12px;\\n  padding: 18px 20px;\\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\\n  transition: transform 200ms ease, box-shadow 200ms ease;\\n}\\n.lift:hover {\\n  transform: translateY(-2px) scale(1.02);\\n  box-shadow: 0 10px 24px rgba(0,0,0,.15);\\n}\\n@media (prefers-reduced-motion: reduce) {\\n  * { transition: none !important; }\\n}"
@@ -706,27 +714,28 @@
         ],
         "techniques": [
           "Pair transform with shadow changes for convincing depth.",
-          "Use ease or ease-out for a natural feel; keep duration around 150\u2013250ms."
+          "Use ease or ease-out for a natural feel; keep duration around 150–250ms."
         ]
       },
       "resources": [
         {
-          "title": "MDN \u2013 transition",
+          "title": "MDN – transition",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transition"
         },
         {
-          "title": "MDN \u2013 transform",
+          "title": "MDN – transform",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transform"
         },
         {
-          "title": "MDN \u2013 prefers-reduced-motion",
+          "title": "MDN – prefers-reduced-motion",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
         }
       ]
     },
     "webSolutionHtml": "<article class='lift'>\\n  <h2>Hover me</h2>\\n  <p>Smooth elevation and scale on hover.</p>\\n</article>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; background: #fafafa; color: #111; }\\n.lift { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.06); transition: transform 200ms ease, box-shadow 200ms ease; }\\n.lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 24px rgba(0,0,0,.15); }\\n@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-theme-variables-dark-mode",
@@ -782,10 +791,10 @@
       "starterCss": "/* TASK\n  1) Define variables on :root (light defaults):\n     --bg, --text, --surface, --accent, --border, --accent-contrast\n\n  2) OS dark mode:\n     @media (prefers-color-scheme: dark) { :root { ...same vars, dark values... } }\n\n  3) Manual override:\n     html.theme-dark { ...same vars, dark values... }\n     IMPORTANT: place html.theme-dark AFTER the media query so it always wins.\n\n  Constraint:\n    - .panel and .btn must use ONLY variables for colors (no literal colors).\n*/\n\n/* Base page styles using variables (you will define them) */\nhtml, body { height: 100%; }\nbody {\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\n  margin: 0;\n  line-height: 1.6;\n  background: var(--bg);\n  color: var(--text);\n  display: grid;\n  place-items: center;\n  padding: 2rem;\n}\n\n.panel {\n  background: var(--surface);\n  color: var(--text);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 1.25rem;\n  box-shadow: 0 1px 2px rgba(0,0,0,.06);\n  max-width: 520px;\n}\n\n.btn {\n  background: var(--accent);\n  color: var(--accent-contrast);\n  border: 0;\n  padding: .5rem .9rem;\n  border-radius: .6rem;\n  font-weight: 600;\n}"
     },
     "solutionBlock": {
-      "overview": "A high-signal CSS theming setup is: tokens on :root, OS dark override via prefers-color-scheme, then an author-controlled override class declared later to win the cascade. The component must never hard-code colors\u2014only consume tokens\u2014so theme swaps are instant.",
+      "overview": "A high-signal CSS theming setup is: tokens on :root, OS dark override via prefers-color-scheme, then an author-controlled override class declared later to win the cascade. The component must never hard-code colors—only consume tokens—so theme swaps are instant.",
       "approaches": [
         {
-          "title": "Approach \u2014 Tokens on :root + Dark Media + html.theme-dark Override",
+          "title": "Approach — Tokens on :root + Dark Media + html.theme-dark Override",
           "prose": "Define a minimal token set (bg/text/surface/accent/border/accent-contrast). Redefine the same tokens in the dark media query for OS-level theming. Then repeat the dark token values in html.theme-dark after the media query so manual override always wins. Toggle by adding theme-dark to <html> (no JS).",
           "codeHtml": "<!-- To force dark mode, add class=\"theme-dark\" to <html> manually -->\n<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>This UI reads all colors from CSS variables.</p>\n  <button class='btn' type='button'>Action</button>\n</div>",
           "codeCss": ":root {\n  --bg: #fafafa;\n  --text: #111111;\n  --surface: #ffffff;\n  --accent: #3b82f6;\n  --border: rgba(0, 0, 0, 0.12);\n  --accent-contrast: #ffffff;\n}\n\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0b0b0c;\n    --text: #f3f4f6;\n    --surface: #16181a;\n    --accent: #60a5fa;\n    --border: rgba(255, 255, 255, 0.14);\n    --accent-contrast: #0b0b0c;\n  }\n}\n\n/* Manual override (declared AFTER media query so it always wins) */\nhtml.theme-dark {\n  --bg: #0b0b0c;\n  --text: #f3f4f6;\n  --surface: #16181a;\n  --accent: #60a5fa;\n  --border: rgba(255, 255, 255, 0.14);\n  --accent-contrast: #0b0b0c;\n}"
@@ -794,7 +803,7 @@
       "notes": {
         "pitfalls": [
           "Placing html.theme-dark before the media query can cause it to lose depending on order.",
-          "Hard-coding a component color (e.g., button text) breaks themeability\u2014add a token like --accent-contrast instead."
+          "Hard-coding a component color (e.g., button text) breaks themeability—add a token like --accent-contrast instead."
         ],
         "techniques": [
           "Keep the token set small but complete (include contrast token for accent).",
@@ -804,17 +813,18 @@
       },
       "resources": [
         {
-          "title": "MDN \u2014 Using CSS custom properties (variables)",
+          "title": "MDN — Using CSS custom properties (variables)",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties"
         },
         {
-          "title": "MDN \u2014 prefers-color-scheme",
+          "title": "MDN — prefers-color-scheme",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"
         }
       ]
     },
     "webSolutionHtml": "<!-- To force dark mode, add class=\"theme-dark\" to <html> manually -->\n<div class='panel'>\n  <h2>Theme Demo</h2>\n  <p>This UI reads all colors from CSS variables.</p>\n  <button class='btn' type='button'>Action</button>\n</div>",
     "webSolutionCss": ":root { --bg:#fafafa; --text:#111111; --surface:#ffffff; --accent:#3b82f6; --border:rgba(0,0,0,0.12); --accent-contrast:#ffffff; }\n@media (prefers-color-scheme: dark) { :root { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,0.14); --accent-contrast:#0b0b0c; } }\nhtml.theme-dark { --bg:#0b0b0c; --text:#f3f4f6; --surface:#16181a; --accent:#60a5fa; --border:rgba(255,255,255,0.14); --accent-contrast:#0b0b0c; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   }
 ]

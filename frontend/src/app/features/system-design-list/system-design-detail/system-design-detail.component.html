@@ -6,6 +6,10 @@
             <div class="left-inner">
                 <div class="left-head">
                     <h1 class="title" [title]="title()">{{ title() }}</h1>
+                    <div class="title-meta">
+                        By {{ authorLabel(q()) }}
+                        <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
+                    </div>
                 </div>
 
                 <div class="left-body">
@@ -19,6 +23,12 @@
                     <div class="guide">
                         New to RADIO?
                         <a routerLink="/guides/system-design-blueprint">Read the guide</a> first.
+                    </div>
+                    <div class="guide-links">
+                        <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
+                        <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
+                        <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
+                        <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
                     </div>
                 </div>
             </div>
@@ -174,6 +184,21 @@
                     </a>
                 </div>
             </section>
+
+            <section class="sd-guides">
+                <div class="sd-related-head">Guides</div>
+                <div class="sd-related-list">
+                    <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/intro']">
+                        <span class="sd-related-title">Front‑End System Design: What It Tests</span>
+                    </a>
+                    <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/framework']">
+                        <span class="sd-related-title">Reusable 5‑Step Approach</span>
+                    </a>
+                    <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/performance']">
+                        <span class="sd-related-title">Performance & Web Vitals at Scale</span>
+                    </a>
+                </div>
+            </section>
         </main>
 
         <!-- RIGHT : fixed TOC -->
@@ -205,6 +230,10 @@
         <div class="locked-card">
             <div class="locked-pill">Premium</div>
             <h1 class="locked-title">{{ lockedTitle() }}</h1>
+            <div class="locked-meta">
+                By {{ authorLabel(q()) }}
+                <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
+            </div>
             <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
                 <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
                 <ul class="locked-preview__list" *ngIf="lockedBullets().length">

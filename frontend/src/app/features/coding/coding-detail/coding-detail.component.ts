@@ -825,8 +825,58 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     ];
 
     return Array.from(
-      new Set([...base, ...tags, ...companies].map(k => String(k || '').trim()).filter(Boolean))
+      new Set([...base, ...tags, ...companies, ...this.frameworkSeoKeywords()].map(k => String(k || '').trim()).filter(Boolean))
     );
+  }
+
+  private frameworkSeoModifier(): string | null {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'react':
+        return 'React-focused: hooks (useState/useEffect), props-driven components, and immutable updates.';
+      case 'vue':
+        return 'Vue-focused: refs/reactive state, computed/watch, and v-if/v-for directives.';
+      case 'angular':
+        return 'Angular-focused: standalone components, template bindings, and @Input/@Output patterns.';
+      default:
+        return null;
+    }
+  }
+
+  private frameworkSeoKeywords(): string[] {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'react':
+        return ['react hooks', 'jsx components', 'react state'];
+      case 'vue':
+        return ['vue composition api', 'vue reactivity', 'single-file components'];
+      case 'angular':
+        return ['angular standalone components', 'rxjs', 'dependency injection'];
+      default:
+        return [];
+    }
+  }
+
+  private resolveAuthor(q: Question): string {
+    return String((q as any).author || 'FrontendAtlas Team').trim() || 'FrontendAtlas Team';
+  }
+
+  private resolveUpdatedIso(q: Question): string | null {
+    const raw = (q as any).updatedAt;
+    if (!raw) return null;
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toISOString();
+  }
+
+  authorLabel(q?: Question | null): string {
+    if (!q) return 'FrontendAtlas Team';
+    return this.resolveAuthor(q);
+  }
+
+  updatedLabel(q?: Question | null): string | null {
+    if (!q) return null;
+    const iso = this.resolveUpdatedIso(q);
+    if (!iso) return null;
+    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
   demoStorageKey(id?: string | null): string | null {
@@ -837,8 +887,14 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private updateSeoForQuestion(q: Question): void {
     if (this.demoMode || this.suppressSeo) return;
     const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/${this.kind}/${q.id}`);
-    const description = this.questionDescription(q);
+    let description = this.questionDescription(q);
+    const modifier = this.frameworkSeoModifier();
+    if (modifier && !description.toLowerCase().includes(modifier.toLowerCase())) {
+      description = `${description} ${modifier}`;
+    }
     const keywords = this.questionKeywords(q);
+    const authorName = this.resolveAuthor(q);
+    const dateModified = this.resolveUpdatedIso(q);
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -871,9 +927,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       description,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
-      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      author: { '@type': 'Organization', name: authorName },
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
+      ...(dateModified ? { dateModified } : {}),
     };
 
     const howTo = this.buildHowToSchema(q, canonical);

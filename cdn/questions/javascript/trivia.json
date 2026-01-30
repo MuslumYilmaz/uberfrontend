@@ -125,7 +125,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-closures",
@@ -199,7 +200,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-this-keyword",
@@ -308,7 +310,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-hoisting-tdz",
@@ -408,7 +411,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-var-let-const-hoisting",
@@ -501,7 +505,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-promises-async-await",
@@ -643,7 +648,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-event-delegation",
@@ -730,7 +736,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-null-undefined-undeclared",
@@ -832,7 +839,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-equality-vs-strict-equality",
@@ -921,7 +929,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-hoisting",
@@ -1041,7 +1050,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-higher-order-function",
@@ -1117,7 +1127,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-event-bubbling-capturing",
@@ -1223,7 +1234,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-call-apply-bind",
@@ -1331,7 +1343,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-foreach-vs-map",
@@ -1427,7 +1440,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-cookie-sessionstorage-localstorage",
@@ -1525,7 +1539,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-prototypal-inheritance",
@@ -1641,7 +1656,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-data-types",
@@ -1757,7 +1773,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-nan-property",
@@ -1831,7 +1848,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-currying",
@@ -1901,7 +1919,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-callbacks",
@@ -1975,7 +1994,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-arrow-functions",
@@ -2058,7 +2078,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-object-destructuring",
@@ -2160,7 +2181,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-design-patterns",
@@ -2263,7 +2285,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-deferred-scripts",
@@ -2354,7 +2377,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-classes",
@@ -2450,7 +2474,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-object-creation-methods",
@@ -2629,7 +2654,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-memoization",
@@ -2725,7 +2751,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-microtasks-vs-macrotasks",
@@ -2816,7 +2843,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-promise-combinators-all-allsettled-race-any",
@@ -2917,7 +2945,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-object-create-vs-new",
@@ -3019,7 +3048,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-prototype-vs-__proto__",
@@ -3108,7 +3138,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-shallow-vs-deep-copy",
@@ -3202,7 +3233,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-map-filter-reduce",
@@ -3317,7 +3349,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-array-sort-pitfalls",
@@ -3402,7 +3435,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "js-mutability-vs-immutability",
@@ -3523,6 +3557,7 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   }
 ]

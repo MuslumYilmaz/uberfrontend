@@ -1,45 +1,46 @@
 {
-    "id": "notification-toast-system",
-    "title": "Notification Toast System",
-    "description": "Design a global notification toast system that can be triggered from anywhere in the app (e.g. `toast.success()`, `toast.error()`). Focus on global state management, rendering via portals, stacking multiple toasts, auto-dismiss timers, and accessible behavior.\n\nFunctional requirements:\n- Expose a simple API like `toast.success(message, options?)`, `toast.error(...)`, `toast.info(...)`.\n- Display one or more toast messages over the UI without breaking the layout.\n- Support variants (success / error / warning / info) with different visual styles.\n- Automatically dismiss toasts after a configurable timeout.\n- Allow manual dismiss (close button / click) that cancels the timer.\n- Stack multiple toasts in a defined order (e.g. newest on top).\n- Support different placements: top-right, top-center, bottom-right, bottom-left; on mobile, optionally full-width.\n\nNon-functional:\n- Global API must work from any part of the app without prop-drilling.\n- No memory leaks from timers or event listeners (proper cleanup on unmount).\n- Correct z-index behavior so toasts appear above regular content but below critical modals if desired.\n- Performant even when many toasts are fired in quick succession.\n- Good accessibility: ARIA roles, screen reader announcements, focus handling for interactive toasts.\n\nData / state considerations:\n- Each toast has: id, type (success/error/warning/info), message, optional description, createdAt, timeout, placement and optional actions.\n- Global toast state is managed in a single place (store, context, or event bus) and rendered through a top-level portal.\n- Timers and dismissal logic are tied to toast IDs so that updates/removals are predictable.\n",
-    "tags": [
-        "toast",
-        "notifications",
-        "global-state",
-        "portals",
-        "z-index",
-        "stacking",
-        "timers",
-        "accessibility",
-        "responsive-ui",
-        "frontend-architecture",
-        "system-design"
-    ],
-    "sections": [
-        {
-            "key": "R",
-            "title": "Requirements exploration",
-            "file": "requirements.json"
-        },
-        {
-            "key": "A",
-            "title": "Architecture / High-level design",
-            "file": "architecture.json"
-        },
-        {
-            "key": "D",
-            "title": "Data model",
-            "file": "data.json"
-        },
-        {
-            "key": "I",
-            "title": "Interface definition (API)",
-            "file": "interfaces.json"
-        },
-        {
-            "key": "O",
-            "title": "Optimizations and deep dive",
-            "file": "optimizations.json"
-        }
-    ]
+  "id": "notification-toast-system",
+  "title": "Notification Toast System",
+  "description": "Design a global notification toast system that can be triggered from anywhere in the app (e.g. `toast.success()`, `toast.error()`). Focus on global state management, rendering via portals, stacking multiple toasts, auto-dismiss timers, and accessible behavior.\n\nFunctional requirements:\n- Expose a simple API like `toast.success(message, options?)`, `toast.error(...)`, `toast.info(...)`.\n- Display one or more toast messages over the UI without breaking the layout.\n- Support variants (success / error / warning / info) with different visual styles.\n- Automatically dismiss toasts after a configurable timeout.\n- Allow manual dismiss (close button / click) that cancels the timer.\n- Stack multiple toasts in a defined order (e.g. newest on top).\n- Support different placements: top-right, top-center, bottom-right, bottom-left; on mobile, optionally full-width.\n\nNon-functional:\n- Global API must work from any part of the app without prop-drilling.\n- No memory leaks from timers or event listeners (proper cleanup on unmount).\n- Correct z-index behavior so toasts appear above regular content but below critical modals if desired.\n- Performant even when many toasts are fired in quick succession.\n- Good accessibility: ARIA roles, screen reader announcements, focus handling for interactive toasts.\n\nData / state considerations:\n- Each toast has: id, type (success/error/warning/info), message, optional description, createdAt, timeout, placement and optional actions.\n- Global toast state is managed in a single place (store, context, or event bus) and rendered through a top-level portal.\n- Timers and dismissal logic are tied to toast IDs so that updates/removals are predictable.\n",
+  "tags": [
+    "toast",
+    "notifications",
+    "global-state",
+    "portals",
+    "z-index",
+    "stacking",
+    "timers",
+    "accessibility",
+    "responsive-ui",
+    "frontend-architecture",
+    "system-design"
+  ],
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "updatedAt": "2026-01-30"
 }

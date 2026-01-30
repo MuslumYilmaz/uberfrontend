@@ -28,6 +28,8 @@ describe('locked preview builder', () => {
 
     expect(preview.what.length).toBeGreaterThan(30);
     expect(preview.learningGoals.length).toBeGreaterThanOrEqual(3);
+    expect(preview.keyDecisions?.length || 0).toBeGreaterThanOrEqual(2);
+    expect(preview.rubric?.length || 0).toBeGreaterThanOrEqual(3);
     expect(preview.constraints.length).toBeGreaterThanOrEqual(4);
     expect(preview.snippet.lines.length).toBeGreaterThanOrEqual(8);
     expect(preview.snippet.lines.length).toBeLessThanOrEqual(20);
@@ -56,6 +58,8 @@ describe('locked preview builder', () => {
     const preview = buildLockedPreviewForTrivia(q, { candidates, tech: 'css', kind: 'trivia' });
 
     expect(preview.learningGoals.length).toBeGreaterThanOrEqual(3);
+    expect(preview.keyDecisions?.length || 0).toBeGreaterThanOrEqual(2);
+    expect(preview.rubric?.length || 0).toBeGreaterThanOrEqual(3);
     expect(preview.constraints.length).toBeGreaterThanOrEqual(4);
     expect(preview.snippet.lines.length).toBeGreaterThanOrEqual(8);
   });
@@ -76,6 +80,8 @@ describe('locked preview builder', () => {
     const preview = buildLockedPreviewForSystemDesign(q, { candidates });
 
     expect(preview.what.length).toBeGreaterThan(30);
+    expect(preview.keyDecisions?.length || 0).toBeGreaterThanOrEqual(2);
+    expect(preview.rubric?.length || 0).toBeGreaterThanOrEqual(3);
     expect(preview.related.length).toBeGreaterThan(0);
     expect(preview.related[0].to[1]).toBe('system-design');
   });

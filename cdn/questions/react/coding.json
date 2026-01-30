@@ -65,7 +65,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-counter-solution.v1.json",
     "companies": [],
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-contact-form-starter",
@@ -150,7 +151,8 @@
     "companies": [
       "netflix"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-todo-list",
@@ -229,7 +231,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-todo-list-solution.v1.json",
     "companies": [],
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-image-slider",
@@ -310,7 +313,8 @@
       "amazon",
       "google"
     ],
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-tabs-switcher",
@@ -326,7 +330,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement React tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels.",
+      "summary": "Implement React tabs with a single activeTab state. Buttons update the value and conditional rendering shows only the active panel, with clear active styles and accessible button semantics. Include keyboard navigation and focus management for accessibility; test edge cases like repeated clicks and long labels. React focus: keep a single activeTab state and render panels conditionally.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -383,7 +387,8 @@
     "companies": [
       "amazon"
     ],
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-filterable-user-list",
@@ -400,7 +405,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Filter a React user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets.",
+      "summary": "Filter a React user list by search text and role. Derive filtered results without mutating the source array, and show an empty state when no matches exist. Add performance notes (memoization or debouncing), accessibility for filter controls, and tests for empty/error states and large datasets. React focus: derive filtered lists in render or useMemo without mutating source data.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main UI.",
@@ -463,7 +468,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-filterable-user-list-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-accordion-faq",
@@ -480,7 +486,7 @@
       "lifting-state"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) UI in React using component state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "summary": "Build a simple FAQ (accordion) UI in React using component state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. React focus: lift open state to the parent and pass isOpen/onToggle props to items.",
       "specs": {
         "requirements": [
           "Render a main <App /> component that shows a FAQ card with 3–4 FAQ items.",
@@ -540,7 +546,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-accordion-faq-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-pagination-table",
@@ -557,7 +564,7 @@
       "components"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in React that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+      "summary": "Build a simple paginated data table in React that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. React focus: keep page index in state and derive page slices.",
       "specs": {
         "requirements": [
           "Render a main <App /> component that shows a table of users.",
@@ -619,7 +626,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-pagination-table-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-theme-toggle",
@@ -637,7 +645,7 @@
       "components"
     ],
     "description": {
-      "summary": "Add a global light/dark theme toggle using React Context. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "summary": "Add a global light/dark theme toggle using React Context. The selected theme should be stored in localStorage and restored when the page reloads. React focus: use Context to persist theme in localStorage and sync the DOM attribute.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner (UI is already provided via CSS).",
@@ -700,7 +708,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-theme-toggle-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-multi-step-signup",
@@ -785,7 +794,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-multi-step-form-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-shopping-cart",
@@ -803,7 +813,7 @@
       "ecommerce"
     ],
     "description": {
-      "summary": "Build a small shopping cart UI in React. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price.",
+      "summary": "Build a small shopping cart UI in React. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. React focus: use immutable updates for cart lines and derived totals.",
       "specs": {
         "requirements": [
           "Render a list of products with name, price, and an \"Add to cart\" button for each.",
@@ -871,7 +881,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-shopping-cart-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-debounced-search",
@@ -889,7 +900,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects.",
+      "summary": "Build a React debounced search input with fake API calls. Use useEffect + setTimeout cleanup to cancel stale requests, and manage loading, error, and empty states for realistic UX. Concepts: react, state, effects. React focus: debounce with useEffect + setTimeout cleanup, and manage loading/error state.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -957,7 +968,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-debounced-search-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-star-rating",
@@ -974,7 +986,7 @@
       "components"
     ],
     "description": {
-      "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes.",
+      "summary": "Implement a reusable <StarRating /> widget in React. It should render a row of clickable stars, allow the user to select a rating, and notify a parent component when the rating changes. React focus: build a controlled component and notify parent on change.",
       "specs": {
         "requirements": [
           "Render a <StarRating /> component as part of the main UI.",
@@ -1035,7 +1047,8 @@
     "companies": [
       "amazon"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-dynamic-table",
@@ -1053,7 +1066,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "Generate a dynamic table in React from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers.",
+      "summary": "Generate a dynamic table in React from row/column inputs. Normalize values, rebuild the grid on action, and render consistent labels so users can verify correct dimensions. Concepts: react, state, event-handlers. React focus: generate rows/cols with map and keep inputs controlled.",
       "specs": {
         "requirements": [
           "Render a main <App /> UI that contains the dynamic table controls.",
@@ -1110,7 +1123,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-dynamic-table-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-nested-checkboxes",
@@ -1127,7 +1141,7 @@
       "dom"
     ],
     "description": {
-      "summary": "Build a small React UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate).",
+      "summary": "Build a small React UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate). React focus: compute parent indeterminate state from child selections.",
       "specs": {
         "requirements": [
           "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
@@ -1187,7 +1201,8 @@
     },
     "solutionAsset": "assets/sb/react/solution/react-nested-checkboxes-solution.v1.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-autocomplete-search-starter",
@@ -1271,7 +1286,8 @@
     "companies": [
       "apple"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-transfer-list",
@@ -1288,7 +1304,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a React transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer.",
+      "summary": "Build a React transfer list UI with two panels and checkbox selection. Users select items in one list and move them to the other with arrow buttons. Preserve item order, clear selection after transfer, and disable buttons when nothing is selected. Include keyboard navigation, focus management, and performance for large lists; test selections after transfer. React focus: manage selected ids and list state immutably across two panels.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1349,7 +1365,8 @@
     "companies": [
       "meta"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-tictactoe",
@@ -1434,7 +1451,8 @@
     "companies": [
       "amazon"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-use-effect-once",
@@ -1506,7 +1524,8 @@
     "companies": [
       "netflix"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-like-button",
@@ -1523,7 +1542,7 @@
       "conditional-rendering"
     ],
     "description": {
-      "summary": "Build a React Like button that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering.",
+      "summary": "Build a React Like button that toggles between liked/unliked and updates a count. Clicking should add or subtract one based on current state, and the counter must never drop below zero. This checks controlled state, event handling, and safe updates. Concepts: react, state, event handlers, components, conditional rendering. React focus: keep liked/count in state and guard against negative values.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1582,7 +1601,8 @@
     "companies": [
       "amazon"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-progress-bar-thresholds",
@@ -1599,7 +1619,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a React progress bar for values 0–100 with +10%/−10% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34–66, green &gt;66). Show the numeric percentage and keep the UI in sync with state.",
+      "summary": "Build a React progress bar for values 0–100 with +10%/−10% controls. Clamp progress to the valid range and change the bar color by thresholds (e.g., red &lt;34, orange 34–66, green &gt;66). Show the numeric percentage and keep the UI in sync with state. React focus: derive classes from state and clamp values before render.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1661,7 +1681,8 @@
     "companies": [
       "react"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-nested-comments",
@@ -1679,7 +1700,7 @@
       "controlled-inputs"
     ],
     "description": {
-      "summary": "Build a React nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation.",
+      "summary": "Build a React nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. React focus: render recursive components and keep a single active reply id.",
       "specs": {
         "requirements": [
           "Render a nested comments UI as the main screen.",
@@ -1740,7 +1761,8 @@
     "companies": [
       "google"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-dynamic-counter-buttons",
@@ -1757,7 +1779,7 @@
       "dynamic-ui"
     ],
     "description": {
-      "summary": "In React, let users add or remove step buttons dynamically, and have each button update the counter by its own step value. Use state arrays and event handlers to keep the UI in sync. Concepts: react, state, arrays, event handlers, dynamic ui.",
+      "summary": "In React, let users add or remove step buttons dynamically, and have each button update the counter by its own step value. Use state arrays and event handlers to keep the UI in sync. Concepts: react, state, arrays, event handlers, dynamic ui. React focus: store step buttons in state arrays and update immutably.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main screen.",
@@ -1816,6 +1838,7 @@
     "companies": [
       "amazon"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   }
 ]

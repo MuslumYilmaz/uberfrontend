@@ -16,6 +16,8 @@ export type LockedPreviewLink = {
 
 export type LockedPreviewData = {
   what: string;
+  keyDecisions?: string[];
+  rubric?: string[];
   learningGoals: string[];
   constraints: string[];
   snippet: LockedPreviewSnippet;
@@ -146,6 +148,40 @@ const buildLearningGoals = (ctx: BuildContext): string[] => {
   return uniq(goals).slice(0, 6);
 };
 
+const hasKeyword = (ctx: BuildContext, keywords: string[]): boolean => {
+  const haystack = `${ctx.title} ${ctx.description} ${(ctx.tags || []).join(' ')}`.toLowerCase();
+  return keywords.some((k) => haystack.includes(k));
+};
+
+const inferConstraints = (ctx: BuildContext): string[] => {
+  const out: string[] = [];
+  if (ctx.type === 'coding') {
+    if (hasKeyword(ctx, ['array', 'list'])) out.push('Preserve input order and handle empty arrays safely.');
+    if (hasKeyword(ctx, ['string'])) out.push('Handle empty strings and mixed casing without errors.');
+    if (hasKeyword(ctx, ['object', 'map', 'dictionary'])) out.push('Avoid prototype pitfalls when reading object keys.');
+    if (hasKeyword(ctx, ['promise', 'async', 'await'])) out.push('Handle async flow without blocking the event loop.');
+    if (hasKeyword(ctx, ['memo', 'cache'])) out.push('Use a stable cache key and avoid collisions.');
+    if (hasKeyword(ctx, ['debounce'])) out.push('Cancel stale work and only execute the latest call.');
+    if (hasKeyword(ctx, ['throttle'])) out.push('Limit executions to a fixed interval and define trailing behavior.');
+    if (hasKeyword(ctx, ['tree', 'graph'])) out.push('Avoid deep recursion issues on large inputs.');
+    if (hasKeyword(ctx, ['sort'])) out.push('Do not mutate inputs; return a new sorted output.');
+  } else if (ctx.type === 'trivia') {
+    out.push('Use exact terminology and avoid vague paraphrasing.');
+    out.push('Include one concrete UI or code example in the explanation.');
+    if (hasKeyword(ctx, ['accessibility', 'aria', 'a11y'])) out.push('Mention keyboard behavior and ARIA where relevant.');
+    if (hasKeyword(ctx, ['css'])) out.push('Reference cascade/specificity or box model implications.');
+    if (hasKeyword(ctx, ['html'])) out.push('Anchor the explanation in semantic HTML behavior.');
+  } else {
+    out.push('Assume real users and real latency; budget for perceived performance.');
+    out.push('Define client-side caching and invalidation strategy.');
+    out.push('Plan pagination or windowing for large UI lists.');
+    if (hasKeyword(ctx, ['realtime', 'real-time', 'websocket', 'sse'])) out.push('Batch UI updates and handle reconnection/backoff.');
+    if (hasKeyword(ctx, ['upload'])) out.push('Validate file size/type and show progress with retry.');
+    if (hasKeyword(ctx, ['notifications'])) out.push('Define dedupe rules and unread state updates.');
+  }
+  return uniq(out);
+};
+
 const buildConstraints = (ctx: BuildContext, raw: string[]): string[] => {
   const base = uniq(raw).map((item) => trimWords(item, 18)).filter(Boolean);
   const tags = pickTags(ctx.tags, 3);
@@ -160,18 +196,22 @@ const buildConstraints = (ctx: BuildContext, raw: string[]): string[] => {
     extra.push('Keep runtime close to linear time where possible.');
     extra.push('Prefer a pure function: no side effects beyond the return value.');
   } else if (ctx.type === 'trivia') {
-    extra.push('Use exact terminology and avoid vague paraphrasing.');
-    extra.push('Include one concrete UI or code example in the explanation.');
     if (tags.length) extra.push(`Differentiate ${tags.join(' vs ')} when relevant.`);
     extra.push('Keep the answer scoped to front-end usage and browser behavior.');
   } else {
-    extra.push('Assume real users and real latency; budget for perceived performance.');
-    extra.push('Define client-side caching and invalidation strategy.');
-    extra.push('Plan pagination or windowing for large UI lists.');
     if (tags.length) extra.push(`Account for ${tags.join(', ')} constraints in the UI.`);
   }
 
-  return uniq([...base, ...extra]).slice(0, 10);
+  const combined = uniq([...base, ...inferConstraints(ctx), ...extra]);
+  if (combined.length < 4) {
+    combined.push(...uniq([
+      'Be explicit about edge cases and error states.',
+      'Prioritize clarity over cleverness in explanations.',
+      'Explain the trade-offs behind your choices.',
+    ]));
+  }
+
+  return uniq(combined).slice(0, 10);
 };
 
 const buildPitfalls = (ctx: BuildContext): string[] => {
@@ -195,6 +235,48 @@ const buildPitfalls = (ctx: BuildContext): string[] => {
   }
 
   return uniq(pitfalls).slice(0, 5);
+};
+
+const buildKeyDecisions = (ctx: BuildContext): string[] => {
+  const decisions: string[] = [];
+  if (ctx.type === 'coding') {
+    decisions.push('Define the exact input/output contract before coding.');
+    if (hasKeyword(ctx, ['array', 'list'])) decisions.push('Choose iteration vs higher-order methods for readability.');
+    if (hasKeyword(ctx, ['async', 'promise'])) decisions.push('Decide on concurrency and error propagation behavior.');
+    decisions.push('Prioritize predictable edge-case handling over micro-optimizations.');
+  } else if (ctx.type === 'trivia') {
+    decisions.push('Give a precise definition first, then a concrete example.');
+    if (hasKeyword(ctx, ['css'])) decisions.push('Tie the answer back to cascade/specificity or layout behavior.');
+    if (hasKeyword(ctx, ['accessibility', 'aria', 'a11y'])) decisions.push('Call out keyboard and screen reader implications.');
+  } else {
+    decisions.push('Choose a data model that matches UI reads and writes.');
+    decisions.push('Pick a pagination + caching strategy to keep the UI fast.');
+    if (hasKeyword(ctx, ['realtime', 'websocket', 'sse'])) decisions.push('Select a realtime transport and reconnection policy.');
+    decisions.push('Set performance budgets (LCP/INP) and validate with telemetry.');
+  }
+  return uniq(decisions).slice(0, 5);
+};
+
+const buildRubric = (ctx: BuildContext): string[] => {
+  const rubric: string[] = [];
+  if (ctx.type === 'coding') {
+    rubric.push('Correctness: covers required behaviors and edge cases.');
+    rubric.push('Clarity: readable structure and predictable control flow.');
+    rubric.push('Complexity: avoids unnecessary work for large inputs.');
+    rubric.push('API discipline: no mutation of inputs; returns expected shape.');
+    rubric.push('Testability: solution is easy to unit test.');
+  } else if (ctx.type === 'trivia') {
+    rubric.push('Accuracy: uses correct terminology and facts.');
+    rubric.push('Specificity: includes at least one concrete example.');
+    rubric.push('Scope: stays within front-end/browser behavior.');
+    rubric.push('Pitfall awareness: mentions a common mistake.');
+  } else {
+    rubric.push('Architecture: clear client data flow and component boundaries.');
+    rubric.push('Performance: budgets + caching/virtualization where needed.');
+    rubric.push('Resilience: offline/error states and retries defined.');
+    rubric.push('Observability: metrics/logs to validate UX and perf.');
+  }
+  return uniq(rubric).slice(0, 5);
 };
 
 const extractFunctionName = (starterCode?: string | null, summary?: string): string => {
@@ -234,12 +316,15 @@ const buildCodingSnippet = (ctx: CodingContext): LockedPreviewSnippet => {
     `const empty = ${args.length >= 2 ? `${arg1} && ${arg2}` : arg1} ?? null;`,
     `const fallback = ${maybeAwait}${name}(${callArgs});`,
     'console.log(fallback);',
+    '',
+    '// Expected: describe output shape, not the implementation',
+    '// (no solution code in preview)',
   ];
 
   return {
     title: 'Mini snippet (usage only)',
     language: 'typescript',
-    lines: lines.slice(0, 12),
+    lines: lines.slice(0, 16),
   };
 };
 
@@ -297,7 +382,7 @@ const buildTriviaSnippet = (ctx: TriviaContext): LockedPreviewSnippet => {
   return {
     title: 'Mini snippet (scenario)',
     language: 'text',
-    lines: lines.slice(0, 12),
+    lines: lines.slice(0, 14),
   };
 };
 
@@ -323,7 +408,7 @@ const buildSystemDesignSnippet = (ctx: SystemDesignContext): LockedPreviewSnippe
   return {
     title: 'Mini snippet (architecture sketch)',
     language: 'text',
-    lines: lines.slice(0, 12),
+    lines: lines.slice(0, 14),
   };
 };
 
@@ -410,6 +495,8 @@ export const buildLockedPreviewForCoding = (
 
   return {
     what: buildWhatText(ctx),
+    keyDecisions: buildKeyDecisions(ctx),
+    rubric: buildRubric(ctx),
     learningGoals: buildLearningGoals(ctx),
     constraints: buildConstraints(ctx, rawConstraints),
     snippet: buildCodingSnippet(ctx),
@@ -437,6 +524,8 @@ export const buildLockedPreviewForTrivia = (
 
   return {
     what: buildWhatText(ctx),
+    keyDecisions: buildKeyDecisions(ctx),
+    rubric: buildRubric(ctx),
     learningGoals: buildLearningGoals(ctx),
     constraints: buildConstraints(ctx, []),
     snippet: buildTriviaSnippet(ctx),
@@ -466,6 +555,8 @@ export const buildLockedPreviewForSystemDesign = (
 
   return {
     what: buildWhatText(ctx),
+    keyDecisions: buildKeyDecisions(ctx),
+    rubric: buildRubric(ctx),
     learningGoals: buildLearningGoals(ctx),
     constraints: buildConstraints(ctx, sectionConstraints),
     snippet: buildSystemDesignSnippet(ctx),

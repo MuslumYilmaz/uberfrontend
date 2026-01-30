@@ -91,6 +91,9 @@ type SDQuestion = {
   tags: string[];
   access?: 'free' | 'premium';
   type?: string;
+  author?: string;
+  updatedAt?: string;
+  difficulty?: string;
 
   radio?: RadioSection[];
 
@@ -448,6 +451,18 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       .trim();
   }
 
+  private uniq(items: string[]): string[] {
+    const out: string[] = [];
+    const seen = new Set<string>();
+    for (const item of items) {
+      const val = this.normalizePreviewText(item);
+      if (!val || seen.has(val.toLowerCase())) continue;
+      seen.add(val.toLowerCase());
+      out.push(val);
+    }
+    return out;
+  }
+
   private trimWords(text: string, maxWords: number): string {
     if (!text) return '';
     const words = text.split(/\s+/);
@@ -463,11 +478,86 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     );
   }
 
+  private buildLearningResourceSchema(question: SDQuestion, canonical: string): Record<string, any> {
+    const teaches = this.uniq([
+      ...(question.tags || []),
+      ...this.sections().map((s) => s.title),
+    ]).slice(0, 8);
+
+    return {
+      '@type': 'LearningResource',
+      '@id': `${canonical}#learning-resource`,
+      name: question.title,
+      description: this.sdDescription(question),
+      url: canonical,
+      inLanguage: 'en',
+      learningResourceType: 'System design practice question',
+      educationalLevel: question.difficulty || 'intermediate',
+      teaches,
+      isAccessibleForFree: question.access !== 'premium',
+      author: { '@type': 'Organization', name: this.resolveAuthor(question) },
+    };
+  }
+
+  private buildFaqSchema(question: SDQuestion, canonical: string, isLocked: boolean): Record<string, any> | null {
+    const sections = this.sections();
+    const items = sections.slice(0, 6).map((s) => {
+      const baseAnswer = isLocked
+        ? this.sdDescription(question)
+        : (s.content || '').trim();
+      const answerText = this.trimWords(this.normalizePreviewText(baseAnswer || question.description || ''), 36);
+      if (!answerText) return null;
+      return {
+        '@type': 'Question',
+        name: s.title,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: answerText,
+        },
+      };
+    }).filter(Boolean) as Array<Record<string, any>>;
+
+    if (!items.length) return null;
+
+    return {
+      '@type': 'FAQPage',
+      '@id': `${canonical}#faq`,
+      mainEntity: items,
+    };
+  }
+
+  private resolveAuthor(q: SDQuestion): string {
+    return String((q as any).author || 'FrontendAtlas Team').trim() || 'FrontendAtlas Team';
+  }
+
+  private resolveUpdatedIso(q: SDQuestion): string | null {
+    const raw = (q as any).updatedAt;
+    if (!raw) return null;
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toISOString();
+  }
+
+  authorLabel(q?: SDQuestion | null): string {
+    if (!q) return 'FrontendAtlas Team';
+    return this.resolveAuthor(q);
+  }
+
+  updatedLabel(q?: SDQuestion | null): string | null {
+    if (!q) return null;
+    const iso = this.resolveUpdatedIso(q);
+    if (!iso) return null;
+    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
   private updateSeo(question: SDQuestion): void {
     if (this.suppressSeo) return;
     const canonical = this.seo.buildCanonicalUrl(`/system-design/${question.id}`);
     const description = this.sdDescription(question);
     const keywords = this.sdKeywords(question);
+    const authorName = this.resolveAuthor(question);
+    const dateModified = this.resolveUpdatedIso(question);
+    const isLocked = this.locked();
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -500,10 +590,15 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       description,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
-      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      author: { '@type': 'Organization', name: authorName },
       isAccessibleForFree: question.access !== 'premium',
       keywords: keywords.join(', '),
+      ...(dateModified ? { dateModified } : {}),
     };
+
+    const learningResource = this.buildLearningResourceSchema(question, canonical);
+    const faq = this.buildFaqSchema(question, canonical, isLocked);
+    const jsonLd = faq ? [breadcrumb, article, learningResource, faq] : [breadcrumb, article, learningResource];
 
     this.seo.updateTags({
       title: question.title,
@@ -511,7 +606,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       keywords,
       canonical,
       ogType: 'article',
-      jsonLd: [breadcrumb, article],
+      jsonLd,
     });
   }
 

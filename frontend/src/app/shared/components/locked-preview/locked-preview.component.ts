@@ -21,6 +21,20 @@ import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
         </ul>
       </section>
 
+      <section class="locked-preview-rich__section" *ngIf="data.keyDecisions?.length">
+        <h2 class="locked-preview-rich__title">Key decisions to discuss</h2>
+        <ul class="locked-preview-rich__list">
+          <li *ngFor="let item of data.keyDecisions">{{ item }}</li>
+        </ul>
+      </section>
+
+      <section class="locked-preview-rich__section" *ngIf="data.rubric?.length">
+        <h2 class="locked-preview-rich__title">Evaluation rubric</h2>
+        <ul class="locked-preview-rich__list">
+          <li *ngFor="let item of data.rubric">{{ item }}</li>
+        </ul>
+      </section>
+
       <section class="locked-preview-rich__section" *ngIf="data.constraints?.length">
         <h2 class="locked-preview-rich__title">Constraints / Requirements</h2>
         <ul class="locked-preview-rich__list">

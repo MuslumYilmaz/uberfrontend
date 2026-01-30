@@ -421,6 +421,30 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     );
   }
 
+  private resolveAuthor(q: Question): string {
+    return String((q as any).author || 'FrontendAtlas Team').trim() || 'FrontendAtlas Team';
+  }
+
+  private resolveUpdatedIso(q: Question): string | null {
+    const raw = (q as any).updatedAt;
+    if (!raw) return null;
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toISOString();
+  }
+
+  authorLabel(q?: Question | null): string {
+    if (!q) return 'FrontendAtlas Team';
+    return this.resolveAuthor(q);
+  }
+
+  updatedLabel(q?: Question | null): string | null {
+    if (!q) return null;
+    const iso = this.resolveUpdatedIso(q);
+    if (!iso) return null;
+    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
   private updateSeo(q: Question | null): void {
     if (this.suppressSeo) return;
     if (!q) {
@@ -435,6 +459,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     const description = this.questionDescription(q);
     const keywords = this.questionKeywords(q);
     const isLocked = isQuestionLockedForTier(q, this.auth.user());
+    const authorName = this.resolveAuthor(q);
+    const dateModified = this.resolveUpdatedIso(q);
 
     const breadcrumb = {
       '@type': 'BreadcrumbList',
@@ -467,9 +493,10 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       description,
       mainEntityOfPage: canonical,
       inLanguage: 'en',
-      author: { '@type': 'Organization', name: 'FrontendAtlas' },
+      author: { '@type': 'Organization', name: authorName },
       isAccessibleForFree: q.access !== 'premium',
       keywords: keywords.join(', '),
+      ...(dateModified ? { dateModified } : {}),
     };
 
     const faq = this.buildFaqSchema(q, canonical, isLocked);

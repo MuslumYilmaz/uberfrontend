@@ -104,7 +104,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-pure-function-of-props-and-state",
@@ -206,7 +207,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-functional-vs-class-components",
@@ -349,7 +351,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-jsx-transform-and-why-not-required",
@@ -456,7 +459,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-function-treated-as-component-rules",
@@ -569,7 +573,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-rerender-decision-and-render",
@@ -696,7 +701,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-render-nothing-return-value",
@@ -814,7 +820,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-one-way-data-flow",
@@ -920,7 +927,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-why-props-immutable",
@@ -1039,7 +1047,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-usestate-purpose",
@@ -1141,7 +1150,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-why-event-delegation",
@@ -1238,7 +1248,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-keys-in-lists",
@@ -1316,7 +1327,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-controlled-vs-uncontrolled",
@@ -1376,7 +1388,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-default-vs-named-exports-runtime-break",
@@ -1483,7 +1496,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-conditional-rendering",
@@ -1640,7 +1654,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-useeffect-purpose",
@@ -1785,7 +1800,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-fragments-dom-and-reconciliation",
@@ -1913,7 +1929,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-virtual-dom",
@@ -2031,7 +2048,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-component-rerendering",
@@ -2190,7 +2208,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-mixing-state-and-props-responsibilities",
@@ -2299,7 +2318,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-lifting-state-up",
@@ -2360,7 +2380,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-higher-order-components",
@@ -2521,7 +2542,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-usememo-vs-usecallback",
@@ -2593,7 +2615,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-prevent-unnecessary-rerenders",
@@ -2676,7 +2699,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-strictmode-purpose",
@@ -2746,7 +2770,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-reconciliation",
@@ -2820,7 +2845,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-diffing-algorithm",
@@ -2894,7 +2920,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-render-props-vs-hocs",
@@ -2970,7 +2997,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-portals",
@@ -3040,7 +3068,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-concurrent-rendering",
@@ -3117,7 +3146,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-why-hooks-have-rules",
@@ -3202,7 +3232,8 @@
       "state",
       "best-practices",
       "control-flow"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-stale-state-closures",
@@ -3306,7 +3337,8 @@
       "state",
       "effects",
       "callbacks"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-useref-vs-usestate",
@@ -3461,7 +3493,8 @@
       "hooks",
       "state",
       "dom"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-why-batching-state-updates",
@@ -3594,7 +3627,8 @@
       "state",
       "performance",
       "state-management"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-derived-state-anti-pattern",
@@ -3737,7 +3771,8 @@
       "derived-state",
       "state-management",
       "best-practices"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-context-performance-issues",
@@ -3879,7 +3914,8 @@
       "performance",
       "memoization",
       "state-management"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-error-boundaries-what-they-solve",
@@ -3999,7 +4035,8 @@
       "error-handling",
       "components",
       "best-practices"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-strictmode-double-invoke-effects",
@@ -4121,7 +4158,8 @@
       "react",
       "effects",
       "best-practices"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-useeffect-vs-uselayouteffect",
@@ -4257,6 +4295,7 @@
       "effects",
       "performance",
       "dom"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   }
 ]

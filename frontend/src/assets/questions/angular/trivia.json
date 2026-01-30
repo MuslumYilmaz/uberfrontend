@@ -1,11 +1,11 @@
 [
   {
     "id": "angular-lifecycle-constructor-oninit-afterviewinit-dom",
-    "title": "What\u2019s the difference between constructor, ngOnInit, and ngAfterViewInit, and which one is correct for DOM/ViewChild access?",
+    "title": "What’s the difference between constructor, ngOnInit, and ngAfterViewInit, and which one is correct for DOM/ViewChild access?",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). For DOM/ViewChild access, ngAfterViewInit is usually correct\u2014except @ViewChild({ static: true }) cases which are available earlier.",
+    "description": "constructor is for DI + trivial class setup, ngOnInit is for initialization that depends on inputs/bindings, and ngAfterViewInit is for work that needs the component view (DOM, ViewChild). For DOM/ViewChild access, ngAfterViewInit is usually correct—except @ViewChild({ static: true }) cases which are available earlier.",
     "answer": {
       "blocks": [
         {
@@ -17,7 +17,7 @@
           "columns": [
             "Hook",
             "When it runs",
-            "What it\u2019s for",
+            "What it’s for",
             "DOM / ViewChild availability"
           ],
           "rows": [
@@ -25,26 +25,26 @@
               "<code>constructor</code>",
               "When the class instance is created (before Angular initializes bindings).",
               "Dependency injection + minimal field initialization (no Angular-dependent logic).",
-              "\u274c Not safe for DOM. View is not created. ViewChild not resolved."
+              "❌ Not safe for DOM. View is not created. ViewChild not resolved."
             ],
             [
               "<code>ngOnInit()</code>",
               "Once, after Angular sets data-bound inputs (after first <code>ngOnChanges</code>).",
               "Initialization that depends on inputs, services, starting streams, fetching data.",
-              "\u26a0\ufe0f Usually not for DOM. ViewChild only if <code>@ViewChild({ static: true })</code>."
+              "⚠️ Usually not for DOM. ViewChild only if <code>@ViewChild({ static: true })</code>."
             ],
             [
               "<code>ngAfterViewInit()</code>",
-              "Once, after Angular finishes creating the component\u2019s view + child views.",
+              "Once, after Angular finishes creating the component’s view + child views.",
               "Work that needs the rendered view: <code>@ViewChild</code>, DOM measurements, focus, 3rd-party widgets init.",
-              "\u2705 Safe for DOM/ViewChild (default <code>static: false</code>)."
+              "✅ Safe for DOM/ViewChild (default <code>static: false</code>)."
             ]
           ],
           "caption": "Constructor vs ngOnInit vs ngAfterViewInit"
         },
         {
           "type": "text",
-          "text": "<strong>Which one is correct for DOM / ViewChild?</strong><br><br><strong>Use <code>ngAfterViewInit()</code> for DOM/ViewChild access in most cases.</strong> That\u2019s when Angular guarantees the view exists and view queries (default <code>static: false</code>) are resolved."
+          "text": "<strong>Which one is correct for DOM / ViewChild?</strong><br><br><strong>Use <code>ngAfterViewInit()</code> for DOM/ViewChild access in most cases.</strong> That’s when Angular guarantees the view exists and view queries (default <code>static: false</code>) are resolved."
         },
         {
           "type": "text",
@@ -104,7 +104,8 @@
       "components",
       "hooks",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-vs-angularjs",
@@ -191,16 +192,16 @@
           ],
           "rows": [
             [
-              "\u201cSame name, different framework. Angular is a rewrite; not an upgrade.\u201d"
+              "“Same name, different framework. Angular is a rewrite; not an upgrade.”"
             ],
             [
-              "\u201cAngularJS: $scope + digest loop; Angular: component tree + change detection.\u201d"
+              "“AngularJS: $scope + digest loop; Angular: component tree + change detection.”"
             ],
             [
-              "\u201cAngular is TypeScript-first with strong DI + CLI + RxJS patterns.\u201d"
+              "“Angular is TypeScript-first with strong DI + CLI + RxJS patterns.”"
             ],
             [
-              "\u201cMigration is non-trivial: architecture changes (controllers\u2192components, services, routing, forms, async model).\u201d"
+              "“Migration is non-trivial: architecture changes (controllers→components, services, routing, forms, async model).”"
             ]
           ]
         },
@@ -221,10 +222,10 @@
           ],
           "rows": [
             [
-              "Simple \u201cupgrade\u201d doesn\u2019t exist; you either rewrite incrementally or build a hybrid app (ngUpgrade) for a period."
+              "Simple “upgrade” doesn’t exist; you either rewrite incrementally or build a hybrid app (ngUpgrade) for a period."
             ],
             [
-              "Main shifts: controllers/scopes \u2192 components + services; digest watchers \u2192 change detection; promise-heavy code \u2192 observable-friendly APIs."
+              "Main shifts: controllers/scopes → components + services; digest watchers → change detection; promise-heavy code → observable-friendly APIs."
             ],
             [
               "Testing/tooling also changes: Karma/Jasmine setups may differ, CLI conventions become the default, and build pipelines change."
@@ -233,7 +234,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>AngularJS (1.x) is the legacy framework built around controllers/<code>$scope</code> and the digest cycle (watchers). Angular (2+) is a TypeScript-first, component-based rewrite with modern DI, RxJS-first async patterns, and CLI/compiler tooling. Same name, different architecture\u2014migration is typically a refactor/rewrite rather than an \u201cupgrade\u201d."
+          "text": "<strong>Summary</strong><br><br>AngularJS (1.x) is the legacy framework built around controllers/<code>$scope</code> and the digest cycle (watchers). Angular (2+) is a TypeScript-first, component-based rewrite with modern DI, RxJS-first async patterns, and CLI/compiler tooling. Same name, different architecture—migration is typically a refactor/rewrite rather than an “upgrade”."
         }
       ]
     },
@@ -245,7 +246,8 @@
       "frameworks",
       "history",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-component-vs-service-responsibilities",
@@ -258,7 +260,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Use <strong>components</strong> for rendering + wiring UI events to actions. Use <strong>services</strong> for reusable logic and side effects (HTTP, caching, state, orchestration). A good component reads like a \u201cview model composer\u201d, not a mini back-end."
+          "text": "<strong>Overview</strong><br><br>Use <strong>components</strong> for rendering + wiring UI events to actions. Use <strong>services</strong> for reusable logic and side effects (HTTP, caching, state, orchestration). A good component reads like a “view model composer”, not a mini back-end."
         },
         {
           "type": "list",
@@ -275,7 +277,7 @@
             ],
             [
               "User interaction",
-              "Click handlers, form submit handlers, mapping UI events \u2192 intent/actions",
+              "Click handlers, form submit handlers, mapping UI events → intent/actions",
               "Input validation rules that are reusable across screens"
             ],
             [
@@ -285,8 +287,8 @@
             ],
             [
               "Business rules",
-              "Minimal (only what\u2019s needed to connect UI to rules)",
-              "Core rules (pricing logic, permission checks, normalization, mapping DTO\u2192domain)"
+              "Minimal (only what’s needed to connect UI to rules)",
+              "Core rules (pricing logic, permission checks, normalization, mapping DTO→domain)"
             ],
             [
               "Data access",
@@ -308,7 +310,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br>If the code depends on <strong>how something is shown</strong> (DOM, template state, view events) \u2192 component. If it depends on <strong>what something means</strong> (rules, data fetching, caching, orchestration) \u2192 service."
+          "text": "<strong>Rule of thumb</strong><br><br>If the code depends on <strong>how something is shown</strong> (DOM, template state, view events) → component. If it depends on <strong>what something means</strong> (rules, data fetching, caching, orchestration) → service."
         },
         {
           "type": "code",
@@ -344,7 +346,7 @@
               "Keep DOM work in components/directives; services stay UI-agnostic"
             ],
             [
-              "\u201cGod component\u201d that owns everything",
+              "“God component” that owns everything",
               "Becomes unmaintainable; PRs become risky",
               "Extract services + presentational components; keep the container thin"
             ]
@@ -369,7 +371,8 @@
       "services",
       "architecture",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-component-metadata",
@@ -377,12 +380,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "The @Component decorator attaches metadata to a TypeScript class so Angular can treat it as a component. This metadata tells Angular how to render the view (template + styles), how to match it in HTML (selector), what dependencies it can use (imports/providers), and how to run it (change detection, encapsulation, host bindings). Angular needs this because a plain class doesn\u2019t contain enough information to compile and instantiate a UI component.",
+    "description": "The @Component decorator attaches metadata to a TypeScript class so Angular can treat it as a component. This metadata tells Angular how to render the view (template + styles), how to match it in HTML (selector), what dependencies it can use (imports/providers), and how to run it (change detection, encapsulation, host bindings). Angular needs this because a plain class doesn’t contain enough information to compile and instantiate a UI component.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>@Component({...})</code> is configuration for Angular\u2019s compiler/runtime. It turns a plain class into something Angular can: (1) match in templates, (2) compile into render instructions, and (3) instantiate with the right DI scope and runtime behavior."
+          "text": "<strong>Overview</strong><br><br><code>@Component({...})</code> is configuration for Angular’s compiler/runtime. It turns a plain class into something Angular can: (1) match in templates, (2) compile into render instructions, and (3) instantiate with the right DI scope and runtime behavior."
         },
         {
           "type": "code",
@@ -400,7 +403,7 @@
             [
               "<code>selector</code>",
               "How this component is referenced in templates (e.g. <code>&lt;app-user-card&gt;</code>).",
-              "Without it, Angular can\u2019t match your class to an element in the DOM/template."
+              "Without it, Angular can’t match your class to an element in the DOM/template."
             ],
             [
               "<code>template</code> / <code>templateUrl</code>",
@@ -409,7 +412,7 @@
             ],
             [
               "<code>styles</code> / <code>styleUrls</code>",
-              "The component\u2019s CSS.",
+              "The component’s CSS.",
               "Angular can scope/apply styles according to encapsulation settings."
             ],
             [
@@ -447,7 +450,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why Angular needs this metadata</strong><br><br>A component is not \u201cjust a class\u201d in Angular. Angular must know: (1) what DOM tag/selector maps to this class, (2) what template to compile, (3) what dependencies are allowed in that template, (4) what DI scope to use, and (5) how to run runtime behaviors like change detection and style scoping. None of that is inferable reliably from TypeScript code alone."
+          "text": "<strong>Why Angular needs this metadata</strong><br><br>A component is not “just a class” in Angular. Angular must know: (1) what DOM tag/selector maps to this class, (2) what template to compile, (3) what dependencies are allowed in that template, (4) what DI scope to use, and (5) how to run runtime behaviors like change detection and style scoping. None of that is inferable reliably from TypeScript code alone."
         },
         {
           "type": "list",
@@ -481,7 +484,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br><code>@Component</code> metadata is the contract between your class and Angular\u2019s compiler/runtime: how to find it (<code>selector</code>), how to render it (<code>template</code>/<code>styles</code>), what it can use (<code>imports</code>/<code>providers</code>), and how it behaves (<code>changeDetection</code>/<code>encapsulation</code>/<code>host</code>). Angular needs it because the framework must compile and instantiate UI components deterministically."
+          "text": "<strong>Summary</strong><br><br><code>@Component</code> metadata is the contract between your class and Angular’s compiler/runtime: how to find it (<code>selector</code>), how to render it (<code>template</code>/<code>styles</code>), what it can use (<code>imports</code>/<code>providers</code>), and how it behaves (<code>changeDetection</code>/<code>encapsulation</code>/<code>host</code>). Angular needs it because the framework must compile and instantiate UI components deterministically."
         }
       ]
     },
@@ -493,20 +496,21 @@
       "decorators",
       "metadata",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngmodules-vs-standalone",
-    "title": "What problems do NgModules solve that standalone components don\u2019t?",
+    "title": "What problems do NgModules solve that standalone components don’t?",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Standalone components remove the need for NgModules for most app composition, routing, and DI setup. NgModules still solve a few practical problems: packaging legacy (non-standalone) declarations, consuming module-based third-party libraries (forRoot/forChild), and providing a single import/export \u201cbundle\u201d boundary that some teams and libraries still rely on. Covers: angular, modules, standalone, architecture, basics.",
+    "description": "Standalone components remove the need for NgModules for most app composition, routing, and DI setup. NgModules still solve a few practical problems: packaging legacy (non-standalone) declarations, consuming module-based third-party libraries (forRoot/forChild), and providing a single import/export “bundle” boundary that some teams and libraries still rely on. Covers: angular, modules, standalone, architecture, basics.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Standalone components shift Angular\u2019s \"template dependency scope\" from <code>@NgModule</code> to the component itself (<code>imports</code> on the component). For modern apps, that removes most reasons to create feature/shared modules.<br><br>NgModules still matter mainly as a <strong>packaging + compatibility layer</strong> for legacy declarables and module-based libraries/config APIs."
+          "text": "<strong>Overview</strong><br><br>Standalone components shift Angular’s \"template dependency scope\" from <code>@NgModule</code> to the component itself (<code>imports</code> on the component). For modern apps, that removes most reasons to create feature/shared modules.<br><br>NgModules still matter mainly as a <strong>packaging + compatibility layer</strong> for legacy declarables and module-based libraries/config APIs."
         },
         {
           "type": "list",
@@ -527,9 +531,9 @@
               "Standalone supports this mostly via <code>importProvidersFrom(SomeModule.forRoot(...))</code>, but the library still forces the NgModule shape."
             ],
             [
-              "Single \u201cbundle import\u201d for a large set of template dependencies",
+              "Single “bundle import” for a large set of template dependencies",
               "One <code>SharedModule</code> re-exports many imports/exports so feature code imports one thing",
-              "Standalone can mimic with a shared array/const, but there\u2019s no first-class \u201cexport scope\u201d container like NgModule exports."
+              "Standalone can mimic with a shared array/const, but there’s no first-class “export scope” container like NgModule exports."
             ],
             [
               "Gradual migration in an existing NgModule app",
@@ -539,7 +543,7 @@
             [
               "Team convention: explicit public API surface (exports) for a domain",
               "Exports define what the rest of the app can use from that domain",
-              "Standalone relies on regular TS exports + per-component imports; you lose the explicit \u201cexports list\u201d mechanism."
+              "Standalone relies on regular TS exports + per-component imports; you lose the explicit “exports list” mechanism."
             ]
           ],
           "caption": "Where NgModules still provide value in a standalone-first Angular world"
@@ -557,20 +561,20 @@
         {
           "type": "list",
           "columns": [
-            "If you\u2019re fully standalone, do this instead",
-            "Why it\u2019s the equivalent"
+            "If you’re fully standalone, do this instead",
+            "Why it’s the equivalent"
           ],
           "rows": [
             [
               "Create reusable import bundles as constants (not modules)",
-              "Gives you \u201cone name\u201d to import across many standalone components without an NgModule exports list."
+              "Gives you “one name” to import across many standalone components without an NgModule exports list."
             ],
             [
               "Prefer provider functions (<code>provideRouter</code>, <code>provideHttpClient</code>, etc.)",
               "Moves app configuration to bootstrap/route providers and reduces NgModule-only configuration patterns."
             ]
           ],
-          "caption": "Standalone alternatives to common \u201cSharedModule\u201d patterns"
+          "caption": "Standalone alternatives to common “SharedModule” patterns"
         },
         {
           "type": "code",
@@ -584,7 +588,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Standalone components cover most of what NgModules were used for (composition, routing, DI setup). NgModules still \u201cwin\u201d mainly for <strong>legacy/non-standalone declarations</strong> and <strong>module-shaped third-party APIs</strong> (especially <code>forRoot</code>/<code>forChild</code>). In a greenfield app with modern libs, you usually don\u2019t need to write new NgModules."
+          "text": "<strong>Summary</strong><br><br>Standalone components cover most of what NgModules were used for (composition, routing, DI setup). NgModules still “win” mainly for <strong>legacy/non-standalone declarations</strong> and <strong>module-shaped third-party APIs</strong> (especially <code>forRoot</code>/<code>forChild</code>). In a greenfield app with modern libs, you usually don’t need to write new NgModules."
         },
         {
           "type": "text",
@@ -600,7 +604,8 @@
       "standalone",
       "architecture",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-appmodule-standalone-changes",
@@ -608,12 +613,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "With standalone, AppModule is no longer the central \u201cassembly point\u201d. Template scope moves from NgModule declarations/imports to each standalone component\u2019s imports, and app-wide configuration moves to bootstrapApplication(...) (or an ApplicationConfig) and route-level providers. AppModule often disappears in greenfield apps, but NgModules still exist for legacy code and module-shaped libraries. The trade-off is simpler bootstrapping versus managing provider scope per component; test DI boundaries when migrating.",
+    "description": "With standalone, AppModule is no longer the central “assembly point”. Template scope moves from NgModule declarations/imports to each standalone component’s imports, and app-wide configuration moves to bootstrapApplication(...) (or an ApplicationConfig) and route-level providers. AppModule often disappears in greenfield apps, but NgModules still exist for legacy code and module-shaped libraries. The trade-off is simpler bootstrapping versus managing provider scope per component; test DI boundaries when migrating.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Standalone changes Angular\u2019s composition model:<br><br><strong>Before</strong>: AppModule declared what exists and what templates can use.<br><strong>Now</strong>: standalone components declare their own template dependencies (<code>imports</code>), and app-wide wiring happens in <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) + route providers."
+          "text": "<strong>Core idea</strong><br><br>Standalone changes Angular’s composition model:<br><br><strong>Before</strong>: AppModule declared what exists and what templates can use.<br><strong>Now</strong>: standalone components declare their own template dependencies (<code>imports</code>), and app-wide wiring happens in <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) + route providers."
         },
         {
           "type": "list",
@@ -649,7 +654,7 @@
               "Standalone components import the legacy NgModule that exports them"
             ]
           ],
-          "caption": "What \u201cmoved out of AppModule\u201d and where it lives now"
+          "caption": "What “moved out of AppModule” and where it lives now"
         },
         {
           "type": "code",
@@ -669,7 +674,7 @@
         {
           "type": "list",
           "columns": [
-            "Interview hotspot: \u201cWhere do global things go now?\u201d",
+            "Interview hotspot: “Where do global things go now?”",
             "Standalone answer"
           ],
           "rows": [
@@ -694,7 +699,7 @@
               "Use <code>importProvidersFrom(SomeLibModule.forRoot(...))</code> (or keep AppModule if simpler)"
             ]
           ],
-          "caption": "This is the practical \u201cAppModule replacement\u201d map interviewers look for"
+          "caption": "This is the practical “AppModule replacement” map interviewers look for"
         },
         {
           "type": "code",
@@ -711,7 +716,7 @@
           "rows": [
             [
               "Forgetting template imports (NgIf/NgFor/AsyncPipe/etc.)",
-              "Template compile errors: \u201cCan\u2019t bind to ...\u201d / unknown directive/pipe",
+              "Template compile errors: “Can’t bind to ...” / unknown directive/pipe",
               "Import the standalone directive/pipe (e.g. <code>NgIf</code>, <code>NgFor</code>, <code>AsyncPipe</code>) or import a legacy NgModule that exports them"
             ],
             [
@@ -720,8 +725,8 @@
               "Prefer provider functions at bootstrap/route; use <code>importProvidersFrom</code> only when the library forces NgModule shape"
             ],
             [
-              "Assuming NgModules are \u201cgone\u201d",
-              "Legacy libs/declarables can\u2019t be imported directly",
+              "Assuming NgModules are “gone”",
+              "Legacy libs/declarables can’t be imported directly",
               "Keep NgModules as a compatibility/container layer where needed"
             ]
           ],
@@ -736,22 +741,22 @@
           "rows": [
             [
               "Greenfield standalone app",
-              "Usually no \u2014 AppModule can disappear entirely."
+              "Usually no — AppModule can disappear entirely."
             ],
             [
               "Incremental migration from a large NgModule app",
-              "Often yes (temporarily) \u2014 convert routes/components gradually while keeping AppModule as glue."
+              "Often yes (temporarily) — convert routes/components gradually while keeping AppModule as glue."
             ],
             [
               "Library ecosystem is NgModule-heavy (forRoot/exported modules)",
-              "You might still avoid AppModule, but you\u2019ll rely on <code>importProvidersFrom(...)</code> and some NgModules as adapters."
+              "You might still avoid AppModule, but you’ll rely on <code>importProvidersFrom(...)</code> and some NgModules as adapters."
             ]
           ],
-          "caption": "The senior answer is \u201cAppModule becomes optional; NgModules become mostly compatibility/packaging.\u201d"
+          "caption": "The senior answer is “AppModule becomes optional; NgModules become mostly compatibility/packaging.”"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Standalone doesn\u2019t delete NgModules, but it removes the need for an AppModule as the app\u2019s \u201cwiring center\u201d. Template scope moves to standalone component <code>imports</code>. App-wide wiring moves to <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) and can be further scoped via route-level providers. AppModule becomes optional: common to remove in new apps, common to keep temporarily during migrations."
+          "text": "<strong>Summary</strong><br><br>Standalone doesn’t delete NgModules, but it removes the need for an AppModule as the app’s “wiring center”. Template scope moves to standalone component <code>imports</code>. App-wide wiring moves to <code>bootstrapApplication</code> (or <code>ApplicationConfig</code>) and can be further scoped via route-level providers. AppModule becomes optional: common to remove in new apps, common to keep temporarily during migrations."
         },
         {
           "type": "text",
@@ -767,7 +772,8 @@
       "standalone",
       "migration",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-template-compilation-and-binding",
@@ -780,7 +786,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Angular does <strong>two big jobs</strong>:<br>1) <strong>Compile</strong> the template into efficient instructions (Ivy) + type-check it.<br>2) <strong>Run change detection</strong> to execute the template\u2019s <em>update</em> instructions, keeping the DOM synced with the component instance."
+          "text": "<strong>Overview</strong><br><br>Angular does <strong>two big jobs</strong>:<br>1) <strong>Compile</strong> the template into efficient instructions (Ivy) + type-check it.<br>2) <strong>Run change detection</strong> to execute the template’s <em>update</em> instructions, keeping the DOM synced with the component instance."
         },
         {
           "type": "list",
@@ -816,7 +822,7 @@
               "AOT = smaller/faster startup + earlier errors."
             ]
           ],
-          "caption": "What \u201ccompiling an Angular template\u201d actually means"
+          "caption": "What “compiling an Angular template” actually means"
         },
         {
           "type": "code",
@@ -830,7 +836,7 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "function CounterComponent_Template(rf: number, ctx: CounterComponent) {\n  if (rf & 1) {\n    // CREATE phase: create DOM nodes + wire listeners once\n    // \u0275\u0275elementStart(0, 'h3');\n    // \u0275\u0275text(1);\n    // \u0275\u0275elementEnd();\n    // \u0275\u0275elementStart(2, 'button');\n    // \u0275\u0275listener('click', () => ctx.inc());\n    // \u0275\u0275text(3);\n    // \u0275\u0275elementEnd();\n  }\n\n  if (rf & 2) {\n    // UPDATE phase: re-evaluate bindings and patch DOM as needed\n    // \u0275\u0275textInterpolate1('Hello, ', ctx.name, '');\n    // \u0275\u0275property('disabled', ctx.count() >= 3);\n    // \u0275\u0275textInterpolate1('Count: ', ctx.count(), '');\n  }\n}"
+          "code": "function CounterComponent_Template(rf: number, ctx: CounterComponent) {\n  if (rf & 1) {\n    // CREATE phase: create DOM nodes + wire listeners once\n    // ɵɵelementStart(0, 'h3');\n    // ɵɵtext(1);\n    // ɵɵelementEnd();\n    // ɵɵelementStart(2, 'button');\n    // ɵɵlistener('click', () => ctx.inc());\n    // ɵɵtext(3);\n    // ɵɵelementEnd();\n  }\n\n  if (rf & 2) {\n    // UPDATE phase: re-evaluate bindings and patch DOM as needed\n    // ɵɵtextInterpolate1('Hello, ', ctx.name, '');\n    // ɵɵproperty('disabled', ctx.count() >= 3);\n    // ɵɵtextInterpolate1('Count: ', ctx.count(), '');\n  }\n}"
         },
         {
           "type": "list",
@@ -870,7 +876,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How the template \u201cbinds to component state\u201d</strong><br><br>Bindings read from the component instance (<code>ctx</code>). When state changes, Angular runs change detection and re-executes the template\u2019s <em>update</em> phase, re-reading <code>ctx</code> and patching the DOM."
+          "text": "<strong>How the template “binds to component state”</strong><br><br>Bindings read from the component instance (<code>ctx</code>). When state changes, Angular runs change detection and re-executes the template’s <em>update</em> phase, re-reading <code>ctx</code> and patching the DOM."
         },
         {
           "type": "list",
@@ -927,7 +933,7 @@
               "Dev workflows / special cases."
             ]
           ],
-          "caption": "Both end up with the same Ivy-style instructions; the main difference is when they\u2019re produced"
+          "caption": "Both end up with the same Ivy-style instructions; the main difference is when they’re produced"
         },
         {
           "type": "list",
@@ -937,7 +943,7 @@
           ],
           "rows": [
             [
-              "Templates are not \u201cmagic strings\u201d",
+              "Templates are not “magic strings”",
               "They compile to create/update instructions; update phase re-runs on CD."
             ],
             [
@@ -973,7 +979,8 @@
       "compilation",
       "data-binding",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-data-binding",
@@ -981,7 +988,7 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Data binding is how Angular connects component state (TS) to the template (HTML) and back. It\u2019s mostly one-way (component \u279c view via interpolation/property bindings, view \u279c component via event bindings). Two-way binding is optional syntactic sugar that combines both directions (commonly via forms/ngModel or custom @Input/@Output pairs).",
+    "description": "Data binding is how Angular connects component state (TS) to the template (HTML) and back. It’s mostly one-way (component ➜ view via interpolation/property bindings, view ➜ component via event bindings). Two-way binding is optional syntactic sugar that combines both directions (commonly via forms/ngModel or custom @Input/@Output pairs).",
     "answer": {
       "blocks": [
         {
@@ -1000,42 +1007,42 @@
           "rows": [
             [
               "Interpolation",
-              "Component \u279c View",
+              "Component ➜ View",
               "Text nodes / attribute text",
               "<code>{{ expr }}</code>",
               "<code>&lt;h1&gt;Hello {{ user.name }}&lt;/h1&gt;</code>"
             ],
             [
               "Property binding",
-              "Component \u279c View",
+              "Component ➜ View",
               "DOM <em>properties</em> (not HTML attributes)",
               "<code>[prop]=\"expr\"</code>",
               "<code>&lt;button [disabled]=\"loading\"&gt;Save&lt;/button&gt;</code>"
             ],
             [
               "Attribute binding",
-              "Component \u279c View",
+              "Component ➜ View",
               "HTML attributes (incl. ARIA, non-property attrs)",
               "<code>[attr.name]=\"expr\"</code>",
               "<code>&lt;div [attr.aria-label]=\"label\"&gt;&lt;/div&gt;</code>"
             ],
             [
               "Class binding",
-              "Component \u279c View",
+              "Component ➜ View",
               "CSS classes",
               "<code>[class.foo]=\"expr\"</code>",
               "<code>&lt;li [class.active]=\"isActive\"&gt;...&lt;/li&gt;</code>"
             ],
             [
               "Style binding",
-              "Component \u279c View",
+              "Component ➜ View",
               "Inline styles (+ units)",
               "<code>[style.width.px]=\"n\"</code>",
               "<code>&lt;div [style.opacity]=\"alpha\"&gt;&lt;/div&gt;</code>"
             ],
             [
               "Event binding",
-              "View \u279c Component",
+              "View ➜ Component",
               "DOM events or child <code>@Output</code>",
               "<code>(event)=\"stmt\"</code>",
               "<code>&lt;input (input)=\"onInput($event)\"&gt;</code>"
@@ -1048,11 +1055,11 @@
               "<code>&lt;input [(ngModel)]=\"name\"&gt;</code>"
             ]
           ],
-          "caption": "Angular binding types you\u2019re expected to know in interviews (including attr/class/style prefixes)."
+          "caption": "Angular binding types you’re expected to know in interviews (including attr/class/style prefixes)."
         },
         {
           "type": "text",
-          "text": "<strong>Property vs Attribute (common interview trap)</strong><br><br><strong>[disabled]</strong> sets the DOM property (actual runtime behavior). <strong>[attr.disabled]</strong> sets/removes the HTML attribute string. For ARIA and many \u201cstring-only\u201d attributes, you typically use <code>[attr.*]</code>. For real element state, use property binding."
+          "text": "<strong>Property vs Attribute (common interview trap)</strong><br><br><strong>[disabled]</strong> sets the DOM property (actual runtime behavior). <strong>[attr.disabled]</strong> sets/removes the HTML attribute string. For ARIA and many “string-only” attributes, you typically use <code>[attr.*]</code>. For real element state, use property binding."
         },
         {
           "type": "code",
@@ -1110,7 +1117,7 @@
             ],
             [
               "Using attribute binding for real element state",
-              "<code>[attr.disabled]</code> doesn\u2019t behave like <code>[disabled]</code> in all cases",
+              "<code>[attr.disabled]</code> doesn’t behave like <code>[disabled]</code> in all cases",
               "Prefer property binding for element state"
             ],
             [
@@ -1151,7 +1158,8 @@
       "templates",
       "basics",
       "components"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-interpolation-vs-property-binding",
@@ -1164,7 +1172,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Both are <strong>one-way</strong> bindings (component \u2192 view), but they update <strong>different DOM targets</strong>:<br>\u2022 <strong>Interpolation</strong> updates <strong>text</strong> (and when used inside attributes, it results in a <strong>string attribute value</strong>).<br>\u2022 <strong>Property binding</strong> updates a <strong>DOM property</strong> (real runtime state) and keeps the correct type (boolean/number/object).<br><br>Interview framing: <strong>use interpolation for display text</strong>; <strong>use property binding for element state</strong>."
+          "text": "<strong>Core idea</strong><br><br>Both are <strong>one-way</strong> bindings (component → view), but they update <strong>different DOM targets</strong>:<br>• <strong>Interpolation</strong> updates <strong>text</strong> (and when used inside attributes, it results in a <strong>string attribute value</strong>).<br>• <strong>Property binding</strong> updates a <strong>DOM property</strong> (real runtime state) and keeps the correct type (boolean/number/object).<br><br>Interview framing: <strong>use interpolation for display text</strong>; <strong>use property binding for element state</strong>."
         },
         {
           "type": "list",
@@ -1196,11 +1204,11 @@
             ],
             [
               "Common trap",
-              "Boolean-ish attributes become strings and can behave \u201calways on\u201d",
+              "Boolean-ish attributes become strings and can behave “always on”",
               "Correct boolean semantics (true/false)"
             ]
           ],
-          "caption": "The difference is not syntax \u2014 it\u2019s which DOM target you update."
+          "caption": "The difference is not syntax — it’s which DOM target you update."
         },
         {
           "type": "code",
@@ -1209,12 +1217,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview trap: boolean attributes</strong><br><br>HTML boolean attributes behave by <strong>presence</strong>. If you do interpolation inside the attribute, you often end up with a string attribute that\u2019s still \u201cpresent\u201d, which can be wrong."
+          "text": "<strong>Interview trap: boolean attributes</strong><br><br>HTML boolean attributes behave by <strong>presence</strong>. If you do interpolation inside the attribute, you often end up with a string attribute that’s still “present”, which can be wrong."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- \u274c Bug-prone: string attribute interpolation -->\n<!-- disabled=\"false\" still counts as present in many cases -->\n<button disabled=\"{{ isDisabled }}\">Submit</button>\n\n<!-- \u2705 Correct: sets the DOM property boolean -->\n<button [disabled]=\"isDisabled\">Submit</button>\n\n<!-- Another common case: form controls -->\n<!-- \u274c Sets attribute string; can desync from actual runtime value -->\n<input value=\"{{ name }}\" />\n\n<!-- \u2705 Sets the DOM property (or better: use forms) -->\n<input [value]=\"name\" />"
+          "code": "<!-- ❌ Bug-prone: string attribute interpolation -->\n<!-- disabled=\"false\" still counts as present in many cases -->\n<button disabled=\"{{ isDisabled }}\">Submit</button>\n\n<!-- ✅ Correct: sets the DOM property boolean -->\n<button [disabled]=\"isDisabled\">Submit</button>\n\n<!-- Another common case: form controls -->\n<!-- ❌ Sets attribute string; can desync from actual runtime value -->\n<input value=\"{{ name }}\" />\n\n<!-- ✅ Sets the DOM property (or better: use forms) -->\n<input [value]=\"name\" />"
         },
         {
           "type": "text",
@@ -1245,7 +1253,7 @@
             ],
             [
               "Confusing property vs attribute targets",
-              "ARIA / non-property attributes don\u2019t work as expected with [prop]",
+              "ARIA / non-property attributes don’t work as expected with [prop]",
               "Use [attr.*] for ARIA/attributes; [prop] for state"
             ]
           ],
@@ -1282,7 +1290,8 @@
       "binding",
       "interpolation",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-event-binding-dom-vs-output-change-detection",
@@ -1295,7 +1304,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>(event)=\"...\"</code> attaches a listener from the template to a template statement (usually a component method). It\u2019s <strong>one-way</strong>: <em>view \u279c component</em>. The event can be a <strong>native DOM event</strong> or a <strong>custom event</strong> emitted by a child component (<code>@Output()</code>)."
+          "text": "<strong>Core idea</strong><br><br><code>(event)=\"...\"</code> attaches a listener from the template to a template statement (usually a component method). It’s <strong>one-way</strong>: <em>view ➜ component</em>. The event can be a <strong>native DOM event</strong> or a <strong>custom event</strong> emitted by a child component (<code>@Output()</code>)."
         },
         {
           "type": "list",
@@ -1308,15 +1317,15 @@
           "rows": [
             [
               "Native DOM event",
-              "<code>(click)</code>, <code>(input)</code>, <code>(submit)</code>, <code>(keydown)</code>\u2026",
-              "A DOM <code>Event</code> / <code>MouseEvent</code> / <code>KeyboardEvent</code>\u2026",
+              "<code>(click)</code>, <code>(input)</code>, <code>(submit)</code>, <code>(keydown)</code>…",
+              "A DOM <code>Event</code> / <code>MouseEvent</code> / <code>KeyboardEvent</code>…",
               "User interactions on elements"
             ],
             [
               "Child component @Output",
-              "<code>(saved)</code>, <code>(closed)</code>\u2026",
+              "<code>(saved)</code>, <code>(closed)</code>…",
               "Whatever the child <code>emit(...)</code>s",
-              "Child \u279c parent communication"
+              "Child ➜ parent communication"
             ]
           ],
           "caption": "DOM events vs component custom events"
@@ -1374,7 +1383,7 @@
             ],
             [
               "OnPush expectations",
-              "UI doesn\u2019t update when state changes outside Angular awareness",
+              "UI doesn’t update when state changes outside Angular awareness",
               "Events in templates normally trigger checks; for external sources use signals/async pipe or <code>markForCheck()</code>"
             ],
             [
@@ -1403,11 +1412,12 @@
       "binding",
       "outputs",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-directives",
-    "title": "Angular directives: structural vs attribute vs components \u2014 and what the * syntax really does",
+    "title": "Angular directives: structural vs attribute vs components — and what the * syntax really does",
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
@@ -1416,7 +1426,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>A <strong>directive</strong> is a class that Angular instantiates when it matches a selector in a template. The directive can:<br>\u2022 add behavior (listen to events, update host properties)<br>\u2022 change styling (classes/styles/attributes)<br>\u2022 <strong>control the DOM tree</strong> by creating/destroying embedded views (structural directives)."
+          "text": "<strong>Core idea</strong><br><br>A <strong>directive</strong> is a class that Angular instantiates when it matches a selector in a template. The directive can:<br>• add behavior (listen to events, update host properties)<br>• change styling (classes/styles/attributes)<br>• <strong>control the DOM tree</strong> by creating/destroying embedded views (structural directives)."
         },
         {
           "type": "list",
@@ -1460,7 +1470,7 @@
         {
           "type": "list",
           "columns": [
-            "Structural directives are special because\u2026",
+            "Structural directives are special because…",
             "Concrete consequence"
           ],
           "rows": [
@@ -1491,7 +1501,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Custom structural directive (the \u201creal\u201d senior signal)</strong><br><br>Structural directives control a <em>template block</em>. They inject <code>TemplateRef</code> (what to render) and <code>ViewContainerRef</code> (where to render)."
+          "text": "<strong>Custom structural directive (the “real” senior signal)</strong><br><br>Structural directives control a <em>template block</em>. They inject <code>TemplateRef</code> (what to render) and <code>ViewContainerRef</code> (where to render)."
         },
         {
           "type": "code",
@@ -1541,22 +1551,22 @@
           ],
           "rows": [
             [
-              "\u201cComponents are directives with templates; attribute directives modify the host; structural directives create/destroy embedded views.\u201d"
+              "“Components are directives with templates; attribute directives modify the host; structural directives create/destroy embedded views.”"
             ],
             [
-              "\u201cThe * is syntax sugar for <ng-template> + directive inputs.\u201d"
+              "“The * is syntax sugar for <ng-template> + directive inputs.”"
             ],
             [
-              "\u201cStructural directives use TemplateRef and ViewContainerRef to manage embedded views.\u201d"
+              "“Structural directives use TemplateRef and ViewContainerRef to manage embedded views.”"
             ],
             [
-              "\u201cPrefer HostBinding/HostListener (or Renderer2) over direct DOM access.\u201d"
+              "“Prefer HostBinding/HostListener (or Renderer2) over direct DOM access.”"
             ]
           ]
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Directives are Angular\u2019s way to attach behavior to templates. Attribute directives change an existing element; structural directives change the rendered tree by creating/destroying embedded views; components are directives with templates. The key senior detail: <code>*</code> desugars into <code>&lt;ng-template&gt;</code>, and structural directives are basically <code>TemplateRef</code> + <code>ViewContainerRef</code> orchestration."
+          "text": "<strong>Summary</strong><br><br>Directives are Angular’s way to attach behavior to templates. Attribute directives change an existing element; structural directives change the rendered tree by creating/destroying embedded views; components are directives with templates. The key senior detail: <code>*</code> desugars into <code>&lt;ng-template&gt;</code>, and structural directives are basically <code>TemplateRef</code> + <code>ViewContainerRef</code> orchestration."
         }
       ]
     },
@@ -1568,7 +1578,8 @@
       "templates",
       "basics",
       "components"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-structural-vs-attribute-directives",
@@ -1576,12 +1587,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Structural directives change the rendered template tree by creating/destroying embedded views (real DOM + component instances). Attribute directives do not change the tree; they modify an existing element\u2019s properties/classes/styles/behavior. Key interview nuance: the * syntax is just sugar for &lt;ng-template&gt; + directive inputs. Structural directives change the DOM tree, so test lifecycle, performance, and accessibility side effects.",
+    "description": "Structural directives change the rendered template tree by creating/destroying embedded views (real DOM + component instances). Attribute directives do not change the tree; they modify an existing element’s properties/classes/styles/behavior. Key interview nuance: the * syntax is just sugar for &lt;ng-template&gt; + directive inputs. Structural directives change the DOM tree, so test lifecycle, performance, and accessibility side effects.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><strong>Structural</strong> directives decide whether a block of template exists at all (create/destroy an embedded view). <strong>Attribute</strong> directives keep the element in place and only change the host element\u2019s behavior/appearance (classes/styles/attrs/listeners)."
+          "text": "<strong>Core idea</strong><br><br><strong>Structural</strong> directives decide whether a block of template exists at all (create/destroy an embedded view). <strong>Attribute</strong> directives keep the element in place and only change the host element’s behavior/appearance (classes/styles/attrs/listeners)."
         },
         {
           "type": "list",
@@ -1598,8 +1609,8 @@
             ],
             [
               "DOM impact",
-              "\u2705 Real DOM nodes and component/directive instances are created/destroyed.",
-              "\u274c No tree changes; the same element stays in the DOM."
+              "✅ Real DOM nodes and component/directive instances are created/destroyed.",
+              "❌ No tree changes; the same element stays in the DOM."
             ],
             [
               "Typical syntax",
@@ -1614,14 +1625,14 @@
             [
               "Lifecycle/state implication",
               "Destroying the view runs <code>ngOnDestroy</code> and resets component state on next show.",
-              "State is preserved because the instance isn\u2019t destroyed."
+              "State is preserved because the instance isn’t destroyed."
             ]
           ],
           "caption": "Structural vs attribute directives (interview framing)"
         },
         {
           "type": "text",
-          "text": "<strong>The <code>*</code> is syntax sugar</strong><br><br>Angular rewrites <code>*</code> into an <code>&lt;ng-template&gt;</code> and attaches the directive there. That\u2019s why structural directives operate on templates (not \u201cjust visibility\u201d)."
+          "text": "<strong>The <code>*</code> is syntax sugar</strong><br><br>Angular rewrites <code>*</code> into an <code>&lt;ng-template&gt;</code> and attaches the directive there. That’s why structural directives operate on templates (not “just visibility”)."
         },
         {
           "type": "code",
@@ -1655,7 +1666,7 @@
           ],
           "rows": [
             [
-              "\u201c*ngIf just hides it\u201d",
+              "“*ngIf just hides it”",
               "False: it destroys/creates the view (state resets, subscriptions re-run).",
               "Use <code>[hidden]</code> / CSS when you must preserve instance state."
             ],
@@ -1674,7 +1685,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br><strong>Structural</strong> directives change the rendered tree by creating/destroying embedded views (real lifecycle + state effects). <strong>Attribute</strong> directives keep the tree and modify the host element\u2019s behavior/appearance. The <code>*</code> is just sugar for <code>&lt;ng-template&gt;</code> + directive inputs\u2014knowing that is the senior signal."
+          "text": "<strong>Summary</strong><br><br><strong>Structural</strong> directives change the rendered tree by creating/destroying embedded views (real lifecycle + state effects). <strong>Attribute</strong> directives keep the tree and modify the host element’s behavior/appearance. The <code>*</code> is just sugar for <code>&lt;ng-template&gt;</code> + directive inputs—knowing that is the senior signal."
         },
         {
           "type": "text",
@@ -1690,7 +1701,8 @@
       "structural",
       "attribute",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngif-dom-lifecycle",
@@ -1703,7 +1715,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br><code>*ngIf</code> does not \u201chide\u201d elements. It <strong>adds/removes</strong> a chunk of template by creating/destroying an <em>embedded view</em> (<code>EmbeddedViewRef</code>) in a <code>ViewContainerRef</code>. When the view is removed, Angular destroys everything inside it (components, directives, pipes, listeners) and runs <code>ngOnDestroy</code>."
+          "text": "<strong>Overview</strong><br><br><code>*ngIf</code> does not “hide” elements. It <strong>adds/removes</strong> a chunk of template by creating/destroying an <em>embedded view</em> (<code>EmbeddedViewRef</code>) in a <code>ViewContainerRef</code>. When the view is removed, Angular destroys everything inside it (components, directives, pipes, listeners) and runs <code>ngOnDestroy</code>."
         },
         {
           "type": "code",
@@ -1720,19 +1732,19 @@
           ],
           "rows": [
             [
-              "false \u2192 true",
+              "false → true",
               "Nodes are inserted into the DOM",
               "New component/directive instances are created",
-              "constructor \u2192 (ngOnChanges) \u2192 ngOnInit \u2192 view/content hooks"
+              "constructor → (ngOnChanges) → ngOnInit → view/content hooks"
             ],
             [
-              "true \u2192 false",
+              "true → false",
               "Nodes are removed from the DOM",
               "Instances are destroyed",
               "ngOnDestroy runs; subscriptions/cleanup should happen here"
             ],
             [
-              "true \u2192 true (condition stays true)",
+              "true → true (condition stays true)",
               "DOM stays",
               "Same instances stay",
               "Normal change detection updates bindings"
@@ -1851,7 +1863,8 @@
       "ngif",
       "lifecycle",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngfor-trackby",
@@ -1887,7 +1900,7 @@
             [
               "Item identity",
               "Match old items to new items across changes",
-              "Prevents treating \u201csame logical item\u201d as a brand-new row"
+              "Prevents treating “same logical item” as a brand-new row"
             ],
             [
               "DOM reuse",
@@ -1941,7 +1954,7 @@
               "Worst-case: every CD cycle behaves like a full rerender"
             ]
           ],
-          "caption": "Most \u201ctrackBy bugs\u201d show up when you refresh data or rebuild arrays (common with immutability patterns)"
+          "caption": "Most “trackBy bugs” show up when you refresh data or rebuild arrays (common with immutability patterns)"
         },
         {
           "type": "list",
@@ -1996,7 +2009,8 @@
       "ngfor",
       "performance",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-services",
@@ -2004,12 +2018,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "In Angular, a \u201cservice\u201d is just a class that becomes useful when it\u2019s provided through Angular\u2019s dependency injection (DI). Services are used to centralize reusable logic and side effects (HTTP, caching, orchestration, shared state) so components stay focused on UI + event wiring. Service scope is controlled by where you provide it (root/module/component), which determines lifetime and instance sharing.",
+    "description": "In Angular, a “service” is just a class that becomes useful when it’s provided through Angular’s dependency injection (DI). Services are used to centralize reusable logic and side effects (HTTP, caching, orchestration, shared state) so components stay focused on UI + event wiring. Service scope is controlled by where you provide it (root/module/component), which determines lifetime and instance sharing.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>An Angular <strong>service</strong> is typically a plain TypeScript class that you register with Angular\u2019s <strong>dependency injection</strong> system. DI creates the instance and injects it where needed. The value is not the class itself \u2014 it\u2019s the <strong>lifetime + sharing + testability</strong> you get from DI and a clean separation from UI code."
+          "text": "<strong>Core idea</strong><br><br>An Angular <strong>service</strong> is typically a plain TypeScript class that you register with Angular’s <strong>dependency injection</strong> system. DI creates the instance and injects it where needed. The value is not the class itself — it’s the <strong>lifetime + sharing + testability</strong> you get from DI and a clean separation from UI code."
         },
         {
           "type": "list",
@@ -2020,15 +2034,15 @@
           "rows": [
             [
               "A DI-provided class used by components/directives/other services",
-              "A special Angular-only construct (it\u2019s still \u201cjust a class\u201d)"
+              "A special Angular-only construct (it’s still “just a class”)"
             ],
             [
               "A place for reusable logic + side effects (HTTP, caching, orchestration)",
               "A place for DOM manipulation (that belongs in components/directives)"
             ],
             [
-              "A unit that\u2019s easy to mock in tests",
-              "A global mutable \u201cgod object\u201d used everywhere without boundaries"
+              "A unit that’s easy to mock in tests",
+              "A global mutable “god object” used everywhere without boundaries"
             ]
           ],
           "caption": "Interview framing: define service via DI + responsibilities"
@@ -2046,7 +2060,7 @@
           "rows": [
             [
               "HTTP/data access (repositories)",
-              "Centralizes endpoints, retries, error mapping, DTO\u2192domain mapping"
+              "Centralizes endpoints, retries, error mapping, DTO→domain mapping"
             ],
             [
               "Caching + request de-duplication",
@@ -2069,7 +2083,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How a service gets an instance: providers and scope</strong><br><br>Service lifetime is determined by <strong>where it\u2019s provided</strong>. Angular DI is hierarchical: child injectors can override parent providers."
+          "text": "<strong>How a service gets an instance: providers and scope</strong><br><br>Service lifetime is determined by <strong>where it’s provided</strong>. Angular DI is hierarchical: child injectors can override parent providers."
         },
         {
           "type": "list",
@@ -2149,7 +2163,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Angular services are DI-provided classes used to centralize reusable logic and side effects. The key interview points are: <strong>(1)</strong> services are \u201cjust classes\u201d + DI providers, <strong>(2)</strong> scope/lifetime depends on where you provide them (root vs component), and <strong>(3)</strong> services keep components focused on UI, improving reuse and testability."
+          "text": "<strong>Summary</strong><br><br>Angular services are DI-provided classes used to centralize reusable logic and side effects. The key interview points are: <strong>(1)</strong> services are “just classes” + DI providers, <strong>(2)</strong> scope/lifetime depends on where you provide them (root vs component), and <strong>(3)</strong> services keep components focused on UI, improving reuse and testability."
         }
       ]
     },
@@ -2161,7 +2175,8 @@
       "dependency-injection",
       "architecture",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-dependency-injection",
@@ -2187,22 +2202,22 @@
             [
               "<strong>Token</strong>",
               "The lookup key for a dependency (class type or <code>InjectionToken</code>).",
-              "\u201cAngular resolves dependencies by token; classes are tokens, but for primitives/objects you use <code>InjectionToken</code>.\u201d"
+              "“Angular resolves dependencies by token; classes are tokens, but for primitives/objects you use <code>InjectionToken</code>.”"
             ],
             [
               "<strong>Provider</strong>",
               "A rule that tells Angular how to produce a value for a token (<code>useClass/useValue/useFactory/useExisting</code>).",
-              "\u201cProviders map token \u2192 value/instance creation strategy.\u201d"
+              "“Providers map token → value/instance creation strategy.”"
             ],
             [
               "<strong>Injector</strong>",
               "A container that holds providers and can resolve tokens. Injectors form a tree.",
-              "\u201cResolution walks up the injector tree; the closest provider wins.\u201d"
+              "“Resolution walks up the injector tree; the closest provider wins.”"
             ],
             [
               "<strong>Scope / lifetime</strong>",
               "Where the provider is registered determines whether you get one shared instance or many.",
-              "\u201cRoot providers are app-singletons; component providers create per-component instances.\u201d"
+              "“Root providers are app-singletons; component providers create per-component instances.”"
             ]
           ],
           "caption": "DI vocabulary (the minimum you should be fluent with)"
@@ -2311,7 +2326,7 @@
             ],
             [
               "Using the wrong token for non-classes",
-              "Runtime DI error: \u201cNo provider for X\u201d (or injecting <code>string</code>/<code>Object</code> doesn\u2019t work).",
+              "Runtime DI error: “No provider for X” (or injecting <code>string</code>/<code>Object</code> doesn’t work).",
               "Use <code>InjectionToken</code> for primitives/config and inject via <code>@Inject(TOKEN)</code>."
             ],
             [
@@ -2326,8 +2341,8 @@
             ],
             [
               "Resolution surprises in a hierarchy",
-              "You think you\u2019re getting the root singleton, but a child injector overrides it.",
-              "Know \u201cclosest provider wins\u201d; use <code>@SkipSelf()</code>/<code>@Self()</code> intentionally when needed."
+              "You think you’re getting the root singleton, but a child injector overrides it.",
+              "Know “closest provider wins”; use <code>@SkipSelf()</code>/<code>@Self()</code> intentionally when needed."
             ]
           ],
           "caption": "Pitfalls seniors mention quickly"
@@ -2350,7 +2365,8 @@
       "services",
       "architecture",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngoninit-vs-constructor",
@@ -2374,7 +2390,7 @@
           "rows": [
             [
               "Component creation",
-              "<code>constructor \u2192 ngOnChanges? \u2192 ngOnInit \u2192 ngAfterViewInit</code>"
+              "<code>constructor → ngOnChanges? → ngOnInit → ngAfterViewInit</code>"
             ]
           ],
           "caption": "Constructor is earliest; ngOnInit happens after the first input binding pass."
@@ -2394,13 +2410,13 @@
             ],
             [
               "Dependency injection",
-              "\u2705 Yes (primary use)",
-              "\u2705 Yes (DI already done)"
+              "✅ Yes (primary use)",
+              "✅ Yes (DI already done)"
             ],
             [
               "@Input() values available?",
-              "\u274c Not reliably (bindings not applied yet)",
-              "\u2705 Yes (initial bindings are applied)"
+              "❌ Not reliably (bindings not applied yet)",
+              "✅ Yes (initial bindings are applied)"
             ],
             [
               "Good for",
@@ -2473,7 +2489,8 @@
       "hooks",
       "components",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-pipes",
@@ -2505,10 +2522,10 @@
             ],
             [
               "Where it runs",
-              "In Angular\u2019s change detection update phase (template evaluation)."
+              "In Angular’s change detection update phase (template evaluation)."
             ],
             [
-              "What it\u2019s for",
+              "What it’s for",
               "Formatting + small/cheap view transforms; not heavy computation or side effects."
             ]
           ],
@@ -2587,7 +2604,7 @@
               "Pure (default)",
               "Only when input changes by value (primitives) or by reference (objects/arrays/functions).",
               "Fast; avoids re-running on every CD pass.",
-              "If you mutate arrays/objects in place, the pipe may not re-run (because reference didn\u2019t change)."
+              "If you mutate arrays/objects in place, the pipe may not re-run (because reference didn’t change)."
             ],
             [
               "Impure (<code>pure: false</code>)",
@@ -2630,7 +2647,7 @@
               "Precompute in TS, memoize by key, or transform upstream in RxJS/store selectors."
             ],
             [
-              "Using an impure pipe to \u201cfix\u201d mutation",
+              "Using an impure pipe to “fix” mutation",
               "Runs every CD cycle; can tank performance.",
               "Prefer immutable state updates or move logic out of template."
             ],
@@ -2654,7 +2671,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Pipes are template transformers used via <code>|</code>. Default is pure: runs when inputs change by value/reference (fast, but mutation-in-place can fool it). Impure pipes run every CD cycle (use rarely). The <code>async</code> pipe is key: it manages subscriptions and keeps templates clean\u2014especially with <code>OnPush</code>."
+          "text": "<strong>Summary</strong><br><br>Pipes are template transformers used via <code>|</code>. Default is pure: runs when inputs change by value/reference (fast, but mutation-in-place can fool it). Impure pipes run every CD cycle (use rarely). The <code>async</code> pipe is key: it manages subscriptions and keeps templates clean—especially with <code>OnPush</code>."
         }
       ]
     },
@@ -2666,7 +2683,8 @@
       "templates",
       "basics",
       "transformations"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-custom-two-way-binding",
@@ -2679,7 +2697,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>[(x)]</code> works only if Angular can find:<br>\u2022 <code>@Input() x</code><br>\u2022 <code>@Output() xChange</code><br><br>Then this:<br><code>&lt;app-cmp [(x)]=&quot;state&quot;&gt;&lt;/app-cmp&gt;</code><br>is equivalent to:<br><code>&lt;app-cmp [x]=&quot;state&quot; (xChange)=&quot;state = $event&quot;&gt;&lt;/app-cmp&gt;</code>"
+          "text": "<strong>Core idea</strong><br><br><code>[(x)]</code> works only if Angular can find:<br>• <code>@Input() x</code><br>• <code>@Output() xChange</code><br><br>Then this:<br><code>&lt;app-cmp [(x)]=&quot;state&quot;&gt;&lt;/app-cmp&gt;</code><br>is equivalent to:<br><code>&lt;app-cmp [x]=&quot;state&quot; (xChange)=&quot;state = $event&quot;&gt;&lt;/app-cmp&gt;</code>"
         },
         {
           "type": "code",
@@ -2725,7 +2743,7 @@
             ],
             [
               "Two sources of truth (internal state diverges from input)",
-              "UI shows stale value or \u201csnaps back\u201d",
+              "UI shows stale value or “snaps back”",
               "Render from the @Input; if you keep local state, sync it carefully in ngOnChanges"
             ],
             [
@@ -2740,7 +2758,7 @@
             ],
             [
               "Using custom two-way binding for form controls when you really need Angular Forms integration",
-              "ngModel / reactive forms don\u2019t work properly (touched/dirty/validation)",
+              "ngModel / reactive forms don’t work properly (touched/dirty/validation)",
               "Implement ControlValueAccessor for true form controls"
             ]
           ],
@@ -2765,7 +2783,8 @@
       "output",
       "components",
       "forms"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-lifecycle-hooks",
@@ -2778,7 +2797,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Hooks are <em>Angular-called</em> methods that let you run code at predictable lifecycle points. The practical skill is picking the right hook:<br>\u2022 <strong>Inputs changed?</strong> <code>ngOnChanges</code><br>\u2022 <strong>Initialize once?</strong> <code>ngOnInit</code><br>\u2022 <strong>Projected content?</strong> <code>ngAfterContent*</code><br>\u2022 <strong>DOM / ViewChild?</strong> <code>ngAfterViewInit</code><br>\u2022 <strong>Cleanup?</strong> <code>ngOnDestroy</code>"
+          "text": "<strong>Core idea</strong><br><br>Hooks are <em>Angular-called</em> methods that let you run code at predictable lifecycle points. The practical skill is picking the right hook:<br>• <strong>Inputs changed?</strong> <code>ngOnChanges</code><br>• <strong>Initialize once?</strong> <code>ngOnInit</code><br>• <strong>Projected content?</strong> <code>ngAfterContent*</code><br>• <strong>DOM / ViewChild?</strong> <code>ngAfterViewInit</code><br>• <strong>Cleanup?</strong> <code>ngOnDestroy</code>"
         },
         {
           "type": "list",
@@ -2786,7 +2805,7 @@
             "Hook",
             "When it runs",
             "Frequency",
-            "What it\u2019s for"
+            "What it’s for"
           ],
           "rows": [
             [
@@ -2811,7 +2830,7 @@
               "<code>ngDoCheck()</code>",
               "During every change detection run",
               "Many times",
-              "Rare: custom change tracking when default checks aren\u2019t enough (use carefully)."
+              "Rare: custom change tracking when default checks aren’t enough (use carefully)."
             ],
             [
               "<code>ngAfterContentInit()</code>",
@@ -2889,7 +2908,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Execution order (practical)</strong><br><br><strong>First render (typical)</strong>:<br><code>constructor \u2192 ngOnChanges? \u2192 ngOnInit \u2192 ngAfterContentInit \u2192 ngAfterContentChecked \u2192 ngAfterViewInit \u2192 ngAfterViewChecked</code><br><br><strong>Later change-detection cycles</strong>:<br><code>ngOnChanges? \u2192 ngDoCheck \u2192 ngAfterContentChecked \u2192 ngAfterViewChecked</code><br><br><em>Note:</em> <code>ngOnChanges</code> only runs for <code>@Input</code> changes from the parent binding; it won\u2019t fire just because you mutated an object in-place without changing the input reference."
+          "text": "<strong>Execution order (practical)</strong><br><br><strong>First render (typical)</strong>:<br><code>constructor → ngOnChanges? → ngOnInit → ngAfterContentInit → ngAfterContentChecked → ngAfterViewInit → ngAfterViewChecked</code><br><br><strong>Later change-detection cycles</strong>:<br><code>ngOnChanges? → ngDoCheck → ngAfterContentChecked → ngAfterViewChecked</code><br><br><em>Note:</em> <code>ngOnChanges</code> only runs for <code>@Input</code> changes from the parent binding; it won’t fire just because you mutated an object in-place without changing the input reference."
         },
         {
           "type": "list",
@@ -2911,12 +2930,12 @@
             ],
             [
               "Heavy work in <code>ngAfterViewChecked</code>/<code>ngDoCheck</code>",
-              "Runs often \u2192 perf issues, jank",
+              "Runs often → perf issues, jank",
               "Keep these hooks rare and cheap; prefer pure derivations and OnPush patterns."
             ],
             [
               "Expecting <code>ngOnChanges</code> on internal mutations",
-              "No call if input reference doesn\u2019t change",
+              "No call if input reference doesn’t change",
               "Use immutable updates (new reference) or manual detection logic if needed."
             ],
             [
@@ -2946,7 +2965,8 @@
       "hooks",
       "components",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-input-output",
@@ -2954,12 +2974,12 @@
     "technology": "angular",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "@Input() defines an API for data flowing from parent \u2192 child via property binding. @Output() defines an API for events flowing from child \u2192 parent via EventEmitter (or newer output helpers). Interviewers expect you to explain timing (updates over time), typing, OnPush/immutability implications, and when NOT to use EventEmitter (cross-component event bus).",
+    "description": "@Input() defines an API for data flowing from parent → child via property binding. @Output() defines an API for events flowing from child → parent via EventEmitter (or newer output helpers). Interviewers expect you to explain timing (updates over time), typing, OnPush/immutability implications, and when NOT to use EventEmitter (cross-component event bus).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>@Input()</code> is the child component\u2019s <strong>public data API</strong>. The parent binds values into it: <em>parent \u279c child</em>.<br><br><code>@Output()</code> is the child component\u2019s <strong>public event API</strong>. The child emits typed events and the parent listens: <em>child \u279c parent</em>."
+          "text": "<strong>Core idea</strong><br><br><code>@Input()</code> is the child component’s <strong>public data API</strong>. The parent binds values into it: <em>parent ➜ child</em>.<br><br><code>@Output()</code> is the child component’s <strong>public event API</strong>. The child emits typed events and the parent listens: <em>child ➜ parent</em>."
         },
         {
           "type": "list",
@@ -2972,13 +2992,13 @@
           "rows": [
             [
               "<code>@Input()</code>",
-              "Parent \u279c Child",
+              "Parent ➜ Child",
               "<code>[prop]=\"expr\"</code>",
               "A bindable property on the child (Angular sets it during change detection)."
             ],
             [
               "<code>@Output()</code>",
-              "Child \u279c Parent",
+              "Child ➜ Parent",
               "<code>(event)=\"handler($event)\"</code>",
               "An EventEmitter the parent listens to (payload is whatever the child emits)."
             ]
@@ -2987,7 +3007,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Typical pattern: pass data down, emit intent up</strong><br><br>Child receives the current value via <code>@Input</code> and emits user intent via <code>@Output</code> (don\u2019t mutate parent state directly)."
+          "text": "<strong>Typical pattern: pass data down, emit intent up</strong><br><br>Child receives the current value via <code>@Input</code> and emits user intent via <code>@Output</code> (don’t mutate parent state directly)."
         },
         {
           "type": "code",
@@ -3011,7 +3031,7 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';\n\ntype User = { id: string; name: string };\n\n@Component({\n  selector: 'app-user-badge',\n  template: `{{ display }}`\n})\nexport class UserBadgeComponent implements OnChanges {\n  @Input() user?: User;\n  display = '\u2014';\n\n  ngOnChanges(changes: SimpleChanges): void {\n    if (changes['user']) {\n      this.display = this.user ? `${this.user.name} (${this.user.id})` : '\u2014';\n    }\n  }\n}\n"
+          "code": "import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';\n\ntype User = { id: string; name: string };\n\n@Component({\n  selector: 'app-user-badge',\n  template: `{{ display }}`\n})\nexport class UserBadgeComponent implements OnChanges {\n  @Input() user?: User;\n  display = '—';\n\n  ngOnChanges(changes: SimpleChanges): void {\n    if (changes['user']) {\n      this.display = this.user ? `${this.user.name} (${this.user.id})` : '—';\n    }\n  }\n}\n"
         },
         {
           "type": "text",
@@ -3047,12 +3067,12 @@
             ],
             [
               "Unstable identity with OnPush (mutating arrays/objects in place)",
-              "Child doesn\u2019t re-render because reference didn\u2019t change",
+              "Child doesn’t re-render because reference didn’t change",
               "Prefer immutable updates (new array/object) or explicit <code>markForCheck()</code> when needed"
             ],
             [
               "Wrong naming for two-way (<code>valueChanged</code> instead of <code>valueChange</code>)",
-              "<code>[(value)]</code> doesn\u2019t work; parent needs manual wiring",
+              "<code>[(value)]</code> doesn’t work; parent needs manual wiring",
               "Use the exact <code>x</code> + <code>xChange</code> naming convention"
             ]
           ],
@@ -3060,7 +3080,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br><code>@Input</code> defines the child\u2019s data API (parent \u279c child). <code>@Output</code> defines the child\u2019s event API (child \u279c parent). In interviews, emphasize: typed payloads, reacting to input changes correctly, OnPush + immutability behavior, and using EventEmitter only for component outputs (not as a global event bus)."
+          "text": "<strong>Summary</strong><br><br><code>@Input</code> defines the child’s data API (parent ➜ child). <code>@Output</code> defines the child’s event API (child ➜ parent). In interviews, emphasize: typed payloads, reacting to input changes correctly, OnPush + immutability behavior, and using EventEmitter only for component outputs (not as a global event bus)."
         }
       ]
     },
@@ -3072,7 +3092,8 @@
       "inputs",
       "outputs",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-observables-rxjs",
@@ -3120,7 +3141,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Angular \u2194 RxJS relationship</strong><br><br>RxJS provides the Observable implementation and operators. Angular exposes Observables in core APIs (most notably <code>HttpClient</code>, reactive forms <code>valueChanges</code>/<code>statusChanges</code>, and <code>Router.events</code>)."
+          "text": "<strong>Angular ↔ RxJS relationship</strong><br><br>RxJS provides the Observable implementation and operators. Angular exposes Observables in core APIs (most notably <code>HttpClient</code>, reactive forms <code>valueChanges</code>/<code>statusChanges</code>, and <code>Router.events</code>)."
         },
         {
           "type": "list",
@@ -3189,7 +3210,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Operator choice: switchMap vs mergeMap vs concatMap vs exhaustMap</strong><br><br>When you map to an Observable (HTTP, dialogs, etc.), you get a \u201chigher-order\u201d stream. Picking the right flattening operator is a common interview probe."
+          "text": "<strong>Operator choice: switchMap vs mergeMap vs concatMap vs exhaustMap</strong><br><br>When you map to an Observable (HTTP, dialogs, etc.), you get a “higher-order” stream. Picking the right flattening operator is a common interview probe."
         },
         {
           "type": "list",
@@ -3217,7 +3238,7 @@
             [
               "<code>exhaustMap</code>",
               "Ignores new values while an inner is running.",
-              "Prevent double-submit, login button, \u201cignore spam clicks\u201d."
+              "Prevent double-submit, login button, “ignore spam clicks”."
             ]
           ],
           "caption": "Flattening operators (the senior-friendly mental model)"
@@ -3244,7 +3265,7 @@
           "type": "list",
           "columns": [
             "Common mistake",
-            "Why it\u2019s bad",
+            "Why it’s bad",
             "Fix"
           ],
           "rows": [
@@ -3304,7 +3325,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Observables are RxJS streams used throughout Angular. Key points: they\u2019re lazy, can emit multiple values, and support teardown via unsubscribe. In Angular, prefer composition with operators + <code>async</code> pipe (or <code>takeUntilDestroyed</code> for imperative subscriptions). Know cold vs hot and pick the right flattening operator (<code>switchMap/mergeMap/concatMap/exhaustMap</code>) to control cancellation and concurrency."
+          "text": "<strong>Summary</strong><br><br>Observables are RxJS streams used throughout Angular. Key points: they’re lazy, can emit multiple values, and support teardown via unsubscribe. In Angular, prefer composition with operators + <code>async</code> pipe (or <code>takeUntilDestroyed</code> for imperative subscriptions). Know cold vs hot and pick the right flattening operator (<code>switchMap/mergeMap/concatMap/exhaustMap</code>) to control cancellation and concurrency."
         }
       ]
     },
@@ -3316,7 +3337,8 @@
       "observables",
       "async",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-routing",
@@ -3329,11 +3351,11 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Angular\u2019s routing system enables navigation between different views or components without reloading the page. It turns your Angular application into a single-page application (SPA) \u2014 meaning that instead of fetching new HTML pages from the server, it dynamically updates the view based on the URL."
+          "text": "<strong>Overview</strong><br><br>Angular’s routing system enables navigation between different views or components without reloading the page. It turns your Angular application into a single-page application (SPA) — meaning that instead of fetching new HTML pages from the server, it dynamically updates the view based on the URL."
         },
         {
           "type": "text",
-          "text": "<strong>How Routing Works</strong><br>The Angular Router maps URL paths to specific components. When the browser\u2019s address changes, Angular determines which component to display by matching the URL with a defined route configuration."
+          "text": "<strong>How Routing Works</strong><br>The Angular Router maps URL paths to specific components. When the browser’s address changes, Angular determines which component to display by matching the URL with a defined route configuration."
         },
         {
           "type": "code",
@@ -3342,7 +3364,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Defining Routes</strong><br>Each route is defined as an object in the <code>Routes</code> array with at least a <code>path</code> and a <code>component</code> property:<ul><li><strong>path</strong> \u2013 the URL segment (e.g., 'about').</li><li><strong>component</strong> \u2013 the component to render when the path is matched.</li></ul>"
+          "text": "<strong>Defining Routes</strong><br>Each route is defined as an object in the <code>Routes</code> array with at least a <code>path</code> and a <code>component</code> property:<ul><li><strong>path</strong> – the URL segment (e.g., 'about').</li><li><strong>component</strong> – the component to render when the path is matched.</li></ul>"
         },
         {
           "type": "code",
@@ -3351,7 +3373,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>RouterModule Methods</strong><br><ul><li><code>RouterModule.forRoot(routes)</code> \u2013 used in the root module for application-wide routing.</li><li><code>RouterModule.forChild(routes)</code> \u2013 used in feature modules for modular routing setups.</li></ul>"
+          "text": "<strong>RouterModule Methods</strong><br><ul><li><code>RouterModule.forRoot(routes)</code> – used in the root module for application-wide routing.</li><li><code>RouterModule.forChild(routes)</code> – used in feature modules for modular routing setups.</li></ul>"
         },
         {
           "type": "text",
@@ -3382,7 +3404,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular routing as a GPS \u2014 it maps URLs to the right components so users can navigate your app fluidly without ever leaving the page."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular routing as a GPS — it maps URLs to the right components so users can navigate your app fluidly without ever leaving the page."
         },
         {
           "type": "text",
@@ -3398,7 +3420,8 @@
       "navigation",
       "router",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-lazy-loading",
@@ -3411,7 +3434,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Lazy loading in Angular is an optimization strategy that helps improve performance by loading specific parts of the application only when required. Instead of downloading all modules and components when the app starts, Angular fetches feature modules on demand \u2014 typically when the user navigates to a particular route."
+          "text": "<strong>Overview</strong><br><br>Lazy loading in Angular is an optimization strategy that helps improve performance by loading specific parts of the application only when required. Instead of downloading all modules and components when the app starts, Angular fetches feature modules on demand — typically when the user navigates to a particular route."
         },
         {
           "type": "text",
@@ -3437,7 +3460,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Benefits of Lazy Loading</strong><br><ul><li>Reduces initial bundle size for faster application startup.</li><li>Improves overall app performance by loading only necessary modules.</li><li>Enhances scalability \u2014 new modules can be added easily without affecting initial load time.</li><li>Better user experience on slower networks or large applications.</li></ul>"
+          "text": "<strong>Benefits of Lazy Loading</strong><br><ul><li>Reduces initial bundle size for faster application startup.</li><li>Improves overall app performance by loading only necessary modules.</li><li>Enhances scalability — new modules can be added easily without affecting initial load time.</li><li>Better user experience on slower networks or large applications.</li></ul>"
         },
         {
           "type": "text",
@@ -3480,7 +3503,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of lazy loading as packing your app into \u2018mini-bundles\u2019 \u2014 instead of loading everything upfront, Angular loads each bundle only when the user needs it."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of lazy loading as packing your app into ‘mini-bundles’ — instead of loading everything upfront, Angular loads each bundle only when the user needs it."
         },
         {
           "type": "text",
@@ -3496,7 +3519,8 @@
       "lazy-loading",
       "performance",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-change-detection-strategies",
@@ -3504,16 +3528,16 @@
     "technology": "angular",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Change detection in Angular is the mechanism that keeps the view in sync with the component\u2019s data. Angular provides two strategies \u2014 Default and OnPush \u2014 to determine when and how it checks for changes and updates the DOM.",
+    "description": "Change detection in Angular is the mechanism that keeps the view in sync with the component’s data. Angular provides two strategies — Default and OnPush — to determine when and how it checks for changes and updates the DOM.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Change detection in Angular is the process by which the framework synchronizes the application's data model (component properties) with the view (DOM). Whenever the data changes, Angular determines what parts of the view need to be updated and efficiently re-renders them. This is one of the most critical mechanisms in Angular\u2019s performance model."
+          "text": "<strong>Overview</strong><br><br>Change detection in Angular is the process by which the framework synchronizes the application's data model (component properties) with the view (DOM). Whenever the data changes, Angular determines what parts of the view need to be updated and efficiently re-renders them. This is one of the most critical mechanisms in Angular’s performance model."
         },
         {
           "type": "text",
-          "text": "<strong>How Change Detection Works</strong><br>Angular maintains a tree of components, each associated with a change detector. Whenever a change occurs (for example, a user event, async call, or timer), Angular traverses this tree and checks if the component\u2019s data bindings have changed. If a change is detected, the DOM is updated accordingly."
+          "text": "<strong>How Change Detection Works</strong><br>Angular maintains a tree of components, each associated with a change detector. Whenever a change occurs (for example, a user event, async call, or timer), Angular traverses this tree and checks if the component’s data bindings have changed. If a change is detected, the DOM is updated accordingly."
         },
         {
           "type": "text",
@@ -3528,11 +3552,11 @@
           "rows": [
             [
               "<code>ChangeDetectionStrategy.Default</code>",
-              "This is the default strategy. Angular checks every component in the component tree during every change detection cycle, whether or not its input data has changed. It\u2019s simple but less efficient for large applications."
+              "This is the default strategy. Angular checks every component in the component tree during every change detection cycle, whether or not its input data has changed. It’s simple but less efficient for large applications."
             ],
             [
               "<code>ChangeDetectionStrategy.OnPush</code>",
-              "With this strategy, Angular only checks the component and its children when specific conditions occur \u2014 such as when an @Input() reference changes, an event originates from inside the component, or you manually trigger detection. This makes the app faster and more predictable."
+              "With this strategy, Angular only checks the component and its children when specific conditions occur — such as when an @Input() reference changes, an event originates from inside the component, or you manually trigger detection. This makes the app faster and more predictable."
             ]
           ],
           "caption": "Angular Change Detection Strategies"
@@ -3544,7 +3568,7 @@
         },
         {
           "type": "text",
-          "text": "In the example above, the component uses the <code>OnPush</code> strategy. Angular will only re-check this component when the <code>user</code> reference changes \u2014 not when you mutate its properties (e.g., <code>user.name = 'Bob'</code>)."
+          "text": "In the example above, the component uses the <code>OnPush</code> strategy. Angular will only re-check this component when the <code>user</code> reference changes — not when you mutate its properties (e.g., <code>user.name = 'Bob'</code>)."
         },
         {
           "type": "text",
@@ -3565,11 +3589,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular change detection as a 'smart mirror' \u2014 by default it checks everything for changes, but with <code>OnPush</code> you tell it to look only when you know something has changed."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular change detection as a 'smart mirror' — by default it checks everything for changes, but with <code>OnPush</code> you tell it to look only when you know something has changed."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Change detection keeps the UI in sync with data changes.</li><li>Two strategies exist \u2014 Default (checks all) and OnPush (checks only when inputs or events trigger).</li><li>OnPush provides better performance for immutable and reactive data flows.</li><li>Developers can use <code>ChangeDetectorRef</code> for fine-grained control.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Change detection keeps the UI in sync with data changes.</li><li>Two strategies exist — Default (checks all) and OnPush (checks only when inputs or events trigger).</li><li>OnPush provides better performance for immutable and reactive data flows.</li><li>Developers can use <code>ChangeDetectorRef</code> for fine-grained control.</li></ul>"
         }
       ]
     },
@@ -3581,11 +3605,12 @@
       "performance",
       "basics",
       "components"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-zonejs-change-detection",
-    "title": "How does Angular\u2019s Zone.js help in change detection?",
+    "title": "How does Angular’s Zone.js help in change detection?",
     "technology": "angular",
     "difficulty": "hard",
     "importance": 5,
@@ -3602,7 +3627,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How Angular Uses Zone.js</strong><br>Angular creates a special zone called the <code>NgZone</code>. It wraps all asynchronous operations inside this zone. When an async event completes, Zone.js calls Angular\u2019s internal mechanism to check for data changes and refresh the view."
+          "text": "<strong>How Angular Uses Zone.js</strong><br>Angular creates a special zone called the <code>NgZone</code>. It wraps all asynchronous operations inside this zone. When an async event completes, Zone.js calls Angular’s internal mechanism to check for data changes and refresh the view."
         },
         {
           "type": "code",
@@ -3615,23 +3640,23 @@
         },
         {
           "type": "text",
-          "text": "<strong>How Zone.js Triggers Change Detection</strong><br>When an asynchronous operation (like <code>setTimeout()</code> or an HTTP call) finishes, Zone.js intercepts it and calls Angular\u2019s internal <code>ApplicationRef.tick()</code> method. This initiates the change detection cycle, ensuring that the UI stays consistent with the data model."
+          "text": "<strong>How Zone.js Triggers Change Detection</strong><br>When an asynchronous operation (like <code>setTimeout()</code> or an HTTP call) finishes, Zone.js intercepts it and calls Angular’s internal <code>ApplicationRef.tick()</code> method. This initiates the change detection cycle, ensuring that the UI stays consistent with the data model."
         },
         {
           "type": "text",
-          "text": "<strong>Benefits of Using Zone.js</strong><br><ul><li>Automatically triggers change detection after async operations.</li><li>Eliminates the need for manual DOM updates.</li><li>Ensures the UI always reflects the latest application state.</li><li>Provides APIs to run code inside or outside Angular\u2019s zone for performance tuning.</li></ul>"
+          "text": "<strong>Benefits of Using Zone.js</strong><br><ul><li>Automatically triggers change detection after async operations.</li><li>Eliminates the need for manual DOM updates.</li><li>Ensures the UI always reflects the latest application state.</li><li>Provides APIs to run code inside or outside Angular’s zone for performance tuning.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>When You Might Disable Zone.js</strong><br>Advanced developers sometimes disable Zone.js (using <code>zone-flags.ts</code>) to gain full control over change detection \u2014 often in highly optimized or reactive applications that use manual <code>ChangeDetectorRef</code> or frameworks like <code>RxAngular</code>."
+          "text": "<strong>When You Might Disable Zone.js</strong><br>Advanced developers sometimes disable Zone.js (using <code>zone-flags.ts</code>) to gain full control over change detection — often in highly optimized or reactive applications that use manual <code>ChangeDetectorRef</code> or frameworks like <code>RxAngular</code>."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Zone.js as Angular\u2019s 'watchdog' for async operations \u2014 it keeps an eye on everything happening in the background and tells Angular, \u201cHey, something changed, time to update the view!\u201d"
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Zone.js as Angular’s 'watchdog' for async operations — it keeps an eye on everything happening in the background and tells Angular, “Hey, something changed, time to update the view!”"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Zone.js tracks asynchronous operations and notifies Angular when they complete.</li><li>Angular uses <code>NgZone</code> to wrap these operations.</li><li>This allows Angular to automatically trigger change detection and update the DOM.</li><li>You can use <code>runOutsideAngular()</code> for performance-critical code that shouldn\u2019t trigger detection.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Zone.js tracks asynchronous operations and notifies Angular when they complete.</li><li>Angular uses <code>NgZone</code> to wrap these operations.</li><li>This allows Angular to automatically trigger change detection and update the DOM.</li><li>You can use <code>runOutsideAngular()</code> for performance-critical code that shouldn’t trigger detection.</li></ul>"
         }
       ]
     },
@@ -3643,7 +3668,8 @@
       "change-detection",
       "performance",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngonchanges-vs-ngdocheck",
@@ -3651,7 +3677,7 @@
     "technology": "angular",
     "difficulty": "hard",
     "importance": 5,
-    "description": "ngOnChanges() and ngDoCheck() are Angular lifecycle hooks that detect and respond to changes in component data. ngOnChanges() automatically runs when @Input() values change, while ngDoCheck() allows developers to perform custom change detection logic beyond Angular\u2019s default mechanism.",
+    "description": "ngOnChanges() and ngDoCheck() are Angular lifecycle hooks that detect and respond to changes in component data. ngOnChanges() automatically runs when @Input() values change, while ngDoCheck() allows developers to perform custom change detection logic beyond Angular’s default mechanism.",
     "answer": {
       "blocks": [
         {
@@ -3673,7 +3699,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>ngDoCheck()</strong><br>While <code>ngOnChanges()</code> only detects <code>@Input()</code> changes, <code>ngDoCheck()</code> is a more powerful hook that lets developers implement <em>custom change detection logic</em>. It runs during every change detection cycle, even if inputs haven\u2019t changed."
+          "text": "<strong>ngDoCheck()</strong><br>While <code>ngOnChanges()</code> only detects <code>@Input()</code> changes, <code>ngDoCheck()</code> is a more powerful hook that lets developers implement <em>custom change detection logic</em>. It runs during every change detection cycle, even if inputs haven’t changed."
         },
         {
           "type": "code",
@@ -3682,7 +3708,7 @@
         },
         {
           "type": "text",
-          "text": "In this example, <code>ngDoCheck()</code> manually checks for changes within the <code>user</code> object \u2014 something <code>ngOnChanges()</code> would not detect if only a property (not the object reference) changes."
+          "text": "In this example, <code>ngDoCheck()</code> manually checks for changes within the <code>user</code> object — something <code>ngOnChanges()</code> would not detect if only a property (not the object reference) changes."
         },
         {
           "type": "list",
@@ -3721,7 +3747,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>ngOnChanges()</code> as Angular\u2019s built-in observer for input updates, while <code>ngDoCheck()</code> is a manual magnifying glass \u2014 you use it when Angular\u2019s default detection isn\u2019t enough."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>ngOnChanges()</code> as Angular’s built-in observer for input updates, while <code>ngDoCheck()</code> is a manual magnifying glass — you use it when Angular’s default detection isn’t enough."
         },
         {
           "type": "text",
@@ -3737,11 +3763,12 @@
       "hooks",
       "change-detection",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-forroot-forchild",
-    "title": "What are Angular modules\u2019 forRoot() and forChild() methods used for?",
+    "title": "What are Angular modules’ forRoot() and forChild() methods used for?",
     "technology": "angular",
     "difficulty": "hard",
     "importance": 5,
@@ -3750,7 +3777,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In Angular, modules can include routing and services. The <code>forRoot()</code> and <code>forChild()</code> methods are conventions that help manage how routes and services are provided across different parts of an application \u2014 ensuring that global providers are instantiated only once, and feature modules get their own route configurations."
+          "text": "<strong>Overview</strong><br><br>In Angular, modules can include routing and services. The <code>forRoot()</code> and <code>forChild()</code> methods are conventions that help manage how routes and services are provided across different parts of an application — ensuring that global providers are instantiated only once, and feature modules get their own route configurations."
         },
         {
           "type": "text",
@@ -3821,7 +3848,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><ul><li>Use <code>forRoot()</code> only once \u2014 in the root module.</li><li>Use <code>forChild()</code> in feature or lazy-loaded modules.</li><li>Do not import <code>RouterModule.forRoot()</code> in feature modules, as it can cause multiple router instances and unpredictable behavior.</li></ul>"
+          "text": "<strong>Best Practices</strong><ul><li>Use <code>forRoot()</code> only once — in the root module.</li><li>Use <code>forChild()</code> in feature or lazy-loaded modules.</li><li>Do not import <code>RouterModule.forRoot()</code> in feature modules, as it can cause multiple router instances and unpredictable behavior.</li></ul>"
         },
         {
           "type": "text",
@@ -3829,7 +3856,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li><code>forRoot()</code> initializes global providers and routing \u2014 used in the root module.</li><li><code>forChild()</code> defines feature module routes without duplicating providers.</li><li>Together, they ensure scalable, modular, and efficient routing and service management in Angular applications.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li><code>forRoot()</code> initializes global providers and routing — used in the root module.</li><li><code>forChild()</code> defines feature module routes without duplicating providers.</li><li>Together, they ensure scalable, modular, and efficient routing and service management in Angular applications.</li></ul>"
         }
       ]
     },
@@ -3841,7 +3868,8 @@
       "providers",
       "dependency-injection",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-performance-optimization",
@@ -3880,7 +3908,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>3. Ahead-of-Time (AOT) Compilation</strong><br>Angular\u2019s AOT compiler converts TypeScript and HTML templates into optimized JavaScript during the build phase, rather than at runtime. This results in smaller, faster applications with fewer runtime errors."
+          "text": "<strong>3. Ahead-of-Time (AOT) Compilation</strong><br>Angular’s AOT compiler converts TypeScript and HTML templates into optimized JavaScript during the build phase, rather than at runtime. This results in smaller, faster applications with fewer runtime errors."
         },
         {
           "type": "code",
@@ -3893,7 +3921,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>4. Tree Shaking and Bundle Optimization</strong><br>Tree shaking removes unused code from the final bundle. Angular\u2019s build system (based on Webpack) automatically performs tree-shaking, minification, and dead-code elimination when building with production mode (<code>--configuration production</code>)."
+          "text": "<strong>4. Tree Shaking and Bundle Optimization</strong><br>Tree shaking removes unused code from the final bundle. Angular’s build system (based on Webpack) automatically performs tree-shaking, minification, and dead-code elimination when building with production mode (<code>--configuration production</code>)."
         },
         {
           "type": "text",
@@ -3947,7 +3975,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>10. Preloading Strategies</strong><br>Angular\u2019s Router offers preloading strategies that load lazy modules in the background after the main app is ready. This reduces navigation delays later on."
+          "text": "<strong>10. Preloading Strategies</strong><br>Angular’s Router offers preloading strategies that load lazy modules in the background after the main app is ready. This reduces navigation delays later on."
         },
         {
           "type": "code",
@@ -3960,7 +3988,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>12. Production Builds and Source Map Optimization</strong><br>Always use production builds in deployment. Angular\u2019s production build mode enables AOT, tree shaking, minification, and optimizations by default, drastically improving runtime speed and reducing bundle size."
+          "text": "<strong>12. Production Builds and Source Map Optimization</strong><br>Always use production builds in deployment. Angular’s production build mode enables AOT, tree shaking, minification, and optimizations by default, drastically improving runtime speed and reducing bundle size."
         },
         {
           "type": "code",
@@ -3973,7 +4001,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular\u2019s performance optimizations as tuning an orchestra \u2014 lazy loading reduces the number of players on stage, OnPush ensures only the right ones play, and AOT ensures every note is ready before the concert begins."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of Angular’s performance optimizations as tuning an orchestra — lazy loading reduces the number of players on stage, OnPush ensures only the right ones play, and AOT ensures every note is ready before the concert begins."
         },
         {
           "type": "text",
@@ -3989,11 +4017,12 @@
       "change-detection",
       "optimization",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-onpush-change-detection-debugging-real-bug",
-    "title": "Explain OnPush Change Detection in Angular Like You\u2019re Debugging a Real Production Bug",
+    "title": "Explain OnPush Change Detection in Angular Like You’re Debugging a Real Production Bug",
     "technology": "angular",
     "difficulty": "advanced",
     "importance": 5,
@@ -4002,7 +4031,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>ChangeDetectionStrategy.OnPush</code> tells Angular: \u201cOnly check this component if something <em>meaningful</em> happened.\u201d Meaningful = an <code>@Input</code> reference changed, an event happened in this component, an <code>async</code> pipe emitted, or you manually asked Angular to check."
+          "text": "<strong>Core idea</strong><br><br><code>ChangeDetectionStrategy.OnPush</code> tells Angular: “Only check this component if something <em>meaningful</em> happened.” Meaningful = an <code>@Input</code> reference changed, an event happened in this component, an <code>async</code> pipe emitted, or you manually asked Angular to check."
         },
         {
           "type": "list",
@@ -4014,32 +4043,32 @@
           "rows": [
             [
               "An @Input reference changed",
-              "\u2705 Yes",
+              "✅ Yes",
               "Angular compares references, not deep values."
             ],
             [
               "A click/event inside the component",
-              "\u2705 Yes",
+              "✅ Yes",
               "Events mark the component dirty."
             ],
             [
               "An async pipe emits a new value",
-              "\u2705 Yes",
+              "✅ Yes",
               "AsyncPipe internally calls markForCheck()."
             ],
             [
               "You mutated an object/array in place",
-              "\u274c No",
+              "❌ No",
               "Reference did not change, Angular thinks nothing happened."
             ],
             [
               "You call markForCheck() manually",
-              "\u2705 Yes",
+              "✅ Yes",
               "You explicitly told Angular to re-check."
             ],
             [
               "You call detectChanges() manually",
-              "\u2705 Yes (immediate)",
+              "✅ Yes (immediate)",
               "Forces synchronous change detection for this subtree."
             ]
           ],
@@ -4047,12 +4076,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>The classic real-world bug</strong><br><br>\u201cMy data changes but the UI doesn\u2019t update.\u201d This almost always means <strong>you mutated an object or array instead of creating a new reference</strong>."
+          "text": "<strong>The classic real-world bug</strong><br><br>“My data changes but the UI doesn’t update.” This almost always means <strong>you mutated an object or array instead of creating a new reference</strong>."
         },
         {
           "type": "code",
           "language": "typescript",
-          "code": "@Component({\n  selector: 'app-user-list',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <div *ngFor=\"let user of users\">{{ user.name }}</div>\n  `\n})\nexport class UserListComponent {\n  @Input() users: { name: string }[] = [];\n\n  // \u274c BUG: UI will NOT update in OnPush\n  addUserWrong() {\n    this.users.push({ name: 'New User' }); // same array reference\n  }\n\n  // \u2705 Correct: new reference => OnPush sees change\n  addUserCorrect() {\n    this.users = [...this.users, { name: 'New User' }];\n  }\n}"
+          "code": "@Component({\n  selector: 'app-user-list',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <div *ngFor=\"let user of users\">{{ user.name }}</div>\n  `\n})\nexport class UserListComponent {\n  @Input() users: { name: string }[] = [];\n\n  // ❌ BUG: UI will NOT update in OnPush\n  addUserWrong() {\n    this.users.push({ name: 'New User' }); // same array reference\n  }\n\n  // ✅ Correct: new reference => OnPush sees change\n  addUserCorrect() {\n    this.users = [...this.users, { name: 'New User' }];\n  }\n}"
         },
         {
           "type": "text",
@@ -4085,11 +4114,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>AsyncPipe is your best friend</strong><br><br>The <code>async</code> pipe automatically:<br>\u2022 Subscribes<br>\u2022 Unsubscribes<br>\u2022 Calls <code>markForCheck()</code> on emission<br><br>This is why OnPush + async pipe is the <strong>recommended default pattern</strong>."
+          "text": "<strong>AsyncPipe is your best friend</strong><br><br>The <code>async</code> pipe automatically:<br>• Subscribes<br>• Unsubscribes<br>• Calls <code>markForCheck()</code> on emission<br><br>This is why OnPush + async pipe is the <strong>recommended default pattern</strong>."
         },
         {
           "type": "text",
-          "text": "<strong>Common senior-level pitfalls</strong><br><br>\u2022 Mutating arrays/objects instead of replacing them<br>\u2022 Forgetting that OnPush uses <em>reference</em> checks, not deep checks<br>\u2022 Updating state inside subscriptions without async pipe or markForCheck<br>\u2022 Using OnPush everywhere without understanding its mental model"
+          "text": "<strong>Common senior-level pitfalls</strong><br><br>• Mutating arrays/objects instead of replacing them<br>• Forgetting that OnPush uses <em>reference</em> checks, not deep checks<br>• Updating state inside subscriptions without async pipe or markForCheck<br>• Using OnPush everywhere without understanding its mental model"
         },
         {
           "type": "list",
@@ -4119,7 +4148,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most \u201cUI not updating\u201d bugs in OnPush come from mutating objects instead of replacing them."
+          "text": "<strong>Interview-level summary</strong><br><br><code>OnPush</code> makes Angular check a component only when inputs change by reference, an event happens, an async pipe emits, or you manually trigger detection. It gives big performance wins, but <strong>requires immutable state updates</strong>. Most “UI not updating” bugs in OnPush come from mutating objects instead of replacing them."
         }
       ]
     },
@@ -4131,7 +4160,8 @@
       "onpush",
       "debugging",
       "performance"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
@@ -4144,7 +4174,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>All four operators take a stream of \u201ctriggers\u201d (typing, clicks, route params) and map each trigger to an inner Observable (usually an HTTP call). The difference is what they do when a <em>new trigger arrives before the previous one finishes</em>:<br><br><code>switchMap</code> = cancel old, keep latest<br><code>mergeMap</code> = run all in parallel<br><code>concatMap</code> = queue one by one<br><code>exhaustMap</code> = ignore new until current completes"
+          "text": "<strong>Core idea</strong><br><br>All four operators take a stream of “triggers” (typing, clicks, route params) and map each trigger to an inner Observable (usually an HTTP call). The difference is what they do when a <em>new trigger arrives before the previous one finishes</em>:<br><br><code>switchMap</code> = cancel old, keep latest<br><code>mergeMap</code> = run all in parallel<br><code>concatMap</code> = queue one by one<br><code>exhaustMap</code> = ignore new until current completes"
         },
         {
           "type": "list",
@@ -4164,19 +4194,19 @@
             [
               "<code>mergeMap</code>",
               "Runs all inner Observables concurrently (no cancellation).",
-              "Fire-and-forget analytics, loading independent resources in parallel, batch requests where order doesn\u2019t matter.",
+              "Fire-and-forget analytics, loading independent resources in parallel, batch requests where order doesn’t matter.",
               "Can cause race conditions (older response overwrites newer state) if you update shared UI state."
             ],
             [
               "<code>concatMap</code>",
               "Queues triggers and runs inner Observables sequentially (preserves order).",
               "Save queue, uploading files in order, sequential steps where order matters and every action must run.",
-              "Prevents out-of-order state. (But can feel \u201cslow\u201d under rapid triggers.)"
+              "Prevents out-of-order state. (But can feel “slow” under rapid triggers.)"
             ],
             [
               "<code>exhaustMap</code>",
               "Ignores new triggers while an inner Observable is active (first wins until completion).",
-              "Login button, \u201cSubmit\u201d button, \u201cPay now\u201d, any action where double submit must be blocked.",
+              "Login button, “Submit” button, “Pay now”, any action where double submit must be blocked.",
               "Prevents double submits. (But can drop user actions if they click again too soon.)"
             ]
           ],
@@ -4189,7 +4219,7 @@
         {
           "type": "list",
           "columns": [
-            "You want\u2026",
+            "You want…",
             "Pick",
             "Why"
           ],
@@ -4228,15 +4258,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Senior pitfall #1: race conditions with mergeMap</strong><br><br>If you use <code>mergeMap</code> for UI state that should reflect the latest request, you can get <em>out-of-order overwrites</em>: request A starts, then request B starts, B returns first (UI shows B), then A returns later and overwrites the UI with stale data. That\u2019s why typeahead/search is almost always <code>switchMap</code>."
+          "text": "<strong>Senior pitfall #1: race conditions with mergeMap</strong><br><br>If you use <code>mergeMap</code> for UI state that should reflect the latest request, you can get <em>out-of-order overwrites</em>: request A starts, then request B starts, B returns first (UI shows B), then A returns later and overwrites the UI with stale data. That’s why typeahead/search is almost always <code>switchMap</code>."
         },
         {
           "type": "text",
-          "text": "<strong>Senior pitfall #2: thinking switchMap \u201ccancels the server\u201d</strong><br><br><code>switchMap</code> unsubscribes from the previous inner Observable. For Angular <code>HttpClient</code>, unsubscribing typically aborts the underlying request (via browser APIs). But if the server already processed it, cancellation won\u2019t rewind time\u2014it mainly prevents your app from handling stale results."
+          "text": "<strong>Senior pitfall #2: thinking switchMap “cancels the server”</strong><br><br><code>switchMap</code> unsubscribes from the previous inner Observable. For Angular <code>HttpClient</code>, unsubscribing typically aborts the underlying request (via browser APIs). But if the server already processed it, cancellation won’t rewind time—it mainly prevents your app from handling stale results."
         },
         {
           "type": "text",
-          "text": "<strong>Senior pitfall #3: exhaustMap dropping user intent</strong><br><br><code>exhaustMap</code> ignores new triggers while busy. Great for preventing double submits, but if you need \u201clast click wins after current finishes\u201d, use a different strategy (e.g., disable button in UI, or use <code>switchMap</code> with careful semantics)."
+          "text": "<strong>Senior pitfall #3: exhaustMap dropping user intent</strong><br><br><code>exhaustMap</code> ignores new triggers while busy. Great for preventing double submits, but if you need “last click wins after current finishes”, use a different strategy (e.g., disable button in UI, or use <code>switchMap</code> with careful semantics)."
         },
         {
           "type": "list",
@@ -4264,14 +4294,14 @@
             [
               "Load independent resources (A, B, C in parallel)",
               "<code>mergeMap</code>",
-              "Parallelism improves speed; ordering doesn\u2019t matter."
+              "Parallelism improves speed; ordering doesn’t matter."
             ]
           ],
           "caption": "Operator picks interviewers expect you to justify"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br><code>switchMap</code> = latest wins (search, route changes). <code>mergeMap</code> = run all in parallel (independent work). <code>concatMap</code> = queue sequentially (ordered saves). <code>exhaustMap</code> = ignore spam until done (submit buttons). The \u201ccorrect\u201d choice is the one that matches how you want to handle overlapping triggers."
+          "text": "<strong>Summary</strong><br><br><code>switchMap</code> = latest wins (search, route changes). <code>mergeMap</code> = run all in parallel (independent work). <code>concatMap</code> = queue sequentially (ordered saves). <code>exhaustMap</code> = ignore spam until done (submit buttons). The “correct” choice is the one that matches how you want to handle overlapping triggers."
         }
       ]
     },
@@ -4283,7 +4313,8 @@
       "operators",
       "async",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
@@ -4309,26 +4340,26 @@
           "rows": [
             [
               "<code>HttpClient</code> request",
-              "\u2705 Yes",
-              "\u274c No",
+              "✅ Yes",
+              "❌ No",
               "HTTP observables complete after one response."
             ],
             [
               "<code>ActivatedRoute</code> params, <code>valueChanges</code>, Subjects",
-              "\u274c No",
-              "\u2705 Yes",
+              "❌ No",
+              "✅ Yes",
               "They are long-lived streams tied to app lifetime."
             ],
             [
               "<code>interval</code>, <code>fromEvent</code>, WebSocket",
-              "\u274c No",
-              "\u2705 Yes",
+              "❌ No",
+              "✅ Yes",
               "They never complete unless you stop them."
             ],
             [
               "<code>async</code> pipe",
-              "\u2014",
-              "\u274c No",
+              "—",
+              "❌ No",
               "Angular unsubscribes automatically on destroy."
             ]
           ],
@@ -4372,7 +4403,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Non-RxJS leaks: event listeners & timers</strong><br><br>Leaks don\u2019t only come from Observables. <code>addEventListener</code>, <code>setInterval</code>, and 3rd-party libraries must also be cleaned up in <code>ngOnDestroy</code>."
+          "text": "<strong>Non-RxJS leaks: event listeners & timers</strong><br><br>Leaks don’t only come from Observables. <code>addEventListener</code>, <code>setInterval</code>, and 3rd-party libraries must also be cleaned up in <code>ngOnDestroy</code>."
         },
         {
           "type": "code",
@@ -4412,11 +4443,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Senior pitfalls</strong><br><br>\u2022 Assuming Angular auto-unsubscribes everything (it doesn\u2019t)<br>\u2022 Forgetting that <code>ActivatedRoute</code>, <code>valueChanges</code>, Subjects never complete<br>\u2022 Subscribing in services that live forever (root scope)<br>\u2022 Leaking intervals, event listeners, and WebSocket connections"
+          "text": "<strong>Senior pitfalls</strong><br><br>• Assuming Angular auto-unsubscribes everything (it doesn’t)<br>• Forgetting that <code>ActivatedRoute</code>, <code>valueChanges</code>, Subjects never complete<br>• Subscribing in services that live forever (root scope)<br>• Leaking intervals, event listeners, and WebSocket connections"
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>To prevent memory leaks in Angular: prefer the <code>async</code> pipe in templates, use <code>takeUntilDestroyed</code> (or <code>takeUntil</code> + Subject) in code, know which Observables complete automatically (HTTP) and which don\u2019t, and always clean up timers and event listeners in <code>ngOnDestroy</code>."
+          "text": "<strong>Interview summary</strong><br><br>To prevent memory leaks in Angular: prefer the <code>async</code> pipe in templates, use <code>takeUntilDestroyed</code> (or <code>takeUntil</code> + Subject) in code, know which Observables complete automatically (HTTP) and which don’t, and always clean up timers and event listeners in <code>ngOnDestroy</code>."
         }
       ]
     },
@@ -4428,7 +4459,8 @@
       "subscriptions",
       "performance",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
@@ -4436,7 +4468,7 @@
     "technology": "angular",
     "difficulty": "advanced",
     "importance": 5,
-    "description": "ControlValueAccessor (CVA) is Angular\u2019s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling\u2014unlike custom two-way binding which only syncs values and breaks form integration.",
+    "description": "ControlValueAccessor (CVA) is Angular’s official bridge between custom components and Angular Forms. It lets your component behave like a real form control (ngModel, formControl, formControlName) with validation, touched/dirty state, and disabled handling—unlike custom two-way binding which only syncs values and breaks form integration.",
     "answer": {
       "blocks": [
         {
@@ -4457,35 +4489,35 @@
           "rows": [
             [
               "Works with Reactive Forms / ngModel",
-              "\u274c No",
-              "\u2705 Yes"
+              "❌ No",
+              "✅ Yes"
             ],
             [
               "Supports validators",
-              "\u274c No",
-              "\u2705 Yes"
+              "❌ No",
+              "✅ Yes"
             ],
             [
               "Tracks touched / dirty / pristine",
-              "\u274c No",
-              "\u2705 Yes"
+              "❌ No",
+              "✅ Yes"
             ],
             [
               "Supports disabled state",
-              "\u274c Manual hacks",
-              "\u2705 Built-in via setDisabledState"
+              "❌ Manual hacks",
+              "✅ Built-in via setDisabledState"
             ],
             [
               "Integrates with FormGroup / FormControl",
-              "\u274c No",
-              "\u2705 Yes"
+              "❌ No",
+              "✅ Yes"
             ]
           ],
           "caption": "Two-way binding vs ControlValueAccessor"
         },
         {
           "type": "text",
-          "text": "<strong>Minimal CVA implementation</strong><br><br>A CVA has four responsibilities:<br>\u2022 <code>writeValue</code>: Angular \u2192 component<br>\u2022 <code>registerOnChange</code>: component \u2192 Angular<br>\u2022 <code>registerOnTouched</code>: mark as touched<br>\u2022 <code>setDisabledState</code>: handle disabled"
+          "text": "<strong>Minimal CVA implementation</strong><br><br>A CVA has four responsibilities:<br>• <code>writeValue</code>: Angular → component<br>• <code>registerOnChange</code>: component → Angular<br>• <code>registerOnTouched</code>: mark as touched<br>• <code>setDisabledState</code>: handle disabled"
         },
         {
           "type": "code",
@@ -4503,7 +4535,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why this is strictly better than custom two-way binding</strong><br><br>With CVA, your component becomes a <strong>first-class Angular form control</strong>. It participates in validation, form submission, reset, disabled state propagation, and form-level state tracking. Two-way binding only moves a value around\u2014it does not integrate into the forms system."
+          "text": "<strong>Why this is strictly better than custom two-way binding</strong><br><br>With CVA, your component becomes a <strong>first-class Angular form control</strong>. It participates in validation, form submission, reset, disabled state propagation, and form-level state tracking. Two-way binding only moves a value around—it does not integrate into the forms system."
         },
         {
           "type": "list",
@@ -4515,34 +4547,34 @@
           "rows": [
             [
               "Disable the whole form",
-              "\u274c You must wire every input manually",
-              "\u2705 setDisabledState is called automatically"
+              "❌ You must wire every input manually",
+              "✅ setDisabledState is called automatically"
             ],
             [
               "Mark control as touched",
-              "\u274c Manual hacks",
-              "\u2705 Angular handles it"
+              "❌ Manual hacks",
+              "✅ Angular handles it"
             ],
             [
               "Show validation errors",
-              "\u274c Not integrated",
-              "\u2705 Works via FormControl"
+              "❌ Not integrated",
+              "✅ Works via FormControl"
             ],
             [
               "Reset the form",
-              "\u274c Manual reset logic",
-              "\u2705 Angular resets automatically"
+              "❌ Manual reset logic",
+              "✅ Angular resets automatically"
             ]
           ],
           "caption": "Why CVA scales in real apps"
         },
         {
           "type": "text",
-          "text": "<strong>Senior-level pitfalls</strong><br><br>\u2022 Forgetting to call <code>onTouched()</code> (control never becomes touched)<br>\u2022 Not implementing <code>setDisabledState</code> (disabled forms don\u2019t work)<br>\u2022 Mutating internal state without calling <code>onChange</code><br>\u2022 Using custom two-way binding for components that should be form controls"
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Forgetting to call <code>onTouched()</code> (control never becomes touched)<br>• Not implementing <code>setDisabledState</code> (disabled forms don’t work)<br>• Mutating internal state without calling <code>onChange</code><br>• Using custom two-way binding for components that should be form controls"
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br><code>ControlValueAccessor</code> is Angular\u2019s official way to make a custom component behave like a real form control. It integrates with Reactive Forms and ngModel, supports validation, touched/dirty state, disabled handling, and form APIs. Custom two-way binding only syncs a value and does not integrate with Angular Forms, which makes it unsuitable for serious form components."
+          "text": "<strong>Interview summary</strong><br><br><code>ControlValueAccessor</code> is Angular’s official way to make a custom component behave like a real form control. It integrates with Reactive Forms and ngModel, supports validation, touched/dirty state, disabled handling, and form APIs. Custom two-way binding only syncs a value and does not integrate with Angular Forms, which makes it unsuitable for serious form components."
         }
       ]
     },
@@ -4554,7 +4586,8 @@
       "controlvalueaccessor",
       "two-way-binding",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-template-driven-vs-reactive-forms-which-scales",
@@ -4567,7 +4600,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Both approaches create the same thing in the end (a <code>FormGroup</code> tree). The difference is <strong>where the form model lives</strong>:<br><br>\u2022 <strong>Template-driven</strong>: the form is inferred from the template.<br>\u2022 <strong>Reactive</strong>: the form is declared explicitly in TypeScript.<br><br>The more complex the form becomes, the more valuable the explicit model of reactive forms becomes."
+          "text": "<strong>Core idea</strong><br><br>Both approaches create the same thing in the end (a <code>FormGroup</code> tree). The difference is <strong>where the form model lives</strong>:<br><br>• <strong>Template-driven</strong>: the form is inferred from the template.<br>• <strong>Reactive</strong>: the form is declared explicitly in TypeScript.<br><br>The more complex the form becomes, the more valuable the explicit model of reactive forms becomes."
         },
         {
           "type": "list",
@@ -4594,18 +4627,18 @@
             ],
             [
               "Dynamic forms",
-              "\u274c Hard to do",
-              "\u2705 First-class support (FormArray, dynamic controls)"
+              "❌ Hard to do",
+              "✅ First-class support (FormArray, dynamic controls)"
             ],
             [
               "Testability",
-              "\u274c Hard (need to render template)",
-              "\u2705 Easy (pure TS objects)"
+              "❌ Hard (need to render template)",
+              "✅ Easy (pure TS objects)"
             ],
             [
               "Predictability",
-              "\u26a0\ufe0f Lower (implicit state & timing)",
-              "\u2705 High (explicit model)"
+              "⚠️ Lower (implicit state & timing)",
+              "✅ High (explicit model)"
             ]
           ],
           "caption": "Template-driven vs Reactive forms"
@@ -4635,7 +4668,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why Reactive Forms scale better</strong><br><br>In real applications you eventually need:<br>\u2022 Dynamic fields (add/remove rows)<br>\u2022 Cross-field validation<br>\u2022 Conditional enable/disable logic<br>\u2022 Programmatic resets, patches, partial updates<br>\u2022 Testable validation logic<br><br>All of these are <strong>natural</strong> in reactive forms and <strong>awkward</strong> in template-driven forms."
+          "text": "<strong>Why Reactive Forms scale better</strong><br><br>In real applications you eventually need:<br>• Dynamic fields (add/remove rows)<br>• Cross-field validation<br>• Conditional enable/disable logic<br>• Programmatic resets, patches, partial updates<br>• Testable validation logic<br><br>All of these are <strong>natural</strong> in reactive forms and <strong>awkward</strong> in template-driven forms."
         },
         {
           "type": "list",
@@ -4647,43 +4680,43 @@
           "rows": [
             [
               "Dynamic rows (FormArray)",
-              "\u274c Very hard",
-              "\u2705 Built-in support"
+              "❌ Very hard",
+              "✅ Built-in support"
             ],
             [
               "Cross-field validation",
-              "\u26a0\ufe0f Awkward",
-              "\u2705 Clean validator functions"
+              "⚠️ Awkward",
+              "✅ Clean validator functions"
             ],
             [
               "Conditional fields",
-              "\u26a0\ufe0f Hacky",
-              "\u2705 Simple enable/disable APIs"
+              "⚠️ Hacky",
+              "✅ Simple enable/disable APIs"
             ],
             [
               "Unit testing",
-              "\u274c Requires TestBed + template",
-              "\u2705 Pure TypeScript tests"
+              "❌ Requires TestBed + template",
+              "✅ Pure TypeScript tests"
             ],
             [
               "Complex state transitions",
-              "\u274c Hard to reason about",
-              "\u2705 Predictable and explicit"
+              "❌ Hard to reason about",
+              "✅ Predictable and explicit"
             ]
           ],
           "caption": "Why reactive forms dominate in large apps"
         },
         {
           "type": "text",
-          "text": "<strong>Performance and architecture considerations</strong><br><br>Reactive forms fit naturally with:<br>\u2022 <code>OnPush</code> change detection<br>\u2022 Immutable update patterns<br>\u2022 Observable-based workflows<br>\u2022 CVA-based custom controls<br><br>Template-driven forms rely heavily on directives and two-way binding, which becomes harder to control and reason about at scale."
+          "text": "<strong>Performance and architecture considerations</strong><br><br>Reactive forms fit naturally with:<br>• <code>OnPush</code> change detection<br>• Immutable update patterns<br>• Observable-based workflows<br>• CVA-based custom controls<br><br>Template-driven forms rely heavily on directives and two-way binding, which becomes harder to control and reason about at scale."
         },
         {
           "type": "text",
-          "text": "<strong>When template-driven forms are still OK</strong><br><br>\u2022 Very small forms (login, newsletter signup)<br>\u2022 Prototypes, admin panels, quick internal tools<br>\u2022 When you want minimal boilerplate and don\u2019t need complex logic"
+          "text": "<strong>When template-driven forms are still OK</strong><br><br>• Very small forms (login, newsletter signup)<br>• Prototypes, admin panels, quick internal tools<br>• When you want minimal boilerplate and don’t need complex logic"
         },
         {
           "type": "text",
-          "text": "<strong>Senior-level pitfalls</strong><br><br>\u2022 Mixing template-driven and reactive approaches in the same form<br>\u2022 Using template-driven forms for dynamic or complex workflows<br>\u2022 Putting business logic in templates instead of validators/services"
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Mixing template-driven and reactive approaches in the same form<br>• Using template-driven forms for dynamic or complex workflows<br>• Putting business logic in templates instead of validators/services"
         },
         {
           "type": "text",
@@ -4699,7 +4732,8 @@
       "reactive-forms",
       "template-driven",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
@@ -4707,12 +4741,12 @@
     "technology": "angular",
     "difficulty": "advanced",
     "importance": 5,
-    "description": "shareReplay is an RxJS operator that turns a cold observable into a shared hot one and caches the last emitted values. Used incorrectly, it can cause memory leaks, stale data bugs, and unexpected behavior\u2014especially in Angular services and HTTP streams.",
+    "description": "shareReplay is an RxJS operator that turns a cold observable into a shared hot one and caches the last emitted values. Used incorrectly, it can cause memory leaks, stale data bugs, and unexpected behavior—especially in Angular services and HTTP streams.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>shareReplay</code> does two things at once:<br>\u2022 It <strong>shares</strong> a single subscription among multiple subscribers.<br>\u2022 It <strong>replays</strong> the last N emitted values to new subscribers.<br><br>This is extremely useful for caching HTTP calls\u2014but also extremely easy to misuse."
+          "text": "<strong>Core idea</strong><br><br><code>shareReplay</code> does two things at once:<br>• It <strong>shares</strong> a single subscription among multiple subscribers.<br>• It <strong>replays</strong> the last N emitted values to new subscribers.<br><br>This is extremely useful for caching HTTP calls—but also extremely easy to misuse."
         },
         {
           "type": "text",
@@ -4799,7 +4833,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What does <code>refCount: true</code> do?</strong><br><br>It tells RxJS: \u201cWhen there are no subscribers left, <strong>unsubscribe from the source</strong> and free resources.\u201d Without this, the source stays alive forever."
+          "text": "<strong>What does <code>refCount: true</code> do?</strong><br><br>It tells RxJS: “When there are no subscribers left, <strong>unsubscribe from the source</strong> and free resources.” Without this, the source stays alive forever."
         },
         {
           "type": "list",
@@ -4812,12 +4846,12 @@
             [
               "shareReplay(1)",
               "Source stays subscribed",
-              "\u274c Potential leak"
+              "❌ Potential leak"
             ],
             [
               "shareReplay({ bufferSize: 1, refCount: true })",
               "Source unsubscribes",
-              "\u2705 Safe cleanup"
+              "✅ Safe cleanup"
             ]
           ],
           "caption": "Why refCount matters"
@@ -4833,7 +4867,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Senior rule of thumb</strong><br><br>\u2022 Use <code>shareReplay</code> for caching expensive or shared streams.<br>\u2022 Prefer <code>{ bufferSize: 1, refCount: true }</code> unless you intentionally want a forever-alive cache.<br>\u2022 Be explicit about refresh/invalidation semantics.<br>\u2022 Never blindly slap <code>shareReplay(1)</code> everywhere."
+          "text": "<strong>Senior rule of thumb</strong><br><br>• Use <code>shareReplay</code> for caching expensive or shared streams.<br>• Prefer <code>{ bufferSize: 1, refCount: true }</code> unless you intentionally want a forever-alive cache.<br>• Be explicit about refresh/invalidation semantics.<br>• Never blindly slap <code>shareReplay(1)</code> everywhere."
         },
         {
           "type": "list",
@@ -4845,22 +4879,22 @@
           "rows": [
             [
               "Config loaded once at app startup",
-              "\u2705 Yes",
+              "✅ Yes",
               "shareReplay(1) without refCount may be OK"
             ],
             [
               "User-specific API data",
-              "\u26a0\ufe0f Be careful",
+              "⚠️ Be careful",
               "Use refCount or explicit refresh trigger"
             ],
             [
               "WebSocket / interval stream",
-              "\u274c Usually dangerous",
+              "❌ Usually dangerous",
               "You probably want manual lifecycle control"
             ],
             [
               "HTTP list used by many components",
-              "\u2705 Yes",
+              "✅ Yes",
               "shareReplay({ bufferSize: 1, refCount: true })"
             ]
           ],
@@ -4880,7 +4914,8 @@
       "sharereplay",
       "performance",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-http-what-actually-cancels-request",
@@ -4888,7 +4923,7 @@
     "technology": "angular",
     "difficulty": "advanced",
     "importance": 5,
-    "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request\u2014some only ignore the result.",
+    "description": "In Angular, HTTP requests are canceled by unsubscribing from the Observable, usually via switchMap, takeUntil, async pipe, or manual unsubscribe. This triggers the browser AbortController/XHR abort under the hood. But not all operators or patterns truly cancel the network request—some only ignore the result.",
     "answer": {
       "blocks": [
         {
@@ -4905,32 +4940,32 @@
           "rows": [
             [
               "Unsubscribe from HttpClient Observable",
-              "\u2705 Yes",
+              "✅ Yes",
               "Browser request is aborted."
             ],
             [
               "switchMap to a new request",
-              "\u2705 Yes",
+              "✅ Yes",
               "Previous inner subscription is unsubscribed."
             ],
             [
               "takeUntil emits",
-              "\u2705 Yes",
-              "Subscription is torn down \u2192 request aborted."
+              "✅ Yes",
+              "Subscription is torn down → request aborted."
             ],
             [
               "Component destroyed (async pipe)",
-              "\u2705 Yes",
+              "✅ Yes",
               "AsyncPipe unsubscribes automatically."
             ],
             [
               "Using mergeMap",
-              "\u274c No",
+              "❌ No",
               "Old requests keep running in parallel."
             ],
             [
               "Ignoring the result in code",
-              "\u274c No",
+              "❌ No",
               "Network still continues; you just drop the response."
             ]
           ],
@@ -4960,7 +4995,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What does NOT cancel the request</strong><br><br>Many devs think these cancel HTTP, but they don\u2019t:"
+          "text": "<strong>What does NOT cancel the request</strong><br><br>Many devs think these cancel HTTP, but they don’t:"
         },
         {
           "type": "list",
@@ -4970,27 +5005,27 @@
           ],
           "rows": [
             [
-              "\u201cI used mergeMap, so old requests are gone\u201d",
-              "\u274c mergeMap runs everything in parallel. Nothing is canceled."
+              "“I used mergeMap, so old requests are gone”",
+              "❌ mergeMap runs everything in parallel. Nothing is canceled."
             ],
             [
-              "\u201cI navigated away from the page\u201d",
-              "\u274c Unless you unsubscribed (async pipe or takeUntil), request keeps running."
+              "“I navigated away from the page”",
+              "❌ Unless you unsubscribed (async pipe or takeUntil), request keeps running."
             ],
             [
-              "\u201cI ignored the result in subscribe\u201d",
-              "\u274c The network request still completes."
+              "“I ignored the result in subscribe”",
+              "❌ The network request still completes."
             ],
             [
-              "\u201cThe server will stop anyway\u201d",
-              "\u274c The server may continue processing even if client aborts."
+              "“The server will stop anyway”",
+              "❌ The server may continue processing even if client aborts."
             ]
           ],
           "caption": "Common misconceptions"
         },
         {
           "type": "text",
-          "text": "<strong>Important nuance: canceling the browser request vs canceling server work</strong><br><br>When Angular aborts the request, the <em>browser connection</em> is closed. The server may or may not stop processing\u2014this depends entirely on server implementation. From the frontend point of view, however, the request is gone."
+          "text": "<strong>Important nuance: canceling the browser request vs canceling server work</strong><br><br>When Angular aborts the request, the <em>browser connection</em> is closed. The server may or may not stop processing—this depends entirely on server implementation. From the frontend point of view, however, the request is gone."
         },
         {
           "type": "list",
@@ -5002,27 +5037,27 @@
           "rows": [
             [
               "AsyncPipe in template",
-              "\u2705 Yes",
+              "✅ Yes",
               "Auto-unsubscribes when component is destroyed."
             ],
             [
               "switchMap",
-              "\u2705 Yes",
+              "✅ Yes",
               "Unsubscribes previous inner Observable."
             ],
             [
               "takeUntil / takeUntilDestroyed",
-              "\u2705 Yes",
+              "✅ Yes",
               "Unsubscribe is triggered by notifier or lifecycle."
             ],
             [
               "mergeMap",
-              "\u274c No",
+              "❌ No",
               "No cancellation semantics."
             ],
             [
               "shareReplay",
-              "\u26a0\ufe0f Depends",
+              "⚠️ Depends",
               "May keep the request alive if refCount is false."
             ]
           ],
@@ -5034,7 +5069,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview summary</strong><br><br>In Angular, <strong>only unsubscribing</strong> cancels an HTTP request. Operators like <code>switchMap</code>, <code>takeUntil</code>, and the <code>async</code> pipe cancel requests because they unsubscribe. Operators like <code>mergeMap</code> do not cancel anything\u2014they just ignore or parallelize results. Real cancellation = unsubscribe."
+          "text": "<strong>Interview summary</strong><br><br>In Angular, <strong>only unsubscribing</strong> cancels an HTTP request. Operators like <code>switchMap</code>, <code>takeUntil</code>, and the <code>async</code> pipe cancel requests because they unsubscribe. Operators like <code>mergeMap</code> do not cancel anything—they just ignore or parallelize results. Real cancellation = unsubscribe."
         }
       ]
     },
@@ -5046,7 +5081,8 @@
       "rxjs",
       "cancellation",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-hierarchical-dependency-injection-real-bug",
@@ -5054,16 +5090,16 @@
     "technology": "angular",
     "difficulty": "advanced",
     "importance": 5,
-    "description": "Angular\u2019s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
+    "description": "Angular’s dependency injection is hierarchical: every injector can create its own instance of a service. If you provide the same service in different places (root, module, component, route), you can accidentally get multiple instances and break shared state, caching, or coordination logic.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Angular does not have a single global injector. It has a <strong>tree of injectors</strong>. When Angular resolves a dependency, it starts from the current component\u2019s injector and walks <em>up the tree</em> until it finds a provider. This means <strong>where you provide a service changes how many instances exist</strong>."
+          "text": "<strong>Core idea</strong><br><br>Angular does not have a single global injector. It has a <strong>tree of injectors</strong>. When Angular resolves a dependency, it starts from the current component’s injector and walks <em>up the tree</em> until it finds a provider. This means <strong>where you provide a service changes how many instances exist</strong>."
         },
         {
           "type": "text",
-          "text": "<strong>The real-world bug</strong><br><br>\u201cWhy does my shared state reset when I navigate?\u201d or \u201cWhy does my cache disappear in some components but not others?\u201d The usual answer: <strong>you accidentally created multiple instances of the same service</strong>."
+          "text": "<strong>The real-world bug</strong><br><br>“Why does my shared state reset when I navigate?” or “Why does my cache disappear in some components but not others?” The usual answer: <strong>you accidentally created multiple instances of the same service</strong>."
         },
         {
           "type": "list",
@@ -5084,7 +5120,7 @@
               "Feature-scoped state"
             ],
             [
-              "In a component\u2019s <code>providers</code>",
+              "In a component’s <code>providers</code>",
               "1 per component instance",
               "Local, isolated state"
             ]
@@ -5098,7 +5134,7 @@
         {
           "type": "code",
           "language": "typescript",
-          "code": "@Injectable({ providedIn: 'root' })\nexport class UserCacheService {\n  users: string[] = [];\n}\n\n@Component({\n  selector: 'app-user-list',\n  template: `...`,\n  // \u274c BUG: this creates a NEW instance just for this component\n  providers: [UserCacheService]\n})\nexport class UserListComponent {\n  constructor(public cache: UserCacheService) {}\n}"
+          "code": "@Injectable({ providedIn: 'root' })\nexport class UserCacheService {\n  users: string[] = [];\n}\n\n@Component({\n  selector: 'app-user-list',\n  template: `...`,\n  // ❌ BUG: this creates a NEW instance just for this component\n  providers: [UserCacheService]\n})\nexport class UserListComponent {\n  constructor(public cache: UserCacheService) {}\n}"
         },
         {
           "type": "text",
@@ -5106,7 +5142,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How Angular resolves the dependency</strong><br><br>1) Check the component\u2019s injector<br>2) If not found, check parent component injectors<br>3) Then module/route injectors<br>4) Finally root injector<br><br>The <strong>first match wins</strong>."
+          "text": "<strong>How Angular resolves the dependency</strong><br><br>1) Check the component’s injector<br>2) If not found, check parent component injectors<br>3) Then module/route injectors<br>4) Finally root injector<br><br>The <strong>first match wins</strong>."
         },
         {
           "type": "list",
@@ -5145,7 +5181,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>When component-level providers are actually correct</strong><br><br>\u2022 Reusable UI widgets with isolated state<br>\u2022 Temporary, per-instance state machines<br>\u2022 Editable rows, dialogs, or dynamic components that must not share state"
+          "text": "<strong>When component-level providers are actually correct</strong><br><br>• Reusable UI widgets with isolated state<br>• Temporary, per-instance state machines<br>• Editable rows, dialogs, or dynamic components that must not share state"
         },
         {
           "type": "list",
@@ -5175,7 +5211,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Senior-level pitfalls</strong><br><br>\u2022 Accidentally re-providing a root service in a component<br>\u2022 Breaking caches or auth state via lazy-loaded module providers<br>\u2022 Assuming \u201cservice = singleton\u201d without checking injector scope<br>\u2022 Debugging \u201cstate randomly resets\u201d for hours"
+          "text": "<strong>Senior-level pitfalls</strong><br><br>• Accidentally re-providing a root service in a component<br>• Breaking caches or auth state via lazy-loaded module providers<br>• Assuming “service = singleton” without checking injector scope<br>• Debugging “state randomly resets” for hours"
         },
         {
           "type": "text",
@@ -5191,6 +5227,7 @@
       "hierarchy",
       "debugging",
       "basics"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   }
 ]

@@ -50,6 +50,10 @@
               </span>
             </div>
             <div class="text-xs text-gray-400 capitalize">{{ question()?.difficulty }}</div>
+            <div class="detail-meta text-xs text-gray-400">
+              By {{ authorLabel(question()) }}
+              <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
+            </div>
 
             <!-- Özet / prose -->
             <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3">
@@ -188,6 +192,30 @@
                   class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5">
                   <span class="truncate">{{ f.title }}</span>
                   <span class="text-yellow-300 text-sm ml-4 capitalize">{{ f.difficulty || '—' }}</span>
+                </a>
+              </div>
+            </section>
+
+            <!-- Guide links -->
+            <section class="mt-6">
+              <div class="flex items-center justify-between px-3 py-2 border border-white/15 rounded">
+                <h3 class="text-sm font-semibold">Guides</h3>
+              </div>
+              <div class="mt-1 rounded border border-white/10 overflow-hidden">
+                <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
+                  [routerLink]="['/guides/interview-blueprint/coding-interviews']">
+                  <span class="truncate">Shipping Code Under Pressure</span>
+                  <span class="text-yellow-300 text-sm ml-4">Playbook</span>
+                </a>
+                <a class="flex items-center justify-between px-4 py-3 border-b border-white/5 hover:bg-white/5"
+                  [routerLink]="['/guides/interview-blueprint/javascript-interviews']">
+                  <span class="truncate">JavaScript Problems That Actually Show Up</span>
+                  <span class="text-yellow-300 text-sm ml-4">Playbook</span>
+                </a>
+                <a class="flex items-center justify-between px-4 py-3 hover:bg-white/5"
+                  [routerLink]="['/guides/interview-blueprint/ui-interviews']">
+                  <span class="truncate">Build Great UI in 60 Minutes</span>
+                  <span class="text-yellow-300 text-sm ml-4">Playbook</span>
                 </a>
               </div>
             </section>
@@ -524,6 +552,10 @@
     <div class="locked-card">
       <div class="locked-pill">Premium</div>
       <h1 class="locked-title">{{ lockedTitle() }}</h1>
+      <div class="locked-meta">
+        By {{ authorLabel(question()) }}
+        <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
+      </div>
       <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
         <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
         <ul class="locked-preview__list" *ngIf="lockedBullets().length">

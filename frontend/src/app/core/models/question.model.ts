@@ -35,6 +35,8 @@ export type StructuredSolution = {
 export interface Question {
   id: string;
   title: string;
+  author?: string;        // default handled in UI/SEO when omitted
+  updatedAt?: string;     // ISO date string (optional)
   answer?: string;
   description?: string | StructuredDescription;
   solution?: string;

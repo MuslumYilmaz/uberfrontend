@@ -97,7 +97,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-vs-angularjs",
@@ -231,7 +232,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-component-vs-service-responsibilities",
@@ -348,7 +350,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-component-metadata",
@@ -465,7 +468,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngmodules-vs-standalone",
@@ -561,7 +565,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-appmodule-standalone-changes",
@@ -717,7 +722,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-template-compilation-and-binding",
@@ -912,7 +918,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-data-binding",
@@ -1083,7 +1090,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-interpolation-vs-property-binding",
@@ -1096,7 +1104,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Both are <strong>one-way</strong> bindings (component \u2192 view), but they update <strong>different DOM targets</strong>:<br>• <strong>Interpolation</strong> updates <strong>text</strong> (and when used inside attributes, it results in a <strong>string attribute value</strong>).<br>• <strong>Property binding</strong> updates a <strong>DOM property</strong> (real runtime state) and keeps the correct type (boolean/number/object).<br><br>Interview framing: <strong>use interpolation for display text</strong>; <strong>use property binding for element state</strong>."
+          "text": "<strong>Core idea</strong><br><br>Both are <strong>one-way</strong> bindings (component → view), but they update <strong>different DOM targets</strong>:<br>• <strong>Interpolation</strong> updates <strong>text</strong> (and when used inside attributes, it results in a <strong>string attribute value</strong>).<br>• <strong>Property binding</strong> updates a <strong>DOM property</strong> (real runtime state) and keeps the correct type (boolean/number/object).<br><br>Interview framing: <strong>use interpolation for display text</strong>; <strong>use property binding for element state</strong>."
         },
         {
           "type": "list",
@@ -1146,7 +1154,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- \u274c Bug-prone: string attribute interpolation -->\n<!-- disabled=\"false\" still counts as present in many cases -->\n<button disabled=\"{{ isDisabled }}\">Submit</button>\n\n<!-- \u2705 Correct: sets the DOM property boolean -->\n<button [disabled]=\"isDisabled\">Submit</button>\n\n<!-- Another common case: form controls -->\n<!-- \u274c Sets attribute string; can desync from actual runtime value -->\n<input value=\"{{ name }}\" />\n\n<!-- \u2705 Sets the DOM property (or better: use forms) -->\n<input [value]=\"name\" />"
+          "code": "<!-- ❌ Bug-prone: string attribute interpolation -->\n<!-- disabled=\"false\" still counts as present in many cases -->\n<button disabled=\"{{ isDisabled }}\">Submit</button>\n\n<!-- ✅ Correct: sets the DOM property boolean -->\n<button [disabled]=\"isDisabled\">Submit</button>\n\n<!-- Another common case: form controls -->\n<!-- ❌ Sets attribute string; can desync from actual runtime value -->\n<input value=\"{{ name }}\" />\n\n<!-- ✅ Sets the DOM property (or better: use forms) -->\n<input [value]=\"name\" />"
         },
         {
           "type": "text",
@@ -1203,7 +1211,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-event-binding-dom-vs-output-change-detection",
@@ -1313,7 +1322,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-directives",
@@ -1471,7 +1481,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-structural-vs-attribute-directives",
@@ -1582,7 +1593,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngif-dom-lifecycle",
@@ -1736,7 +1748,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngfor-trackby",
@@ -1870,7 +1883,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-services",
@@ -2028,7 +2042,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-dependency-injection",
@@ -2206,7 +2221,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngoninit-vs-constructor",
@@ -2318,7 +2334,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-pipes",
@@ -2504,7 +2521,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-custom-two-way-binding",
@@ -2591,7 +2609,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-lifecycle-hooks",
@@ -2765,7 +2784,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-input-output",
@@ -2884,7 +2904,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-observables-rxjs",
@@ -3121,7 +3142,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-routing",
@@ -3196,7 +3218,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-lazy-loading",
@@ -3287,7 +3310,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-change-detection-strategies",
@@ -3365,7 +3389,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-zonejs-change-detection",
@@ -3420,7 +3445,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-ngonchanges-vs-ngdocheck",
@@ -3507,7 +3533,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-forroot-forchild",
@@ -3604,7 +3631,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-performance-optimization",
@@ -3745,7 +3773,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-onpush-change-detection-debugging-real-bug",
@@ -3880,7 +3909,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use",
@@ -4025,7 +4055,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-prevent-memory-leaks-unsubscribe-patterns",
@@ -4163,7 +4194,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",
@@ -4282,7 +4314,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-template-driven-vs-reactive-forms-which-scales",
@@ -4420,7 +4453,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "rxjs-sharereplay-angular-how-it-breaks-your-app",
@@ -4594,7 +4628,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-http-what-actually-cancels-request",
@@ -4753,7 +4788,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-hierarchical-dependency-injection-real-bug",
@@ -4891,6 +4927,7 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   }
 ]

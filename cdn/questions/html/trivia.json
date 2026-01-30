@@ -97,7 +97,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-tags",
@@ -207,7 +208,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-head-tag",
@@ -308,7 +310,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-div-vs-span",
@@ -411,7 +414,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-title-tag",
@@ -507,7 +511,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-img-alt-attribute",
@@ -597,7 +602,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-semantic-elements",
@@ -720,7 +726,8 @@
         }
       ]
     },
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-block-inline-elements",
@@ -781,7 +788,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-br-tag",
@@ -845,7 +853,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-a-tag",
@@ -927,7 +936,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-href-attribute",
@@ -1008,7 +1018,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-meta-tag",
@@ -1115,7 +1126,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-ol-ul-dl-difference",
@@ -1213,7 +1225,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-form-default-method",
@@ -1403,7 +1416,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-input-placeholder",
@@ -1476,7 +1490,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-id-vs-class",
@@ -1556,7 +1571,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-iframe-tag",
@@ -1657,7 +1673,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-data-attribute",
@@ -1743,7 +1760,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-clickable-image",
@@ -1834,7 +1852,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-vs-xhtml",
@@ -1926,7 +1945,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-anchor-target",
@@ -2031,7 +2051,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-img-srcset",
@@ -2105,7 +2126,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-parsing-rendering",
@@ -2180,7 +2202,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-aria-roles",
@@ -2249,7 +2272,8 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-shadow-dom",
@@ -2318,6 +2342,7 @@
       ]
     },
     "access": "free",
-    "type": "trivia"
+    "type": "trivia",
+    "updatedAt": "2026-01-30"
   }
 ]

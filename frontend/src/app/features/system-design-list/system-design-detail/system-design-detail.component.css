@@ -46,6 +46,11 @@
   overflow:hidden;
   text-overflow:ellipsis;
 }
+.title-meta{
+  margin-top: 6px;
+  font-size: 11px;
+  color: #9ca3af;
+}
 .left-body{ overflow:auto; padding:14px 16px; color:#cfd6dd; font-size:13px; }
 .desc{
   white-space:pre-line;
@@ -58,6 +63,19 @@
 .left-foot{ border-top:1px solid rgba(255,255,255,.06); padding:10px 12px; }
 .guide{ font-size: 13px; background:#141a22; border:1px solid rgba(255,255,255,.08); color:#b7c3cf; padding:10px; border-radius:8px; }
 .guide a{ color:#9ad1ff; text-decoration:underline; }
+.guide-links{
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+}
+.guide-links a{
+  color: #93c5fd;
+  text-decoration: none;
+}
+.guide-links a:hover{
+  text-decoration: underline;
+}
 
 /* ---------- CENTER ---------- */
 .sdl-center{
@@ -392,6 +410,13 @@
   border-radius: 12px;
   background: #0f1116;
 }
+.sd-guides{
+  margin: 0 6px 24px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  background: #0f1116;
+}
 .sd-related-head{
   font-size: 13px;
   font-weight: 700;
@@ -521,6 +546,10 @@
   margin: 4px 0 0;
   font-size: 22px;
   letter-spacing: -0.01em;
+}
+.locked-meta{
+  font-size: 12px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
 }
 .locked-copy{
   margin: 0;

@@ -54,10 +54,10 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}"
     },
     "solutionBlock": {
-      "overview": "This warm-up introduces the structure of an HTML document: doctype, head, and body. You\u2019ll create a simple page with a title, one heading, and one paragraph.",
+      "overview": "This warm-up introduces the structure of an HTML document: doctype, head, and body. You’ll create a simple page with a title, one heading, and one paragraph.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Basic HTML Skeleton",
+          "title": "Approach 1 – Basic HTML Skeleton",
           "prose": "Start with `<!DOCTYPE html>` to declare HTML5. Wrap everything in `<html>`. Inside `<head>`, add a `<title>`. Place visible content inside `<body>`, including `<h1>` and `<p>`.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }"
@@ -75,22 +75,23 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 HTML basics",
+          "title": "MDN – HTML basics",
           "url": "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/HTML_basics"
         },
         {
-          "title": "MDN \u2013 The <head> element",
+          "title": "MDN – The <head> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/head"
         },
         {
-          "title": "MDN \u2013 The <title> element",
+          "title": "MDN – The <title> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title"
         }
       ]
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>My First Page</title>\\n  </head>\\n  <body>\\n    <h1>Hello, world!</h1>\\n    <p>This is my first HTML document.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-inline-vs-block",
@@ -189,7 +190,8 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Inline vs Block</title>\\n  </head>\\n  <body>\\n    <h1>Inline vs Block</h1>\\n\\n    <main>\\n      <p>This is the first paragraph. It is a block-level element by default.</p>\\n      <p>Here is a second paragraph with a <strong>bold</strong> word and an inline image <img alt='Demo image' src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2250%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23ddd%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2212%22%3EIMG%3C/text%3E%3C/svg%3E' /> in the same line.</p>\\n    </main>\\n\\n    <section id='explanation'>\\n      <h2>Explanation</h2>\\n      <p><code>&lt;p&gt;</code> is block-level (starts on a new line). <code>&lt;strong&gt;</code> and <code>&lt;img&gt;</code> are inline by default (they flow within a line of text).</p>\\n    </section>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\nmain {\\n  display: block;\\n}\\nimg {\\n  vertical-align: middle;\\n}",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-links-and-images",
@@ -206,7 +208,7 @@
       "beginner"
     ],
     "description": {
-      "summary": "Create a clickable image link that is secure (target=_blank + rel) and accessible (non-empty alt). Note: in a sandboxed preview, opening a new tab may be blocked \u2014 tests focus on correct markup.",
+      "summary": "Create a clickable image link that is secure (target=_blank + rel) and accessible (non-empty alt). Note: in a sandboxed preview, opening a new tab may be blocked — tests focus on correct markup.",
       "arguments": [
         {
           "name": "<a>",
@@ -239,7 +241,7 @@
         "desc": "A clickable image link with target='_blank', rel='noopener noreferrer', and a non-empty alt."
       },
       "examples": [
-        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked \u2014 that's expected.</p>\\n  </body>\\n</html>"
+        "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, the new tab may be blocked — that's expected.</p>\\n  </body>\\n</html>"
       ]
     },
     "web": {
@@ -247,10 +249,10 @@
       "starterCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n  text-align: center;\\n}\\nimg {\\n  width: 150px;\\n  height: auto;\\n  border: 2px solid #ccc;\\n  border-radius: 6px;\\n  margin-top: 1rem;\\n}\\nh1 {\\n  font-size: 1.5rem;\\n  margin-bottom: .5rem;\\n}\\n.note {\\n  font-size: .9rem;\\n  opacity: .75;\\n  margin-top: 1rem;\\n}"
     },
     "solutionBlock": {
-      "overview": "Wrap the image in an <a> to make it clickable. Use target='_blank' plus rel='noopener noreferrer' for safe external links, and provide a non-empty alt for accessibility. In sandboxed previews, opening a new tab may be blocked \u2014 tests validate the markup instead of actual navigation.",
+      "overview": "Wrap the image in an <a> to make it clickable. Use target='_blank' plus rel='noopener noreferrer' for safe external links, and provide a non-empty alt for accessibility. In sandboxed previews, opening a new tab may be blocked — tests validate the markup instead of actual navigation.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Secure clickable image link",
+          "title": "Approach 1 – Secure clickable image link",
           "prose": "The <a> wraps the <img>, making it clickable. target='_blank' opens a new tab in normal browsers, while rel='noopener noreferrer' prevents window.opener access and reduces tab-napping risk. The alt text stays non-empty for screen readers.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }"
@@ -270,22 +272,23 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <a> element",
+          "title": "MDN – <a> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"
         },
         {
-          "title": "MDN \u2013 <img> element",
+          "title": "MDN – <img> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img"
         },
         {
-          "title": "MDN \u2013 Security considerations with target=\"_blank\"",
+          "title": "MDN – Security considerations with target=\"_blank\"",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#security_and_privacy_concerns"
         }
       ]
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Clickable Image Link</title>\\n  </head>\\n  <body>\\n    <h1>My Favorite Website</h1>\\n    <p>Click the image below to visit Wikipedia:</p>\\n    <a href='https://www.wikipedia.org' target='_blank' rel='noopener noreferrer'>\\n      <img src='https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png' alt='Wikipedia logo'>\\n    </a>\\n    <p class='note'>If this preview is sandboxed, opening a new tab may be blocked. The markup is still correct.</p>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; text-align: center; }\\nh1 { font-size: 1.5rem; margin-bottom: .5rem; }\\nimg { width: 150px; height: auto; border: 2px solid #ccc; border-radius: 6px; margin-top: 1rem; }\\n.note { font-size: .9rem; opacity: .75; margin-top: 1rem; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-lists-and-navigation",
@@ -376,7 +379,8 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Lists and Navigation</title>\n  </head>\n  <body>\n    <nav aria-label='Primary'>\n      <ul>\n        <li><a href='#home'>Home</a></li>\n        <li><a href='#about'>About</a></li>\n        <li><a href='#contact'>Contact</a></li>\n      </ul>\n    </nav>\n\n    <section id='about'>\n      <h2>About</h2>\n      <p>This section becomes visible when the URL hash is #about.</p>\n    </section>\n\n    <section id='contact'>\n      <h2>Contact</h2>\n      <p>This section becomes visible when the URL hash is #contact.</p>\n    </section>\n\n    <section id='home'>\n      <h2>Home</h2>\n      <p>Home is visible by default (when there is no hash).</p>\n    </section>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }\nnav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }\nnav a { text-decoration: none; color: #007acc; }\nnav a:hover { text-decoration: underline; }\nsection { margin-top: 1rem; display: none; }\nsection:target { display: block; }\nsection#home { display: block; }\nsection:target ~ section#home { display: none; }\n",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-semantic-layout",
@@ -471,7 +475,8 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Semantic Page Layout</title>\n    <style>\n      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\n      header, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\n      main { margin-top: 1.5rem; }\n      article { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\n      article h2 { margin-top: 0; }\n    </style>\n  </head>\n  <body>\n    <header>\n      <h1>My Blog</h1>\n      <p>Welcome to your semantic HTML layout exercise.</p>\n    </header>\n\n    <main>\n      <article>\n        <h2>First Post</h2>\n        <section>\n          <p>This is the first article’s main content.</p>\n        </section>\n      </article>\n\n      <article>\n        <h2>Second Post</h2>\n        <section>\n          <p>This is the second article’s main content.</p>\n        </section>\n      </article>\n    </main>\n\n    <footer>\n      <p>Footer placeholder.</p>\n    </footer>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nheader, footer { background: #f5f5f5; padding: 1rem; border-radius: 6px; }\nmain { margin-top: 1.5rem; }\narticle { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; }\narticle h2 { margin-top: 0; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-tables-accessibility",
@@ -498,7 +503,7 @@
         {
           "name": "<caption>",
           "type": "descriptive element",
-          "desc": "Provides a concise description of the table\u2019s contents for accessibility."
+          "desc": "Provides a concise description of the table’s contents for accessibility."
         },
         {
           "name": "<thead> and <tbody>",
@@ -532,7 +537,7 @@
       "overview": "Use semantic table markup to ensure both visual clarity and accessibility. The <caption> summarizes the table, <thead> groups header cells, and <th scope='col'> defines relationships for assistive technologies.",
       "approaches": [
         {
-          "title": "Approach 1 \u2013 Accessible Employee Table",
+          "title": "Approach 1 – Accessible Employee Table",
           "prose": "Use <caption> to describe the data, <thead> for the column headers, and <tbody> for the content rows. Each header cell should have scope='col' to help screen readers associate data cells correctly.",
           "codeHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
           "codeCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }"
@@ -542,7 +547,7 @@
         "pitfalls": [
           "Forgetting to add a <caption> makes the table less accessible to screen readers.",
           "Leaving out scope attributes can confuse assistive technologies.",
-          "Avoid using tables for layout purposes \u2014 use them only for structured data."
+          "Avoid using tables for layout purposes — use them only for structured data."
         ],
         "techniques": [
           "Use <thead> and <tbody> to separate structure from content.",
@@ -552,22 +557,23 @@
       },
       "resources": [
         {
-          "title": "MDN \u2013 <table> element",
+          "title": "MDN – <table> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table"
         },
         {
-          "title": "MDN \u2013 <caption> element",
+          "title": "MDN – <caption> element",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption"
         },
         {
-          "title": "MDN \u2013 Using the scope attribute",
+          "title": "MDN – Using the scope attribute",
           "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th#scope"
         }
       ]
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang='en'>\\n  <head>\\n    <meta charset='UTF-8'>\\n    <title>Accessible Table</title>\\n  </head>\\n  <body>\\n    <table>\\n      <caption>Employee Directory</caption>\\n      <thead>\\n        <tr>\\n          <th scope='col'>Name</th>\\n          <th scope='col'>Role</th>\\n          <th scope='col'>Email</th>\\n        </tr>\\n      </thead>\\n      <tbody>\\n        <tr><td>Alice Johnson</td><td>Designer</td><td>alice@example.com</td></tr>\\n        <tr><td>Bob Smith</td><td>Developer</td><td>bob@example.com</td></tr>\\n        <tr><td>Carol Lee</td><td>Manager</td><td>carol@example.com</td></tr>\\n      </tbody>\\n    </table>\\n  </body>\\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\\ntable { width: 100%; border-collapse: collapse; margin-top: 1rem; }\\ncaption { caption-side: top; font-weight: 600; text-align: left; margin-bottom: 0.5rem; }\\nth, td { border: 1px solid #ccc; padding: 0.5rem 1rem; text-align: left; }\\nth { background-color: #f5f5f5; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-contact-form-labeled",
@@ -650,7 +656,8 @@
     },
     "webSolutionHtml": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\" />\n  <title>Contact</title>\n</head>\n<body>\n  <h1>Contact support</h1>\n\n  <form action=\"#thanks\" method=\"get\">\n    <label for=\"c-name\">Name</label>\n    <input id=\"c-name\" name=\"name\" type=\"text\" autocomplete=\"name\" required />\n\n    <label for=\"c-email\">Email</label>\n    <input id=\"c-email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n    <label for=\"c-message\">Message</label>\n    <textarea id=\"c-message\" name=\"message\" required></textarea>\n\n    <button type=\"submit\">Send</button>\n  </form>\n\n  <section id=\"thanks\" role=\"status\" aria-live=\"polite\">\n    <h2>Message sent</h2>\n    <p>Thanks! We received your message and will reply soon.</p>\n  </section>\n</body>\n</html>\n",
     "webSolutionCss": "body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;}\nlabel{display:block;margin-top:12px;}\ninput,textarea,button{font:inherit;}\ntextarea{min-height:90px;}\n\n#thanks{display:none;margin-top:16px;padding:12px;border:1px solid #ccc;border-radius:8px;}\n#thanks:target{display:block;}\n",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-forms-validation-required",
@@ -755,7 +762,8 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\n<html lang='en'>\n  <head>\n    <meta charset='UTF-8'>\n    <title>Signup Form Validation</title>\n  </head>\n  <body>\n    <h1>Signup Form</h1>\n\n    <form aria-label='Signup form'>\n      <label for='name'>Name</label>\n      <input id='name' name='name' type='text' required autocomplete='name' />\n\n      <label for='email'>Email</label>\n      <input id='email' name='email' type='email' required autocomplete='email' />\n\n      <label for='password'>Password</label>\n      <input\n        id='password'\n        name='password'\n        type='password'\n        required\n        minlength='8'\n        autocomplete='new-password'\n        pattern='(?=.*[A-Z])(?=.*\\d).{8,}'\n        title='At least 8 characters, including 1 uppercase letter and 1 number.'\n      />\n\n      <button type='submit'>Sign up</button>\n      <p id='status' aria-live='polite'></p>\n    </form>\n\n    <script>\n      (function () {\n        const get = (sel) => document.querySelector(sel);\n\n        const init = () => {\n          const form = get('form');\n          const status = get('#status');\n          if (!form || !status) return;\n\n          form.addEventListener('submit', (e) => {\n            e.preventDefault();\n\n            const valid = form.checkValidity();\n            if (!valid) {\n              form.reportValidity();\n              status.textContent = 'Fix the highlighted fields.';\n              return;\n            }\n\n            status.textContent = 'Looks good ✅';\n          });\n        };\n\n        init();\n        window.addEventListener('DOMContentLoaded', init);\n      })();\n    </script>\n  </body>\n</html>",
     "webSolutionCss": "body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.6; }\nform { display: flex; flex-direction: column; gap: 0.75rem; max-width: 340px; }\nlabel { font-weight: 500; }\ninput { padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }\nbutton { padding: 0.5rem; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }\nbutton:hover { background: #005fa3; }\n#status { font-weight: 600; margin-top: 0.25rem; }",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-head-seo-basics",
@@ -856,7 +864,8 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>FrontendAtlas – Frontend Interview Practice</title>\\n    <meta\\n      name=\"description\"\\n      content=\"Practice real interview-style frontend tasks with clear solutions and explanations.\"\\n    >\\n\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <main class=\"card\">\\n      <h1>FrontendAtlas</h1>\\n      <p class=\"muted\">Interview-style frontend practice: coding tasks, explanations, and reviewable solutions.</p>\\n    </main>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n.card {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 760px;\\n}\\n.muted {\\n  opacity: 0.7;\\n}",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "html-dialog-confirm-a11y",
@@ -952,6 +961,7 @@
     },
     "webSolutionHtml": "<!DOCTYPE html>\\n<html lang=\"en\">\\n  <head>\\n    <meta charset=\"utf-8\">\\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n    <title>Project Settings</title>\\n    <link rel=\"stylesheet\" href=\"styles.css\">\\n  </head>\\n  <body>\\n    <h1>Project Settings</h1>\\n    <p>Danger zone</p>\\n\\n    <dialog open aria-labelledby=\"dlg-title\" aria-describedby=\"dlg-desc\">\\n      <h2 id=\"dlg-title\">Delete project?</h2>\\n      <p id=\"dlg-desc\">This action cannot be undone. All project data will be removed.</p>\\n\\n      <form method=\"dialog\">\\n        <div class=\"row\">\\n          <button value=\"cancel\">Cancel</button>\\n          <button value=\"confirm\">Delete</button>\\n        </div>\\n      </form>\\n    </dialog>\\n  </body>\\n</html>",
     "webSolutionCss": "body {\\n  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;\\n  margin: 2rem;\\n  line-height: 1.6;\\n}\\n\\ndialog {\\n  border: 1px solid #2a2a2a;\\n  border-radius: 12px;\\n  padding: 16px;\\n  max-width: 520px;\\n}\\n\\n.row {\\n  display: flex;\\n  gap: 8px;\\n  justify-content: flex-end;\\n}\\n\\nbutton {\\n  padding: 8px 12px;\\n}",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   }
 ]

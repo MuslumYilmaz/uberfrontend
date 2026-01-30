@@ -71,7 +71,8 @@
       "storageKey": "v1:ui:vue:vue-counter"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-counter-solution.v1.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-contact-form-starter",
@@ -153,7 +154,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-todo-list",
@@ -232,7 +234,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-image-slider",
@@ -314,7 +317,8 @@
       "storageKey": "v1:ui:vue:vue-image-slider"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-tabs-switcher",
@@ -334,7 +338,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Implement Vue 3 tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics. Concepts: vue, components, reactivity.",
+      "summary": "Implement Vue 3 tabs using a single activeTab state. Buttons update the active tab, and conditional rendering shows one panel at a time. Include clear active styles and keyboard-friendly button semantics. Concepts: vue, components, reactivity. Vue focus: keep activeTab in a ref and render with v-if.",
       "specs": {
         "requirements": [
           "Render a tabbed UI with three tabs labeled \"Overview\", \"Details\", and \"Settings\".",
@@ -389,7 +393,8 @@
       "storageKey": "v1:ui:vue:vue-tabs-switcher"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-filterable-user-list",
@@ -407,7 +412,7 @@
       "filtering"
     ],
     "description": {
-      "summary": "Build a Vue 3 filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match. Concepts: vue, components, reactivity.",
+      "summary": "Build a Vue 3 filterable list using search text and role filters. Derive filtered results with computed properties and keep the source list immutable. Show an empty state when no results match. Concepts: vue, components, reactivity. Vue focus: derive filtered lists with computed properties.",
       "specs": {
         "requirements": [
           "Render a filter UI and a list of users as the main component.",
@@ -470,7 +475,8 @@
       "storageKey": "v1:ui:vue:vue-filterable-user-list"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-accordion-faq",
@@ -487,7 +493,7 @@
       "state-management"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) UI in Vue 3 using reactive state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open.",
+      "summary": "Build a simple FAQ (accordion) UI in Vue 3 using reactive state. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. Vue focus: manage open state with refs and emit toggle events from item components.",
       "specs": {
         "requirements": [
           "Use Vue 3 with a single <App.vue> root component as the main entry.",
@@ -548,7 +554,8 @@
       "storageKey": "v1:ui:vue:vue-accordion-faq"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-pagination-table",
@@ -565,7 +572,7 @@
       "arrays"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages.",
+      "summary": "Build a simple paginated data table in Vue 3 that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Vue focus: keep page index in a ref and derive page slices with computed.",
       "specs": {
         "requirements": [
           "Render the table UI as the main <App.vue> component.",
@@ -626,7 +633,8 @@
       "storageKey": "v1:ui:vue:vue-pagination-table"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-theme-toggle",
@@ -643,7 +651,7 @@
       "theming"
     ],
     "description": {
-      "summary": "Add a global light/dark theme toggle in the top-right of the page using Vue 3. The selected theme should be stored in localStorage and restored when the page reloads.",
+      "summary": "Add a global light/dark theme toggle in the top-right of the page using Vue 3. The selected theme should be stored in localStorage and restored when the page reloads. Vue focus: use a global ref/composable to persist theme in localStorage and apply a root attribute.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
@@ -708,7 +716,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-multi-step-form",
@@ -796,7 +805,8 @@
       "storageKey": "v1:ui:vue:vue-multi-step-form"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-shopping-cart",
@@ -815,7 +825,7 @@
       "ecommerce"
     ],
     "description": {
-      "summary": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price.",
+      "summary": "Build a small shopping cart UI in Vue 3. Show a list of products, let the user add them to the cart, adjust quantities, remove items, and display derived totals for item count and price. Vue focus: use reactive arrays and computed totals.",
       "specs": {
         "requirements": [
           "Render a list of products with name, price, and an \"Add to cart\" button for each.",
@@ -880,7 +890,8 @@
       "storageKey": "v1:ui:vue:vue-shopping-cart"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-debounced-search",
@@ -898,7 +909,7 @@
       "api-calls"
     ],
     "description": {
-      "summary": "Implement a Vue 3 debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX. Concepts: vue, composition-api, watch.",
+      "summary": "Implement a Vue 3 debounced search input that calls a fake API. Use a watcher with a timeout, cancel stale calls, and manage loading/error/empty states. This mirrors real-world search UX. Concepts: vue, composition-api, watch. Vue focus: debounce with watch + timeout cleanup and reactive loading state.",
       "specs": {
         "requirements": [
           "Render a search input as the main UI.",
@@ -965,7 +976,8 @@
       "storageKey": "v2:ui:vue:vue-debounced-search"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-star-rating",
@@ -982,7 +994,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity.",
+      "summary": "Create a reusable star rating widget in Vue 3 with a controlled rating value. Render stars from 1..max, update on click, and reflect the current rating visually. Keep the parent as the source of truth. Concepts: vue, components, reactivity. Vue focus: use props/emits for a controlled rating component.",
       "specs": {
         "requirements": [
           "Render the star rating UI as the main component.",
@@ -1043,7 +1055,8 @@
       "storageKey": "v1:ui:vue:vue-star-rating"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-dynamic-table",
@@ -1061,7 +1074,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Generate a dynamic table in Vue 3 from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable. Concepts: vue, components, reactivity.",
+      "summary": "Generate a dynamic table in Vue 3 from row/column inputs. Normalize inputs (clamp to 0/1), rebuild the grid on action, and render stable row/column labels so the UI stays predictable. Concepts: vue, components, reactivity. Vue focus: generate rows/cols with v-for and computed helpers.",
       "specs": {
         "requirements": [
           "Render the dynamic table UI as the main component.",
@@ -1119,7 +1132,8 @@
       "storageKey": "v1:ui:vue:vue-dynamic-table"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-table-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-nested-checkboxes",
@@ -1137,7 +1151,7 @@
       "dom"
     ],
     "description": {
-      "summary": "Build a small Vue 3 UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate).",
+      "summary": "Build a small Vue 3 UI that renders a parent checkbox and multiple child checkboxes. The parent controls all children, and the children keep the parent in sync (checked, unchecked, or indeterminate). Vue focus: compute parent checked/indeterminate state via computed properties.",
       "specs": {
         "requirements": [
           "Render a parent checkbox with a label, plus several child checkboxes listed under it.",
@@ -1196,7 +1210,8 @@
       "storageKey": "v1:ui:vue:vue-nested-checkboxes"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-autocomplete-search",
@@ -1290,7 +1305,8 @@
     "companies": [
       "apple"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-transfer-list",
@@ -1309,7 +1325,7 @@
       "inputs"
     ],
     "description": {
-      "summary": "This UI should keep item order stable, clear selection after transfer, and avoid no-op actions when nothing is selected. Concepts: vue, components, reactivity, derived state, event handlers, lists, inputs.",
+      "summary": "This UI should keep item order stable, clear selection after transfer, and avoid no-op actions when nothing is selected. Concepts: vue, components, reactivity, derived state, event handlers, lists, inputs. Vue focus: manage selection with reactive arrays and computed helpers.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1367,7 +1383,8 @@
       "storageKey": "v2:ui:vue:vue-transfer-list"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-tictactoe",
@@ -1453,7 +1470,8 @@
     "companies": [
       "amazon"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-like-button",
@@ -1471,7 +1489,7 @@
       "basics"
     ],
     "description": {
-      "summary": "Create a Vue 3 Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state. Concepts: vue, components, reactivity. Include keyboard and ARIA considerations, edge cases like rapid clicks, and tests for optimistic UI or throttling.",
+      "summary": "Create a Vue 3 Like button with a toggle state and visible counter. Clicking should increment on like, decrement on unlike, and never allow the count to drop below zero. The UI should immediately reflect the current state. Concepts: vue, components, reactivity. Include keyboard and ARIA considerations, edge cases like rapid clicks, and tests for optimistic UI or throttling. Vue focus: keep liked/count in refs and guard against negative values.",
       "specs": {
         "requirements": [
           "Render a Like button and a like counter.",
@@ -1532,7 +1550,8 @@
     "companies": [
       "amazon"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-progress-bar-thresholds",
@@ -1550,7 +1569,7 @@
       "styling"
     ],
     "description": {
-      "summary": "Build a Vue 3 progress bar for 0–100 with +10/−10 controls. Clamp values, display the percentage, and change the fill color by thresholds (red/orange/green) to communicate status clearly. Keep state in sync with UI at all times. Include accessibility notes (contrast, text labels), edge cases (clamping at 0/100), and tests for threshold boundaries and performance on rapid clicks.",
+      "summary": "Build a Vue 3 progress bar for 0–100 with +10/−10 controls. Clamp values, display the percentage, and change the fill color by thresholds (red/orange/green) to communicate status clearly. Keep state in sync with UI at all times. Include accessibility notes (contrast, text labels), edge cases (clamping at 0/100), and tests for threshold boundaries and performance on rapid clicks. Vue focus: use computed classes and clamp values in reactive state.",
       "specs": {
         "requirements": [
           "Render the progress bar UI as the main component.",
@@ -1608,7 +1627,8 @@
       "storageKey": "v1:ui:vue:vue-progress-bar-thresholds"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-progress-bar-thresholds-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-nested-comments",
@@ -1626,7 +1646,7 @@
       "controlled-inputs"
     ],
     "description": {
-      "summary": "Build a Vue 3 nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. Concepts: vue, composition api, recursion, tree, event handlers, controlled inputs.",
+      "summary": "Build a Vue 3 nested comments panel with infinite replies. Users can add top-level comments and reply to any comment, creating an infinitely deep tree. Clicking Reply should open an input ONLY under that comment (single active reply box). Render nested replies with indentation. Concepts: vue, composition api, recursion, tree, event handlers, controlled inputs. Vue focus: render recursive components and keep a single active reply id.",
       "specs": {
         "requirements": [
           "Render a nested comments UI as the main screen.",
@@ -1685,7 +1705,8 @@
       "storageKey": "v1:ui:vue:vue-nested-comments"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-comments-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-dynamic-counter-buttons",
@@ -1702,7 +1723,7 @@
       "lists"
     ],
     "description": {
-      "summary": "In Vue 3, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: vue, components, reactivity, event handlers, lists.",
+      "summary": "In Vue 3, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: vue, components, reactivity, event handlers, lists. Vue focus: store step buttons in reactive arrays and update with v-for.",
       "specs": {
         "requirements": [
           "Render the dynamic counter buttons UI as the main component.",
@@ -1759,6 +1780,7 @@
       "storageKey": "v1:ui:vue:vue-dynamic-counter-buttons"
     },
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   }
 ]

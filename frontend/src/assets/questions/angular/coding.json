@@ -66,7 +66,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-contact-form-starter",
@@ -152,7 +153,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-todo-list-starter",
@@ -234,7 +236,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-image-slider-starter",
@@ -316,7 +319,8 @@
       "google"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-tabs-switcher",
@@ -332,7 +336,7 @@
       "tabs"
     ],
     "description": {
-      "summary": "Create an Angular tab switcher using a single activeTab value. Buttons update the value, *ngIf renders only the active panel, and active styles clearly indicate the current tab. Keep labels and click targets accessible.",
+      "summary": "Create an Angular tab switcher using a single activeTab value. Buttons update the value, *ngIf renders only the active panel, and active styles clearly indicate the current tab. Keep labels and click targets accessible. Angular focus: keep activeTab in the component and render with *ngIf.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -390,7 +394,8 @@
       "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-filterable-user-list",
@@ -407,7 +412,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist.",
+      "summary": "Filter a user list in Angular by search and role without mutating the original array. Derive results in the template or a getter, and show an empty state when no matches exist. Angular focus: derive filtered lists in a getter or a pure pipe.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -470,7 +475,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-faq-accordion",
@@ -487,7 +493,7 @@
       "interactivity"
     ],
     "description": {
-      "summary": "Build a simple FAQ (accordion) component in Angular using inputs/outputs. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. Concepts: components, inputs, outputs.",
+      "summary": "Build a simple FAQ (accordion) component in Angular using inputs/outputs. Clicking a question should toggle its answer. By default, only one item can be open at a time, but the user can enable a mode where multiple items can stay open. Concepts: components, inputs, outputs. Angular focus: use @Input/@Output for item state and a parent controller for open indexes.",
       "specs": {
         "requirements": [
           "Use a standalone root component and at least one child component for a single FAQ item.",
@@ -546,7 +552,8 @@
       "storageKey": "v2:ui:angular:angular-faq-accordion"
     },
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-pagination-table",
@@ -563,7 +570,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination.",
+      "summary": "Build a simple paginated data table in Angular that shows a static list of users. Display 5 rows per page, with Previous / Next controls and a \"Page X of Y\" indicator. Disable the navigation buttons appropriately on the first and last pages. Concepts: components, state, pagination. Angular focus: keep page index in component state and derive page slices.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -627,7 +634,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-theme-toggle",
@@ -645,7 +653,7 @@
       "theming"
     ],
     "description": {
-      "summary": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection.",
+      "summary": "Implement an Angular light/dark theme toggle with persistence. Store the theme in localStorage, apply it to the root element, and keep the toggle label/icon in sync across reloads and new sessions. Concepts: components, services, dependency-injection. Angular focus: use a ThemeService to persist theme and apply it to the root element.",
       "specs": {
         "requirements": [
           "Render a main page layout with a simple content card and a theme toggle control in the top-right corner.",
@@ -710,7 +718,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-multi-step-form-starter",
@@ -795,7 +804,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-shopping-cart-mini",
@@ -883,7 +893,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-debounced-search",
@@ -903,7 +914,7 @@
       "forms"
     ],
     "description": {
-      "summary": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination.",
+      "summary": "Implement an Angular debounced search using RxJS. Use debounceTime + distinctUntilChanged + switchMap to cancel stale requests, and model loading, error, and empty states so the UI feels like a real search box. This checks reactive streams, cancellation, and UI state coordination. Angular focus: debounce with RxJS debounceTime, distinctUntilChanged, and switchMap cancellation.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -972,7 +983,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-star-rating",
@@ -989,7 +1001,7 @@
       "accessibility"
     ],
     "description": {
-      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding.",
+      "summary": "Implement a reusable star-rating widget as an Angular standalone component. It should render a row of clickable stars, allow the user to select a rating, and notify the parent when the rating changes. Concepts: components, inputs-outputs, event-binding. Angular focus: use @Input/@Output for a controlled rating component.",
       "specs": {
         "requirements": [
           "Create a standalone `StarRatingComponent` that renders a row of stars.",
@@ -1051,7 +1063,8 @@
       "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-dynamic-table-starter",
@@ -1069,7 +1082,7 @@
       "template-syntax"
     ],
     "description": {
-      "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and *ngFor loops to generate the table structure. Concepts: components, dynamic-ui, forms.",
+      "summary": "Given user input for the number of rows and columns, render a table grid dynamically. Use an Angular standalone component with form bindings and *ngFor loops to generate the table structure. Concepts: components, dynamic-ui, forms. Angular focus: generate rows/cols with *ngFor and template bindings.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1127,7 +1140,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-nested-checkboxes",
@@ -1206,7 +1220,8 @@
       "storageKey": "v1:ui:angular:angular-nested-checkboxes"
     },
     "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-autocomplete-search-starter",
@@ -1294,7 +1309,8 @@
       "apple"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-transfer-list",
@@ -1311,7 +1327,7 @@
       "immutability"
     ],
     "description": {
-      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items.",
+      "summary": "Build a dual-list transfer UI in Angular. Users select items in one list and move them to the other via buttons. Preserve order, clear selection after transfer, disable buttons when nothing is selected, and keep the UI consistent. Consider edge cases like large lists and keyboard selection; test accessibility and performance with many items. Angular focus: manage selection arrays and use *ngFor with checkbox bindings.",
       "specs": {
         "requirements": [
           "Render two lists: Top and Bottom.",
@@ -1372,7 +1388,8 @@
       "meta"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-transfer-list-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-tictactoe-starter",
@@ -1458,7 +1475,8 @@
       "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tictactoe-solution.v1.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-like-button",
@@ -1533,7 +1551,8 @@
       "amazon"
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-like-button-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-input-output-two-way",
@@ -1611,7 +1630,8 @@
     "companies": [
       "google"
     ],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-progress-bar-thresholds",
@@ -1628,7 +1648,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state.",
+      "summary": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1690,7 +1710,8 @@
     },
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-progress-bar-thresholds-solution.v2.json",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-nested-comments",
@@ -1770,7 +1791,8 @@
     },
     "solutionAsset": "assets/sb/angular/solution/angular-nested-comments-solution.v2.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "angular-dynamic-counter-buttons",
@@ -1787,7 +1809,7 @@
       "arrays"
     ],
     "description": {
-      "summary": "In Angular, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: components, event binding, state, ng for, arrays.",
+      "summary": "In Angular, users should be able to add or remove step buttons dynamically, and each button should update the counter by its own step value. Concepts: components, event binding, state, ng for, arrays. Angular focus: store step buttons in arrays and render with *ngFor.",
       "specs": {
         "requirements": [
           "Use a standalone Angular root component.",
@@ -1844,6 +1866,7 @@
     },
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json",
     "companies": [],
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   }
 ]

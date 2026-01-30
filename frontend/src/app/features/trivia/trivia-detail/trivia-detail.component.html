@@ -39,6 +39,10 @@
                     <span class="chip chip-tech">{{ (q.technology || '—') | titlecase }}</span>
                     <span class="chip chip-premium" *ngIf="locked()">Premium</span>
                 </div>
+                <div class="meta-byline">
+                    By {{ authorLabel(q) }}
+                    <ng-container *ngIf="updatedLabel(q) as updated"> · Updated {{ updated }}</ng-container>
+                </div>
             </header>
 
             <!-- Quick Answer -->
@@ -46,6 +50,24 @@
                 <div class="card-head">Quick Answer</div>
                 <div class="card-body">
                     <div class="content" [innerHTML]="md(descText(q.description)) | safeHtml"></div>
+                </div>
+            </section>
+
+            <!-- Guides -->
+            <section class="card">
+                <div class="card-head">Guides</div>
+                <div class="card-body">
+                    <ul class="guide-links">
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/fundamentals-check']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
+                        </li>
+                    </ul>
                 </div>
             </section>
 
@@ -172,6 +194,10 @@
                 <div class="locked-card">
                     <div class="locked-pill">Premium</div>
                     <h1 class="locked-title">{{ lockedTitle() }}</h1>
+                    <div class="locked-meta">
+                        By {{ authorLabel(question()) }}
+                        <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
+                    </div>
                     <div class="locked-preview" data-testid="premium-preview" *ngIf="lockedSummary() || lockedBullets().length">
                         <p class="locked-preview__summary" *ngIf="lockedSummary()">{{ lockedSummary() }}</p>
                         <ul class="locked-preview__list" *ngIf="lockedBullets().length">

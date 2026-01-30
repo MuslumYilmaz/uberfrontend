@@ -85,6 +85,11 @@ html, body { height: 100%; background: var(--uf-bg); }
 
 /* Chips */
 .meta-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.meta-byline {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--uf-text-tertiary);
+}
 .chip {
   height: 26px;
   padding: 0 12px;
@@ -121,6 +126,22 @@ html, body { height: 100%; background: var(--uf-bg); }
   justify-content: space-between;
   cursor: pointer;
   user-select: none;
+}
+
+.guide-links {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.guide-links a {
+  color: #93c5fd;
+  text-decoration: none;
+}
+.guide-links a:hover {
+  text-decoration: underline;
 }
 .card-head-toggle i { font-size: 12px; }
 
@@ -308,6 +329,10 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   margin: 4px 0 0;
   font-size: 22px;
   letter-spacing: -0.01em;
+}
+.locked-meta{
+  font-size: 12px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
 }
 .locked-copy{
   margin: 0;

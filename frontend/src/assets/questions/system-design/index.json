@@ -13,7 +13,8 @@
       "ux"
     ],
     "type": "system-design",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "endless-short-video-feed",
@@ -34,7 +35,8 @@
       "system-design"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "notification-toast-system",
@@ -51,7 +53,8 @@
       "timers"
     ],
     "type": "system-design",
-    "access": "free"
+    "access": "free",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "scalable-notifications-feed",
@@ -68,7 +71,8 @@
     "access": "premium",
     "companies": [
       "netflix"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "live-comments-global-stream",
@@ -89,7 +93,8 @@
       "system-design"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "netflix-scale-expansion",
@@ -109,7 +114,8 @@
       "system-design"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "multi-step-form-autosave",
@@ -122,12 +128,13 @@
       "local-storage"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "realtime-search-debounce-cache",
     "title": "Real-time Search with Debounce & Caching",
-    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query \u2192 results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
+    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query → results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
     "tags": [
       "search",
       "debounce",
@@ -137,7 +144,8 @@
     "access": "premium",
     "companies": [
       "bytedance"
-    ]
+    ],
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "dashboard-widgets-draggable-resizable",
@@ -153,7 +161,8 @@
       "local-storage"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "live-chart-high-frequency-updates",
@@ -165,7 +174,8 @@
       "performance"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "component-design-system-architecture",
@@ -177,7 +187,8 @@
       "performance"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "image-upload-preview",
@@ -189,7 +200,8 @@
       "validation"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "flashcard-language-trainer",
@@ -197,13 +209,14 @@
     "companies": [
       "amazon"
     ],
-    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server\u2013client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
+    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server–client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
     "tags": [
       "flashcards",
       "language-learning",
       "accessibility"
     ],
     "type": "system-design",
-    "access": "premium"
+    "access": "premium",
+    "updatedAt": "2026-01-30"
   }
 ]
