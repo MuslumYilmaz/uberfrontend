@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "The deep dive is about protecting UI performance under heavy streams. Mention **batching**, **virtualization**, and **backpressure** as first‑class strategies." 
+            "text": "The deep dive is about protecting UI performance under heavy streams. Mention batching, virtualization, and backpressure as first-class strategies."
         },
         {
             "type": "divider"
@@ -20,7 +20,7 @@
             "rows": [
                 [
                     "Re-render storm",
-                    "Batch updates every 100–250ms",
+                    "Batch updates every 100-250ms",
                     "Coalesces many events into a single state update."
                 ],
                 [
@@ -40,7 +40,7 @@
                 ],
                 [
                     "Main-thread jank",
-                    "Defer heavy work (rAF / Worker)",
+                    "Throttle progress and use rAF",
                     "Keeps scrolling and input responsive."
                 ]
             ]
@@ -57,11 +57,11 @@
                             "type": "checklist",
                             "title": "Performance best practices",
                             "items": [
-                                "Use `requestAnimationFrame` for UI updates when visible.",
+                                "Use requestAnimationFrame for UI updates when visible.",
                                 "Memoize row components; avoid rerendering unchanged rows.",
                                 "Use stable keys and avoid re-sorting large arrays on every tick.",
                                 "Compute unread count incrementally, not by scanning whole list.",
-                                "Pause rendering when the panel is closed (only increment badge)."
+                                "Pause list rendering when the panel is closed."
                             ]
                         }
                     ]
@@ -83,10 +83,30 @@
             ]
         },
         {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Interaction budget",
+                    "value": "<= 200ms",
+                    "helperText": "INP goal for open/close."
+                },
+                {
+                    "label": "Batch cadence",
+                    "value": "100-250ms",
+                    "helperText": "Controls render cost."
+                },
+                {
+                    "label": "DOM cap",
+                    "value": "500-1000",
+                    "helperText": "Keeps memory stable."
+                }
+            ]
+        },
+        {
             "type": "callout",
             "variant": "warning",
             "title": "Common pitfalls",
-            "text": "Updating the UI for every single message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance." 
+            "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
         }
     ]
 }

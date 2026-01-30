@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "This is a **real-time feed**, not a one-off toast. The interviewer wants to hear how you handle high‑frequency updates, keep the UI smooth, and prevent the DOM from growing unbounded. Start by clarifying the product expectations (freshness, ordering, unread behavior) and the constraints (update rate, device class, latency)."
+            "text": "This is a real-time notifications feed. The interviewer wants to hear how you handle high-frequency updates, keep the UI smooth, and prevent the DOM from growing unbounded. Start by clarifying freshness, ordering, unread behavior, and device constraints."
         },
         {
             "type": "divider"
@@ -16,7 +16,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What you’re solving:**\nA scrollable notifications feed that receives real‑time updates (potentially in bursts). You need to render new items without freezing the UI, keep memory bounded, and ensure unread state is reliable."
+                            "text": "**What you’re solving:**\nA scrollable notifications panel that receives real-time updates (potentially in bursts). You must render new items without freezing the UI, keep memory bounded, and ensure unread counts are correct even when the panel is closed."
                         }
                     ]
                 },
@@ -24,7 +24,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Real‑time subscription strategy (WebSocket/SSE/polling).\n- **Batching / buffering** vs re-rendering per event.\n- Virtualized list rendering for large feeds.\n- Correct ordering, dedupe, and unread count logic.\n- Resilience to reconnects and bursts."
+                            "text": "**What the interviewer is testing:**\n- Real-time subscription strategy (WebSocket/SSE/polling).\n- Batching / buffering vs re-rendering per event.\n- Virtualized list rendering for large feeds.\n- Correct ordering, dedupe, and unread count logic.\n- Resilience to reconnects and bursts."
                         }
                     ]
                 }
@@ -34,7 +34,7 @@
             "type": "callout",
             "variant": "info",
             "title": "How you should open",
-            "text": "Start with: \"We need a feed that can ingest a high‑volume stream, buffer incoming events, and render them in a virtualized list. I’ll separate **ingest**, **store**, and **render** so bursts don’t cause re-render storms.\""
+            "text": "Start with: \"We need a feed that can ingest a high-volume stream, buffer incoming events, and render them in a virtualized list. I’ll separate ingest, store, and render so bursts don’t cause re-render storms.\""
         },
         {
             "type": "divider"
@@ -44,24 +44,28 @@
             "title": "High-level user flow",
             "steps": [
                 {
-                    "title": "1. User opens notifications",
+                    "title": "1) User opens notifications",
                     "text": "Load initial batch (latest N) from REST. Establish a live connection (WebSocket/SSE)."
                 },
                 {
-                    "title": "2. Stream starts",
-                    "text": "Incoming events go into a short **buffer/queue** (not directly to UI)."
+                    "title": "2) Stream starts",
+                    "text": "Incoming events go into a short buffer/queue (not directly to UI)."
                 },
                 {
-                    "title": "3. Batch apply",
-                    "text": "On a fixed cadence (e.g., 100–250ms), merge buffered items into state and update unread counts."
+                    "title": "3) Batch apply",
+                    "text": "On a fixed cadence (e.g., 100-250ms), merge buffered items into state and update unread counts."
                 },
                 {
-                    "title": "4. Render efficiently",
-                    "text": "UI reads from a **bounded list** (e.g., last 500). Use virtualization so DOM stays small."
+                    "title": "4) Render efficiently",
+                    "text": "UI reads from a bounded list (e.g., last 500). Use virtualization so DOM stays small."
                 },
                 {
-                    "title": "5. Reconnect & recovery",
-                    "text": "If the socket drops, switch to backoff reconnect + fallback polling. When recovered, fetch deltas since last cursor." 
+                    "title": "5) Panel closed",
+                    "text": "Stop rendering the list; only update badge counts and store events until reopened."
+                },
+                {
+                    "title": "6) Reconnect & recovery",
+                    "text": "If the socket drops, reconnect with backoff and fetch deltas since last cursor."
                 }
             ]
         },
@@ -77,9 +81,10 @@
                                 "How many notifications per minute at peak?",
                                 "Is strict ordering required, or eventual ordering is fine?",
                                 "How long should items stay in the client list (last 200/500/1000)?",
-                                "Is this a global feed or per‑user feed?",
+                                "Is this a global feed or per-user feed?",
                                 "Do we need read receipts synced to server?",
-                                "Should we show a real-time badge even when the panel is closed?"
+                                "Should we show a real-time badge when the panel is closed?",
+                                "Are there priority levels (mentions vs likes) that affect rendering?"
                             ]
                         }
                     ]
@@ -94,10 +99,31 @@
                                 "DOM size is bounded (virtualization + trimming).",
                                 "Smooth scroll performance under heavy load.",
                                 "Stable behavior with flaky networks.",
-                                "Graceful handling of bursts (backpressure)."
+                                "Graceful handling of bursts (backpressure).",
+                                "INP <= 200ms for panel interactions."
                             ]
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Batch window",
+                    "value": "100-250ms",
+                    "helperText": "Balances latency vs render cost."
+                },
+                {
+                    "label": "DOM cap",
+                    "value": "500-1000 items",
+                    "helperText": "Keeps memory and scroll stable."
+                },
+                {
+                    "label": "Interaction budget",
+                    "value": "<= 200ms",
+                    "helperText": "INP goal for open/close."
                 }
             ]
         }

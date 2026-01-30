@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "You already built a correct feature. Now an interviewer asks: ‘How would this work at Netflix scale?’ This is a front-end system design question about UI architecture, performance budgets, and safe rollout — not backend scaling." 
+            "text": "You already built a correct feature. Now an interviewer asks: \"How would this work at Netflix scale?\" Anchor the discussion to a concrete feature: assume the Home \"Continue Watching\" row (personalized carousel). This is a front-end system design question about UI architecture, data flow, performance budgets, and safe rollout - not backend scaling."
         },
         {
             "type": "callout",
@@ -22,7 +22,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What you are solving:**\nTake an existing UI feature (search, recommendations, notifications, etc.) and make it scale to millions of users without changing the core UX. You must keep the UI fast, resilient, and easy to evolve." 
+                            "text": "**What you are solving:**\nA personalized Continue Watching carousel that must render quickly on first load, stay smooth while scrolling, and keep the same UX while serving millions of users. Data should flow predictably from edge cache + BFF -> client cache -> view model -> render."
                         }
                     ]
                 },
@@ -30,7 +30,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What the interviewer is testing:**\n- Can you define **module boundaries** (feature modules or microfrontends)?\n- Do you understand **performance budgets** (LCP/INP/TTI)?\n- Can you prevent **re-render storms** and keep UI smooth?\n- Do you know how to **roll out safely** (flags, canary, A/B)?\n- Can you explain **observability** for UX and data health?"
+                            "text": "**What the interviewer is testing:**\n- Can you define module boundaries (feature modules or microfrontends)?\n- Do you understand performance budgets (LCP/INP/TTI)?\n- Can you prevent re-render storms and keep UI smooth?\n- Do you know how to roll out safely (flags, canary, A/B)?\n- Can you explain observability for UX and data health?"
                         }
                     ]
                 }
@@ -74,8 +74,8 @@
                             "type": "checklist",
                             "title": "Clarifying questions",
                             "items": [
-                                "Which feature is being expanded (search, recs, notifications)?",
-                                "What are the performance budgets (LCP/INP/TTI)?",
+                                "Which feature is being expanded (assume Continue Watching if not specified)?",
+                                "What are the performance budgets (e.g., LCP <= 2.5s, INP <= 200ms)?",
                                 "What devices and regions are highest priority?",
                                 "Is personalization/experimentation required?",
                                 "What is the rollback strategy if UX degrades?",
@@ -90,6 +90,7 @@
                             "type": "checklist",
                             "title": "Non-functional expectations",
                             "items": [
+                                "Hit LCP <= 2.5s and INP <= 200ms on mid-range devices.",
                                 "Stable UX under heavy load.",
                                 "Clear module ownership and API contracts.",
                                 "Graceful fallback when data is slow or missing.",
@@ -99,6 +100,26 @@
                             ]
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "LCP budget",
+                    "value": "<= 2.5s",
+                    "helperText": "Primary page load goal."
+                },
+                {
+                    "label": "INP budget",
+                    "value": "<= 200ms",
+                    "helperText": "Interaction responsiveness."
+                },
+                {
+                    "label": "Carousel FPS",
+                    "value": "60 FPS",
+                    "helperText": "Smooth horizontal scroll."
                 }
             ]
         }

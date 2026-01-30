@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "The architecture must keep playback fast and scrolling smooth. Use a feed shell with virtualized items, a video prefetch queue, and a cache-aware media loader tied to viewport visibility." 
+            "text": "The architecture must keep playback fast and scrolling smooth. Treat this as a client pipeline: feed shell + visibility tracking + prefetch manager + media loader + playback controller. The UI should be driven by a single active player and a bounded cache."
         },
         {
             "type": "divider"
@@ -16,7 +16,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**Client architecture**\n- Feed shell + virtualized list\n- Video card component with lifecycle hooks\n- Preload queue (next 1–3)\n- Visibility-based autoplay/pause" 
+                            "text": "**Client architecture**\n- Feed shell + virtualized list\n- Visibility observer (viewport + direction)\n- Video card component with lifecycle hooks\n- Prefetch manager (next 2-3)\n- Playback controller (single active player)"
                         }
                     ]
                 },
@@ -24,7 +24,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**Delivery pipeline**\n- CDN for video segments\n- Adaptive bitrate (ABR)\n- Client cache with TTL\n- Retry + fallback for slow networks"
+                            "text": "**Delivery pipeline**\n- CDN for segmented media\n- Adaptive bitrate (ABR) selection\n- Client cache with TTL + LRU\n- Retry + fallback for slow networks\n- Analytics hooks for playback health"
                         }
                     ]
                 }
@@ -32,35 +32,74 @@
         },
         {
             "type": "table",
-            "title": "Architecture decisions to explain",
+            "title": "Core modules to mention",
             "columns": [
-                "Decision",
+                "Module",
+                "Responsibility",
                 "Why it matters"
             ],
             "rows": [
                 [
-                    "Prefetch window size",
-                    "Balances startup speed vs memory"
+                    "FeedShell",
+                    "Loads metadata + manages virtualized list",
+                    "Controls DOM size and scroll performance"
                 ],
                 [
-                    "Virtualization strategy",
-                    "Limits DOM and keeps scroll smooth"
+                    "VisibilityObserver",
+                    "Detects active card + scroll direction",
+                    "Drives autoplay and prefetch window"
                 ],
                 [
-                    "Playback lifecycle",
-                    "Prevents multiple videos playing"
+                    "PrefetchManager",
+                    "Queues upcoming media requests",
+                    "Improves time-to-first-frame"
                 ],
                 [
-                    "Adaptive quality",
-                    "Improves UX on weak networks"
+                    "PlaybackController",
+                    "Ensures a single active player",
+                    "Prevents multiple decoders running"
+                ],
+                [
+                    "MediaCache",
+                    "Caches poster + segments (TTL/LRU)",
+                    "Reduces network churn"
                 ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level data flow",
+            "steps": [
+                {
+                    "title": "1) Fetch metadata",
+                    "text": "Load feed metadata (id, poster, media URLs, duration) and render the first card."
+                },
+                {
+                    "title": "2) Start playback",
+                    "text": "When the first card enters the viewport, the PlaybackController starts playback and records TTFF."
+                },
+                {
+                    "title": "3) Prefetch",
+                    "text": "PrefetchManager schedules the next 2-3 videos based on scroll direction and idle time."
+                },
+                {
+                    "title": "4) Adapt quality",
+                    "text": "ABR chooses a lower bitrate on slow networks; upgrade when stable."
+                },
+                {
+                    "title": "5) Cleanup",
+                    "text": "Pause offscreen videos, cancel downloads, and evict cache entries via LRU."
+                }
             ]
         },
         {
             "type": "callout",
             "variant": "success",
             "title": "Key message",
-            "text": "The UI must feel instant even on bad networks, so the design centers on prefetch, virtualization, and adaptive playback."
+            "text": "You win by controlling the pipeline: visibility drives playback, a small prefetch window drives instant play, and a bounded cache keeps memory predictable."
         }
     ]
 }

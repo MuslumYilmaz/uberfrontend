@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "In this step, the interviewer checks whether you can take a simple Image Upload & Preview component and still think about performance, UX polish, accessibility edge cases, and long-running sessions (memory leaks). You should show that you know how to keep it smooth and robust, not just \"it works on my machine\"."
+            "text": "In this step, the interviewer checks whether you can keep a real upload pipeline fast and resilient: preprocessing cost, upload stability, progress UX, and memory safety."
         },
         {
             "type": "divider"
@@ -16,7 +16,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**How you should frame optimizations:**\n\"The component is small, but there are still real problems to solve: preventing memory leaks from object URLs, keeping mobile UX clean, handling repeated selections without flicker, and making sure errors/statuses are clearly communicated to assistive tech. I’d also design it so we can extend it to drag-and-drop or multi-image uploads later without rewriting everything.\""
+                            "text": "**How you should frame optimizations:**\n\"Even a single-image upload can be expensive: decoding, resizing, and uploading large files can jank the UI. I’ll keep image work off the main thread when possible, throttle progress updates, and make retries safe.\""
                         }
                     ]
                 },
@@ -24,7 +24,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What the interviewer listens for:**\n- Awareness of **object URL lifecycle** and memory management.\n- Handling **fast user interactions** (selecting multiple times quickly).\n- Smooth, non-janky **loading transitions** and clear status changes.\n- Strong **accessibility** even in error and edge states.\n- A path to **extend** the component (drag-and-drop, multi-image) safely."
+                            "text": "**What the interviewer listens for:**\n- Awareness of **image decoding/resizing cost** and main-thread impact.\n- Stable **progress + retry** behavior on flaky networks.\n- Memory hygiene (object URLs, avoiding base64 blobs).\n- A path to extend to multi-image or chunked uploads."
                         }
                     ]
                 }
@@ -34,7 +34,7 @@
             "type": "callout",
             "variant": "info",
             "title": "How you should act here",
-            "text": "Pick a few realistic risks — memory leaks, ugly transitions, confusing errors, mobile layout — and explain specifically how you avoid them: where you revoke object URLs, how you structure timers, how you keep focus and ARIA states in sync with the status."
+            "text": "Pick a few realistic risks: large files, slow networks, and janky UI. Explain exactly how you avoid them."
         },
         {
             "type": "divider"
@@ -48,12 +48,12 @@
                             "type": "checklist",
                             "title": "Performance & memory hygiene",
                             "items": [
-                                "Revoke old `previewUrl` **every time** a new file is accepted or the component unmounts (e.g. cleanup in a `useEffect` / onDestroy hook).",
-                                "Only call `URL.createObjectURL` **after** validation passes, so you never create URLs for rejected files.",
-                                "Keep the state small: store just the `File` and `previewUrl`, not large base64 strings.",
-                                "Use a simple **status enum** instead of heavy, nested objects to avoid unnecessary re-renders.",
-                                "Avoid expensive image operations on the main thread; for basic preview, rely on the browser’s native `<img>` rendering.",
-                                "If you later support multi-image, consider a **max number of thumbnails** and lazy rendering if the list grows."
+                                "Use `createImageBitmap` + OffscreenCanvas or a Web Worker for resize/compress.",
+                                "Throttle progress updates (e.g., 100-200ms) to avoid re-render storms.",
+                                "Revoke old `previewUrl` on replace/remove/unmount.",
+                                "Avoid base64 in state; keep File + object URL only.",
+                                "Use `AbortController` to cancel in-flight uploads on replace/remove.",
+                                "Cap memory usage if multiple previews are added later."
                             ]
                         }
                     ]
@@ -86,51 +86,51 @@
             ],
             "rows": [
                 [
+                    "Large files",
+                    "Decoding/resizing blocks the main thread.",
+                    "Use `createImageBitmap` or a worker + OffscreenCanvas for preprocessing."
+                ],
+                [
+                    "Flaky networks",
+                    "Uploads fail mid-flight; users lose progress.",
+                    "Retry with backoff, allow cancel, and resume if the backend supports chunking."
+                ],
+                [
+                    "Progress updates",
+                    "High-frequency events cause re-render storms.",
+                    "Throttle progress UI updates to a fixed cadence."
+                ],
+                [
                     "Object URL lifecycle",
-                    "Creating many previews without revoking old URLs can leak memory over time.",
-                    "Track the current `previewUrl` in state and always revoke the previous one on replace/remove and on unmount. Only create URLs when validation has passed."
+                    "Multiple previews leak memory over time.",
+                    "Revoke URLs on replace/remove/unmount and avoid base64."
                 ],
                 [
-                    "Fast repeated selections",
-                    "User quickly selects multiple files; timers and state can get out of sync.",
-                    "Store the current upload token (e.g. a simple counter) and only apply `simulateUpload` results if the token still matches the latest selection."
-                ],
-                [
-                    "Loading/Uploaded transitions",
-                    "Sudden jumps between idle → uploaded can feel confusing.",
-                    "Always go through a short `uploading` state (1–2s) with a clear spinner or skeleton and progress text (e.g. \"Uploading…\")."
-                ],
-                [
-                    "Error feedback",
-                    "Users see a red border but don’t know why the file was rejected.",
-                    "Show a specific error message (\"File too large\" vs \"Unsupported format\") and make sure it’s associated with the control via ARIA."
-                ],
-                [
-                    "Mobile & responsiveness",
-                    "On small screens, the preview or actions might overflow or become hard to tap.",
-                    "Use a simple vertical layout on mobile: button on top, preview below, actions stacked, and set max-width / max-height for the image with `object-fit: cover` or `contain`."
+                    "Mobile responsiveness",
+                    "Preview/actions overflow on small screens.",
+                    "Use a vertical layout and limit preview size with `object-fit`."
                 ]
             ]
         },
         {
             "type": "steps",
-            "title": "Example deep-dive: upload simulation & cancellation",
+            "title": "Example deep-dive: upload cancel + retry",
             "steps": [
                 {
-                    "title": "1. Start fake upload with a token",
-                    "text": "Whenever a valid file is selected, increment an internal `uploadId` and capture it locally. Set `status = 'uploading'` and schedule a timeout based on `fakeUploadMs`."
+                    "title": "1. Start upload with AbortController",
+                    "text": "Create an AbortController per upload and store it in state. Set status to uploading and expose Cancel."
                 },
                 {
-                    "title": "2. Ignore stale completions",
-                    "text": "When the timeout fires, compare its captured `uploadId` with the current one in state. If they do not match, ignore the completion because a newer file has been selected."
+                    "title": "2. Handle cancel",
+                    "text": "On cancel/replace, call `controller.abort()`, reset progress, and revoke preview URLs."
                 },
                 {
-                    "title": "3. Handle remove during upload",
-                    "text": "If the user hits Remove while uploading, clear the timeout (if you have a reference) or increment `uploadId` and reset state. That way, any later timeout will be ignored."
+                    "title": "3. Retry with backoff",
+                    "text": "On failure, show Retry and attempt again with exponential backoff."
                 },
                 {
-                    "title": "4. Sync callbacks with state",
-                    "text": "Only call `onUploadComplete` if the upload is still the latest and the component is not in an error or removed state."
+                    "title": "4. Throttle progress UI",
+                    "text": "Update progress at a fixed cadence to keep rendering stable."
                 }
             ]
         },
@@ -139,18 +139,18 @@
             "items": [
                 {
                     "label": "Main risk",
-                    "value": "Object URL leaks",
-                    "helperText": "Always revoke URLs on replace/remove/unmount."
+                    "value": "Main-thread jank",
+                    "helperText": "Move resize/compress off-thread."
                 },
                 {
                     "label": "Key UX lever",
-                    "value": "Clear states",
-                    "helperText": "Idle, uploading, uploaded, error all look and sound different."
+                    "value": "Progress + retry",
+                    "helperText": "Users trust the upload if they can see and recover."
                 },
                 {
                     "label": "Deep-dive hook",
-                    "value": "Simulated cancelation",
-                    "helperText": "Use an upload token/id to ignore stale results."
+                    "value": "Cancel + backoff",
+                    "helperText": "Use AbortController and exponential retry."
                 }
             ]
         },
@@ -158,7 +158,7 @@
             "type": "callout",
             "variant": "warning",
             "title": "Key message to land",
-            "text": "Even for a small image picker, you can talk like a strong frontend engineer: you manage object URLs carefully, keep state transitions predictable, handle fast user interactions safely, and make the component accessible and mobile-friendly by design."
+            "text": "The deep dive is about performance and reliability: keep image work off the main thread, throttle progress updates, and make retry/cancel safe."
         }
     ]
 }

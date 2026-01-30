@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "Your answer should show you can keep the UI fast and resilient at scale. Focus on rendering budgets, cache strategy, and graceful failure." 
+            "text": "Your answer should show you can keep the UI fast and resilient at scale. Focus on rendering budgets, cache strategy, and safe rollout."
         },
         {
             "type": "divider"
@@ -13,22 +13,53 @@
             "type": "checklist",
             "title": "Frontend performance strategies",
             "items": [
-                "Route-level code splitting + prefetch on idle",
-                "Virtualization for large lists",
-                "Memoization to avoid re-render storms",
-                "Batching UI updates (100–250ms)",
-                "Priority loading for above-the-fold content"
+                "Route-level code splitting + prefetch on idle.",
+                "Virtualization for large carousels.",
+                "Memoization to avoid re-render storms.",
+                "Batch UI updates (100-250ms).",
+                "Priority loading for above-the-fold content."
             ]
         },
         {
             "type": "checklist",
             "title": "Reliability and rollout",
             "items": [
-                "Feature flags with gradual rollout",
-                "Fallback UI when data is slow or missing",
-                "Regional rollouts + fast rollback",
-                "Monitoring Web Vitals + custom UX metrics",
-                "Error boundaries to isolate failures"
+                "Feature flags with gradual rollout.",
+                "Fallback UI when data is slow or missing.",
+                "Regional rollouts + fast rollback.",
+                "Monitoring Web Vitals + custom UX metrics.",
+                "Error boundaries to isolate failures."
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Metrics to report",
+            "columns": [
+                "Metric",
+                "Target",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "LCP",
+                    "<= 2.5s",
+                    "Core page load health"
+                ],
+                [
+                    "INP",
+                    "<= 200ms",
+                    "Interaction quality"
+                ],
+                [
+                    "Error rate",
+                    "< 0.5%",
+                    "Reliability"
+                ],
+                [
+                    "Carousel FPS",
+                    "60 FPS",
+                    "Smooth interaction"
+                ]
             ]
         },
         {
@@ -37,17 +68,17 @@
                 {
                     "label": "Frame budget",
                     "value": "16ms",
-                    "helperText": "Avoid dropped frames during updates"
+                    "helperText": "Avoid dropped frames during updates."
                 },
                 {
                     "label": "Cache TTL",
-                    "value": "30–120s",
-                    "helperText": "Short-lived for dynamic data"
+                    "value": "30-120s",
+                    "helperText": "Short-lived for dynamic data."
                 },
                 {
                     "label": "Rollback goal",
                     "value": "< 5 minutes",
-                    "helperText": "Fast disable if metrics regress"
+                    "helperText": "Fast disable if metrics regress."
                 }
             ]
         },
@@ -55,7 +86,7 @@
             "type": "callout",
             "variant": "warning",
             "title": "What sinks candidates",
-            "text": "Vague answers like ‘just scale servers.’ You must show concrete frontend trade-offs: rendering, caching, and rollout control."
+            "text": "Vague answers like 'just scale servers.' You must show concrete frontend trade-offs: rendering, caching, and rollout control."
         }
     ]
 }

@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "The architecture should prevent re-render storms while keeping comments near real time. Use a streaming transport, a client buffer, and a virtualized list to keep DOM size bounded." 
+            "text": "The architecture should prevent re-render storms while keeping comments near real time. Use a streaming transport, a client buffer, a scheduler, and a virtualized list to keep DOM size bounded."
         },
         {
             "type": "divider"
@@ -16,7 +16,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**Client architecture**\n- Comment stream manager (WebSocket/SSE)\n- Buffer queue + batch apply\n- Virtualized list (latest N)\n- Moderation UI (mute/delete/report)" 
+                            "text": "**Client architecture**\n- Comment stream manager (WebSocket/SSE)\n- Buffer queue + batch scheduler\n- Feed store (bounded list + dedupe)\n- Virtualized list\n- Moderation layer (mute/delete/report)"
                         }
                     ]
                 },
@@ -24,11 +24,20 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**Delivery pipeline**\n- Real-time transport with reconnect\n- Server-side fanout\n- Optional CDN for static assets\n- Backpressure signaling (client can drop/slow)"
+                            "text": "**Delivery pipeline**\n- Real-time transport with reconnect\n- Server timestamps for ordering\n- Backpressure signals when overwhelmed\n- Optional slow-mode controls"
                         }
                     ]
                 }
             ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "Diagram you should draw",
+            "text": "WS/SSE -> Buffer/Queue -> Scheduler -> CommentStore (bounded) -> VirtualizedList -> UI. Add a Moderation Filter between Store and UI."
+        },
+        {
+            "type": "divider"
         },
         {
             "type": "table",
@@ -57,10 +66,36 @@
             ]
         },
         {
+            "type": "steps",
+            "title": "High-level data flow",
+            "steps": [
+                {
+                    "title": "1) Connect",
+                    "text": "Open a WebSocket/SSE channel and load the latest N comments."
+                },
+                {
+                    "title": "2) Buffer",
+                    "text": "Push incoming events into a short queue instead of rendering immediately."
+                },
+                {
+                    "title": "3) Batch apply",
+                    "text": "Every 100-250ms, drain the queue, dedupe, and append to the store."
+                },
+                {
+                    "title": "4) Render",
+                    "text": "Render a virtualized list of the latest N items, applying moderation filters."
+                },
+                {
+                    "title": "5) Recover",
+                    "text": "Reconnect with backoff and fill gaps using cursor-based fetch."
+                }
+            ]
+        },
+        {
             "type": "callout",
             "variant": "success",
             "title": "Key message",
-            "text": "For live comments, buffering + virtualization is the difference between smooth UX and a frozen page."
+            "text": "Buffering + virtualization is the difference between smooth UX and a frozen page when chat spikes."
         }
     ]
 }

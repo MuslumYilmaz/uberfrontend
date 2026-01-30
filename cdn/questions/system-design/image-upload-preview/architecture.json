@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "Here the interviewer wants to see if you can structure the Image Upload & Preview component cleanly: state, sub-parts, and responsibilities. You’re not just wiring a file input; you’re designing a small state machine with a clear separation between UI, validation, and the fake upload flow."
+            "text": "Here the interviewer wants to see a frontend upload pipeline, not just a file input. You should structure the component into clear layers: UI, validation/preprocess, upload manager, and API integration."
         },
         {
             "type": "divider"
@@ -16,7 +16,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**How you should frame the architecture:**\n\"I’d build a single `ImageUploadPreview` component composed of smaller pieces: a control area (button/drag zone), a preview area, a status + actions bar, and an internal state machine that manages `idle → validating → uploading → uploaded → error`. Validation and upload simulation are handled in small helper functions or hooks so the JSX/template stays clean.\""
+                            "text": "**How you should frame the architecture:**\n\"I’d build a small client pipeline: UI layer (control, preview, status), a validator/preprocessor (type/size/dimensions + optional resize), an UploadManager (queue, progress, cancel, retry), and a thin API client for getting upload URLs. The UI is just a state machine driven by that pipeline.\""
                         }
                     ]
                 },
@@ -24,7 +24,7 @@
                     "blocks": [
                         {
                             "type": "text",
-                            "text": "**What the interviewer listens for:**\n- A clear **state model** instead of ad-hoc booleans.\n- A simple, predictable **data flow** when the user selects/replaces/removes.\n- Separation of concerns: **file handling + validation + upload simulation + UI**.\n- Awareness of **object URL lifecycle** (create + revoke).\n- Hooks or helpers that make the component easy to test and reuse."
+                            "text": "**What the interviewer listens for:**\n- A clear **state model** instead of ad-hoc booleans.\n- A predictable **data flow** (select -> validate -> preprocess -> upload -> finalize).\n- Separation of concerns: **UI**, **validation/preprocess**, **upload manager**, **API client**.\n- Awareness of **object URL lifecycle** (create + revoke).\n- Main-thread safety for image work (worker/offscreen when possible)."
                         }
                     ]
                 }
@@ -34,7 +34,7 @@
             "type": "callout",
             "variant": "info",
             "title": "How you should act here",
-            "text": "Describe the component as if you’ll ship it in a real design system: a well-defined state machine, clear sub-sections (control, preview, status/actions, error), and a couple of tiny helpers for validation and upload simulation. Keep the mental model simple enough that another dev could extend it to drag-and-drop or multiple images."
+            "text": "Describe the component as if it ships to millions: a state machine in the UI, a preprocessing step for images, and an upload manager that can retry/cancel safely. Keep each layer small and testable."
         },
         {
             "type": "divider"
@@ -42,7 +42,7 @@
         {
             "type": "code",
             "language": "ts",
-            "code": "// High-level state model\n\ntype UploadStatus =\n  | 'idle'\n  | 'validating'\n  | 'uploading'\n  | 'uploaded'\n  | 'error';\n\ninterface ImageUploadState {\n  file: File | null;\n  previewUrl: string | null;\n  status: UploadStatus;\n  error: string | null;\n}\n\n// Top-level component skeleton\nfunction ImageUploadPreview() {\n  // internal state: status, file, previewUrl, error\n  // handlers: onFileChange, onDrop, onRemove, onReplace\n  // effect: cleanup object URLs when file changes/unmounts\n  return (\n    <div className=\"image-upload\">\n      {/* 1. Control area (button + optional dropzone) */}\n      {/* 2. Preview area (thumbnail) */}\n      {/* 3. Status + actions (Uploading… / Uploaded / Replace / Remove) */}\n      {/* 4. Error message (ARIA-aware) */}\n    </div>\n  );\n}\n"
+            "code": "// High-level state model\n\ntype UploadStatus =\n  | 'idle'\n  | 'validating'\n  | 'preprocessing'\n  | 'uploading'\n  | 'uploaded'\n  | 'error';\n\ninterface ImageUploadState {\n  file: File | null;\n  previewUrl: string | null;\n  status: UploadStatus;\n  progress: number; // 0..100\n  error: string | null;\n}\n\n// Pipeline layers\n// 1) validateFile(file) -> ok/error\n// 2) preprocessImage(file) -> { file, previewUrl }\n// 3) uploadManager.upload(file, onProgress, signal)\n"
         },
         {
             "type": "table",
@@ -70,8 +70,8 @@
                 ],
                 [
                     "Status bar",
-                    "Shows \"Uploading…\", \"Uploaded\", or nothing",
-                    "Can include a spinner or skeleton while `status === 'uploading'`."
+                    "Shows progress, retry, cancel, or uploaded state",
+                    "Progress updates should be throttled to avoid re-render storms."
                 ],
                 [
                     "Actions",
@@ -79,9 +79,14 @@
                     "Replace opens picker again, Remove clears state and revokes object URL."
                 ],
                 [
-                    "Validation + upload helpers",
-                    "Pure functions or hooks",
-                    "Keep validation rules and fake upload timer out of the render function for testability."
+                    "Validation + preprocess",
+                    "Pure helpers or worker",
+                    "Keep resize/compress off the main thread when possible."
+                ],
+                [
+                    "Upload manager",
+                    "Queue, progress, cancel, retry",
+                    "Encapsulates async upload behavior and exposes lifecycle events."
                 ]
             ]
         },
@@ -97,12 +102,12 @@
                             "type": "checklist",
                             "title": "Architecture decisions you should highlight",
                             "items": [
-                                "Use a **single, explicit status field** (`idle`, `uploading`, `uploaded`, `error`) instead of many booleans.",
-                                "Isolate **validation logic** in a helper (e.g. `validateFile(file, config)` that returns `{ ok, error }`).",
-                                "Simulate upload in a separate function/hook that returns a **promise or callback**, not inline `setTimeout` chaos.",
-                                "Use `URL.createObjectURL` only after validation passes, and **revoke** the old URL when replacing/removing.",
-                                "Make size/type limits **configurable via props**, so the component is reusable in different contexts.",
-                                "Keep layout flexible: the root can grow/shrink responsively without rewriting logic."
+                                "Use a **single, explicit status field** plus `progress` instead of many booleans.",
+                                "Isolate **validation** and **preprocess** in helpers/worker.",
+                                "Keep an **UploadManager** with cancel/retry and progress callbacks.",
+                                "Use `URL.createObjectURL` only after validation passes, and **revoke** old URLs on replace/remove.",
+                                "Make size/type limits **configurable via props**, so the component is reusable.",
+                                "Throttle progress updates to avoid re-render storms."
                             ]
                         }
                     ]
@@ -116,7 +121,7 @@
                                 "Mixing file validation, preview logic, and JSX all in one huge handler.",
                                 "Never revoking object URLs, causing **memory leaks** on long sessions.",
                                 "Hiding errors behind console logs instead of user-visible messages.",
-                                "Tightly coupling the component to a specific backend API (this is frontend-only).",
+                                "Tightly coupling the component to a specific backend API (keep the upload URL step abstract).",
                                 "Using only icons or color to show errors or statuses (poor accessibility).",
                                 "Relying solely on click interactions and ignoring keyboard/focus flows."
                             ]
@@ -131,23 +136,23 @@
             "steps": [
                 {
                     "title": "1. Handle file selection/drop",
-                    "text": "On `input` change or drop, grab the first file and pass it into a validation helper, not directly into state."
+                    "text": "On input change or drop, pass the file into validation before touching state."
                 },
                 {
-                    "title": "2. Validate before preview",
-                    "text": "If validation fails (type/size), set `status = 'error'`, `error = message`, and keep `file`/`previewUrl` null. If it passes, set `status = 'uploading'` and create a new `previewUrl`."
+                    "title": "2. Validate + preprocess",
+                    "text": "If validation passes, create a preview and optionally resize/compress (off-thread)."
                 },
                 {
-                    "title": "3. Start fake upload",
-                    "text": "Kick off a fake async upload (e.g. `simulateUpload(1500ms)`), which resolves or rejects. While pending, show the preview and an \"Uploading…\" indicator."
+                    "title": "3. Upload with progress",
+                    "text": "Request a pre-signed URL, start upload via UploadManager, and emit progress updates."
                 },
                 {
-                    "title": "4. Resolve upload",
-                    "text": "On success, set `status = 'uploaded'`, `error = null`. Optionally, you could bubble an `onUploadComplete` event with meta (file name, size)."
+                    "title": "4. Success or retry",
+                    "text": "On success, set status to uploaded and emit the asset URL/id. On failure, show retry with backoff."
                 },
                 {
                     "title": "5. Replace / remove",
-                    "text": "On Replace, re-run the flow: revoke old `previewUrl`, validate, preview, upload. On Remove, revoke the URL and reset state to the initial idle state."
+                    "text": "Replace restarts the flow; remove cancels upload, revokes preview URLs, and resets state."
                 }
             ]
         },
@@ -156,17 +161,17 @@
             "items": [
                 {
                     "label": "Core state fields",
-                    "value": "4",
-                    "helperText": "`file`, `previewUrl`, `status`, `error` cover all important UI states."
+                    "value": "5",
+                    "helperText": "`file`, `previewUrl`, `status`, `progress`, `error`."
                 },
                 {
                     "label": "Main transitions",
-                    "value": "idle → uploading → uploaded",
-                    "helperText": "With side paths to `error` and back to `idle` on remove."
+                    "value": "idle -> preprocessing -> uploading -> uploaded",
+                    "helperText": "With error + retry paths."
                 },
                 {
                     "label": "Main layers",
-                    "value": "Control, Preview, Status, Actions",
+                    "value": "UI, Preprocess, UploadManager",
                     "helperText": "Each with a clear responsibility."
                 }
             ]
@@ -175,7 +180,7 @@
             "type": "callout",
             "variant": "warning",
             "title": "Key message to land",
-            "text": "Make it sound like a tiny, well-structured app: a small state machine, a few clearly defined sub-areas (control, preview, status, actions), and helpers for validation and upload simulation. If your architecture is clean, adding drag-and-drop or multi-image support later becomes an obvious extension instead of a rewrite."
+            "text": "This is not just a widget; it is a client pipeline. If you can describe UI -> preprocess -> upload manager -> finalize, you are speaking system design language."
         }
     ]
 }

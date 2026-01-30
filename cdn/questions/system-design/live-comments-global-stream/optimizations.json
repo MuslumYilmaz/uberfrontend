@@ -4,7 +4,7 @@
     "blocks": [
         {
             "type": "text",
-            "text": "Optimizations should focus on preventing UI overload during comment spikes while keeping latency low." 
+            "text": "Optimizations should focus on preventing UI overload during comment spikes while keeping latency low."
         },
         {
             "type": "divider"
@@ -13,43 +13,75 @@
             "type": "checklist",
             "title": "Frontend performance strategies",
             "items": [
-                "Batch updates every 100–250ms",
-                "Virtualize list to cap DOM size",
-                "Drop or collapse spam bursts",
-                "Pause auto-scroll when user is reading",
-                "Lazy-render avatars and badges"
+                "Batch updates every 100-250ms.",
+                "Virtualize list to cap DOM size.",
+                "Collapse spam bursts or rate-limit duplicates.",
+                "Pause auto-scroll when the user scrolls up.",
+                "Lazy-render avatars and badges."
             ]
         },
         {
             "type": "checklist",
             "title": "Reliability and rollout",
             "items": [
-                "Reconnect with exponential backoff",
-                "Fallback to polling if stream fails",
-                "Feature flags for moderation UI",
-                "Monitor latency + drop rate",
-                "Rollback if UX degrades"
+                "Reconnect with exponential backoff + jitter.",
+                "Fallback to polling if stream fails.",
+                "Use feature flags for moderation UI.",
+                "Monitor latency + drop rate.",
+                "Rollback if UX degrades."
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Metrics you can quote",
+            "columns": [
+                "Metric",
+                "Target",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "End-to-end latency",
+                    "<= 500ms",
+                    "Live feel"
+                ],
+                [
+                    "Dropped frames",
+                    "< 2%",
+                    "Smooth scrolling"
+                ],
+                [
+                    "DOM cap",
+                    "500-1000",
+                    "Avoid memory growth"
+                ]
             ]
         },
         {
             "type": "stats",
             "items": [
                 {
-                    "label": "End-to-end latency",
-                    "value": "< 500ms",
-                    "helperText": "Goal for live feel"
-                },
-                {
                     "label": "Batch window",
-                    "value": "100–250ms",
-                    "helperText": "Balances latency vs render cost"
+                    "value": "100-250ms",
+                    "helperText": "Balances latency vs render cost."
                 },
                 {
-                    "label": "DOM cap",
-                    "value": "500–1000",
-                    "helperText": "Keep list responsive"
+                    "label": "Render budget",
+                    "value": "16ms",
+                    "helperText": "Keep 60 FPS during spikes."
+                },
+                {
+                    "label": "Reconnect",
+                    "value": "<= 5s",
+                    "helperText": "Fast recovery target."
                 }
             ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Common pitfalls",
+            "text": "Updating the UI for every message, letting the feed grow without bounds, and re-sorting the entire list on every tick are the fastest ways to tank performance."
         }
     ]
 }
