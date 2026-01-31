@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
 import { PlanId } from '../../../../core/utils/payments-provider.util';
+import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
 
@@ -374,6 +375,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   ];
 
   get ctaText(): string {
+    if (isProActive(this.auth.user())) return 'Manage subscription';
     if (this.ctaLabel) return this.ctaLabel;
     return this.paymentsEnabled ? 'Upgrade' : 'Upgrade';
   }
@@ -429,6 +431,10 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   }
 
   async onCta(planId: PlanId) {
+    if (isProActive(this.auth.user())) {
+      this.openManageSubscription(planId);
+      return;
+    }
     if (this.paymentsEnabled) {
       const checkoutUrl = this.resolveCheckoutUrl(planId);
       if (checkoutUrl) {
@@ -482,5 +488,36 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     }
 
     this.ctaClick.emit({ planId });
+  }
+
+  private openManageSubscription(planId: PlanId) {
+    if (this.checkoutLoading) return;
+    this.checkoutNotice = null;
+    this.checkoutLoading = planId;
+    this.auth.getManageSubscriptionUrl().subscribe({
+      next: ({ url }) => {
+        this.checkoutLoading = null;
+        if (!url) {
+          this.setCheckoutNotice('Manage URL is not available yet. Please contact support.');
+          return;
+        }
+        const hook = (window as any).__faCheckoutRedirect;
+        if (typeof hook === 'function') {
+          hook(url);
+          return;
+        }
+        window.open(url, '_blank', 'noopener');
+      },
+      error: (err) => {
+        this.checkoutLoading = null;
+        if (err?.status === 409) {
+          this.setCheckoutNotice('Manage URL is not available yet. Please contact support.');
+        } else if (err?.status === 400) {
+          this.setCheckoutNotice('Subscription management is not supported for this provider.');
+        } else {
+          this.setCheckoutNotice('Failed to load manage URL. Please try again.');
+        }
+      },
+    });
   }
 }

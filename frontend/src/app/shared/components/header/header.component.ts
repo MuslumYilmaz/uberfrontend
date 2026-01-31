@@ -5,6 +5,7 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, startWith } from 'rxjs';
 import { defaultPrefs, Tech } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
+import { isProActive } from '../../../core/utils/entitlements.util';
 import { PREPARE_GROUPS, PrepareGroup, PrepareItem, TargetName } from '../../prepare/prepare.registry';
 
 type Mode =
@@ -53,7 +54,7 @@ type VisibleEntry = {
       <!-- RIGHT (Pricing → Avatar → CTA) -->
       <div class="fah-right" (click)="$event.stopPropagation()">
         <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
-        <a class="fah-btn" routerLink="/pricing">Pricing</a>
+        <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
 
         <div class="fah-profile fah-profile-right">
           <button class="fah-avatar" data-testid="header-profile-button"
@@ -88,8 +89,8 @@ type VisibleEntry = {
         </div>
 
         <!-- Luminous CTA -->
-        <a class="fah-cta fah-cta-solid" routerLink="/pricing">
-          {{ auth.isLoggedIn() ? 'Upgrade' : 'Get full access' }}
+        <a *ngIf="!isPro()" class="fah-cta fah-cta-solid" [routerLink]="ctaLink()">
+          {{ ctaLabel() }}
         </a>
       </div>
     </div>
@@ -305,6 +306,12 @@ export class HeaderComponent implements OnInit {
   }
 
   public auth = inject(AuthService);
+  isPro = computed(() => isProActive(this.auth.user()));
+  ctaLabel = computed(() => {
+    if (this.isPro()) return 'Manage subscription';
+    return this.auth.isLoggedIn() ? 'Upgrade' : 'Get full access';
+  });
+  ctaLink = computed(() => (this.isPro() ? ['/profile'] : ['/pricing']));
 
   constructor() {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd), startWith(null))
