@@ -11,7 +11,18 @@ const { getJwtSecret, getJwtVerifyOptions, isProd } = require('../config/jwt');
 const { resolveAllowedFrontendOrigins, resolveFrontendBase, resolveServerBase } = require('../config/urls');
 
 
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+function normalizeJwtExpiresIn(raw) {
+    if (raw == null) return '7d';
+    const v = String(raw).trim();
+    if (!v) return null;
+    const lowered = v.toLowerCase();
+    if (['none', '0', 'false', 'off', 'no-expiry', 'noexpiry'].includes(lowered)) {
+        return null;
+    }
+    return v;
+}
+
+const JWT_EXPIRES_IN = normalizeJwtExpiresIn(process.env.JWT_EXPIRES_IN);
 
 const ACCESS_TOKEN_COOKIE = process.env.AUTH_COOKIE_NAME || 'access_token';
 const CSRF_COOKIE = process.env.CSRF_COOKIE_NAME || 'csrf_token';
@@ -64,11 +75,22 @@ function parseExpiresInToMs(expiresIn) {
     return mult ? n * mult : null;
 }
 
+function parseCookieMaxAgeDays(raw) {
+    if (raw == null) return null;
+    const v = String(raw).trim();
+    if (!v) return null;
+    const n = Number(v);
+    if (!Number.isFinite(n) || n <= 0) return null;
+    return Math.round(n * 24 * 60 * 60 * 1000);
+}
+
 function authCookieOptions() {
     const sameSite = getCookieSameSite();
     const secure = getCookieSecure();
     const domain = getCookieDomain();
-    const maxAge = parseExpiresInToMs(JWT_EXPIRES_IN);
+    const maxAge =
+        parseCookieMaxAgeDays(process.env.AUTH_COOKIE_MAX_AGE_DAYS) ??
+        parseExpiresInToMs(JWT_EXPIRES_IN);
 
     return {
         sameSite,
@@ -227,12 +249,13 @@ const pick = (u) => {
 // GET /api/auth/ping
 router.get('/ping', (_req, res) => res.json({ ok: true }));
 
-const sign = (u) =>
-    jwt.sign(
-        { sub: u._id.toString(), role: u.role },
-        getJwtSecret(),
-        { expiresIn: JWT_EXPIRES_IN, algorithm: 'HS256' }
-    );
+const sign = (u) => {
+    const payload = { sub: u._id.toString(), role: u.role };
+    const options = JWT_EXPIRES_IN
+        ? { expiresIn: JWT_EXPIRES_IN, algorithm: 'HS256' }
+        : { algorithm: 'HS256' };
+    return jwt.sign(payload, getJwtSecret(), options);
+};
 
 // GET /api/auth/oauth/google/start
 router.get('/oauth/google/start', (req, res) => {
