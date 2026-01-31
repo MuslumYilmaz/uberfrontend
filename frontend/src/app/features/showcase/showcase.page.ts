@@ -19,6 +19,7 @@ import { map } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
 import { QuestionService } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
+import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { FaqSectionComponent } from '../../shared/faq-section/faq-section.component';
 import { PricingPlansSectionComponent } from '../pricing/components/pricing-plans-section/pricing-plans-section.component';
 import { environment } from '../../../environments/environment';
@@ -792,22 +793,7 @@ You can also reset any task back to the starter whenever you want to re-practice
       this.qs.loadAllQuestions('trivia'),
       this.qs.loadSystemDesign(),
     ]).pipe(
-      map(([coding, trivia, system]) => {
-        const counts: Record<string, { all: number; coding: number; trivia: number; system: number }> = {};
-        const bump = (slug: string, key: 'coding' | 'trivia' | 'system') => {
-          const bucket = counts[slug] || { all: 0, coding: 0, trivia: 0, system: 0 };
-          bucket[key] += 1;
-          bucket.all += 1;
-          counts[slug] = bucket;
-        };
-        const addList = (list: any[], key: 'coding' | 'trivia' | 'system') => {
-          list.forEach((q) => (q.companies || []).forEach((slug: string) => bump(slug, key)));
-        };
-        addList(coding, 'coding');
-        addList(trivia, 'trivia');
-        addList(system, 'system');
-        return counts;
-      })
+      map(([coding, trivia, system]) => collectCompanyCounts({ coding, trivia, system }))
     );
   }
 }

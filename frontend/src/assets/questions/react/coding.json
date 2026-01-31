@@ -1680,9 +1680,7 @@
       "storageKey": "v2:ui:react:react-progress-bar-thresholds"
     },
     "solutionAsset": "assets/sb/react/solution/react-progress-bar-thresholds-solution.v1.json",
-    "companies": [
-      "react"
-    ],
+    "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30"
   },

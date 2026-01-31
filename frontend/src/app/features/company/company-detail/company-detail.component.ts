@@ -6,6 +6,7 @@ import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { FaChipComponent } from '../../../shared/components/chip/fa-chip.component';
+import { collectCompanyCounts, CompanyCountBucket } from '../../../shared/company-counts.util';
 
 @Component({
   standalone: true,
@@ -24,14 +25,9 @@ export class CompanyDetailComponent {
     this.qs.loadSystemDesign()
   ]).pipe(
     map(([slug, coding, trivia, system]) => {
-      const filterCompany = (q: any) => (q.companies ?? []).includes(slug);
-
-      return {
-        all: [...coding, ...trivia, ...system].filter(filterCompany).length,
-        coding: coding.filter(filterCompany).length,
-        trivia: trivia.filter(filterCompany).length,
-        system: system.filter(filterCompany).length
-      };
+      const counts = collectCompanyCounts({ coding, trivia, system });
+      const bucket: CompanyCountBucket = counts[slug] ?? { all: 0, coding: 0, trivia: 0, system: 0 };
+      return bucket;
     })
   );
 

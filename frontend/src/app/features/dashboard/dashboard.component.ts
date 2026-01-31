@@ -4,6 +4,7 @@ import { Params, RouterModule } from '@angular/router';
 import { forkJoin, from, map, Observable, shareReplay } from 'rxjs';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
 import { deriveTopicIdsFromTags, loadTopics, TopicDefinition } from '../../core/utils/topics.util';
+import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
 import { TRACKS } from '../tracks/track.data';
 
@@ -139,13 +140,6 @@ export class DashboardComponent {
         const cat = this.inferFormatCategory(q);
         formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
 
-        const companies: string[] =
-          (q as any).companies ?? (q as any).companyTags ?? [];
-
-        for (const c of companies) {
-          companyCounts[c] = (companyCounts[c] ?? 0) + 1;
-        }
-
         bumpTopics(q);
       }
 
@@ -159,13 +153,6 @@ export class DashboardComponent {
         const cat = this.inferFormatCategory(q as MixedQuestion);
         formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
 
-        const companies: string[] =
-          (q as any).companies ?? (q as any).companyTags ?? [];
-
-        for (const c of companies) {
-          companyCounts[c] = (companyCounts[c] ?? 0) + 1;
-        }
-
         bumpTopics(q);
       }
 
@@ -173,6 +160,11 @@ export class DashboardComponent {
       formatCounts.system = systemDesignTotal;
 
       const triviaTotal = trivia.length;
+
+      const companyBuckets = collectCompanyCounts({ coding, trivia, system });
+      Object.entries(companyBuckets).forEach(([slug, bucket]) => {
+        companyCounts[slug] = bucket.all;
+      });
 
       return {
         companyCounts,
