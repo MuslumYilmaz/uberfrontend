@@ -345,10 +345,12 @@ test.describe('lemonsqueezy integration (local)', () => {
   const formatDate = (value: string) =>
     new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(value));
 
+  const DAY = 24 * 60 * 60 * 1000;
+  const baseStart = new Date(Date.now() - 7 * DAY).toISOString();
   const subscriptionCases = [
-    { label: 'monthly', start: '2026-01-01T00:00:00Z', end: '2026-02-01T00:00:00Z' },
-    { label: 'quarterly', start: '2026-01-01T00:00:00Z', end: '2026-04-01T00:00:00Z' },
-    { label: 'annual', start: '2026-01-01T00:00:00Z', end: '2027-01-01T00:00:00Z' },
+    { label: 'monthly', start: baseStart, end: new Date(Date.now() + 30 * DAY).toISOString() },
+    { label: 'quarterly', start: baseStart, end: new Date(Date.now() + 90 * DAY).toISOString() },
+    { label: 'annual', start: baseStart, end: new Date(Date.now() + 365 * DAY).toISOString() },
   ] as const;
 
   for (const plan of subscriptionCases) {
