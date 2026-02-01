@@ -1,0 +1,66 @@
+{
+  "key": "D",
+  "title": "Data model",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Define which state is global, shared, or local. Keep derived state computed in selectors or memoized helpers."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Separate server vs UI state",
+      "text": "Server data changes via API; UI state changes via user interactions. Mixing them makes components hard to reason about."
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "interface PageState {\n  items: Item[];\n  filters: FilterState;\n  selectedId: string | null;\n  loading: boolean;\n  error: string | null;\n}\n\ninterface FilterState {\n  query: string;\n  tags: string[];\n}\n\ninterface UIState {\n  isModalOpen: boolean;\n  hoveredId: string | null;\n}\n"
+    },
+    {
+      "type": "table",
+      "title": "What belongs where",
+      "columns": [
+        "State",
+        "Owner",
+        "Why"
+      ],
+      "rows": [
+        [
+          "items",
+          "Container",
+          "Shared across list and details"
+        ],
+        [
+          "filters",
+          "Container",
+          "Used by multiple components"
+        ],
+        [
+          "hover/expanded",
+          "ItemCard",
+          "Local UI only"
+        ],
+        [
+          "selectedId",
+          "Container",
+          "Controls list + detail"
+        ],
+        [
+          "modal open",
+          "PageLayout",
+          "Global overlay state"
+        ]
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Data rules",
+      "items": [
+        "Derived data should be computed, not stored.",
+        "Keep server cache separate from UI state.",
+        "Avoid duplicating the same source of truth across components."
+      ]
+    }
+  ]
+}

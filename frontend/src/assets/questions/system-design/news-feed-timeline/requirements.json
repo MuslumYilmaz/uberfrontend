@@ -1,0 +1,168 @@
+{
+  "key": "R",
+  "title": "Reflect & Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "This is a high-volume feed UI. The interviewer wants to see how you load content incrementally, keep scrolling smooth, and merge real-time updates without jank or duplicate items."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What you are solving:**\nA timeline that mixes text, images, video, and ads with infinite scroll and live updates. The UI must be fast on mid-range devices and resilient to bursty updates."
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What the interviewer is testing:**\n- Pagination vs cursor-based loading.\n- Virtualization and media lazy-loading.\n- Dedupe + ordering of live updates.\n- Optimistic interactions without re-render storms.\n- Scroll anchoring and UX stability."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "How to frame your answer",
+      "text": "Start by restating the core UX goal: fast first paint, smooth scroll, and correct ordering despite real-time inserts. Then ask clarifying questions about freshness, ordering rules, and content types."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "High-level user flow to describe",
+      "steps": [
+        {
+          "title": "1) Initial load",
+          "text": "Fetch first page, render above-the-fold quickly with skeletons and placeholders."
+        },
+        {
+          "title": "2) Scroll",
+          "text": "Prefetch next page near the end, append to store, and keep scroll position stable."
+        },
+        {
+          "title": "3) Media",
+          "text": "Lazy-load images/video via IntersectionObserver and reserve space to avoid layout shift."
+        },
+        {
+          "title": "4) Real-time",
+          "text": "Buffer incoming items and show a 'New posts' banner to prevent jumpy scroll."
+        },
+        {
+          "title": "5) Interactions",
+          "text": "Optimistically update likes/comments and reconcile server responses."
+        },
+        {
+          "title": "6) Refresh",
+          "text": "Periodic refresh to pick up missed items and revalidate cache."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Clarifying questions you should ask",
+              "items": [
+                "How fresh must the feed be (seconds vs minutes)?",
+                "Is strict ordering required or is eventual ordering OK?",
+                "What content types are present (text, image, video, ads)?",
+                "What is the expected feed length and update rate?",
+                "Do we need offline caching or only in-memory cache?",
+                "Do we support editing/deleting posts and how do we reflect that?",
+                "Is ranking/personalization done on the server or client?",
+                "Are there privacy or visibility rules per item?"
+              ]
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "checklist",
+              "title": "Non-functional expectations",
+              "items": [
+                "Smooth scroll (avoid layout thrash).",
+                "Bounded DOM size via virtualization.",
+                "Fast first item render and low CLS.",
+                "Stable UI under bursty updates.",
+                "Efficient network usage and caching.",
+                "Accessible interactions (keyboard + focus states)."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Ordering strategies (how to talk about it)",
+      "columns": [
+        "Strategy",
+        "Pros",
+        "Cons",
+        "When to use"
+      ],
+      "rows": [
+        [
+          "Chronological",
+          "Simple mental model",
+          "May reduce relevance",
+          "Small or time-driven feeds"
+        ],
+        [
+          "Ranked",
+          "Personalized relevance",
+          "Needs ranking infra",
+          "Large social feeds"
+        ],
+        [
+          "Hybrid",
+          "Balance recency + relevance",
+          "More complex merges",
+          "Most modern feeds"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Target scroll FPS",
+          "value": "55-60",
+          "helperText": "Keep frames smooth during fast scroll."
+        },
+        {
+          "label": "Page size",
+          "value": "20-50 items",
+          "helperText": "Enough to reduce requests without bloating DOM."
+        },
+        {
+          "label": "Realtime batch window",
+          "value": "100-300ms",
+          "helperText": "Batch updates to avoid render storms."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Pitfall to avoid",
+      "text": "Inserting real-time items directly into the list while the user scrolls can cause jumpy scroll. Use a buffer + banner and let the user choose when to insert."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "key": "I",
+  "title": "Interface definition (API)",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Expose a small API to the UI. The UI should not know about dedupe or buffering internals."
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "interface FeedAPI {\n  loadNextPage(): Promise<void>;\n  refresh(): Promise<void>;\n  markSeen(ids: string[]): void;\n  subscribeToStream(onItems: (items: FeedItem[]) => void): () => void;\n  like(id: string, value: boolean): Promise<void>;\n  addComment(id: string, text: string): Promise<void>;\n  hide(id: string): Promise<void>;\n}\n"
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "// Realtime message shape (SSE/WebSocket)\ninterface FeedEvent {\n  type: 'insert' | 'update' | 'delete';\n  items: FeedItem[];\n  cursor?: string;\n}\n"
+    },
+    {
+      "type": "table",
+      "title": "API considerations",
+      "columns": [
+        "Endpoint",
+        "Purpose",
+        "Notes"
+      ],
+      "rows": [
+        [
+          "GET /feed?cursor=...",
+          "Paging",
+          "Prefer cursor over offset"
+        ],
+        [
+          "GET /feed/updates?since=...",
+          "Refresh",
+          "Fetch missed items"
+        ],
+        [
+          "POST /feed/:id/like",
+          "Like",
+          "Optimistic UI"
+        ],
+        [
+          "POST /feed/:id/comment",
+          "Comment",
+          "Reconcile counts"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Dedupe rule",
+      "text": "All sources must de-duplicate by id before updating state. The UI should never show the same item twice even if it arrives from paging + realtime."
+    }
+  ]
+}

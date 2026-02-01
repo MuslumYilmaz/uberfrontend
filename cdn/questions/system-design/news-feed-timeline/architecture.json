@@ -1,0 +1,165 @@
+{
+  "key": "A",
+  "title": "Architecture / High-level design",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Separate ingestion, storage, and rendering. Paged results and real-time updates flow into a merge layer, then into a normalized store that drives a virtualized list."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Design principle",
+      "text": "The UI should render from a single source of truth (ids + entities). All merges, dedupe, and ordering happen before state hits the view layer."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "diagram",
+      "title": "Suggested flow",
+      "description": "Paged API + realtime stream -> merge/dedupe -> store -> virtualized feed.",
+      "nodes": [
+        {
+          "id": "api",
+          "label": "Feed API (paged)"
+        },
+        {
+          "id": "cdn",
+          "label": "Media CDN"
+        },
+        {
+          "id": "rt",
+          "label": "Realtime stream"
+        },
+        {
+          "id": "merge",
+          "label": "Merge + dedupe buffer"
+        },
+        {
+          "id": "cache",
+          "label": "Local cache"
+        },
+        {
+          "id": "store",
+          "label": "Feed store (ids + entities)"
+        },
+        {
+          "id": "ui",
+          "label": "Virtualized feed UI"
+        },
+        {
+          "id": "track",
+          "label": "Viewport tracker"
+        }
+      ],
+      "edges": [
+        {
+          "from": "api",
+          "to": "merge"
+        },
+        {
+          "from": "rt",
+          "to": "merge"
+        },
+        {
+          "from": "merge",
+          "to": "cache"
+        },
+        {
+          "from": "cache",
+          "to": "store"
+        },
+        {
+          "from": "store",
+          "to": "ui"
+        },
+        {
+          "from": "cdn",
+          "to": "ui"
+        },
+        {
+          "from": "ui",
+          "to": "track"
+        }
+      ]
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Read/write paths",
+      "steps": [
+        {
+          "title": "Initial load",
+          "text": "Fetch page -> normalize -> store -> render window."
+        },
+        {
+          "title": "Paging",
+          "text": "Prefetch next cursor -> dedupe -> append ids."
+        },
+        {
+          "title": "Realtime",
+          "text": "Stream -> buffer -> merge -> banner -> insert on user action."
+        },
+        {
+          "title": "Mutations",
+          "text": "Optimistic update -> server ack -> reconcile or rollback."
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Key modules:**\n- PageLoader (pagination + prefetch)\n- StreamBuffer (batch realtime items)\n- Merge/Dedupe (avoid duplicates, keep order)\n- FeedStore (normalized state)\n- VirtualizedList (render window only)\n- MediaLoader (lazy + prefetch)"
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Tradeoffs to explain:**\n- Cursor vs offset.\n- Chronological vs ranked ordering.\n- Immediate insert vs buffered banner.\n- Client cache size vs memory footprint."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Update paths (how data changes the UI)",
+      "columns": [
+        "Source",
+        "Flow",
+        "UI impact"
+      ],
+      "rows": [
+        [
+          "Paging",
+          "API -> merge -> store",
+          "Append items to bottom"
+        ],
+        [
+          "Realtime",
+          "Stream -> buffer -> merge",
+          "Show banner, insert on user action"
+        ],
+        [
+          "Mutations",
+          "Optimistic update -> server ack",
+          "Instant UI + reconcile"
+        ],
+        [
+          "Refresh",
+          "Refetch first page",
+          "Dedupe + update existing"
+        ]
+      ]
+    }
+  ]
+}

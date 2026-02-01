@@ -1,0 +1,127 @@
+{
+  "key": "A",
+  "title": "Architecture / High-level design",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Start from the mock and build a component tree. Identify container components (data fetching) vs presentational components, and define the events that flow upward."
+    },
+    {
+      "type": "code",
+      "language": "text",
+      "code": "App\n├─ PageLayout\n│  ├─ Toolbar\n│  ├─ FiltersPanel\n│  └─ ContentArea\n│     ├─ SectionHeader\n│     ├─ ItemsList\n│     │  └─ ItemCard\n│     └─ DetailsPanel"
+    },
+    {
+      "type": "diagram",
+      "title": "State flow (high level)",
+      "description": "Props down, events up. Server data at the container, local UI state in leaves.",
+      "nodes": [
+        {
+          "id": "container",
+          "label": "PageContainer (fetch + store)"
+        },
+        {
+          "id": "filters",
+          "label": "FiltersPanel (local UI)"
+        },
+        {
+          "id": "list",
+          "label": "ItemsList (render)"
+        },
+        {
+          "id": "item",
+          "label": "ItemCard (local UI)"
+        },
+        {
+          "id": "details",
+          "label": "DetailsPanel (view/edit)"
+        }
+      ],
+      "edges": [
+        {
+          "from": "container",
+          "to": "filters"
+        },
+        {
+          "from": "container",
+          "to": "list"
+        },
+        {
+          "from": "list",
+          "to": "item"
+        },
+        {
+          "from": "filters",
+          "to": "container"
+        },
+        {
+          "from": "list",
+          "to": "details"
+        }
+      ]
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**State placement rules:**\n- Keep state as low as possible.\n- Lift only when multiple siblings need it.\n- Server state belongs in a cache/store layer."
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**Event flow:**\n- User action -> callback -> container updates state -> props update children.\n- Avoid two-way binding; keep flows predictable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Component boundaries",
+      "columns": [
+        "Component",
+        "Responsibility",
+        "State"
+      ],
+      "rows": [
+        [
+          "PageContainer",
+          "Fetch data and orchestrate",
+          "Server + shared UI"
+        ],
+        [
+          "FiltersPanel",
+          "Local filters UI",
+          "Local UI"
+        ],
+        [
+          "ItemsList",
+          "Render list",
+          "Stateless"
+        ],
+        [
+          "ItemCard",
+          "Item UI + local interactions",
+          "Local UI"
+        ],
+        [
+          "DetailsPanel",
+          "View/edit selected item",
+          "Derived + local UI"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Pitfall",
+      "text": "Avoid pushing all state into global stores by default; it makes components harder to test and slower to render."
+    }
+  ]
+}

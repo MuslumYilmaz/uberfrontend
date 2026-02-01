@@ -1,0 +1,74 @@
+{
+  "key": "O",
+  "title": "Optimizations and deep dive",
+  "blocks": [
+    {
+      "type": "checklist",
+      "title": "Performance and scalability",
+      "items": [
+        "Memoize heavy subtrees and list rows to avoid re-render churn.",
+        "Use derived selectors for computed state (filters, counts).",
+        "Split large UI areas with code-splitting or route-based chunks.",
+        "Keep props stable to avoid unnecessary renders.",
+        "Virtualize lists when item count is large."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Performance issues and fixes",
+      "columns": [
+        "Issue",
+        "Cause",
+        "Fix"
+      ],
+      "rows": [
+        [
+          "Re-render storms",
+          "Changing object identities",
+          "Memoize + stable props"
+        ],
+        [
+          "Slow lists",
+          "Too many DOM nodes",
+          "Virtualize + windowed rendering"
+        ],
+        [
+          "Stale UI",
+          "Derived state stored",
+          "Compute with selectors"
+        ],
+        [
+          "Hard to test",
+          "Global state everywhere",
+          "Scope state to smallest owner"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Re-render target",
+          "value": "< 16ms",
+          "helperText": "Avoid frame drops on interaction."
+        },
+        {
+          "label": "List threshold",
+          "value": "> 100 items",
+          "helperText": "Consider virtualization."
+        },
+        {
+          "label": "State scope",
+          "value": "As local as possible",
+          "helperText": "Minimize prop drilling and updates."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Pitfall",
+      "text": "Global state for everything makes components hard to test and slow to render. Prefer local state unless multiple parts truly need it."
+    }
+  ]
+}

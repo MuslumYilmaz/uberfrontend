@@ -1,0 +1,88 @@
+{
+  "key": "O",
+  "title": "Optimizations and deep dive",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Show that you can keep the feed smooth under heavy load. Optimize rendering, media, and update frequency."
+    },
+    {
+      "type": "checklist",
+      "title": "Performance techniques",
+      "items": [
+        "Virtualize the list; cap DOM nodes.",
+        "Batch realtime updates (e.g., every 100-300ms).",
+        "Lazy-load media and use placeholders to avoid layout shifts.",
+        "Memoize row components to reduce re-rendering.",
+        "Prefetch the next page when near the end.",
+        "Use requestIdleCallback for low-priority work (if available)."
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Common bottlenecks and fixes",
+      "columns": [
+        "Problem",
+        "Cause",
+        "Fix"
+      ],
+      "rows": [
+        [
+          "Janky scroll",
+          "Too many DOM nodes",
+          "Virtualize + reduce row complexity"
+        ],
+        [
+          "Layout shift",
+          "Unknown media size",
+          "Reserve space + aspect ratio boxes"
+        ],
+        [
+          "Duplicate items",
+          "Multiple sources",
+          "Merge + dedupe by id"
+        ],
+        [
+          "Stale ordering",
+          "Out-of-order arrivals",
+          "Sort by createdAt + stable tiebreaker"
+        ]
+      ]
+    },
+    {
+      "type": "stats",
+      "items": [
+        {
+          "label": "Max DOM nodes",
+          "value": "150-300",
+          "helperText": "Keep it bounded with virtualization."
+        },
+        {
+          "label": "Image prefetch",
+          "value": "1-2 screens ahead",
+          "helperText": "Balance bandwidth vs perceived speed."
+        },
+        {
+          "label": "Update batch size",
+          "value": "10-50 items",
+          "helperText": "Prevent re-render storms."
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "High-risk pitfall",
+      "text": "Do not insert items above the viewport without anchoring; it will shift scroll position and feel broken. Use a banner or scroll anchoring APIs."
+    },
+    {
+      "type": "checklist",
+      "title": "Observability",
+      "items": [
+        "Track CLS, INP, and long tasks during scroll.",
+        "Measure drop-off at page boundaries.",
+        "Log dedupe rate and buffer size to detect stream bursts."
+      ]
+    }
+  ]
+}

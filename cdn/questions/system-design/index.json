@@ -320,5 +320,47 @@
       "openai"
     ],
     "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "news-feed-timeline",
+    "title": "News Feed / Timeline Front-End System Design",
+    "companies": [
+      "meta"
+    ],
+    "description": "Design a social news feed/timeline UI with pagination, virtualization, media lazy-loading, realtime updates, and smooth interactions.",
+    "tags": [
+      "infinite-scroll",
+      "virtualization",
+      "performance",
+      "caching",
+      "loading-states",
+      "state-management",
+      "real-time",
+      "streams",
+      "pagination",
+      "lazy-loading",
+      "ux"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "updatedAt": "2026-02-01"
+  },
+  {
+    "id": "ui-component-state-from-mock",
+    "title": "UI Component & State Design From a Mock (Frontend System Design)",
+    "companies": [
+      "meta"
+    ],
+    "description": "Given a UI mock, describe the component tree, state ownership, and data flow while keeping the UI scalable and maintainable.",
+    "tags": [
+      "components",
+      "state-management",
+      "architecture",
+      "ux",
+      "performance"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "updatedAt": "2026-02-01"
   }
 ]

@@ -1,0 +1,44 @@
+{
+  "id": "ui-component-state-from-mock",
+  "title": "UI Component & State Design From a Mock (Frontend System Design)",
+  "description": "Given a UI mock or diagram, design the component tree and state model. Break the UI into reusable components, decide where state lives (local vs shared), and describe data flow (props, callbacks, derived state).\n\nKey considerations:\n- Component boundaries and reusability.\n- State ownership and data flow.\n- Async data fetching and caching placement.\n- Performance (memoization, avoiding re-renders).\n\nBe prepared to discuss separation of concerns, scalability, and how you keep the UI maintainable as requirements grow.",
+  "tags": [
+    "components",
+    "state-management",
+    "architecture",
+    "ux",
+    "performance"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "meta"
+  ],
+  "updatedAt": "2026-02-01"
+}

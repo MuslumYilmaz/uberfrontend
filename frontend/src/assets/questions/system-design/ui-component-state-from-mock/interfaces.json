@@ -1,0 +1,47 @@
+{
+  "key": "I",
+  "title": "Interface definition (API)",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Describe minimal component interfaces: inputs (props) and outputs (callbacks)."
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "interface ItemsListProps {\n  items: Item[];\n  selectedId: string | null;\n  onSelect: (id: string) => void;\n}\n\ninterface FiltersPanelProps {\n  value: FilterState;\n  onChange: (next: FilterState) => void;\n}\n\ninterface ItemCardProps {\n  item: Item;\n  onLike: (id: string) => void;\n}\n"
+    },
+    {
+      "type": "table",
+      "title": "Props and events (example mapping)",
+      "columns": [
+        "Component",
+        "Inputs",
+        "Outputs"
+      ],
+      "rows": [
+        [
+          "FiltersPanel",
+          "filters",
+          "onChange"
+        ],
+        [
+          "ItemsList",
+          "items, selectedId",
+          "onSelect"
+        ],
+        [
+          "ItemCard",
+          "item",
+          "onLike, onOpen"
+        ]
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "warning",
+      "title": "Common pitfall",
+      "text": "Avoid passing huge objects through many layers. Keep props small and stable to prevent re-render cascades."
+    }
+  ]
+}

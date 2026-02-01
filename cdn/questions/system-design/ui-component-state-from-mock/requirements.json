@@ -1,0 +1,128 @@
+{
+  "key": "R",
+  "title": "Reflect & Requirements",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "The prompt gives you a UI mock. Your job is to turn it into a component tree with clear state ownership and data flow."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "columns",
+      "columns": [
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What you are solving:**\nTranslate a static mock into reusable components and a state model that can support real data, user interactions, and errors."
+            }
+          ]
+        },
+        {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "**What the interviewer is testing:**\n- Component boundaries and reusability.\n- State ownership and data flow.\n- Placement of async effects and caching.\n- Ability to avoid overly coupled components."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "How to start",
+      "text": "Narrate your approach: identify major regions, list interactive elements, then decide which state is local, shared, or server-driven."
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "steps",
+      "title": "Methodical approach to a mock",
+      "steps": [
+        {
+          "title": "1) Identify regions",
+          "text": "Group the mock into large UI regions (header, filters, list, details)."
+        },
+        {
+          "title": "2) Find interactions",
+          "text": "List clickable and editable elements and what state they affect."
+        },
+        {
+          "title": "3) Decide state ownership",
+          "text": "Place state where it is used by the fewest components."
+        },
+        {
+          "title": "4) Define data flow",
+          "text": "Props down, events up. Avoid circular dependencies."
+        },
+        {
+          "title": "5) Plan async data",
+          "text": "Choose where fetching/caching happens and how loading/error states appear."
+        },
+        {
+          "title": "6) Check accessibility",
+          "text": "Ensure keyboard flow and ARIA for interactive components."
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Clarifying questions you should ask",
+      "items": [
+        "Which parts are reusable vs one-off?",
+        "What data is server-driven vs purely UI state?",
+        "Any performance constraints (large lists, frequent updates)?",
+        "Do we need offline or caching behavior?",
+        "Any accessibility requirements (keyboard, ARIA)?",
+        "What error and empty states should look like?",
+        "Are there feature flags or experiments that change the UI?"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "State placement cheat sheet",
+      "columns": [
+        "State type",
+        "Examples",
+        "Where to keep it"
+      ],
+      "rows": [
+        [
+          "Local UI",
+          "Hover, input focus",
+          "Component state"
+        ],
+        [
+          "Shared UI",
+          "Selected row, filters",
+          "Nearest common ancestor"
+        ],
+        [
+          "Server state",
+          "List data, counts",
+          "Data store or query cache"
+        ],
+        [
+          "Derived",
+          "Filtered list",
+          "Selectors/memoized helpers"
+        ]
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Evaluation criteria",
+      "items": [
+        "Component boundaries are clear and reusable.",
+        "State is placed as low as possible.",
+        "Data flow is predictable and testable.",
+        "Performance risks are addressed early.",
+        "Accessibility is not an afterthought."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "news-feed-timeline",
+  "title": "News Feed / Timeline Front-End System Design",
+  "description": "Design a social news feed (Facebook/Instagram style) from the front-end perspective. Cover initial load, pagination/infinite scroll, virtualization, media lazy-loading, real-time updates, and smooth interactions (likes/comments) with optimistic UI.\n\nKey considerations:\n- Fetch strategy: initial load vs incremental pages and refresh.\n- Virtualized rendering to keep DOM size bounded.\n- Media handling (images/video), placeholders, and caching.\n- Real-time updates (polling/stream) and how you merge new items.\n- State and interaction design (like/comment) without jank.\n\nBe prepared to discuss: dedupe, ordering, cache invalidation, scroll anchoring, and how to keep performance stable at scale.",
+  "tags": [
+    "infinite-scroll",
+    "virtualization",
+    "performance",
+    "caching",
+    "loading-states",
+    "state-management",
+    "real-time",
+    "streams",
+    "pagination",
+    "lazy-loading",
+    "ux"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "meta"
+  ],
+  "updatedAt": "2026-02-01"
+}

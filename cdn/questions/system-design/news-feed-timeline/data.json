@@ -1,0 +1,57 @@
+{
+  "key": "D",
+  "title": "Data model",
+  "blocks": [
+    {
+      "type": "text",
+      "text": "Model the feed as ordered ids + entity map. Track cursors, loading state, and a realtime buffer for bursty updates."
+    },
+    {
+      "type": "callout",
+      "variant": "info",
+      "title": "Normalization principle",
+      "text": "Keep a single entity per id so likes/comments and edits are O(1) updates without scanning the whole list."
+    },
+    {
+      "type": "code",
+      "language": "ts",
+      "code": "type FeedItemId = string;\n\ninterface FeedItem {\n  id: FeedItemId;\n  type: 'text' | 'image' | 'video' | 'ad';\n  authorId: string;\n  createdAt: number;\n  rankScore?: number;\n  likeCount: number;\n  commentCount: number;\n  mediaUrl?: string;\n  isSponsored?: boolean;\n}\n\ninterface FeedState {\n  ids: FeedItemId[];\n  entities: Record<FeedItemId, FeedItem>;\n  nextCursor: string | null;\n  loading: boolean;\n  error: string | null;\n  realtimeBuffer: FeedItemId[];\n  optimistic: Record<FeedItemId, { liked?: boolean; commentDelta?: number }>;\n  seenIds: Set<FeedItemId>;\n  sortKey: 'createdAt' | 'rankScore';\n}\n"
+    },
+    {
+      "type": "table",
+      "title": "State buckets (how to explain ownership)",
+      "columns": [
+        "Category",
+        "Examples",
+        "Where stored"
+      ],
+      "rows": [
+        [
+          "Server state",
+          "Feed items, counts",
+          "entities + ids"
+        ],
+        [
+          "UI state",
+          "loading, errors, scroll position",
+          "local UI state"
+        ],
+        [
+          "Ephemeral",
+          "realtime buffer, optimistic changes",
+          "transient store"
+        ]
+      ]
+    },
+    {
+      "type": "checklist",
+      "title": "Data invariants",
+      "items": [
+        "ids are unique and ordered by sortKey.",
+        "entities contain latest version per id.",
+        "buffered items are not yet inserted into ids.",
+        "optimistic data can be rolled back on failure."
+      ]
+    }
+  ]
+}

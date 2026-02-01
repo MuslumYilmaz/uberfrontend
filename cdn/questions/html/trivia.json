@@ -2,7 +2,7 @@
   {
     "id": "html-dom",
     "title": "What is the DOM?",
-    "description": "The DOM (Document Object Model) is a programming interface for web documents. It represents the structure of an HTML or XML document as a tree of nodes, allowing developers to read, modify, and manipulate the page\u2019s content, structure, and styles dynamically using JavaScript.",
+    "description": "The DOM (Document Object Model) is a programming interface for web documents. It represents the structure of an HTML or XML document as a tree of nodes, allowing developers to read, modify, and manipulate the page’s content, structure, and styles dynamically using JavaScript.",
     "type": "trivia",
     "technology": "html",
     "difficulty": "intermediate",
@@ -19,7 +19,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong>Document Object Model (DOM)</strong> is how the browser represents a webpage in memory. When you load an HTML document, the browser doesn\u2019t just display the raw text \u2014 it builds a <strong>structured tree of objects</strong> where each HTML element, attribute, and text becomes a <strong>node</strong> in that tree.\n\nDevelopers use JavaScript to interact with this model \u2014 meaning they can change the content, styles, or even the structure of the page <em>after</em> it\u2019s loaded, making webpages dynamic and interactive."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong>Document Object Model (DOM)</strong> is how the browser represents a webpage in memory. When you load an HTML document, the browser doesn’t just display the raw text — it builds a <strong>structured tree of objects</strong> where each HTML element, attribute, and text becomes a <strong>node</strong> in that tree.\n\nDevelopers use JavaScript to interact with this model — meaning they can change the content, styles, or even the structure of the page <em>after</em> it’s loaded, making webpages dynamic and interactive."
         },
         {
           "type": "code",
@@ -28,7 +28,7 @@
         },
         {
           "type": "text",
-          "text": "When this code is loaded by the browser, it creates a DOM tree that looks like this:\n\n```\nDocument\n \u2514\u2500\u2500 html\n      \u2514\u2500\u2500 body\n           \u251c\u2500\u2500 h1 \u2192 'Hello, World!'\n           \u2514\u2500\u2500 p \u2192 'This is a paragraph.'\n```\n\nEach HTML tag becomes a node, and the hierarchy shows the parent-child relationships."
+          "text": "When this code is loaded by the browser, it creates a DOM tree that looks like this:\n\n```\nDocument\n └── html\n      └── body\n           ├── h1 → 'Hello, World!'\n           └── p → 'This is a paragraph.'\n```\n\nEach HTML tag becomes a node, and the hierarchy shows the parent-child relationships."
         },
         {
           "type": "list",
@@ -55,7 +55,7 @@
             ],
             [
               "<strong>Attribute Node</strong>",
-              "Represents an element\u2019s attributes (e.g., class, id, href).",
+              "Represents an element’s attributes (e.g., class, id, href).",
               "class='button'"
             ],
             [
@@ -68,7 +68,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gears'></i> <strong>How the DOM Works</strong>\n\n1. The browser parses the HTML code from top to bottom.  \n2. It creates an in-memory tree of objects \u2014 this is the DOM.  \n3. JavaScript can use the <code>document</code> object to access and manipulate the DOM.\n\nFor example, you can modify text or styles on the fly:\n\n```javascript\nconst heading = document.querySelector('h1');\nheading.textContent = 'Welcome to My Page!';\nheading.style.color = 'blue';\n```"
+          "text": "<i class='fa-solid fa-gears'></i> <strong>How the DOM Works</strong>\n\n1. The browser parses the HTML code from top to bottom.  \n2. It creates an in-memory tree of objects — this is the DOM.  \n3. JavaScript can use the <code>document</code> object to access and manipulate the DOM.\n\nFor example, you can modify text or styles on the fly:\n\n```javascript\nconst heading = document.querySelector('h1');\nheading.textContent = 'Welcome to My Page!';\nheading.style.color = 'blue';\n```"
         },
         {
           "type": "text",
@@ -81,19 +81,19 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>The DOM and the BOM</strong>\n\nWhile the DOM represents the structure of the webpage, the <strong>BOM (Browser Object Model)</strong> provides access to the browser environment itself \u2014 like the window, history, or location objects.\n\nFor example:\n```javascript\nwindow.alert('Hello!'); // BOM\nconsole.log(document.title); // DOM\n```\nThey work together: the DOM manages the page, while the BOM manages the browser context."
+          "text": "<i class='fa-solid fa-diagram-project'></i> <strong>The DOM and the BOM</strong>\n\nWhile the DOM represents the structure of the webpage, the <strong>BOM (Browser Object Model)</strong> provides access to the browser environment itself — like the window, history, or location objects.\n\nFor example:\n```javascript\nwindow.alert('Hello!'); // BOM\nconsole.log(document.title); // DOM\n```\nThey work together: the DOM manages the page, while the BOM manages the browser context."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Issues with DOM Manipulation</strong>\n\n- **Performance Problems:** Frequent updates to the DOM can cause reflows and repaints, slowing performance.  \n- **DOM Traversal Confusion:** Using inefficient selectors can make code hard to maintain.  \n- **Timing Issues:** Trying to manipulate DOM elements before they\u2019re fully loaded (use <code>DOMContentLoaded</code> event).  \n- **Global Scope Pollution:** Modifying the DOM without proper encapsulation can lead to naming conflicts."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Issues with DOM Manipulation</strong>\n\n- **Performance Problems:** Frequent updates to the DOM can cause reflows and repaints, slowing performance.  \n- **DOM Traversal Confusion:** Using inefficient selectors can make code hard to maintain.  \n- **Timing Issues:** Trying to manipulate DOM elements before they’re fully loaded (use <code>DOMContentLoaded</code> event).  \n- **Global Scope Pollution:** Modifying the DOM without proper encapsulation can lead to naming conflicts."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the DOM as a <strong>digital blueprint</strong> of your webpage. If HTML is the architect\u2019s plan, the DOM is the 3D model that can be changed anytime \u2014 you can move walls (elements), repaint (CSS), or add furniture (content) using JavaScript."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the DOM as a <strong>digital blueprint</strong> of your webpage. If HTML is the architect’s plan, the DOM is the 3D model that can be changed anytime — you can move walls (elements), repaint (CSS), or add furniture (content) using JavaScript."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The DOM is a tree-like structure representing every element in a webpage.  \n- JavaScript uses the DOM API to create, delete, or modify elements dynamically.  \n- Each part of a webpage \u2014 tags, text, and attributes \u2014 is represented as a node.  \n- DOM manipulation is key for interactive web apps.  \n- The DOM differs from the BOM, which controls the browser\u2019s environment, not the document itself."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The DOM is a tree-like structure representing every element in a webpage.  \n- JavaScript uses the DOM API to create, delete, or modify elements dynamically.  \n- Each part of a webpage — tags, text, and attributes — is represented as a node.  \n- DOM manipulation is key for interactive web apps.  \n- The DOM differs from the BOM, which controls the browser’s environment, not the document itself."
         }
       ]
     },
@@ -120,7 +120,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nHTML (HyperText Markup Language) is built using <strong>tags</strong> that tell the browser how to structure and display content. Each tag has a specific role, such as defining a paragraph, a heading, or an image.\n\nWhen a browser reads an HTML document, it processes tags from top to bottom and builds the page layout through the <strong>Document Object Model (DOM)</strong> \u2014 a structured tree of elements."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nHTML (HyperText Markup Language) is built using <strong>tags</strong> that tell the browser how to structure and display content. Each tag has a specific role, such as defining a paragraph, a heading, or an image.\n\nWhen a browser reads an HTML document, it processes tags from top to bottom and builds the page layout through the <strong>Document Object Model (DOM)</strong> — a structured tree of elements."
         },
         {
           "type": "code",
@@ -140,17 +140,17 @@
           ],
           "rows": [
             [
-              "<h1>\u2026</h1>",
+              "<h1>…</h1>",
               "Defines a heading (from h1 to h6).",
               "<h1>Main Title</h1>"
             ],
             [
-              "<p>\u2026</p>",
+              "<p>…</p>",
               "Defines a paragraph of text.",
               "<p>This is a paragraph.</p>"
             ],
             [
-              "<a>\u2026</a>",
+              "<a>…</a>",
               "Creates a hyperlink to another page or resource.",
               "<a href='https://example.com'>Visit Site</a>"
             ],
@@ -188,7 +188,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Tag Types</strong>\n\n- **Paired Tags** \u2014 Have both an opening and closing tag (e.g., <code>&lt;p&gt;&lt;/p&gt;</code>, <code>&lt;div&gt;&lt;/div&gt;</code>).  \n- **Self-closing Tags** \u2014 Do not require a closing tag (e.g., <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;hr&gt;</code>).  \n\nExample:\n``<code>html\n&lt;p&gt;This is a paragraph.&lt;/p&gt;\n&lt;img src='photo.jpg' alt='Example Image'&gt;\n</code>``"
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Tag Types</strong>\n\n- **Paired Tags** — Have both an opening and closing tag (e.g., <code>&lt;p&gt;&lt;/p&gt;</code>, <code>&lt;div&gt;&lt;/div&gt;</code>).  \n- **Self-closing Tags** — Do not require a closing tag (e.g., <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;hr&gt;</code>).  \n\nExample:\n``<code>html\n&lt;p&gt;This is a paragraph.&lt;/p&gt;\n&lt;img src='photo.jpg' alt='Example Image'&gt;\n</code>``"
         },
         {
           "type": "text",
@@ -196,11 +196,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-sitemap'></i> <strong>How Tags Relate to the DOM</strong>\n\nWhen a browser parses HTML, it turns tags into DOM nodes. For example:\n``<code>html\n&lt;body&gt;\n  &lt;h1&gt;Hello&lt;/h1&gt;\n  &lt;p&gt;World&lt;/p&gt;\n&lt;/body&gt;\n</code>``\n\u2026becomes a tree:\n```\nDocument\n \u2514\u2500\u2500 body\n      \u251c\u2500\u2500 h1 \u2192 'Hello'\n      \u2514\u2500\u2500 p \u2192 'World'\n```\nEach HTML tag corresponds to a node that can be accessed and modified via JavaScript."
+          "text": "<i class='fa-solid fa-sitemap'></i> <strong>How Tags Relate to the DOM</strong>\n\nWhen a browser parses HTML, it turns tags into DOM nodes. For example:\n``<code>html\n&lt;body&gt;\n  &lt;h1&gt;Hello&lt;/h1&gt;\n  &lt;p&gt;World&lt;/p&gt;\n&lt;/body&gt;\n</code>``\n…becomes a tree:\n```\nDocument\n └── body\n      ├── h1 → 'Hello'\n      └── p → 'World'\n```\nEach HTML tag corresponds to a node that can be accessed and modified via JavaScript."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of HTML tags as <strong>labels</strong> on boxes \u2014 each box tells the browser what\u2019s inside and how to display it. For example, <code>&lt;h1&gt;</code> is a big label (a title box), <code>&lt;p&gt;</code> is a small text box, and <code>&lt;img&gt;</code> is a picture frame. Together, these labeled boxes form your web page layout."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of HTML tags as <strong>labels</strong> on boxes — each box tells the browser what’s inside and how to display it. For example, <code>&lt;h1&gt;</code> is a big label (a title box), <code>&lt;p&gt;</code> is a small text box, and <code>&lt;img&gt;</code> is a picture frame. Together, these labeled boxes form your web page layout."
         },
         {
           "type": "text",
@@ -231,7 +231,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong><code>&lt;head&gt;</code></strong> tag is an essential section of every HTML document. It doesn\u2019t display visible content but instead holds **metadata** \u2014 information about the webpage that helps browsers interpret it, search engines index it, and other systems (like social media platforms) understand how to preview it.\n\nEverything inside the <code>&lt;head&gt;</code> tag affects how the page behaves, loads, and integrates with the web ecosystem."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <strong><code>&lt;head&gt;</code></strong> tag is an essential section of every HTML document. It doesn’t display visible content but instead holds **metadata** — information about the webpage that helps browsers interpret it, search engines index it, and other systems (like social media platforms) understand how to preview it.\n\nEverything inside the <code>&lt;head&gt;</code> tag affects how the page behaves, loads, and integrates with the web ecosystem."
         },
         {
           "type": "code",
@@ -252,7 +252,7 @@
           "rows": [
             [
               "<title>",
-              "Specifies the document\u2019s title (shown in the browser tab or search results).",
+              "Specifies the document’s title (shown in the browser tab or search results).",
               "<title>My Website</title>"
             ],
             [
@@ -302,7 +302,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the <code>&lt;head&gt;</code> tag as the **control room** of your webpage \u2014 it doesn\u2019t show up on the front end, but it manages everything behind the scenes: the title, styling, behavior, and how search engines or other platforms see your site."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the <code>&lt;head&gt;</code> tag as the **control room** of your webpage — it doesn’t show up on the front end, but it manages everything behind the scenes: the title, styling, behavior, and how search engines or other platforms see your site."
         },
         {
           "type": "text",
@@ -335,7 +335,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are **generic container elements**, meaning they don\u2019t add semantic meaning on their own. Instead, they\u2019re used for **grouping elements** and **applying styles or scripts**. The key difference is their **display behavior**:\n\n- <code>&lt;div&gt;</code> is a **block-level element** \u2014 it starts on a new line and stretches across the full width of its parent container.\n- <code>&lt;span&gt;</code> is an **inline element** \u2014 it stays within the flow of text and only takes up as much width as its content requires."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> are **generic container elements**, meaning they don’t add semantic meaning on their own. Instead, they’re used for **grouping elements** and **applying styles or scripts**. The key difference is their **display behavior**:\n\n- <code>&lt;div&gt;</code> is a **block-level element** — it starts on a new line and stretches across the full width of its parent container.\n- <code>&lt;span&gt;</code> is an **inline element** — it stays within the flow of text and only takes up as much width as its content requires."
         },
         {
           "type": "code",
@@ -402,7 +402,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- Using <code>&lt;div&gt;</code> for **text styling** when <code>&lt;span&gt;</code> is more appropriate.  \n- Wrapping <code>&lt;div&gt;</code> elements inside inline tags like <code>&lt;span&gt;</code> or <code>&lt;a&gt;</code>.  \n- Overusing <code>&lt;div&gt;</code> without semantic structure (called <em>div soup</em>).  \n- Forgetting that <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> themselves carry **no semantic meaning** \u2014 they should be used with purpose or replaced by more meaningful tags (<code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, etc.) when possible."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- Using <code>&lt;div&gt;</code> for **text styling** when <code>&lt;span&gt;</code> is more appropriate.  \n- Wrapping <code>&lt;div&gt;</code> elements inside inline tags like <code>&lt;span&gt;</code> or <code>&lt;a&gt;</code>.  \n- Overusing <code>&lt;div&gt;</code> without semantic structure (called <em>div soup</em>).  \n- Forgetting that <code>&lt;div&gt;</code> and <code>&lt;span&gt;</code> themselves carry **no semantic meaning** — they should be used with purpose or replaced by more meaningful tags (<code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;strong&gt;</code>, etc.) when possible."
         },
         {
           "type": "text",
@@ -410,7 +410,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>&lt;div&gt;</code> is a **block-level container** used for grouping large elements or layout sections.  \n- <code>&lt;span&gt;</code> is an **inline container** used to target and style specific text portions.  \n- <code>&lt;div&gt;</code> affects the page\u2019s layout; <code>&lt;span&gt;</code> affects only content appearance.  \n- Use <code>&lt;div&gt;</code> for structure and <code>&lt;span&gt;</code> for inline styling or small content manipulation.  \n- Both can be styled with CSS and manipulated with JavaScript."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>&lt;div&gt;</code> is a **block-level container** used for grouping large elements or layout sections.  \n- <code>&lt;span&gt;</code> is an **inline container** used to target and style specific text portions.  \n- <code>&lt;div&gt;</code> affects the page’s layout; <code>&lt;span&gt;</code> affects only content appearance.  \n- Use <code>&lt;div&gt;</code> for structure and <code>&lt;span&gt;</code> for inline styling or small content manipulation.  \n- Both can be styled with CSS and manipulated with JavaScript."
         }
       ]
     },
@@ -420,7 +420,7 @@
   {
     "id": "html-title-tag",
     "title": "What does the <title> tag do?",
-    "description": "The &lt;title&gt; tag defines the title of an HTML document. It appears in the browser\u2019s title bar or tab and is used by search engines and social networks to identify and display the page. Though not visible within the webpage itself, it plays a crucial role in SEO, accessibility, and user experience.",
+    "description": "The &lt;title&gt; tag defines the title of an HTML document. It appears in the browser’s title bar or tab and is used by search engines and social networks to identify and display the page. Though not visible within the webpage itself, it plays a crucial role in SEO, accessibility, and user experience.",
     "type": "trivia",
     "technology": "html",
     "difficulty": "easy",
@@ -437,7 +437,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <code>&lt;title&gt;</code> tag is one of the most important elements inside the <code>&lt;head&gt;</code> section of an HTML document. It defines the **title of the web page**, which appears in the **browser tab**, **search engine results**, and **bookmarks**. Even though it doesn\u2019t display on the webpage itself, it plays a vital role in both user navigation and search engine optimization (SEO)."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe <code>&lt;title&gt;</code> tag is one of the most important elements inside the <code>&lt;head&gt;</code> section of an HTML document. It defines the **title of the web page**, which appears in the **browser tab**, **search engine results**, and **bookmarks**. Even though it doesn’t display on the webpage itself, it plays a vital role in both user navigation and search engine optimization (SEO)."
         },
         {
           "type": "code",
@@ -446,7 +446,7 @@
         },
         {
           "type": "text",
-          "text": "In this example, the browser tab will display the text **\u201cLearn HTML Basics\u201d**, while the heading inside the <code>&lt;body&gt;</code> (<code>&lt;h1&gt;</code>) shows content visible to the user."
+          "text": "In this example, the browser tab will display the text **“Learn HTML Basics”**, while the heading inside the <code>&lt;body&gt;</code> (<code>&lt;h1&gt;</code>) shows content visible to the user."
         },
         {
           "type": "list",
@@ -481,7 +481,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-magnifying-glass'></i> <strong>SEO and Accessibility Benefits</strong>\n\nThe <code>&lt;title&gt;</code> tag directly influences a webpage\u2019s ranking and accessibility:\n\n- **Search Engine Optimization (SEO):** Search engines like Google use the <code>&lt;title&gt;</code> as the main heading for a search result. A clear, keyword-rich title helps users and crawlers understand the page\u2019s content.\n- **Accessibility Tools:** Screen readers announce the title when users switch between tabs or open a new page, making it essential for visually impaired users.\n- **Browser Usability:** Users often rely on tab titles to navigate between multiple open pages, so short and descriptive titles enhance usability."
+          "text": "<i class='fa-solid fa-magnifying-glass'></i> <strong>SEO and Accessibility Benefits</strong>\n\nThe <code>&lt;title&gt;</code> tag directly influences a webpage’s ranking and accessibility:\n\n- **Search Engine Optimization (SEO):** Search engines like Google use the <code>&lt;title&gt;</code> as the main heading for a search result. A clear, keyword-rich title helps users and crawlers understand the page’s content.\n- **Accessibility Tools:** Screen readers announce the title when users switch between tabs or open a new page, making it essential for visually impaired users.\n- **Browser Usability:** Users often rely on tab titles to navigate between multiple open pages, so short and descriptive titles enhance usability."
         },
         {
           "type": "code",
@@ -490,24 +490,24 @@
         },
         {
           "type": "text",
-          "text": "A well-written title is concise (50\u201360 characters), descriptive, and relevant to the page content. Avoid keyword stuffing or using the same title across multiple pages."
+          "text": "A well-written title is concise (50–60 characters), descriptive, and relevant to the page content. Avoid keyword stuffing or using the same title across multiple pages."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- **Omitting the <code>&lt;title&gt;</code> tag:** Causes accessibility issues and results in poor search engine visibility.  \n- **Too long or too short titles:** Search engines may truncate or ignore them.  \n- **Using generic text:** Titles like \u201cHome\u201d or \u201cPage 1\u201d provide no context.  \n- **Duplicating titles across pages:** Confuses users and search engines about content relevance."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- **Omitting the <code>&lt;title&gt;</code> tag:** Causes accessibility issues and results in poor search engine visibility.  \n- **Too long or too short titles:** Search engines may truncate or ignore them.  \n- **Using generic text:** Titles like “Home” or “Page 1” provide no context.  \n- **Duplicating titles across pages:** Confuses users and search engines about content relevance."
         },
         {
           "type": "code",
           "language": "html",
-          "code": "<!-- Bad example -->\n<title>Home</title>\n\n<!-- Good example -->\n<title>Home | Sarah\u2019s Interior Design Studio</title>"
+          "code": "<!-- Bad example -->\n<title>Home</title>\n\n<!-- Good example -->\n<title>Home | Sarah’s Interior Design Studio</title>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the <code>&lt;title&gt;</code> tag as the **nameplate of your webpage** \u2014 it doesn\u2019t appear inside the house (the visible page), but it\u2019s what people see from the outside: on the browser tab, in Google search, or in their bookmarks. A clear and descriptive nameplate makes your page stand out and easy to find."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the <code>&lt;title&gt;</code> tag as the **nameplate of your webpage** — it doesn’t appear inside the house (the visible page), but it’s what people see from the outside: on the browser tab, in Google search, or in their bookmarks. A clear and descriptive nameplate makes your page stand out and easy to find."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The <code>&lt;title&gt;</code> tag defines the document\u2019s title shown in the browser, search results, and bookmarks.  \n- It belongs inside the <code>&lt;head&gt;</code> section of the HTML document.  \n- Plays a critical role in SEO, accessibility, and user navigation.  \n- Keep titles concise (50\u201360 characters), descriptive, and unique for every page.  \n- Avoid generic or duplicated titles for better visibility and usability."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The <code>&lt;title&gt;</code> tag defines the document’s title shown in the browser, search results, and bookmarks.  \n- It belongs inside the <code>&lt;head&gt;</code> section of the HTML document.  \n- Plays a critical role in SEO, accessibility, and user navigation.  \n- Keep titles concise (50–60 characters), descriptive, and unique for every page.  \n- Avoid generic or duplicated titles for better visibility and usability."
         }
       ]
     },
@@ -517,7 +517,7 @@
   {
     "id": "html-img-alt-attribute",
     "title": "What is the purpose of the alt attribute in the <img> tag?",
-    "description": "The alt (alternative text) attribute in the &lt;img&gt; tag provides a textual description of an image. It helps users who cannot see the image \u2014 such as visually impaired users using screen readers \u2014 and also appears if the image fails to load. Additionally, alt text improves SEO by allowing search engines to understand image content.",
+    "description": "The alt (alternative text) attribute in the &lt;img&gt; tag provides a textual description of an image. It helps users who cannot see the image — such as visually impaired users using screen readers — and also appears if the image fails to load. Additionally, alt text improves SEO by allowing search engines to understand image content.",
     "type": "trivia",
     "technology": "html",
     "difficulty": "intermediate",
@@ -534,7 +534,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe **alt attribute** (short for \u201calternative text\u201d) in the <code>&lt;img&gt;</code> tag provides a textual description of an image. It\u2019s a key part of **web accessibility**, ensuring that users who cannot see the image \u2014 due to visual impairments, slow connections, or technical errors \u2014 still understand what the image represents. Search engines also rely on this attribute to interpret image content for ranking and indexing."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe **alt attribute** (short for “alternative text”) in the <code>&lt;img&gt;</code> tag provides a textual description of an image. It’s a key part of **web accessibility**, ensuring that users who cannot see the image — due to visual impairments, slow connections, or technical errors — still understand what the image represents. Search engines also rely on this attribute to interpret image content for ranking and indexing."
         },
         {
           "type": "code",
@@ -543,7 +543,7 @@
         },
         {
           "type": "text",
-          "text": "In this example:\n- If the image loads successfully, users see the picture.  \n- If it fails to load, the browser displays the text: \u201cA beautiful orange sunset over the ocean.\u201d  \n- Screen readers announce this description for visually impaired users, allowing them to understand the page content."
+          "text": "In this example:\n- If the image loads successfully, users see the picture.  \n- If it fails to load, the browser displays the text: “A beautiful orange sunset over the ocean.”  \n- Screen readers announce this description for visually impaired users, allowing them to understand the page content."
         },
         {
           "type": "list",
@@ -573,11 +573,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-universal-access'></i> <strong>Accessibility Importance</strong>\n\nThe alt attribute is a cornerstone of **web accessibility (a11y)**. Screen readers \u2014 used by visually impaired users \u2014 read the alt text aloud, helping them navigate and understand the page. Without it, users may miss critical information, especially for images conveying meaning, such as charts, infographics, or buttons.\n\nExample:\n``<code>html\n&lt;img src=\"search-icon.png\" alt=\"Search button\"&gt;\n</code>``\nIf the image is used as a button, the alt text communicates its purpose clearly to assistive technologies."
+          "text": "<i class='fa-solid fa-universal-access'></i> <strong>Accessibility Importance</strong>\n\nThe alt attribute is a cornerstone of **web accessibility (a11y)**. Screen readers — used by visually impaired users — read the alt text aloud, helping them navigate and understand the page. Without it, users may miss critical information, especially for images conveying meaning, such as charts, infographics, or buttons.\n\nExample:\n``<code>html\n&lt;img src=\"search-icon.png\" alt=\"Search button\"&gt;\n</code>``\nIf the image is used as a button, the alt text communicates its purpose clearly to assistive technologies."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-magnifying-glass-chart'></i> <strong>SEO Benefits</strong>\n\nSearch engines cannot \u201csee\u201d images \u2014 they rely on **alt text** to understand their content. Descriptive alt attributes help search engines index images correctly, improving visibility in **Google Image Search** and enhancing overall page SEO.\n\nFor instance:\n``<code>html\n&lt;img src=\"organic-tea.jpg\" alt=\"Cup of organic green tea on wooden table\"&gt;\n</code>``\nThis helps search engines associate your image with queries related to organic tea, potentially increasing site traffic."
+          "text": "<i class='fa-solid fa-magnifying-glass-chart'></i> <strong>SEO Benefits</strong>\n\nSearch engines cannot “see” images — they rely on **alt text** to understand their content. Descriptive alt attributes help search engines index images correctly, improving visibility in **Google Image Search** and enhancing overall page SEO.\n\nFor instance:\n``<code>html\n&lt;img src=\"organic-tea.jpg\" alt=\"Cup of organic green tea on wooden table\"&gt;\n</code>``\nThis helps search engines associate your image with queries related to organic tea, potentially increasing site traffic."
         },
         {
           "type": "text",
@@ -594,7 +594,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the alt attribute as a **backup voice for your image**. If someone can\u2019t see it \u2014 whether because of a screen reader or a slow internet connection \u2014 the alt text speaks on the image\u2019s behalf, describing what\u2019s there and why it matters."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of the alt attribute as a **backup voice for your image**. If someone can’t see it — whether because of a screen reader or a slow internet connection — the alt text speaks on the image’s behalf, describing what’s there and why it matters."
         },
         {
           "type": "text",
@@ -630,7 +630,7 @@
         {
           "type": "code",
           "language": "html",
-          "code": "<header>\n  <h1>My Blog</h1>\n</header>\n<main>\n  <article>\n    <h2>Understanding Semantic HTML</h2>\n    <p>Semantic HTML gives meaning to web structure...</p>\n  </article>\n</main>\n<footer>\n  <p>\u00a9 2025 My Blog</p>\n</footer>"
+          "code": "<header>\n  <h1>My Blog</h1>\n</header>\n<main>\n  <article>\n    <h2>Understanding Semantic HTML</h2>\n    <p>Semantic HTML gives meaning to web structure...</p>\n  </article>\n</main>\n<footer>\n  <p>© 2025 My Blog</p>\n</footer>"
         },
         {
           "type": "text",
@@ -701,12 +701,12 @@
           "rows": [
             [
               "Semantic",
-              "\u2039article\u203a, \u2039footer\u203a, \u2039header\u203a",
+              "‹article›, ‹footer›, ‹header›",
               "Has clear meaning and purpose"
             ],
             [
               "Non-Semantic",
-              "\u2039div\u203a, \u2039span\u203a",
+              "‹div›, ‹span›",
               "No inherent meaning; purely structural"
             ]
           ],
@@ -714,11 +714,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- Using <code>&lt;div&gt;</code> everywhere instead of semantic tags, leading to \u201cdiv soup.\u201d  \n- Nesting structural tags incorrectly (e.g., <code>&lt;footer&gt;</code> inside <code>&lt;header&gt;</code>).  \n- Misusing semantic tags for layout instead of meaning (e.g., using <code>&lt;article&gt;</code> just for styling).  \n- Forgetting to use heading hierarchy properly (<code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>)."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistakes</strong>\n\n- Using <code>&lt;div&gt;</code> everywhere instead of semantic tags, leading to “div soup.”  \n- Nesting structural tags incorrectly (e.g., <code>&lt;footer&gt;</code> inside <code>&lt;header&gt;</code>).  \n- Misusing semantic tags for layout instead of meaning (e.g., using <code>&lt;article&gt;</code> just for styling).  \n- Forgetting to use heading hierarchy properly (<code>&lt;h1&gt;</code> to <code>&lt;h6&gt;</code>)."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of semantic elements as **labels on a document folder** \u2014 they tell you what each section is about. Instead of having many blank folders (<code>&lt;div&gt;</code>), you use labeled ones (<code>&lt;header&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>) so both people and search engines can find what they need faster."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of semantic elements as **labels on a document folder** — they tell you what each section is about. Instead of having many blank folders (<code>&lt;div&gt;</code>), you use labeled ones (<code>&lt;header&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code>) so both people and search engines can find what they need faster."
         },
         {
           "type": "text",
@@ -779,7 +779,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of block-level elements as **building blocks** of a webpage \u2014 like paragraphs and containers \u2014 while inline elements are **decorations or text-level tools** that modify or highlight parts within those blocks. For example, <code>&lt;div&gt;</code> defines a section, while <code>&lt;span&gt;</code> emphasizes a word inside it."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of block-level elements as **building blocks** of a webpage — like paragraphs and containers — while inline elements are **decorations or text-level tools** that modify or highlight parts within those blocks. For example, <code>&lt;div&gt;</code> defines a section, while <code>&lt;span&gt;</code> emphasizes a word inside it."
         },
         {
           "type": "text",
@@ -808,12 +808,12 @@
     "technology": "html",
     "difficulty": "easy",
     "importance": 2,
-    "description": "The &lt;br&gt; tag inserts a line break inside text content. It\u2019s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poems), not layout. Overuse can hurt accessibility and maintainability; test with screen readers.",
+    "description": "The &lt;br&gt; tag inserts a line break inside text content. It’s an empty element and should be used for line breaks in prose, not for layout (use CSS for spacing). Use it only for semantic line breaks (addresses, poems), not layout. Overuse can hurt accessibility and maintainability; test with screen readers.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;br&gt;</code> tag stands for **'break'** and is an empty (self-closing) HTML element used to force a line break in text. It tells the browser to move the content that follows onto the next line. Unlike <code>&lt;p&gt;</code> or <code>&lt;div&gt;</code>, it does not create extra vertical spacing or start a new block \u2014 it simply breaks the line within the same block context."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;br&gt;</code> tag stands for **'break'** and is an empty (self-closing) HTML element used to force a line break in text. It tells the browser to move the content that follows onto the next line. Unlike <code>&lt;p&gt;</code> or <code>&lt;div&gt;</code>, it does not create extra vertical spacing or start a new block — it simply breaks the line within the same block context."
         },
         {
           "type": "text",
@@ -821,7 +821,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Use Cases</strong>\n\nThe <code>&lt;br&gt;</code> tag is often used in scenarios where text needs manual line breaks \u2014 such as poetry, song lyrics, addresses, or formatted contact information. It should be avoided for layout spacing, as CSS provides more flexible and accessible methods for controlling vertical spacing."
+          "text": "<strong>Use Cases</strong>\n\nThe <code>&lt;br&gt;</code> tag is often used in scenarios where text needs manual line breaks — such as poetry, song lyrics, addresses, or formatted contact information. It should be avoided for layout spacing, as CSS provides more flexible and accessible methods for controlling vertical spacing."
         },
         {
           "type": "list",
@@ -844,7 +844,7 @@
             ],
             [
               "Best Practice",
-              "Avoid using `<br>` for spacing \u2014 use CSS margin or padding instead"
+              "Avoid using `<br>` for spacing — use CSS margin or padding instead"
             ]
           ],
           "caption": "Overview of `<br>` tag properties and usage."
@@ -855,7 +855,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;br&gt;</code> as pressing the **Enter key once** when typing text \u2014 it moves to the next line but stays within the same paragraph or container. In contrast, using <code>&lt;p&gt;</code> is like starting a **new paragraph** entirely with spacing before and after it."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;br&gt;</code> as pressing the **Enter key once** when typing text — it moves to the next line but stays within the same paragraph or container. In contrast, using <code>&lt;p&gt;</code> is like starting a **new paragraph** entirely with spacing before and after it."
         },
         {
           "type": "text",
@@ -889,7 +889,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;a&gt;</code> tag, also known as the **anchor element**, is used to define hyperlinks \u2014 clickable links that connect one web page, document, or section to another. It can link to external websites, internal pages, specific sections within the same page, email addresses, files for download, or even trigger scripts.\n\nWithout <code>&lt;a&gt;</code> tags, the web would be a collection of isolated documents without any way to navigate between them."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;a&gt;</code> tag, also known as the **anchor element**, is used to define hyperlinks — clickable links that connect one web page, document, or section to another. It can link to external websites, internal pages, specific sections within the same page, email addresses, files for download, or even trigger scripts.\n\nWithout <code>&lt;a&gt;</code> tags, the web would be a collection of isolated documents without any way to navigate between them."
         },
         {
           "type": "text",
@@ -897,7 +897,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common Attributes</strong>\n\nThe <code>&lt;a&gt;</code> tag supports several attributes to control link behavior:\n\n- **`href`** \u2013 Specifies the destination URL or path (can be absolute or relative).\n- **`target`** \u2013 Determines how to open the link (e.g., `_blank` for a new tab, `_self` for the same tab).\n- **`title`** \u2013 Provides additional information shown as a tooltip on hover.\n- **`download`** \u2013 Prompts a download instead of navigation.\n- **`rel`** \u2013 Defines the relationship between the current document and the linked resource (e.g., `noopener`, `nofollow`, `external`)."
+          "text": "<strong>Common Attributes</strong>\n\nThe <code>&lt;a&gt;</code> tag supports several attributes to control link behavior:\n\n- **`href`** – Specifies the destination URL or path (can be absolute or relative).\n- **`target`** – Determines how to open the link (e.g., `_blank` for a new tab, `_self` for the same tab).\n- **`title`** – Provides additional information shown as a tooltip on hover.\n- **`download`** – Prompts a download instead of navigation.\n- **`rel`** – Defines the relationship between the current document and the linked resource (e.g., `noopener`, `nofollow`, `external`)."
         },
         {
           "type": "list",
@@ -949,7 +949,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;a&gt;</code> as a **bridge** between destinations. The `href` attribute is the address of where that bridge leads. Without it, the link is just text \u2014 but with it, it becomes a doorway to another page, file, or even a specific section of the same document."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;a&gt;</code> as a **bridge** between destinations. The `href` attribute is the address of where that bridge leads. Without it, the link is just text — but with it, it becomes a doorway to another page, file, or even a specific section of the same document."
         },
         {
           "type": "text",
@@ -979,7 +979,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe `href` attribute stands for **Hypertext Reference**. It is used to define the **URL, file path, or identifier** that a hyperlink or resource points to. When applied to an element like <code>&lt;a&gt;</code>, it tells the browser where to go when a user clicks on it.\n\nWhile it\u2019s most frequently associated with the <code>&lt;a&gt;</code> tag, it can also be used in other elements like <code>&lt;link&gt;</code>, <code>&lt;base&gt;</code>, and <code>&lt;area&gt;</code> to define related resources."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe `href` attribute stands for **Hypertext Reference**. It is used to define the **URL, file path, or identifier** that a hyperlink or resource points to. When applied to an element like <code>&lt;a&gt;</code>, it tells the browser where to go when a user clicks on it.\n\nWhile it’s most frequently associated with the <code>&lt;a&gt;</code> tag, it can also be used in other elements like <code>&lt;link&gt;</code>, <code>&lt;base&gt;</code>, and <code>&lt;area&gt;</code> to define related resources."
         },
         {
           "type": "text",
@@ -1022,7 +1022,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Absolute vs. Relative URLs</strong>\n\nThe `href` value can be **absolute** or **relative**:\n\n- **Absolute URL:** Points to an external website with the full address.\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN Docs&lt;/a&gt;\n</code>``\n\n- **Relative URL:** Points to a resource relative to the current page\u2019s location.\n``<code>html\n&lt;a href=\"/about.html\"&gt;About Us&lt;/a&gt;\n</code>``"
+          "text": "<strong>Absolute vs. Relative URLs</strong>\n\nThe `href` value can be **absolute** or **relative**:\n\n- **Absolute URL:** Points to an external website with the full address.\n``<code>html\n&lt;a href=\"https://developer.mozilla.org/\"&gt;MDN Docs&lt;/a&gt;\n</code>``\n\n- **Relative URL:** Points to a resource relative to the current page’s location.\n``<code>html\n&lt;a href=\"/about.html\"&gt;About Us&lt;/a&gt;\n</code>``"
         },
         {
           "type": "text",
@@ -1030,11 +1030,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Other Common Uses</strong>\n\n- **Email links:** Opens the user\u2019s default email client.\n  ``<code>html\n  &lt;a href=\"mailto:support@example.com\"&gt;Contact Support&lt;/a&gt;\n  </code>``\n- **Phone links:** Opens a phone dialer on mobile devices.\n  ``<code>html\n  &lt;a href=\"tel:+123456789\"&gt;Call Us&lt;/a&gt;\n  </code>``\n- **Download links:** When combined with the `download` attribute, triggers file downloads.\n  ``<code>html\n  &lt;a href=\"files/report.pdf\" download&gt;Download Report&lt;/a&gt;\n  </code>``"
+          "text": "<strong>Other Common Uses</strong>\n\n- **Email links:** Opens the user’s default email client.\n  ``<code>html\n  &lt;a href=\"mailto:support@example.com\"&gt;Contact Support&lt;/a&gt;\n  </code>``\n- **Phone links:** Opens a phone dialer on mobile devices.\n  ``<code>html\n  &lt;a href=\"tel:+123456789\"&gt;Call Us&lt;/a&gt;\n  </code>``\n- **Download links:** When combined with the `download` attribute, triggers file downloads.\n  ``<code>html\n  &lt;a href=\"files/report.pdf\" download&gt;Download Report&lt;/a&gt;\n  </code>``"
         },
         {
           "type": "text",
-          "text": "<strong>Security and Best Practices</strong>\n\n- Always use **absolute URLs** when linking to external websites.\n- Add the attribute `rel=\"noopener noreferrer\"` when using `target=\"_blank\"` to prevent malicious access to the parent window.\n- Avoid using broken or incomplete URLs \u2014 it can harm SEO and accessibility.\n- For internal navigation, prefer **relative links** for flexibility during site deployment."
+          "text": "<strong>Security and Best Practices</strong>\n\n- Always use **absolute URLs** when linking to external websites.\n- Add the attribute `rel=\"noopener noreferrer\"` when using `target=\"_blank\"` to prevent malicious access to the parent window.\n- Avoid using broken or incomplete URLs — it can harm SEO and accessibility.\n- For internal navigation, prefer **relative links** for flexibility during site deployment."
         },
         {
           "type": "text",
@@ -1042,7 +1042,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of `href` as the **address label** on a hyperlink. Without it, the browser has nowhere to go \u2014 it\u2019s like clicking on a button with no destination. Once you add `href`, you\u2019re telling the browser exactly where that link should lead, whether it\u2019s another webpage, a document, or even a specific section on the same page."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of `href` as the **address label** on a hyperlink. Without it, the browser has nowhere to go — it’s like clicking on a button with no destination. Once you add `href`, you’re telling the browser exactly where that link should lead, whether it’s another webpage, a document, or even a specific section on the same page."
         }
       ]
     },
@@ -1063,12 +1063,12 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "The &lt;meta&gt; tag provides metadata\u2014data about the webpage itself\u2014such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media platforms understand and display the page correctly.",
+    "description": "The &lt;meta&gt; tag provides metadata—data about the webpage itself—such as character encoding, viewport settings, description, keywords, and author information. It helps browsers, search engines, and social media platforms understand and display the page correctly.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;meta&gt;</code> tag in HTML defines **metadata**, which is information about the webpage rather than content visible to users. It plays a crucial role in helping **browsers, search engines, and other web services** interpret a page\u2019s content, encoding, responsiveness, and SEO-related information. All <code>&lt;meta&gt;</code> tags are placed within the <code>&lt;head&gt;</code> section of an HTML document."
+          "text": "<strong>Definition and Purpose</strong>\n\nThe <code>&lt;meta&gt;</code> tag in HTML defines **metadata**, which is information about the webpage rather than content visible to users. It plays a crucial role in helping **browsers, search engines, and other web services** interpret a page’s content, encoding, responsiveness, and SEO-related information. All <code>&lt;meta&gt;</code> tags are placed within the <code>&lt;head&gt;</code> section of an HTML document."
         },
         {
           "type": "code",
@@ -1153,11 +1153,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The <code>&lt;meta&gt;</code> tag defines **metadata** that describes the content, encoding, behavior, and indexing preferences of a webpage.\n- It\u2019s placed within the <code>&lt;head&gt;</code> section and serves **search engines**, **browsers**, and **social media crawlers**.\n- Common uses include setting the character encoding, page description, viewport, author, and social sharing metadata.\n- While invisible to users, <code>&lt;meta&gt;</code> tags are vital for SEO, accessibility, and overall web performance."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The <code>&lt;meta&gt;</code> tag defines **metadata** that describes the content, encoding, behavior, and indexing preferences of a webpage.\n- It’s placed within the <code>&lt;head&gt;</code> section and serves **search engines**, **browsers**, and **social media crawlers**.\n- Common uses include setting the character encoding, page description, viewport, author, and social sharing metadata.\n- While invisible to users, <code>&lt;meta&gt;</code> tags are vital for SEO, accessibility, and overall web performance."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;meta&gt;</code> tags as a **resume for your webpage** \u2014 they don\u2019t appear on the page itself but tell browsers and search engines everything they need to know behind the scenes: what language you speak, how you want to be displayed, and how others should describe you online."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>&lt;meta&gt;</code> tags as a **resume for your webpage** — they don’t appear on the page itself but tell browsers and search engines everything they need to know behind the scenes: what language you speak, how you want to be displayed, and how others should describe you online."
         }
       ]
     },
@@ -1183,7 +1183,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>HTML provides three primary list elements \u2014 <ol>, <ul>, and &lt;dl&gt; \u2014 each used for structuring information in a specific way. Lists help organize related items, improve readability, and provide semantic meaning for assistive technologies and search engines."
+          "text": "<strong>Overview</strong><br><br>HTML provides three primary list elements — <ol>, <ul>, and &lt;dl&gt; — each used for structuring information in a specific way. Lists help organize related items, improve readability, and provide semantic meaning for assistive technologies and search engines."
         },
         {
           "type": "list",
@@ -1203,14 +1203,14 @@
             [
               "<ul>",
               "Unordered List",
-              "Displays items with bullets; order doesn\u2019t matter.",
-              "\u2022 Item A<br>\u2022 Item B<br>\u2022 Item C"
+              "Displays items with bullets; order doesn’t matter.",
+              "• Item A<br>• Item B<br>• Item C"
             ],
             [
               "<dl>",
               "Description List",
               "Pairs terms with their definitions (dictionary/FAQ style).",
-              "Term \u2192 Definition"
+              "Term → Definition"
             ]
           ],
           "caption": "Differences between the three list elements."
@@ -1221,15 +1221,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>2) <ul> (Unordered List)</strong><br><br>Used when order doesn\u2019t matter. Each item is wrapped in an <li> tag.<br><br><pre><code><ul>\n  <li>HTML</li>\n  <li>CSS</li>\n  <li>JavaScript</li>\n</ul></code></pre><br>You can style bullet types using CSS:<br><pre><code>ul { list-style-type: square; } /* disc | circle | square | none */</code></pre>"
+          "text": "<strong>2) <ul> (Unordered List)</strong><br><br>Used when order doesn’t matter. Each item is wrapped in an <li> tag.<br><br><pre><code><ul>\n  <li>HTML</li>\n  <li>CSS</li>\n  <li>JavaScript</li>\n</ul></code></pre><br>You can style bullet types using CSS:<br><pre><code>ul { list-style-type: square; } /* disc | circle | square | none */</code></pre>"
         },
         {
           "type": "text",
-          "text": "<strong>3) &lt;dl&gt; (Description List)</strong><br><br>Used for name\u2013value pairs such as glossary terms or FAQs. Combine with &lt;dt&gt; (term) and &lt;dd&gt; (definition):<br><br><pre><code>&lt;dl&gt;\n  &lt;dt&gt;HTML&lt;/dt&gt;\n  &lt;dd&gt;The standard markup language for web pages.&lt;/dd&gt;\n  &lt;dt&gt;CSS&lt;/dt&gt;\n  &lt;dd&gt;A stylesheet language for presentation.&lt;/dd&gt;\n&lt;/dl&gt;</code></pre>"
+          "text": "<strong>3) &lt;dl&gt; (Description List)</strong><br><br>Used for name–value pairs such as glossary terms or FAQs. Combine with &lt;dt&gt; (term) and &lt;dd&gt; (definition):<br><br><pre><code>&lt;dl&gt;\n  &lt;dt&gt;HTML&lt;/dt&gt;\n  &lt;dd&gt;The standard markup language for web pages.&lt;/dd&gt;\n  &lt;dt&gt;CSS&lt;/dt&gt;\n  &lt;dd&gt;A stylesheet language for presentation.&lt;/dd&gt;\n&lt;/dl&gt;</code></pre>"
         },
         {
           "type": "text",
-          "text": "<strong>Accessibility & Semantics</strong><br><br>- <ol> communicates order and hierarchy.<br>- <ul> conveys grouping without sequence.<br>- &lt;dl&gt; conveys term\u2013definition relationships.<br><br>Using proper list types helps screen readers and search engines interpret your content correctly."
+          "text": "<strong>Accessibility & Semantics</strong><br><br>- <ol> communicates order and hierarchy.<br>- <ul> conveys grouping without sequence.<br>- &lt;dl&gt; conveys term–definition relationships.<br><br>Using proper list types helps screen readers and search engines interpret your content correctly."
         },
         {
           "type": "text",
@@ -1256,14 +1256,14 @@
             [
               "<dl>",
               "Description List",
-              "Terms & definitions, FAQs, metadata key\u2013value pairs"
+              "Terms & definitions, FAQs, metadata key–value pairs"
             ]
           ],
-          "caption": "Summary \u2014 choose based on whether order, grouping, or term\u2013definition relationships matter."
+          "caption": "Summary — choose based on whether order, grouping, or term–definition relationships matter."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of it like this:<br>- <ol> \u2192 a <strong>numbered to-do list</strong> (order matters).<br>- <ul> \u2192 a <strong>grocery list</strong> (order doesn\u2019t matter).<br>- &lt;dl&gt; \u2192 a <strong>dictionary entry</strong> (term with definition)."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of it like this:<br>- <ol> → a <strong>numbered to-do list</strong> (order matters).<br>- <ul> → a <strong>grocery list</strong> (order doesn’t matter).<br>- &lt;dl&gt; → a <strong>dictionary entry</strong> (term with definition)."
         }
       ]
     },
@@ -1289,7 +1289,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>When a user submits a form, the browser sends its input data to a server endpoint defined in the <code>action</code> attribute. If no <code>method</code> is provided, the default is <strong>GET</strong> \u2014 meaning the data is sent as part of the URL query string."
+          "text": "<strong>Overview</strong><br><br>When a user submits a form, the browser sends its input data to a server endpoint defined in the <code>action</code> attribute. If no <code>method</code> is provided, the default is <strong>GET</strong> — meaning the data is sent as part of the URL query string."
         },
         {
           "type": "list",
@@ -1323,7 +1323,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Example of Default Behavior</strong><br><br>When you don\u2019t define the <code>method</code> attribute, it defaults to GET automatically:"
+          "text": "<strong>Example of Default Behavior</strong><br><br>When you don’t define the <code>method</code> attribute, it defaults to GET automatically:"
         },
         {
           "type": "code",
@@ -1355,15 +1355,15 @@
           ],
           "rows": [
             [
-              "\u2705 Bookmarkable",
+              "✅ Bookmarkable",
               "Users can save or share the resulting URL with data included."
             ],
             [
-              "\u2705 Cached",
+              "✅ Cached",
               "Browsers can cache GET requests for faster reloads."
             ],
             [
-              "\u2705 Debuggable",
+              "✅ Debuggable",
               "Developers can view and test parameters directly in the URL."
             ]
           ]
@@ -1380,15 +1380,15 @@
           ],
           "rows": [
             [
-              "\u26a0\ufe0f Data visibility",
+              "⚠️ Data visibility",
               "Sensitive data appears in the URL and should not be used for passwords or tokens."
             ],
             [
-              "\u26a0\ufe0f Length limit",
+              "⚠️ Length limit",
               "Most browsers cap URLs around 2048 characters."
             ],
             [
-              "\u26a0\ufe0f Limited use",
+              "⚠️ Limited use",
               "Cannot handle complex or binary data like file uploads."
             ]
           ]
@@ -1407,8 +1407,8 @@
           "rows": [
             [
               "Default?",
-              "\u2705 Yes",
-              "\u274c No (must specify)"
+              "✅ Yes",
+              "❌ No (must specify)"
             ],
             [
               "Data location",
@@ -1444,19 +1444,19 @@
         },
         {
           "type": "text",
-          "text": "<ul><li><strong>GET</strong> \u2192 appends data to URL (good for searches)</li><li><strong>POST</strong> \u2192 hides data inside the request body (good for sensitive info)</li></ul>"
+          "text": "<ul><li><strong>GET</strong> → appends data to URL (good for searches)</li><li><strong>POST</strong> → hides data inside the request body (good for sensitive info)</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Security and Best Practices</strong><br><ul><li>\ud83d\udd12 Use <code>POST</code> for private or modifying actions (like registration or login).</li><li>\ud83d\udd0e Use <code>GET</code> for read-only actions (like search).</li><li>\ud83e\udde9 Always validate and sanitize GET parameters on the server.</li><li>\ud83d\udccf Keep URLs short and meaningful.</li></ul>"
+          "text": "<strong>Security and Best Practices</strong><br><ul><li>🔒 Use <code>POST</code> for private or modifying actions (like registration or login).</li><li>🔎 Use <code>GET</code> for read-only actions (like search).</li><li>🧩 Always validate and sanitize GET parameters on the server.</li><li>📏 Keep URLs short and meaningful.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of it like this:<br>- <strong>GET</strong> \u2192 like writing your data on a <em>postcard</em> \u2014 everyone can see it.<br>- <strong>POST</strong> \u2192 like sealing your message in an <em>envelope</em> \u2014 private and secure."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of it like this:<br>- <strong>GET</strong> → like writing your data on a <em>postcard</em> — everyone can see it.<br>- <strong>POST</strong> → like sealing your message in an <em>envelope</em> — private and secure."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Default method: <strong>GET</strong></li><li>Data is sent via the URL as key\u2013value pairs</li><li>Useful for search and non-sensitive data</li><li>Use <strong>POST</strong> when handling private or large data</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Default method: <strong>GET</strong></li><li>Data is sent via the URL as key–value pairs</li><li>Useful for search and non-sensitive data</li><li>Use <strong>POST</strong> when handling private or large data</li></ul>"
         },
         {
           "type": "code",
@@ -1535,7 +1535,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common Use Cases</strong><br><ul><li>Search boxes \u2014 e.g., <code>placeholder=\"Search...\"</code></li><li>Login or sign-up forms \u2014 hinting expected input (like username or email)</li><li>Contact forms \u2014 suggesting format, e.g., <code>placeholder=\"Your message here...\"</code></li></ul>"
+          "text": "<strong>Common Use Cases</strong><br><ul><li>Search boxes — e.g., <code>placeholder=\"Search...\"</code></li><li>Login or sign-up forms — hinting expected input (like username or email)</li><li>Contact forms — suggesting format, e.g., <code>placeholder=\"Your message here...\"</code></li></ul>"
         },
         {
           "type": "text",
@@ -1543,7 +1543,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <code>placeholder</code> as a <em>hint</em> \u2014 it whispers what to type, but once you start writing, it quietly steps aside."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the <code>placeholder</code> as a <em>hint</em> — it whispers what to type, but once you start writing, it quietly steps aside."
         },
         {
           "type": "text",
@@ -1627,11 +1627,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Key Differences</strong><br><ul><li><code>id</code> must be unique \u2014 each value can appear only once per HTML document.</li><li><code>class</code> can be shared by any number of elements.</li><li><code>id</code> is selected in CSS with <code>#</code> (e.g. <code>#header</code>), while <code>class</code> is selected with <code>.</code> (e.g. <code>.btn</code>).</li><li><code>id</code> is often used for JavaScript targeting or page anchors; <code>class</code> is used for styling and grouping.</li></ul>"
+          "text": "<strong>Key Differences</strong><br><ul><li><code>id</code> must be unique — each value can appear only once per HTML document.</li><li><code>class</code> can be shared by any number of elements.</li><li><code>id</code> is selected in CSS with <code>#</code> (e.g. <code>#header</code>), while <code>class</code> is selected with <code>.</code> (e.g. <code>.btn</code>).</li><li><code>id</code> is often used for JavaScript targeting or page anchors; <code>class</code> is used for styling and grouping.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>id</code> as a <em>name tag</em> \u2014 one per person.<br>And <code>class</code> as a <em>team jersey</em> \u2014 many people can wear the same one."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>id</code> as a <em>name tag</em> — one per person.<br>And <code>class</code> as a <em>team jersey</em> — many people can wear the same one."
         },
         {
           "type": "text",
@@ -1656,7 +1656,7 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 4,
-    "description": "The &lt;iframe&gt; (inline frame) tag allows you to embed another HTML page within the current page. It\u2019s commonly used to display external content such as videos, maps, ads, or other web pages without leaving the parent site.",
+    "description": "The &lt;iframe&gt; (inline frame) tag allows you to embed another HTML page within the current page. It’s commonly used to display external content such as videos, maps, ads, or other web pages without leaving the parent site.",
     "answer": {
       "blocks": [
         {
@@ -1727,7 +1727,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Security and Best Practices</strong><br><ul><li>Always specify the <code>title</code> attribute for accessibility.</li><li>Use the <code>sandbox</code> attribute to restrict what embedded content can do (e.g., prevent scripts or forms).</li><li>Only embed trusted sources \u2014 malicious sites could attempt cross-site scripting (XSS) attacks.</li><li>Use <code>loading=\"lazy\"</code> to improve performance by deferring off-screen iframes.</li></ul>"
+          "text": "<strong>Security and Best Practices</strong><br><ul><li>Always specify the <code>title</code> attribute for accessibility.</li><li>Use the <code>sandbox</code> attribute to restrict what embedded content can do (e.g., prevent scripts or forms).</li><li>Only embed trusted sources — malicious sites could attempt cross-site scripting (XSS) attacks.</li><li>Use <code>loading=\"lazy\"</code> to improve performance by deferring off-screen iframes.</li></ul>"
         },
         {
           "type": "text",
@@ -1740,7 +1740,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of an <code>iframe</code> as a <em>window</em> inside your page \u2014 it shows another page, but you can decide how much control that page has through attributes like <code>sandbox</code> or <code>allowfullscreen</code>."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of an <code>iframe</code> as a <em>window</em> inside your page — it shows another page, but you can decide how much control that page has through attributes like <code>sandbox</code> or <code>allowfullscreen</code>."
         },
         {
           "type": "text",
@@ -1830,11 +1830,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>data-*</code> attributes for nonessential or UI-specific data only.</li><li>Do not store sensitive information \u2014 they are visible in the DOM.</li><li>Keep names descriptive and lowercase with hyphens (e.g., <code>data-user-role</code>).</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Use <code>data-*</code> attributes for nonessential or UI-specific data only.</li><li>Do not store sensitive information — they are visible in the DOM.</li><li>Keep names descriptive and lowercase with hyphens (e.g., <code>data-user-role</code>).</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>data-*</code> attributes as <em>sticky notes</em> on your HTML elements \u2014 small, hidden pieces of info that JavaScript can easily read or update."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>data-*</code> attributes as <em>sticky notes</em> on your HTML elements — small, hidden pieces of info that JavaScript can easily read or update."
         },
         {
           "type": "text",
@@ -1868,7 +1868,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>You can make an image clickable by placing it inside an <a> tag. The <a> tag defines a hyperlink, and any element inside it \u2014 including images \u2014 becomes clickable."
+          "text": "<strong>Overview</strong><br><br>You can make an image clickable by placing it inside an <a> tag. The <a> tag defines a hyperlink, and any element inside it — including images — becomes clickable."
         },
         {
           "type": "list",
@@ -1933,11 +1933,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Accessibility Tip</strong><br><ul><li>Always provide a clear <code>alt</code> attribute describing the image\u2019s purpose.</li><li>If the image represents navigation (like a button), the <code>alt</code> text should describe the action, e.g., \u201cGo to Home Page.\u201d</li></ul>"
+          "text": "<strong>Accessibility Tip</strong><br><ul><li>Always provide a clear <code>alt</code> attribute describing the image’s purpose.</li><li>If the image represents navigation (like a button), the <code>alt</code> text should describe the action, e.g., “Go to Home Page.”</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of wrapping the image inside an <a> tag as <em>placing a door on it</em> \u2014 the picture stays the same, but now it leads somewhere when clicked."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of wrapping the image inside an <a> tag as <em>placing a door on it</em> — the picture stays the same, but now it leads somewhere when clicked."
         },
         {
           "type": "text",
@@ -1979,8 +1979,8 @@
           "rows": [
             [
               "<strong>Syntax rules</strong>",
-              "Lenient \u2014 browsers fix many mistakes automatically",
-              "Strict \u2014 must be well-formed and follow XML syntax"
+              "Lenient — browsers fix many mistakes automatically",
+              "Strict — must be well-formed and follow XML syntax"
             ],
             [
               "<strong>Tag case</strong>",
@@ -2016,7 +2016,7 @@
         },
         {
           "type": "text",
-          "text": "This HTML example works even though the <code><p>;</code> tag isn\u2019t closed \u2014 browsers automatically fix it."
+          "text": "This HTML example works even though the <code><p>;</code> tag isn’t closed — browsers automatically fix it."
         },
         {
           "type": "text",
@@ -2033,11 +2033,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Compatibility Notes</strong><br><ul><li>XHTML documents must be served with the <code>application/xhtml+xml</code> MIME type to be treated as real XML.</li><li>Most modern browsers support HTML5 and have moved away from XHTML\u2019s stricter syntax requirements.</li><li>HTML5 combines the flexibility of HTML with many of XHTML\u2019s structure ideas.</li></ul>"
+          "text": "<strong>Compatibility Notes</strong><br><ul><li>XHTML documents must be served with the <code>application/xhtml+xml</code> MIME type to be treated as real XML.</li><li>Most modern browsers support HTML5 and have moved away from XHTML’s stricter syntax requirements.</li><li>HTML5 combines the flexibility of HTML with many of XHTML’s structure ideas.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of HTML as a <em>relaxed teacher</em> who lets small mistakes slide \u2014 while XHTML is a <em>strict professor</em> who demands perfect syntax every time."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of HTML as a <em>relaxed teacher</em> who lets small mistakes slide — while XHTML is a <em>strict professor</em> who demands perfect syntax every time."
         },
         {
           "type": "text",
@@ -2071,7 +2071,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The <code>target</code> attribute specifies where the linked page will open when a user clicks on a hyperlink. It\u2019s part of the <a> (anchor) tag and defines the browsing context such as a new tab, a parent frame, or the current window."
+          "text": "<strong>Overview</strong><br><br>The <code>target</code> attribute specifies where the linked page will open when a user clicks on a hyperlink. It’s part of the <a> (anchor) tag and defines the browsing context such as a new tab, a parent frame, or the current window."
         },
         {
           "type": "list",
@@ -2120,7 +2120,7 @@
         },
         {
           "type": "text",
-          "text": "The linked page replaces the current one \u2014 this is the default even if you omit the <code>target</code> attribute."
+          "text": "The linked page replaces the current one — this is the default even if you omit the <code>target</code> attribute."
         },
         {
           "type": "text",
@@ -2154,7 +2154,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>target</code> as telling the link <em>where to go</em> \u2014 stay here (<code>_self</code>), open a new tab (<code>_blank</code>), or load inside a specific frame (<code>contentFrame</code>)."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>target</code> as telling the link <em>where to go</em> — stay here (<code>_self</code>), open a new tab (<code>_blank</code>), or load inside a specific frame (<code>contentFrame</code>)."
         },
         {
           "type": "text",
@@ -2204,7 +2204,7 @@
             ],
             [
               "<code>w</code> descriptor",
-              "Specifies the image\u2019s intrinsic width for responsive design."
+              "Specifies the image’s intrinsic width for responsive design."
             ],
             [
               "<code>sizes</code>",
@@ -2237,11 +2237,11 @@
         },
         {
           "type": "text",
-          "text": "The browser calculates which image fits best based on current viewport width \u2014 no JavaScript needed."
+          "text": "The browser calculates which image fits best based on current viewport width — no JavaScript needed."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>srcset</code> as giving the browser a <em>menu of images</em> \u2014 it chooses the one that fits best on the user\u2019s device."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of <code>srcset</code> as giving the browser a <em>menu of images</em> — it chooses the one that fits best on the user’s device."
         },
         {
           "type": "text",
@@ -2320,11 +2320,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Key Behavior Notes</strong><br><ul><li>Scripts (&lt;script&gt;) can block HTML parsing unless marked <code>async</code> or <code>defer</code>.</li><li>External CSS blocks rendering until it\u2019s downloaded and parsed.</li><li>Images are fetched asynchronously, but layout space is reserved immediately.</li></ul>"
+          "text": "<strong>Key Behavior Notes</strong><br><ul><li>Scripts (&lt;script&gt;) can block HTML parsing unless marked <code>async</code> or <code>defer</code>.</li><li>External CSS blocks rendering until it’s downloaded and parsed.</li><li>Images are fetched asynchronously, but layout space is reserved immediately.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Example Timeline</strong><br><br>1\ufe0f\u20e3 HTML \u2192 DOM<br>2\ufe0f\u20e3 CSS \u2192 CSSOM<br>3\ufe0f\u20e3 Combine \u2192 Render Tree<br>4\ufe0f\u20e3 Layout & Paint \u2192 Final Pixels"
+          "text": "<strong>Example Timeline</strong><br><br>1️⃣ HTML → DOM<br>2️⃣ CSS → CSSOM<br>3️⃣ Combine → Render Tree<br>4️⃣ Layout & Paint → Final Pixels"
         },
         {
           "type": "text",
@@ -2358,12 +2358,12 @@
     "technology": "html",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren\u2019t available, but should not replace proper HTML tags. ARIA should match real behavior; incorrect roles hurt accessibility. Test with keyboard navigation and screen readers.",
+    "description": "ARIA roles describe element purpose for assistive technologies. They improve accessibility when native semantics aren’t available, but should not replace proper HTML tags. ARIA should match real behavior; incorrect roles hurt accessibility. Test with keyboard navigation and screen readers.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>ARIA (Accessible Rich Internet Applications) defines roles and properties that help assistive technologies understand the purpose of elements, especially when default HTML semantics aren\u2019t enough."
+          "text": "<strong>Overview</strong><br><br>ARIA (Accessible Rich Internet Applications) defines roles and properties that help assistive technologies understand the purpose of elements, especially when default HTML semantics aren’t enough."
         },
         {
           "type": "list",
@@ -2376,7 +2376,7 @@
             [
               "<strong>Roles</strong>",
               "<code>role=\"button\"</code>",
-              "Defines the element\u2019s function or type."
+              "Defines the element’s function or type."
             ],
             [
               "<strong>States</strong>",
@@ -2410,7 +2410,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of ARIA roles as <em>name tags</em> for custom elements \u2014 they tell screen readers what each component actually is and what it does."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of ARIA roles as <em>name tags</em> for custom elements — they tell screen readers what each component actually is and what it does."
         },
         {
           "type": "text",
@@ -2439,7 +2439,7 @@
     "technology": "html",
     "difficulty": "hard",
     "importance": 5,
-    "description": "The Shadow DOM is a browser feature that encapsulates a component\u2019s internal structure, keeping its styles and markup isolated from the main document. It\u2019s a core part of Web Components for building reusable, self-contained UI elements. It improves style isolation but can complicate theming and testing; be mindful of accessibility and focus behavior.",
+    "description": "The Shadow DOM is a browser feature that encapsulates a component’s internal structure, keeping its styles and markup isolated from the main document. It’s a core part of Web Components for building reusable, self-contained UI elements. It improves style isolation but can complicate theming and testing; be mindful of accessibility and focus behavior.",
     "answer": {
       "blocks": [
         {
@@ -2487,15 +2487,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>Relation to Web Components</strong><br><ul><li>The Shadow DOM is one of three core Web Component technologies (alongside Custom Elements and HTML Templates).</li><li>It provides true encapsulation \u2014 vital for reusable and maintainable components.</li><li>Used by modern frameworks and design systems (e.g., Angular, Lit, Material Design).</li></ul>"
+          "text": "<strong>Relation to Web Components</strong><br><ul><li>The Shadow DOM is one of three core Web Component technologies (alongside Custom Elements and HTML Templates).</li><li>It provides true encapsulation — vital for reusable and maintainable components.</li><li>Used by modern frameworks and design systems (e.g., Angular, Lit, Material Design).</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the Shadow DOM as a <em>mini private world</em> inside your component \u2014 it keeps your styles and structure safe from the outside world."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong><br><br>Think of the Shadow DOM as a <em>mini private world</em> inside your component — it keeps your styles and structure safe from the outside world."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>The Shadow DOM encapsulates a component\u2019s internal DOM and CSS.</li><li>Prevents style conflicts and enhances modularity.</li><li>Core feature of Web Components for reusable UI.</li><li>Created via <code>element.attachShadow({mode: 'open'})</code>.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>The Shadow DOM encapsulates a component’s internal DOM and CSS.</li><li>Prevents style conflicts and enhances modularity.</li><li>Core feature of Web Components for reusable UI.</li><li>Created via <code>element.attachShadow({mode: 'open'})</code>.</li></ul>"
         },
         {
           "type": "text",
@@ -2558,16 +2558,16 @@
             [
               "Keyboard access",
               "Everything reachable by Tab; visible focus states; logical tab order",
-              "Required for users who don\u2019t use a mouse"
+              "Required for users who don’t use a mouse"
             ],
             [
               "ARIA (only when needed)",
               "Add roles/labels for custom widgets; avoid misusing ARIA",
-              "Fills gaps when native semantics aren\u2019t available"
+              "Fills gaps when native semantics aren’t available"
             ],
             [
               "Color & contrast",
-              "Meet WCAG contrast ratios; don\u2019t rely on color alone",
+              "Meet WCAG contrast ratios; don’t rely on color alone",
               "Ensures text and UI are readable"
             ],
             [
@@ -2586,5 +2586,57 @@
     },
     "access": "free",
     "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "html-dom-tree-structure",
+    "title": "DOM Tree Structure and Depth",
+    "description": "Explain the DOM as a tree of nodes, estimate tree depth/height, and discuss performance implications. A balanced DOM has height about log_b(n) (O(log n)), while a skewed DOM can be O(n) deep. Mention node types and why depth affects traversal and layout.",
+    "type": "trivia",
+    "technology": "html",
+    "difficulty": "intermediate",
+    "tags": [
+      "dom",
+      "tree",
+      "browser"
+    ],
+    "importance": 3,
+    "companies": [
+      "meta"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe DOM is a <strong>tree</strong> of nodes (document, element, text, comment). Each element has a single parent and zero or more children."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Node types</strong><br><br>\n- Document node (root)\n- Element nodes (tags)\n- Text nodes (text content)\n- Comment nodes (less common in traversal)"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Depth estimate</strong><br><br>\nIf a tree is roughly balanced with average branching factor <code>b</code>, its height is about <code>log_b(n)</code>. In interviews you can say <strong>O(log n)</strong> levels for a balanced tree, but <strong>O(n)</strong> in the worst case (fully skewed)."
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<div id=\"root\">\n  <section>\n    <h1>Title</h1>\n    <p><em>Text</em></p>\n  </section>\n</div>\n\n// Depth (root -> section -> p -> em) = 4"
+        },
+        {
+          "type": "text",
+          "text": "<strong>Why depth matters</strong><br><br>\nDOM traversal is typically O(n). Deep trees increase traversal cost, style recalculation, and layout work. Keep structure reasonably shallow and avoid unnecessary wrappers."
+        },
+        {
+          "type": "text",
+          "text": "<strong>Pitfalls</strong><br><br>\n- Real DOMs are not perfectly balanced.\n- Shadow DOM creates separate trees but each tree is still hierarchical.\n- Deep nesting hurts readability and performance."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The DOM is a tree of nodes.\n- Balanced height is about O(log n); worst-case depth is O(n).\n- Depth affects traversal and rendering performance."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-01"
   }
 ]
