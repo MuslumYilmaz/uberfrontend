@@ -1,0 +1,44 @@
+{
+  "id": "ai-ux-considerations",
+  "title": "AI UX Resilience and Controls",
+  "description": "Design the UX and frontend state machine for AI responses, focusing on slow or failed model responses, cancellation, retries, and rate limits. This prompt tests whether you can make AI features feel reliable and predictable despite uncertainty.\n\nKey considerations:\n- Streaming vs non-streaming UX and latency indicators.\n- Cancel and retry flows that preserve user input.\n- Throttling and rate limits in the UI.\n- Error states, fallbacks, and graceful degradation.\n- Safety: prevent runaway requests and handle partial responses.\n\nYou should be prepared to talk about: UI states, request lifecycle, and how to keep the user in control when responses are slow or fail.",
+  "tags": [
+    "ux",
+    "error-handling",
+    "state-management",
+    "real-time",
+    "performance"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "openai"
+  ],
+  "updatedAt": "2026-01-31"
+}

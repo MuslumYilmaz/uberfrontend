@@ -1,0 +1,179 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see if you can turn a vague idea like 'sync preferences across devices' into a clear set of components and data flows. You should show a single source of truth for local preferences, a durable sync queue, and a background sync engine that reconciles with the server without blocking the UI."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"At a high level, I would have a `PreferencesStore` that owns local state, a `LocalCache` that persists it, a `SyncQueue` for pending patches, and a `SyncEngine` that batches and sends updates in the background. The Settings UI only talks to the store; it never calls the network directly.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- One **source of truth** for preferences on the client.\n- A **durable queue** for offline changes.\n- A clear separation between **UI state** and **sync state**.\n- A conflict strategy (LWW or per-field merge).\n- Clean module boundaries (store vs sync engine vs API client)."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Draw 4-5 boxes: Settings UI -> PreferencesStore -> LocalCache + SyncQueue -> SyncEngine -> API. Keep it simple: UI updates local state, queue captures patches, sync engine reconciles in the background."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "PreferencesStore",
+                    "Owns the local preferences state and exposes a small API to update it.",
+                    "\"The store is the single source of truth for settings; UI reads from it and writes through it.\""
+                ],
+                [
+                    "LocalCache",
+                    "Persists the current preferences and the queue locally for fast boot.",
+                    "\"On startup we load from cache so the UI is instant, then reconcile with the server.\""
+                ],
+                [
+                    "SyncQueue",
+                    "Stores pending patches with metadata for retry and conflict detection.",
+                    "\"Every local change creates a small patch event we can retry later.\""
+                ],
+                [
+                    "SyncEngine",
+                    "Batches patches, sends them, and applies server responses.",
+                    "\"The sync engine runs in the background; it never blocks UI.\""
+                ],
+                [
+                    "ConflictResolver",
+                    "Resolves version mismatches and decides merge strategy.",
+                    "\"If the server says our base revision is stale, we merge or reapply.\""
+                ],
+                [
+                    "Settings UI",
+                    "Renders controls and shows sync state.",
+                    "\"The UI shows saving/synced states but does not handle network logic.\""
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type PreferenceKey = 'theme' | 'language' | 'notifications';\n\ninterface PreferencesState {\n  values: Record<PreferenceKey, string | boolean>;\n  revision: string;             // server revision or ETag\n  syncStatus: 'synced' | 'saving' | 'offline' | 'conflict';\n}\n\ninterface PreferencePatch {\n  id: string;\n  changes: Partial<PreferencesState['values']>;\n  baseRevision: string;\n  createdAt: number;\n}\n\ninterface PreferencesStore {\n  getState(): PreferencesState;\n  setPreference(key: PreferenceKey, value: string | boolean): void;\n  applyRemote(state: PreferencesState): void;\n}\n\ninterface SyncQueue {\n  enqueue(patch: PreferencePatch): void;\n  peekBatch(limit: number): PreferencePatch[];\n  remove(ids: string[]): void;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "UI updates **local state first** for instant feedback.",
+                                "A **durable queue** captures changes for offline retry.",
+                                "Sync runs in the background and is **decoupled** from UI.",
+                                "Conflicts are detected via **revision tokens**.",
+                                "The store exposes a **small API** for settings screens."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags to avoid",
+                            "items": [
+                                "Settings UI calling fetch directly for every change.",
+                                "No persistent queue, so offline changes are lost.",
+                                "Multiple competing sources of truth for preferences.",
+                                "No plan for conflict resolution or version mismatch.",
+                                "Sync state baked into every component instead of a central store."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Boot and hydrate",
+                    "text": "Load cached preferences + queue from storage, render UI immediately, then fetch server state to reconcile."
+                },
+                {
+                    "title": "2. Local updates",
+                    "text": "User toggles a setting; store updates local state and emits a patch into the queue."
+                },
+                {
+                    "title": "3. Background sync",
+                    "text": "SyncEngine batches queued patches and sends them with the current revision token."
+                },
+                {
+                    "title": "4. Server response",
+                    "text": "On success, clear queue items and update local revision. On conflict, resolve and reapply patches if needed."
+                },
+                {
+                    "title": "5. UI feedback",
+                    "text": "Store updates syncStatus to show saving, offline, or conflict states in the settings UI."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State ownership",
+                    "value": "PreferencesStore",
+                    "helperText": "Single source of truth for UI and sync."
+                },
+                {
+                    "label": "Sync backbone",
+                    "value": "Queue + engine",
+                    "helperText": "Durable patches plus background sync."
+                },
+                {
+                    "label": "Conflict handling",
+                    "value": "Revision-aware",
+                    "helperText": "Use ETags or versions to detect staleness."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "The best architecture keeps the UI fast and simple, and pushes sync complexity into a dedicated engine. If you can describe clean boundaries and a durable queue, you will stand out."
+        }
+    ]
+}

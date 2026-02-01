@@ -424,7 +424,13 @@
     <loc>https://frontendatlas.com/html/trivia/html-vs-xhtml</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/html/trivia/web-accessibility-make-page-accessible</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-abortable-helpers</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-add-strings</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-add-two-promises</loc>
@@ -526,10 +532,19 @@
     <loc>https://frontendatlas.com/javascript/coding/js-is-object-empty</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-lodash-get</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-max-char</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-median-of-array</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-memoize-function</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-merge-sorted-arrays</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-number-clamp</loc>
@@ -583,6 +598,9 @@
     <loc>https://frontendatlas.com/javascript/coding/js-sum-numbers</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-three-sum</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-throttle</loc>
   </url>
   <url>
@@ -590,6 +608,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-update-at-index</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-valid-anagram</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/debug/js-debug-async-race</loc>
@@ -601,10 +622,22 @@
     <loc>https://frontendatlas.com/javascript/debug/js-debug-off-by-one</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/ai-streaming-data-handling</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/ai-ux-integration-challenges</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/chat-conversation-state-management</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/content-delivery-caching-strategies-streaming</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/debounce-vs-throttle-search-input</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/http-caching-basics</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-array-sort-pitfalls</loc>
@@ -626,6 +659,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-cookie-sessionstorage-localstorage</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-current-trends</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-currying</loc>
@@ -665,6 +701,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-map-filter-reduce</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-map-vs-object</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-memoization</loc>
@@ -715,6 +754,15 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-var-let-const-hoisting</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/prompt-engineering-frontend</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/sse-vs-websocket-real-time</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/web-performance-optimize-load-time</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/legal</loc>
   </url>
   <url>
@@ -737,6 +785,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-autocomplete-search-starter</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/coding/react-chat-streaming-ui</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-contact-form-starter</loc>
@@ -805,6 +856,9 @@
     <loc>https://frontendatlas.com/react/coding/react-use-effect-once</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/trivia/react-18-whats-new</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/trivia/react-component-rerendering</loc>
   </url>
   <url>
@@ -845,6 +899,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/react/trivia/react-higher-order-components</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/trivia/react-hooks-youve-used</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/trivia/react-jsx-transform-and-why-not-required</loc>
@@ -925,7 +982,19 @@
     <loc>https://frontendatlas.com/system-design</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/system-design/ai-chat-textarea-design</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/ai-image-generation-mvp</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/ai-ux-considerations</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/system-design/component-design-system-architecture</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/cross-device-preferences-sync</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/dashboard-widgets-draggable-resizable</loc>
@@ -947,6 +1016,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/live-comments-global-stream</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/model-training-progress-dashboard</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/multi-step-form-autosave</loc>

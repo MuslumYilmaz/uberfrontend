@@ -1,0 +1,163 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Describe a simple response pipeline: input -> request -> stream -> render, with a cancel path and error recovery."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I would build a small ResponseController that owns request state and exposes start/stop/retry. The UI reads state from the controller and renders the correct UX for each state.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A single state machine for responses.\n- Clear cancel and retry logic.\n- Separation between UI and network details."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Sketch a simple state machine and show how UI components bind to it."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "Composer",
+                    "Collects user input",
+                    "Triggers request start."
+                ],
+                [
+                    "ResponseController",
+                    "Owns request lifecycle",
+                    "Tracks pending/streaming/done/error."
+                ],
+                [
+                    "StreamClient",
+                    "Delivers chunks and supports cancel",
+                    "AbortController or SSE close."
+                ],
+                [
+                    "MessageRenderer",
+                    "Displays partial output",
+                    "Renders streaming UI safely."
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type ResponseState = 'idle' | 'pending' | 'streaming' | 'done' | 'error' | 'stopped';\n\ninterface ResponseContext {\n  state: ResponseState;\n  text: string;\n  error?: string;\n  requestId?: string;\n}\n\ninterface ResponseController {\n  start: (prompt: string) => void;\n  stop: () => void;\n  retry: () => void;\n  state: ResponseContext;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "UI renders from a single response state.",
+                                "Cancel stops the stream immediately.",
+                                "Retry reuses the last prompt.",
+                                "Errors are visible but non-blocking."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags to avoid",
+                            "items": [
+                                "Multiple competing state variables.",
+                                "No cancel path for long responses.",
+                                "Errors that clear user input.",
+                                "Streaming logic embedded in UI components."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Start",
+                    "text": "Controller sets state to pending and opens stream."
+                },
+                {
+                    "title": "2. Stream",
+                    "text": "Chunks append to text while state=streaming."
+                },
+                {
+                    "title": "3. Stop or error",
+                    "text": "Cancel or error sets state and keeps text."
+                },
+                {
+                    "title": "4. Retry",
+                    "text": "Reuse prompt and restart the stream."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State model",
+                    "value": "ResponseState",
+                    "helperText": "Single source of UI truth."
+                },
+                {
+                    "label": "Control",
+                    "value": "start/stop/retry",
+                    "helperText": "User stays in control."
+                },
+                {
+                    "label": "Streaming",
+                    "value": "StreamClient",
+                    "helperText": "Clean separation from UI."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "AI UX reliability comes from a simple response state machine with a real cancel path and clear error UI."
+        }
+    ]
+}

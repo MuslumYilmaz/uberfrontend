@@ -1,0 +1,157 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This question tests your ability to design a small but complete MVP: a prompt-to-image flow with async generation. You must show trade-offs for a two-week timeline while keeping the UX safe and reliable."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nA minimal AI image generation feature where users submit a prompt, wait for a job to complete, and view the resulting image. The UI must show progress, handle errors, and keep state consistent."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Can you define a realistic MVP scope?\n- Do you handle long-running async jobs cleanly?\n- Do you model UI states and error handling?\n- Do you think about storage and delivery of generated assets?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "State the MVP scope first: prompt input, submit, loading, result, error, and history list. Then explain what you would defer."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. Prompt submission",
+                    "text": "User enters a prompt and hits Generate. UI validates input and starts a job."
+                },
+                {
+                    "title": "2. Generation state",
+                    "text": "Show a loading placeholder and progress state. Disable duplicate submits."
+                },
+                {
+                    "title": "3. Completion",
+                    "text": "Render the image when the job finishes. Offer download or share."
+                },
+                {
+                    "title": "4. Error and retry",
+                    "text": "If the job fails or times out, show a clear error and a retry button."
+                },
+                {
+                    "title": "5. History",
+                    "text": "Show a short history list of recent generations with thumbnails."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "How long does generation typically take?",
+                                "Do we need progress events or just a spinner?",
+                                "How many images per prompt?",
+                                "Should results be stored permanently or expire?",
+                                "Do we need content moderation in the flow?",
+                                "What is the rate limit per user?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "UI must not freeze during generation.",
+                                "Users should understand when to wait vs retry.",
+                                "Jobs should be resumable on page reload.",
+                                "Storage should be efficient and CDN-backed.",
+                                "Errors should be handled gracefully."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "MVP scope vs future scope",
+            "columns": [
+                "Now (2 weeks)",
+                "Later",
+                "Why"
+            ],
+            "rows": [
+                [
+                    "Single image per prompt",
+                    "Batch or variations",
+                    "Keeps API and UI simple"
+                ],
+                [
+                    "Basic prompt input",
+                    "Advanced controls (style, seed)",
+                    "Defer complexity"
+                ],
+                [
+                    "Polling or SSE",
+                    "Full realtime queue view",
+                    "MVP can use a simpler transport"
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "MVP goal",
+                    "value": "Prompt -> image",
+                    "helperText": "Deliver the core flow quickly."
+                },
+                {
+                    "label": "Async handling",
+                    "value": "Job status",
+                    "helperText": "Poll or stream until complete."
+                },
+                {
+                    "label": "Storage",
+                    "value": "Object store + metadata",
+                    "helperText": "CDN for fast image delivery."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong answer prioritizes a simple, reliable prompt-to-image flow with clear UX states, then calls out what you would improve after the MVP ships."
+        }
+    ]
+}

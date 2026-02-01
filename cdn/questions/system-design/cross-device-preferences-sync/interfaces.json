@@ -1,0 +1,165 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see how the rest of the app and the backend interact with your preferences system. You should expose a small, clear client API (hook/service) and outline the server endpoints used for sync."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I would expose a `usePreferences()` hook (or a PreferencesService) that returns current values, a `setPreference` method, and a sync status. The hook hides queueing and retries; it only exposes the current values and whether they are synced.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Small, ergonomic surface for UI integration.\n- A clear server contract: fetch current preferences, submit patches, handle conflicts.\n- Revision tokens or ETags for conflict detection.\n- Batching support for multiple quick edits."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Think like a library author: keep the hook simple and let the sync engine do the hard work. Then show what the REST contract looks like, including conflict responses."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// Client-facing hook\ninterface UsePreferencesResult {\n  values: Record<string, string | boolean>;\n  syncStatus: 'synced' | 'saving' | 'offline' | 'conflict';\n  setPreference: (key: string, value: string | boolean) => void;\n  refresh: () => Promise<void>;\n}\n\nfunction usePreferences(): UsePreferencesResult {\n  // returns local values + sync status; hides queueing and retries\n}\n\n// Server contract (example)\nGET /api/preferences\n200 OK\n{ values: { theme: 'dark' }, revision: 'rev_42' }\n\nPATCH /api/preferences\nIf-Match: rev_42\n{ changes: { theme: 'light' } }\n200 OK\n{ values: { theme: 'light' }, revision: 'rev_43' }\n\n409 Conflict\n{ values: { theme: 'dark' }, revision: 'rev_44' }\n\nPOST /api/preferences/sync\n{ baseRevision: 'rev_43', patches: [ ... ] }\n200 OK\n{ values: { ... }, revision: 'rev_45' }"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / endpoint",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "usePreferences",
+                    "{ values, syncStatus, setPreference }",
+                    "\"UI uses this hook, not raw API calls.\""
+                ],
+                [
+                    "GET /api/preferences",
+                    "returns values + revision",
+                    "\"Fetch the latest settings and the server revision token.\""
+                ],
+                [
+                    "PATCH /api/preferences",
+                    "changes + If-Match",
+                    "\"Send only changed fields and use If-Match to detect conflicts.\""
+                ],
+                [
+                    "POST /api/preferences/sync",
+                    "batch patches",
+                    "\"Allows batching multiple quick edits into one request.\""
+                ],
+                [
+                    "409 Conflict",
+                    "server values + revision",
+                    "\"Client resolves or re-applies local changes.\""
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should expose",
+                            "items": [
+                                "Current values and a **syncStatus** for UI.",
+                                "A **setPreference** method that is local-first.",
+                                "A **refresh** method for manual re-sync.",
+                                "A clear contract for conflicts and retries."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should NOT expose",
+                            "items": [
+                                "Queue internals or retry timers in the UI layer.",
+                                "Raw network errors that leak transport details.",
+                                "Direct fetch calls sprinkled across settings screens.",
+                                "Low-level conflict resolution details in every component."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Initialize",
+                    "text": "Settings page calls `usePreferences()` and renders current values immediately."
+                },
+                {
+                    "title": "2. Update",
+                    "text": "User toggles a setting; `setPreference` updates local state and queues a patch."
+                },
+                {
+                    "title": "3. Sync",
+                    "text": "Background engine batches patches and sends them with the latest revision."
+                },
+                {
+                    "title": "4. Resolve",
+                    "text": "On success, update revision. On conflict, merge or prompt, then retry."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary API",
+                    "value": "usePreferences",
+                    "helperText": "Simple hook or service for UI."
+                },
+                {
+                    "label": "Conflict signal",
+                    "value": "If-Match / ETag",
+                    "helperText": "Detects stale updates."
+                },
+                {
+                    "label": "Sync shape",
+                    "value": "Batch patches",
+                    "helperText": "Reduces network chatter."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "The app should feel like it reads from and writes to a simple preferences store, while sync happens behind the scenes. If your API keeps UI code clean, you are solving the right problem."
+        }
+    ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "cross-device-preferences-sync",
+  "title": "Cross-device Preferences Sync",
+  "description": "Design a client-side system that keeps user preferences (theme, language, notification settings, etc.) in sync across iPhone, iPad, and web. Focus on the frontend data flow, offline support, and how conflicts are handled when multiple devices update the same preference.\n\nKey considerations:\n- Local-first updates with optimistic UI and a durable sync queue.\n- Offline edits, retry with backoff, and background sync.\n- Conflict resolution (last-write-wins vs per-field merge) and user-visible messaging.\n- Versioning (ETag/revision) and minimal payloads.\n- Clear UX states: synced, saving, offline, conflict.\n\nYou should be prepared to talk about: batching updates, per-field merge strategy, how to store pending changes, and how to expose a clean Preferences API to the rest of the app.",
+  "tags": [
+    "sync",
+    "preferences",
+    "offline",
+    "state-management",
+    "cross-device"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "apple"
+  ],
+  "updatedAt": "2026-01-31"
+}

@@ -1,0 +1,149 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Describe a minimal API for starting, streaming, and cancelling AI responses."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I need a start endpoint that returns a request id, a streaming channel for chunks, and a cancel endpoint to stop generation.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A clear start/stream/stop contract.\n- Request ids for correlation.\n- A way to retry without losing prompt."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep the API small. You only need a start endpoint and a stream. Cancellation can be a separate endpoint or client-side abort."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "POST /api/ai/respond\n{ \"prompt\": \"Explain backpressure\" }\n\n200 OK\n{ \"requestId\": \"req_123\" }\n\nGET /api/ai/respond/req_123/stream (SSE)\nEVENT: chunk\nDATA: { \"delta\": \"Backpressure is...\" }\nEVENT: done\nDATA: { \"requestId\": \"req_123\" }\n\nPOST /api/ai/respond/req_123/cancel\n200 OK"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / endpoint",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "POST /respond",
+                    "returns requestId",
+                    "Starts generation."
+                ],
+                [
+                    "GET /stream",
+                    "chunk events",
+                    "Streams partial output."
+                ],
+                [
+                    "POST /cancel",
+                    "ack",
+                    "Stops generation."
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should expose",
+                            "items": [
+                                "requestId for correlation",
+                                "stream of chunks",
+                                "cancel capability"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should NOT expose",
+                            "items": [
+                                "long blocking requests",
+                                "streaming without a request id",
+                                "raw internal errors without user-friendly mapping"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Start",
+                    "text": "Call POST /respond and store requestId."
+                },
+                {
+                    "title": "2. Stream",
+                    "text": "Open stream and append chunks."
+                },
+                {
+                    "title": "3. Stop",
+                    "text": "User cancels; close stream and mark state stopped."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Control",
+                    "value": "cancel",
+                    "helperText": "User can stop long responses."
+                },
+                {
+                    "label": "Transport",
+                    "value": "SSE or fetch stream",
+                    "helperText": "Incremental delivery."
+                },
+                {
+                    "label": "Correlation",
+                    "value": "requestId",
+                    "helperText": "Protects against stale streams."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A simple start/stream/cancel contract is enough to build a robust AI UX."
+        }
+    ]
+}

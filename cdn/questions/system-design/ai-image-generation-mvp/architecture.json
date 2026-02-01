@@ -1,0 +1,168 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This step should describe how the UI communicates with a generation job service, how status updates return to the UI, and where images are stored. Keep the architecture simple for an MVP."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"The UI submits a prompt to a Generate API that returns a job id. A JobStatus poller (or SSE stream) updates the UI until completion. When done, the image is served from object storage/CDN.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear async job flow.\n- Separation between UI state and job status updates.\n- Storage strategy for images.\n- A path to resume jobs on reload."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Draw 4 boxes: PromptForm -> Generate API -> Job Status (poll/SSE) -> Image CDN. Mention a metadata DB for job records."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "PromptForm",
+                    "Collects prompt and submits",
+                    "Validates input and kicks off generation."
+                ],
+                [
+                    "GenerationStore",
+                    "Tracks job state and results",
+                    "Single source of truth for UI."
+                ],
+                [
+                    "JobStatusClient",
+                    "Polls or streams job updates",
+                    "Updates progress and completion."
+                ],
+                [
+                    "Asset Delivery",
+                    "Serves images via CDN",
+                    "Fast, cacheable delivery."
+                ],
+                [
+                    "Metadata DB",
+                    "Stores job records and output URLs",
+                    "Enables history and resume."
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type JobStatus = 'queued' | 'running' | 'done' | 'error';\n\ninterface GenerationJob {\n  id: string;\n  prompt: string;\n  status: JobStatus;\n  progress?: number;\n  imageUrl?: string;\n  error?: string;\n}\n\ninterface GenerationState {\n  jobs: GenerationJob[];\n  activeJobId?: string;\n  isSubmitting: boolean;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "Use a job id to track progress.",
+                                "Show a loading state until the job is done.",
+                                "Persist job metadata so history loads fast.",
+                                "Keep the MVP flow simple and reliable."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags to avoid",
+                            "items": [
+                                "Blocking the UI until the image returns.",
+                                "No way to recover if the app reloads mid-job.",
+                                "Hard-coding image data into the API response.",
+                                "No clear separation between job state and UI."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Submit prompt",
+                    "text": "POST /generate returns jobId; store creates a job entry."
+                },
+                {
+                    "title": "2. Track status",
+                    "text": "Poll or stream job updates until status=done."
+                },
+                {
+                    "title": "3. Render result",
+                    "text": "When done, show the image from CDN and update history."
+                },
+                {
+                    "title": "4. Handle failures",
+                    "text": "If status=error, show message and allow retry."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Async control",
+                    "value": "Job status",
+                    "helperText": "Simple polling or SSE works for MVP."
+                },
+                {
+                    "label": "Storage",
+                    "value": "Object store + DB",
+                    "helperText": "Separates binary assets from metadata."
+                },
+                {
+                    "label": "UX focus",
+                    "value": "Clear loading state",
+                    "helperText": "Users know the job is running."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "For an MVP, simplicity wins. A single job flow with solid error handling and a clear loading state is better than a complex UI that is hard to ship in two weeks."
+        }
+    ]
+}

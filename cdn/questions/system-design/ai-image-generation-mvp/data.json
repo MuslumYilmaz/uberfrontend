@@ -1,0 +1,133 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Model the generation job and its output. Keep the schema small so the UI can render jobs, progress, and results."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I model each generation as a Job with status, prompt, and output URLs. The UI renders a list of jobs and shows the active one.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear job status field.\n- Output URL stored separately from prompt.\n- Metadata to render history.\n- Error fields for failures."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep the model simple: prompt, status, progress, and output URL. That is enough for an MVP UI."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "What it represents",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "GenerationJob",
+                    "A single prompt-to-image request",
+                    "Primary UI unit"
+                ],
+                [
+                    "JobStatus",
+                    "queued/running/done/error",
+                    "Drives loading and error UI"
+                ],
+                [
+                    "Asset",
+                    "Image URL + metadata",
+                    "Displayed in the results grid"
+                ]
+            ]
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type JobStatus = 'queued' | 'running' | 'done' | 'error';\n\ninterface GenerationJob {\n  id: string;\n  prompt: string;\n  status: JobStatus;\n  progress?: number;\n  imageUrl?: string;\n  error?: string;\n  createdAt: number;\n}\n\ninterface GenerationState {\n  jobs: GenerationJob[];\n  activeJobId?: string;\n}\n"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should model explicitly",
+                            "items": [
+                                "Job status and timestamps.",
+                                "Output URL for the generated image.",
+                                "Error field for failed jobs.",
+                                "A list of recent jobs for history."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Common data model gaps",
+                            "items": [
+                                "No status field, so UI cannot show progress.",
+                                "No job id, so polling is impossible.",
+                                "Embedding base64 images instead of URLs.",
+                                "No history list, so users lose past results."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary entity",
+                    "value": "GenerationJob",
+                    "helperText": "Everything revolves around the job lifecycle."
+                },
+                {
+                    "label": "Output",
+                    "value": "imageUrl",
+                    "helperText": "Serve via CDN for speed."
+                },
+                {
+                    "label": "History",
+                    "value": "jobs[]",
+                    "helperText": "Small list of recent items."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "An MVP data model should be tiny and UI-driven: prompt, status, progress, and output URL."
+        }
+    ]
+}

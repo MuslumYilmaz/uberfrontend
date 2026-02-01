@@ -1,0 +1,137 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Model the training run, metrics, and logs so the UI can render a stable dashboard."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I keep a TrainingRun entity with status, progress, and a metrics map. Logs are a bounded list with a cursor for pagination.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear metric point structure.\n- Bounded log storage.\n- Status and progress fields.\n- Cursors or sequence ids for resume."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep the data model lean: run metadata, metrics arrays, and logs with a cursor."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "What it represents",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "TrainingRun",
+                    "Metadata and status of a run",
+                    "Entry point for the dashboard"
+                ],
+                [
+                    "MetricPoint",
+                    "Time series data point",
+                    "Used for charts"
+                ],
+                [
+                    "LogEvent",
+                    "A single log line",
+                    "Displayed in the log list"
+                ],
+                [
+                    "Cursor",
+                    "Sequence token",
+                    "Resume streaming from last point"
+                ]
+            ]
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "interface TrainingRun {\n  id: string;\n  status: 'running' | 'done' | 'failed';\n  progress: number;\n  startedAt: number;\n  finishedAt?: number;\n}\n\ninterface MetricPoint {\n  t: number;\n  value: number;\n}\n\ninterface LogEvent {\n  id: string;\n  t: number;\n  level: 'info' | 'warn' | 'error';\n  message: string;\n}\n\ninterface RunStreamState {\n  metrics: Record<string, MetricPoint[]>;\n  logs: LogEvent[];\n  nextCursor?: string;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should model explicitly",
+                            "items": [
+                                "Run status and progress.",
+                                "Metric points with timestamps.",
+                                "Logs with ids and timestamps.",
+                                "Cursor for resume."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Common data model gaps",
+                            "items": [
+                                "Unbounded logs stored in memory.",
+                                "No cursor or sequence id for resume.",
+                                "Mixing UI flags into backend model."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary entity",
+                    "value": "TrainingRun",
+                    "helperText": "Top-level status and progress."
+                },
+                {
+                    "label": "Realtime data",
+                    "value": "MetricPoint",
+                    "helperText": "Feeds charts."
+                },
+                {
+                    "label": "Logs",
+                    "value": "Bounded list",
+                    "helperText": "Protects memory and DOM."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good data model makes realtime updates predictable: small metric points, bounded logs, and a cursor for resume."
+        }
+    ]
+}

@@ -1,0 +1,162 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see how your design behaves under real-world conditions: flaky networks, long offline sessions, and users with multiple devices editing settings at the same time. You should talk about batching, retry policies, conflict reduction, and privacy."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First I'd ship a simple local-first store with a durable queue. Then I'd measure network chatter, conflict rate, and sync latency, and tune batching and retry policies.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You can reduce network traffic via batching or debounce.\n- You have a clear retry/backoff strategy.\n- You can minimize conflicts with per-field merges.\n- You consider privacy and data minimization."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Focus on user impact: fast local updates, fewer sync failures, and predictable conflict handling. Mention that you would monitor conflict rate and retry counts in production."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Optimization levers to mention",
+            "columns": [
+                "Lever",
+                "What it does",
+                "Why it helps"
+            ],
+            "rows": [
+                [
+                    "Batching",
+                    "Combine multiple patches into one request.",
+                    "Reduces request overhead and saves battery."
+                ],
+                [
+                    "Debounce",
+                    "Wait briefly before syncing rapid changes.",
+                    "Avoids sending a request for every toggle."
+                ],
+                [
+                    "Idle/background sync",
+                    "Use idle time or app background events.",
+                    "Keeps UI responsive and reduces contention."
+                ],
+                [
+                    "Per-field merge",
+                    "Merge non-conflicting changes automatically.",
+                    "Prevents unnecessary conflicts."
+                ],
+                [
+                    "Payload minimization",
+                    "Send only changed fields.",
+                    "Lower bandwidth usage and faster sync."
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Optimizations you should mention",
+                            "items": [
+                                "Batch updates with a short debounce window.",
+                                "Retry with exponential backoff and jitter.",
+                                "Store the queue in IndexedDB for durability.",
+                                "Use If-Match/ETag to avoid blind overwrites.",
+                                "Expose a light sync indicator, not noisy toasts."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Failure modes to watch for",
+                            "items": [
+                                "Conflict storms when multiple devices edit frequently.",
+                                "Queue growth during long offline sessions.",
+                                "Silent failures that leave the UI stuck in saving.",
+                                "Over-eager polling that drains battery.",
+                                "Syncing more data than necessary."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Deep dive scenario you can walk through",
+            "steps": [
+                {
+                    "title": "1. Device A offline changes",
+                    "text": "User changes theme and language while offline; patches accumulate in the queue."
+                },
+                {
+                    "title": "2. Device B online changes",
+                    "text": "User updates notifications on another device; server revision advances."
+                },
+                {
+                    "title": "3. Device A reconnects",
+                    "text": "SyncEngine sends queued patches with an old revision; server returns a conflict."
+                },
+                {
+                    "title": "4. Merge and retry",
+                    "text": "Client merges non-conflicting fields, updates its revision, and retries remaining patches."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary metric",
+                    "value": "Sync success rate",
+                    "helperText": "Measure how often patches land on first try."
+                },
+                {
+                    "label": "Secondary metric",
+                    "value": "Conflict rate",
+                    "helperText": "High conflict rate signals a merge strategy issue."
+                },
+                {
+                    "label": "UX budget",
+                    "value": "Instant local apply",
+                    "helperText": "The UI should never wait on the network."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Optimizing preference sync is about reliability and user trust. If you can show durable queues, smart retry, and conflict-aware merging, your design feels production-grade."
+        }
+    ]
+}

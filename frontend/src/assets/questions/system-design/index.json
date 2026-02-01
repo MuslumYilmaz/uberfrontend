@@ -20,7 +20,7 @@
     "id": "endless-short-video-feed",
     "title": "Endless Short-Video Feed (TikTok-Style)",
     "companies": [
-      "bytedance"
+      "apple"
     ],
     "description": "Design a TikTok-style endless short-video feed for a front-end system design interview. Focus on fast first play, smooth scrolling, preloading the next videos, and handling variable network conditions.\n\nKey considerations include: CDN delivery, adaptive quality, caching strategy, viewport-based prefetching, memory control, and graceful degradation on slow networks.",
     "tags": [
@@ -36,7 +36,7 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-31"
   },
   {
     "id": "notification-toast-system",
@@ -70,9 +70,10 @@
     "type": "system-design",
     "access": "premium",
     "companies": [
-      "netflix"
+      "netflix",
+      "meta"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "live-comments-global-stream",
@@ -134,7 +135,7 @@
   {
     "id": "realtime-search-debounce-cache",
     "title": "Real-time Search with Debounce & Caching",
-    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query → results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
+    "description": "Design a real-time search module where results update as the user types, focusing only on the frontend side: state management, debouncing, and caching. Assume there is some abstract async search function in the background, but your job is to design how the input, debounced calls, cache, and UI states work.\n\nKey considerations include: choosing debounce (and explaining why) vs throttle, maintaining a client-side cache of query \u2192 results so repeated queries are instant, simulating cancellation of outdated requests (ignoring late responses), handling slow typing vs fast typing without flicker or stale results, and designing UX states for empty query, loading, no results, and error.",
     "tags": [
       "search",
       "debounce",
@@ -143,9 +144,11 @@
     "type": "system-design",
     "access": "premium",
     "companies": [
-      "bytedance"
+      "bytedance",
+      "apple",
+      "meta"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "dashboard-widgets-draggable-resizable",
@@ -175,7 +178,10 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "companies": [
+      "apple"
+    ],
+    "updatedAt": "2026-01-31"
   },
   {
     "id": "component-design-system-architecture",
@@ -188,7 +194,10 @@
     ],
     "type": "system-design",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "companies": [
+      "apple"
+    ],
+    "updatedAt": "2026-01-31"
   },
   {
     "id": "image-upload-preview",
@@ -209,7 +218,7 @@
     "companies": [
       "amazon"
     ],
-    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server–client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
+    "description": "Design a web app that uses flash cards to help users learn a foreign language. The front side shows a word in the user's language; when hovered or clicked it flips to reveal the foreign-language word. Focus on server\u2013client communication (APIs for decks, cards, and progress), a smooth flip interaction, and responsive, accessible UI.\n\nKey considerations include: how to fetch and paginate cards for a deck, how to track and persist per-user progress (\"knew it\" / \"didn't know it\"), how to design the flip interaction for both mouse and touch, how to cache data for low-latency study sessions (including offline-friendly behavior), and how to keep animations and rendering smooth as decks grow.",
     "tags": [
       "flashcards",
       "language-learning",
@@ -218,5 +227,98 @@
     "type": "system-design",
     "access": "premium",
     "updatedAt": "2026-01-30"
+  },
+  {
+    "id": "cross-device-preferences-sync",
+    "title": "Cross-device Preferences Sync",
+    "description": "Design a client-side system that keeps user preferences (theme, language, notification settings, etc.) in sync across devices. Focus on local-first updates, offline support, conflict resolution, and how the UI stays responsive while sync happens in the background.\n\nKey considerations include: a durable sync queue, revision or ETag-based conflict detection, per-field merge strategy, background retries with backoff, and minimal payloads (send only changed fields).",
+    "tags": [
+      "sync",
+      "preferences",
+      "offline",
+      "state-management",
+      "cross-device"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "companies": [
+      "apple"
+    ],
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "ai-chat-textarea-design",
+    "title": "AI Chat Text Area (ChatGPT-Style)",
+    "description": "Design a minimal ChatGPT-like experience in a text area: the user submits a prompt, the assistant streams a response, and the conversation is persisted for resume. Include frontend architecture plus database considerations for storing chat history.",
+    "tags": [
+      "real-time",
+      "streams",
+      "state-management",
+      "ux",
+      "api-calls",
+      "storage"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "companies": [
+      "openai"
+    ],
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "ai-image-generation-mvp",
+    "title": "AI Image Generation MVP (Two-Week Design)",
+    "description": "Design a two-week MVP for integrating image generation into an app. Cover prompt input, async job handling (polling or streaming), error states, and how generated images are stored and delivered (object storage + CDN).",
+    "tags": [
+      "ux",
+      "api-calls",
+      "real-time",
+      "state-management",
+      "performance",
+      "storage"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "companies": [
+      "openai"
+    ],
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "model-training-progress-dashboard",
+    "title": "Real-time Model Training Dashboard",
+    "description": "Design a dashboard that updates in real time with training progress, metrics, and logs. Discuss streaming updates, buffering/throttling, and UI performance under high-frequency events.",
+    "tags": [
+      "real-time",
+      "streams",
+      "performance",
+      "charts",
+      "state-management",
+      "api-calls"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "companies": [
+      "openai"
+    ],
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "ai-ux-considerations",
+    "title": "AI UX Resilience and Controls",
+    "description": "Design the UX state machine for AI responses: streaming indicators, cancel/stop, retries, and rate-limit handling. Focus on keeping the user in control when responses are slow or fail.",
+    "tags": [
+      "ux",
+      "error-handling",
+      "state-management",
+      "real-time",
+      "performance"
+    ],
+    "type": "system-design",
+    "access": "premium",
+    "companies": [
+      "openai"
+    ],
+    "updatedAt": "2026-01-31"
   }
 ]

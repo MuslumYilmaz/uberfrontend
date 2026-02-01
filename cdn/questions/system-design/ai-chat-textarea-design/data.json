@@ -1,0 +1,138 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see a compact, explicit model for conversations, messages, and sync metadata. Keep it small and focused on what the UI needs."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I model a Conversation with an id and a list of Message objects. Each message has role, text, status, and timestamps. I also keep a server revision or cursor for pagination.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear message status fields.\n- A way to paginate or resume history.\n- Stable ids for optimistic UI.\n- Minimal metadata for streaming and errors."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep the schema small: conversation, messages, status, and pagination cursor. Avoid adding fields you do not need for the UI."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "What it represents",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "Conversation",
+                    "A chat session owned by a user",
+                    "Allows resume and pagination"
+                ],
+                [
+                    "Message",
+                    "A single user or assistant turn",
+                    "UI renders from this list"
+                ],
+                [
+                    "MessageStatus",
+                    "pending/streaming/done/error",
+                    "Drives loading and error UI"
+                ],
+                [
+                    "Cursor/Revision",
+                    "Paging marker or version token",
+                    "Supports fetching older history"
+                ]
+            ]
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type MessageStatus = 'pending' | 'streaming' | 'done' | 'error' | 'stopped';\n\ninterface Conversation {\n  id: string;\n  title?: string;\n  createdAt: number;\n  updatedAt: number;\n}\n\ninterface Message {\n  id: string;\n  conversationId: string;\n  role: 'user' | 'assistant' | 'system';\n  text: string;\n  status: MessageStatus;\n  createdAt: number;\n}\n\ninterface ConversationPage {\n  items: Message[];\n  nextCursor?: string;\n}\n"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should model explicitly",
+                            "items": [
+                                "Stable ids for each message.",
+                                "Message status for streaming and errors.",
+                                "A cursor or page token for older history.",
+                                "Timestamps for ordering and display."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Common data model gaps",
+                            "items": [
+                                "No status field for streaming states.",
+                                "No way to fetch history incrementally.",
+                                "No id to reconcile optimistic UI with server data.",
+                                "Mixing UI-only flags into the stored schema."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary entity",
+                    "value": "Message",
+                    "helperText": "Everything in the UI is derived from messages."
+                },
+                {
+                    "label": "Paging",
+                    "value": "Cursor",
+                    "helperText": "Load history in chunks."
+                },
+                {
+                    "label": "Status",
+                    "value": "MessageStatus",
+                    "helperText": "Drives streaming and error UI."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A clean message model with statuses and pagination is enough to power a solid ChatGPT-style UI. Keep the schema lean and UI-driven."
+        }
+    ]
+}

@@ -1,0 +1,153 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This step is about scale and UX safety: long conversations, large responses, and unreliable networks. Explain how you keep the chat fast and reliable over time."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First I would ship a clean streaming UX with cancel and pagination. Then I would measure scroll performance, error rate, and latency, and add targeted optimizations like list virtualization and chunk batching.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You know how to handle long histories.\n- You avoid re-render storms during streaming.\n- You have a cancel and retry story.\n- You understand context window limits and summarization."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Mention list virtualization, chunk batching, and a summary strategy for long history. Tie each to a user-visible benefit."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Optimization levers to mention",
+            "columns": [
+                "Lever",
+                "What it does",
+                "Why it helps"
+            ],
+            "rows": [
+                [
+                    "Virtualized list",
+                    "Render only visible messages",
+                    "Keeps scrolling smooth on long histories"
+                ],
+                [
+                    "Chunk batching",
+                    "Batch token updates (every 50-100ms)",
+                    "Avoids excessive re-renders"
+                ],
+                [
+                    "Context summarization",
+                    "Summarize older turns",
+                    "Stays within model limits"
+                ],
+                [
+                    "Retry + backoff",
+                    "Retry failed streams",
+                    "Improves resilience"
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Optimizations you should mention",
+                            "items": [
+                                "Virtualize long message lists.",
+                                "Batch streaming chunks before state updates.",
+                                "Summarize old context when it grows too large.",
+                                "Abort in-flight streams on new requests.",
+                                "Cache recent conversations for quick load."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Failure modes to watch for",
+                            "items": [
+                                "Stale streams overwriting newer messages.",
+                                "UI jank from per-token renders.",
+                                "History payloads that are too large to load.",
+                                "Error states that lose the user's prompt.",
+                                "Stop button that does not actually cancel."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Deep dive scenario you can walk through",
+            "steps": [
+                {
+                    "title": "1. Very long conversation",
+                    "text": "Load only the latest N messages, show a Load more button, and virtualize the list."
+                },
+                {
+                    "title": "2. User sends a new prompt",
+                    "text": "Abort any existing stream and start a new one to avoid overlap."
+                },
+                {
+                    "title": "3. Stream hiccup",
+                    "text": "Show a retry CTA and keep the partial response so the user does not lose progress."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main metric",
+                    "value": "Time-to-first-token",
+                    "helperText": "Streaming makes the UI feel instant."
+                },
+                {
+                    "label": "Secondary metric",
+                    "value": "Scroll smoothness",
+                    "helperText": "Virtualization prevents jank."
+                },
+                {
+                    "label": "Error metric",
+                    "value": "Stream failure rate",
+                    "helperText": "Track retries and stability."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A great chat UX is resilient: it streams smoothly, cancels reliably, and scales to long histories without slowing down."
+        }
+    ]
+}

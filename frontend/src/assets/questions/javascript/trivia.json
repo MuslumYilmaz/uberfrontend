@@ -14,12 +14,14 @@
       "timers"
     ],
     "importance": 5,
-    "companies": [],
+    "companies": [
+      "meta"
+    ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Big Picture</strong>\n\nJavaScript runs <strong>on a single thread</strong>, meaning it can only do <strong>one thing at a time</strong>. So how does it handle things like <code>setTimeout</code>, <code>fetch</code>, or <code>Promise.then</code> without freezing? That’s where the <strong>event loop</strong> comes in.\n\nThink of it like a manager that decides <em>what piece of code runs next</em> among all waiting tasks."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Big Picture</strong>\n\nJavaScript runs <strong>on a single thread</strong>, meaning it can only do <strong>one thing at a time</strong>. So how does it handle things like <code>setTimeout</code>, <code>fetch</code>, or <code>Promise.then</code> without freezing? That\u2019s where the <strong>event loop</strong> comes in.\n\nThink of it like a manager that decides <em>what piece of code runs next</em> among all waiting tasks."
         },
         {
           "type": "text",
@@ -40,7 +42,7 @@
             ],
             [
               "<strong>Task Queues (two types)</strong>",
-              "Where async tasks wait until the stack is clear — split into Microtask and Macrotask queues.",
+              "Where async tasks wait until the stack is clear \u2014 split into Microtask and Macrotask queues.",
               "Async callbacks, Promises, timers, I/O events"
             ],
             [
@@ -58,7 +60,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-repeat'></i> <strong>The Event Loop</strong>\n\nThe event loop constantly checks:\n1. Is the call stack empty?  \n2. Any microtasks waiting? → Run all of them.  \n3. Take one macrotask and run it.  \nThen the cycle repeats forever."
+          "text": "<i class='fa-solid fa-repeat'></i> <strong>The Event Loop</strong>\n\nThe event loop constantly checks:\n1. Is the call stack empty?  \n2. Any microtasks waiting? \u2192 Run all of them.  \n3. Take one macrotask and run it.  \nThen the cycle repeats forever."
         },
         {
           "type": "code",
@@ -67,7 +69,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why this order?</strong>\n- <code>A</code> and <code>E</code> → run first (synchronous stack).  \n- Then the event loop runs <strong>all microtasks</strong> → <code>C</code>, <code>D</code>.  \n- Finally, the next macrotask runs → <code>B</code>.  \n\nThat’s why <strong>Promises always run before timers</strong>, even when scheduled “at the same time.”"
+          "text": "<strong>Why this order?</strong>\n- <code>A</code> and <code>E</code> \u2192 run first (synchronous stack).  \n- Then the event loop runs <strong>all microtasks</strong> \u2192 <code>C</code>, <code>D</code>.  \n- Finally, the next macrotask runs \u2192 <code>B</code>.  \n\nThat\u2019s why <strong>Promises always run before timers</strong>, even when scheduled \u201cat the same time.\u201d"
         },
         {
           "type": "text",
@@ -99,21 +101,21 @@
         },
         {
           "type": "text",
-          "text": "After each macrotask, <strong>all microtasks</strong> are drained before the next one starts. That’s why too many microtasks (like recursive Promises) can block rendering."
+          "text": "After each macrotask, <strong>all microtasks</strong> are drained before the next one starts. That\u2019s why too many microtasks (like recursive Promises) can block rendering."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "function loop() {\n  Promise.resolve().then(loop); // microtask recursion\n}\nloop(); // browser freezes — it never yields control back"
+          "code": "function loop() {\n  Promise.resolve().then(loop); // microtask recursion\n}\nloop(); // browser freezes \u2014 it never yields control back"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-server'></i> <strong>In Node.js</strong>\n\nThe event loop runs through several <strong>phases</strong>:\n<pre class='md-pre'>timers → pending callbacks → poll → check → close callbacks</pre>\nMicrotasks (<code>Promise.then</code>, <code>process.nextTick</code>) run <strong>after each phase</strong>, unlike browsers where they run once per loop."
+          "text": "<i class='fa-solid fa-server'></i> <strong>In Node.js</strong>\n\nThe event loop runs through several <strong>phases</strong>:\n<pre class='md-pre'>timers \u2192 pending callbacks \u2192 poll \u2192 check \u2192 close callbacks</pre>\nMicrotasks (<code>Promise.then</code>, <code>process.nextTick</code>) run <strong>after each phase</strong>, unlike browsers where they run once per loop."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n\n// Common order:\n// microtask → timer → immediate"
+          "code": "setTimeout(() => console.log('timer'));\nsetImmediate(() => console.log('immediate'));\nPromise.resolve().then(() => console.log('microtask'));\n\n// Common order:\n// microtask \u2192 timer \u2192 immediate"
         },
         {
           "type": "text",
@@ -121,17 +123,17 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re the only cashier at a store. You serve one customer at a time (the call stack). When a customer needs to grab something, you tell them to step aside (macrotask). But before you call the next one, you handle quick questions like ‘Can I get a receipt?’ (microtasks). You repeat this all day — that’s the event loop!"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you\u2019re the only cashier at a store. You serve one customer at a time (the call stack). When a customer needs to grab something, you tell them to step aside (macrotask). But before you call the next one, you handle quick questions like \u2018Can I get a receipt?\u2019 (microtasks). You repeat this all day \u2014 that\u2019s the event loop!"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-closures",
     "title": "Explain Closures in JavaScript",
-    "description": "A closure happens when a function keeps access to variables from its outer scope, even after that outer function has finished. It’s how JavaScript allows private data and persistent state inside functions.",
+    "description": "A closure happens when a function keeps access to variables from its outer scope, even after that outer function has finished. It\u2019s how JavaScript allows private data and persistent state inside functions.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -146,13 +148,14 @@
       "amazon",
       "google",
       "netflix",
-      "apple"
+      "apple",
+      "meta"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA **closure** is when a function remembers variables from the place where it was created — not from where it is called. It means inner functions can keep using values from an outer function, even after that outer function has finished running."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA **closure** is when a function remembers variables from the place where it was created \u2014 not from where it is called. It means inner functions can keep using values from an outer function, even after that outer function has finished running."
         },
         {
           "type": "code",
@@ -161,16 +164,16 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lock'></i> <strong>Why It’s Useful</strong>\n\nClosures are powerful because they let you:\n- Keep variables **private** (not accessible globally)\n- Store **state** between function calls\n- Create **helpers** like <code>once()</code>, <code>memoize()</code>, and other reusable patterns"
+          "text": "<i class='fa-solid fa-lock'></i> <strong>Why It\u2019s Useful</strong>\n\nClosures are powerful because they let you:\n- Keep variables **private** (not accessible globally)\n- Store **state** between function calls\n- Create **helpers** like <code>once()</code>, <code>memoize()</code>, and other reusable patterns"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example: once()\nfunction once(fn) {\n  let called = false;\n  let value;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      value = fn.apply(this, args);\n    }\n    return value;\n  };\n}\n\nconst init = once(() => console.log('Initialized'));\ninit(); // Logs once\ninit(); // Does nothing — remembers state"
+          "code": "// Example: once()\nfunction once(fn) {\n  let called = false;\n  let value;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      value = fn.apply(this, args);\n    }\n    return value;\n  };\n}\n\nconst init = once(() => console.log('Initialized'));\ninit(); // Logs once\ninit(); // Does nothing \u2014 remembers state"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>var</code> in loops creates one shared variable for all iterations — so all functions close over the same value:"
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>var</code> in loops creates one shared variable for all iterations \u2014 so all functions close over the same value:"
         },
         {
           "type": "code",
@@ -192,21 +195,21 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Functions automatically form closures in JavaScript.  \n- Inner functions remember outer variables (their <strong>lexical scope</strong>).  \n- Used for data privacy, persistence, and modular code.  \n- Use <code>let</code>/<code>const</code> to avoid loop bugs.  \n- Don’t overuse closures in long-lived objects to prevent memory leaks."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Functions automatically form closures in JavaScript.  \n- Inner functions remember outer variables (their <strong>lexical scope</strong>).  \n- Used for data privacy, persistence, and modular code.  \n- Use <code>let</code>/<code>const</code> to avoid loop bugs.  \n- Don\u2019t overuse closures in long-lived objects to prevent memory leaks."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you leave a room (outer function ends), but you gave your friend (inner function) a copy of the key to your drawer (variables). Even though you’re gone, they can still open it — that’s a closure!"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you leave a room (outer function ends), but you gave your friend (inner function) a copy of the key to your drawer (variables). Even though you\u2019re gone, they can still open it \u2014 that\u2019s a closure!"
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-this-keyword",
     "title": "Explain the `this` keyword in JavaScript",
-    "description": "The value of `this` in JavaScript depends on how a function is called — not where it’s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions. The value of this depends on call site, strict mode, and arrow functions. Misbinding is a common source of bugs; test with call/apply/bind.",
+    "description": "The value of `this` in JavaScript depends on how a function is called \u2014 not where it\u2019s defined. It can refer to the global object, a specific object, or be `undefined` in strict mode or arrow functions. The value of this depends on call site, strict mode, and arrow functions. Misbinding is a common source of bugs; test with call/apply/bind.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "hard",
@@ -219,13 +222,15 @@
     "importance": 5,
     "companies": [
       "amazon",
-      "google"
+      "google",
+      "apple",
+      "meta"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> in JavaScript is determined by <strong>how a function is called</strong>, not by where it is written. It points to the <strong>execution context</strong> — the object that 'owns' the function at the time of invocation."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nThe value of <code>this</code> in JavaScript is determined by <strong>how a function is called</strong>, not by where it is written. It points to the <strong>execution context</strong> \u2014 the object that 'owns' the function at the time of invocation."
         },
         {
           "type": "list",
@@ -237,13 +242,13 @@
           "rows": [
             [
               "<strong>Global / Default</strong>",
-              "In browsers → <code>window</code>, in strict mode → <code>undefined</code>",
+              "In browsers \u2192 <code>window</code>, in strict mode \u2192 <code>undefined</code>",
               "<code>console.log(this)</code>"
             ],
             [
               "<strong>Object method</strong>",
               "The object before the dot",
-              "<code>user.sayHi()</code> → <code>this === user</code>"
+              "<code>user.sayHi()</code> \u2192 <code>this === user</code>"
             ],
             [
               "<strong>Constructor</strong>",
@@ -253,12 +258,12 @@
             [
               "<strong>Explicit binding</strong>",
               "Set manually using <code>call</code>, <code>apply</code>, or <code>bind</code>",
-              "<code>fn.call(obj)</code> → <code>this === obj</code>"
+              "<code>fn.call(obj)</code> \u2192 <code>this === obj</code>"
             ],
             [
               "<strong>Arrow function</strong>",
               "Does not bind <code>this</code>; inherits it from its outer scope",
-              "<code>() => this</code> inside an object → outer <code>this</code>"
+              "<code>() => this</code> inside an object \u2192 outer <code>this</code>"
             ]
           ],
           "caption": "How `this` changes based on how the function is called."
@@ -276,11 +281,11 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 3: Detached method loses context\nconst greetFn = user.greet;\ngreetFn(); // undefined or 'Hi, undefined' — this is lost"
+          "code": "// Example 3: Detached method loses context\nconst greetFn = user.greet;\ngreetFn(); // undefined or 'Hi, undefined' \u2014 this is lost"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-link'></i> <strong>Fixing Lost Context</strong>\n\nYou can control or preserve <code>this</code> explicitly using:\n- <code>call()</code> / <code>apply()</code> → call immediately\n- <code>bind()</code> → return a new function with fixed <code>this</code>"
+          "text": "<i class='fa-solid fa-link'></i> <strong>Fixing Lost Context</strong>\n\nYou can control or preserve <code>this</code> explicitly using:\n- <code>call()</code> / <code>apply()</code> \u2192 call immediately\n- <code>bind()</code> \u2192 return a new function with fixed <code>this</code>"
         },
         {
           "type": "code",
@@ -289,7 +294,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Arrow Functions</strong>\n\nArrow functions **don’t have their own <code>this</code>**. They inherit it from the surrounding scope. Great for callbacks that need lexical <code>this</code>."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Arrow Functions</strong>\n\nArrow functions **don\u2019t have their own <code>this</code>**. They inherit it from the surrounding scope. Great for callbacks that need lexical <code>this</code>."
         },
         {
           "type": "code",
@@ -298,15 +303,15 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting <code>new</code> → <code>this</code> becomes global (or undefined in strict mode)\n- Losing context when passing methods as callbacks\n- Misusing arrow functions in class methods (they can’t be rebound)"
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting <code>new</code> \u2192 <code>this</code> becomes global (or undefined in strict mode)\n- Losing context when passing methods as callbacks\n- Misusing arrow functions in class methods (they can\u2019t be rebound)"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>this</code> depends on the <strong>call site</strong>, not where the function is defined.  \n- Arrow functions don’t have their own <code>this</code>.  \n- <code>call</code>, <code>apply</code>, and <code>bind</code> let you control <code>this</code> explicitly.  \n- <code>new</code> creates a new object and binds <code>this</code> to it."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>this</code> depends on the <strong>call site</strong>, not where the function is defined.  \n- Arrow functions don\u2019t have their own <code>this</code>.  \n- <code>call</code>, <code>apply</code>, and <code>bind</code> let you control <code>this</code> explicitly.  \n- <code>new</code> creates a new object and binds <code>this</code> to it."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>this</code> as the person holding the phone 📱 — not the number you dialed. The number (function) stays the same, but who picks up (the object that calls it) decides what <code>this</code> will be."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>this</code> as the person holding the phone \ud83d\udcf1 \u2014 not the number you dialed. The number (function) stays the same, but who picks up (the object that calls it) decides what <code>this</code> will be."
         },
         {
           "type": "text",
@@ -315,7 +320,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-hoisting-tdz",
@@ -336,7 +341,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore JavaScript executes any code, it first scans your script to find all variable and function declarations. It sets up memory for them in a process called <strong>hoisting</strong>. But — not all declarations behave the same way."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore JavaScript executes any code, it first scans your script to find all variable and function declarations. It sets up memory for them in a process called <strong>hoisting</strong>. But \u2014 not all declarations behave the same way."
         },
         {
           "type": "list",
@@ -350,25 +355,25 @@
             [
               "<code>var</code>",
               "Yes",
-              "✅ Initialized to <code>undefined</code>",
-              "<code>console.log(a); var a = 5;</code> → undefined"
+              "\u2705 Initialized to <code>undefined</code>",
+              "<code>console.log(a); var a = 5;</code> \u2192 undefined"
             ],
             [
               "<code>let</code>",
               "Yes",
-              "❌ In TDZ (no access before declaration)",
-              "<code>console.log(b); let b = 5;</code> → ReferenceError"
+              "\u274c In TDZ (no access before declaration)",
+              "<code>console.log(b); let b = 5;</code> \u2192 ReferenceError"
             ],
             [
               "<code>const</code>",
               "Yes",
-              "❌ In TDZ (must be initialized immediately)",
+              "\u274c In TDZ (must be initialized immediately)",
               "<code>const c = 10;</code>"
             ],
             [
               "<code>function</code>",
               "Yes (fully hoisted)",
-              "✅ Can be called before definition",
+              "\u2705 Can be called before definition",
               "<code>foo(); function foo() {}</code>"
             ]
           ],
@@ -376,7 +381,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-up-long'></i> <strong>What is Hoisting?</strong>\n\nHoisting means declarations are <strong>moved to the top of their scope</strong> before code runs. This doesn’t mean your code is literally moved — it’s just how JavaScript’s memory setup works during the 'creation phase' of execution."
+          "text": "<i class='fa-solid fa-up-long'></i> <strong>What is Hoisting?</strong>\n\nHoisting means declarations are <strong>moved to the top of their scope</strong> before code runs. This doesn\u2019t mean your code is literally moved \u2014 it\u2019s just how JavaScript\u2019s memory setup works during the 'creation phase' of execution."
         },
         {
           "type": "code",
@@ -390,7 +395,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 2: let and TDZ\nconsole.log(age); // ❌ ReferenceError\nlet age = 25;\n\n// In memory:\n// TDZ starts → variable exists but not initialized\n// Declaration reached → initialized to 25"
+          "code": "// Example 2: let and TDZ\nconsole.log(age); // \u274c ReferenceError\nlet age = 25;\n\n// In memory:\n// TDZ starts \u2192 variable exists but not initialized\n// Declaration reached \u2192 initialized to 25"
         },
         {
           "type": "text",
@@ -399,19 +404,19 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 3: function vs expression\nsayHi(); // ✅ Works\nfunction sayHi() { console.log('Hi!'); }\n\nsayHello(); // ❌ ReferenceError\nconst sayHello = function() { console.log('Hello!'); };"
+          "code": "// Example 3: function vs expression\nsayHi(); // \u2705 Works\nfunction sayHi() { console.log('Hi!'); }\n\nsayHello(); // \u274c ReferenceError\nconst sayHello = function() { console.log('Hello!'); };"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Thinking <code>let</code> or <code>const</code> aren’t hoisted (they are — just uninitialized).  \n- Forgetting that accessing them early throws an error, not <code>undefined</code>.  \n- Mixing function declarations and expressions in confusing ways."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Thinking <code>let</code> or <code>const</code> aren\u2019t hoisted (they are \u2014 just uninitialized).  \n- Forgetting that accessing them early throws an error, not <code>undefined</code>.  \n- Mixing function declarations and expressions in confusing ways."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript hoists all declarations before execution.  \n- <code>var</code> → initialized as <code>undefined</code>.  \n- <code>let</code> / <code>const</code> → uninitialized, causing a TDZ.  \n- <code>function</code> declarations → fully hoisted and callable early.  \n- Avoid referencing variables before their declaration line."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- JavaScript hoists all declarations before execution.  \n- <code>var</code> \u2192 initialized as <code>undefined</code>.  \n- <code>let</code> / <code>const</code> \u2192 uninitialized, causing a TDZ.  \n- <code>function</code> declarations \u2192 fully hoisted and callable early.  \n- Avoid referencing variables before their declaration line."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a classroom roll call 📋. The teacher knows all students’ names at the start (hoisting), but only after they say 'here' (initialization) can they answer questions. Until then, they’re in the **temporal dead zone**!"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a classroom roll call \ud83d\udccb. The teacher knows all students\u2019 names at the start (hoisting), but only after they say 'here' (initialization) can they answer questions. Until then, they\u2019re in the **temporal dead zone**!"
         }
       ]
     },
@@ -441,7 +446,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAll variable declarations are **hoisted** — meaning they’re recognized by JavaScript before execution. However, only <code>var</code> is **initialized** immediately with <code>undefined</code>. <code>let</code> and <code>const</code> are hoisted too, but they stay in the **temporal dead zone (TDZ)** until the actual declaration line."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAll variable declarations are **hoisted** \u2014 meaning they\u2019re recognized by JavaScript before execution. However, only <code>var</code> is **initialized** immediately with <code>undefined</code>. <code>let</code> and <code>const</code> are hoisted too, but they stay in the **temporal dead zone (TDZ)** until the actual declaration line."
         },
         {
           "type": "list",
@@ -456,27 +461,27 @@
           "rows": [
             [
               "<code>var</code>",
-              "✅ Yes",
-              "✅ Initialized to <code>undefined</code>",
-              "✅ Yes (but value = undefined)",
-              "✅ Yes",
-              "✅ Yes"
+              "\u2705 Yes",
+              "\u2705 Initialized to <code>undefined</code>",
+              "\u2705 Yes (but value = undefined)",
+              "\u2705 Yes",
+              "\u2705 Yes"
             ],
             [
               "<code>let</code>",
-              "✅ Yes",
-              "❌ Not initialized (TDZ)",
-              "❌ No — ReferenceError",
-              "✅ Yes",
-              "❌ No"
+              "\u2705 Yes",
+              "\u274c Not initialized (TDZ)",
+              "\u274c No \u2014 ReferenceError",
+              "\u2705 Yes",
+              "\u274c No"
             ],
             [
               "<code>const</code>",
-              "✅ Yes",
-              "❌ Not initialized (TDZ)",
-              "❌ No — ReferenceError",
-              "❌ No (must initialize immediately)",
-              "❌ No"
+              "\u2705 Yes",
+              "\u274c Not initialized (TDZ)",
+              "\u274c No \u2014 ReferenceError",
+              "\u274c No (must initialize immediately)",
+              "\u274c No"
             ]
           ],
           "caption": "Hoisting and accessibility differences between var, let, and const."
@@ -488,7 +493,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// Example 1: var\nconsole.log(a); // undefined\nvar a = 10;\n\n// Example 2: let\nconsole.log(b); // ❌ ReferenceError (TDZ)\nlet b = 10;\n\n// Example 3: const\nconsole.log(c); // ❌ ReferenceError (TDZ)\nconst c = 10;"
+          "code": "// Example 1: var\nconsole.log(a); // undefined\nvar a = 10;\n\n// Example 2: let\nconsole.log(b); // \u274c ReferenceError (TDZ)\nlet b = 10;\n\n// Example 3: const\nconsole.log(c); // \u274c ReferenceError (TDZ)\nconst c = 10;"
         },
         {
           "type": "text",
@@ -497,15 +502,15 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "{\n  // TDZ starts\n  console.log(x); // ❌ ReferenceError\n  let x = 5; // TDZ ends here\n  console.log(x); // ✅ 5\n}"
+          "code": "{\n  // TDZ starts\n  console.log(x); // \u274c ReferenceError\n  let x = 5; // TDZ ends here\n  console.log(x); // \u2705 5\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>All declarations are hoisted</strong>, but initialization differs.\n- <code>var</code> → hoisted + initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but uninitialized (TDZ).\n- Accessing <code>let</code> or <code>const</code> before declaration → <code>ReferenceError</code>.\n- <code>const</code> also requires immediate initialization."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>All declarations are hoisted</strong>, but initialization differs.\n- <code>var</code> \u2192 hoisted + initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> \u2192 hoisted but uninitialized (TDZ).\n- Accessing <code>let</code> or <code>const</code> before declaration \u2192 <code>ReferenceError</code>.\n- <code>const</code> also requires immediate initialization."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you’re checking into a hotel 🏨. Rooms (<code>var</code>, <code>let</code>, <code>const</code>) are reserved at check-in (hoisting), but only <code>var</code> gets its key immediately. <code>let</code> and <code>const</code> exist but you can’t enter until the receptionist actually hands over the key — that’s the **temporal dead zone**!"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you\u2019re checking into a hotel \ud83c\udfe8. Rooms (<code>var</code>, <code>let</code>, <code>const</code>) are reserved at check-in (hoisting), but only <code>var</code> gets its key immediately. <code>let</code> and <code>const</code> exist but you can\u2019t enter until the receptionist actually hands over the key \u2014 that\u2019s the **temporal dead zone**!"
         }
       ]
     },
@@ -527,12 +532,14 @@
       "promise"
     ],
     "importance": 5,
-    "companies": [],
+    "companies": [
+      "meta"
+    ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>Promise</strong> is a container for an eventual result: <code>pending → fulfilled</code> (resolved) or <code>pending → rejected</code>. <code>async/await</code> makes working with Promises easier: <code>await</code> pauses within an <code>async</code> function until the Promise settles, then returns the value or throws the rejection."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>Promise</strong> is a container for an eventual result: <code>pending \u2192 fulfilled</code> (resolved) or <code>pending \u2192 rejected</code>. <code>async/await</code> makes working with Promises easier: <code>await</code> pauses within an <code>async</code> function until the Promise settles, then returns the value or throws the rejection."
         },
         {
           "type": "list",
@@ -544,7 +551,7 @@
           "rows": [
             [
               "<strong>Promise states</strong>",
-              "pending → fulfilled / rejected",
+              "pending \u2192 fulfilled / rejected",
               "<code>new Promise((res, rej) => ...)</code>"
             ],
             [
@@ -587,7 +594,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Sequential (slow)\nfor (const url of urls) {\n  const res = await fetch(url);\n  results.push(await res.json());\n}\n\n// ✅ Parallel (fast)\nconst promises = urls.map(url => fetch(url).then(r => r.json()));\nconst results = await Promise.all(promises);"
+          "code": "// \u274c Sequential (slow)\nfor (const url of urls) {\n  const res = await fetch(url);\n  results.push(await res.json());\n}\n\n// \u2705 Parallel (fast)\nconst promises = urls.map(url => fetch(url).then(r => r.json()));\nconst results = await Promise.all(promises);"
         },
         {
           "type": "text",
@@ -635,7 +642,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common pitfalls</strong>\n\n- Forgetting to <code>return</code> inside <code>.then</code> chains → next <code>.then</code> gets <code>undefined</code>.\n- Using <code>await</code> in <code>Array.prototype.forEach</code> (it won’t await). Prefer <code>for...of</code> or <code>Promise.all</code>.\n- Assuming <code>async</code> functions throw synchronously — they return a rejected Promise instead.\n- No built-in cancellation for Promises (use <code>AbortController</code> with <code>fetch</code> or libraries that support cancel)."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common pitfalls</strong>\n\n- Forgetting to <code>return</code> inside <code>.then</code> chains \u2192 next <code>.then</code> gets <code>undefined</code>.\n- Using <code>await</code> in <code>Array.prototype.forEach</code> (it won\u2019t await). Prefer <code>for...of</code> or <code>Promise.all</code>.\n- Assuming <code>async</code> functions throw synchronously \u2014 they return a rejected Promise instead.\n- No built-in cancellation for Promises (use <code>AbortController</code> with <code>fetch</code> or libraries that support cancel)."
         },
         {
           "type": "code",
@@ -648,12 +655,12 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a Promise as an order ticket 🧾: you place the order (create Promise), you’ll be notified when it’s ready (microtask). With <code>await</code>, you stand by the counter for <em>just that ticket</em> without blocking other customers — when it’s ready, you pick it up and continue."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a Promise as an order ticket \ud83e\uddfe: you place the order (create Promise), you\u2019ll be notified when it\u2019s ready (microtask). With <code>await</code>, you stand by the counter for <em>just that ticket</em> without blocking other customers \u2014 when it\u2019s ready, you pick it up and continue."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-event-delegation",
@@ -669,7 +676,10 @@
       "bubbling"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "bytedance",
+      "meta"
+    ],
     "answer": {
       "blocks": [
         {
@@ -697,7 +707,7 @@
             [
               "<strong>Event Bubbling</strong>",
               "Events start from the target element and bubble up to its ancestors.",
-              "<code>click</code> on <code>li</code> → bubbles to <code>ul</code>"
+              "<code>click</code> on <code>li</code> \u2192 bubbles to <code>ul</code>"
             ],
             [
               "<strong>event.target</strong>",
@@ -714,7 +724,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Why Use Event Delegation?</strong>\n\n- Better **performance** — fewer event listeners in the DOM.\n- Handles **dynamic elements** added later (since the listener is on a stable ancestor).\n- Cleaner, more maintainable code for lists, tables, or repeated components."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Why Use Event Delegation?</strong>\n\n- Better **performance** \u2014 fewer event listeners in the DOM.\n- Handles **dynamic elements** added later (since the listener is on a stable ancestor).\n- Cleaner, more maintainable code for lists, tables, or repeated components."
         },
         {
           "type": "code",
@@ -723,7 +733,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting to check <code>event.target</code> → all clicks bubble and trigger the handler.\n- Relying on <code>event.target</code> when nested elements are inside clickable items (use <code>.closest()</code> to handle this safely)."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Forgetting to check <code>event.target</code> \u2192 all clicks bubble and trigger the handler.\n- Relying on <code>event.target</code> when nested elements are inside clickable items (use <code>.closest()</code> to handle this safely)."
         },
         {
           "type": "code",
@@ -736,7 +746,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine a restaurant. Instead of each waiter (child) taking orders, there’s one manager (parent) who hears all requests and decides who called — that’s **event delegation**!"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine a restaurant. Instead of each waiter (child) taking orders, there\u2019s one manager (parent) who hears all requests and decides who called \u2014 that\u2019s **event delegation**!"
         },
         {
           "type": "text",
@@ -745,7 +755,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-null-undefined-undeclared",
@@ -769,7 +779,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, we have three different 'empty' states for variables — <code>undefined</code>, <code>null</code>, and <code>undeclared</code>. Each one tells a different story about the variable’s existence and purpose."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, we have three different 'empty' states for variables \u2014 <code>undefined</code>, <code>null</code>, and <code>undeclared</code>. Each one tells a different story about the variable\u2019s existence and purpose."
         },
         {
           "type": "list",
@@ -795,8 +805,8 @@
             [
               "<code>undeclared</code>",
               "Variable not declared at all in current scope.",
-              "<code>console.log(c); // ❌ ReferenceError</code>",
-              "—"
+              "<code>console.log(c); // \u274c ReferenceError</code>",
+              "\u2014"
             ]
           ],
           "caption": "Quick comparison of undefined, null, and undeclared."
@@ -812,7 +822,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>null</strong>\n\n- <code>null</code> is something you assign deliberately to indicate that a variable should be empty.\n- It’s a developer’s way of saying, “I know this exists, but it currently has no value.”"
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>null</strong>\n\n- <code>null</code> is something you assign deliberately to indicate that a variable should be empty.\n- It\u2019s a developer\u2019s way of saying, \u201cI know this exists, but it currently has no value.\u201d"
         },
         {
           "type": "code",
@@ -821,16 +831,16 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>undeclared</strong>\n\n- A variable that has never been declared in the current scope.\n- Trying to read it results in a <code>ReferenceError</code>.\n- Accidentally assigning to it (without <code>let</code>, <code>const</code>, or <code>var</code>) creates a global variable in non-strict mode — which is almost always a mistake."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>undeclared</strong>\n\n- A variable that has never been declared in the current scope.\n- Trying to read it results in a <code>ReferenceError</code>.\n- Accidentally assigning to it (without <code>let</code>, <code>const</code>, or <code>var</code>) creates a global variable in non-strict mode \u2014 which is almost always a mistake."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log(x); // ❌ ReferenceError: x is not defined\n\nfunction test() {\n  y = 10; // creates global variable in non-strict mode\n}\ntest();\nconsole.log(window.y); // 10"
+          "code": "console.log(x); // \u274c ReferenceError: x is not defined\n\nfunction test() {\n  y = 10; // creates global variable in non-strict mode\n}\ntest();\nconsole.log(window.y); // 10"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusions</strong>\n\n- <code>typeof null</code> returns <code>'object'</code> — this is a long-standing bug in JavaScript.\n- <code>undefined == null</code> is <strong>true</strong> because both mean 'no value'.\n- <code>undefined === null</code> is <strong>false</strong> because they are different types."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusions</strong>\n\n- <code>typeof null</code> returns <code>'object'</code> \u2014 this is a long-standing bug in JavaScript.\n- <code>undefined == null</code> is <strong>true</strong> because both mean 'no value'.\n- <code>undefined === null</code> is <strong>false</strong> because they are different types."
         },
         {
           "type": "code",
@@ -839,11 +849,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>undefined</strong>: Variable exists but has no value yet — default initial state used by JavaScript.\n- <strong>null</strong>: Deliberate empty value — use when you want to reset or clear a variable explicitly.\n- <strong>undeclared</strong>: Variable not defined in the current scope — avoid entirely; it signals a missing declaration or typo."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>undefined</strong>: Variable exists but has no value yet \u2014 default initial state used by JavaScript.\n- <strong>null</strong>: Deliberate empty value \u2014 use when you want to reset or clear a variable explicitly.\n- <strong>undeclared</strong>: Variable not defined in the current scope \u2014 avoid entirely; it signals a missing declaration or typo."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you ordered coffee ☕:\n- <strong>undefined</strong> → The cup exists, but it’s still empty because no one poured coffee yet.\n- <strong>null</strong> → You got an empty cup on purpose (you asked for none).\n- <strong>undeclared</strong> → There’s no cup at all — you never placed an order."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine you ordered coffee \u2615:\n- <strong>undefined</strong> \u2192 The cup exists, but it\u2019s still empty because no one poured coffee yet.\n- <strong>null</strong> \u2192 You got an empty cup on purpose (you asked for none).\n- <strong>undeclared</strong> \u2192 There\u2019s no cup at all \u2014 you never placed an order."
         }
       ]
     },
@@ -865,7 +875,8 @@
     ],
     "importance": 5,
     "companies": [
-      "google"
+      "google",
+      "apple"
     ],
     "answer": {
       "blocks": [
@@ -920,7 +931,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types.\n- Example: `[] == false` → `true`, but `[] === false` → `false`.\n- Always use `===` unless you specifically need type coercion (which is rare)."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Pitfalls</strong>\n\n- Using `==` can lead to hidden bugs when JavaScript tries to 'help' by converting types.\n- Example: `[] == false` \u2192 `true`, but `[] === false` \u2192 `false`.\n- Always use `===` unless you specifically need type coercion (which is rare)."
         },
         {
           "type": "code",
@@ -929,11 +940,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>==</strong>: Compares values after converting their types. May return unexpected results.\n- <strong>===</strong>: Compares both value and type. Safer and preferred in almost all cases.\n\n👉 Rule of thumb: If you’re not sure — use <code>===</code>."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>==</strong>: Compares values after converting their types. May return unexpected results.\n- <strong>===</strong>: Compares both value and type. Safer and preferred in almost all cases.\n\n\ud83d\udc49 Rule of thumb: If you\u2019re not sure \u2014 use <code>===</code>."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine two people named Alex:\n- Using <strong>==</strong> is like saying “they have the same name” — even if one is human and one is a robot.\n- Using <strong>===</strong> is like saying “same name <em>and</em> same species” — no confusion at all."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine two people named Alex:\n- Using <strong>==</strong> is like saying \u201cthey have the same name\u201d \u2014 even if one is human and one is a robot.\n- Using <strong>===</strong> is like saying \u201csame name <em>and</em> same species\u201d \u2014 no confusion at all."
         },
         {
           "type": "text",
@@ -942,12 +953,12 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-31"
   },
   {
     "id": "js-hoisting",
     "title": "Explain 'hoisting' in JavaScript",
-    "description": "Hoisting is JavaScript’s default behavior of moving declarations to the top of their scope before code execution. In practice, it means you can use certain variables and functions before declaring them — but only partially.",
+    "description": "Hoisting is JavaScript\u2019s default behavior of moving declarations to the top of their scope before code execution. In practice, it means you can use certain variables and functions before declaring them \u2014 but only partially.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -959,13 +970,14 @@
     ],
     "importance": 2,
     "companies": [
-      "google"
+      "google",
+      "meta"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore your code runs, JavaScript’s engine scans the scope and moves **declarations** (not initializations) to the top. This is called <strong>hoisting</strong>.\n\nIt applies to <code>var</code> variables, function declarations, and class declarations — but with different effects."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBefore your code runs, JavaScript\u2019s engine scans the scope and moves **declarations** (not initializations) to the top. This is called <strong>hoisting</strong>.\n\nIt applies to <code>var</code> variables, function declarations, and class declarations \u2014 but with different effects."
         },
         {
           "type": "list",
@@ -992,7 +1004,7 @@
               "Function declarations",
               "Yes",
               "Yes",
-              "Fully hoisted — can be called before defined."
+              "Fully hoisted \u2014 can be called before defined."
             ],
             [
               "Function expressions / arrow functions",
@@ -1005,7 +1017,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: var Hoisting</strong>\n\nA variable declared with <code>var</code> is hoisted to the top of its scope, but only its declaration — not its assignment."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: var Hoisting</strong>\n\nA variable declared with <code>var</code> is hoisted to the top of its scope, but only its declaration \u2014 not its assignment."
         },
         {
           "type": "code",
@@ -1023,12 +1035,12 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: let and const Hoisting</strong>\n\nAlthough <code>let</code> and <code>const</code> are hoisted, they live in a special phase called the **Temporal Dead Zone (TDZ)**. You can’t access them until the line where they are declared."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example: let and const Hoisting</strong>\n\nAlthough <code>let</code> and <code>const</code> are hoisted, they live in a special phase called the **Temporal Dead Zone (TDZ)**. You can\u2019t access them until the line where they are declared."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log(x); // ❌ ReferenceError\nlet x = 10;\nconsole.log(x); // ✅ 10"
+          "code": "console.log(x); // \u274c ReferenceError\nlet x = 10;\nconsole.log(x); // \u2705 10"
         },
         {
           "type": "text",
@@ -1037,7 +1049,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "sayHello(); // ✅ Works fine\n\nfunction sayHello() {\n  console.log('Hello!');\n}"
+          "code": "sayHello(); // \u2705 Works fine\n\nfunction sayHello() {\n  console.log('Hello!');\n}"
         },
         {
           "type": "text",
@@ -1046,24 +1058,24 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "greet(); // ❌ TypeError: greet is not a function\n\nvar greet = function() {\n  console.log('Hi there!');\n};"
+          "code": "greet(); // \u274c TypeError: greet is not a function\n\nvar greet = function() {\n  console.log('Hi there!');\n};"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nHoisting doesn’t move code literally — it’s about how JavaScript’s memory is allocated before execution.\n\nVariables and functions are known to the engine before code runs, which is why you can sometimes access them early."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nHoisting doesn\u2019t move code literally \u2014 it\u2019s about how JavaScript\u2019s memory is allocated before execution.\n\nVariables and functions are known to the engine before code runs, which is why you can sometimes access them early."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Declarations</strong> (not assignments) are hoisted.\n- <code>var</code> → hoisted and initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> → hoisted but in TDZ (can’t access early).\n- Function declarations → fully hoisted.\n- Function expressions → treated as variables, not hoisted safely."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Declarations</strong> (not assignments) are hoisted.\n- <code>var</code> \u2192 hoisted and initialized as <code>undefined</code>.\n- <code>let</code> / <code>const</code> \u2192 hoisted but in TDZ (can\u2019t access early).\n- Function declarations \u2192 fully hoisted.\n- Function expressions \u2192 treated as variables, not hoisted safely."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of hoisting like setting the stage before a play:\n- <code>var</code> = the actor is on stage but asleep (exists, but undefined).\n- <code>let</code>/<code>const</code> = actor is behind the curtain (exists, but unreachable).\n- Function declaration = actor is fully ready, already rehearsed.\n- Function expression = actor hasn’t arrived yet — script will fail if you try to cue them early."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of hoisting like setting the stage before a play:\n- <code>var</code> = the actor is on stage but asleep (exists, but undefined).\n- <code>let</code>/<code>const</code> = actor is behind the curtain (exists, but unreachable).\n- Function declaration = actor is fully ready, already rehearsed.\n- Function expression = actor hasn\u2019t arrived yet \u2014 script will fail if you try to cue them early."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-higher-order-function",
@@ -1084,7 +1096,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, a <strong>higher-order function</strong> is any function that either:\n- Takes one or more functions as arguments, <em>or</em>\n- Returns another function as its result.\n\nIn other words, it treats functions as values — passing them around just like variables."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, a <strong>higher-order function</strong> is any function that either:\n- Takes one or more functions as arguments, <em>or</em>\n- Returns another function as its result.\n\nIn other words, it treats functions as values \u2014 passing them around just like variables."
         },
         {
           "type": "list",
@@ -1109,7 +1121,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example 1: Taking a Function as an Argument</strong>\n\nFunctions like <code>map</code>, <code>filter</code>, and <code>forEach</code> are classic examples — they take another function and apply it to elements of an array."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example 1: Taking a Function as an Argument</strong>\n\nFunctions like <code>map</code>, <code>filter</code>, and <code>forEach</code> are classic examples \u2014 they take another function and apply it to elements of an array."
         },
         {
           "type": "code",
@@ -1118,7 +1130,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example 2: Returning a Function</strong>\n\nA function can return another function that 'remembers' the outer scope — this is often used in currying or closures."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Example 2: Returning a Function</strong>\n\nA function can return another function that 'remembers' the outer scope \u2014 this is often used in currying or closures."
         },
         {
           "type": "code",
@@ -1135,7 +1147,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a higher-order function like a chef that doesn’t cook food directly — it takes other chefs (functions) and tells them <em>how</em> to cook. The chef can even create a new chef recipe on the spot and hand it back to you!"
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a higher-order function like a chef that doesn\u2019t cook food directly \u2014 it takes other chefs (functions) and tells them <em>how</em> to cook. The chef can even create a new chef recipe on the spot and hand it back to you!"
         }
       ]
     },
@@ -1164,7 +1176,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nWhen an event (like a click) occurs in the DOM, it doesn’t just happen on one element. Instead, it travels through a **three-phase path**:\n\n1. **Capturing phase** – The event travels from the root of the document down to the target element.\n2. **Target phase** – The event occurs on the exact target element.\n3. **Bubbling phase** – The event bubbles up from the target element back to the root."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nWhen an event (like a click) occurs in the DOM, it doesn\u2019t just happen on one element. Instead, it travels through a **three-phase path**:\n\n1. **Capturing phase** \u2013 The event travels from the root of the document down to the target element.\n2. **Target phase** \u2013 The event occurs on the exact target element.\n3. **Bubbling phase** \u2013 The event bubbles up from the target element back to the root."
         },
         {
           "type": "list",
@@ -1177,19 +1189,19 @@
           "rows": [
             [
               "Capturing",
-              "Top → Down",
+              "Top \u2192 Down",
               "From document to target",
               "<code>addEventListener('click', handler, true)</code>"
             ],
             [
               "Target",
-              "—",
+              "\u2014",
               "Actual element clicked",
               "Event fires directly on target"
             ],
             [
               "Bubbling",
-              "Bottom → Up",
+              "Bottom \u2192 Up",
               "From target to document",
               "<code>addEventListener('click', handler)</code> (default)"
             ]
@@ -1229,7 +1241,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping Event Propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> → stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> → also prevents other handlers on the same element from firing."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Stopping Event Propagation</strong>\n\nYou can stop the event from moving further in either direction using:\n- <code>event.stopPropagation()</code> \u2192 stops it from continuing up or down.\n- <code>event.stopImmediatePropagation()</code> \u2192 also prevents other handlers on the same element from firing."
         },
         {
           "type": "code",
@@ -1238,7 +1250,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The event path has three phases: capturing → target → bubbling.\n- Bubbling is the **default** in JavaScript.\n- You can listen in the capturing phase by passing <code>true</code> as the third argument.\n- <code>stopPropagation()</code> prevents the event from continuing.\n\nThis knowledge is crucial for efficient event handling and **event delegation** in complex UIs."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- The event path has three phases: capturing \u2192 target \u2192 bubbling.\n- Bubbling is the **default** in JavaScript.\n- You can listen in the capturing phase by passing <code>true</code> as the third argument.\n- <code>stopPropagation()</code> prevents the event from continuing.\n\nThis knowledge is crucial for efficient event handling and **event delegation** in complex UIs."
         },
         {
           "type": "text",
@@ -1263,12 +1275,15 @@
       "call-apply-bind"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "apple",
+      "meta"
+    ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, functions are special objects — they have built-in methods like <code>call()</code>, <code>apply()</code>, and <code>bind()</code> that allow you to explicitly set what <code>this</code> refers to when a function runs.\n\nThey all help you reuse a function with different objects as its <code>this</code> context."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, functions are special objects \u2014 they have built-in methods like <code>call()</code>, <code>apply()</code>, and <code>bind()</code> that allow you to explicitly set what <code>this</code> refers to when a function runs.\n\nThey all help you reuse a function with different objects as its <code>this</code> context."
         },
         {
           "type": "list",
@@ -1338,7 +1353,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nA frequent confusion is expecting <code>bind()</code> to call the function immediately. Remember: it only returns a new function — you have to call it manually later."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nA frequent confusion is expecting <code>bind()</code> to call the function immediately. Remember: it only returns a new function \u2014 you have to call it manually later."
         },
         {
           "type": "code",
@@ -1347,11 +1362,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- **call()** → Calls immediately, arguments as a list.\n- **apply()** → Calls immediately, arguments as an array.\n- **bind()** → Returns a new function (call it later).\n\nAll three methods let you control what <code>this</code> refers to."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- **call()** \u2192 Calls immediately, arguments as a list.\n- **apply()** \u2192 Calls immediately, arguments as an array.\n- **bind()** \u2192 Returns a new function (call it later).\n\nAll three methods let you control what <code>this</code> refers to."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like renting a car:\n- <strong>call()</strong> → You rent and drive it right away.\n- <strong>apply()</strong> → You rent and drive it right away, but hand over your passengers list (array).\n- <strong>bind()</strong> → You book it for later — the car is reserved and ready to use when you need it."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like renting a car:\n- <strong>call()</strong> \u2192 You rent and drive it right away.\n- <strong>apply()</strong> \u2192 You rent and drive it right away, but hand over your passengers list (array).\n- <strong>bind()</strong> \u2192 You book it for later \u2014 the car is reserved and ready to use when you need it."
         },
         {
           "type": "text",
@@ -1360,7 +1375,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-foreach-vs-map",
@@ -1381,7 +1396,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>forEach()</code> and <code>map()</code> are used to iterate over arrays, but they serve **different purposes**:\n\n- <strong>forEach()</strong> is for performing side effects (like logging or updating variables). It doesn’t return anything useful.\n- <strong>map()</strong> transforms data — it creates a **new array** based on what you return in each iteration."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBoth <code>forEach()</code> and <code>map()</code> are used to iterate over arrays, but they serve **different purposes**:\n\n- <strong>forEach()</strong> is for performing side effects (like logging or updating variables). It doesn\u2019t return anything useful.\n- <strong>map()</strong> transforms data \u2014 it creates a **new array** based on what you return in each iteration."
         },
         {
           "type": "list",
@@ -1408,8 +1423,8 @@
             ],
             [
               "Chaining",
-              "No — returns undefined",
-              "Yes — returns a new array"
+              "No \u2014 returns undefined",
+              "Yes \u2014 returns a new array"
             ],
             [
               "Typical use case",
@@ -1439,20 +1454,20 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>map()</code> just for its side effects. Since it expects you to return something, doing so wastes performance and memory.\n\nIf you’re not using the returned array, you probably meant <code>forEach()</code>."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Mistake</strong>\n\nUsing <code>map()</code> just for its side effects. Since it expects you to return something, doing so wastes performance and memory.\n\nIf you\u2019re not using the returned array, you probably meant <code>forEach()</code>."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Wrong: using map() for side effects only\nnumbers.map(n => console.log(n)); // just prints, no new array needed\n\n// ✅ Correct:\nnumbers.forEach(n => console.log(n));"
+          "code": "// \u274c Wrong: using map() for side effects only\nnumbers.map(n => console.log(n)); // just prints, no new array needed\n\n// \u2705 Correct:\nnumbers.forEach(n => console.log(n));"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Use forEach()</strong> → when you want to iterate and perform an action (no return).\n- <strong>Use map()</strong> → when you want to create a new array by transforming data.\n\nIf you need chaining or data transformation, always prefer <code>map()</code>."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <strong>Use forEach()</strong> \u2192 when you want to iterate and perform an action (no return).\n- <strong>Use map()</strong> \u2192 when you want to create a new array by transforming data.\n\nIf you need chaining or data transformation, always prefer <code>map()</code>."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine sorting mail:\n- <strong>forEach()</strong> → you open each envelope and read it.\n- <strong>map()</strong> → you open each envelope, copy the letter, and build a new stack of letters — the transformed result."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nImagine sorting mail:\n- <strong>forEach()</strong> \u2192 you open each envelope and read it.\n- <strong>map()</strong> \u2192 you open each envelope, copy the letter, and build a new stack of letters \u2014 the transformed result."
         },
         {
           "type": "text",
@@ -1483,7 +1498,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBrowsers provide several ways to store data on the client side. The three most common are:\n- <strong>Cookies</strong> – small pieces of data sent to and from the server.\n- <strong>localStorage</strong> – stores data persistently in the browser.\n- <strong>sessionStorage</strong> – stores data temporarily for one browser tab session."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nBrowsers provide several ways to store data on the client side. The three most common are:\n- <strong>Cookies</strong> \u2013 small pieces of data sent to and from the server.\n- <strong>localStorage</strong> \u2013 stores data persistently in the browser.\n- <strong>sessionStorage</strong> \u2013 stores data temporarily for one browser tab session."
         },
         {
           "type": "list",
@@ -1503,8 +1518,8 @@
             [
               "Storage limit",
               "~4KB",
-              "~5–10MB",
-              "~5–10MB"
+              "~5\u201310MB",
+              "~5\u201310MB"
             ],
             [
               "Accessible from JavaScript?",
@@ -1514,7 +1529,7 @@
             ],
             [
               "Automatically sent to server?",
-              "Yes — sent with every HTTP request to matching domain",
+              "Yes \u2014 sent with every HTTP request to matching domain",
               "No",
               "No"
             ],
@@ -1528,7 +1543,7 @@
               "Shared between tabs?",
               "Yes (same domain)",
               "Yes (same domain)",
-              "No — per tab only"
+              "No \u2014 per tab only"
             ]
           ],
           "caption": "Comparison between cookies, localStorage, and sessionStorage."
@@ -1539,7 +1554,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>localStorage</strong>\n\n- Stores data **persistently** — it remains even after closing the browser.\n- Only accessible through JavaScript (never sent to the server).\n\n```javascript\nlocalStorage.setItem('theme', 'dark');\nconsole.log(localStorage.getItem('theme')); // 'dark'\n```"
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>localStorage</strong>\n\n- Stores data **persistently** \u2014 it remains even after closing the browser.\n- Only accessible through JavaScript (never sent to the server).\n\n```javascript\nlocalStorage.setItem('theme', 'dark');\nconsole.log(localStorage.getItem('theme')); // 'dark'\n```"
         },
         {
           "type": "text",
@@ -1547,7 +1562,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Security Notes</strong>\n\n- Never store sensitive data (like passwords or tokens) in localStorage or sessionStorage — they are easily accessible by JavaScript.\n- For secure cookies, use the <code>HttpOnly</code> and <code>Secure</code> flags so they can’t be accessed via JavaScript and are only sent over HTTPS."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Security Notes</strong>\n\n- Never store sensitive data (like passwords or tokens) in localStorage or sessionStorage \u2014 they are easily accessible by JavaScript.\n- For secure cookies, use the <code>HttpOnly</code> and <code>Secure</code> flags so they can\u2019t be accessed via JavaScript and are only sent over HTTPS."
         },
         {
           "type": "text",
@@ -1555,7 +1570,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of them like hotel storage options:\n- **Cookies:** Front desk storage — accessible by staff (server) and you (browser).\n- **localStorage:** Your personal locker — data stays even if you leave and come back later.\n- **sessionStorage:** Your room table — data disappears when you check out (close the tab)."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of them like hotel storage options:\n- **Cookies:** Front desk storage \u2014 accessible by staff (server) and you (browser).\n- **localStorage:** Your personal locker \u2014 data stays even if you leave and come back later.\n- **sessionStorage:** Your room table \u2014 data disappears when you check out (close the tab)."
         },
         {
           "type": "text",
@@ -1589,7 +1604,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, objects don’t inherit from classes (like in many other languages). Instead, they inherit directly from **other objects**. This is called <strong>prototypal inheritance</strong>.\n\nEvery object has an internal link to another object called its <strong>prototype</strong>. If you try to access a property that doesn’t exist on the object itself, JavaScript looks for it on the prototype — and keeps going up the <strong>prototype chain</strong> until it finds it or reaches <code>null</code>."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nIn JavaScript, objects don\u2019t inherit from classes (like in many other languages). Instead, they inherit directly from **other objects**. This is called <strong>prototypal inheritance</strong>.\n\nEvery object has an internal link to another object called its <strong>prototype</strong>. If you try to access a property that doesn\u2019t exist on the object itself, JavaScript looks for it on the prototype \u2014 and keeps going up the <strong>prototype chain</strong> until it finds it or reaches <code>null</code>."
         },
         {
           "type": "list",
@@ -1607,7 +1622,7 @@
             [
               "<strong>Prototype Chain</strong>",
               "A chain of linked objects that JS traverses when looking up properties.",
-              "Ends when reaching <code>Object.prototype</code> → <code>null</code>."
+              "Ends when reaching <code>Object.prototype</code> \u2192 <code>null</code>."
             ],
             [
               "<strong>__proto__</strong>",
@@ -1633,7 +1648,7 @@
         },
         {
           "type": "text",
-          "text": "Here’s what happens when you call <code>dog.walk()</code>:\n1. JS looks for <code>walk</code> on <code>dog</code>.\n2. It doesn’t find it, so it looks at <code>dog.__proto__</code> (which points to <code>animal</code>).\n3. Finds <code>walk</code> there and executes it."
+          "text": "Here\u2019s what happens when you call <code>dog.walk()</code>:\n1. JS looks for <code>walk</code> on <code>dog</code>.\n2. It doesn\u2019t find it, so it looks at <code>dog.__proto__</code> (which points to <code>animal</code>).\n3. Finds <code>walk</code> there and executes it."
         },
         {
           "type": "text",
@@ -1646,7 +1661,7 @@
         },
         {
           "type": "text",
-          "text": "All objects created using <code>new Animal()</code> share the same <code>speak()</code> method via <code>Animal.prototype</code> — not a copy for each instance."
+          "text": "All objects created using <code>new Animal()</code> share the same <code>speak()</code> method via <code>Animal.prototype</code> \u2014 not a copy for each instance."
         },
         {
           "type": "text",
@@ -1663,7 +1678,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nPrototypal inheritance doesn’t copy properties — it links objects. If you change a method on the prototype, all objects linked to it see the change immediately."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Misunderstanding</strong>\n\nPrototypal inheritance doesn\u2019t copy properties \u2014 it links objects. If you change a method on the prototype, all objects linked to it see the change immediately."
         },
         {
           "type": "code",
@@ -1672,11 +1687,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Every object in JS has a prototype (except <code>Object.prototype</code>).\n- Property lookups follow the prototype chain.\n- Prototypal inheritance <strong>links</strong> objects — it doesn’t clone them.\n- Modern <code>class</code> syntax still uses prototypes under the hood."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Every object in JS has a prototype (except <code>Object.prototype</code>).\n- Property lookups follow the prototype chain.\n- Prototypal inheritance <strong>links</strong> objects \u2014 it doesn\u2019t clone them.\n- Modern <code>class</code> syntax still uses prototypes under the hood."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a family tree:\n- Each child (object) can use traits from their parent (prototype).\n- If the child doesn’t have a skill, it checks if the parent does.\n- If not, it goes further up the chain — until there’s no ancestor left."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of it like a family tree:\n- Each child (object) can use traits from their parent (prototype).\n- If the child doesn\u2019t have a skill, it checks if the parent does.\n- If not, it goes further up the chain \u2014 until there\u2019s no ancestor left."
         }
       ]
     },
@@ -1703,7 +1718,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\\n\\nJavaScript values fall into two main categories:\\n- **Primitive types** — stored directly, immutable, and compared by value.\\n- **Non-primitive type** — objects, which are mutable and compared by reference.\\n\\nThere are **8 total data types** in JavaScript (as of ES2020)."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\\n\\nJavaScript values fall into two main categories:\\n- **Primitive types** \u2014 stored directly, immutable, and compared by value.\\n- **Non-primitive type** \u2014 objects, which are mutable and compared by reference.\\n\\nThere are **8 total data types** in JavaScript (as of ES2020)."
         },
         {
           "type": "list",
@@ -1767,7 +1782,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can’t be changed directly — any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // ❌ has no effect\\nconsole.log(str); // 'Hi'\\n```"
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Primitives Are Immutable</strong>\\n\\nPrimitive values can\u2019t be changed directly \u2014 any modification creates a new value instead.\\n\\n```javascript\\nlet str = 'Hi';\\nstr[0] = 'Y'; // \u274c has no effect\\nconsole.log(str); // 'Hi'\\n```"
         },
         {
           "type": "text",
@@ -1780,7 +1795,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> — this is a well-known JavaScript quirk kept for backward compatibility."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Common Confusion</strong>\\n\\n<code>typeof null</code> returns <code>'object'</code> \u2014 this is a well-known JavaScript quirk kept for backward compatibility."
         },
         {
           "type": "code",
@@ -1793,7 +1808,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of primitives as single paper notes — once written, they can’t be changed. Objects are like folders — you can add, remove, or edit their contents anytime."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of primitives as single paper notes \u2014 once written, they can\u2019t be changed. Objects are like folders \u2014 you can add, remove, or edit their contents anytime."
         },
         {
           "type": "text",
@@ -1824,7 +1839,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<code>NaN</code> stands for <strong>Not-a-Number</strong>. It is a special numeric value that represents the result of an invalid mathematical operation — something that cannot produce a meaningful number."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\n<code>NaN</code> stands for <strong>Not-a-Number</strong>. It is a special numeric value that represents the result of an invalid mathematical operation \u2014 something that cannot produce a meaningful number."
         },
         {
           "type": "code",
@@ -1859,20 +1874,20 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong>\n\nThe global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn’t perform type coercion."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Why not just 'isNaN'?</strong>\n\nThe global <code>isNaN()</code> function tries to coerce values before checking, which can give confusing results. Always prefer <code>Number.isNaN()</code> because it doesn\u2019t perform type coercion."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "isNaN('Hello');         // true ❌ (string coerced)\nNumber.isNaN('Hello');   // false ✅"
+          "code": "isNaN('Hello');         // true \u274c (string coerced)\nNumber.isNaN('Hello');   // false \u2705"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>NaN</code> represents 'Not-a-Number' but its type is actually <code>number</code>.\n- It results from invalid numeric operations.\n- It’s the only value in JS that is not equal to itself.\n- Use <code>Number.isNaN()</code> instead of <code>isNaN()</code> to check safely."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- <code>NaN</code> represents 'Not-a-Number' but its type is actually <code>number</code>.\n- It results from invalid numeric operations.\n- It\u2019s the only value in JS that is not equal to itself.\n- Use <code>Number.isNaN()</code> instead of <code>isNaN()</code> to check safely."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>NaN</code> like a 'broken calculator' output — the operation ran, but the result doesn’t make mathematical sense, so JavaScript gives you NaN instead of crashing."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>NaN</code> like a 'broken calculator' output \u2014 the operation ran, but the result doesn\u2019t make mathematical sense, so JavaScript gives you NaN instead of crashing."
         },
         {
           "type": "text",
@@ -1904,7 +1919,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nCurrying transforms a function that takes multiple arguments into a chain of functions, each taking one argument at a time. It allows partial application — creating new functions by pre-filling some arguments."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nCurrying transforms a function that takes multiple arguments into a chain of functions, each taking one argument at a time. It allows partial application \u2014 creating new functions by pre-filling some arguments."
         },
         {
           "type": "code",
@@ -1931,7 +1946,7 @@
             ],
             [
               "Closures in Action",
-              "Each inner function 'remembers' the outer function’s arguments through closure.",
+              "Each inner function 'remembers' the outer function\u2019s arguments through closure.",
               "<code>curriedAdd(1)(2)(3); // Works because of lexical scope</code>"
             ]
           ],
@@ -1947,7 +1962,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of currying like a vending machine: instead of inserting all coins at once, you insert them one by one — and after the last coin, you finally get your snack."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of currying like a vending machine: instead of inserting all coins at once, you insert them one by one \u2014 and after the last coin, you finally get your snack."
         },
         {
           "type": "text",
@@ -1978,7 +1993,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>callback</strong> is simply a function passed into another function as an argument, to be <em>called back</em> later when a certain task finishes. It’s a fundamental pattern in JavaScript, especially in asynchronous programming."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nA <strong>callback</strong> is simply a function passed into another function as an argument, to be <em>called back</em> later when a certain task finishes. It\u2019s a fundamental pattern in JavaScript, especially in asynchronous programming."
         },
         {
           "type": "code",
@@ -1992,7 +2007,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "console.log('Start');\n\nsetTimeout(function() {\n  console.log('This runs later');\n}, 1000);\n\nconsole.log('End');\n// Output: Start → End → This runs later"
+          "code": "console.log('Start');\n\nsetTimeout(function() {\n  console.log('This runs later');\n}, 1000);\n\nconsole.log('End');\n// Output: Start \u2192 End \u2192 This runs later"
         },
         {
           "type": "list",
@@ -2022,11 +2037,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A callback is a function passed as an argument to another function.\n- Allows asynchronous and event-driven behavior.\n- Can cause 'callback hell' when deeply nested — use Promises or async/await instead.\n- Core part of how JavaScript handles non-blocking operations."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- A callback is a function passed as an argument to another function.\n- Allows asynchronous and event-driven behavior.\n- Can cause 'callback hell' when deeply nested \u2014 use Promises or async/await instead.\n- Core part of how JavaScript handles non-blocking operations."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like leaving your phone number with someone: you don’t wait on the line — they’ll call you <em>back</em> when they’re ready."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of callbacks like leaving your phone number with someone: you don\u2019t wait on the line \u2014 they\u2019ll call you <em>back</em> when they\u2019re ready."
         },
         {
           "type": "text",
@@ -2040,7 +2055,7 @@
   {
     "id": "js-arrow-functions",
     "title": "What are arrow functions in JavaScript?",
-    "description": "Arrow functions are a shorter syntax for writing functions in JavaScript, introduced in ES6. They don’t have their own `this`, `arguments`, or `prototype`. Use them for callbacks, but watch edge cases with this binding and constructor usage; add tests for behavior.",
+    "description": "Arrow functions are a shorter syntax for writing functions in JavaScript, introduced in ES6. They don\u2019t have their own `this`, `arguments`, or `prototype`. Use them for callbacks, but watch edge cases with this binding and constructor usage; add tests for behavior.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -2052,7 +2067,9 @@
       "syntax"
     ],
     "importance": 3,
-    "companies": [],
+    "companies": [
+      "meta"
+    ],
     "answer": {
       "blocks": [
         {
@@ -2084,12 +2101,12 @@
             ],
             [
               "Lexical <code>this</code>",
-              "Arrow functions don’t create their own <code>this</code> — they inherit it from the surrounding scope.",
-              "<code>this</code> inside arrow → same as outside"
+              "Arrow functions don\u2019t create their own <code>this</code> \u2014 they inherit it from the surrounding scope.",
+              "<code>this</code> inside arrow \u2192 same as outside"
             ],
             [
               "No <code>arguments</code>",
-              "They don’t have an <code>arguments</code> object — use rest parameters instead.",
+              "They don\u2019t have an <code>arguments</code> object \u2014 use rest parameters instead.",
               "<code>const fn = (...args) => console.log(args);</code>"
             ]
           ],
@@ -2097,24 +2114,24 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Arrow functions and `this`</strong>\n\nIn regular functions, <code>this</code> depends on how the function is called. But in arrow functions, <code>this</code> is <strong>lexically bound</strong> — it refers to the value of <code>this</code> in the outer scope."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Arrow functions and `this`</strong>\n\nIn regular functions, <code>this</code> depends on how the function is called. But in arrow functions, <code>this</code> is <strong>lexically bound</strong> \u2014 it refers to the value of <code>this</code> in the outer scope."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "function Counter() {\n  this.count = 0;\n  setInterval(() => {\n    this.count++;\n    console.log(this.count);\n  }, 1000);\n}\n\nnew Counter(); // Works ✅ — 'this' refers to the Counter instance"
+          "code": "function Counter() {\n  this.count = 0;\n  setInterval(() => {\n    this.count++;\n    console.log(this.count);\n  }, 1000);\n}\n\nnew Counter(); // Works \u2705 \u2014 'this' refers to the Counter instance"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Be careful:</strong>\n\n- You can’t use arrow functions as constructors (<code>new</code> keyword will throw an error).\n- They also don’t have their own <code>prototype</code>."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Be careful:</strong>\n\n- You can\u2019t use arrow functions as constructors (<code>new</code> keyword will throw an error).\n- They also don\u2019t have their own <code>prototype</code>."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Shorter syntax for cleaner code.\n- Lexically binds <code>this</code> and doesn’t create its own <code>arguments</code>.\n- Great for callbacks, array methods, and event handlers.\n- Avoid them when you need your own <code>this</code> or when defining class methods."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Shorter syntax for cleaner code.\n- Lexically binds <code>this</code> and doesn\u2019t create its own <code>arguments</code>.\n- Great for callbacks, array methods, and event handlers.\n- Avoid them when you need your own <code>this</code> or when defining class methods."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of arrow functions as assistants — they don’t have their own <code>this</code>; they simply use their boss’s <code>this</code> from the outer scope."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of arrow functions as assistants \u2014 they don\u2019t have their own <code>this</code>; they simply use their boss\u2019s <code>this</code> from the outer scope."
         },
         {
           "type": "text",
@@ -2123,12 +2140,12 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "js-object-destructuring",
     "title": "What is Object Destructuring in JavaScript?",
-    "description": "Object destructuring is a concise way to extract values from objects (or arrays) and assign them to variables using a syntax that mirrors the object’s structure. It was introduced in ES6 to make code cleaner and more readable.",
+    "description": "Object destructuring is a concise way to extract values from objects (or arrays) and assign them to variables using a syntax that mirrors the object\u2019s structure. It was introduced in ES6 to make code cleaner and more readable.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "easy",
@@ -2154,7 +2171,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How it works</strong>\n\nWhen you destructure an object, JavaScript matches variable names to property keys. If a key doesn’t exist in the object, its variable will be <code>undefined</code>.\n\nYou can also rename variables, set default values, and extract nested properties — all within the same expression."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How it works</strong>\n\nWhen you destructure an object, JavaScript matches variable names to property keys. If a key doesn\u2019t exist in the object, its variable will be <code>undefined</code>.\n\nYou can also rename variables, set default values, and extract nested properties \u2014 all within the same expression."
         },
         {
           "type": "list",
@@ -2208,7 +2225,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common Pitfalls</strong>\n\n- Variable names must match property names unless you rename them explicitly.\n- If you try to destructure <code>null</code> or <code>undefined</code>, it throws an error because they aren’t objects.\n- Always ensure the object exists before destructuring — or use default values to avoid runtime errors."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common Pitfalls</strong>\n\n- Variable names must match property names unless you rename them explicitly.\n- If you try to destructure <code>null</code> or <code>undefined</code>, it throws an error because they aren\u2019t objects.\n- Always ensure the object exists before destructuring \u2014 or use default values to avoid runtime errors."
         },
         {
           "type": "code",
@@ -2221,7 +2238,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of destructuring like unpacking a suitcase: instead of taking each item one by one, you open it once and pull out exactly what you need — all in one move."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of destructuring like unpacking a suitcase: instead of taking each item one by one, you open it once and pull out exactly what you need \u2014 all in one move."
         }
       ]
     },
@@ -2282,34 +2299,34 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Common JavaScript Design Patterns</strong>\n\nLet’s look at a few widely used patterns in JavaScript development:"
+          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Common JavaScript Design Patterns</strong>\n\nLet\u2019s look at a few widely used patterns in JavaScript development:"
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// 1. Module Pattern — encapsulation using closures\nconst CounterModule = (function() {\n  let count = 0;\n  return {\n    increment() { count++; console.log(count); },\n    reset() { count = 0; console.log('Reset!'); }\n  };\n})();\n\nCounterModule.increment(); // 1\nCounterModule.increment(); // 2\nCounterModule.reset(); // Reset!"
+          "code": "// 1. Module Pattern \u2014 encapsulation using closures\nconst CounterModule = (function() {\n  let count = 0;\n  return {\n    increment() { count++; console.log(count); },\n    reset() { count = 0; console.log('Reset!'); }\n  };\n})();\n\nCounterModule.increment(); // 1\nCounterModule.increment(); // 2\nCounterModule.reset(); // Reset!"
         },
         {
           "type": "text",
-          "text": "The **Module Pattern** helps keep variables private and exposes only the functionality you want, preventing global namespace pollution — one of the most useful patterns in JavaScript before ES6 modules."
+          "text": "The **Module Pattern** helps keep variables private and exposes only the functionality you want, preventing global namespace pollution \u2014 one of the most useful patterns in JavaScript before ES6 modules."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// 2. Singleton Pattern — one instance shared across application\nclass AppSettings {\n  constructor() {\n    if (AppSettings.instance) return AppSettings.instance;\n    this.theme = 'dark';\n    AppSettings.instance = this;\n  }\n}\n\nconst a = new AppSettings();\nconst b = new AppSettings();\nconsole.log(a === b); // true"
+          "code": "// 2. Singleton Pattern \u2014 one instance shared across application\nclass AppSettings {\n  constructor() {\n    if (AppSettings.instance) return AppSettings.instance;\n    this.theme = 'dark';\n    AppSettings.instance = this;\n  }\n}\n\nconst a = new AppSettings();\nconst b = new AppSettings();\nconsole.log(a === b); // true"
         },
         {
           "type": "text",
-          "text": "The **Singleton Pattern** ensures that only one instance of a class exists throughout the app — commonly used for global state or configuration management."
+          "text": "The **Singleton Pattern** ensures that only one instance of a class exists throughout the app \u2014 commonly used for global state or configuration management."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "// 3. Observer Pattern — event-based communication\nclass Observable {\n  constructor() { this.subscribers = []; }\n  subscribe(fn) { this.subscribers.push(fn); }\n  notify(data) { this.subscribers.forEach(fn => fn(data)); }\n}\n\nconst newsFeed = new Observable();\nnewsFeed.subscribe(news => console.log('Breaking:', news));\nnewsFeed.notify('New JavaScript version released!');"
+          "code": "// 3. Observer Pattern \u2014 event-based communication\nclass Observable {\n  constructor() { this.subscribers = []; }\n  subscribe(fn) { this.subscribers.push(fn); }\n  notify(data) { this.subscribers.forEach(fn => fn(data)); }\n}\n\nconst newsFeed = new Observable();\nnewsFeed.subscribe(news => console.log('Breaking:', news));\nnewsFeed.notify('New JavaScript version released!');"
         },
         {
           "type": "text",
-          "text": "The **Observer Pattern** enables one-to-many communication — when one object’s state changes, all its dependents are automatically notified. It forms the foundation of event systems and frameworks like React’s state updates and RxJS observables."
+          "text": "The **Observer Pattern** enables one-to-many communication \u2014 when one object\u2019s state changes, all its dependents are automatically notified. It forms the foundation of event systems and frameworks like React\u2019s state updates and RxJS observables."
         },
         {
           "type": "text",
@@ -2317,15 +2334,15 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>When to Use Design Patterns</strong>\n\nNot every problem needs a design pattern — overusing them can lead to unnecessary complexity. You should apply them when:\n- The same design problem occurs multiple times.\n- You want to improve code readability and reduce coupling.\n- Your codebase is growing and needs a consistent architecture.\n- Teams need a shared structure and predictable patterns."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>When to Use Design Patterns</strong>\n\nNot every problem needs a design pattern \u2014 overusing them can lead to unnecessary complexity. You should apply them when:\n- The same design problem occurs multiple times.\n- You want to improve code readability and reduce coupling.\n- Your codebase is growing and needs a consistent architecture.\n- Teams need a shared structure and predictable patterns."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Design patterns are reusable solutions to common programming problems.\n- They improve scalability, maintainability, and readability.\n- JavaScript uses patterns like Module, Singleton, Observer, and Factory widely.\n- Frameworks like React, Angular, and Vue are built upon these principles.\n- Apply them wisely — patterns should simplify, not complicate, your code."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Design patterns are reusable solutions to common programming problems.\n- They improve scalability, maintainability, and readability.\n- JavaScript uses patterns like Module, Singleton, Observer, and Factory widely.\n- Frameworks like React, Angular, and Vue are built upon these principles.\n- Apply them wisely \u2014 patterns should simplify, not complicate, your code."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of design patterns as blueprints for building software. You don’t copy the blueprint exactly — you adapt it to your project, knowing that others have successfully used that same design to build reliable and maintainable structures before."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of design patterns as blueprints for building software. You don\u2019t copy the blueprint exactly \u2014 you adapt it to your project, knowing that others have successfully used that same design to build reliable and maintainable structures before."
         }
       ]
     },
@@ -2352,7 +2369,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nNormally, when the browser encounters a <code>&lt;script&gt;</code> tag during HTML parsing, it stops rendering, fetches the script, and executes it immediately before continuing. This behavior blocks the page rendering process and slows down the perceived load time.\n\nDeferred scripts solve this problem by allowing the browser to continue parsing HTML while downloading the script in the background — executing it only after the entire document is parsed."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nNormally, when the browser encounters a <code>&lt;script&gt;</code> tag during HTML parsing, it stops rendering, fetches the script, and executes it immediately before continuing. This behavior blocks the page rendering process and slows down the perceived load time.\n\nDeferred scripts solve this problem by allowing the browser to continue parsing HTML while downloading the script in the background \u2014 executing it only after the entire document is parsed."
         },
         {
           "type": "code",
@@ -2391,7 +2408,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gears'></i> <strong>How Deferred Scripts Work Internally</strong>\n\n1. The browser encounters a <code>&lt;script defer&gt;</code> tag while parsing HTML.\n2. It starts downloading the script in parallel with HTML parsing.\n3. The script is queued for execution after the document has been fully parsed.\n4. Deferred scripts preserve their order — if multiple scripts are marked as <code>defer</code>, they will execute sequentially in the order they appear in the document.\n\nThis makes <code>defer</code> especially useful for including multiple dependent scripts without blocking page rendering."
+          "text": "<i class='fa-solid fa-gears'></i> <strong>How Deferred Scripts Work Internally</strong>\n\n1. The browser encounters a <code>&lt;script defer&gt;</code> tag while parsing HTML.\n2. It starts downloading the script in parallel with HTML parsing.\n3. The script is queued for execution after the document has been fully parsed.\n4. Deferred scripts preserve their order \u2014 if multiple scripts are marked as <code>defer</code>, they will execute sequentially in the order they appear in the document.\n\nThis makes <code>defer</code> especially useful for including multiple dependent scripts without blocking page rendering."
         },
         {
           "type": "code",
@@ -2409,7 +2426,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Key Considerations</strong>\n\n- The <code>defer</code> attribute only works for **external scripts** (those with <code>src</code> attributes).\n- Inline scripts cannot use <code>defer</code>.\n- In old browsers (pre-HTML5), support for <code>defer</code> was inconsistent, but it’s now standard in all major browsers.\n- Combining <code>defer</code> and <code>async</code> on the same script is invalid — only one behavior applies."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Key Considerations</strong>\n\n- The <code>defer</code> attribute only works for **external scripts** (those with <code>src</code> attributes).\n- Inline scripts cannot use <code>defer</code>.\n- In old browsers (pre-HTML5), support for <code>defer</code> was inconsistent, but it\u2019s now standard in all major browsers.\n- Combining <code>defer</code> and <code>async</code> on the same script is invalid \u2014 only one behavior applies."
         },
         {
           "type": "text",
@@ -2417,7 +2434,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>defer</code> like scheduling a meeting after you've finished your main work — the script is downloaded while you’re busy, but it only executes once your workspace (HTML) is ready. It keeps everything efficient and orderly."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of <code>defer</code> like scheduling a meeting after you've finished your main work \u2014 the script is downloaded while you\u2019re busy, but it only executes once your workspace (HTML) is ready. It keeps everything efficient and orderly."
         }
       ]
     },
@@ -2444,7 +2461,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nJavaScript classes are templates for creating objects that encapsulate data (properties) and behavior (methods). While they resemble classes in languages like Java or C#, under the hood they still use **prototypes** — a fundamental feature of JavaScript’s object system.\n\nThe class syntax provides a more structured, readable, and modern way to define constructor functions, methods, and inheritance."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nJavaScript classes are templates for creating objects that encapsulate data (properties) and behavior (methods). While they resemble classes in languages like Java or C#, under the hood they still use **prototypes** \u2014 a fundamental feature of JavaScript\u2019s object system.\n\nThe class syntax provides a more structured, readable, and modern way to define constructor functions, methods, and inheritance."
         },
         {
           "type": "code",
@@ -2488,7 +2505,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-code-branch'></i> <strong>Inheritance with Classes</strong>\n\nJavaScript supports class inheritance using the <code>extends</code> keyword. The child class inherits properties and methods from the parent class and can add its own. The <code>super()</code> keyword allows calling the parent’s constructor or methods."
+          "text": "<i class='fa-solid fa-code-branch'></i> <strong>Inheritance with Classes</strong>\n\nJavaScript supports class inheritance using the <code>extends</code> keyword. The child class inherits properties and methods from the parent class and can add its own. The <code>super()</code> keyword allows calling the parent\u2019s constructor or methods."
         },
         {
           "type": "code",
@@ -2497,11 +2514,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Behind the Scenes</strong>\n\nEven though classes look new, they’re still built on top of JavaScript’s **prototype chain**:\n- Every class has a hidden <code>[[Prototype]]</code> link.\n- The class body methods are added to <code>ClassName.prototype</code>.\n- When you call a method on an instance, JavaScript looks it up through this prototype chain.\n\nThis means the following two approaches are equivalent in behavior:\n\n```javascript\nfunction Person(name) {\n  this.name = name;\n}\nPerson.prototype.greet = function() {\n  console.log('Hello, ' + this.name);\n};\n```\n\n```javascript\nclass Person {\n  constructor(name) {\n    this.name = name;\n  }\n  greet() {\n    console.log('Hello, ' + this.name);\n  }\n}\n```"
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Behind the Scenes</strong>\n\nEven though classes look new, they\u2019re still built on top of JavaScript\u2019s **prototype chain**:\n- Every class has a hidden <code>[[Prototype]]</code> link.\n- The class body methods are added to <code>ClassName.prototype</code>.\n- When you call a method on an instance, JavaScript looks it up through this prototype chain.\n\nThis means the following two approaches are equivalent in behavior:\n\n```javascript\nfunction Person(name) {\n  this.name = name;\n}\nPerson.prototype.greet = function() {\n  console.log('Hello, ' + this.name);\n};\n```\n\n```javascript\nclass Person {\n  constructor(name) {\n    this.name = name;\n  }\n  greet() {\n    console.log('Hello, ' + this.name);\n  }\n}\n```"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important Details</strong>\n\n- Class declarations are **not hoisted** like function declarations. You must define them before using them.\n- You can define **anonymous classes** or assign them to variables.\n- By default, class methods are **non-enumerable**, meaning they don’t show up in <code>for...in</code> loops.\n- Using <code>new</code> is mandatory when instantiating classes — calling a class as a function throws an error."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important Details</strong>\n\n- Class declarations are **not hoisted** like function declarations. You must define them before using them.\n- You can define **anonymous classes** or assign them to variables.\n- By default, class methods are **non-enumerable**, meaning they don\u2019t show up in <code>for...in</code> loops.\n- Using <code>new</code> is mandatory when instantiating classes \u2014 calling a class as a function throws an error."
         },
         {
           "type": "code",
@@ -2510,11 +2527,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Classes define blueprints for creating objects with shared behavior.\n- They simplify working with prototypes and inheritance.\n- Support constructors, instance methods, static methods, and getters/setters.\n- Classes improve code organization and readability, making OOP patterns easier to implement in JavaScript.\n- Under the hood, they’re still prototype-based — just easier to read and maintain."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\n- Classes define blueprints for creating objects with shared behavior.\n- They simplify working with prototypes and inheritance.\n- Support constructors, instance methods, static methods, and getters/setters.\n- Classes improve code organization and readability, making OOP patterns easier to implement in JavaScript.\n- Under the hood, they\u2019re still prototype-based \u2014 just easier to read and maintain."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a class like a cookie cutter 🍪 — it defines the shape and design. Each cookie (object) made from it shares the same structure, but with its own details (property values)."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of a class like a cookie cutter \ud83c\udf6a \u2014 it defines the shape and design. Each cookie (object) made from it shares the same structure, but with its own details (property values)."
         }
       ]
     },
@@ -2524,7 +2541,7 @@
   {
     "id": "js-object-creation-methods",
     "title": "In JavaScript, how many different methods can you make an object?",
-    "description": "There are several ways to create objects in JavaScript — each serving a unique purpose. From using object literals to the Object.create() method and ES6 classes, these approaches allow developers to structure data and behavior in flexible ways.",
+    "description": "There are several ways to create objects in JavaScript \u2014 each serving a unique purpose. From using object literals to the Object.create() method and ES6 classes, these approaches allow developers to structure data and behavior in flexible ways.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -2541,7 +2558,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nJavaScript is an object-oriented language built around objects and prototypes. There isn’t just one way to create an object — there are **multiple**, each suited to different use cases. Some are simple and declarative, while others give fine-grained control over inheritance and property configuration."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nJavaScript is an object-oriented language built around objects and prototypes. There isn\u2019t just one way to create an object \u2014 there are **multiple**, each suited to different use cases. Some are simple and declarative, while others give fine-grained control over inheritance and property configuration."
         },
         {
           "type": "text",
@@ -2554,7 +2571,7 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** When you need a quick, simple object with fixed structure. Ideal for configurations, settings, or small data objects."
+          "text": "\u2705 **When to use:** When you need a quick, simple object with fixed structure. Ideal for configurations, settings, or small data objects."
         },
         {
           "type": "text",
@@ -2567,7 +2584,7 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** Rarely used in modern code — the object literal is cleaner and faster. But useful when creating objects dynamically in certain APIs or legacy systems."
+          "text": "\u2705 **When to use:** Rarely used in modern code \u2014 the object literal is cleaner and faster. But useful when creating objects dynamically in certain APIs or legacy systems."
         },
         {
           "type": "text",
@@ -2580,7 +2597,7 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** When you need multiple objects of the same type that share methods. It provides structure and supports prototype-based inheritance."
+          "text": "\u2705 **When to use:** When you need multiple objects of the same type that share methods. It provides structure and supports prototype-based inheritance."
         },
         {
           "type": "text",
@@ -2593,7 +2610,7 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** Perfect for creating structured, reusable object templates in modern applications. Supports clean inheritance and encapsulation."
+          "text": "\u2705 **When to use:** Perfect for creating structured, reusable object templates in modern applications. Supports clean inheritance and encapsulation."
         },
         {
           "type": "text",
@@ -2606,11 +2623,11 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** When you need fine control over inheritance or want to create an object that directly inherits from another without using classes or constructors."
+          "text": "\u2705 **When to use:** When you need fine control over inheritance or want to create an object that directly inherits from another without using classes or constructors."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-file-code'></i> <strong>6. Using Factory Functions</strong>\n\nA factory function returns a new object each time it’s called, without using <code>new</code>. It’s simple and doesn’t rely on prototypes unless explicitly set."
+          "text": "<i class='fa-solid fa-file-code'></i> <strong>6. Using Factory Functions</strong>\n\nA factory function returns a new object each time it\u2019s called, without using <code>new</code>. It\u2019s simple and doesn\u2019t rely on prototypes unless explicitly set."
         },
         {
           "type": "code",
@@ -2619,7 +2636,7 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** When you need simple, self-contained object creation without worrying about prototypes or class inheritance. Common in functional programming and React-style design."
+          "text": "\u2705 **When to use:** When you need simple, self-contained object creation without worrying about prototypes or class inheritance. Common in functional programming and React-style design."
         },
         {
           "type": "text",
@@ -2632,7 +2649,7 @@
         },
         {
           "type": "text",
-          "text": "✅ **When to use:** Ideal when receiving JSON data from a server or a configuration file. It quickly transforms string data into usable JavaScript objects."
+          "text": "\u2705 **When to use:** Ideal when receiving JSON data from a server or a configuration file. It quickly transforms string data into usable JavaScript objects."
         },
         {
           "type": "list",
@@ -2694,7 +2711,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of object creation methods like different ways to build a house:\n- **Object literal:** Prefab home — quick and easy.\n- **Constructor/Class:** Architect-designed — reusable blueprint.\n- **Factory function:** Custom-built home — flexible but independent.\n- **Object.create():** Extension — built from an existing foundation.\nEach approach gives you a new home (object), but the building method depends on your needs."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of object creation methods like different ways to build a house:\n- **Object literal:** Prefab home \u2014 quick and easy.\n- **Constructor/Class:** Architect-designed \u2014 reusable blueprint.\n- **Factory function:** Custom-built home \u2014 flexible but independent.\n- **Object.create():** Extension \u2014 built from an existing foundation.\nEach approach gives you a new home (object), but the building method depends on your needs."
         }
       ]
     },
@@ -2730,7 +2747,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How It Works</strong>\n\n1. The function is wrapped in a **higher-order function** that maintains a cache (usually an object or Map).\n2. When the function is called, the wrapper checks if the input has been seen before.\n3. If found in cache, the stored value is returned immediately.\n4. If not found, the function runs normally, stores its result in the cache, and then returns it.\n\nThe key concept: **trade space for time** — use memory to store results and avoid unnecessary computation."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How It Works</strong>\n\n1. The function is wrapped in a **higher-order function** that maintains a cache (usually an object or Map).\n2. When the function is called, the wrapper checks if the input has been seen before.\n3. If found in cache, the stored value is returned immediately.\n4. If not found, the function runs normally, stores its result in the cache, and then returns it.\n\nThe key concept: **trade space for time** \u2014 use memory to store results and avoid unnecessary computation."
         },
         {
           "type": "list",
@@ -2765,7 +2782,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gears'></i> <strong>Memoization vs. Caching</strong>\n\nWhile both involve storing data for faster future access, **memoization** is function-specific — it stores **function return values** based on input arguments. General caching, on the other hand, can apply to data from APIs, databases, or file systems.\n\nIn other words:\n- **Memoization** → optimization at the **function level**.\n- **Caching** → broader concept used in **networking, databases, or browsers**."
+          "text": "<i class='fa-solid fa-gears'></i> <strong>Memoization vs. Caching</strong>\n\nWhile both involve storing data for faster future access, **memoization** is function-specific \u2014 it stores **function return values** based on input arguments. General caching, on the other hand, can apply to data from APIs, databases, or file systems.\n\nIn other words:\n- **Memoization** \u2192 optimization at the **function level**.\n- **Caching** \u2192 broader concept used in **networking, databases, or browsers**."
         },
         {
           "type": "code",
@@ -2774,11 +2791,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>When to Use and When Not To</strong>\n\n✅ **Use memoization when:**\n- A function performs expensive or repetitive calculations.\n- The same inputs occur frequently.\n- The function is pure — it always returns the same output for the same inputs.\n\n🚫 **Avoid memoization when:**\n- The input range is very large (cache will grow uncontrollably).\n- The function relies on external state or randomness.\n- The computation is cheap (the overhead of caching may outweigh benefits)."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>When to Use and When Not To</strong>\n\n\u2705 **Use memoization when:**\n- A function performs expensive or repetitive calculations.\n- The same inputs occur frequently.\n- The function is pure \u2014 it always returns the same output for the same inputs.\n\n\ud83d\udeab **Avoid memoization when:**\n- The input range is very large (cache will grow uncontrollably).\n- The function relies on external state or randomness.\n- The computation is cheap (the overhead of caching may outweigh benefits)."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Real-World Use Cases</strong>\n\n- **React’s useMemo() and useCallback():** Prevent re-rendering by memoizing values or functions between renders.\n- **API call optimization:** Cache API responses to avoid fetching the same data multiple times.\n- **Dynamic programming:** In problems like Fibonacci, factorial, or pathfinding (e.g., Dijkstra’s algorithm), memoization avoids redundant recursive calls.\n- **Machine learning pipelines:** Memoizing preprocessing steps for repeated datasets."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Real-World Use Cases</strong>\n\n- **React\u2019s useMemo() and useCallback():** Prevent re-rendering by memoizing values or functions between renders.\n- **API call optimization:** Cache API responses to avoid fetching the same data multiple times.\n- **Dynamic programming:** In problems like Fibonacci, factorial, or pathfinding (e.g., Dijkstra\u2019s algorithm), memoization avoids redundant recursive calls.\n- **Machine learning pipelines:** Memoizing preprocessing steps for repeated datasets."
         },
         {
           "type": "code",
@@ -2791,7 +2808,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of memoization like remembering math homework answers — once you’ve solved a problem, you don’t need to redo it every time someone asks. You just recall the answer instantly."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Still so complicated?</strong>\n\nThink of memoization like remembering math homework answers \u2014 once you\u2019ve solved a problem, you don\u2019t need to redo it every time someone asks. You just recall the answer instantly."
         }
       ]
     },
@@ -2820,7 +2837,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bolt'></i> <strong>Core difference</strong>\n\nBoth are “queued callbacks” that run <em>after</em> the current synchronous call stack finishes. The difference is <strong>priority and timing</strong>.\n\n- <strong>Microtasks</strong> run <strong>immediately after the call stack</strong> and are <strong>fully drained</strong> before anything else happens.\n- <strong>Macrotasks</strong> run <strong>one at a time</strong> on the next event loop turn, and the browser may render between macrotasks."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Core difference</strong>\n\nBoth are \u201cqueued callbacks\u201d that run <em>after</em> the current synchronous call stack finishes. The difference is <strong>priority and timing</strong>.\n\n- <strong>Microtasks</strong> run <strong>immediately after the call stack</strong> and are <strong>fully drained</strong> before anything else happens.\n- <strong>Macrotasks</strong> run <strong>one at a time</strong> on the next event loop turn, and the browser may render between macrotasks."
         },
         {
           "type": "list",
@@ -2835,7 +2852,7 @@
               "<strong>Microtask queue</strong>",
               "<code>Promise.then/catch/finally</code>, <code>queueMicrotask</code>, <code>MutationObserver</code>",
               "After the current call stack, <strong>before</strong> the next macrotask and typically before rendering",
-              "Higher priority: can “cut in line” before timers/events"
+              "Higher priority: can \u201ccut in line\u201d before timers/events"
             ],
             [
               "<strong>Macrotask queue</strong>",
@@ -2857,7 +2874,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview punchline:</strong> “Promises run before timers because microtasks are drained before the next macrotask.”"
+          "text": "<strong>Interview punchline:</strong> \u201cPromises run before timers because microtasks are drained before the next macrotask.\u201d"
         },
         {
           "type": "text",
@@ -2870,7 +2887,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Practical guidance</strong>\n\n- Use <strong>microtasks</strong> for “run right after this finishes” follow-ups (e.g., finalize state, chain promise work).\n- Use <strong>macrotasks</strong> to yield control (e.g., split heavy work so the UI can render):\n  - <code>setTimeout(fn, 0)</code> (coarse)\n  - <code>requestAnimationFrame</code> (before next paint)\n  - <code>requestIdleCallback</code> (when idle; best-effort)"
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Practical guidance</strong>\n\n- Use <strong>microtasks</strong> for \u201crun right after this finishes\u201d follow-ups (e.g., finalize state, chain promise work).\n- Use <strong>macrotasks</strong> to yield control (e.g., split heavy work so the UI can render):\n  - <code>setTimeout(fn, 0)</code> (coarse)\n  - <code>requestAnimationFrame</code> (before next paint)\n  - <code>requestIdleCallback</code> (when idle; best-effort)"
         },
         {
           "type": "code",
@@ -2879,7 +2896,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-server'></i> <strong>Node.js note (don’t overclaim)</strong>\n\nNode also has microtasks (Promises) and macrotask-like phases (timers, I/O, check, etc.). Microtasks are processed between phases, and <code>process.nextTick</code> has even higher priority than Promise microtasks. In interviews: keep the core browser model correct, then mention Node differences briefly if asked."
+          "text": "<i class='fa-solid fa-server'></i> <strong>Node.js note (don\u2019t overclaim)</strong>\n\nNode also has microtasks (Promises) and macrotask-like phases (timers, I/O, check, etc.). Microtasks are processed between phases, and <code>process.nextTick</code> has even higher priority than Promise microtasks. In interviews: keep the core browser model correct, then mention Node differences briefly if asked."
         },
         {
           "type": "text",
@@ -2909,7 +2926,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nAll four take an <strong>iterable of promises</strong> (values are auto-wrapped via <code>Promise.resolve</code>). The key differences are:\n\n1) <strong>What “finishes” the combinator</strong> (first failure? first settle? first success? all done?)\n2) <strong>What it returns</strong> (values only vs per-promise status objects)\n3) <strong>How errors behave</strong> (fail-fast vs aggregate)\n\nAlso: these combinators <strong>do not cancel</strong> the other promises; they just decide what result to produce."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The mental model</strong>\n\nAll four take an <strong>iterable of promises</strong> (values are auto-wrapped via <code>Promise.resolve</code>). The key differences are:\n\n1) <strong>What \u201cfinishes\u201d the combinator</strong> (first failure? first settle? first success? all done?)\n2) <strong>What it returns</strong> (values only vs per-promise status objects)\n3) <strong>How errors behave</strong> (fail-fast vs aggregate)\n\nAlso: these combinators <strong>do not cancel</strong> the other promises; they just decide what result to produce."
         },
         {
           "type": "list",
@@ -2940,7 +2957,7 @@
               "First promise <strong>settles</strong> and it fulfills",
               "First promise <strong>settles</strong> and it rejects",
               "The first settled value (or rejection reason)",
-              "Timeouts / “first response wins”"
+              "Timeouts / \u201cfirst response wins\u201d"
             ],
             [
               "<strong>Promise.any</strong>",
@@ -2967,7 +2984,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-stopwatch'></i> <strong>Classic pattern: timeout with race</strong>\n\nUse <code>race</code> to bound time. But remember: the original async work continues unless it’s cancellable."
+          "text": "<i class='fa-solid fa-stopwatch'></i> <strong>Classic pattern: timeout with race</strong>\n\nUse <code>race</code> to bound time. But remember: the original async work continues unless it\u2019s cancellable."
         },
         {
           "type": "code",
@@ -2985,7 +3002,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-liners to memorize</strong>\n\n- <strong>all</strong>: “All succeed or I fail fast.”\n- <strong>allSettled</strong>: “Tell me how each one ended.”\n- <strong>race</strong>: “First one to settle decides.”\n- <strong>any</strong>: “First success wins; otherwise aggregate failure.”"
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-liners to memorize</strong>\n\n- <strong>all</strong>: \u201cAll succeed or I fail fast.\u201d\n- <strong>allSettled</strong>: \u201cTell me how each one ended.\u201d\n- <strong>race</strong>: \u201cFirst one to settle decides.\u201d\n- <strong>any</strong>: \u201cFirst success wins; otherwise aggregate failure.\u201d"
         }
       ]
     },
@@ -3110,12 +3127,14 @@
       "object-creation"
     ],
     "importance": 4,
-    "companies": [],
+    "companies": [
+      "apple"
+    ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bullseye'></i> <strong>High-signal answer (what interviewers want)</strong>\n\n- <strong><code>prototype</code></strong> is a property on <strong>functions</strong> (constructors). It’s the object that instances created with <code>new</code> will delegate to.\n- <strong><code>__proto__</code></strong> is the <strong>legacy accessor</strong> for an object’s internal <strong><code>[[Prototype]]</code></strong> link (the real prototype chain pointer).\n\nThey connect via <code>new</code>: <strong><code>Object.getPrototypeOf(obj) === Foo.prototype</code></strong>."
+          "text": "<i class='fa-solid fa-bullseye'></i> <strong>High-signal answer (what interviewers want)</strong>\n\n- <strong><code>prototype</code></strong> is a property on <strong>functions</strong> (constructors). It\u2019s the object that instances created with <code>new</code> will delegate to.\n- <strong><code>__proto__</code></strong> is the <strong>legacy accessor</strong> for an object\u2019s internal <strong><code>[[Prototype]]</code></strong> link (the real prototype chain pointer).\n\nThey connect via <code>new</code>: <strong><code>Object.getPrototypeOf(obj) === Foo.prototype</code></strong>."
         },
         {
           "type": "list",
@@ -3161,7 +3180,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Top interview pitfalls</strong>\n\n1) <strong>Mixing them up</strong>\n- <code>prototype</code> is on the constructor (<code>Foo.prototype</code>)\n- <code>__proto__</code>/<code>[[Prototype]]</code> is on the instance (<code>obj</code>)\n\n2) <strong>Thinking <code>__proto__</code> is the “official” API</strong>\nUse:\n- <code>Object.getPrototypeOf(obj)</code>\n- <code>Object.setPrototypeOf(obj, proto)</code>\n\n3) <strong>Forgetting functions are objects</strong>\nFunctions have <code>[[Prototype]]</code> too (so <code>Foo.__proto__</code> exists), and also have <code>Foo.prototype</code> (used for instances)."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Top interview pitfalls</strong>\n\n1) <strong>Mixing them up</strong>\n- <code>prototype</code> is on the constructor (<code>Foo.prototype</code>)\n- <code>__proto__</code>/<code>[[Prototype]]</code> is on the instance (<code>obj</code>)\n\n2) <strong>Thinking <code>__proto__</code> is the \u201cofficial\u201d API</strong>\nUse:\n- <code>Object.getPrototypeOf(obj)</code>\n- <code>Object.setPrototypeOf(obj, proto)</code>\n\n3) <strong>Forgetting functions are objects</strong>\nFunctions have <code>[[Prototype]]</code> too (so <code>Foo.__proto__</code> exists), and also have <code>Foo.prototype</code> (used for instances)."
         },
         {
           "type": "text",
@@ -3183,7 +3202,7 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-31"
   },
   {
     "id": "js-shallow-vs-deep-copy",
@@ -3206,7 +3225,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nIn JavaScript, objects and arrays are <strong>reference types</strong>. A “copy” can either:\n\n- <strong>Shallow copy</strong>: copy only the <strong>top-level</strong> container, but keep <strong>nested objects shared</strong>.\n- <strong>Deep copy</strong>: copy <strong>everything recursively</strong>, so no nested references are shared.\n\nMost bugs around state mutation come from <strong>thinking you made a deep copy but actually making a shallow one</strong>."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core idea</strong>\n\nIn JavaScript, objects and arrays are <strong>reference types</strong>. A \u201ccopy\u201d can either:\n\n- <strong>Shallow copy</strong>: copy only the <strong>top-level</strong> container, but keep <strong>nested objects shared</strong>.\n- <strong>Deep copy</strong>: copy <strong>everything recursively</strong>, so no nested references are shared.\n\nMost bugs around state mutation come from <strong>thinking you made a deep copy but actually making a shallow one</strong>."
         },
         {
           "type": "list",
@@ -3239,7 +3258,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const original = {\n  name: 'Alice',\n  address: { city: 'Paris' }\n};\n\n// Shallow copies:\nconst a = { ...original };           // spread\nconst b = Object.assign({}, original);\n\n// Top-level is new:\na !== original; // true\n\n// Nested object is shared:\na.address === original.address; // true\n\n// Mutating nested object affects both:\na.address.city = 'London';\nconsole.log(original.address.city); // 'London'  ❗"
+          "code": "const original = {\n  name: 'Alice',\n  address: { city: 'Paris' }\n};\n\n// Shallow copies:\nconst a = { ...original };           // spread\nconst b = Object.assign({}, original);\n\n// Top-level is new:\na !== original; // true\n\n// Nested object is shared:\na.address === original.address; // true\n\n// Mutating nested object affects both:\na.address.city = 'London';\nconsole.log(original.address.city); // 'London'  \u2757"
         },
         {
           "type": "text",
@@ -3248,7 +3267,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const original = {\n  name: 'Alice',\n  address: { city: 'Paris' }\n};\n\n// 1) structuredClone (modern, correct for most cases)\nconst deep1 = structuredClone(original);\n\n// 2) JSON trick (limited!)\nconst deep2 = JSON.parse(JSON.stringify(original));\n\n// Check:\ndeep1.address === original.address; // false\n\ndeep1.address.city = 'Rome';\nconsole.log(original.address.city); // 'Paris' ✅"
+          "code": "const original = {\n  name: 'Alice',\n  address: { city: 'Paris' }\n};\n\n// 1) structuredClone (modern, correct for most cases)\nconst deep1 = structuredClone(original);\n\n// 2) JSON trick (limited!)\nconst deep2 = JSON.parse(JSON.stringify(original));\n\n// Check:\ndeep1.address === original.address; // false\n\ndeep1.address.city = 'Rome';\nconsole.log(original.address.city); // 'Paris' \u2705"
         },
         {
           "type": "text",
@@ -3261,11 +3280,11 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const arr = [{ x: 1 }, { x: 2 }];\n\nconst copy = [...arr]; // shallow\n\ncopy[0].x = 999;\nconsole.log(arr[0].x); // 999 ❗"
+          "code": "const arr = [{ x: 1 }, { x: 2 }];\n\nconst copy = [...arr]; // shallow\n\ncopy[0].x = 999;\nconsole.log(arr[0].x); // 999 \u2757"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Where this matters in real life</strong>\n\n- React / Angular / Redux / NgRx state updates\n- Undo/redo stacks\n- Caching snapshots\n- Any place you assume “old state” is immutable\n\nA shallow copy of a nested state tree is <strong>not enough</strong>."
+          "text": "<i class='fa-solid fa-screwdriver-wrench'></i> <strong>Where this matters in real life</strong>\n\n- React / Angular / Redux / NgRx state updates\n- Undo/redo stacks\n- Caching snapshots\n- Any place you assume \u201cold state\u201d is immutable\n\nA shallow copy of a nested state tree is <strong>not enough</strong>."
         },
         {
           "type": "text",
@@ -3308,26 +3327,26 @@
           "type": "list",
           "columns": [
             "Method",
-            "Input → Output",
+            "Input \u2192 Output",
             "Callback returns",
             "Typical use"
           ],
           "rows": [
             [
               "<strong>map</strong>",
-              "Array → Array (same length)",
+              "Array \u2192 Array (same length)",
               "The new element",
-              "Transform each element (e.g., numbers → strings)"
+              "Transform each element (e.g., numbers \u2192 strings)"
             ],
             [
               "<strong>filter</strong>",
-              "Array → Array (shorter or same)",
+              "Array \u2192 Array (shorter or same)",
               "<code>true</code> / <code>false</code>",
               "Select a subset (e.g., only active users)"
             ],
             [
               "<strong>reduce</strong>",
-              "Array → Any (number, object, array, map, etc.)",
+              "Array \u2192 Any (number, object, array, map, etc.)",
               "The new accumulator",
               "Aggregate / fold data into one value"
             ]
@@ -3363,7 +3382,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-layer-group'></i> <strong>reduce can replace both (but shouldn’t always)</strong>\n\nYou can implement map and filter with reduce, but it’s usually <strong>less readable</strong>:"
+          "text": "<i class='fa-solid fa-layer-group'></i> <strong>reduce can replace both (but shouldn\u2019t always)</strong>\n\nYou can implement map and filter with reduce, but it\u2019s usually <strong>less readable</strong>:"
         },
         {
           "type": "code",
@@ -3381,7 +3400,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const users = [\n  { id: 1, name: 'Alice', active: true },\n  { id: 2, name: 'Bob', active: false },\n  { id: 3, name: 'Carol', active: true }\n];\n\n// 1) Get names of active users\nconst activeNames = users\n  .filter(u => u.active)\n  .map(u => u.name);\n\n// ['Alice', 'Carol']\n\n// 2) Index by id (reduce → object)\nconst byId = users.reduce((acc, u) => {\n  acc[u.id] = u;\n  return acc;\n}, {});\n\n// { '1': {...}, '2': {...}, '3': {...} }"
+          "code": "const users = [\n  { id: 1, name: 'Alice', active: true },\n  { id: 2, name: 'Bob', active: false },\n  { id: 3, name: 'Carol', active: true }\n];\n\n// 1) Get names of active users\nconst activeNames = users\n  .filter(u => u.active)\n  .map(u => u.name);\n\n// ['Alice', 'Carol']\n\n// 2) Index by id (reduce \u2192 object)\nconst byId = users.reduce((acc, u) => {\n  acc[u.id] = u;\n  return acc;\n}, {});\n\n// { '1': {...}, '2': {...}, '3': {...} }"
         },
         {
           "type": "text",
@@ -3422,7 +3441,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const nums = [1, 2, 10, 21];\n\nnums.sort();\n\nconsole.log(nums); // [1, 10, 2, 21] ❗ (string comparison)"
+          "code": "const nums = [1, 2, 10, 21];\n\nnums.sort();\n\nconsole.log(nums); // [1, 10, 2, 21] \u2757 (string comparison)"
         },
         {
           "type": "text",
@@ -3431,16 +3450,16 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const nums = [1, 2, 10, 21];\n\nnums.sort((a, b) => a - b);\n\nconsole.log(nums); // [1, 2, 10, 21] ✅"
+          "code": "const nums = [1, 2, 10, 21];\n\nnums.sort((a, b) => a - b);\n\nconsole.log(nums); // [1, 2, 10, 21] \u2705"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bug'></i> <strong>Pitfall #1: It mutates the original array</strong>\n\n<code>sort()</code> sorts <strong>in place</strong>. If you’re in React/Angular/Redux and expect immutability, this can silently corrupt your state."
+          "text": "<i class='fa-solid fa-bug'></i> <strong>Pitfall #1: It mutates the original array</strong>\n\n<code>sort()</code> sorts <strong>in place</strong>. If you\u2019re in React/Angular/Redux and expect immutability, this can silently corrupt your state."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const original = [3, 1, 2];\nconst sorted = original.sort((a, b) => a - b);\n\nconsole.log(original); // [1, 2, 3] ❗ mutated\nconsole.log(sorted === original); // true"
+          "code": "const original = [3, 1, 2];\nconst sorted = original.sort((a, b) => a - b);\n\nconsole.log(original); // [1, 2, 3] \u2757 mutated\nconsole.log(sorted === original); // true"
         },
         {
           "type": "text",
@@ -3449,7 +3468,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const original = [3, 1, 2];\nconst sorted = [...original].sort((a, b) => a - b);\n\nconsole.log(original); // [3, 1, 2] ✅\nconsole.log(sorted);   // [1, 2, 3]"
+          "code": "const original = [3, 1, 2];\nconst sorted = [...original].sort((a, b) => a - b);\n\nconsole.log(original); // [3, 1, 2] \u2705\nconsole.log(sorted);   // [1, 2, 3]"
         },
         {
           "type": "text",
@@ -3458,7 +3477,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "// ❌ Buggy comparator\narr.sort((a, b) => a > b);\n\n// ✅ Correct\narr.sort((a, b) => a - b);"
+          "code": "// \u274c Buggy comparator\narr.sort((a, b) => a > b);\n\n// \u2705 Correct\narr.sort((a, b) => a - b);"
         },
         {
           "type": "text",
@@ -3471,7 +3490,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Stability note</strong>\n\nModern JavaScript engines (ES2019+) guarantee that <code>sort</code> is <strong>stable</strong>, but older engines did not. In interviews, it’s good to mention that <strong>today it is stable by spec</strong>."
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Stability note</strong>\n\nModern JavaScript engines (ES2019+) guarantee that <code>sort</code> is <strong>stable</strong>, but older engines did not. In interviews, it\u2019s good to mention that <strong>today it is stable by spec</strong>."
         },
         {
           "type": "text",
@@ -3489,7 +3508,7 @@
   {
     "id": "js-mutability-vs-immutability",
     "title": "Mutability vs Immutability in JavaScript (State, References, and Side Effects)",
-    "description": "Mutable data can be changed in place, while immutable data is never modified — instead, new copies are created. Understanding this difference is critical for predictable state management in React, Angular, Redux/NgRx, and for avoiding side effects and hard-to-debug bugs.",
+    "description": "Mutable data can be changed in place, while immutable data is never modified \u2014 instead, new copies are created. Understanding this difference is critical for predictable state management in React, Angular, Redux/NgRx, and for avoiding side effects and hard-to-debug bugs.",
     "type": "trivia",
     "technology": "javascript",
     "difficulty": "intermediate",
@@ -3536,7 +3555,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const state = {\n  user: { name: 'Alice' },\n  loggedIn: true\n};\n\nconst nextState = state; // NOT a copy, same reference!\n\nnextState.user.name = 'Bob';\n\nconsole.log(state.user.name); // 'Bob' ❗ original is changed"
+          "code": "const state = {\n  user: { name: 'Alice' },\n  loggedIn: true\n};\n\nconst nextState = state; // NOT a copy, same reference!\n\nnextState.user.name = 'Bob';\n\nconsole.log(state.user.name); // 'Bob' \u2757 original is changed"
         },
         {
           "type": "text",
@@ -3545,7 +3564,7 @@
         {
           "type": "code",
           "language": "javascript",
-          "code": "const state = {\n  user: { name: 'Alice' },\n  loggedIn: true\n};\n\nconst nextState = {\n  ...state,\n  user: {\n    ...state.user,\n    name: 'Bob'\n  }\n};\n\nconsole.log(state.user.name);    // 'Alice' ✅\nconsole.log(nextState.user.name); // 'Bob'"
+          "code": "const state = {\n  user: { name: 'Alice' },\n  loggedIn: true\n};\n\nconst nextState = {\n  ...state,\n  user: {\n    ...state.user,\n    name: 'Bob'\n  }\n};\n\nconsole.log(state.user.name);    // 'Alice' \u2705\nconsole.log(nextState.user.name); // 'Bob'"
         },
         {
           "type": "text",
@@ -3588,20 +3607,20 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Performance reality</strong>\n\n- Naive deep copying everything is <strong>slow</strong>.\n- Real-world immutable systems use <strong>structural sharing</strong>: only copy the path you change, reuse the rest.\n\nLibraries like <strong>Immer</strong> let you write “mutating” code that produces immutable results under the hood."
+          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Performance reality</strong>\n\n- Naive deep copying everything is <strong>slow</strong>.\n- Real-world immutable systems use <strong>structural sharing</strong>: only copy the path you change, reuse the rest.\n\nLibraries like <strong>Immer</strong> let you write \u201cmutating\u201d code that produces immutable results under the hood."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important nuance</strong>\n\nImmutability is a <strong>discipline</strong>, not a JavaScript language rule. <code>const</code> does <strong>not</strong> make objects immutable — it only prevents reassigning the variable."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Important nuance</strong>\n\nImmutability is a <strong>discipline</strong>, not a JavaScript language rule. <code>const</code> does <strong>not</strong> make objects immutable \u2014 it only prevents reassigning the variable."
         },
         {
           "type": "code",
           "language": "javascript",
-          "code": "const obj = { x: 1 };\nobj.x = 2; // allowed ❗"
+          "code": "const obj = { x: 1 };\nobj.x = 2; // allowed \u2757"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong>Mutable</strong> data is changed in place, while <strong>immutable</strong> data is never modified — instead, you create <strong>new values</strong> and keep the old ones untouched, enabling predictable state and cheap change detection."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence answer</strong>\n\n<strong>Mutable</strong> data is changed in place, while <strong>immutable</strong> data is never modified \u2014 instead, you create <strong>new values</strong> and keep the old ones untouched, enabling predictable state and cheap change detection."
         }
       ]
     },
@@ -3630,19 +3649,20 @@
     ],
     "importance": 4,
     "companies": [
-      "netflix"
+      "netflix",
+      "meta"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-shield'></i> <strong>Key principle</strong>\n\nCORS is part of the <strong>Same-Origin Policy</strong> enforced by the browser. If the API response doesn’t include the right CORS headers, the browser blocks your JavaScript from reading it. The fix is almost always <strong>server-side</strong> (or via a trusted proxy/BFF)."
+          "text": "<i class='fa-solid fa-shield'></i> <strong>Key principle</strong>\n\nCORS is part of the <strong>Same-Origin Policy</strong> enforced by the browser. If the API response doesn\u2019t include the right CORS headers, the browser blocks your JavaScript from reading it. The fix is almost always <strong>server-side</strong> (or via a trusted proxy/BFF)."
         },
         {
           "type": "list",
           "columns": [
             "Frontend action",
-            "What it does (and doesn’t do)"
+            "What it does (and doesn\u2019t do)"
           ],
           "rows": [
             [
@@ -3651,7 +3671,7 @@
             ],
             [
               "Remove custom headers / use simple requests",
-              "May avoid preflight, but still won’t bypass CORS if the server disallows the origin."
+              "May avoid preflight, but still won\u2019t bypass CORS if the server disallows the origin."
             ],
             [
               "Set <code>credentials: 'include'</code>",
@@ -3700,7 +3720,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-route'></i> <strong>Preflight (OPTIONS) requests</strong>\n\nBrowsers send a preflight when a request is not “simple” (custom headers, non-GET/POST, or JSON content type). Your server must respond to <code>OPTIONS</code> with the same CORS headers or the real request will be blocked."
+          "text": "<i class='fa-solid fa-route'></i> <strong>Preflight (OPTIONS) requests</strong>\n\nBrowsers send a preflight when a request is not \u201csimple\u201d (custom headers, non-GET/POST, or JSON content type). Your server must respond to <code>OPTIONS</code> with the same CORS headers or the real request will be blocked."
         },
         {
           "type": "code",
@@ -3709,7 +3729,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-network-wired'></i> <strong>When you can’t change the API</strong>\n\nUse a backend proxy/BFF: your frontend calls your own server, and your server calls the third-party API. This avoids CORS, keeps API keys private, and lets you enforce auth, logging, and rate limits."
+          "text": "<i class='fa-solid fa-network-wired'></i> <strong>When you can\u2019t change the API</strong>\n\nUse a backend proxy/BFF: your frontend calls your own server, and your server calls the third-party API. This avoids CORS, keeps API keys private, and lets you enforce auth, logging, and rate limits."
         },
         {
           "type": "text",
@@ -3717,12 +3737,12 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview-ready answer</strong>\n\nYou don’t “fix CORS” in the frontend; you configure the API (or a proxy/BFF) to allow trusted origins with the right CORS headers, handle preflight correctly, and avoid wildcard origins when credentials are involved."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Interview-ready answer</strong>\n\nYou don\u2019t \u201cfix CORS\u201d in the frontend; you configure the API (or a proxy/BFF) to allow trusted origins with the right CORS headers, handle preflight correctly, and avoid wildcard origins when credentials are involved."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-02-01"
   },
   {
     "id": "content-delivery-caching-strategies-streaming",
@@ -3797,7 +3817,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-cloud'></i> <strong>CDN strategy (the real MVP)</strong>\n\n- Put video segments on <strong>global CDN edge servers</strong>\n- Users download from the <strong>nearest location</strong>\n- Popular content stays hot in cache\n- Cache headers like:\n  - <code>Cache-Control: public, max-age=31536000, immutable</code>\n\nResult:\n✅ Ultra-low latency\n✅ Massive origin offload\n✅ Huge cost savings"
+          "text": "<i class='fa-solid fa-cloud'></i> <strong>CDN strategy (the real MVP)</strong>\n\n- Put video segments on <strong>global CDN edge servers</strong>\n- Users download from the <strong>nearest location</strong>\n- Popular content stays hot in cache\n- Cache headers like:\n  - <code>Cache-Control: public, max-age=31536000, immutable</code>\n\nResult:\n\u2705 Ultra-low latency\n\u2705 Massive origin offload\n\u2705 Huge cost savings"
         },
         {
           "type": "text",
@@ -3817,7 +3837,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"I would use multi-layer caching: browser + service worker for app data, CDN edge caches for video segments with immutable URLs, regional caches for hot content, and keep origin servers as a last resort — while streaming chunked, multi-bitrate video optimized for cache reuse.\""
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"I would use multi-layer caching: browser + service worker for app data, CDN edge caches for video segments with immutable URLs, regional caches for hot content, and keep origin servers as a last resort \u2014 while streaming chunked, multi-bitrate video optimized for cache reuse.\""
         }
       ]
     },
@@ -3850,11 +3870,11 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The real interview problem</strong>\n\nThis question is <strong>not</strong> about definitions. It's about this:\n\n<strong>\"How do you prevent expensive work from running too often when the user types?\"</strong>\n\nTyping in a search input can easily trigger <strong>10–20 events per second</strong>. Calling an API on each keystroke is wasteful, slow, and can even get you rate-limited."
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The real interview problem</strong>\n\nThis question is <strong>not</strong> about definitions. It's about this:\n\n<strong>\"How do you prevent expensive work from running too often when the user types?\"</strong>\n\nTyping in a search input can easily trigger <strong>10\u201320 events per second</strong>. Calling an API on each keystroke is wasteful, slow, and can even get you rate-limited."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-stopwatch'></i> <strong>Debounce vs Throttle — the mental model</strong>"
+          "text": "<i class='fa-solid fa-stopwatch'></i> <strong>Debounce vs Throttle \u2014 the mental model</strong>"
         },
         {
           "type": "list",
@@ -3883,7 +3903,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Is 200ms a good debounce value?</strong>\n\nUsually yes — as a <strong>starting point</strong>.\n\n- Common range: <strong>150–300ms</strong>\n- <strong>200ms</strong> often feels instant to humans\n- But still cuts request volume massively\n\nTrade-off:\n- Too small → still spams API\n- Too big → UI feels laggy\n\n<strong>Senior answer:</strong> \"We should measure and tune this based on UX and backend cost.\""
+          "text": "<i class='fa-solid fa-gauge-high'></i> <strong>Is 200ms a good debounce value?</strong>\n\nUsually yes \u2014 as a <strong>starting point</strong>.\n\n- Common range: <strong>150\u2013300ms</strong>\n- <strong>200ms</strong> often feels instant to humans\n- But still cuts request volume massively\n\nTrade-off:\n- Too small \u2192 still spams API\n- Too big \u2192 UI feels laggy\n\n<strong>Senior answer:</strong> \"We should measure and tune this based on UX and backend cost.\""
         },
         {
           "type": "text",
@@ -3904,15 +3924,651 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-skull-crossbones'></i> <strong>Common mistakes</strong>\n\n- Using throttle for search → sends half-baked queries\n- Debouncing too aggressively → UI feels broken\n- Not cancelling previous requests\n- Letting stale responses overwrite fresh ones"
+          "text": "<i class='fa-solid fa-skull-crossbones'></i> <strong>Common mistakes</strong>\n\n- Using throttle for search \u2192 sends half-baked queries\n- Debouncing too aggressively \u2192 UI feels broken\n- Not cancelling previous requests\n- Letting stale responses overwrite fresh ones"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"For search inputs I would use <strong>debounce</strong>, not throttle, because I only care about the final query — and <strong>~200ms</strong> is a good starting point that should be tuned based on UX and backend cost, plus I’d handle request cancellation to avoid race conditions.\""
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"For search inputs I would use <strong>debounce</strong>, not throttle, because I only care about the final query \u2014 and <strong>~200ms</strong> is a good starting point that should be tuned based on UX and backend cost, plus I\u2019d handle request cancellation to avoid race conditions.\""
         }
       ]
     },
     "access": "free",
     "updatedAt": "2026-01-30"
+  },
+  {
+    "id": "js-map-vs-object",
+    "title": "What\u2019s the difference between a Map and a plain Object in JavaScript?",
+    "technology": "javascript",
+    "companies": [
+      "bytedance"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "Map is a dedicated key-value collection with any key type, stable iteration order, and a size property. Plain Objects are great for structured records, but keys are limited to strings/symbols and require care with prototypes and ordering.",
+    "type": "trivia",
+    "tags": [
+      "javascript",
+      "objects",
+      "es6",
+      "data-types",
+      "keys",
+      "iteration"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nUse <strong>Map</strong> when you need a true key-value collection with non-string keys and predictable iteration. Use a plain <strong>Object</strong> when modeling a fixed record with known string keys."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Aspect",
+            "Map",
+            "Object"
+          ],
+          "rows": [
+            [
+              "Key types",
+              "Any type (objects, functions, primitives)",
+              "Strings or symbols only (other types coerce)"
+            ],
+            [
+              "Iteration order",
+              "Guaranteed insertion order",
+              "Mostly insertion order, but special cases for numeric keys"
+            ],
+            [
+              "Size",
+              "<code>map.size</code>",
+              "No built-in size (use <code>Object.keys</code>)"
+            ],
+            [
+              "Iteration",
+              "Built-in iterators (<code>map.keys()</code>, <code>map.entries()</code>)",
+              "Use <code>Object.keys/values/entries</code>"
+            ],
+            [
+              "Prototype safety",
+              "No prototype collisions",
+              "Potential collisions unless created with <code>Object.create(null)</code>"
+            ],
+            [
+              "Serialization",
+              "Not JSON-serializable by default",
+              "JSON-friendly for plain data"
+            ]
+          ],
+          "caption": "Key differences between Map and Object"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const map = new Map();\nconst keyObj = { id: 1 };\nmap.set(keyObj, 'value');\n\nconst obj = {};\nobj[keyObj] = 'value';\n\nconsole.log(map.get(keyObj)); // 'value'\nconsole.log(obj); // { \"[object Object]\": \"value\" }\n"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nMap is purpose-built for dynamic key-value data with any key type and stable iteration. Objects are best for structured records and JSON-shaped data."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "http-caching-basics",
+    "title": "Explain HTTP caching (Cache-Control, ETag vs Last-Modified, 304 responses)",
+    "description": "Interviewers want to hear how browser caching actually works: cache-control directives, validators (ETag vs Last-Modified), conditional requests, and what a 304 means for the response body.",
+    "type": "trivia",
+    "technology": "web",
+    "difficulty": "intermediate",
+    "tags": [
+      "http",
+      "headers",
+      "cache",
+      "caching",
+      "http-cache",
+      "web-performance"
+    ],
+    "importance": 5,
+    "companies": [
+      "bytedance"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nHTTP caching is about letting the browser reuse responses to avoid network trips. You control it with response headers, and you validate freshness with conditional requests."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Directive",
+            "Meaning",
+            "Typical use"
+          ],
+          "rows": [
+            [
+              "<code>max-age</code>",
+              "Fresh for N seconds",
+              "Static assets"
+            ],
+            [
+              "<code>no-cache</code>",
+              "Store but revalidate before use",
+              "HTML pages that change often"
+            ],
+            [
+              "<code>no-store</code>",
+              "Do not store at all",
+              "Sensitive data"
+            ],
+            [
+              "<code>public</code> / <code>private</code>",
+              "Cacheable by shared caches or only the browser",
+              "User-specific vs shared content"
+            ],
+            [
+              "<code>immutable</code>",
+              "Never revalidate during freshness window",
+              "Versioned assets"
+            ]
+          ],
+          "caption": "Common Cache-Control directives"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>ETag vs Last-Modified</strong>\n\n- <strong>ETag</strong> is a content validator (hash or version). It is more precise and preferred when you can generate it.\n- <strong>Last-Modified</strong> is a timestamp. It is simpler but less precise (time granularity).\n\nBrowsers revalidate with <code>If-None-Match</code> (ETag) or <code>If-Modified-Since</code> (Last-Modified)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-question'></i> <strong>What is the response body of a 304?</strong>\n\nA <code>304 Not Modified</code> response has <strong>no response body</strong>. The browser reuses the cached body and only reads the headers."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nUse <code>Cache-Control</code> to define freshness, and validators (ETag/Last-Modified) for revalidation. 304 responses are header-only and tell the browser to reuse cached content."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "web-performance-optimize-load-time",
+    "title": "How do you optimize a web page\u2019s response or load time?",
+    "description": "This question checks if you can reason about performance across the network, render pipeline, assets, and runtime. Interviewers expect concrete tactics like caching, compression, code splitting, and image optimization.",
+    "type": "trivia",
+    "technology": "web",
+    "difficulty": "intermediate",
+    "tags": [
+      "performance",
+      "web-performance",
+      "optimization",
+      "caching",
+      "cdn",
+      "images",
+      "http-cache"
+    ],
+    "importance": 5,
+    "companies": [
+      "bytedance",
+      "apple"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nGood answers cover multiple layers: network, caching, rendering, assets, and runtime. You should also mention measuring with Core Web Vitals or real-user metrics."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Layer",
+            "What to do",
+            "Why it helps"
+          ],
+          "rows": [
+            [
+              "Network",
+              "Use a CDN, compression (gzip/brotli), HTTP/2 or HTTP/3",
+              "Reduce latency and payload size"
+            ],
+            [
+              "Caching",
+              "Set Cache-Control + ETag, version assets",
+              "Avoid repeated downloads"
+            ],
+            [
+              "JS/CSS",
+              "Code split, defer scripts, inline critical CSS",
+              "Reduce render blocking and main-thread work"
+            ],
+            [
+              "Images",
+              "Responsive images, modern formats, lazy loading",
+              "Biggest byte savings"
+            ],
+            [
+              "Runtime",
+              "Avoid long tasks, memoize heavy work",
+              "Keep the UI responsive"
+            ],
+            [
+              "Measurement",
+              "Track LCP, INP, CLS",
+              "Verify impact with real metrics"
+            ]
+          ],
+          "caption": "A complete performance answer spans the stack"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nSpeed comes from smaller payloads, smart caching, non-blocking rendering, optimized assets, and continuous measurement."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "js-current-trends",
+    "title": "What are the current trends in JavaScript?",
+    "technology": "javascript",
+    "companies": [
+      "bytedance"
+    ],
+    "difficulty": "intermediate",
+    "importance": 3,
+    "description": "This is a breadth check. The best answers mention a few durable themes and explain how you stay current rather than naming one library.",
+    "type": "trivia",
+    "tags": [
+      "javascript",
+      "best-practices",
+      "frontend-interview",
+      "performance"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nTrends shift quickly. A strong answer highlights a few broad directions and ties them to real work, then explains how you keep up with changes."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Theme",
+            "What it means",
+            "How to mention it"
+          ],
+          "rows": [
+            [
+              "Type safety",
+              "Teams want fewer runtime bugs",
+              "Adoption of TypeScript and better tooling"
+            ],
+            [
+              "ES modules everywhere",
+              "Native ESM is the default",
+              "Module-first builds and tree-shaking"
+            ],
+            [
+              "Faster tooling",
+              "Short feedback loops",
+              "Modern bundlers and dev servers"
+            ],
+            [
+              "Performance focus",
+              "UX depends on responsiveness",
+              "Core Web Vitals, code splitting"
+            ],
+            [
+              "Framework evolution",
+              "SSR/streaming/edge patterns",
+              "Pick frameworks that match product needs"
+            ]
+          ],
+          "caption": "Durable themes you can anchor on"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>How to stay current</strong>\n\nMention how you follow release notes, read RFCs, scan TC39 proposals, or track changelogs for the tools you use."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nShow breadth without name-dropping every tool. Pick a few themes, connect them to impact, and explain how you keep learning."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "ai-streaming-data-handling",
+    "title": "How should a front-end handle streaming data from an AI model?",
+    "technology": "web",
+    "companies": [
+      "openai"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "This checks whether you know how to implement streaming responses (SSE/WebSocket/ReadableStream), update the UI incrementally, and handle cancellation or errors cleanly.",
+    "type": "trivia",
+    "tags": [
+      "real-time",
+      "streams",
+      "streaming",
+      "http",
+      "api-calls",
+      "error-handling"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nStreaming means you don't wait for the full response. You open a stream (SSE, WebSocket, or fetch + ReadableStream), append chunks to the UI as they arrive, and stop cleanly when the stream ends or errors."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "What happens",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Open stream",
+              "Connect via SSE/WebSocket or fetch stream",
+              "Start receiving tokens immediately"
+            ],
+            [
+              "Append chunks",
+              "Update UI incrementally as data arrives",
+              "Low latency UX"
+            ],
+            [
+              "Handle errors",
+              "Show retry/state on disconnect",
+              "Resilience on flaky networks"
+            ],
+            [
+              "Cancel/stop",
+              "AbortController or close socket",
+              "User can stop generation"
+            ]
+          ],
+          "caption": "A minimal streaming flow"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const controller = new AbortController();\nconst res = await fetch('/api/stream', { signal: controller.signal });\nconst reader = res.body.getReader();\nconst decoder = new TextDecoder();\nlet text = '';\n\nwhile (true) {\n  const { done, value } = await reader.read();\n  if (done) break;\n  text += decoder.decode(value, { stream: true });\n  render(text); // append to UI\n}\n\n// controller.abort() to cancel\n"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nOpen a stream, append chunks to the UI, and handle cancel + errors gracefully. The UX should feel responsive even before the full response finishes."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "chat-conversation-state-management",
+    "title": "How would you maintain conversation state in a chat app like ChatGPT?",
+    "technology": "web",
+    "companies": [
+      "openai"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "This probes your ability to model a conversation, manage streaming messages, and handle memory limits or truncation without breaking UX.",
+    "type": "trivia",
+    "tags": [
+      "state-management",
+      "ux",
+      "real-time",
+      "error-handling"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nTreat the conversation as an ordered list of message objects with stable IDs and roles (user/assistant/system). Streaming responses update a \"draft\" message until completion."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "What to store",
+            "Example fields",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Message list",
+              "id, role, text, createdAt",
+              "Stable rendering and ordering"
+            ],
+            [
+              "Status",
+              "sending, streaming, done, error",
+              "Accurate UI states"
+            ],
+            [
+              "Draft message",
+              "partial text buffer",
+              "Streaming UX"
+            ],
+            [
+              "Context window",
+              "summary or truncation",
+              "Stay within token limits"
+            ]
+          ],
+          "caption": "Conversation state you should model explicitly"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Common details to mention</strong>\n\n- Optimistic UI: show the user message immediately with a temporary id.\n- Streaming: append chunks to the assistant message while status = streaming.\n- Persistence: keep recent conversations in memory and optionally in localStorage/IndexedDB.\n- Truncation: summarize or trim old turns when sending context to the server."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nModel messages + status clearly, update a streaming draft in place, and handle history size with truncation or summarization."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "sse-vs-websocket-real-time",
+    "title": "When would you use SSE over WebSockets for real-time updates?",
+    "technology": "web",
+    "companies": [
+      "openai"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "Interviewers want to hear trade-offs: SSE is server-to-client, simple, and great for streaming responses, while WebSockets are bidirectional and better for interactive or collaborative apps.",
+    "type": "trivia",
+    "tags": [
+      "real-time",
+      "streams",
+      "streaming",
+      "http"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nSSE is a simple, one-way server-to-client stream over HTTP. WebSockets are full duplex and better when the client must send frequent updates."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Feature",
+            "SSE",
+            "WebSocket"
+          ],
+          "rows": [
+            [
+              "Direction",
+              "Server -> client only",
+              "Bidirectional"
+            ],
+            [
+              "Setup",
+              "Simple HTTP connection",
+              "WebSocket handshake"
+            ],
+            [
+              "Best for",
+              "Streaming logs, AI tokens",
+              "Chat, multiplayer, collaboration"
+            ],
+            [
+              "Reconnect",
+              "Built-in (EventSource)",
+              "Manual logic"
+            ]
+          ],
+          "caption": "SSE vs WebSocket quick comparison"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>One-sentence interview answer</strong>\n\n\"Use SSE when you only need server-to-client streaming (like token-by-token AI responses). Use WebSockets when the client must send frequent real-time updates back.\""
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "ai-ux-integration-challenges",
+    "title": "What UI/UX challenges arise when integrating an AI model into an app?",
+    "technology": "web",
+    "companies": [
+      "openai"
+    ],
+    "difficulty": "intermediate",
+    "importance": 4,
+    "description": "This checks if you understand AI-specific UX constraints like latency, streaming, error handling, and unpredictable outputs.",
+    "type": "trivia",
+    "tags": [
+      "ux",
+      "error-handling",
+      "performance",
+      "real-time"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nAI responses are probabilistic, can be slow, and sometimes fail. The UI has to make that uncertainty feel safe and predictable."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Challenge",
+            "UX response",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "Latency",
+              "Show streaming or \"thinking\" state",
+              "Reduces perceived wait"
+            ],
+            [
+              "Partial responses",
+              "Render incrementally",
+              "Feels faster and more transparent"
+            ],
+            [
+              "Failures/timeouts",
+              "Clear retry and error messaging",
+              "Prevents user confusion"
+            ],
+            [
+              "Uncertainty",
+              "Provide edits, undo, or feedback",
+              "Builds trust"
+            ]
+          ],
+          "caption": "AI-specific UX concerns"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Extra points</strong>\n\nMention user controls like stop generation, regenerate, and showing a partial answer safely when the stream fails."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nMake uncertainty visible, keep the UI responsive during streaming, and recover gracefully from errors."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
+  },
+  {
+    "id": "prompt-engineering-frontend",
+    "title": "What is prompt engineering, and how does it relate to frontend features?",
+    "technology": "web",
+    "companies": [
+      "openai"
+    ],
+    "difficulty": "intermediate",
+    "importance": 3,
+    "description": "This checks if you understand that prompts are part of product design and can be influenced by frontend UX and input shaping.",
+    "type": "trivia",
+    "tags": [
+      "ux",
+      "state-management",
+      "best-practices"
+    ],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nPrompt engineering is the practice of structuring instructions and context so the model produces reliable outputs. Frontend UX often shapes that prompt by guiding what the user provides."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Frontend feature",
+            "How it affects prompts",
+            "Why it helps"
+          ],
+          "rows": [
+            [
+              "Templates / presets",
+              "Provide structured inputs",
+              "More predictable output"
+            ],
+            [
+              "Context selection",
+              "Choose relevant files or snippets",
+              "Better grounding"
+            ],
+            [
+              "Input validation",
+              "Prevent missing fields",
+              "Fewer bad responses"
+            ],
+            [
+              "Tone / style toggles",
+              "Add lightweight instructions",
+              "Consistent UX"
+            ]
+          ],
+          "caption": "How frontend UX shapes prompt quality"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nPrompt engineering is not just a backend concern. Frontend design can guide inputs and context, which directly impacts output quality."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-01-31"
   }
 ]

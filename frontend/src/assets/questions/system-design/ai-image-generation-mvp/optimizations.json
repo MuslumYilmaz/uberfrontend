@@ -1,0 +1,152 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Discuss how you would improve the MVP once it works: faster perceived latency, better reliability, and more efficient storage."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"After the MVP ships, I would measure generation time and error rates, then add streaming progress, caching, and a richer history view.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You optimize based on metrics.\n- You improve perceived speed.\n- You reduce bandwidth and storage costs.\n- You handle failures gracefully."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Mention a small set of measurable improvements like faster time-to-first-preview and lower error rate."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Optimization levers to mention",
+            "columns": [
+                "Lever",
+                "What it does",
+                "Why it helps"
+            ],
+            "rows": [
+                [
+                    "Progress events",
+                    "Show incremental status",
+                    "Improves perceived latency"
+                ],
+                [
+                    "Thumbnail previews",
+                    "Load low-res first",
+                    "Faster visual feedback"
+                ],
+                [
+                    "Result caching",
+                    "Cache recent generations",
+                    "Avoids re-fetching"
+                ],
+                [
+                    "Retry/backoff",
+                    "Retry failed jobs",
+                    "Higher success rate"
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Optimizations you should mention",
+                            "items": [
+                                "Show a low-res preview first.",
+                                "Limit concurrency per user.",
+                                "Cache recent results and thumbnails.",
+                                "Add retry with backoff for failures.",
+                                "Use CDN with cache headers for images."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Failure modes to watch for",
+                            "items": [
+                                "Jobs stuck in running state.",
+                                "Large image payloads slowing the UI.",
+                                "No retry path after errors.",
+                                "Duplicate submissions creating multiple jobs."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Deep dive scenario you can walk through",
+            "steps": [
+                {
+                    "title": "1. Slow generation",
+                    "text": "Add progress events and show a clear waiting state."
+                },
+                {
+                    "title": "2. Large outputs",
+                    "text": "Render a thumbnail first, then load full image."
+                },
+                {
+                    "title": "3. Errors",
+                    "text": "Use retry with backoff and keep the prompt for resubmission."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary metric",
+                    "value": "Time to first preview",
+                    "helperText": "Users feel the feature is fast."
+                },
+                {
+                    "label": "Reliability",
+                    "value": "Job success rate",
+                    "helperText": "Track errors and retries."
+                },
+                {
+                    "label": "Cost",
+                    "value": "Image bandwidth",
+                    "helperText": "Optimize with caching."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Ship a simple, reliable MVP first. Then optimize perceived speed and reliability based on real metrics."
+        }
+    ]
+}

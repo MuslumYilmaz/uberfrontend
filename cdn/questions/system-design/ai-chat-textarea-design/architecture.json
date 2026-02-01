@@ -1,0 +1,172 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see a clean separation between UI, state, and streaming transport. You should show how messages flow from the text area to the server and back to the UI, while history is persisted in a database."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I would have a ChatPage with a MessageList and Composer. A ChatStore owns messages and streaming status. A StreamClient handles SSE/fetch streaming and pushes chunks into the store. A HistoryService loads and paginates conversation history from the backend.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- One source of truth for message state.\n- A streaming layer that can be cancelled.\n- Clear separation of UI vs network logic.\n- A path for pagination and resume.\n- Awareness of storage (database) on the backend side."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Draw 4 to 5 boxes: Composer -> ChatStore -> StreamClient -> API. Add HistoryService and DB on the backend side so you can explain persistence and resume."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "ChatPage",
+                    "Layout and composition of list + composer",
+                    "The view layer that binds to store state."
+                ],
+                [
+                    "ChatStore",
+                    "Holds messages, statuses, and streaming state",
+                    "Single source of truth for UI updates."
+                ],
+                [
+                    "StreamClient",
+                    "Opens streaming connection and emits chunks",
+                    "Handles SSE/fetch stream and cancel."
+                ],
+                [
+                    "HistoryService",
+                    "Loads paged history and resumes conversation",
+                    "Fetches past messages by conversation id."
+                ],
+                [
+                    "Backend + DB",
+                    "Stores conversation history and metadata",
+                    "Document or relational DB depending on needs."
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type MessageStatus = 'pending' | 'streaming' | 'done' | 'error' | 'stopped';\n\ninterface ChatMessage {\n  id: string;\n  role: 'user' | 'assistant' | 'system';\n  text: string;\n  status: MessageStatus;\n  createdAt: number;\n}\n\ninterface ChatState {\n  conversationId: string | null;\n  messages: ChatMessage[];\n  isStreaming: boolean;\n  error: string | null;\n}\n\ninterface StreamClient {\n  start(prompt: string, onChunk: (chunk: string) => void): () => void;\n  stop(): void;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "The store owns the messages array and streaming flag.",
+                                "Streaming appends to a single assistant message.",
+                                "History is fetched in pages to avoid huge payloads.",
+                                "Stop cancels the stream and keeps partial text."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags to avoid",
+                            "items": [
+                                "Multiple components mutating message state independently.",
+                                "Streaming chunks appended to a new message each time.",
+                                "No cancel path for long responses.",
+                                "Loading the full history every time without pagination."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Initialize",
+                    "text": "Load conversation metadata and a first page of messages into the store."
+                },
+                {
+                    "title": "2. Send",
+                    "text": "Optimistically add the user message and create an assistant placeholder."
+                },
+                {
+                    "title": "3. Stream",
+                    "text": "Open the stream, append chunks to the assistant message, and update status."
+                },
+                {
+                    "title": "4. Persist",
+                    "text": "Backend writes messages to the DB and returns ids/revisions."
+                },
+                {
+                    "title": "5. Resume",
+                    "text": "On reload, request the latest messages and continue where the user left off."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "State ownership",
+                    "value": "ChatStore",
+                    "helperText": "Single source of truth for message state."
+                },
+                {
+                    "label": "Streaming control",
+                    "value": "StreamClient",
+                    "helperText": "Encapsulates SSE or fetch streaming."
+                },
+                {
+                    "label": "Persistence",
+                    "value": "HistoryService + DB",
+                    "helperText": "Keeps conversation history durable."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Keep the UI simple and the state centralized. The streaming client should be a thin layer that pushes chunks into the store, while the backend handles durable storage and pagination."
+        }
+    ]
+}

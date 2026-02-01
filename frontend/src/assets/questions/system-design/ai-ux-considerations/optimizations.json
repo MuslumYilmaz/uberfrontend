@@ -1,0 +1,152 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This step is about making the UX feel fast and safe under slow or unreliable conditions."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"I would optimize for perceived speed with streaming and add guardrails like timeouts, throttling, and retries.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You improve perceived speed.\n- You prevent runaway requests.\n- You reduce user frustration with clear recovery."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Talk about cancellation, retry, and throttling as UX protections, not just technical features."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Optimization levers to mention",
+            "columns": [
+                "Lever",
+                "What it does",
+                "Why it helps"
+            ],
+            "rows": [
+                [
+                    "Streaming",
+                    "Render partial output early",
+                    "Faster perceived response"
+                ],
+                [
+                    "Timeouts",
+                    "Stop hung requests",
+                    "Avoid indefinite waits"
+                ],
+                [
+                    "Rate limits",
+                    "Throttle repeated requests",
+                    "Protects backend and UX"
+                ],
+                [
+                    "Retry backoff",
+                    "Retry after failure",
+                    "Higher success rate"
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Optimizations you should mention",
+                            "items": [
+                                "Use streaming for faster feedback.",
+                                "Add a cancel button with AbortController.",
+                                "Retry with exponential backoff.",
+                                "Throttle input to avoid spam.",
+                                "Preserve partial output on failure."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Failure modes to watch for",
+                            "items": [
+                                "User stuck waiting with no feedback.",
+                                "Requests overlapping and corrupting state.",
+                                "Error messages that erase the prompt.",
+                                "Cancel not actually stopping the stream."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Deep dive scenario you can walk through",
+            "steps": [
+                {
+                    "title": "1. Slow response",
+                    "text": "Show streaming indicator and allow stop."
+                },
+                {
+                    "title": "2. Failure",
+                    "text": "Show error, keep prompt, allow retry."
+                },
+                {
+                    "title": "3. Overuse",
+                    "text": "Throttle requests and show cooldown messaging."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main UX metric",
+                    "value": "Time to first token",
+                    "helperText": "Streaming improves perception."
+                },
+                {
+                    "label": "Reliability",
+                    "value": "Retry success",
+                    "helperText": "Track how often retries work."
+                },
+                {
+                    "label": "Control",
+                    "value": "Cancel rate",
+                    "helperText": "Ensure stop is responsive."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "AI UX succeeds when users feel in control: fast feedback, safe cancel, and clear recovery."
+        }
+    ]
+}

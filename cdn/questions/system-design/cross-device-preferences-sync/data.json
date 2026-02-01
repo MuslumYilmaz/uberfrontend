@@ -1,0 +1,138 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see that you can model preferences and sync metadata explicitly instead of scattering values across components. The data model should separate user preferences, sync metadata, and queued changes."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I would model preferences as a simple key-value map plus a revision token. Then I would model queued changes as patch events with a base revision so we can detect conflicts.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear separation between **values** and **sync metadata**.\n- A compact patch/event model for updates.\n- A way to detect conflicts (revision, ETag, timestamp).\n- A durable queue representation."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep the model small and explicit: preferences, revision, and queued patches. You do not need a huge database schema."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "What it represents",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "PreferencesState",
+                    "Current local values plus a revision token.",
+                    "The UI reads from this; sync compares revisions."
+                ],
+                [
+                    "PreferencePatch",
+                    "A small change set (only changed fields).",
+                    "Keeps payloads small and enables batching."
+                ],
+                [
+                    "SyncQueueItem",
+                    "A durable entry that wraps a patch with metadata.",
+                    "Allows retries, ordering, and conflict detection."
+                ],
+                [
+                    "SyncStatus",
+                    "Client-visible state (synced, saving, offline, conflict).",
+                    "Lets the UI show accurate feedback."
+                ]
+            ]
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type PreferenceKey = 'theme' | 'language' | 'notifications';\n\ninterface PreferencesState {\n  values: Record<PreferenceKey, string | boolean>;\n  revision: string;\n}\n\ninterface PreferencePatch {\n  id: string;\n  changes: Partial<PreferencesState['values']>;\n  baseRevision: string;\n  createdAt: number;\n}\n\ninterface SyncQueueItem {\n  patch: PreferencePatch;\n  attempts: number;\n  lastAttemptAt?: number;\n}\n\ntype SyncStatus = 'synced' | 'saving' | 'offline' | 'conflict';"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should model explicitly",
+                            "items": [
+                                "A **revision** or ETag for conflict detection.",
+                                "Queued patches with **baseRevision**.",
+                                "A **sync status** for the UI.",
+                                "Timestamps for ordering and retry backoff."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Common data model gaps",
+                            "items": [
+                                "Only storing final values and losing change history.",
+                                "No revision token, so conflicts are invisible.",
+                                "No per-item retry metadata.",
+                                "Mixing UI state (toggles) with sync state (offline)."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary entity",
+                    "value": "PreferencesState",
+                    "helperText": "Single map of settings plus revision."
+                },
+                {
+                    "label": "Change unit",
+                    "value": "PreferencePatch",
+                    "helperText": "Only send what changed."
+                },
+                {
+                    "label": "Durability",
+                    "value": "Queue persisted",
+                    "helperText": "Survives offline and reloads."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A small, explicit data model makes sync reliable. If you can explain revisions, patches, and queue items, your design will feel production-ready."
+        }
+    ]
+}

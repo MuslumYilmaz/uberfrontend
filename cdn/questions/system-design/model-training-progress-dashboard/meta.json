@@ -1,0 +1,45 @@
+{
+  "id": "model-training-progress-dashboard",
+  "title": "Real-time Model Training Dashboard",
+  "description": "Design a dashboard that updates in real time with model training progress: metrics, logs, and run status. Focus on streaming data into the UI, keeping it responsive under frequent updates, and handling reconnects or backpressure.\n\nKey considerations:\n- Live progress bars, charts, and logs.\n- WebSocket/SSE vs polling and update cadence.\n- Buffering, throttling, and list virtualization.\n- Error states, reconnect logic, and stale data handling.\n\nYou should be prepared to talk about: data flow from stream to UI, data model for metrics/logs, and how you keep the interface fast during bursts.",
+  "tags": [
+    "real-time",
+    "streams",
+    "performance",
+    "charts",
+    "state-management",
+    "api-calls"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "openai"
+  ],
+  "updatedAt": "2026-01-31"
+}

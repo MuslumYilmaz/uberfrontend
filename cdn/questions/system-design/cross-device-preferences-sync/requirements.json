@@ -1,0 +1,158 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer expects you to clarify what it means to keep preferences in sync across devices: which settings matter, how fast changes should propagate, and how the UI behaves when the network is slow or offline. You should show that you understand both UX and data-consistency trade-offs."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you're solving:**\nA preferences system where users can change settings on one device (theme, language, notifications) and expect them to appear on their other devices. The frontend owns local state, optimistic updates, offline support, and a durable sync queue."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Can you define **consistency expectations** (instant vs eventual)?\n- Do you handle **offline edits** and retries safely?\n- Do you model **conflict resolution** across devices?\n- Can you separate **local UI state** from **sync state**?\n- Do you expose clear UX states: synced, saving, offline, conflict?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Start by restating the problem: \"We need a local-first preferences store with a background sync engine so changes apply instantly on this device and reconcile across others when the network is available.\" Then ask clarifying questions about latency, conflict rules, and which settings are most important."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. App launch and hydration",
+                    "text": "Load preferences from local cache immediately for fast UI, then fetch the latest server version in the background and reconcile if needed."
+                },
+                {
+                    "title": "2. User updates a setting",
+                    "text": "Apply the change optimistically in the UI and mark the preference as dirty. The user sees the new setting immediately."
+                },
+                {
+                    "title": "3. Enqueue and persist",
+                    "text": "Record a small patch event in a durable queue (IndexedDB/localStorage) so the change survives app reloads or offline periods."
+                },
+                {
+                    "title": "4. Background sync",
+                    "text": "When online, batch queued patches, send them to the server, and clear the queue on success. Use retry with backoff on errors."
+                },
+                {
+                    "title": "5. Conflict handling",
+                    "text": "If the server reports a version conflict, resolve it (last write wins or per-field merge) and surface a subtle UI cue if the user's change was overwritten."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "Which preferences are in scope (theme, language, notifications, privacy)?",
+                                "Do we need **real-time** sync or is eventual consistency acceptable?",
+                                "Should the UI show a **saving/synced** indicator?",
+                                "How should we handle **offline** edits and long offline sessions?",
+                                "What is the conflict rule if two devices change the same setting?",
+                                "Do we need per-device settings or truly global settings?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "Local changes must feel **instant** (no blocking UI).",
+                                "No data loss: queued changes should survive reloads.",
+                                "Network failures should be **transparent** and retryable.",
+                                "Conflicts should be resolved deterministically.",
+                                "Payloads should be small (send only changed fields).",
+                                "Respect privacy: only sync what is needed."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Consistency strategies you can mention",
+            "columns": [
+                "Approach",
+                "Why teams pick it",
+                "Trade-offs"
+            ],
+            "rows": [
+                [
+                    "Last write wins",
+                    "Simple rule using timestamps or server revision.",
+                    "Can overwrite a user's recent change on another device."
+                ],
+                [
+                    "Per-field merge",
+                    "Merge non-conflicting fields independently.",
+                    "Requires per-field versioning or timestamps."
+                ],
+                [
+                    "Server authoritative",
+                    "Server resolves conflicts and sends the final state.",
+                    "Less control on the client; needs clear UX if changes are rejected."
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Sync trigger",
+                    "value": "On change + debounce",
+                    "helperText": "Batch small updates and avoid spamming the network."
+                },
+                {
+                    "label": "Conflict signal",
+                    "value": "Revision or ETag",
+                    "helperText": "Use version tokens to detect mismatches."
+                },
+                {
+                    "label": "Local durability",
+                    "value": "Cache + queue",
+                    "helperText": "Preferences cached, patches queued for retry."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong answer separates fast local UX from eventual sync. If you emphasize optimistic updates, a durable queue, and a clear conflict policy, you will sound like someone who has built cross-device settings in production."
+        }
+    ]
+}

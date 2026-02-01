@@ -35,5 +35,8 @@
       "file": "optimizations.json"
     }
   ],
-  "updatedAt": "2026-01-30"
+  "companies": [
+    "apple"
+  ],
+  "updatedAt": "2026-01-31"
 }

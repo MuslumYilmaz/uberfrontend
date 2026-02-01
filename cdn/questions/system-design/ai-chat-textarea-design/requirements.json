@@ -1,0 +1,157 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "In this step, the interviewer wants to see whether you can define a clear scope for a ChatGPT-style text area: message flow, streaming response behavior, and what data must be persisted. You should show product thinking (fast, safe UX) plus system thinking (history storage and retrieval)."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nA minimal chat interface where a user types into a text area, sees their message immediately, and receives a streaming assistant response. The UI must stay responsive while the backend stores conversation history for later retrieval."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Can you design a clean streaming UX with cancel/stop?\n- Do you model message state clearly (pending, streaming, done, error)?\n- Do you understand persistence and database choices for chat history?\n- Can you define simple APIs and pagination?\n- Do you consider latency, retries, and failure states?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Restate the core UX: \"User sends a prompt, UI shows it instantly, assistant streams back, and conversation is saved so the user can resume later.\" Then ask clarifying questions about persistence, streaming, and limits."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. Load conversation",
+                    "text": "Open an existing conversation by id or start a new one. Load recent messages (paged) and render immediately."
+                },
+                {
+                    "title": "2. User submits prompt",
+                    "text": "Optimistically add the user message to the list and clear the text area."
+                },
+                {
+                    "title": "3. Stream assistant reply",
+                    "text": "Create an assistant placeholder and append chunks as they arrive. Show a streaming indicator and a Stop button."
+                },
+                {
+                    "title": "4. End or cancel",
+                    "text": "On completion, mark the assistant message as done. If the user stops, keep partial text and mark status as stopped."
+                },
+                {
+                    "title": "5. Persist history",
+                    "text": "Backend stores messages and returns ids/revisions so the client can refresh or resume later."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "Is this a single conversation or many conversations per user?",
+                                "How long should history be retained (days, weeks, forever)?",
+                                "Do we need real-time streaming or is a full response acceptable?",
+                                "What is the max prompt/response size the UI should handle?",
+                                "Do we need pagination or search for past messages?",
+                                "Should the user be able to stop/cancel generation?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "Latency should feel low with streaming chunks.",
+                                "UI remains responsive even with long conversations.",
+                                "Stale responses should not overwrite newer ones.",
+                                "Data is stored safely and can be retrieved reliably.",
+                                "Errors show a clear retry state without losing the prompt."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Database options to mention",
+            "columns": [
+                "Option",
+                "Why teams pick it",
+                "Trade-offs"
+            ],
+            "rows": [
+                [
+                    "Document store",
+                    "Flexible schema for messages and metadata",
+                    "Harder joins, consistency can vary"
+                ],
+                [
+                    "Relational DB",
+                    "Strong consistency, easy user/message relations",
+                    "Schema changes are more rigid"
+                ],
+                [
+                    "Key-value + cache",
+                    "Fast recent history and session state",
+                    "Not ideal for long-term history"
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary transport",
+                    "value": "Streaming (SSE or fetch stream)",
+                    "helperText": "Keeps the UI responsive during long replies."
+                },
+                {
+                    "label": "Persistence",
+                    "value": "Conversation + message store",
+                    "helperText": "Allows resume and pagination."
+                },
+                {
+                    "label": "Key UX controls",
+                    "value": "Stop + retry",
+                    "helperText": "Users can cancel or recover on failure."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A strong answer combines a fast streaming UI with a simple, reliable history store. If you can explain how messages are rendered, streamed, and persisted, you are covering the core of this question."
+        }
+    ]
+}

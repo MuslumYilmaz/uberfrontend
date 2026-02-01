@@ -1,0 +1,163 @@
+{
+    "key": "A",
+    "title": "Architecture / High-level design",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Explain how streaming updates flow from the backend into a buffered store, then into UI components on a controlled cadence."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"A StreamClient ingests events into a buffer. A DashboardStore coalesces updates and exposes derived state to UI widgets like ProgressBar, MetricChart, and LogList.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Buffering before rendering.\n- A single store for realtime state.\n- Clear widget boundaries.\n- Reconnect and error handling."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Draw a pipeline: Stream -> Buffer -> Store -> Widgets. Mention throttling so charts redraw at a sane rate."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core building blocks you should mention",
+            "columns": [
+                "Piece",
+                "Responsibility",
+                "What you say out loud"
+            ],
+            "rows": [
+                [
+                    "StreamClient",
+                    "Connects to WS/SSE",
+                    "Ingests realtime events."
+                ],
+                [
+                    "Buffer",
+                    "Queues events for batching",
+                    "Prevents render storms."
+                ],
+                [
+                    "DashboardStore",
+                    "Holds latest metrics and logs",
+                    "Single source of truth for UI."
+                ],
+                [
+                    "Widgets",
+                    "Progress bar, charts, logs",
+                    "Render derived state."
+                ]
+            ]
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "interface MetricPoint {\n  t: number;\n  value: number;\n}\n\ninterface TrainingState {\n  status: 'running' | 'done' | 'failed';\n  progress: number;\n  metrics: Record<string, MetricPoint[]>;\n  logs: string[];\n}\n\ninterface StreamEvent {\n  type: 'progress' | 'metric' | 'log' | 'status';\n  payload: any;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should explicitly say",
+                            "items": [
+                                "Buffer events before updating charts.",
+                                "Render logs with virtualization.",
+                                "Handle reconnect and resume from last cursor.",
+                                "Keep widget renders cheap."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Architecture red flags to avoid",
+                            "items": [
+                                "Updating React state per log line.",
+                                "Redrawing charts for every event.",
+                                "No handling for disconnects.",
+                                "Unbounded log memory growth."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "High-level flow you should walk through",
+            "steps": [
+                {
+                    "title": "1. Initial load",
+                    "text": "Fetch run metadata and last N metric points."
+                },
+                {
+                    "title": "2. Connect stream",
+                    "text": "Subscribe to realtime updates and push into buffer."
+                },
+                {
+                    "title": "3. Batch render",
+                    "text": "Flush buffer every 100-250ms to update charts/logs."
+                },
+                {
+                    "title": "4. Disconnect",
+                    "text": "Show reconnect UI and resume using a cursor."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Update cadence",
+                    "value": "100-250ms",
+                    "helperText": "Batch updates to protect UI."
+                },
+                {
+                    "label": "Store",
+                    "value": "DashboardStore",
+                    "helperText": "Single source for widgets."
+                },
+                {
+                    "label": "Rendering",
+                    "value": "Virtualized logs",
+                    "helperText": "Avoid huge DOM lists."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A realtime dashboard is about buffering and batching. If you can explain how to avoid per-event re-renders, you are answering the core of this question."
+        }
+    ]
+}

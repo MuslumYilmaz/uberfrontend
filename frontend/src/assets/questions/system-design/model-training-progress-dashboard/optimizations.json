@@ -1,0 +1,152 @@
+{
+    "key": "O",
+    "title": "Optimizations and deep dive",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This step is about protecting UI performance under high update rates and large log volume."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame optimizations:**\n\"First I would batch updates and virtualize logs. Then I would downsample charts and add backpressure if update rates spike.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- You can reduce re-renders.\n- You can handle bursts of events.\n- You consider memory bounds."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Mention buffering and throttling first, then virtualization and downsampling."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Optimization levers to mention",
+            "columns": [
+                "Lever",
+                "What it does",
+                "Why it helps"
+            ],
+            "rows": [
+                [
+                    "Batching",
+                    "Apply updates every 100-250ms",
+                    "Avoids render storms"
+                ],
+                [
+                    "Downsampling",
+                    "Reduce metric points",
+                    "Keeps charts fast"
+                ],
+                [
+                    "Virtualized logs",
+                    "Render only visible lines",
+                    "Prevents huge DOM"
+                ],
+                [
+                    "Backpressure",
+                    "Drop or coalesce events",
+                    "Protects UI under spikes"
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Optimizations you should mention",
+                            "items": [
+                                "Throttle chart redraws.",
+                                "Window metric data to last N points.",
+                                "Virtualize log list.",
+                                "Use requestAnimationFrame for heavy UI updates.",
+                                "Persist last cursor for reconnect."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Failure modes to watch for",
+                            "items": [
+                                "Charts freezing during spikes.",
+                                "Logs growing without bounds.",
+                                "Reconnect loops without backoff.",
+                                "Out-of-order events corrupting UI."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Deep dive scenario you can walk through",
+            "steps": [
+                {
+                    "title": "1. Burst of events",
+                    "text": "Buffer and coalesce updates before rendering."
+                },
+                {
+                    "title": "2. Long run",
+                    "text": "Window metrics and trim logs to keep memory bounded."
+                },
+                {
+                    "title": "3. Disconnect",
+                    "text": "Reconnect with cursor and show a subtle warning."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Target cadence",
+                    "value": "100-250ms",
+                    "helperText": "Batch updates to protect UI."
+                },
+                {
+                    "label": "Memory guardrail",
+                    "value": "windowed data",
+                    "helperText": "Bound chart and log size."
+                },
+                {
+                    "label": "Stability",
+                    "value": "reconnect + backoff",
+                    "helperText": "Avoid rapid reconnect loops."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Streaming is easy; streaming smoothly is the hard part. Buffer and batch first, then optimize charts and logs."
+        }
+    ]
+}

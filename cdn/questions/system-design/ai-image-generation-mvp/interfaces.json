@@ -1,0 +1,154 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Define a simple API contract: create job, fetch status, and deliver image URLs."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I would expose a generate endpoint that returns a job id, then a status endpoint for polling or a stream endpoint for realtime updates.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Clear job lifecycle endpoints.\n- A simple polling or streaming strategy.\n- Output URLs for CDN delivery."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep the contract minimal: POST to create, GET to read status, and return a URL when done."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "POST /api/images/generate\n{ \"prompt\": \"a blue robot\" }\n\n200 OK\n{ \"jobId\": \"job_123\" }\n\nGET /api/images/jobs/job_123\n\n200 OK\n{ \"status\": \"running\", \"progress\": 0.4 }\n\n200 OK\n{ \"status\": \"done\", \"imageUrl\": \"https://cdn.example.com/img/123.png\" }\n\n// Optional streaming\nGET /api/images/jobs/job_123/stream (SSE)\nEVENT: progress\nDATA: { \"progress\": 0.4 }\nEVENT: done\nDATA: { \"imageUrl\": \"...\" }"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / endpoint",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "POST /generate",
+                    "returns jobId",
+                    "Creates a long-running job."
+                ],
+                [
+                    "GET /jobs/:id",
+                    "status + progress",
+                    "UI polls until done."
+                ],
+                [
+                    "GET /jobs/:id/stream",
+                    "progress events",
+                    "Optional realtime updates."
+                ],
+                [
+                    "imageUrl",
+                    "CDN URL",
+                    "Result is served from object storage."
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should expose",
+                            "items": [
+                                "jobId and status",
+                                "progress updates",
+                                "imageUrl when done"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should NOT expose",
+                            "items": [
+                                "raw model internals",
+                                "binary image blobs in API responses",
+                                "long-lived polling without backoff"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Create job",
+                    "text": "Call POST /generate and store jobId."
+                },
+                {
+                    "title": "2. Watch status",
+                    "text": "Poll or stream status until done."
+                },
+                {
+                    "title": "3. Render output",
+                    "text": "Display the image from the CDN URL."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Main endpoint",
+                    "value": "/generate",
+                    "helperText": "Creates the generation job."
+                },
+                {
+                    "label": "Result",
+                    "value": "imageUrl",
+                    "helperText": "CDN-delivered output."
+                },
+                {
+                    "label": "Realtime",
+                    "value": "optional SSE",
+                    "helperText": "Nice-to-have for MVP."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "Keep the contract minimal and job-based. That is the simplest reliable way to ship an MVP quickly."
+        }
+    ]
+}

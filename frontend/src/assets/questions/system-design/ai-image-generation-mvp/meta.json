@@ -1,0 +1,45 @@
+{
+  "id": "ai-image-generation-mvp",
+  "title": "AI Image Generation MVP (Two-Week Design)",
+  "description": "Design a two-week MVP for integrating an image-generating AI into a mobile or web app. Focus on the frontend UX, the async backend workflow, and how you would ship a usable feature quickly with clear trade-offs.\n\nKey considerations:\n- Prompt input, generation states, and error handling.\n- Long-running job flow (polling, WebSocket, or SSE).\n- Storage of generated images (object storage + metadata DB).\n- Minimal scope for a two-week delivery: core flow over polish.\n- Safety and retries when the model fails or times out.\n\nYou should be prepared to talk about: UX states, API contract, job status, and what you would defer to a later iteration.",
+  "tags": [
+    "ux",
+    "api-calls",
+    "real-time",
+    "state-management",
+    "performance",
+    "storage"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "openai"
+  ],
+  "updatedAt": "2026-01-31"
+}

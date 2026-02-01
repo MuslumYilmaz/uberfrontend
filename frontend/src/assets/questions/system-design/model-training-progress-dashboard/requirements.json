@@ -1,0 +1,157 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This question checks whether you can design a UI that stays responsive while receiving frequent realtime updates. You should define the scope of metrics, logs, and status, plus what realtime guarantees are required."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nA dashboard for a training run that shows live progress (percentage), live metrics (loss/accuracy), and a scrolling log stream."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Can you handle realtime updates without UI jank?\n- Do you pick a streaming strategy (WS/SSE/polling)?\n- Do you model data for charts and logs?\n- Do you handle reconnects and stale data?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Start by clarifying update frequency and required freshness. Then define which widgets must be realtime and which can be delayed."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. Load run",
+                    "text": "Fetch initial run metadata and render baseline charts."
+                },
+                {
+                    "title": "2. Open stream",
+                    "text": "Subscribe to live updates for metrics and logs."
+                },
+                {
+                    "title": "3. Render updates",
+                    "text": "Update progress bar and charts on a controlled cadence."
+                },
+                {
+                    "title": "4. Handle disconnect",
+                    "text": "Show a reconnect indicator and backoff."
+                },
+                {
+                    "title": "5. Run completed",
+                    "text": "Stop streaming and show final status."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "How often do metrics update (per second, per step)?",
+                                "Do we need strict ordering for logs?",
+                                "How many concurrent runs can a user view?",
+                                "What is the max log volume per run?",
+                                "Should the dashboard work on mobile?",
+                                "What happens if the stream drops?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "UI should stay smooth under bursty updates.",
+                                "Charts should not redraw too often.",
+                                "Logs should be virtualized for large volume.",
+                                "Reconnect should be automatic and visible.",
+                                "Stale updates should not overwrite newer ones."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "Update channels to mention",
+            "columns": [
+                "Channel",
+                "When to use",
+                "Trade-offs"
+            ],
+            "rows": [
+                [
+                    "WebSocket",
+                    "Bidirectional realtime updates",
+                    "More complex infra"
+                ],
+                [
+                    "SSE",
+                    "Server to client stream",
+                    "Simpler, one-way"
+                ],
+                [
+                    "Polling",
+                    "Low update frequency",
+                    "Higher latency, more requests"
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Realtime focus",
+                    "value": "Metrics + logs",
+                    "helperText": "Primary dynamic widgets."
+                },
+                {
+                    "label": "Performance goal",
+                    "value": "Smooth UI",
+                    "helperText": "Avoid re-render storms."
+                },
+                {
+                    "label": "Reliability",
+                    "value": "Reconnect",
+                    "helperText": "Auto recover on disconnect."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A realtime dashboard is about controlled updates: stream the data, buffer it, and render on a predictable cadence so the UI stays smooth."
+        }
+    ]
+}

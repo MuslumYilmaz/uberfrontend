@@ -1,0 +1,158 @@
+{
+    "key": "R",
+    "title": "Reflect & Requirements",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "This prompt focuses on AI-specific UX: slow responses, partial streaming, cancellations, and failures. You should define a clear request lifecycle and UI states that make the product feel stable."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What you are solving:**\nA UI state machine for AI responses that handles streaming, cancellation, retries, and rate limits while keeping the user in control."
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer is testing:**\n- Can you define user-facing states clearly?\n- Do you handle slow or failed responses gracefully?\n- Do you consider cancel/stop and retry flows?\n- Can you balance speed with safety and rate limits?"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Describe the response lifecycle (idle -> sending -> streaming -> done/error/stopped) and map each to UI states."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "steps",
+            "title": "High-level user flow to describe",
+            "steps": [
+                {
+                    "title": "1. Submit",
+                    "text": "User sends a prompt; UI shows pending state."
+                },
+                {
+                    "title": "2. Streaming",
+                    "text": "Response streams in; show partial output and Stop control."
+                },
+                {
+                    "title": "3. Completion",
+                    "text": "Mark message as done and re-enable input."
+                },
+                {
+                    "title": "4. Failure",
+                    "text": "Show error with Retry and preserve the prompt."
+                }
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Smart clarifying questions you should ask",
+                            "items": [
+                                "What is the typical response latency?",
+                                "Do we stream tokens or return full responses?",
+                                "What happens if the user navigates away?",
+                                "Do we need rate limits or cooldowns?",
+                                "Should partial responses be saved?",
+                                "How do we communicate safety or moderation blocks?"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Non-functional expectations to confirm",
+                            "items": [
+                                "Users can stop a response quickly.",
+                                "Failures do not erase the user's prompt.",
+                                "UI does not lock up on slow responses.",
+                                "Retry is obvious and safe.",
+                                "Rate limits are communicated clearly."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "table",
+            "title": "AI UX states to mention",
+            "columns": [
+                "State",
+                "UI treatment",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "Pending",
+                    "Show sending indicator",
+                    "Confirms request started"
+                ],
+                [
+                    "Streaming",
+                    "Append partial text + Stop",
+                    "Improves perceived speed"
+                ],
+                [
+                    "Error",
+                    "Inline error + retry",
+                    "Recover without losing input"
+                ],
+                [
+                    "Stopped",
+                    "Keep partial output",
+                    "User stays in control"
+                ]
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary UX goal",
+                    "value": "User control",
+                    "helperText": "Stop and retry must work."
+                },
+                {
+                    "label": "Latency UX",
+                    "value": "Streaming",
+                    "helperText": "Faster perceived response."
+                },
+                {
+                    "label": "Resilience",
+                    "value": "Retryable errors",
+                    "helperText": "No lost prompts."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "AI UX should feel stable even when the model is slow or fails. Clear state transitions and user controls are the core of this prompt."
+        }
+    ]
+}

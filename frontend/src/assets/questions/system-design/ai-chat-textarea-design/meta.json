@@ -1,0 +1,45 @@
+{
+  "id": "ai-chat-textarea-design",
+  "title": "AI Chat Text Area (ChatGPT-Style)",
+  "description": "Design a minimal ChatGPT-like experience in a text area: a user types a prompt and receives a streaming response. Cover the frontend UI, the client-side state model, and how the server stores conversation history (database choice and trade-offs).\n\nKey considerations:\n- Message list + composer UX with streaming updates.\n- Optimistic rendering for the user message.\n- Streaming transport (SSE/WebSocket/fetch stream) and cancel/stop.\n- Persistence: where conversation history lives (database options) and how the client paginates it.\n- Error handling, retries, and fallback for slow responses.\n\nYou should be prepared to talk about: state shape, message status, how to avoid stale streaming updates, and how the frontend requests or resumes a conversation by id.",
+  "tags": [
+    "real-time",
+    "streams",
+    "state-management",
+    "ux",
+    "api-calls",
+    "storage"
+  ],
+  "type": "system-design",
+  "sections": [
+    {
+      "key": "R",
+      "title": "Requirements exploration",
+      "file": "requirements.json"
+    },
+    {
+      "key": "A",
+      "title": "Architecture / High-level design",
+      "file": "architecture.json"
+    },
+    {
+      "key": "D",
+      "title": "Data model",
+      "file": "data.json"
+    },
+    {
+      "key": "I",
+      "title": "Interface definition (API)",
+      "file": "interfaces.json"
+    },
+    {
+      "key": "O",
+      "title": "Optimizations and deep dive",
+      "file": "optimizations.json"
+    }
+  ],
+  "companies": [
+    "openai"
+  ],
+  "updatedAt": "2026-01-31"
+}

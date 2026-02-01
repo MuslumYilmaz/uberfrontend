@@ -1,0 +1,132 @@
+{
+    "key": "D",
+    "title": "Data model",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Model the response lifecycle so the UI can react to each state consistently."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should frame it:**\n\"I keep a ResponseContext with state, text, and error, plus a requestId to avoid stale updates.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A single state machine.\n- Error field that does not clear text.\n- Request id for stale stream protection."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Use a tiny model: state + text + error + requestId. That is enough for most AI UX flows."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "table",
+            "title": "Core entities you should define",
+            "columns": [
+                "Entity",
+                "What it represents",
+                "Why it matters"
+            ],
+            "rows": [
+                [
+                    "ResponseContext",
+                    "Current response state",
+                    "Drives UI rendering"
+                ],
+                [
+                    "RequestId",
+                    "Unique request token",
+                    "Avoids stale updates"
+                ],
+                [
+                    "RetryInfo",
+                    "Last prompt and attempt",
+                    "Enables retry"
+                ]
+            ]
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "type ResponseState = 'idle' | 'pending' | 'streaming' | 'done' | 'error' | 'stopped';\n\ninterface ResponseContext {\n  state: ResponseState;\n  text: string;\n  error?: string;\n  requestId?: string;\n}\n\ninterface RetryInfo {\n  lastPrompt: string;\n  attempts: number;\n}"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should model explicitly",
+                            "items": [
+                                "Response state enum.",
+                                "Error message separate from text.",
+                                "Request id to gate streaming chunks.",
+                                "Retry metadata."
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Common data model gaps",
+                            "items": [
+                                "No requestId, so stale streams overwrite state.",
+                                "Error handling that clears the response text.",
+                                "No way to retry without retyping the prompt."
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary model",
+                    "value": "ResponseContext",
+                    "helperText": "Single state machine."
+                },
+                {
+                    "label": "Safety",
+                    "value": "requestId",
+                    "helperText": "Protect against stale chunks."
+                },
+                {
+                    "label": "Recovery",
+                    "value": "RetryInfo",
+                    "helperText": "Support retry without loss."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A tiny state model is enough to create a stable AI UX if it captures state, error, and request identity."
+        }
+    ]
+}

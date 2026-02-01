@@ -1,0 +1,158 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Here the interviewer wants to see a small, clear client API plus the server endpoints that support streaming and history."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I would expose a useChat hook that returns messages, sendMessage, stop, and status. On the backend, I need endpoints to fetch history and a streaming endpoint to deliver tokens.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- Small UI surface (messages + send + stop).\n- Streaming endpoint with a clear protocol.\n- Pagination for history.\n- Conflict-free ids for optimistic UI."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Think like a library author: the UI should call a simple hook/service, while the streaming and history details stay hidden behind it."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "// Client-facing API\ninterface UseChatResult {\n  messages: ChatMessage[];\n  isStreaming: boolean;\n  sendMessage: (text: string) => void;\n  stop: () => void;\n  loadMore: () => Promise<void>;\n}\n\nfunction useChat(conversationId?: string): UseChatResult {\n  // hides streaming + pagination\n}\n\n// Server endpoints (example)\nGET /api/conversations/:id/messages?cursor=...\nPOST /api/conversations/:id/messages\nPOST /api/conversations/:id/stream  // SSE or chunked response\n\n// Streaming response format (SSE)\nEVENT: chunk\nDATA: { messageId: 'm_123', delta: 'hello' }\n\nEVENT: done\nDATA: { messageId: 'm_123' }"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / endpoint",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "useChat",
+                    "{ messages, sendMessage, stop }",
+                    "Simple UI API; streaming is hidden."
+                ],
+                [
+                    "GET /messages",
+                    "paged list + cursor",
+                    "Fetch history without loading everything."
+                ],
+                [
+                    "POST /stream",
+                    "SSE or chunked response",
+                    "Incrementally delivers assistant tokens."
+                ],
+                [
+                    "POST /messages",
+                    "creates user message",
+                    "Returns ids for optimistic UI reconciliation."
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should expose",
+                            "items": [
+                                "messages list and streaming status",
+                                "sendMessage and stop",
+                                "loadMore for pagination"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should NOT expose",
+                            "items": [
+                                "raw SSE parsing in the UI",
+                                "streaming timers or internal buffers",
+                                "database details leaking into components"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Initialize",
+                    "text": "Hook loads latest messages by conversation id."
+                },
+                {
+                    "title": "2. Send",
+                    "text": "UI calls sendMessage, store adds user + assistant placeholder."
+                },
+                {
+                    "title": "3. Stream",
+                    "text": "Stream endpoint delivers chunks; hook appends text."
+                },
+                {
+                    "title": "4. Stop",
+                    "text": "User clicks Stop; hook cancels stream and updates status."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary endpoint",
+                    "value": "/stream",
+                    "helperText": "Drives incremental UI updates."
+                },
+                {
+                    "label": "Paging",
+                    "value": "cursor",
+                    "helperText": "Loads history in chunks."
+                },
+                {
+                    "label": "Client API",
+                    "value": "useChat",
+                    "helperText": "Keeps UI clean and focused."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A good API hides streaming complexity and exposes a small surface for the UI. If the UI only deals with messages and send/stop, you did it right."
+        }
+    ]
+}

@@ -1,0 +1,149 @@
+{
+    "key": "I",
+    "title": "Interface definition (API)",
+    "blocks": [
+        {
+            "type": "text",
+            "text": "Define a baseline REST API plus a streaming channel for realtime updates."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**How you should talk about the API:**\n\"I would fetch the run metadata with REST, then open a stream for metrics and logs. If the stream drops, I reconnect with a cursor.\""
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "text",
+                            "text": "**What the interviewer listens for:**\n- A cursor-based resume story.\n- Clear separation between REST and streaming.\n- Small event payloads for frequent updates."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "info",
+            "title": "How you should act here",
+            "text": "Keep endpoints minimal: GET run, GET history, STREAM updates."
+        },
+        {
+            "type": "divider"
+        },
+        {
+            "type": "code",
+            "language": "ts",
+            "code": "GET /api/runs/:id\n200 OK\n{ id, status, progress }\n\nGET /api/runs/:id/metrics?cursor=...\n200 OK\n{ items: [...], nextCursor: 'c_123' }\n\nGET /api/runs/:id/stream?cursor=... (SSE)\nEVENT: metric\nDATA: { name: 'loss', t: 171000, value: 0.42 }\nEVENT: log\nDATA: { id: 'l1', t: 171000, level: 'info', message: 'step 10' }\nEVENT: status\nDATA: { status: 'done' }"
+        },
+        {
+            "type": "table",
+            "title": "Core interfaces you should define out loud",
+            "columns": [
+                "Interface / endpoint",
+                "Shape (example)",
+                "How you explain it"
+            ],
+            "rows": [
+                [
+                    "GET /runs/:id",
+                    "run metadata",
+                    "Initial page load."
+                ],
+                [
+                    "GET /runs/:id/stream",
+                    "SSE events",
+                    "Realtime updates for UI."
+                ],
+                [
+                    "cursor",
+                    "sequence token",
+                    "Resume after disconnect."
+                ]
+            ]
+        },
+        {
+            "type": "columns",
+            "columns": [
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should expose",
+                            "items": [
+                                "run status and progress",
+                                "metric and log events",
+                                "cursor for resume"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "blocks": [
+                        {
+                            "type": "checklist",
+                            "title": "Things you should NOT expose",
+                            "items": [
+                                "giant payloads per event",
+                                "full history on every update",
+                                "streaming without a resume token"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "steps",
+            "title": "Typical integration flow you should describe",
+            "steps": [
+                {
+                    "title": "1. Load run",
+                    "text": "Fetch run metadata and initial charts."
+                },
+                {
+                    "title": "2. Stream",
+                    "text": "Open SSE or WebSocket stream."
+                },
+                {
+                    "title": "3. Resume",
+                    "text": "Reconnect with cursor after disconnect."
+                }
+            ]
+        },
+        {
+            "type": "stats",
+            "items": [
+                {
+                    "label": "Primary channel",
+                    "value": "SSE/WS",
+                    "helperText": "Realtime data delivery."
+                },
+                {
+                    "label": "Resume",
+                    "value": "cursor",
+                    "helperText": "Avoid missing events."
+                },
+                {
+                    "label": "Payload",
+                    "value": "small events",
+                    "helperText": "Protect UI performance."
+                }
+            ]
+        },
+        {
+            "type": "callout",
+            "variant": "warning",
+            "title": "Key message to land",
+            "text": "A simple stream with small events and a resume cursor is enough for a reliable realtime dashboard."
+        }
+    ]
+}
