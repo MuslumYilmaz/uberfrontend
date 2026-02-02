@@ -225,6 +225,114 @@
     </div>
 </section>
 
+<section class="company-insights" *ngIf="(slug | async) === 'apple'">
+    <h2>How Apple Evaluates Front-End Engineers (Beyond the Questions)</h2>
+    <p class="insight-lede">
+        Apple’s front-end interviews emphasize engineering taste, fundamentals, and product-level quality.
+        The bar is subtle but high: build polished, reliable, user-first web experiences and explain why you made each decision.
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>1) Strong fundamentals, applied practically</h3>
+            <p>
+                Apple places heavy emphasis on core web fundamentals in realistic scenarios: vanilla JavaScript (closures,
+                prototypes, async behavior, <code>this</code> binding), DOM structure and event handling, HTML semantics and
+                CSS behavior, and basic data structures used in JS (arrays, objects, sets, stacks/queues).
+            </p>
+            <p>
+                Their questions often resemble real front-end work: building UI components, manipulating the DOM, or fixing broken logic.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you build and reason about UI without hiding behind frameworks?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>2) Performance is a first-class concern</h3>
+            <ul>
+                <li>Page load performance (critical rendering path, lazy loading, caching)</li>
+                <li>Runtime performance (avoiding layout thrashing, minimizing reflows/repaints)</li>
+                <li>Event handling strategies (debounce vs throttle)</li>
+                <li>Animation and smooth UI updates (<code>requestAnimationFrame</code>)</li>
+                <li>When to offload work (e.g., web workers)</li>
+            </ul>
+            <p>
+                Interviewers expect concrete answers, not buzzwords — you should explain how, why, and where performance matters most.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Do you think about responsiveness and efficiency as part of product quality?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>3) Debugging and code reading matter a lot</h3>
+            <p>
+                You may be asked to walk through a snippet and explain what it does, what’s wrong, why the bug happens,
+                and how you would fix it. How you debug matters as much as whether you find the bug.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you stay calm, methodical, and precise when things break?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>4) Accessibility is expected, not optional</h3>
+            <p>
+                Accessibility is treated as a baseline: semantic HTML, keyboard navigation, focus management, ARIA roles
+                (and when not to use them), and accessible components (modals, dropdowns, forms).
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Do you design interfaces with real users in mind, not just visuals?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>5) Engineering judgment and trade-offs</h3>
+            <p>
+                Apple cares about your decisions: simplicity vs flexibility, performance vs complexity, custom solution
+                vs library, local state vs shared/global state. Explaining why you chose an approach — and what you traded off —
+                signals maturity.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Do you show mature engineering judgment instead of rigid thinking?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>6) Communication and collaboration signals</h3>
+            <p>
+                Apple interviews are conversational but structured. They watch how you explain your thinking, respond to
+                follow-ups, handle uncertainty, and take feedback. Honest, calm reasoning beats bluffing.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Would this person be a good engineer to work with day to day?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>7) Product mindset and quality bar</h3>
+            <p>
+                Candidates stand out when they mention edge cases, error states, testing strategies, UX polish,
+                and long-term maintainability. Apple wants “it works well and feels right,” not just “it works.”
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Do you care about quality the way Apple cares about quality?</p>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Common pitfalls</h3>
+        <ul>
+            <li>Relying too heavily on frameworks without understanding underlying mechanics</li>
+            <li>Weak or rusty JavaScript fundamentals</li>
+            <li>Vague answers about performance or optimization</li>
+            <li>Poor debugging narration or rushing to conclusions</li>
+            <li>Little to no accessibility awareness</li>
+            <li>Overconfidence, defensiveness, or dismissive attitude</li>
+        </ul>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Bottom line</h3>
+        <p>
+            Apple’s front-end interviews identify engineers who combine solid fundamentals, strong product instincts,
+            and clear communication. The difficulty is rarely about obscure knowledge — it’s about depth, care, and judgment.
+        </p>
+        <p>
+            If you can demonstrate that you build front-end systems with the same attention to performance, accessibility,
+            and polish that Apple expects from its products, you’ll align closely with the signals Apple is looking for.
+        </p>
+    </div>
+</section>
+
 <!-- Local tabs for this company -->
 <div class="company-tabs">
     <fa-chip class="company-chip fa-chip--label"
