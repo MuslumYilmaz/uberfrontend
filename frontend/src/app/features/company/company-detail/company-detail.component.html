@@ -464,6 +464,140 @@
     </div>
 </section>
 
+<section class="company-insights" *ngIf="(slug | async) === 'netflix'">
+    <h2>Netflix’s Culture &amp; Interview Philosophy</h2>
+    <p class="insight-lede">
+        Netflix hires like they’re building a “dream team,” not a “nice family.” The subtext in almost every interview is:
+        “If we drop you into ambiguity with no hand-holding… do you ship, make good calls, and own the outcomes?”
+    </p>
+    <p class="insight-lede">
+        That’s the “Freedom &amp; Responsibility” idea: lots of latitude, but strong judgment and accountability.
+        Netflix also uses the “keeper test” mindset (“Would I fight to keep this person?”) and emphasizes candid feedback.
+        As Netflix scaled, they’ve put more emphasis on accountability/ownership language.
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>What Netflix looks for in frontend engineers</h3>
+            <ol>
+                <li>
+                    <strong>Strong fundamentals, but not “CS olympiad”</strong>
+                    <p>
+                        Netflix frontend interviews skew practical: JS + async behavior + browser realities, rendering/perf
+                        trade-offs, architecture that won’t collapse at scale, and code a senior engineer would approve in a PR.
+                    </p>
+                    <p class="signal"><strong>Signal being tested:</strong> Real product engineering over puzzle collecting.</p>
+                </li>
+                <li>
+                    <strong>“Senior ownership” as a default setting</strong>
+                    <p>
+                        They want candidates who can turn vague requirements into a plan, decide with incomplete info,
+                        communicate risks early, own quality (tests, edge cases, accessibility, reliability), and work without micromanagement.
+                    </p>
+                    <p class="signal"><strong>Signal being tested:</strong> Ownership without ego.</p>
+                </li>
+                <li>
+                    <strong>Candid, high‑signal communication</strong>
+                    <p>
+                        They’re allergic to fluff and vague answers. They value clarity: “Here’s what I did, why, what changed,
+                        and what I’d do differently.”
+                    </p>
+                    <p class="signal"><strong>Signal being tested:</strong> Clarity and accountability over performance theater.</p>
+                </li>
+            </ol>
+        </article>
+
+        <article class="insight-card">
+            <h3>Interview stages &amp; structure (typical)</h3>
+            <ul>
+                <li><strong>Recruiter screen:</strong> role fit, motivation, and “do you get how Netflix works?”</li>
+                <li><strong>Hiring manager screen (sometimes):</strong> architecture instincts + day‑to‑day ownership</li>
+                <li><strong>Technical screen:</strong> live coding in a shared editor (sometimes take‑home); realistic build/modify tasks</li>
+                <li><strong>Onsite/virtual loop:</strong> 4–6 rounds mixing coding, frontend/system design, project deep‑dive, culture/behavior</li>
+                <li><strong>Debrief:</strong> more binary “dream team?” decision than score averaging</li>
+            </ul>
+        </article>
+
+        <article class="insight-card">
+            <h3>The rounds Netflix frontend candidates usually face</h3>
+            <p><strong>A) Coding (JS/React) — “Can you build cleanly under pressure?”</strong></p>
+            <ul>
+                <li>Component behavior (autocomplete, dropdown, infinite list, sorting/filtering)</li>
+                <li>Utilities (debounce/throttle, memoization, concurrency control)</li>
+                <li>Debug/refactor (state bugs, stale closures, async race conditions)</li>
+            </ul>
+            <p><strong>What they grade:</strong> correctness + edge cases, readability + structure, performance awareness, trade‑off clarity.</p>
+            <p class="signal"><strong>Netflix‑ish follow‑up:</strong> “Ok, now scale it. What breaks? What would you measure?”</p>
+
+            <p><strong>B) Frontend/System Design — “Can you architect a product page that won’t melt?”</strong></p>
+            <ul>
+                <li>Content browsing page (rows, personalization, caching, prefetching)</li>
+                <li>Video playback page (state machine, errors, retries)</li>
+                <li>Experimentation‑ready UI (A/B tests, metrics, feature flags)</li>
+                <li>Component system/design system strategy</li>
+            </ul>
+            <p><strong>Signals:</strong> clean decomposition, state/data flow, perf strategy, resilience, security basics.</p>
+
+            <p><strong>C) Behavioral/Culture — “Dream team fit”</strong></p>
+            <p>
+                Expect direct probes about conflict, mistakes, hard trade‑offs, impact, and feedback. If your stories sound
+                like “everything was perfect,” it’s a red flag.
+            </p>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>What interviewers are really looking for (hidden rubric)</h3>
+        <ol>
+            <li><strong>Judgment under ambiguity:</strong> clarify, state assumptions, pick a path, adjust fast.</li>
+            <li><strong>Ownership with receipts:</strong> show metrics (LCP, error rate, conversion, cost, CI time).</li>
+            <li><strong>Strong opinions, loosely held:</strong> defend reasoning, then adapt when new info appears.</li>
+            <li><strong>Practical performance mindset:</strong> measure → profile → fix the biggest offenders.</li>
+        </ol>
+    </div>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>Keys to standing out vs. common pitfalls</h3>
+            <p><strong>What makes people stand out:</strong></p>
+            <ul>
+                <li>They treat the interview like a product engineering conversation, not a quiz.</li>
+                <li>They communicate like a senior: plan → implement → validate → improve.</li>
+                <li>They tie decisions to outcomes and real impact.</li>
+                <li>They stay calm in messy situations.</li>
+            </ul>
+            <p><strong>Common pitfalls:</strong></p>
+            <ul>
+                <li>Needing too much guidance or structure</li>
+                <li>Vague outcomes (“we improved performance a lot”)</li>
+                <li>Defensiveness when challenged</li>
+                <li>Over‑indexing on algorithms while weak on browser/React/perf/system thinking</li>
+                <li>Not understanding the culture (freedom + accountability)</li>
+            </ul>
+        </article>
+
+        <article class="insight-card">
+            <h3>How Netflix differs from other FAANG‑style loops</h3>
+            <ul>
+                <li>Less algorithm worship, more practical frontend + architecture + impact</li>
+                <li>Culture fit is a real filter, not fluff</li>
+                <li>Senior autonomy expectations show up early</li>
+                <li>Direct communication is considered a feature, not a bug</li>
+            </ul>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>How to prep for Netflix (actionable)</h3>
+        <ol>
+            <li>Build a “metrics story bank” (6–8 stories with constraints, decisions, trade‑offs, results, learnings).</li>
+            <li>Practice scale follow‑ups (10x data, slow network, flaky API, low‑end device, a11y flows).</li>
+            <li>Train debugging + async race conditions (stale closures, cancellation, “latest request wins”).</li>
+            <li>Refresh the fundamentals Netflix cares about (event loop, debounce/throttle, perf profiling, caching layers, React perf basics).</li>
+        </ol>
+    </div>
+</section>
+
 <!-- Local tabs for this company -->
 <div class="company-tabs">
     <fa-chip class="company-chip fa-chip--label"
