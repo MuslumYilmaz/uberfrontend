@@ -20,6 +20,159 @@
     </div>
 </div>
 
+<section class="company-insights" *ngIf="(slug | async) === 'meta'">
+    <h2>How Meta Evaluates Frontend Engineers (Beyond the Questions)</h2>
+    <p class="insight-lede">
+        Meta’s front-end interview process is often described as predictable, but not easy. Many candidates
+        focus on memorizing past questions, yet success usually comes down to understanding how Meta
+        evaluates frontend engineers, not just what they ask.
+    </p>
+    <p class="insight-lede">
+        Across dozens of real candidate reports, several consistent patterns emerge.
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>1) Fundamentals Matter More Than Cleverness</h3>
+            <p>
+                Meta heavily emphasizes core web fundamentals: JavaScript mechanics, browser behavior, DOM structure,
+                and async execution. These are not trick questions or brainteasers — they are deliberate checks for
+                whether you actually understand how the web works.
+            </p>
+            <p>
+                Interviewers often expect precise, textbook-level explanations. Vague or hand-wavy answers
+                (“it kind of works like…”) tend to be penalized, even if your intuition is correct. Many candidates
+                report that uncertainty — not difficulty — was their biggest issue.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you reason confidently about the foundations of the web without guessing?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>2) Difficulty Is Moderate — Speed and Clarity Are the Real Challenge</h3>
+            <p>
+                Most Meta frontend coding tasks are rated medium difficulty compared to general SWE algorithm interviews.
+                However, candidates often underestimate time pressure, implementation speed, and clean reasoning under
+                observation.
+            </p>
+            <ul>
+                <li>Explain your approach clearly</li>
+                <li>Justify data structure choices</li>
+                <li>Handle edge cases proactively</li>
+                <li>Respond well to follow-up variations</li>
+            </ul>
+            <p>
+                Solving the problem is not enough. Many candidates who “knew the solution” still received feedback
+                that they were too slow or overly verbose.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you implement correct, clean solutions efficiently while communicating your thinking?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>3) Frontend ≠ LeetCode (But Algorithms Still Exist)</h3>
+            <p>
+                Meta frontend interviews are frontend-first, not algorithm-first. Algorithms do appear, but they are
+                usually embedded in realistic UI or DOM contexts.
+            </p>
+            <ul>
+                <li>Traverse a DOM tree</li>
+                <li>Manage timers or async queues</li>
+                <li>Optimize event handling</li>
+                <li>Implement UI-related utilities (debounce, memoization, pub/sub)</li>
+            </ul>
+            <p>
+                Pure algorithm trivia without frontend relevance is rare, but algorithmic thinking is still expected.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you apply algorithmic thinking to real frontend problems, not just theoretical ones?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>4) System Design Is About UI Architecture — Not Backend Theory</h3>
+            <p>
+                Meta’s frontend system design interviews often surprise candidates because they do not resemble
+                classic backend system design.
+            </p>
+            <ul>
+                <li>You are not expected to design databases</li>
+                <li>You are not expected to architect distributed systems</li>
+                <li>You are not expected to discuss load balancers in depth</li>
+            </ul>
+            <p>
+                Instead, interviewers focus on component structure, state ownership and data flow, performance
+                considerations (rendering, caching, throttling), client/server responsibility boundaries, and
+                scalability of UI logic. Designing an autocomplete, feed, dashboard, or real-time UI is far more common
+                than designing “Facebook as a system.”
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you architect maintainable, scalable frontend systems — not just components?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>5) Communication Is a First-Class Skill</h3>
+            <p>Communication quality directly impacts outcomes. Interviewers expect you to:</p>
+            <ul>
+                <li>Talk through your approach before coding</li>
+                <li>Explain trade-offs explicitly</li>
+                <li>Ask clarifying questions early</li>
+                <li>Adjust based on feedback mid-solution</li>
+            </ul>
+            <p>
+                Several candidates reported receiving hints — but only because they were clearly reasoning in the
+                right direction. Silence, guessing, or rushing without explanation works against you.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you collaborate, reason out loud, and adapt — like a real teammate?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>6) The Interview Is More Predictable Than People Think</h3>
+            <p>
+                A striking insight from many candidates: Meta reuses patterns — a lot. Questions, problem types,
+                and design scenarios repeat across years with small variations. Candidates who reviewed recent interview
+                reports often encountered nearly identical problems in their own interviews.
+            </p>
+            <p>
+                This does not mean memorization alone is enough — but it does mean targeted preparation is extremely
+                effective.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Did you prepare seriously, or are you relying on improvisation?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>7) Meta Is Testing Engineering Maturity, Not Flashiness</h3>
+            <p>Meta is not trying to trick you or showcase obscure knowledge. Instead, they are evaluating whether you can:</p>
+            <ul>
+                <li>Build things that won’t break at scale</li>
+                <li>Reason about performance and maintainability</li>
+                <li>Write predictable, readable code</li>
+                <li>Think in systems, not just functions</li>
+            </ul>
+            <p>
+                Flashy solutions, clever hacks, or over-engineering often backfire.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Would we trust this person to build and maintain real product features?</p>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Final Takeaway</h3>
+        <p>
+            Meta’s frontend interviews reward depth over breadth, clarity over cleverness, and preparation over
+            improvisation. Candidates who succeed tend to:
+        </p>
+        <ul>
+            <li>Master JavaScript and browser fundamentals</li>
+            <li>Practice realistic frontend coding problems</li>
+            <li>Think architecturally about UI design</li>
+            <li>Communicate calmly and clearly under pressure</li>
+        </ul>
+        <blockquote>
+            “Nothing was impossible - but nothing was forgiving either.”
+        </blockquote>
+        <p>
+            If you prepare deliberately and practice frontend problems the way Meta actually frames them, the process
+            becomes far more manageable — and far less mysterious.
+        </p>
+    </div>
+</section>
+
 <!-- Local tabs for this company -->
 <div class="company-tabs">
     <fa-chip class="company-chip fa-chip--label"

@@ -55,6 +55,83 @@
   font-weight: 700;
 }
 
+.company-insights {
+  margin: 12px 0 18px;
+  padding: 18px;
+  border-radius: var(--fa-radius-16);
+  background: var(--fa-surface);
+  border: 1px solid var(--fa-border-subtle);
+  box-shadow: var(--fa-card-shadow);
+}
+
+.company-insights h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.insight-lede {
+  margin: 0 0 10px;
+  color: var(--fa-text-muted);
+  line-height: 1.6;
+}
+
+.insight-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.insight-card {
+  padding: 12px 14px;
+  border-radius: var(--fa-radius-12);
+  background: var(--fa-surface-2);
+  border: 1px solid var(--fa-border-subtle);
+}
+
+.insight-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.insight-card p,
+.insight-card ul {
+  margin: 0 0 8px;
+  color: var(--fa-text);
+  line-height: 1.55;
+}
+
+.insight-card ul {
+  padding-left: 18px;
+}
+
+.insight-card .signal {
+  margin-top: 6px;
+  color: var(--fa-text-muted);
+}
+
+.insight-summary {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--fa-border-subtle);
+}
+
+.insight-summary h3 {
+  margin: 0 0 6px;
+}
+
+.insight-summary ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.insight-summary blockquote {
+  margin: 8px 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--fa-accent);
+  color: var(--fa-text-muted);
+}
+
 :host ::ng-deep fa-chip .fa-chip.fa-chip--selected {
   background: var(--fa-accent-soft);
   border-color: var(--fa-accent);

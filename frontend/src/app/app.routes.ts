@@ -331,6 +331,15 @@ export const routes: Routes = [
 
   // Tracks (curated question sets)
   {
+    path: 'track',
+    pathMatch: 'full',
+    redirectTo: 'tracks',
+  },
+  {
+    path: 'track/:slug',
+    redirectTo: 'tracks/:slug',
+  },
+  {
     path: 'tracks',
     canActivate: [premiumGuard],
     data: { premiumGate: 'tracks' },

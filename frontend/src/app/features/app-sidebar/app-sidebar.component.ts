@@ -69,7 +69,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       open: false,
       children: [
         { type: 'link', label: 'All practice questions', to: '/coding', icon: 'pi pi-list' },
-        { type: 'link', label: 'Foundations Track', to: '/tracks/foundations-30d', icon: 'pi pi-sliders-h' },
+        { type: 'link', label: 'Foundations Track', to: '/tracks', icon: 'pi pi-sliders-h' },
         { type: 'link', label: 'Question formats', to: '/coding', icon: 'pi pi-check-square', query: { view: 'formats' } },
       ],
     },
