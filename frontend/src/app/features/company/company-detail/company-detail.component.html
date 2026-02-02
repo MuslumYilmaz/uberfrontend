@@ -333,6 +333,137 @@
     </div>
 </section>
 
+<section class="company-insights" *ngIf="(slug | async) === 'amazon'">
+    <h2>How Amazon Evaluates Front-End Engineers (Beyond the Questions)</h2>
+    <p class="insight-lede">
+        Amazon’s front-end interviews are deliberately holistic: technical competence and behavioral excellence are
+        weighted together. You’re evaluated on coding, architectural thinking, and how you embody the Leadership Principles.
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>Amazon’s core evaluation philosophy</h3>
+            <p>
+                Amazon evaluates with a long-term lens: “Will this person raise the bar for the team over time?”
+                Technical and behavioral signals are weighed roughly equally, every interviewer evaluates Leadership Principles,
+                and the Bar Raiser exists to prevent brilliant-but-toxic hires. A single strength rarely compensates for a major weakness.
+            </p>
+        </article>
+
+        <article class="insight-card">
+            <h3>1) Solid, generalist engineering fundamentals</h3>
+            <ul>
+                <li>Comfort with data structures and algorithms (typically medium difficulty)</li>
+                <li>Ability to reason about time/space complexity</li>
+                <li>Writing correct solutions under time constraints</li>
+                <li>Handling edge cases and validating assumptions</li>
+            </ul>
+            <p class="signal"><strong>Signal being tested:</strong> Can you reliably solve problems, not just recognize patterns?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>2) Deep front-end fundamentals (frameworks are optional)</h3>
+            <ul>
+                <li>JavaScript mechanics (closures, scope, async behavior)</li>
+                <li>DOM manipulation and event handling</li>
+                <li>HTML/CSS fundamentals</li>
+                <li>Browser behavior and rendering implications</li>
+            </ul>
+            <p>
+                Amazon often strips tooling away to see if you understand what happens underneath.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Do you understand how the browser actually works, or just the abstractions?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>3) System design thinking at the UI level</h3>
+            <p>
+                Front-end system design discussions focus on component decomposition, state management, data flow between UI and APIs,
+                performance considerations at scale, and error handling under load.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Can you design for growth beyond a single component?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>4) Code quality, trade-offs, and high standards</h3>
+            <p>
+                “Insist on the Highest Standards” appears in code readability, naming clarity, defensive programming,
+                willingness to refactor, and awareness of performance implications. Interviewers often push back to test judgment.
+            </p>
+            <p class="signal"><strong>Signal being tested:</strong> Do you make deliberate trade-offs instead of defaulting to convenience?</p>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>The Leadership Principles are non-negotiable signals</h3>
+        <p>
+            Interviewers probe Leadership Principles in every round. Commonly tested principles include:
+        </p>
+        <ul>
+            <li><strong>Customer Obsession:</strong> performance, usability, accessibility, reliability from the user’s perspective</li>
+            <li><strong>Ownership:</strong> taking responsibility beyond the immediate task</li>
+            <li><strong>Bias for Action &amp; Deliver Results:</strong> making progress with incomplete information</li>
+            <li><strong>Insist on the Highest Standards:</strong> pushing for quality</li>
+            <li><strong>Learn and Be Curious:</strong> continuous growth in a fast-moving domain</li>
+            <li><strong>Have Backbone; Disagree and Commit:</strong> challenge respectfully, then align</li>
+        </ul>
+        <p class="signal"><strong>Signal being tested:</strong> How you behave matters as much as what you build.</p>
+    </div>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>What interviewers are really observing</h3>
+            <ul>
+                <li>Problem framing: clarifying requirements before implementation</li>
+                <li>Structured thinking: breaking problems down logically</li>
+                <li>Communication: narrating your approach and responding to feedback</li>
+                <li>Coachability: adapting when given hints or pushback</li>
+                <li>Ownership in stories: clearly explaining your role and impact</li>
+            </ul>
+        </article>
+
+        <article class="insight-card">
+            <h3>Why candidates succeed (or fail)</h3>
+            <p><strong>Successful candidates typically:</strong></p>
+            <ul>
+                <li>Prepare equally for technical and behavioral interviews</li>
+                <li>Have concrete stories aligned with Leadership Principles</li>
+                <li>Communicate clearly under pressure</li>
+                <li>Demonstrate both depth and balance</li>
+                <li>Show growth mindset and accountability</li>
+            </ul>
+            <p><strong>Candidates often fail because they:</strong></p>
+            <ul>
+                <li>Underestimate behavioral depth</li>
+                <li>Focus only on coding prep</li>
+                <li>Rely too heavily on frameworks</li>
+                <li>Struggle to articulate past experiences</li>
+                <li>Become defensive or rigid under challenge</li>
+            </ul>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>How Amazon differs from other Big Tech interviews</h3>
+        <ul>
+            <li><strong>Compared to Google:</strong> less algorithmically extreme, far more behavioral depth</li>
+            <li><strong>Compared to Meta:</strong> heavier Leadership Principles emphasis and culture evaluation</li>
+            <li><strong>Compared to Apple:</strong> less design-polish focus, more ownership and scale mindset</li>
+        </ul>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Bottom line</h3>
+        <p>
+            Amazon’s front-end interviews are designed to answer one core question: “Will this person make Amazon better over time?”
+            That requires strong fundamentals, sound judgment, customer focus, ownership, and the ability to grow within a demanding culture.
+        </p>
+        <p>
+            Candidates who succeed don’t just solve problems — they demonstrate how they think, communicate, and lead.
+        </p>
+    </div>
+</section>
+
 <!-- Local tabs for this company -->
 <div class="company-tabs">
     <fa-chip class="company-chip fa-chip--label"

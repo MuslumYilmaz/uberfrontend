@@ -184,7 +184,7 @@ export class DashboardComponent {
     {
       title: 'FrontendAtlas Interview Blueprint',
       subtitle: 'A starter guide to preparing for front end interviews.',
-      icon: 'book',
+      icon: 'cap',
       route: ['/guides', 'interview-blueprint'],
     },
     {
@@ -196,7 +196,7 @@ export class DashboardComponent {
     {
       title: 'Behavioral Interview Blueprint',
       subtitle: 'STAR method, stories, and high-signal answers.',
-      icon: 'book',
+      icon: 'star',
       route: ['/guides', 'behavioral'],
     },
   ];
@@ -208,7 +208,7 @@ export class DashboardComponent {
       title: t.title,
       subtitle: t.subtitle,
       icon: t.slug === 'crash-7d' ? 'clock' : 'book',
-      route: ['/tracks', t.slug],
+      route: ['/track', t.slug],
     }));
 
   /** ===== Company guides ===== */
