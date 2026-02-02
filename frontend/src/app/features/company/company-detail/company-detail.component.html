@@ -598,6 +598,205 @@
     </div>
 </section>
 
+<section class="company-insights" *ngIf="(slug | async) === 'bytedance'">
+    <h2>ByteDance’s Interview Philosophy: “Day 1, high standards, ship fast — but don’t ship garbage”</h2>
+    <p class="insight-lede">
+        ByteDance’s vibe is basically: move fast, think big, measure everything, and keep the bar high.
+        Their internal culture framing (“ByteStyles”) pushes candor, Day‑1 mindset, and operating in a global, diverse environment.
+    </p>
+    <p class="insight-lede">
+        In interviews that becomes: speed + clarity, a performance mindset (what happens at 10× scale?), pragmatism,
+        and direct communication. And because products like TikTok live or die on feed UX, frontend interviews care deeply about
+        “render fast, scroll smooth, don’t waste bytes, don’t waste CPU.”
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>Typical interview structure (frontend)</h3>
+            <ul>
+                <li><strong>Recruiter/HR screen:</strong> motivation, role fit, logistics, culture alignment.</li>
+                <li><strong>Online assessment or initial screen:</strong> often LeetCode‑ish + JS tasks.</li>
+                <li><strong>2–4 technical interviews:</strong> DSA, JS fundamentals, React + performance, frontend system design.</li>
+                <li><strong>Manager/culture round:</strong> ownership, collaboration, ambiguity handling.</li>
+            </ul>
+            <p class="signal"><strong>Note:</strong> Interviews are often done on ByteDance’s internal stack (e.g., Feishu).</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>What ByteDance is really testing (signals)</h3>
+            <ol>
+                <li>
+                    <strong>Fundamentals that don’t flinch under pressure</strong>
+                    <p>Closures/scope/prototypes, event loop ordering, promises/async patterns, DOM/events, browser perf basics.</p>
+                    <p class="signal"><strong>Signal:</strong> Can you explain the basics crisply under pressure?</p>
+                </li>
+                <li>
+                    <strong>Production‑grade JS/TS</strong>
+                    <p>Edge cases, time/space complexity, readable structure, quick sanity tests, refactoring mid‑solution.</p>
+                    <p class="signal"><strong>Signal:</strong> Clean code + clear reasoning beats brute force.</p>
+                </li>
+                <li>
+                    <strong>React performance instincts</strong>
+                    <p>Re‑renders, memoization tradeoffs, stale closures, list virtualization, pagination/infinite scroll, state strategy.</p>
+                    <p class="signal"><strong>Signal:</strong> “Scroll must be buttery.”</p>
+                </li>
+                <li>
+                    <strong>Frontend system design thinking in systems, not screens</strong>
+                    <p>Requirements → constraints → architecture → trade‑offs → data flow → caching → perf → observability.</p>
+                </li>
+            </ol>
+        </article>
+
+        <article class="insight-card">
+            <h3>Why candidates pass (the “yes” profile)</h3>
+            <ul>
+                <li>Clarify the problem fast, then propose a plan.</li>
+                <li>Write clean code a teammate wouldn’t hate reviewing.</li>
+                <li>Proactively talk performance on UI lists + network.</li>
+                <li>Communicate directly and calmly, not defensively.</li>
+                <li>Adapt quickly when assumptions change.</li>
+            </ul>
+            <p class="signal"><strong>Profile:</strong> “Fast, sharp, and collaborative.”</p>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Common ByteDance traps</h3>
+        <ul>
+            <li><strong>Ignoring algorithms:</strong> DSA rounds are real for FE roles.</li>
+            <li><strong>Weak async reasoning:</strong> out‑of‑order responses, cancellation, debounced search.</li>
+            <li><strong>No performance thinking:</strong> feed UI without virtualization/caching is a red flag.</li>
+            <li><strong>Vague communication:</strong> “it depends” with no structure doesn’t land.</li>
+        </ul>
+    </div>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>Frontend system design prompts you’ll likely see</h3>
+            <ul>
+                <li>Design a feed UI (infinite scroll, caching, personalization)</li>
+                <li>Design autocomplete/typeahead</li>
+                <li>Design a component library/design system setup</li>
+                <li>Design a dashboard (filters, charts, tables)</li>
+            </ul>
+            <p><strong>What they want:</strong> data flow, caching, perf strategy, resilience, observability, correctness at scale.</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>Prep strategy that maps to ByteDance</h3>
+            <ol>
+                <li><strong>Algorithms (targeted):</strong> arrays/strings/maps, two‑pointers, sliding window, stack/queue, BFS/DFS basics.</li>
+                <li><strong>JS core:</strong> event loop, closures/scope, <code>this</code>, prototypes, promises/async/await.</li>
+                <li><strong>React performance:</strong> rerender causes, memoization tradeoffs, list virtualization, effect dependencies.</li>
+                <li><strong>FE system design reps:</strong> autocomplete + feed UI with full requirements → architecture → data → perf → edge cases → metrics.</li>
+            </ol>
+        </article>
+    </div>
+</section>
+
+<section class="company-insights" *ngIf="(slug | async) === 'openai'">
+    <h2>OpenAI’s Culture &amp; Interview Philosophy</h2>
+    <p class="insight-lede">
+        OpenAI is mission‑first in a literal way: ensuring AGI benefits all of humanity, with explicit emphasis on safety
+        and broad benefit. Interviews aren’t just “can you build things?” — they’re also “can we trust you to build
+        powerful things responsibly, under ambiguity, at speed?”
+    </p>
+    <p class="insight-lede">
+        The vibe is high agency, high responsibility. OpenAI optimizes for people who can take a fuzzy problem and ship,
+        make good trade‑offs without constant validation, and communicate clearly when uncertainty or risk is high.
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>What OpenAI values in frontend engineers</h3>
+            <ol>
+                <li>
+                    <strong>Product engineering, not “component grinding”</strong>
+                    <p>
+                        Frontend is product‑critical: latency, streaming, reliability, accessibility, and “this needs to feel inevitable” UX.
+                        Expect scenarios with partial/streaming responses, flaky networks, retries/timeouts, cancellation, long sessions,
+                        and huge state graphs (threads, tools, attachments, models, permissions).
+                    </p>
+                </li>
+                <li>
+                    <strong>Code quality as a force multiplier</strong>
+                    <p>Readable structure, tests where appropriate, clear trade‑offs, and iterative improvement with feedback.</p>
+                </li>
+                <li>
+                    <strong>Systems thinking even for frontend</strong>
+                    <p>Architecture (SSR/CSR), caching/consistency, observability, performance/memory under load, security boundaries.</p>
+                </li>
+                <li>
+                    <strong>Mission + responsibility realism (no cosplay)</strong>
+                    <p>Reason about safety, misuse, privacy, and unintended behavior with practical engineering instincts.</p>
+                </li>
+            </ol>
+        </article>
+
+        <article class="insight-card">
+            <h3>Interview structure &amp; what it’s trying to measure</h3>
+            <ul>
+                <li><strong>Recruiter / hiring manager:</strong> mission fit, role match, and “why OpenAI, why now?”</li>
+                <li><strong>Technical screens:</strong> practical coding/debugging with emphasis on clarity + robustness</li>
+                <li><strong>Onsite/loop:</strong> multiple rounds covering coding, domain depth, collaboration, and role‑specific work</li>
+            </ul>
+            <p class="signal"><strong>Signal:</strong> Can you build real product under real constraints and explain trade‑offs?</p>
+        </article>
+
+        <article class="insight-card">
+            <h3>The hidden rubric</h3>
+            <ol>
+                <li><strong>Product under constraints:</strong> clarify requirements, handle edge cases, keep code maintainable.</li>
+                <li><strong>Reasoning under ambiguity:</strong> structured thinking, willingness to update your view, “I’m not sure” without collapsing.</li>
+                <li><strong>High‑trust teammate:</strong> crisp communication, feedback‑friendly, assertive without bulldozing.</li>
+                <li><strong>Mission alignment, concretely:</strong> misuse, safety‑trade‑offs, guardrails, escalation paths.</li>
+            </ol>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Frontend topics that over‑index at OpenAI</h3>
+        <ul>
+            <li><strong>Streaming UX + async correctness:</strong> cancellation (AbortController), “latest wins,” backpressure‑ish thinking.</li>
+            <li><strong>State architecture:</strong> state machines vs ad‑hoc booleans, server vs client state, optimistic updates.</li>
+            <li><strong>Performance in real life:</strong> large list rendering, rerender minimization, layout thrash avoidance.</li>
+            <li><strong>Reliability:</strong> retry with idempotency + dedupe, stale response handling.</li>
+            <li><strong>Accessibility:</strong> keyboard flows, screen reader semantics, focus management.</li>
+        </ul>
+    </div>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>Common pitfalls</h3>
+            <ul>
+                <li>Being fast but sloppy (clarity + correctness matters more than raw speed)</li>
+                <li>Performative mission answers without concrete engineering instincts</li>
+                <li>Over‑indexing on LeetCode vs product‑level async/state/perf work</li>
+                <li>Weak requirement clarification at the start</li>
+            </ul>
+        </article>
+
+        <article class="insight-card">
+            <h3>Prep plan that matches their shape (7 days)</h3>
+            <ol>
+                <li>Build a mini streaming chat UI (mock API streaming tokens).</li>
+                <li>Refactor a messy React component (split concerns, add tests, fix perf).</li>
+                <li>System design: “Design a ChatGPT‑like conversation UI + APIs.”</li>
+                <li>A11y + performance pass on your mini app.</li>
+                <li>Mission + stories: 4–6 strong examples (ownership, conflict, ambiguity, speed vs quality, failure).</li>
+            </ol>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>What to say when asked “Why OpenAI?”</h3>
+        <p>
+            The best answer blends mission alignment with specific product/engineering reasons, plus what you want to build
+            and how you’ll measure impact.
+        </p>
+    </div>
+</section>
+
 <!-- Local tabs for this company -->
 <div class="company-tabs">
     <fa-chip class="company-chip fa-chip--label"
