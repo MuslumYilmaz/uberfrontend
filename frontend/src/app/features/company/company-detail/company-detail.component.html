@@ -173,6 +173,58 @@
     </div>
 </section>
 
+<section class="company-insights" *ngIf="(slug | async) === 'google'">
+    <h2>How Google Evaluates Front-End Engineers (Beyond the Questions)</h2>
+    <p class="insight-lede">
+        Google evaluates front-end engineers as strong software engineers first, and UI specialists second.
+        You’re judged on CS fundamentals, web depth, and communication under pressure.
+    </p>
+
+    <div class="insight-grid">
+        <article class="insight-card">
+            <h3>The key signals Google looks for</h3>
+            <ul>
+                <li><strong>Algorithmic problem-solving:</strong> You’re expected to handle classic DS&amp;A (arrays, hash maps, trees/graphs) even as a front-end candidate.</li>
+                <li><strong>Clean code under constraints:</strong> You often write in a shared doc/editor without running code — clarity, structure, and correctness matter a lot.</li>
+                <li><strong>Structured thinking:</strong> Clarify requirements, propose a simple solution first, then optimize. Talk through trade-offs and complexity.</li>
+                <li><strong>Deep web fundamentals:</strong> JavaScript internals (closures, event loop, prototypal inheritance), DOM/events, rendering pipeline, performance bottlenecks.</li>
+                <li><strong>Performance mindset:</strong> Efficient DOM updates, avoiding reflows/layout thrash, caching, lazy loading, and realistic front-end optimization tactics.</li>
+                <li><strong>Accessibility &amp; user-centric thinking:</strong> A11y awareness (keyboard, ARIA, screen readers) increasingly shows up as a differentiator.</li>
+                <li><strong>Communication + “Googleyness”:</strong> Collaboration, humility, handling feedback, staying calm, and explaining your reasoning is part of the rubric.</li>
+            </ul>
+        </article>
+
+        <article class="insight-card">
+            <h3>What trips candidates up</h3>
+            <ul>
+                <li>Underestimating DS&amp;A (“I’m FE, I won’t see trees/graphs”)</li>
+                <li>Going silent while thinking (you must narrate)</li>
+                <li>Writing a correct idea but messy/unclear code</li>
+                <li>Not discussing complexity or edge cases</li>
+                <li>Claiming a tool/framework solution without understanding the underlying mechanics</li>
+            </ul>
+        </article>
+
+        <article class="insight-card">
+            <h3>How to prepare efficiently</h3>
+            <ul>
+                <li>Practice DS&amp;A in JavaScript (arrays/strings → hash maps → trees/graphs).</li>
+                <li>Do “no-IDE” reps: solve problems in a plain doc while narrating.</li>
+                <li>Review web fundamentals like a systems engineer: event loop, DOM events, rendering/reflow, caching semantics, XSS basics.</li>
+                <li>Prep 5–6 STAR stories for behavioral/leadership and be ready to show collaboration signals.</li>
+            </ul>
+        </article>
+    </div>
+
+    <div class="insight-summary">
+        <h3>Bottom line</h3>
+        <p>
+            Google’s loop rewards candidates who are clear, correct, and structured, with strong fundamentals
+            and real web depth — not just framework familiarity.
+        </p>
+    </div>
+</section>
+
 <!-- Local tabs for this company -->
 <div class="company-tabs">
     <fa-chip class="company-chip fa-chip--label"
