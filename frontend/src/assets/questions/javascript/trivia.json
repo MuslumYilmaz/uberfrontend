@@ -4928,5 +4928,222 @@
     },
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-escape-vs-sanitize",
+    "title": "Escaping vs Sanitizing: What's the Difference?",
+    "description": "Explain the difference between output escaping (context-specific encoding) and sanitizing user input (allowlist filtering). Include when to use each, how they work, and why both matter for XSS prevention.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "security",
+      "html",
+      "strings",
+      "dom",
+      "best-practices"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Big idea</strong>\n\nEscaping and sanitizing both reduce XSS risk, but they solve different problems. <strong>Escaping</strong> encodes characters so the browser treats user input as text in a specific output context. <strong>Sanitizing</strong> removes or rewrites dangerous parts of user-provided markup so some HTML can be allowed."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Aspect",
+            "Escaping",
+            "Sanitizing"
+          ],
+          "rows": [
+            [
+              "Primary goal",
+              "Encode special characters so they render as text",
+              "Allow some HTML while blocking dangerous tags/attrs"
+            ],
+            [
+              "Input expectation",
+              "Plain text",
+              "HTML-like input"
+            ],
+            [
+              "Context",
+              "Context-specific (HTML text, attributes, URLs, JS, CSS)",
+              "HTML context only"
+            ],
+            [
+              "Typical tooling",
+              "textContent, template auto-escaping, encoding helpers",
+              "DOMPurify, browser sanitizer APIs, server allowlists"
+            ],
+            [
+              "Failure mode",
+              "Wrong encoder for the context can still allow XSS",
+              "Weak allowlist can allow XSS or strip too much content"
+            ]
+          ],
+          "caption": "Escaping encodes for a context; sanitizing filters to an allowlist."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>\n\nA profile bio can be plain text (escape and render safely), but a blog editor might allow limited rich text (sanitize with an allowlist). Decide based on the product requirement, not convenience."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const userInput = '<img src=x onerror=alert(1) />';\n\n// Escaping (text only)\nbioEl.textContent = userInput;\n\n// Sanitizing (allow some HTML)\nbioEl.innerHTML = DOMPurify.sanitize(userInput, {\n  ALLOWED_TAGS: ['b', 'i', 'a'],\n  ALLOWED_ATTR: ['href', 'rel', 'target']\n});"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Context",
+            "Use",
+            "Example"
+          ],
+          "rows": [
+            [
+              "HTML text",
+              "textContent / template escaping",
+              "el.textContent = userText"
+            ],
+            [
+              "HTML attribute",
+              "Set attributes with encoded values",
+              "el.setAttribute('title', safeText)"
+            ],
+            [
+              "URL",
+              "Allowlist protocols + URL parsing",
+              "new URL(input, location.origin)"
+            ],
+            [
+              "JS string",
+              "Avoid inline JS; never concatenate user input",
+              "Prefer data attributes or JSON"
+            ]
+          ],
+          "caption": "Encoding is context-specific. Use the right output channel."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n\n- Stripping tags with regex (easy to bypass).\n- Sanitizing once and reusing the result in a different context.\n- Double-escaping by encoding the same value twice.\n- Storing only sanitized HTML and losing the original data."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nEscape for the specific output context. Sanitize only when you must allow markup, and pair it with defense-in-depth like CSP and Trusted Types."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-xss-dom-sinks",
+    "title": "DOM XSS: Dangerous Sinks and Safer Alternatives",
+    "description": "Explain DOM-based XSS, list common untrusted sources and dangerous sinks, and show safer alternatives. Mention defense-in-depth like CSP and Trusted Types.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "security",
+      "dom",
+      "browser",
+      "best-practices",
+      "validation"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>What is DOM XSS?</strong>\n\nDOM-based XSS happens when untrusted data flows directly into a dangerous DOM sink and gets interpreted as code or markup. The attack stays entirely on the client: the server never sees it."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Untrusted source",
+            "Example"
+          ],
+          "rows": [
+            [
+              "URL data",
+              "location.search, location.hash, document.referrer"
+            ],
+            [
+              "Cross-window data",
+              "postMessage payloads"
+            ],
+            [
+              "Storage",
+              "localStorage/sessionStorage values"
+            ],
+            [
+              "Network data",
+              "API responses that are treated as HTML"
+            ]
+          ],
+          "caption": "Treat these sources as attacker-controlled unless validated."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Risky sink",
+            "Safer alternative",
+            "Why"
+          ],
+          "rows": [
+            [
+              "innerHTML / outerHTML / insertAdjacentHTML",
+              "textContent or createElement + append",
+              "Avoids parsing attacker-controlled HTML"
+            ],
+            [
+              "document.write",
+              "DOM APIs + templates",
+              "Prevents HTML injection during parse"
+            ],
+            [
+              "eval / new Function / setTimeout(string)",
+              "Function references or direct logic",
+              "Blocks arbitrary code execution"
+            ],
+            [
+              "setAttribute('href', userInput)",
+              "Validate URL + allowlist protocols",
+              "Blocks javascript: and data: schemes"
+            ],
+            [
+              "srcdoc / iframe content",
+              "Trusted, sanitized HTML only",
+              "Iframes can execute injected markup"
+            ]
+          ],
+          "caption": "Prefer safe DOM APIs and validate dangerous sinks."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const input = location.hash.slice(1); // attacker-controlled\n\n// Bad: interprets HTML\noutput.innerHTML = input;\n\n// Good: renders as text\noutput.textContent = input;\n\n// If you must set a URL, allowlist protocols\nconst url = new URL(input, location.origin);\nif (['http:', 'https:'].includes(url.protocol)) {\n  link.setAttribute('href', url.href);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Red flags in reviews</strong>\n\n- Any direct innerHTML assignment with user data.\n- String-based timers or eval-like APIs.\n- URL assignments without protocol validation.\n- Reusing sanitized HTML in a different context (attribute/JS/CSS)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield'></i> <strong>Defense in depth</strong>\n\nUse CSP to limit script execution, adopt Trusted Types to block unsafe sinks, and sanitize only when you must allow rich HTML. Modern frameworks often auto-escape by default, but you can still create XSS with unsafe APIs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nDOM XSS is about data flow: untrusted source \u2192 dangerous sink. Break the chain with safe DOM APIs, strict validation, and layered defenses."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]

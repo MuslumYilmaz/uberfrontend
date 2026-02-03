@@ -6657,5 +6657,92 @@
     "testsTs": "import createTtlStorage from './createTtlStorage';\n\nfunction makeStorage() {\n  const map = new Map<string, string>();\n  return {\n    getItem: (k: string) => (map.has(k) ? map.get(k)! : null),\n    setItem: (k: string, v: string) => { map.set(k, String(v)); },\n    removeItem: (k: string) => { map.delete(k); },\n    _map: map\n  };\n}\n\ndescribe('createTtlStorage (TypeScript)', () => {\n  it('stores and retrieves values without ttl', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('a', { x: 1 });\n    expect(cache.get('a')).toEqual({ x: 1 });\n  });\n\n  it('expires values after ttl', () => {\n    const store = makeStorage();\n    let t = 0;\n    const cache = createTtlStorage(store, () => t);\n    cache.set('a', 'ok', 10);\n    expect(cache.get('a')).toBe('ok');\n    t = 10;\n    expect(cache.get('a')).toBe(null);\n  });\n\n  it('removes corrupted JSON entries', () => {\n    const store = makeStorage();\n    store.setItem('bad', '{not json');\n    const cache = createTtlStorage(store, () => 0);\n    expect(cache.get('bad')).toBe(null);\n    expect(store.getItem('bad')).toBe(null);\n  });\n\n  it('remove deletes key', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('x', 1);\n    cache.remove('x');\n    expect(cache.get('x')).toBe(null);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-escape-html",
+    "title": "Escape HTML for Safe Text",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "security",
+      "strings",
+      "html",
+      "dom",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement escapeHtml(text) to convert &, <, >, \" and ' into HTML entities so user-provided text can be safely inserted into HTML text nodes or attributes. This is context-specific encoding for XSS prevention (text only).",
+      "arguments": [
+        {
+          "name": "text",
+          "type": "string",
+          "desc": "Raw user text to escape for HTML."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "Escaped HTML-safe string."
+      },
+      "examples": [
+        "escapeHtml('<div class=\"x\">Tom & Jerry\\'s</div>')\n// => \"&lt;div class=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/div&gt;\"",
+        "escapeHtml('5 > 3 & 2 < 4')\n// => \"5 &gt; 3 &amp; 2 &lt; 4\""
+      ]
+    },
+    "starterCode": "export default function escapeHtml(text) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function escapeHtml(text: string): string {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Escaping converts special characters into HTML entities so the browser treats them as text, not markup. This prevents user input from turning into tags or attributes when inserted into HTML.",
+      "approaches": [
+        {
+          "title": "Approach 1: Regex + lookup map (preferred)",
+          "prose": "Create a map for the five characters and replace them with a single regex pass. Complexity is O(n) time and O(n) space.",
+          "codeJs": "export default function escapeHtml(text) {\n  const map = {\n    '&': '&amp;',\n    '<': '&lt;',\n    '>': '&gt;',\n    '\"': '&quot;',\n    \"'\": '&#39;'\n  };\n  return String(text).replace(/[&<>\"']/g, (ch) => map[ch]);\n}\n",
+          "codeTs": "export default function escapeHtml(text: string): string {\n  const map: Record<string, string> = {\n    '&': '&amp;',\n    '<': '&lt;',\n    '>': '&gt;',\n    '\"': '&quot;',\n    \"'\": '&#39;'\n  };\n  return String(text).replace(/[&<>\"']/g, (ch) => map[ch]);\n}\n"
+        },
+        {
+          "title": "Approach 2: Chained replace (simple but order-sensitive)",
+          "prose": "You can chain replace calls, but you must escape `&` first or you will double-escape the entities you create later.",
+          "codeJs": "export default function escapeHtml(text) {\n  return String(text)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#39;');\n}\n",
+          "codeTs": "export default function escapeHtml(text: string): string {\n  return String(text)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#39;');\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Escaping is context-specific. HTML escaping does not make strings safe for URLs, JS, or CSS contexts.",
+          "If you chain replacements, escape `&` first or you will double-escape entities.",
+          "Escaping does not allow rich HTML; use a sanitizer with an allowlist when you must accept markup."
+        ],
+        "edgeCases": [
+          "Empty string should return an empty string.",
+          "Already-escaped input will be escaped again (expected for raw-text encoding).",
+          "Quotes matter for attribute contexts; escape both `\"` and `'`."
+        ],
+        "techniques": [
+          "Regex replacement with a lookup table.",
+          "String normalization via String(text).",
+          "Context-aware output encoding."
+        ]
+      },
+      "followUpQuestions": [
+        "js-dom-renderer",
+        "js-dom-find-node"
+      ],
+      "resources": [
+        {
+          "title": "OWASP – XSS Prevention Cheat Sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        },
+        {
+          "title": "MDN – Element.textContent",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent"
+        }
+      ]
+    },
+    "tests": "import escapeHtml from './escapeHtml';\n\ndescribe('escapeHtml', () => {\n  test('escapes HTML special characters', () => {\n    const input = '<div class=\"x\">Tom & Jerry\\'s</div>';\n    const out = '&lt;div class=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/div&gt;';\n    expect(escapeHtml(input)).toBe(out);\n  });\n\n  test('leaves safe text unchanged', () => {\n    expect(escapeHtml('hello world')).toBe('hello world');\n  });\n\n  test('escapes ampersands in existing entities', () => {\n    expect(escapeHtml('&lt;script&gt;')).toBe('&amp;lt;script&amp;gt;');\n  });\n});\n",
+    "testsTs": "import escapeHtml from './escapeHtml';\n\ndescribe('escapeHtml (TypeScript)', () => {\n  it('escapes HTML special characters', () => {\n    const input = '<div class=\"x\">Tom & Jerry\\'s</div>';\n    const out = '&lt;div class=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/div&gt;';\n    expect(escapeHtml(input)).toBe(out);\n  });\n\n  it('leaves safe text unchanged', () => {\n    expect(escapeHtml('hello world')).toBe('hello world');\n  });\n\n  it('escapes ampersands in existing entities', () => {\n    expect(escapeHtml('&lt;script&gt;')).toBe('&amp;lt;script&amp;gt;');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]
