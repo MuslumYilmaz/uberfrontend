@@ -5261,5 +5261,514 @@
     },
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-performance-profiling-workflow",
+    "title": "Performance Profiling Workflow (Browser DevTools)",
+    "description": "Explain a practical workflow for profiling performance in the browser: pick metrics, record traces, isolate bottlenecks, apply fixes, and verify improvements. Include what LCP, INP, and CLS mean and how to measure them.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "performance",
+      "web-performance",
+      "debugging",
+      "browser",
+      "best-practices"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gauge'></i> <strong>Goal</strong>\n\nProfiling turns a vague \"the page feels slow\" into measurable bottlenecks. The best workflow is repeatable: pick a metric, capture a trace, fix the biggest issue, and verify with the same scenario."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Metric",
+            "What it measures",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "LCP",
+              "Largest Contentful Paint",
+              "Main content appears quickly"
+            ],
+            [
+              "INP",
+              "Interaction to Next Paint",
+              "UI responds to user input fast"
+            ],
+            [
+              "CLS",
+              "Cumulative Layout Shift",
+              "Layout stability (no unexpected jumps)"
+            ]
+          ],
+          "caption": "Start with user-facing metrics before micro-optimizations."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "Action",
+            "DevTools hint"
+          ],
+          "rows": [
+            [
+              "1. Reproduce",
+              "Create a stable scenario (same route, same data)",
+              "Use CPU throttling + cold cache"
+            ],
+            [
+              "2. Record",
+              "Capture a Performance trace",
+              "Record interactions and mark with User Timing"
+            ],
+            [
+              "3. Isolate",
+              "Find long tasks, layout thrash, heavy scripting",
+              "Look at the flame chart + Main thread"
+            ],
+            [
+              "4. Fix",
+              "Reduce or split expensive work",
+              "Chunk work, debounce, memoize"
+            ],
+            [
+              "5. Verify",
+              "Re-run the same trace and compare",
+              "Check LCP/INP/CLS deltas"
+            ]
+          ],
+          "caption": "A repeatable workflow beats random tweaks."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// User Timing marks for trace analysis\nperformance.mark('render-start');\nrenderUI();\nperformance.mark('render-end');\nperformance.measure('render', 'render-start', 'render-end');\n\n// Track Web Vitals in the field (simplified)\nnew PerformanceObserver((list) => {\n  for (const entry of list.getEntries()) {\n    console.log(entry.name, entry.value);\n  }\n}).observe({ type: 'largest-contentful-paint', buffered: true });"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Signal",
+            "Likely cause",
+            "Typical fix"
+          ],
+          "rows": [
+            [
+              "Long tasks (>50ms)",
+              "Too much JS on main thread",
+              "Split work, lazy-load, defer"
+            ],
+            [
+              "Forced reflow",
+              "Layout thrash (read/write mixing)",
+              "Batch DOM reads then writes"
+            ],
+            [
+              "Large paint",
+              "Big images or expensive styles",
+              "Optimize assets, reduce effects"
+            ]
+          ],
+          "caption": "Use the trace to map signals to fixes."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n\n- Optimizing without a baseline metric.\n- Profiling in dev builds only (prod bundles behave differently).\n- Ignoring long tasks and focusing on tiny wins.\n- Not re-testing after changes."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nPick a metric, record a trace, fix the biggest bottleneck, and verify with the same scenario. That loop is the fastest path to real-world performance gains."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-memory-leaks-common-sources",
+    "title": "Memory Leaks in JavaScript: Common Sources and Fixes",
+    "description": "Explain how memory leaks happen in the browser, list common sources (listeners, timers, closures, caches, detached DOM), and show practical cleanup patterns and debugging steps.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "performance",
+      "debugging",
+      "browser",
+      "events",
+      "best-practices"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bug'></i> <strong>What is a memory leak?</strong>\n\nA memory leak happens when objects stay referenced and cannot be garbage collected, even though the app no longer needs them. In long-lived SPAs this causes slowdowns, jank, and crashes over time."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Leak source",
+            "Why it leaks",
+            "Fix pattern"
+          ],
+          "rows": [
+            [
+              "Event listeners",
+              "Handlers keep closures alive",
+              "Remove listeners on cleanup"
+            ],
+            [
+              "Intervals/timeouts",
+              "Timers keep callbacks reachable",
+              "Clear timers on unmount"
+            ],
+            [
+              "Detached DOM",
+              "Nodes retained by JS references",
+              "Null references; avoid caching DOM nodes"
+            ],
+            [
+              "Global caches",
+              "Maps grow without limits",
+              "Bounded caches + eviction"
+            ],
+            [
+              "Observers",
+              "Mutation/Intersection observers never disconnected",
+              "Call disconnect() on cleanup"
+            ],
+            [
+              "Closures",
+              "Captured large objects stay alive",
+              "Avoid capturing big data unnecessarily"
+            ]
+          ],
+          "caption": "Leaks usually come from forgotten references."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: leak from uncleaned listener\nfunction mount(btn) {\n  const handler = () => console.log('click');\n  btn.addEventListener('click', handler);\n  return () => btn.removeEventListener('click', handler);\n}\n\n// Example: cleanup timers\nconst id = setInterval(poll, 2000);\n// later...\nclearInterval(id);"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "What to do",
+            "Why"
+          ],
+          "rows": [
+            [
+              "1. Snapshot",
+              "Take a heap snapshot (baseline)",
+              "Know what normal looks like"
+            ],
+            [
+              "2. Reproduce",
+              "Perform the action multiple times",
+              "Amplify the leak"
+            ],
+            [
+              "3. Compare",
+              "Take another snapshot and compare",
+              "Find growing objects"
+            ],
+            [
+              "4. Retainers",
+              "Inspect retaining paths",
+              "See what keeps objects alive"
+            ]
+          ],
+          "caption": "Use the Memory panel to prove the leak."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common mistakes</strong>\n\n- Relying on GC to clean up listeners (it will not if references remain).\n- Using global arrays/maps as logs without bounds.\n- Forgetting to unsubscribe from Observables or event buses.\n- Holding DOM nodes in closures after unmount."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nAvoid leaks by removing references: detach listeners, clear timers, disconnect observers, and bound caches. Verify with heap snapshots after repeated actions."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-esm-vs-cjs",
+    "title": "ESM vs CommonJS: Differences, Interop, and Tooling",
+    "description": "Compare ES Modules (ESM) and CommonJS (CJS): syntax, loading model, live bindings, interop pitfalls, and how bundlers/tree-shaking behave. Include Node.js package.json settings and file extensions.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "modules",
+      "imports",
+      "exports",
+      "build",
+      "optimization"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Big picture</strong>\n\n<strong>ES Modules (ESM)</strong> are the modern JavaScript module system with static imports/exports. <strong>CommonJS (CJS)</strong> is Node.js\u2019s legacy system using require/module.exports. The key difference is that ESM is statically analyzable, which enables tree-shaking and better tooling."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Topic",
+            "ESM",
+            "CommonJS"
+          ],
+          "rows": [
+            [
+              "Syntax",
+              "import/export",
+              "require/module.exports"
+            ],
+            [
+              "Loading",
+              "Static, hoisted",
+              "Dynamic at runtime"
+            ],
+            [
+              "Bindings",
+              "Live bindings",
+              "Snapshot values"
+            ],
+            [
+              "Tree-shaking",
+              "Works well",
+              "Limited (hard to analyze)"
+            ],
+            [
+              "Interop",
+              "Default export vs named exports",
+              "module.exports is a single object"
+            ]
+          ],
+          "caption": "ESM\u2019s static structure is the big win for tooling."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// ESM\nexport const add = (a, b) => a + b;\nexport default function sum(arr) {\n  return arr.reduce(add, 0);\n}\n\n// CJS\nconst add = (a, b) => a + b;\nmodule.exports = { add };"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-gears'></i> <strong>Node.js module type</strong>\n\nIn Node.js, <code>package.json</code> controls defaults: <code>\"type\": \"module\"</code> makes <code>.js</code> files ESM; <code>\"type\": \"commonjs\"</code> keeps CJS. You can always use <code>.mjs</code> for ESM and <code>.cjs</code> for CJS regardless of the package type."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Interop pitfalls</strong>\n\n- CJS <code>module.exports = value</code> becomes ESM <code>default</code> when imported.\n- Named exports from CJS are not always real named exports.\n- Mixing systems can break tree-shaking unless you publish ESM builds."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nPrefer ESM for new code and libraries. It enables static analysis, tree-shaking, and better tooling. Use CJS only for legacy compatibility or when required by environment constraints."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-tree-shaking",
+    "title": "Tree-Shaking: How It Works and Common Pitfalls",
+    "description": "Explain tree-shaking (dead code elimination) in modern bundlers, the requirements for it to work (ESM, sideEffects, pure), and how to verify results. Include common pitfalls that prevent tree-shaking.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "modules",
+      "build",
+      "optimization",
+      "tree",
+      "performance"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-seedling'></i> <strong>What is tree-shaking?</strong>\n\nTree-shaking is <strong>dead code elimination</strong>. Bundlers analyze your import graph and remove unused exports so your final bundle is smaller and faster. It works best with ESM because imports/exports are static."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Requirement",
+            "Why it matters",
+            "Example"
+          ],
+          "rows": [
+            [
+              "ESM exports",
+              "Static analysis of imports",
+              "export const foo = ..."
+            ],
+            [
+              "No side effects",
+              "Unused code can be safely removed",
+              "set \"sideEffects\": false"
+            ],
+            [
+              "Pure annotations",
+              "Signals safe removal",
+              "/* @__PURE__ */ helper()"
+            ]
+          ],
+          "caption": "Tree-shaking needs static structure + side-effect info."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Good: named ESM exports\nexport const add = (a, b) => a + b;\nexport const multiply = (a, b) => a * b;\n\n// Consumer uses only add\nimport { add } from './math.js';"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Pitfall",
+            "Why it breaks tree-shaking",
+            "Fix"
+          ],
+          "rows": [
+            [
+              "CommonJS modules",
+              "Require is dynamic",
+              "Publish ESM build"
+            ],
+            [
+              "Side-effect imports",
+              "Bundler must keep them",
+              "Mark sideEffects accurately"
+            ],
+            [
+              "Barrel files with side effects",
+              "Re-export triggers file execution",
+              "Keep barrels side-effect free"
+            ],
+            [
+              "Dynamic require/import",
+              "Unknown at build time",
+              "Prefer static imports"
+            ]
+          ],
+          "caption": "Most tree-shaking failures are about side effects or dynamic loading."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-magnifying-glass'></i> <strong>How to verify</strong>\n\nUse a bundle analyzer to compare sizes before/after. In devtools, inspect the output bundle to ensure unused exports are removed. Add perf budgets to prevent regressions."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nTree-shaking is effective when your code is ESM, side-effect free, and statically analyzable. If bundles stay large, check for CJS dependencies and unmarked side effects."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-intl-datetime-timezone",
+    "title": "Intl.DateTimeFormat and Time Zones in JavaScript",
+    "description": "Explain how to format dates with Intl.DateTimeFormat, how IANA time zones work, and why manual offset math fails. Include formatToParts, DST pitfalls, and best practices.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "timers",
+      "best-practices",
+      "edge-cases",
+      "strings",
+      "browser"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-calendar'></i> <strong>Big idea</strong>\n\nJavaScript dates are stored in UTC milliseconds, but users expect local time zones. <strong>Intl.DateTimeFormat</strong> lets you format a Date for a specific locale and <strong>IANA time zone</strong> (e.g., <code>America/Los_Angeles</code>) without manual offset math."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "What it means",
+            "Why it matters"
+          ],
+          "rows": [
+            [
+              "IANA time zone",
+              "Standard names like America/New_York",
+              "Handles DST rules correctly"
+            ],
+            [
+              "Locale",
+              "Formatting rules (order, separators)",
+              "Controls display style"
+            ],
+            [
+              "UTC storage",
+              "Date internally stored as ms since epoch",
+              "Always convert on output"
+            ]
+          ],
+          "caption": "Time zone and locale are independent: time zone changes the clock, locale changes the display."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "const date = new Date('2020-01-01T00:30:00Z');\n\nconst fmt = new Intl.DateTimeFormat('en-US', {\n  timeZone: 'America/Los_Angeles',\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit'\n});\n\nfmt.format(date); // e.g. 12/31/2019\n\n// Stable output using formatToParts:\nconst parts = fmt.formatToParts(date);\nconst map = Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value]));\nconst ymd = `${map.year}-${map.month}-${map.day}`;"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Why manual offsets fail</strong>\n\nDaylight Saving Time changes offsets during the year. Subtracting a fixed number of hours can produce incorrect dates. Always use <code>Intl</code> or a time zone\u2013aware library when you need exact local dates."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Pitfall",
+            "Example",
+            "Better approach"
+          ],
+          "rows": [
+            [
+              "Using toISOString()",
+              "Always returns UTC",
+              "Use Intl.DateTimeFormat + timeZone"
+            ],
+            [
+              "Hard-coded offsets",
+              "-08:00 is wrong in summer",
+              "Let Intl handle DST"
+            ],
+            [
+              "Locale assumptions",
+              "MM/DD vs DD/MM confusion",
+              "Use formatToParts or fixed locale"
+            ]
+          ],
+          "caption": "Most date bugs are caused by wrong assumptions about offsets or locale."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Best practices</strong>\n\n- Store timestamps in UTC.\n- Convert to a user\u2019s time zone at the edges (UI).\n- Use IANA time zone IDs.\n- Prefer formatToParts for stable, testable output."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]

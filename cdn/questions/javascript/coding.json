@@ -6911,5 +6911,236 @@
     "testsTs": "import safeJsonParse from './safeJsonParse';\n\ndescribe('safeJsonParse (TypeScript)', () => {\n  it('parses valid JSON objects and arrays', () => {\n    expect(safeJsonParse('{\"ok\":true}')).toEqual({ ok: true });\n    expect(safeJsonParse('[1,2,3]')).toEqual([1, 2, 3]);\n  });\n\n  it('parses valid primitives', () => {\n    expect(safeJsonParse('0')).toBe(0);\n    expect(safeJsonParse('true')).toBe(true);\n    expect(safeJsonParse('null')).toBe(null);\n  });\n\n  it('returns fallback on invalid JSON', () => {\n    const fallback = { ok: false };\n    expect(safeJsonParse('{bad}', fallback)).toBe(fallback);\n  });\n\n  it('returns fallback for non-string input', () => {\n    expect(safeJsonParse(42 as any, [])).toEqual([]);\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-measure-duration",
+    "title": "Measure Function Duration (Profiling Wrapper)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "performance",
+      "web-performance",
+      "debugging",
+      "functions",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement measure(fn, now?) to profile execution time. It should run a function, measure the duration using the provided clock, and return { result, durationMs }. It must support both sync and async functions (return a Promise in all cases).",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "() => any | Promise<any>",
+          "desc": "Function to execute and measure."
+        },
+        {
+          "name": "now",
+          "type": "() => number",
+          "desc": "Optional clock (defaults to performance.now or Date.now)."
+        }
+      ],
+      "returns": {
+        "type": "Promise<{ result: any, durationMs: number }>",
+        "desc": "The function result plus elapsed time in ms."
+      },
+      "examples": [
+        "await measure(() => doWork())",
+        "await measure(async () => await fetchData(), () => 0)"
+      ]
+    },
+    "starterCode": "export default async function measure(fn, now = () => Date.now()) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default async function measure(\n  fn: () => any | Promise<any>,\n  now: () => number = () => Date.now()\n): Promise<{ result: any; durationMs: number }> {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Capture a start time, execute the function, then capture an end time after it finishes. Wrap the result in Promise.resolve so both sync and async paths are handled consistently.",
+      "approaches": [
+        {
+          "title": "Approach: Promise.resolve wrapper",
+          "prose": "Steps:\n1) Record start time.\n2) Call fn and wrap with Promise.resolve.\n3) After it resolves, record end time and return { result, durationMs }.\n4) If fn throws or rejects, propagate the error.\n\nComplexity: O(1) extra work (not counting fn).",
+          "codeJs": "export default async function measure(fn, now = () => Date.now()) {\n  const start = now();\n  const result = await Promise.resolve().then(fn);\n  const end = now();\n  return { result, durationMs: end - start };\n}\n",
+          "codeTs": "export default async function measure(\n  fn: () => any | Promise<any>,\n  now: () => number = () => Date.now()\n): Promise<{ result: any; durationMs: number }> {\n  const start = now();\n  const result = await Promise.resolve().then(fn);\n  const end = now();\n  return { result, durationMs: end - start };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using Date.now() for small durations can be too coarse; prefer performance.now when available.",
+          "Measuring async work without awaiting gives misleading durations.",
+          "Profiling adds overhead; keep wrappers lightweight."
+        ],
+        "edgeCases": [
+          "Function throws: error should propagate (no swallowing).",
+          "Async function resolves: duration should cover await time.",
+          "Clock function can be injected for deterministic tests."
+        ],
+        "techniques": [
+          "Promise.resolve to normalize sync vs async."
+        ]
+      },
+      "followUpQuestions": [
+        "js-debounce",
+        "js-poll-until"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 Performance.now()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Performance/now"
+        }
+      ]
+    },
+    "tests": "import measure from './measure';\n\ndescribe('measure', () => {\n  test('measures sync functions', async () => {\n    let t = 0;\n    const now = () => (t += 5);\n    const { result, durationMs } = await measure(() => 42, now);\n    expect(result).toBe(42);\n    expect(durationMs).toBe(5);\n  });\n\n  test('measures async functions', async () => {\n    let t = 100;\n    const now = () => (t += 10);\n    const { result, durationMs } = await measure(async () => 'ok', now);\n    expect(result).toBe('ok');\n    expect(durationMs).toBe(10);\n  });\n\n  test('propagates errors', async () => {\n    const now = () => 1;\n    await expect(measure(() => { throw new Error('boom'); }, now)).rejects.toThrow('boom');\n  });\n});\n",
+    "testsTs": "import measure from './measure';\n\ndescribe('measure (TypeScript)', () => {\n  it('measures sync functions', async () => {\n    let t = 0;\n    const now = () => (t += 5);\n    const { result, durationMs } = await measure(() => 42, now);\n    expect(result).toBe(42);\n    expect(durationMs).toBe(5);\n  });\n\n  it('measures async functions', async () => {\n    let t = 100;\n    const now = () => (t += 10);\n    const { result, durationMs } = await measure(async () => 'ok', now);\n    expect(result).toBe('ok');\n    expect(durationMs).toBe(10);\n  });\n\n  it('propagates errors', async () => {\n    const now = () => 1;\n    await expect(measure(() => { throw new Error('boom'); }, now)).rejects.toThrow('boom');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-create-cleanup-bag",
+    "title": "Cleanup Bag (Dispose Subscriptions)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "best-practices",
+      "event-handling",
+      "utilities",
+      "debugging",
+      "performance"
+    ],
+    "description": {
+      "summary": "Implement createCleanupBag() that helps prevent memory leaks by tracking cleanup functions (like removing event listeners or cancelling timers). It should return { add, dispose, size }. add(fn) registers a cleanup and returns a function to remove it. dispose() runs all remaining cleanups once and clears the bag.",
+      "arguments": [],
+      "returns": {
+        "type": "{ add: (fn: () => void) => () => void, dispose: () => void, size: () => number }",
+        "desc": "A cleanup registry that can be disposed safely."
+      },
+      "examples": [
+        "const bag = createCleanupBag();\nconst off = bag.add(() => clearInterval(id));\n// later...\nbag.dispose();",
+        "// add after dispose runs immediately\nbag.dispose();\nbag.add(() => console.log('cleanup'));"
+      ]
+    },
+    "starterCode": "export default function createCleanupBag() {\n  // TODO: return { add, dispose, size }\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function createCleanupBag(): {\n  add: (fn: () => void) => () => void;\n  dispose: () => void;\n  size: () => number;\n} {\n  // TODO: return { add, dispose, size }\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Track cleanup callbacks in a Set. add() registers a cleanup and returns a remover. dispose() runs each cleanup once and clears the Set. If add() is called after dispose(), run it immediately to avoid leaks.",
+      "approaches": [
+        {
+          "title": "Approach: Set + idempotent dispose",
+          "prose": "Steps:\n1) Keep a Set of cleanup functions.\n2) add(fn): if already disposed, run fn immediately and return a no-op remover; otherwise store fn and return a remover that deletes it.\n3) dispose(): run all remaining cleanups once, clear the Set, mark disposed.\n\nComplexity: O(n) to dispose; O(1) per add/remove.",
+          "codeJs": "export default function createCleanupBag() {\n  const cleanups = new Set();\n  let disposed = false;\n\n  const add = (fn) => {\n    if (typeof fn !== 'function') throw new TypeError('cleanup must be a function');\n    if (disposed) {\n      fn();\n      return () => {};\n    }\n    cleanups.add(fn);\n    let removed = false;\n    return () => {\n      if (removed) return;\n      removed = true;\n      cleanups.delete(fn);\n    };\n  };\n\n  const dispose = () => {\n    if (disposed) return;\n    disposed = true;\n    for (const fn of Array.from(cleanups)) {\n      try { fn(); } finally { cleanups.delete(fn); }\n    }\n  };\n\n  const size = () => cleanups.size;\n\n  return { add, dispose, size };\n}\n",
+          "codeTs": "export default function createCleanupBag() {\n  const cleanups = new Set<() => void>();\n  let disposed = false;\n\n  const add = (fn: () => void) => {\n    if (typeof fn !== 'function') throw new TypeError('cleanup must be a function');\n    if (disposed) {\n      fn();\n      return () => {};\n    }\n    cleanups.add(fn);\n    let removed = false;\n    return () => {\n      if (removed) return;\n      removed = true;\n      cleanups.delete(fn);\n    };\n  };\n\n  const dispose = () => {\n    if (disposed) return;\n    disposed = true;\n    for (const fn of Array.from(cleanups)) {\n      try { fn(); } finally { cleanups.delete(fn); }\n    }\n  };\n\n  const size = () => cleanups.size;\n\n  return { add, dispose, size };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to clear references keeps memory alive unnecessarily.",
+          "Calling cleanup twice can cause errors; make dispose idempotent.",
+          "Not handling add-after-dispose can leak resources."
+        ],
+        "edgeCases": [
+          "dispose() called multiple times should be safe.",
+          "remove a cleanup before dispose should skip it.",
+          "add() after dispose should run immediately."
+        ],
+        "techniques": [
+          "Set for stable O(1) add/remove.",
+          "Idempotent cleanup patterns."
+        ]
+      },
+      "followUpQuestions": [
+        "js-debounce",
+        "js-event-loop"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 addEventListener/removeEventListener",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener"
+        }
+      ]
+    },
+    "tests": "import createCleanupBag from './createCleanupBag';\n\ndescribe('createCleanupBag', () => {\n  test('disposes remaining cleanups', () => {\n    const bag = createCleanupBag();\n    const calls = [];\n    const offA = bag.add(() => calls.push('a'));\n    bag.add(() => calls.push('b'));\n    offA();\n\n    bag.dispose();\n\n    expect(calls).toEqual(['b']);\n    expect(bag.size()).toBe(0);\n  });\n\n  test('dispose is idempotent', () => {\n    const bag = createCleanupBag();\n    let count = 0;\n    bag.add(() => count++);\n    bag.dispose();\n    bag.dispose();\n    expect(count).toBe(1);\n  });\n\n  test('add after dispose runs immediately', () => {\n    const bag = createCleanupBag();\n    let ran = 0;\n    bag.dispose();\n    bag.add(() => ran++);\n    expect(ran).toBe(1);\n    expect(bag.size()).toBe(0);\n  });\n});\n",
+    "testsTs": "import createCleanupBag from './createCleanupBag';\n\ndescribe('createCleanupBag (TypeScript)', () => {\n  it('disposes remaining cleanups', () => {\n    const bag = createCleanupBag();\n    const calls: string[] = [];\n    const offA = bag.add(() => calls.push('a'));\n    bag.add(() => calls.push('b'));\n    offA();\n\n    bag.dispose();\n\n    expect(calls).toEqual(['b']);\n    expect(bag.size()).toBe(0);\n  });\n\n  it('dispose is idempotent', () => {\n    const bag = createCleanupBag();\n    let count = 0;\n    bag.add(() => count++);\n    bag.dispose();\n    bag.dispose();\n    expect(count).toBe(1);\n  });\n\n  it('add after dispose runs immediately', () => {\n    const bag = createCleanupBag();\n    let ran = 0;\n    bag.dispose();\n    bag.add(() => ran++);\n    expect(ran).toBe(1);\n    expect(bag.size()).toBe(0);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-format-date-timezone",
+    "title": "Format Date in Time Zone (YYYY-MM-DD)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "timers",
+      "utilities",
+      "strings",
+      "edge-cases",
+      "best-practices"
+    ],
+    "description": {
+      "summary": "Implement formatDateInTimeZone(date, timeZone) to return a YYYY-MM-DD string for a given Date (or timestamp) in a specific IANA time zone. Use Intl.DateTimeFormat and handle invalid dates safely.",
+      "arguments": [
+        {
+          "name": "date",
+          "type": "Date | number",
+          "desc": "Date object or timestamp (ms)."
+        },
+        {
+          "name": "timeZone",
+          "type": "string",
+          "desc": "IANA time zone (e.g., 'UTC', 'America/Los_Angeles')."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "Formatted date as YYYY-MM-DD in the specified time zone."
+      },
+      "examples": [
+        "formatDateInTimeZone(new Date('2020-01-01T00:30:00Z'), 'America/Los_Angeles') // => '2019-12-31'",
+        "formatDateInTimeZone(1593646200000, 'UTC') // => '2020-07-01'"
+      ]
+    },
+    "starterCode": "export default function formatDateInTimeZone(date, timeZone) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function formatDateInTimeZone(date: Date | number, timeZone: string): string {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Use Intl.DateTimeFormat with a fixed locale and the provided timeZone. formatToParts lets you build a stable YYYY-MM-DD string without relying on locale-specific formatting.",
+      "approaches": [
+        {
+          "title": "Approach: Intl.DateTimeFormat + formatToParts",
+          "prose": "Steps:\n1) Normalize input to a Date.\n2) Throw if the date is invalid.\n3) Use Intl.DateTimeFormat with { year, month, day } and the timeZone.\n4) Read year/month/day from formatToParts and build YYYY-MM-DD.\n\nComplexity: O(1) time, O(1) space.",
+          "codeJs": "export default function formatDateInTimeZone(date, timeZone) {\n  const d = date instanceof Date ? date : new Date(date);\n  if (Number.isNaN(d.getTime())) throw new TypeError('Invalid date');\n\n  const parts = new Intl.DateTimeFormat('en-US', {\n    timeZone,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit'\n  }).formatToParts(d);\n\n  const map = {};\n  for (const p of parts) {\n    if (p.type !== 'literal') map[p.type] = p.value;\n  }\n\n  return `${map.year}-${map.month}-${map.day}`;\n}\n",
+          "codeTs": "export default function formatDateInTimeZone(date: Date | number, timeZone: string): string {\n  const d = date instanceof Date ? date : new Date(date);\n  if (Number.isNaN(d.getTime())) throw new TypeError('Invalid date');\n\n  const parts = new Intl.DateTimeFormat('en-US', {\n    timeZone,\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit'\n  }).formatToParts(d);\n\n  const map: Record<string, string> = {};\n  for (const p of parts) {\n    if (p.type !== 'literal') map[p.type] = p.value;\n  }\n\n  return `${map.year}-${map.month}-${map.day}`;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Manual offset math fails across daylight saving time changes.",
+          "Using toISOString always returns UTC, not the target time zone.",
+          "Locale formatting can vary; formatToParts avoids ambiguity."
+        ],
+        "edgeCases": [
+          "Invalid dates should throw or be handled explicitly.",
+          "Dates near midnight can change the local day depending on time zone.",
+          "Invalid time zones should throw a RangeError from Intl."
+        ],
+        "techniques": [
+          "Intl.DateTimeFormat with timeZone option.",
+          "formatToParts for stable output."
+        ]
+      },
+      "followUpQuestions": [
+        "js-storage-ttl-cache",
+        "js-sleep"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 Intl.DateTimeFormat",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat"
+        }
+      ]
+    },
+    "tests": "import formatDateInTimeZone from './formatDateInTimeZone';\n\ndescribe('formatDateInTimeZone', () => {\n  test('formats date in different time zones', () => {\n    const date = new Date('2020-01-01T00:30:00Z');\n    expect(formatDateInTimeZone(date, 'America/Los_Angeles')).toBe('2019-12-31');\n    expect(formatDateInTimeZone(date, 'Asia/Tokyo')).toBe('2020-01-01');\n  });\n\n  test('accepts a timestamp', () => {\n    const ts = Date.parse('2020-07-01T23:30:00Z');\n    expect(formatDateInTimeZone(ts, 'UTC')).toBe('2020-07-01');\n  });\n\n  test('throws on invalid date', () => {\n    expect(() => formatDateInTimeZone(new Date('invalid'), 'UTC')).toThrow();\n  });\n});\n",
+    "testsTs": "import formatDateInTimeZone from './formatDateInTimeZone';\n\ndescribe('formatDateInTimeZone (TypeScript)', () => {\n  it('formats date in different time zones', () => {\n    const date = new Date('2020-01-01T00:30:00Z');\n    expect(formatDateInTimeZone(date, 'America/Los_Angeles')).toBe('2019-12-31');\n    expect(formatDateInTimeZone(date, 'Asia/Tokyo')).toBe('2020-01-01');\n  });\n\n  it('accepts a timestamp', () => {\n    const ts = Date.parse('2020-07-01T23:30:00Z');\n    expect(formatDateInTimeZone(ts, 'UTC')).toBe('2020-07-01');\n  });\n\n  it('throws on invalid date', () => {\n    expect(() => formatDateInTimeZone(new Date('invalid'), 'UTC')).toThrow();\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]
