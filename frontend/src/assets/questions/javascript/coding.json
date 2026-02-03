@@ -6744,5 +6744,172 @@
     "testsTs": "import escapeHtml from './escapeHtml';\n\ndescribe('escapeHtml (TypeScript)', () => {\n  it('escapes HTML special characters', () => {\n    const input = '<div class=\"x\">Tom & Jerry\\'s</div>';\n    const out = '&lt;div class=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/div&gt;';\n    expect(escapeHtml(input)).toBe(out);\n  });\n\n  it('leaves safe text unchanged', () => {\n    expect(escapeHtml('hello world')).toBe('hello world');\n  });\n\n  it('escapes ampersands in existing entities', () => {\n    expect(escapeHtml('&lt;script&gt;')).toBe('&amp;lt;script&amp;gt;');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-validate-username",
+    "title": "Validate Username (Rules + Edge Cases)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "validation",
+      "strings",
+      "edge-cases",
+      "best-practices",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement validateUsername(name) to enforce common username rules and handle edge cases safely. Rules: 3\u201316 chars, lowercase letters/digits/underscore only, must start with a letter, no consecutive underscores, and no trailing underscore.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string",
+          "desc": "The username to validate."
+        }
+      ],
+      "returns": {
+        "type": "boolean",
+        "desc": "True if valid; otherwise false."
+      },
+      "examples": [
+        "validateUsername('alice_1') // => true",
+        "validateUsername('2cool')   // => false (must start with a letter)",
+        "validateUsername('bob__x')  // => false (no consecutive underscores)"
+      ]
+    },
+    "starterCode": "export default function validateUsername(name) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function validateUsername(name: string): boolean {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Validate step-by-step: type guard, length check, allowed characters, and underscore rules. This makes edge cases explicit and tests easy to reason about.",
+      "approaches": [
+        {
+          "title": "Approach 1: Explicit checks (clear and testable)",
+          "prose": "Steps:\n1) Ensure input is a string.\n2) Check length between 3 and 16.\n3) Verify allowed characters (lowercase letters, digits, underscore).\n4) Ensure it starts with a letter.\n5) Reject consecutive underscores and trailing underscore.\n\nComplexity: O(n) time, O(1) extra space.",
+          "codeJs": "export default function validateUsername(name) {\n  if (typeof name !== 'string') return false;\n  const len = name.length;\n  if (len < 3 || len > 16) return false;\n  if (!/^[a-z][a-z0-9_]*$/.test(name)) return false;\n  if (name.endsWith('_')) return false;\n  if (name.includes('__')) return false;\n  return true;\n}\n",
+          "codeTs": "export default function validateUsername(name: string): boolean {\n  if (typeof name !== 'string') return false;\n  const len = name.length;\n  if (len < 3 || len > 16) return false;\n  if (!/^[a-z][a-z0-9_]*$/.test(name)) return false;\n  if (name.endsWith('_')) return false;\n  if (name.includes('__')) return false;\n  return true;\n}\n"
+        },
+        {
+          "title": "Approach 2: Single regex (compact)",
+          "prose": "A single regex can encode all rules. It is shorter but harder to maintain. Keep tests strong so refactors do not break edge cases.",
+          "codeJs": "export default function validateUsername(name) {\n  return typeof name === 'string' && /^[a-z](?!.*__)[a-z0-9_]{1,14}[a-z0-9]$/.test(name);\n}\n",
+          "codeTs": "export default function validateUsername(name: string): boolean {\n  return typeof name === 'string' && /^[a-z](?!.*__)[a-z0-9_]{1,14}[a-z0-9]$/.test(name);\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to reject trailing underscores.",
+          "Allowing uppercase letters or hyphens accidentally.",
+          "Regex-only solutions that hide edge-case intent without tests."
+        ],
+        "edgeCases": [
+          "Length boundaries: 3 and 16 are valid; 2 and 17 are invalid.",
+          "Leading digit is invalid even if the rest is valid.",
+          "Consecutive underscores are invalid anywhere in the string."
+        ],
+        "techniques": [
+          "Boundary checks before regex for clarity.",
+          "String methods for simple rules (endsWith, includes).",
+          "Small, focused unit tests for each rule."
+        ]
+      },
+      "followUpQuestions": [
+        "js-parse-query-string",
+        "js-stringify-query-string"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 Regular expressions",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions"
+        }
+      ]
+    },
+    "tests": "import validateUsername from './validateUsername';\n\ndescribe('validateUsername', () => {\n  test('accepts valid usernames', () => {\n    expect(validateUsername('alice_1')).toBe(true);\n    expect(validateUsername('abc')).toBe(true);\n    expect(validateUsername('a123456789012345')).toBe(true);\n  });\n\n  test('rejects invalid length', () => {\n    expect(validateUsername('ab')).toBe(false);\n    expect(validateUsername('a1234567890123456')).toBe(false);\n  });\n\n  test('rejects uppercase or invalid chars', () => {\n    expect(validateUsername('Alice')).toBe(false);\n    expect(validateUsername('bob-dash')).toBe(false);\n  });\n\n  test('rejects leading digit, trailing underscore, or consecutive underscores', () => {\n    expect(validateUsername('2cool')).toBe(false);\n    expect(validateUsername('bob_')).toBe(false);\n    expect(validateUsername('bob__x')).toBe(false);\n  });\n});\n",
+    "testsTs": "import validateUsername from './validateUsername';\n\ndescribe('validateUsername (TypeScript)', () => {\n  it('accepts valid usernames', () => {\n    expect(validateUsername('alice_1')).toBe(true);\n    expect(validateUsername('abc')).toBe(true);\n    expect(validateUsername('a123456789012345')).toBe(true);\n  });\n\n  it('rejects invalid length', () => {\n    expect(validateUsername('ab')).toBe(false);\n    expect(validateUsername('a1234567890123456')).toBe(false);\n  });\n\n  it('rejects uppercase or invalid chars', () => {\n    expect(validateUsername('Alice')).toBe(false);\n    expect(validateUsername('bob-dash')).toBe(false);\n  });\n\n  it('rejects leading digit, trailing underscore, or consecutive underscores', () => {\n    expect(validateUsername('2cool')).toBe(false);\n    expect(validateUsername('bob_')).toBe(false);\n    expect(validateUsername('bob__x')).toBe(false);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-safe-json-parse",
+    "title": "Safe JSON Parse (Fallback on Error)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "easy",
+    "tags": [
+      "error-handling",
+      "validation",
+      "strings",
+      "edge-cases",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement safeJsonParse(text, fallback = null) to safely parse JSON. It should return the parsed value for valid JSON strings and the fallback for invalid JSON or non-string inputs. This is a common edge-case strategy for parsing unknown inputs.",
+      "arguments": [
+        {
+          "name": "text",
+          "type": "string",
+          "desc": "The JSON string to parse."
+        },
+        {
+          "name": "fallback",
+          "type": "any",
+          "desc": "Value to return when parsing fails. Defaults to null."
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "desc": "Parsed JSON value or the fallback."
+      },
+      "examples": [
+        "safeJsonParse('{\"ok\":true}') // => { ok: true }",
+        "safeJsonParse('not json', []) // => []",
+        "safeJsonParse(42, { ok: false }) // => { ok: false }"
+      ]
+    },
+    "starterCode": "export default function safeJsonParse(text, fallback = null) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function safeJsonParse(text: string, fallback: any = null): any {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Guard the input type, then try JSON.parse in a try/catch. On any error, return the fallback. Keep the behavior predictable so tests can cover invalid inputs and boundary cases.",
+      "approaches": [
+        {
+          "title": "Approach: Guard + try/catch",
+          "prose": "Steps:\n1) If text is not a string, return fallback.\n2) Attempt JSON.parse.\n3) On error, return fallback.\n\nComplexity: O(n) time for parsing, O(1) extra space.",
+          "codeJs": "export default function safeJsonParse(text, fallback = null) {\n  if (typeof text !== 'string') return fallback;\n  try {\n    return JSON.parse(text);\n  } catch {\n    return fallback;\n  }\n}\n",
+          "codeTs": "export default function safeJsonParse(text: string, fallback: any = null): any {\n  if (typeof text !== 'string') return fallback;\n  try {\n    return JSON.parse(text);\n  } catch {\n    return fallback;\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Assuming JSON.parse always returns an object (it can return numbers, strings, booleans, or null).",
+          "Catching errors but returning undefined, which makes tests ambiguous.",
+          "Parsing non-strings without guarding can throw or behave unexpectedly."
+        ],
+        "edgeCases": [
+          "Valid primitives like '0', 'true', and 'null' should parse correctly.",
+          "Whitespace around JSON is valid and should parse.",
+          "Invalid JSON should always return the fallback without throwing."
+        ],
+        "techniques": [
+          "Type guards before parsing.",
+          "Deterministic fallback behavior for tests.",
+          "Focused unit tests per edge case."
+        ]
+      },
+      "followUpQuestions": [
+        "js-parse-query-string",
+        "js-stringify-query-string"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 JSON.parse()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"
+        }
+      ]
+    },
+    "tests": "import safeJsonParse from './safeJsonParse';\n\ndescribe('safeJsonParse', () => {\n  test('parses valid JSON objects and arrays', () => {\n    expect(safeJsonParse('{\"ok\":true}')).toEqual({ ok: true });\n    expect(safeJsonParse('[1,2,3]')).toEqual([1, 2, 3]);\n  });\n\n  test('parses valid primitives', () => {\n    expect(safeJsonParse('0')).toBe(0);\n    expect(safeJsonParse('true')).toBe(true);\n    expect(safeJsonParse('null')).toBe(null);\n  });\n\n  test('returns fallback on invalid JSON', () => {\n    const fallback = { ok: false };\n    expect(safeJsonParse('{bad}', fallback)).toBe(fallback);\n  });\n\n  test('returns fallback for non-string input', () => {\n    expect(safeJsonParse(42, [])).toEqual([]);\n  });\n});\n",
+    "testsTs": "import safeJsonParse from './safeJsonParse';\n\ndescribe('safeJsonParse (TypeScript)', () => {\n  it('parses valid JSON objects and arrays', () => {\n    expect(safeJsonParse('{\"ok\":true}')).toEqual({ ok: true });\n    expect(safeJsonParse('[1,2,3]')).toEqual([1, 2, 3]);\n  });\n\n  it('parses valid primitives', () => {\n    expect(safeJsonParse('0')).toBe(0);\n    expect(safeJsonParse('true')).toBe(true);\n    expect(safeJsonParse('null')).toBe(null);\n  });\n\n  it('returns fallback on invalid JSON', () => {\n    const fallback = { ok: false };\n    expect(safeJsonParse('{bad}', fallback)).toBe(fallback);\n  });\n\n  it('returns fallback for non-string input', () => {\n    expect(safeJsonParse(42 as any, [])).toEqual([]);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]

@@ -5145,5 +5145,121 @@
     },
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-testing-edge-cases-strategy",
+    "title": "Testing Strategy: Edge Cases and Boundaries",
+    "description": "Explain how to design tests that cover boundaries, equivalence classes, invariants, and failure modes. Include a practical checklist and JavaScript-specific pitfalls.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "edge-cases",
+      "best-practices",
+      "debugging",
+      "validation",
+      "error-handling"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-lightbulb'></i> <strong>Goal</strong>\n\nA strong test strategy does not try every input. It finds the <strong>smallest set</strong> that still exposes boundary bugs, invalid inputs, and real-world failure modes. This is how you get high confidence with low test count."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Core idea",
+            "Why it matters",
+            "Example"
+          ],
+          "rows": [
+            [
+              "Boundary values",
+              "Most bugs happen at edges",
+              "min-1, min, max, max+1"
+            ],
+            [
+              "Equivalence classes",
+              "Group similar inputs to reduce tests",
+              "valid vs invalid formats"
+            ],
+            [
+              "Invariants",
+              "Properties that should always hold",
+              "sorted output stays sorted"
+            ],
+            [
+              "Failure modes",
+              "Graceful handling of bad input",
+              "null, undefined, NaN"
+            ],
+            [
+              "Regression cases",
+              "Lock in prior bugs",
+              "add a test for every fix"
+            ]
+          ],
+          "caption": "Cover the space with intent, not volume."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Practical checklist</strong>\n\n1) List inputs and outputs.\n2) Identify constraints (min/max, allowed chars, allowed states).\n3) Pick boundaries and one representative per equivalence class.\n4) Add invalid and unexpected types.\n5) Add a real-world case and a worst-case case.\n6) Add regression tests for any previous bugs."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Example: testing clamp(value, min, max)\nconst cases = [\n  [-1, 0, 10, 0],\n  [0, 0, 10, 0],\n  [5, 0, 10, 5],\n  [10, 0, 10, 10],\n  [11, 0, 10, 10]\n];\n\nfor (const [v, min, max, expected] of cases) {\n  expect(clamp(v, min, max)).toBe(expected);\n}\n\n// Invariant example: clamp output is always between min and max\nfor (const [v, min, max] of cases) {\n  const out = clamp(v, min, max);\n  expect(out).toBeGreaterThanOrEqual(min);\n  expect(out).toBeLessThanOrEqual(max);\n}"
+        },
+        {
+          "type": "list",
+          "columns": [
+            "JavaScript pitfall",
+            "Why it breaks tests",
+            "What to assert"
+          ],
+          "rows": [
+            [
+              "Type coercion",
+              "'0' vs 0 behave differently",
+              "add explicit type tests"
+            ],
+            [
+              "NaN",
+              "NaN !== NaN",
+              "use Number.isNaN"
+            ],
+            [
+              "Floating point",
+              "0.1 + 0.2 !== 0.3",
+              "use toBeCloseTo"
+            ],
+            [
+              "Empty/sparse arrays",
+              "holes behave like undefined",
+              "test length and iteration"
+            ],
+            [
+              "Dates/timezones",
+              "locale-dependent output",
+              "assert on UTC or iso strings"
+            ]
+          ],
+          "caption": "JavaScript-specific edge cases to call out explicitly."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common anti-patterns</strong>\n\n- Only testing happy paths.\n- Too many tests that assert the same behavior.\n- Tests that mirror the implementation instead of the requirements.\n- Random tests without a seed (non-deterministic failures)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nDesign tests around boundaries, invariants, and failure modes. Use a small, deliberate set of cases that make bugs obvious and keep the suite fast and reliable."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]
