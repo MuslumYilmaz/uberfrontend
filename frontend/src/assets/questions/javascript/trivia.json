@@ -4845,5 +4845,88 @@
     },
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-web-workers-basics",
+    "title": "Web Workers: Off-Main-Thread JavaScript",
+    "description": "Explain what Web Workers are, how message passing works (structured clone + Transferables), and the key constraints (no DOM). Include a real scenario, trade-offs (startup + message overhead), and common pitfalls like leaks or copying huge payloads.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "web-apis",
+      "concurrency",
+      "performance",
+      "events",
+      "browser"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>What is a Web Worker?</strong>\n\nA Web Worker runs JavaScript on a separate thread from the main UI thread. Use it for CPU-heavy work (parsing, compression, image processing) so the UI stays responsive and scrolling stays smooth."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Real-world scenario</strong>\n\nExample: you need to parse a 50MB JSON export and compute stats while the user keeps scrolling. Doing this on the main thread will jank the UI. Offload the parsing + aggregation to a worker, then send the small result back to the UI thread."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Capability",
+            "Main Thread",
+            "Worker"
+          ],
+          "rows": [
+            [
+              "DOM access",
+              "Yes",
+              "No"
+            ],
+            [
+              "Heavy compute",
+              "Blocks UI",
+              "Safe (off-thread)"
+            ],
+            [
+              "Communication",
+              "postMessage/onmessage",
+              "postMessage/onmessage"
+            ],
+            [
+              "Globals",
+              "window/document",
+              "self (no DOM)"
+            ]
+          ],
+          "caption": "Workers are for computation, not UI rendering."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-exchange'></i> <strong>How communication works</strong>\n\nWorkers communicate via <code>postMessage</code>. Data is copied using the <strong>structured clone</strong> algorithm, or transferred using <strong>Transferables</strong> (e.g., ArrayBuffer) to avoid expensive copies. Functions and DOM nodes cannot be cloned."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// main thread\nconst worker = new Worker('worker.js');\n\n// Transfer ArrayBuffer to avoid copy\nconst buffer = new Uint8Array([1,2,3]).buffer;\nworker.postMessage({ type: 'analyze', buffer }, [buffer]);\n\nworker.onmessage = (e) => {\n  console.log('result', e.data);\n};\n\n// worker.js\nself.onmessage = (e) => {\n  const view = new Uint8Array(e.data.buffer);\n  const sum = view.reduce((a,b) => a + b, 0);\n  self.postMessage({ sum });\n};"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-sitemap'></i> <strong>Lifecycle + error handling</strong>\n\nWorkers are long-lived by default. Terminate them when done (<code>worker.terminate()</code>) to avoid leaks. Handle errors with <code>worker.onerror</code> and <code>worker.onmessageerror</code> so failures do not silently disappear."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>When to use (and when not to)</strong>\n\nUse workers for CPU-heavy tasks or large data transforms. Avoid them for small tasks where the startup cost + message overhead outweighs the benefit. For I/O-bound work (fetching), a worker usually does not help unless you also do heavy processing on the results."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls interviewers look for</strong>\n\n- Forgetting that workers cannot touch the DOM.\n- Copying large payloads instead of using Transferables.\n- Spawning too many workers (startup + memory cost).\n- Not terminating workers or handling errors.\n- Assuming every API is available inside a worker (environment-dependent)."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]

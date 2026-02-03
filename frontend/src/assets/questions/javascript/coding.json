@@ -6402,5 +6402,260 @@
     "testsTs": "import pollUntil from './pollUntil';\n\ndescribe('pollUntil (TypeScript)', () => {\n  it('resolves when check becomes truthy', async () => {\n    let count = 0;\n    const result = await pollUntil(() => {\n      count += 1;\n      return count >= 3 ? 'ready' : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe('ready');\n  });\n\n  it('supports async checks', async () => {\n    let count = 0;\n    const result = await pollUntil(async () => {\n      count += 1;\n      await new Promise((r) => setTimeout(r, 2));\n      return count === 2 ? 42 : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe(42);\n  });\n\n  it('rejects on timeout', async () => {\n    await expect(\n      pollUntil(() => false, { interval: 5, timeout: 20 })\n    ).rejects.toThrow('Timeout');\n  });\n\n  it('rejects when aborted', async () => {\n    const ac = new AbortController();\n    const p = pollUntil(() => false, { interval: 5, signal: ac.signal });\n    setTimeout(() => ac.abort(), 10);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-fetch-json-timeout",
+    "title": "Fetch JSON with Timeout + Abort",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "web-apis",
+      "fetch",
+      "abort-controller",
+      "async",
+      "promises",
+      "cancellation"
+    ],
+    "description": {
+      "summary": "Implement fetchJson(url, options) that fetches JSON with built-in timeout and abort support. It should abort on timeout, respect an external AbortSignal, and throw on non-2xx HTTP responses. This mirrors real-world client utilities for APIs. Concepts: fetch, AbortController, timeouts, error handling.",
+      "arguments": [
+        {
+          "name": "url",
+          "type": "string",
+          "desc": "The request URL."
+        },
+        {
+          "name": "options",
+          "type": "{ timeoutMs?: number, signal?: AbortSignal, fetchFn?: Function, ...init }",
+          "desc": "Optional timeout, AbortSignal, and a fetch function override for testing. Any extra fields are passed to fetch."
+        }
+      ],
+      "returns": {
+        "type": "Promise<any>",
+        "desc": "Resolves with parsed JSON or rejects on timeout, abort, or non-OK response."
+      },
+      "examples": [
+        "// Basic usage\nconst data = await fetchJson('/api/user/42', { timeoutMs: 2000 });\n",
+        "// With external cancellation\nconst ac = new AbortController();\nconst p = fetchJson('/api/search?q=js', { signal: ac.signal });\nac.abort();\nawait p; // rejects with AbortError\n"
+      ]
+    },
+    "starterCode": "export default async function fetchJson(url, options = {}) {\n  // TODO: support timeoutMs + AbortSignal, throw on non-OK responses\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type FetchJsonOptions = {\n  timeoutMs?: number;\n  signal?: AbortSignal;\n  fetchFn?: (input: string, init?: any) => Promise<{ ok: boolean; status: number; json: () => Promise<any> }>;\n  [key: string]: any;\n};\n\nexport default async function fetchJson<T = any>(\n  url: string,\n  options: FetchJsonOptions = {}\n): Promise<T> {\n  // TODO: support timeoutMs + AbortSignal, throw on non-OK responses\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Create a new AbortController per call. If an external signal aborts, forward that to the controller. If a timeout is set, abort after the deadline. Call fetch, throw on non-OK status, and return response.json(). Always clear timers and listeners.",
+      "approaches": [
+        {
+          "title": "Approach: AbortController + timeout guard",
+          "prose": "Steps:\n1) Extract timeoutMs, signal, and fetchFn from options.\n2) Create an AbortController and forward external aborts.\n3) If timeoutMs is set, abort with a Timeout AbortError.\n4) Call fetch with the combined signal.\n5) Throw on non-OK status.\n6) Parse and return JSON.\n7) Always cleanup listeners and timers.\n\nComplexity: O(1) extra work beyond the network request.",
+          "codeJs": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default async function fetchJson(url, options = {}) {\n  const { timeoutMs, signal, fetchFn, ...init } = options;\n  const fetcher = fetchFn || (typeof fetch === 'function' ? fetch : null);\n  if (!fetcher) throw new Error('fetchFn is required');\n\n  const controller = new AbortController();\n  let timeoutId;\n\n  const onAbort = () => {\n    controller.abort(toAbortError(signal && signal.reason));\n  };\n\n  if (signal) {\n    if (signal.aborted) {\n      controller.abort(toAbortError(signal.reason));\n    } else {\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n  }\n\n  if (typeof timeoutMs === 'number' && timeoutMs >= 0) {\n    timeoutId = setTimeout(() => {\n      controller.abort(toAbortError(null, 'Timeout'));\n    }, timeoutMs);\n  }\n\n  try {\n    if (controller.signal.aborted) {\n      throw toAbortError(controller.signal.reason);\n    }\n\n    const res = await fetcher(url, { ...init, signal: controller.signal });\n    if (!res || !res.ok) {\n      const status = res && typeof res.status === 'number' ? res.status : 0;\n      throw new Error(`HTTP ${status}`);\n    }\n    return await res.json();\n  } finally {\n    if (timeoutId) clearTimeout(timeoutId);\n    if (signal) signal.removeEventListener('abort', onAbort);\n  }\n}\n",
+          "codeTs": "function toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\ntype FetchJsonOptions = {\n  timeoutMs?: number;\n  signal?: AbortSignal;\n  fetchFn?: (input: string, init?: any) => Promise<{ ok: boolean; status: number; json: () => Promise<any> }>;\n  [key: string]: any;\n};\n\nexport default async function fetchJson<T = any>(\n  url: string,\n  options: FetchJsonOptions = {}\n): Promise<T> {\n  const { timeoutMs, signal, fetchFn, ...init } = options;\n  const fetcher = fetchFn || (typeof fetch === 'function' ? fetch : null);\n  if (!fetcher) throw new Error('fetchFn is required');\n\n  const controller = new AbortController();\n  let timeoutId: ReturnType<typeof setTimeout> | undefined;\n\n  const onAbort = () => {\n    controller.abort(toAbortError(signal && (signal as any).reason));\n  };\n\n  if (signal) {\n    if (signal.aborted) {\n      controller.abort(toAbortError((signal as any).reason));\n    } else {\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n  }\n\n  if (typeof timeoutMs === 'number' && timeoutMs >= 0) {\n    timeoutId = setTimeout(() => {\n      controller.abort(toAbortError(null, 'Timeout'));\n    }, timeoutMs);\n  }\n\n  try {\n    if (controller.signal.aborted) {\n      throw toAbortError((controller.signal as any).reason);\n    }\n\n    const res = await fetcher(url, { ...init, signal: controller.signal });\n    if (!res || !res.ok) {\n      const status = res && typeof res.status === 'number' ? res.status : 0;\n      throw new Error(`HTTP ${status}`);\n    }\n    return await res.json();\n  } finally {\n    if (timeoutId) clearTimeout(timeoutId);\n    if (signal) signal.removeEventListener('abort', onAbort);\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using Promise.race without AbortController does not cancel the fetch.",
+          "Forgetting to clear timeouts or abort listeners can leak resources.",
+          "Not checking response.ok can silently treat HTTP 404/500 as success."
+        ],
+        "edgeCases": [
+          "signal already aborted: reject immediately.",
+          "timeoutMs = 0 should timeout immediately.",
+          "fetchFn not provided and fetch missing: throw a helpful error."
+        ],
+        "techniques": [
+          "AbortController for cancellation.",
+          "Timeout guard with setTimeout.",
+          "Defensive error handling for non-OK responses."
+        ]
+      },
+      "followUpQuestions": [
+        "js-abortable-helpers",
+        "js-promise-all"
+      ],
+      "resources": [
+        {
+          "title": "MDN – fetch()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/fetch"
+        },
+        {
+          "title": "MDN – AbortController",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+        }
+      ]
+    },
+    "tests": "import fetchJson from './fetchJson';\n\nfunction toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction makeFetch({ delay = 0, ok = true, status = 200, jsonData = {} } = {}) {\n  return function fetchMock(_url, init = {}) {\n    const signal = init.signal;\n    return new Promise((resolve, reject) => {\n      let done = false;\n      const finish = () => {\n        if (done) return;\n        done = true;\n        if (signal) signal.removeEventListener('abort', onAbort);\n        resolve({\n          ok,\n          status,\n          json: async () => jsonData\n        });\n      };\n\n      const onAbort = () => {\n        if (done) return;\n        done = true;\n        clearTimeout(timerId);\n        reject(toAbortError(signal && signal.reason));\n      };\n\n      if (signal) {\n        if (signal.aborted) return onAbort();\n        signal.addEventListener('abort', onAbort, { once: true });\n      }\n\n      const timerId = setTimeout(finish, delay);\n    });\n  };\n}\n\ndescribe('fetchJson', () => {\n  test('resolves JSON for ok responses', async () => {\n    const fetchFn = makeFetch({ jsonData: { ok: true } });\n    await expect(fetchJson('/ok', { fetchFn, timeoutMs: 100 })).resolves.toEqual({ ok: true });\n  });\n\n  test('throws on non-ok status', async () => {\n    const fetchFn = makeFetch({ ok: false, status: 404 });\n    await expect(fetchJson('/missing', { fetchFn })).rejects.toThrow('HTTP 404');\n  });\n\n  test('aborts on timeout', async () => {\n    const fetchFn = makeFetch({ delay: 50, jsonData: { ok: true } });\n    await expect(fetchJson('/slow', { fetchFn, timeoutMs: 10 })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Timeout'\n    });\n  });\n\n  test('respects external abort signal', async () => {\n    const ac = new AbortController();\n    const fetchFn = makeFetch({ delay: 30, jsonData: { ok: true } });\n    const p = fetchJson('/abort', { fetchFn, signal: ac.signal });\n    setTimeout(() => ac.abort(new Error('Cancelled')), 5);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
+    "testsTs": "import fetchJson from './fetchJson';\n\nfunction toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction makeFetch({ delay = 0, ok = true, status = 200, jsonData = {} } = {}) {\n  return function fetchMock(_url: string, init: any = {}) {\n    const signal: AbortSignal | undefined = init.signal;\n    return new Promise((resolve, reject) => {\n      let done = false;\n      const finish = () => {\n        if (done) return;\n        done = true;\n        if (signal) signal.removeEventListener('abort', onAbort);\n        resolve({\n          ok,\n          status,\n          json: async () => jsonData\n        });\n      };\n\n      const onAbort = () => {\n        if (done) return;\n        done = true;\n        clearTimeout(timerId);\n        reject(toAbortError(signal && (signal as any).reason));\n      };\n\n      if (signal) {\n        if (signal.aborted) return onAbort();\n        signal.addEventListener('abort', onAbort, { once: true });\n      }\n\n      const timerId = setTimeout(finish, delay);\n    });\n  };\n}\n\ndescribe('fetchJson (TypeScript)', () => {\n  it('resolves JSON for ok responses', async () => {\n    const fetchFn = makeFetch({ jsonData: { ok: true } });\n    await expect(fetchJson('/ok', { fetchFn, timeoutMs: 100 })).resolves.toEqual({ ok: true });\n  });\n\n  it('throws on non-ok status', async () => {\n    const fetchFn = makeFetch({ ok: false, status: 404 });\n    await expect(fetchJson('/missing', { fetchFn })).rejects.toThrow('HTTP 404');\n  });\n\n  it('aborts on timeout', async () => {\n    const fetchFn = makeFetch({ delay: 50, jsonData: { ok: true } });\n    await expect(fetchJson('/slow', { fetchFn, timeoutMs: 10 })).rejects.toMatchObject({\n      name: 'AbortError',\n      message: 'Timeout'\n    });\n  });\n\n  it('respects external abort signal', async () => {\n    const ac = new AbortController();\n    const fetchFn = makeFetch({ delay: 30, jsonData: { ok: true } });\n    const p = fetchJson('/abort', { fetchFn, signal: ac.signal });\n    setTimeout(() => ac.abort(new Error('Cancelled')), 5);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-stream-to-text",
+    "title": "Stream to Text (ReadableStream -> string)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "web-apis",
+      "streams",
+      "text-decoder",
+      "async",
+      "promises"
+    ],
+    "description": {
+      "summary": "Implement streamToText(stream, options) that reads a ReadableStream<Uint8Array> and returns the full string. Use TextDecoder with stream=true to handle multi-byte characters across chunk boundaries. Optionally support AbortSignal to cancel reading. Concepts: Streams API, TextDecoder, async iteration.",
+      "arguments": [
+        {
+          "name": "stream",
+          "type": "ReadableStream<Uint8Array>",
+          "desc": "A stream of byte chunks (e.g., from fetch(...).body)."
+        },
+        {
+          "name": "options",
+          "type": "{ encoding?: string, signal?: AbortSignal }",
+          "desc": "Optional text encoding and AbortSignal for cancellation."
+        }
+      ],
+      "returns": {
+        "type": "Promise<string>",
+        "desc": "Resolves to the decoded text, or rejects on abort."
+      },
+      "examples": [
+        "const res = await fetch('/api/logs');\nconst text = await streamToText(res.body);",
+        "const ac = new AbortController();\nconst p = streamToText(stream, { signal: ac.signal });\nac.abort();"
+      ]
+    },
+    "starterCode": "export default async function streamToText(stream, options = {}) {\n  // TODO: read stream with a reader + TextDecoder\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type StreamToTextOptions = {\n  encoding?: string;\n  signal?: AbortSignal;\n};\n\nexport default async function streamToText(\n  stream: { getReader: () => { read: () => Promise<{ done: boolean; value?: Uint8Array }>; cancel?: () => void } },\n  options: StreamToTextOptions = {}\n): Promise<string> {\n  // TODO: read stream with a reader + TextDecoder\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Get a reader, read chunks in a loop, and decode with TextDecoder using `{ stream: true }` so multi-byte characters aren’t split. Flush the decoder at the end. If an AbortSignal is provided, cancel and throw an AbortError.",
+      "approaches": [
+        {
+          "title": "Approach: Reader loop + TextDecoder",
+          "prose": "Steps:\n1) Validate stream and getReader().\n2) Create TextDecoder with optional encoding.\n3) Read in a loop: decode each chunk with `{ stream: true }` and append.\n4) When done, flush decoder and append final text.\n5) If signal aborts, cancel the reader and throw AbortError.\n\nComplexity: O(n) time and O(n) memory for the final string.",
+          "codeJs": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default async function streamToText(stream, options = {}) {\n  if (!stream || typeof stream.getReader !== 'function') {\n    throw new TypeError('stream must be a ReadableStream');\n  }\n\n  const { encoding = 'utf-8', signal } = options;\n  const reader = stream.getReader();\n  const decoder = new TextDecoder(encoding);\n  let output = '';\n  let aborted = false;\n\n  const onAbort = () => {\n    aborted = true;\n    if (reader.cancel) reader.cancel();\n  };\n\n  if (signal) {\n    if (signal.aborted) {\n      if (reader.cancel) reader.cancel();\n      throw toAbortError(signal.reason);\n    }\n    signal.addEventListener('abort', onAbort, { once: true });\n  }\n\n  try {\n    while (true) {\n      if (aborted) throw toAbortError(signal && signal.reason);\n      const { done, value } = await reader.read();\n      if (aborted) throw toAbortError(signal && signal.reason);\n      if (done) break;\n      if (value) output += decoder.decode(value, { stream: true });\n    }\n    output += decoder.decode();\n    return output;\n  } finally {\n    if (signal) signal.removeEventListener('abort', onAbort);\n  }\n}\n",
+          "codeTs": "function toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\ntype StreamToTextOptions = {\n  encoding?: string;\n  signal?: AbortSignal;\n};\n\nexport default async function streamToText(\n  stream: { getReader: () => { read: () => Promise<{ done: boolean; value?: Uint8Array }>; cancel?: () => void } },\n  options: StreamToTextOptions = {}\n): Promise<string> {\n  if (!stream || typeof stream.getReader !== 'function') {\n    throw new TypeError('stream must be a ReadableStream');\n  }\n\n  const { encoding = 'utf-8', signal } = options;\n  const reader = stream.getReader();\n  const decoder = new TextDecoder(encoding);\n  let output = '';\n  let aborted = false;\n\n  const onAbort = () => {\n    aborted = true;\n    if (reader.cancel) reader.cancel();\n  };\n\n  if (signal) {\n    if (signal.aborted) {\n      if (reader.cancel) reader.cancel();\n      throw toAbortError((signal as any).reason);\n    }\n    signal.addEventListener('abort', onAbort, { once: true });\n  }\n\n  try {\n    while (true) {\n      if (aborted) throw toAbortError(signal && (signal as any).reason);\n      const { done, value } = await reader.read();\n      if (aborted) throw toAbortError(signal && (signal as any).reason);\n      if (done) break;\n      if (value) output += decoder.decode(value, { stream: true });\n    }\n    output += decoder.decode();\n    return output;\n  } finally {\n    if (signal) signal.removeEventListener('abort', onAbort);\n  }\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Calling TextDecoder without { stream: true } can corrupt multi-byte characters.",
+          "Not flushing the decoder at the end may drop trailing bytes.",
+          "Ignoring abort signals can leave readers open or stuck."
+        ],
+        "edgeCases": [
+          "Empty stream should resolve to an empty string.",
+          "Split emoji or accented chars across chunks should decode correctly.",
+          "Aborted signal should reject immediately."
+        ],
+        "techniques": [
+          "ReadableStream reader loop.",
+          "TextDecoder streaming decode.",
+          "AbortSignal cancellation."
+        ]
+      },
+      "followUpQuestions": [
+        "js-parse-ndjson",
+        "js-fetch-json-timeout"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Streams API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Streams_API"
+        },
+        {
+          "title": "MDN – TextDecoder",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder"
+        }
+      ]
+    },
+    "tests": "import streamToText from './streamToText';\n\nfunction makeStream(chunks) {\n  let i = 0;\n  let cancelled = false;\n  return {\n    getReader() {\n      return {\n        read() {\n          if (cancelled) return Promise.resolve({ done: true });\n          if (i >= chunks.length) return Promise.resolve({ done: true, value: undefined });\n          return Promise.resolve({ done: false, value: chunks[i++] });\n        },\n        cancel() {\n          cancelled = true;\n        }\n      };\n    }\n  };\n}\n\ndescribe('streamToText', () => {\n  test('concatenates chunks', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('Hello '), enc.encode('World')]);\n    await expect(streamToText(stream)).resolves.toBe('Hello World');\n  });\n\n  test('handles multibyte characters across chunks', async () => {\n    const enc = new TextEncoder();\n    const bytes = enc.encode('Hi 🌍');\n    const part1 = bytes.slice(0, 4);\n    const part2 = bytes.slice(4);\n    const stream = makeStream([part1, part2]);\n    await expect(streamToText(stream)).resolves.toBe('Hi 🌍');\n  });\n\n  test('rejects on abort', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('data')]);\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n    await expect(streamToText(stream, { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError'\n    });\n  });\n});\n",
+    "testsTs": "import streamToText from './streamToText';\n\nfunction makeStream(chunks: Uint8Array[]) {\n  let i = 0;\n  let cancelled = false;\n  return {\n    getReader() {\n      return {\n        read() {\n          if (cancelled) return Promise.resolve({ done: true });\n          if (i >= chunks.length) return Promise.resolve({ done: true, value: undefined });\n          return Promise.resolve({ done: false, value: chunks[i++] });\n        },\n        cancel() {\n          cancelled = true;\n        }\n      };\n    }\n  };\n}\n\ndescribe('streamToText (TypeScript)', () => {\n  it('concatenates chunks', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('Hello '), enc.encode('World')]);\n    await expect(streamToText(stream)).resolves.toBe('Hello World');\n  });\n\n  it('handles multibyte characters across chunks', async () => {\n    const enc = new TextEncoder();\n    const bytes = enc.encode('Hi 🌍');\n    const part1 = bytes.slice(0, 4);\n    const part2 = bytes.slice(4);\n    const stream = makeStream([part1, part2]);\n    await expect(streamToText(stream)).resolves.toBe('Hi 🌍');\n  });\n\n  it('rejects on abort', async () => {\n    const enc = new TextEncoder();\n    const stream = makeStream([enc.encode('data')]);\n    const ac = new AbortController();\n    ac.abort(new Error('Stop'));\n    await expect(streamToText(stream, { signal: ac.signal })).rejects.toMatchObject({\n      name: 'AbortError'\n    });\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-storage-ttl-cache",
+    "title": "Storage TTL Cache (localStorage/sessionStorage)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "web-apis",
+      "storage",
+      "caching",
+      "local-storage",
+      "sessionstorage"
+    ],
+    "description": {
+      "summary": "Implement createTtlStorage(storage, now?) that returns { set, get, remove }. It should store JSON values with an optional TTL and automatically expire items when read. This mirrors real-world caching layers on top of localStorage/sessionStorage.",
+      "arguments": [
+        {
+          "name": "storage",
+          "type": "{ getItem, setItem, removeItem }",
+          "desc": "A Storage-like object (localStorage/sessionStorage compatible)."
+        },
+        {
+          "name": "now",
+          "type": "() => number",
+          "desc": "Optional time provider (defaults to Date.now) for testing."
+        }
+      ],
+      "returns": {
+        "type": "{ set: (key, value, ttlMs?) => void, get: (key) => any, remove: (key) => void }",
+        "desc": "A tiny TTL-aware cache wrapper."
+      },
+      "examples": [
+        "const cache = createTtlStorage(localStorage);\ncache.set('user', { id: 1 }, 5000);\ncache.get('user');",
+        "cache.set('perm', 'ok'); // no expiry"
+      ]
+    },
+    "starterCode": "export default function createTtlStorage(storage, now = () => Date.now()) {\n  // TODO: return { set, get, remove } with TTL behavior\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type StorageLike = {\n  getItem: (key: string) => string | null;\n  setItem: (key: string, value: string) => void;\n  removeItem: (key: string) => void;\n};\n\nexport default function createTtlStorage(\n  storage: StorageLike,\n  now: () => number = () => Date.now()\n): {\n  set: (key: string, value: any, ttlMs?: number) => void;\n  get: (key: string) => any;\n  remove: (key: string) => void;\n} {\n  // TODO: return { set, get, remove } with TTL behavior\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Store a JSON envelope { v, exp } where exp is the absolute expiration timestamp or null. On get, parse the envelope, check exp, and delete expired or invalid entries.",
+      "approaches": [
+        {
+          "title": "Approach: JSON envelope with exp timestamp",
+          "prose": "Steps:\n1) Validate that storage has getItem/setItem/removeItem.\n2) set(): store JSON { v: value, exp: ttlMs == null ? null : now()+max(ttlMs,0) }.\n3) get(): read, JSON.parse, and return v if exp is null or in the future; otherwise remove and return null.\n4) If JSON.parse fails, remove the key and return null.\n\nComplexity: O(1) per operation.",
+          "codeJs": "export default function createTtlStorage(storage, now = () => Date.now()) {\n  if (!storage || typeof storage.getItem !== 'function') {\n    throw new TypeError('storage must implement getItem/setItem/removeItem');\n  }\n\n  const set = (key, value, ttlMs) => {\n    const exp = ttlMs == null ? null : now() + Math.max(0, ttlMs);\n    const payload = JSON.stringify({ v: value, exp });\n    storage.setItem(String(key), payload);\n  };\n\n  const get = (key) => {\n    const raw = storage.getItem(String(key));\n    if (raw == null) return null;\n    try {\n      const data = JSON.parse(raw);\n      if (!data || !('v' in data)) return null;\n      if (data.exp != null && now() >= data.exp) {\n        storage.removeItem(String(key));\n        return null;\n      }\n      return data.v;\n    } catch {\n      storage.removeItem(String(key));\n      return null;\n    }\n  };\n\n  const remove = (key) => {\n    storage.removeItem(String(key));\n  };\n\n  return { set, get, remove };\n}\n",
+          "codeTs": "type StorageLike = {\n  getItem: (key: string) => string | null;\n  setItem: (key: string, value: string) => void;\n  removeItem: (key: string) => void;\n};\n\nexport default function createTtlStorage(\n  storage: StorageLike,\n  now: () => number = () => Date.now()\n) {\n  if (!storage || typeof storage.getItem !== 'function') {\n    throw new TypeError('storage must implement getItem/setItem/removeItem');\n  }\n\n  const set = (key: string, value: any, ttlMs?: number) => {\n    const exp = ttlMs == null ? null : now() + Math.max(0, ttlMs);\n    const payload = JSON.stringify({ v: value, exp });\n    storage.setItem(String(key), payload);\n  };\n\n  const get = (key: string) => {\n    const raw = storage.getItem(String(key));\n    if (raw == null) return null;\n    try {\n      const data = JSON.parse(raw) as { v?: any; exp?: number | null };\n      if (!data || !('v' in data)) return null;\n      if (data.exp != null && now() >= data.exp) {\n        storage.removeItem(String(key));\n        return null;\n      }\n      return data.v;\n    } catch {\n      storage.removeItem(String(key));\n      return null;\n    }\n  };\n\n  const remove = (key: string) => {\n    storage.removeItem(String(key));\n  };\n\n  return { set, get, remove };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to remove expired entries can leave stale data forever.",
+          "Not handling JSON.parse errors can crash reads on corrupted storage.",
+          "Using localStorage for sensitive data is risky (it’s readable by JS)."
+        ],
+        "edgeCases": [
+          "ttlMs omitted: item should persist until explicitly removed.",
+          "ttlMs = 0 or negative: item expires immediately.",
+          "Missing keys should return null."
+        ],
+        "techniques": [
+          "JSON envelope storage.",
+          "Time-based expiry checks.",
+          "Defensive parsing + cleanup."
+        ]
+      },
+      "followUpQuestions": [
+        "js-stringify-query-string",
+        "js-parse-query-string"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Web Storage API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API"
+        }
+      ]
+    },
+    "tests": "import createTtlStorage from './createTtlStorage';\n\nfunction makeStorage() {\n  const map = new Map();\n  return {\n    getItem: (k) => (map.has(k) ? map.get(k) : null),\n    setItem: (k, v) => { map.set(k, String(v)); },\n    removeItem: (k) => { map.delete(k); },\n    _map: map\n  };\n}\n\ndescribe('createTtlStorage', () => {\n  test('stores and retrieves values without ttl', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('a', { x: 1 });\n    expect(cache.get('a')).toEqual({ x: 1 });\n  });\n\n  test('expires values after ttl', () => {\n    const store = makeStorage();\n    let t = 0;\n    const cache = createTtlStorage(store, () => t);\n    cache.set('a', 'ok', 10);\n    expect(cache.get('a')).toBe('ok');\n    t = 10;\n    expect(cache.get('a')).toBe(null);\n  });\n\n  test('removes corrupted JSON entries', () => {\n    const store = makeStorage();\n    store.setItem('bad', '{not json');\n    const cache = createTtlStorage(store, () => 0);\n    expect(cache.get('bad')).toBe(null);\n    expect(store.getItem('bad')).toBe(null);\n  });\n\n  test('remove deletes key', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('x', 1);\n    cache.remove('x');\n    expect(cache.get('x')).toBe(null);\n  });\n});\n",
+    "testsTs": "import createTtlStorage from './createTtlStorage';\n\nfunction makeStorage() {\n  const map = new Map<string, string>();\n  return {\n    getItem: (k: string) => (map.has(k) ? map.get(k)! : null),\n    setItem: (k: string, v: string) => { map.set(k, String(v)); },\n    removeItem: (k: string) => { map.delete(k); },\n    _map: map\n  };\n}\n\ndescribe('createTtlStorage (TypeScript)', () => {\n  it('stores and retrieves values without ttl', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('a', { x: 1 });\n    expect(cache.get('a')).toEqual({ x: 1 });\n  });\n\n  it('expires values after ttl', () => {\n    const store = makeStorage();\n    let t = 0;\n    const cache = createTtlStorage(store, () => t);\n    cache.set('a', 'ok', 10);\n    expect(cache.get('a')).toBe('ok');\n    t = 10;\n    expect(cache.get('a')).toBe(null);\n  });\n\n  it('removes corrupted JSON entries', () => {\n    const store = makeStorage();\n    store.setItem('bad', '{not json');\n    const cache = createTtlStorage(store, () => 0);\n    expect(cache.get('bad')).toBe(null);\n    expect(store.getItem('bad')).toBe(null);\n  });\n\n  it('remove deletes key', () => {\n    const store = makeStorage();\n    const cache = createTtlStorage(store, () => 0);\n    cache.set('x', 1);\n    cache.remove('x');\n    expect(cache.get('x')).toBe(null);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]
