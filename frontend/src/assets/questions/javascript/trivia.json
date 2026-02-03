@@ -4748,5 +4748,102 @@
     },
     "access": "free",
     "updatedAt": "2026-02-01"
+  },
+  {
+    "id": "js-async-race-conditions",
+    "title": "Async Race Conditions and Stale UI Updates",
+    "description": "When multiple async requests are in flight, they can resolve out of order and overwrite newer UI state. Explain why this happens and how to prevent stale updates with cancellation or guards.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "async",
+      "concurrency",
+      "cancellation",
+      "abort-controller",
+      "ui"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>The core issue</strong>\n\nAsync calls can resolve out of order. If request A starts, then request B starts, B might finish first. When A finishes later, it can overwrite newer UI state with stale data."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Step",
+            "What happens"
+          ],
+          "rows": [
+            [
+              "User types 'rea'",
+              "Request A is sent"
+            ],
+            [
+              "User types 'react'",
+              "Request B is sent"
+            ],
+            [
+              "Request B returns first",
+              "UI shows results for 'react'"
+            ],
+            [
+              "Request A returns later",
+              "UI is overwritten with stale 'rea' results"
+            ]
+          ],
+          "caption": "Classic search-as-you-type race condition."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-shield'></i> <strong>How to prevent it</strong>\n\nYou need either <strong>real cancellation</strong> or a <strong>stale-result guard</strong>. Both prevent old responses from winning the race."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Technique",
+            "How it works",
+            "Notes"
+          ],
+          "rows": [
+            [
+              "AbortController",
+              "Cancel the previous request so it never resolves",
+              "Best when the API supports AbortSignal (e.g., fetch)"
+            ],
+            [
+              "Request id guard",
+              "Only apply results if the id matches the latest",
+              "Works even if the API cannot be cancelled"
+            ],
+            [
+              "takeLatest / switchMap",
+              "Wrap calls to auto-cancel or ignore stale results",
+              "Common in RxJS or custom utilities"
+            ]
+          ],
+          "caption": "Three reliable ways to avoid stale updates."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let requestId = 0;\n\nasync function search(query) {\n  const id = ++requestId;\n  const res = await fetch(`/api?q=${query}`);\n  const data = await res.json();\n  if (id !== requestId) return; // stale result\n  render(data);\n}"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "let controller;\n\nasync function search(query) {\n  if (controller) controller.abort();\n  controller = new AbortController();\n  const res = await fetch(`/api?q=${query}`, { signal: controller.signal });\n  const data = await res.json();\n  render(data);\n}"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Pitfalls</strong>\n\n- Promise.race does not cancel the losing promises.\n- Debounce reduces request count but does not prevent out-of-order responses.\n- Always clean up abort listeners or timers to avoid leaks."
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]

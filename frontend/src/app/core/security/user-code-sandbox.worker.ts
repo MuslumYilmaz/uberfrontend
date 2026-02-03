@@ -242,15 +242,61 @@ function deepEqual(a: any, b: any): boolean {
     return true;
 }
 
+function matchObject(actual: any, expected: any): boolean {
+    if (Object.is(actual, expected)) return true;
+    if (expected === null || expected === undefined) return Object.is(actual, expected);
+    if (typeof expected !== 'object') return Object.is(actual, expected);
+    if (typeof actual !== 'object' || actual === null) return false;
+    for (const k of Object.keys(expected)) {
+        if (!matchObject(actual[k], expected[k])) return false;
+    }
+    return true;
+}
+
 function expect(received: any) {
+    const makeAsync = (mode: 'resolves' | 'rejects') => {
+        const run = async (cb: (value: any) => void | Promise<void>) => {
+            try {
+                const value = await Promise.resolve(received);
+                if (mode === 'rejects') throw new Error('Expected promise to reject');
+                await cb(value);
+            } catch (err: any) {
+                if (mode === 'resolves') {
+                    const msg = err?.message ? String(err.message) : 'Expected promise to resolve';
+                    throw new Error(msg);
+                }
+                await cb(err);
+            }
+        };
+        return {
+            toBe: (expected: any) => run((v) => expect(v).toBe(expected)),
+            toEqual: (expected: any) => run((v) => expect(v).toEqual(expected)),
+            toBeNaN: () => run((v) => expect(v).toBeNaN()),
+            toBeCloseTo: (expected: number, precision?: number) =>
+                run((v) => expect(v).toBeCloseTo(expected, precision)),
+            toMatchObject: (expected: any) => run((v) => expect(v).toMatchObject(expected)),
+            toThrow: () => run((v) => expect(() => { throw v; }).toThrow()),
+        };
+    };
+
     return {
         toBe(expected: any) {
             if (!Object.is(received, expected))
                 throw new Error(`Expected ${safeStringify(received)} to be ${safeStringify(expected)}`);
         },
+        toBeTruthy() {
+            if (!received) throw new Error(`Expected ${safeStringify(received)} to be truthy`);
+        },
+        toBeFalsy() {
+            if (received) throw new Error(`Expected ${safeStringify(received)} to be falsy`);
+        },
         toEqual(expected: any) {
             if (!deepEqual(received, expected))
                 throw new Error(`Expected ${safeStringify(received)} to deeply equal ${safeStringify(expected)}`);
+        },
+        toMatchObject(expected: any) {
+            if (!matchObject(received, expected))
+                throw new Error(`Expected ${safeStringify(received)} to match ${safeStringify(expected)}`);
         },
         toBeNaN() {
             if (!Number.isNaN(received)) throw new Error(`Expected ${safeStringify(received)} to be NaN`);
@@ -266,12 +312,15 @@ function expect(received: any) {
             let threw = false; try { received(); } catch { threw = true; }
             if (!threw) throw new Error('Expected function to throw');
         },
+        resolves: makeAsync('resolves'),
+        rejects: makeAsync('rejects'),
     };
 }
 
 function fullName(name: string) { return [...suiteStack, name].join(' › '); }
 function describe(name: string, fn: () => any) { suiteStack.push(name); try { fn(); } finally { suiteStack.pop(); } }
 function test(name: string, fn: () => any) { queue.push({ idx: nextIdx++, name: fullName(name), fn }); }
+function it(name: string, fn: () => any) { test(name, fn); }
 
 // Run queued tests sequentially; return ordered results with clean errors
 async function runQueued(): Promise<TestResult[]> {
@@ -332,6 +381,7 @@ self.onmessage = async (e: MessageEvent<RunMsg>) => {
     (self as any).describe = describe;
     (self as any).test = test;
     (self as any).expect = expect;
+    (self as any).it = it;
 
     // hard reset per-run log cap
     logLimitHit = false;

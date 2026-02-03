@@ -6155,5 +6155,252 @@
     "testsTs": "import hasPath from './mazePath';\n\ndescribe('hasPath', () => {\n  test('finds path in grid', () => {\n    const grid = [\n      [0,0,1],\n      [1,0,1],\n      [0,0,0]\n    ];\n    expect(hasPath(grid, [0,0], [2,2])).toBe(true);\n  });\n\n  test('returns false when blocked', () => {\n    const grid = [\n      [0,1,1],\n      [1,1,1],\n      [1,1,0]\n    ];\n    expect(hasPath(grid, [0,0], [2,2])).toBe(false);\n  });\n\n  test('start equals end', () => {\n    const grid = [[0]];\n    expect(hasPath(grid, [0,0], [0,0])).toBe(true);\n  });\n\n  test('returns false if start or end is a wall', () => {\n    const grid = [\n      [1,0],\n      [0,1]\n    ];\n    expect(hasPath(grid, [0,0], [0,1])).toBe(false);\n    expect(hasPath(grid, [1,0], [1,1])).toBe(false);\n  });\n});\n",
     "access": "premium",
     "updatedAt": "2026-02-01"
+  },
+  {
+    "id": "js-take-latest",
+    "title": "Take Latest (Abort Previous Requests)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "async",
+      "cancellation",
+      "abort-controller",
+      "concurrency",
+      "promises",
+      "ui"
+    ],
+    "description": {
+      "summary": "Implement takeLatest(fn) that wraps an async function and guarantees only the most recent call can resolve. Each new call aborts the previous one via AbortController, and stale results must not update state. This prevents out-of-order responses in search-as-you-type, autocomplete, and live filtering. Concepts: async, cancellation, race control.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "(signal: AbortSignal, ...args: any[]) => Promise<T>",
+          "desc": "Async worker to run. It receives an AbortSignal as the first argument, followed by your call arguments."
+        }
+      ],
+      "returns": {
+        "type": "(...args: any[]) => Promise<T>",
+        "desc": "A wrapped function that aborts the previous call and resolves only the latest result."
+      },
+      "examples": [
+        "const searchLatest = takeLatest((signal, q) =>\n  fetch(`/api/search?q=${q}`, { signal }).then(r => r.json())\n);\n\nsearchLatest('rea');\nsearchLatest('react'); // aborts the previous call\n",
+        "const latest = takeLatest(async (signal, id) => {\n  const res = await fetch(`/user/${id}`, { signal });\n  return res.json();\n});\n\nconst user = await latest(42);\n"
+      ]
+    },
+    "starterCode": "export default function takeLatest(fn) {\n  // TODO: return a wrapped function that aborts previous calls and resolves only the latest\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function takeLatest<TArgs extends any[], TResult>(\n  fn: (signal: AbortSignal, ...args: TArgs) => Promise<TResult>\n): (...args: TArgs) => Promise<TResult> {\n  // TODO: return a wrapped function that aborts previous calls and resolves only the latest\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Keep one AbortController per in-flight call. When a new call starts, abort the previous controller and increment a call id. When a promise settles, only resolve if its id matches the latest; otherwise reject with an AbortError. This prevents stale results from winning the race.",
+      "approaches": [
+        {
+          "title": "Approach: AbortController + call id guard",
+          "prose": "Step-by-step:\n1) Track a `currentId` and `currentController` in the closure.\n2) On every call, increment `currentId` and abort the previous controller (if any).\n3) Create a new AbortController and call `fn(signal, ...args)`.\n4) If the promise settles but its `callId` is not the latest, reject with an AbortError; otherwise forward the value or error.\n\nComplexity: O(1) time and O(1) space per call.",
+          "codeJs": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default function takeLatest(fn) {\n  let currentId = 0;\n  let currentController = null;\n\n  return function (...args) {\n    currentId += 1;\n    const callId = currentId;\n\n    if (currentController && !currentController.signal.aborted) {\n      try {\n        currentController.abort(toAbortError(null, 'Cancelled'));\n      } catch {\n        // ignore\n      }\n    }\n\n    const controller = new AbortController();\n    currentController = controller;\n\n    return Promise.resolve()\n      .then(() => fn(controller.signal, ...args))\n      .then(\n        (value) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          return value;\n        },\n        (err) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          throw err;\n        }\n      );\n  };\n}\n",
+          "codeTs": "function toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nexport default function takeLatest<TArgs extends any[], TResult>(\n  fn: (signal: AbortSignal, ...args: TArgs) => Promise<TResult>\n): (...args: TArgs) => Promise<TResult> {\n  let currentId = 0;\n  let currentController: AbortController | null = null;\n\n  return function (...args: TArgs): Promise<TResult> {\n    currentId += 1;\n    const callId = currentId;\n\n    if (currentController && !currentController.signal.aborted) {\n      try {\n        currentController.abort(toAbortError(null, 'Cancelled'));\n      } catch {\n        // ignore\n      }\n    }\n\n    const controller = new AbortController();\n    currentController = controller;\n\n    return Promise.resolve()\n      .then(() => fn(controller.signal, ...args))\n      .then(\n        (value) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          return value;\n        },\n        (err) => {\n          if (callId !== currentId) throw toAbortError(null, 'Stale');\n          throw err;\n        }\n      );\n  };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to abort the previous controller allows stale requests to continue.",
+          "If the worker ignores AbortSignal, you still need a call id guard to prevent stale updates.",
+          "Not normalizing abort errors can lead to inconsistent error handling in tests and UI code."
+        ],
+        "edgeCases": [
+          "Multiple rapid calls in the same tick should still resolve only the latest one.",
+          "A previous call may resolve after being aborted; it must be ignored.",
+          "AbortController can have an undefined reason; create a fallback AbortError."
+        ],
+        "techniques": [
+          "AbortController for cancellation wiring.",
+          "Monotonic call id to ignore stale results.",
+          "Error normalization to standardize AbortError handling."
+        ]
+      },
+      "followUpQuestions": [
+        "js-abortable-helpers",
+        "js-debounce",
+        "js-promise-all"
+      ],
+      "resources": [
+        {
+          "title": "MDN – AbortController",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+        },
+        {
+          "title": "MDN – AbortSignal",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal"
+        }
+      ]
+    },
+    "tests": "import takeLatest from './takeLatest';\n\nfunction toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { err.name = 'AbortError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction delay(ms, value, signal) {\n  return new Promise((resolve, reject) => {\n    const id = setTimeout(() => resolve(value), ms);\n    if (signal) {\n      if (signal.aborted) {\n        clearTimeout(id);\n        return reject(toAbortError(signal.reason));\n      }\n      signal.addEventListener(\n        'abort',\n        () => {\n          clearTimeout(id);\n          reject(toAbortError(signal.reason));\n        },\n        { once: true }\n      );\n    }\n  });\n}\n\ndescribe('takeLatest', () => {\n  test('resolves only the latest call', async () => {\n    const latest = takeLatest((signal, value, ms) => delay(ms, value, signal));\n\n    const p1 = latest('first', 30);\n    const p2 = latest('second', 5);\n\n    await expect(p1).rejects.toMatchObject({ name: 'AbortError' });\n    await expect(p2).resolves.toBe('second');\n  });\n\n  test('propagates errors from the latest call', async () => {\n    const latest = takeLatest(async () => {\n      throw new Error('boom');\n    });\n\n    await expect(latest()).rejects.toThrow('boom');\n  });\n\n  test('aborts the previous controller immediately', async () => {\n    const latest = takeLatest((signal) => delay(20, 'ok', signal));\n\n    const p1 = latest();\n    await new Promise((r) => setTimeout(r, 1));\n    const p2 = latest();\n\n    await expect(p1).rejects.toMatchObject({ name: 'AbortError' });\n    await expect(p2).resolves.toBe('ok');\n  });\n});\n",
+    "testsTs": "import takeLatest from './takeLatest';\n\nfunction toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  try { (err as any).name = 'AbortError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AbortError' }); } catch {} }\n  return err;\n}\n\nfunction delay(ms: number, value: string, signal?: AbortSignal): Promise<string> {\n  return new Promise((resolve, reject) => {\n    const id = setTimeout(() => resolve(value), ms);\n    if (signal) {\n      if (signal.aborted) {\n        clearTimeout(id);\n        return reject(toAbortError((signal as any).reason));\n      }\n      signal.addEventListener(\n        'abort',\n        () => {\n          clearTimeout(id);\n          reject(toAbortError((signal as any).reason));\n        },\n        { once: true }\n      );\n    }\n  });\n}\n\ndescribe('takeLatest (TypeScript)', () => {\n  it('resolves only the latest call', async () => {\n    const latest = takeLatest((signal, value: string, ms: number) => delay(ms, value, signal));\n\n    const p1 = latest('first', 30);\n    const p2 = latest('second', 5);\n\n    await expect(p1).rejects.toMatchObject({ name: 'AbortError' });\n    await expect(p2).resolves.toBe('second');\n  });\n\n  it('propagates errors from the latest call', async () => {\n    const latest = takeLatest(async () => {\n      throw new Error('boom');\n    });\n\n    await expect(latest()).rejects.toThrow('boom');\n  });\n\n  it('aborts the previous controller immediately', async () => {\n    const latest = takeLatest((signal) => delay(20, 'ok', signal));\n\n    const p1 = latest();\n    await new Promise((r) => setTimeout(r, 1));\n    const p2 = latest();\n\n    await expect(p1).rejects.toMatchObject({ name: 'AbortError' });\n    await expect(p2).resolves.toBe('ok');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-promise-any",
+    "title": "Promise.any (First Fulfilled)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "promise",
+      "async",
+      "concurrency",
+      "error-handling",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement promiseAny(promises) that behaves like Promise.any. It should resolve with the first fulfilled value, ignoring rejections until all inputs reject. If everything rejects (or the input is empty), it should reject with an AggregateError containing all reasons. Concepts: promises, racing, error aggregation.",
+      "arguments": [
+        {
+          "name": "promises",
+          "type": "Array<T | Promise<T>>",
+          "desc": "An array of values or promises. Values are treated as already-fulfilled promises."
+        }
+      ],
+      "returns": {
+        "type": "Promise<T>",
+        "desc": "Resolves to the first fulfilled value, or rejects with AggregateError when all reject."
+      },
+      "examples": [
+        "promiseAny([\n  Promise.reject(new Error('A')),\n  Promise.resolve('ok'),\n  Promise.resolve('later')\n]).then(v => {\n  // v === 'ok'\n});\n",
+        "promiseAny([Promise.reject('x'), Promise.reject('y')])\n  .catch(err => {\n    // err.name === 'AggregateError'\n    // err.errors === ['x', 'y']\n  });\n"
+      ]
+    },
+    "starterCode": "export default function promiseAny(promises) {\n  // TODO: resolve on first fulfillment; reject with AggregateError if all reject\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function promiseAny<T>(promises: Array<T | Promise<T>>): Promise<T> {\n  // TODO: resolve on first fulfillment; reject with AggregateError if all reject\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Track how many inputs have rejected and collect their reasons. Resolve immediately on the first fulfillment. If all inputs reject (or the array is empty), reject with an AggregateError that includes all reasons.",
+      "approaches": [
+        {
+          "title": "Approach: Count rejections and aggregate reasons",
+          "prose": "Algorithm:\n1) Validate input: reject with TypeError if not an array.\n2) If the array is empty, reject with AggregateError containing an empty errors array.\n3) For each item, wrap with Promise.resolve and attach handlers.\n4) On fulfillment, resolve immediately.\n5) On rejection, store the reason at the same index and increment a counter.\n6) If all have rejected, reject with AggregateError.\n\nComplexity: O(n) time and O(n) space for stored errors.",
+          "codeJs": "function createAggregateError(errors) {\n  const Agg = (typeof globalThis !== 'undefined' && globalThis.AggregateError) ? globalThis.AggregateError : null;\n  if (typeof Agg === 'function') {\n    return new Agg(errors, 'All promises were rejected');\n  }\n  const err = new Error('All promises were rejected');\n  try { err.name = 'AggregateError'; } catch { try { Object.defineProperty(err, 'name', { value: 'AggregateError' }); } catch {} }\n  err.errors = errors;\n  return err;\n}\n\n\nexport default function promiseAny(promises) {\n  if (!Array.isArray(promises)) {\n    return Promise.reject(new TypeError('Argument must be an array'));\n  }\n  const n = promises.length;\n  if (n === 0) {\n    return Promise.reject(createAggregateError([]));\n  }\n\n  return new Promise((resolve, reject) => {\n    const errors = new Array(n);\n    let rejected = 0;\n\n    promises.forEach((p, i) => {\n      Promise.resolve(p).then(\n        (value) => resolve(value),\n        (err) => {\n          errors[i] = err;\n          rejected += 1;\n          if (rejected === n) {\n            reject(createAggregateError(errors));\n          }\n        }\n      );\n    });\n  });\n}\n",
+          "codeTs": "function createAggregateError(errors: any[]): Error {\n  const Agg = (typeof globalThis !== 'undefined' && (globalThis as any).AggregateError)\n    ? (globalThis as any).AggregateError\n    : null;\n  if (typeof Agg === 'function') {\n    return new Agg(errors, 'All promises were rejected');\n  }\n  const err = new Error('All promises were rejected');\n  try { (err as any).name = 'AggregateError'; } catch { try { Object.defineProperty(err as any, 'name', { value: 'AggregateError' }); } catch {} }\n  (err as any).errors = errors;\n  return err;\n}\n\n\nexport default function promiseAny<T>(promises: Array<T | Promise<T>>): Promise<T> {\n  if (!Array.isArray(promises)) {\n    return Promise.reject(new TypeError('Argument must be an array'));\n  }\n  const n = promises.length;\n  if (n === 0) {\n    return Promise.reject(createAggregateError([]));\n  }\n\n  return new Promise<T>((resolve, reject) => {\n    const errors: any[] = new Array(n);\n    let rejected = 0;\n\n    promises.forEach((p, i) => {\n      Promise.resolve(p).then(\n        (value) => resolve(value as T),\n        (err) => {\n          errors[i] = err;\n          rejected += 1;\n          if (rejected === n) {\n            reject(createAggregateError(errors));\n          }\n        }\n      );\n    });\n  });\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using Promise.race is incorrect because it rejects on the first rejection.",
+          "Forgetting the empty array case (Promise.any rejects immediately with AggregateError).",
+          "Not preserving rejection reasons makes debugging harder."
+        ],
+        "edgeCases": [
+          "Non-promise values should be treated as fulfilled inputs.",
+          "All inputs reject should produce an AggregateError with all reasons.",
+          "Mixed sync and async inputs should still resolve on the first fulfillment."
+        ],
+        "techniques": [
+          "Promise.resolve to normalize inputs.",
+          "Rejection counting and reason aggregation.",
+          "AggregateError compatibility fallback."
+        ]
+      },
+      "followUpQuestions": [
+        "js-promise-all",
+        "js-concurrency-map-limit"
+      ],
+      "resources": [
+        {
+          "title": "MDN – Promise.any()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/any"
+        },
+        {
+          "title": "MDN – AggregateError",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError"
+        }
+      ]
+    },
+    "tests": "import promiseAny from './promiseAny';\n\ndescribe('promiseAny', () => {\n  test('resolves on first fulfillment', async () => {\n    const bad = Promise.reject(new Error('nope'));\n    const slow = new Promise((resolve) => setTimeout(() => resolve('slow'), 20));\n    const fast = Promise.resolve('fast');\n\n    await expect(promiseAny([bad, slow, fast])).resolves.toBe('fast');\n  });\n\n  test('handles non-promise values', async () => {\n    await expect(promiseAny([0, Promise.resolve(2)])).resolves.toBe(0);\n  });\n\n  test('rejects with AggregateError when all reject', async () => {\n    let err;\n    try {\n      await promiseAny([Promise.reject('a'), Promise.reject('b')]);\n    } catch (e) {\n      err = e;\n    }\n    expect(err).toBeTruthy();\n    expect(err.name).toBe('AggregateError');\n    expect(Array.isArray(err.errors)).toBe(true);\n    expect(err.errors.length).toBe(2);\n  });\n\n  test('rejects for empty input', async () => {\n    let err;\n    try {\n      await promiseAny([]);\n    } catch (e) {\n      err = e;\n    }\n    expect(err).toBeTruthy();\n    expect(err.name).toBe('AggregateError');\n  });\n});\n",
+    "testsTs": "import promiseAny from './promiseAny';\n\ndescribe('promiseAny (TypeScript)', () => {\n  it('resolves on first fulfillment', async () => {\n    const bad = Promise.reject(new Error('nope'));\n    const slow = new Promise<string>((resolve) => setTimeout(() => resolve('slow'), 20));\n    const fast = Promise.resolve('fast');\n\n    await expect(promiseAny([bad, slow, fast])).resolves.toBe('fast');\n  });\n\n  it('handles non-promise values', async () => {\n    await expect(promiseAny<number | Promise<number>>([0, Promise.resolve(2)])).resolves.toBe(0);\n  });\n\n  it('rejects with AggregateError when all reject', async () => {\n    let err: any;\n    try {\n      await promiseAny([Promise.reject('a'), Promise.reject('b')]);\n    } catch (e) {\n      err = e;\n    }\n    expect(err).toBeTruthy();\n    expect(err.name).toBe('AggregateError');\n    expect(Array.isArray((err as any).errors)).toBe(true);\n    expect((err as any).errors.length).toBe(2);\n  });\n\n  it('rejects for empty input', async () => {\n    let err: any;\n    try {\n      await promiseAny([]);\n    } catch (e) {\n      err = e;\n    }\n    expect(err).toBeTruthy();\n    expect(err.name).toBe('AggregateError');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-poll-until",
+    "title": "Poll Until (with Timeout + Abort)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "async",
+      "cancellation",
+      "timers",
+      "control-flow",
+      "promises"
+    ],
+    "description": {
+      "summary": "Implement pollUntil(check, { interval, timeout, signal }) that repeatedly runs a check until it returns a truthy value. Wait interval milliseconds between attempts. Reject if the timeout is reached or the AbortSignal is aborted. Useful for waiting on background jobs, eventual consistency, or feature flags without blocking the UI thread.",
+      "arguments": [
+        {
+          "name": "check",
+          "type": "() => T | Promise<T>",
+          "desc": "A function that returns a value (or Promise). A truthy result ends polling and becomes the resolve value."
+        },
+        {
+          "name": "options",
+          "type": "{ interval?: number, timeout?: number, signal?: AbortSignal }",
+          "desc": "Polling configuration. interval is the delay between attempts. timeout is the max time to wait. signal cancels polling."
+        }
+      ],
+      "returns": {
+        "type": "Promise<T>",
+        "desc": "Resolves with the first truthy value returned by check, or rejects on timeout/abort."
+      },
+      "examples": [
+        "const result = await pollUntil(async () => {\n  const status = await fetchStatus();\n  return status === 'ready' ? status : false;\n}, { interval: 200, timeout: 5000 });\n",
+        "const ac = new AbortController();\nconst p = pollUntil(() => isReady(), { interval: 100, signal: ac.signal });\nac.abort(); // cancels polling\n"
+      ]
+    },
+    "starterCode": "export default function pollUntil(check, options = {}) {\n  // TODO: poll until check returns a truthy value or rejects on timeout/abort\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "type PollOptions = {\n  interval?: number;\n  timeout?: number;\n  signal?: AbortSignal;\n};\n\nexport default function pollUntil<T>(\n  check: () => T | Promise<T>,\n  options: PollOptions = {}\n): Promise<T> {\n  // TODO: poll until check returns a truthy value or rejects on timeout/abort\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Run the check immediately, then schedule the next attempt with setTimeout if it is still falsy. Track start time for timeout, and wire an AbortSignal to cancel. Always clear timeouts and listeners on resolve or reject.",
+      "approaches": [
+        {
+          "title": "Approach: Recursive setTimeout loop",
+          "prose": "Steps:\n1) Normalize options: interval (default 50), timeout (optional), signal (optional).\n2) If signal is already aborted, reject immediately with AbortError.\n3) Define an async attempt() function that calls check(); if the result is truthy, resolve.\n4) If check throws, reject immediately.\n5) If timeout elapsed, reject with Error('Timeout').\n6) Otherwise, schedule the next attempt using setTimeout(attempt, interval).\n7) On resolve/reject/abort, clear any timeout and remove the abort listener.\n\nComplexity: O(k) time for k attempts, O(1) extra space.",
+          "codeJs": "function toAbortError(reason, message = 'Aborted') {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  err.name = 'AbortError';\n  return err;\n}\n\nexport default function pollUntil(check, options = {}) {\n  const { interval = 50, timeout, signal } = options;\n\n  return new Promise((resolve, reject) => {\n    let timerId;\n    let done = false;\n    const start = Date.now();\n\n    const cleanup = () => {\n      if (timerId) clearTimeout(timerId);\n      if (signal) signal.removeEventListener('abort', onAbort);\n    };\n\n    const onAbort = () => {\n      if (done) return;\n      done = true;\n      cleanup();\n      reject(toAbortError(signal && signal.reason));\n    };\n\n    if (signal) {\n      if (signal.aborted) {\n        reject(toAbortError(signal.reason));\n        return;\n      }\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n\n    const attempt = async () => {\n      try {\n        const result = await check();\n        if (result) {\n          done = true;\n          cleanup();\n          resolve(result);\n          return;\n        }\n      } catch (err) {\n        done = true;\n        cleanup();\n        reject(err);\n        return;\n      }\n\n      if (timeout != null && Date.now() - start >= timeout) {\n        done = true;\n        cleanup();\n        reject(new Error('Timeout'));\n        return;\n      }\n\n      timerId = setTimeout(attempt, interval);\n    };\n\n    attempt();\n  });\n}\n",
+          "codeTs": "type PollOptions = {\n  interval?: number;\n  timeout?: number;\n  signal?: AbortSignal;\n};\n\nfunction toAbortError(reason: any, message: string = 'Aborted'): Error {\n  if (reason && reason.name === 'AbortError') return reason;\n  const err = new Error(reason && reason.message ? reason.message : message);\n  (err as any).name = 'AbortError';\n  return err;\n}\n\nexport default function pollUntil<T>(\n  check: () => T | Promise<T>,\n  options: PollOptions = {}\n): Promise<T> {\n  const { interval = 50, timeout, signal } = options;\n\n  return new Promise<T>((resolve, reject) => {\n    let timerId: ReturnType<typeof setTimeout> | undefined;\n    let done = false;\n    const start = Date.now();\n\n    const cleanup = () => {\n      if (timerId) clearTimeout(timerId);\n      if (signal) signal.removeEventListener('abort', onAbort);\n    };\n\n    const onAbort = () => {\n      if (done) return;\n      done = true;\n      cleanup();\n      reject(toAbortError(signal && (signal as any).reason));\n    };\n\n    if (signal) {\n      if (signal.aborted) {\n        reject(toAbortError((signal as any).reason));\n        return;\n      }\n      signal.addEventListener('abort', onAbort, { once: true });\n    }\n\n    const attempt = async (): Promise<void> => {\n      try {\n        const result = await check();\n        if (result) {\n          done = true;\n          cleanup();\n          resolve(result as T);\n          return;\n        }\n      } catch (err) {\n        done = true;\n        cleanup();\n        reject(err);\n        return;\n      }\n\n      if (timeout != null && Date.now() - start >= timeout) {\n        done = true;\n        cleanup();\n        reject(new Error('Timeout'));\n        return;\n      }\n\n      timerId = setTimeout(attempt, interval);\n    };\n\n    attempt();\n  });\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using setInterval without cleanup can leave polling running forever.",
+          "Forgetting to remove the abort listener causes memory leaks.",
+          "Treating falsy values as success can end polling too early."
+        ],
+        "edgeCases": [
+          "timeout = 0 should timeout immediately if the first check is falsy.",
+          "check throwing should reject immediately and stop polling.",
+          "signal already aborted should reject without running check."
+        ],
+        "techniques": [
+          "Recursive setTimeout for precise control.",
+          "AbortSignal wiring for cancellation.",
+          "Timeout tracking via Date.now()."
+        ]
+      },
+      "followUpQuestions": [
+        "js-sleep",
+        "js-abortable-helpers",
+        "js-concurrency-map-limit"
+      ],
+      "resources": [
+        {
+          "title": "MDN – AbortController",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/AbortController"
+        }
+      ]
+    },
+    "tests": "import pollUntil from './pollUntil';\n\ndescribe('pollUntil', () => {\n  test('resolves when check becomes truthy', async () => {\n    let count = 0;\n    const result = await pollUntil(() => {\n      count += 1;\n      return count >= 3 ? 'ready' : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe('ready');\n  });\n\n  test('supports async checks', async () => {\n    let count = 0;\n    const result = await pollUntil(async () => {\n      count += 1;\n      await new Promise((r) => setTimeout(r, 2));\n      return count === 2 ? 42 : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe(42);\n  });\n\n  test('rejects on timeout', async () => {\n    await expect(\n      pollUntil(() => false, { interval: 5, timeout: 20 })\n    ).rejects.toThrow('Timeout');\n  });\n\n  test('rejects when aborted', async () => {\n    const ac = new AbortController();\n    const p = pollUntil(() => false, { interval: 5, signal: ac.signal });\n    setTimeout(() => ac.abort(), 10);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
+    "testsTs": "import pollUntil from './pollUntil';\n\ndescribe('pollUntil (TypeScript)', () => {\n  it('resolves when check becomes truthy', async () => {\n    let count = 0;\n    const result = await pollUntil(() => {\n      count += 1;\n      return count >= 3 ? 'ready' : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe('ready');\n  });\n\n  it('supports async checks', async () => {\n    let count = 0;\n    const result = await pollUntil(async () => {\n      count += 1;\n      await new Promise((r) => setTimeout(r, 2));\n      return count === 2 ? 42 : false;\n    }, { interval: 5, timeout: 50 });\n\n    expect(result).toBe(42);\n  });\n\n  it('rejects on timeout', async () => {\n    await expect(\n      pollUntil(() => false, { interval: 5, timeout: 20 })\n    ).rejects.toThrow('Timeout');\n  });\n\n  it('rejects when aborted', async () => {\n    const ac = new AbortController();\n    const p = pollUntil(() => false, { interval: 5, signal: ac.signal });\n    setTimeout(() => ac.abort(), 10);\n    await expect(p).rejects.toMatchObject({ name: 'AbortError' });\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-03"
   }
 ]
