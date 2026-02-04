@@ -376,6 +376,9 @@
     <loc>https://frontendatlas.com/html/trivia/html-dom</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/html/trivia/html-dom-tree-structure</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/html/trivia/html-form-default-method</loc>
   </url>
   <url>
@@ -469,6 +472,9 @@
     <loc>https://frontendatlas.com/javascript/coding/js-count-vowels</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-create-cleanup-bag</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-create-counter</loc>
   </url>
   <url>
@@ -496,6 +502,15 @@
     <loc>https://frontendatlas.com/javascript/coding/js-delegated-events-3</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-dom-find-node</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-dom-renderer</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-dom-twin-node</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-1</loc>
   </url>
   <url>
@@ -505,13 +520,22 @@
     <loc>https://frontendatlas.com/javascript/coding/js-dom-walk-text-content-3</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-escape-html</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-event-emitter-mini</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-fetch-json-timeout</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-flatten-depth</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-flatten-once</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-format-date-timezone</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-get-by-path-1</loc>
@@ -538,6 +562,12 @@
     <loc>https://frontendatlas.com/javascript/coding/js-max-char</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-maze-path</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-measure-duration</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-median-of-array</loc>
   </url>
   <url>
@@ -556,7 +586,16 @@
     <loc>https://frontendatlas.com/javascript/coding/js-once</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-palindrome-check</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-poll-until</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-promise-all</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-promise-any</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-querystring-parse-1</loc>
@@ -572,6 +611,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-reverse-string</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-safe-json-parse</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-selector-polyfill-closest-2</loc>
@@ -592,16 +634,34 @@
     <loc>https://frontendatlas.com/javascript/coding/js-sleep</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-stack-queue-implementation</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-storage-ttl-cache</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-stream-to-text</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-streaming-ndjson-parser</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-sum-numbers</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-take-latest</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-three-sum</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-throttle</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-timer-manager</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-timer-manager-and-dom-renderer</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-unique-array</loc>
@@ -611,6 +671,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-valid-anagram</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-validate-username</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/debug/js-debug-async-race</loc>
@@ -646,6 +709,12 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-arrow-functions</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-async-race-conditions</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-big-o-notation</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-call-apply-bind</loc>
   </url>
   <url>
@@ -679,6 +748,12 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-equality-vs-strict-equality</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-escape-vs-sanitize</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-esm-vs-cjs</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-event-bubbling-capturing</loc>
   </url>
   <url>
@@ -700,6 +775,9 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-hoisting-tdz</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-intl-datetime-timezone</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-map-filter-reduce</loc>
   </url>
   <url>
@@ -707,6 +785,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-memoization</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-memory-leaks-common-sources</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-microtasks-vs-macrotasks</loc>
@@ -730,6 +811,9 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-object-destructuring</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-performance-profiling-workflow</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-promise-combinators-all-allsettled-race-any</loc>
   </url>
   <url>
@@ -742,16 +826,31 @@
     <loc>https://frontendatlas.com/javascript/trivia/js-prototype-vs-__proto__</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-queue-vs-stack</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-secure-cors-handling</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-shallow-vs-deep-copy</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-testing-edge-cases-strategy</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-this-keyword</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-tree-shaking</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-var-let-const-hoisting</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-web-workers-basics</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-xss-dom-sinks</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/prompt-engineering-frontend</loc>
@@ -1027,6 +1126,9 @@
     <loc>https://frontendatlas.com/system-design/netflix-scale-expansion</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/system-design/news-feed-timeline</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/system-design/notification-toast-system</loc>
   </url>
   <url>
@@ -1034,6 +1136,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/system-design/scalable-notifications-feed</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/system-design/ui-component-state-from-mock</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-accordion-faq</loc>

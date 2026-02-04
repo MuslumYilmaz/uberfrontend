@@ -1,7 +1,29 @@
-export PATH="/opt/homebrew/bin:$PATH"
+#!/usr/bin/env bash
+set -euo pipefail
 
-#!/usr/bin/env sh
-set -eu
+# Ensure common Node paths are available in non-interactive git hooks.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+# Load nvm/asdf/fnm if present (git hooks don't source shell profiles).
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+  . "$HOME/.nvm/nvm.sh"
+fi
+if [ -s "$HOME/.asdf/asdf.sh" ]; then
+  . "$HOME/.asdf/asdf.sh"
+fi
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd)"
+fi
+
+# Fallback: add the first nvm-installed node bin to PATH if npm is still missing.
+if ! command -v npm >/dev/null 2>&1; then
+  for p in "$HOME/.nvm/versions/node"/*/bin; do
+    if [ -x "$p/npm" ]; then
+      export PATH="$p:$PATH"
+      break
+    fi
+  done
+fi
 
 echo "[pre-push] Running FrontendAtlas unit tests (Karma)..."
 
