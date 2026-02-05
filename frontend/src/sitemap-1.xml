@@ -481,6 +481,9 @@
     <loc>https://frontendatlas.com/javascript/coding/js-create-deferred-promise</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-create-lru-cache</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-create-spy-function</loc>
   </url>
   <url>
@@ -617,6 +620,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-reverse-string</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-run-with-perf-budget</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/coding/js-safe-json-parse</loc>
@@ -770,6 +776,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-foreach-vs-map</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-garbage-collection-and-gc-pauses</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-higher-order-function</loc>

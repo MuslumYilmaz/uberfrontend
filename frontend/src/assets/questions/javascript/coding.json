@@ -7333,5 +7333,174 @@
     "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n    d.resolve(42);\n    const out = await d.promise;\n    expect(out).toBe(42);\n  });\n\n  it('rejects when reject is called', async () => {\n    const d = createDeferred<number>();\n    const err = new Error('fail');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n    d.resolve(Promise.resolve('ok'));\n    expect(await d.promise).toBe('ok');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05"
+  },
+  {
+    "id": "js-create-lru-cache",
+    "title": "Create an LRU Cache (Bounded Memory)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "memory",
+      "cache",
+      "performance",
+      "web-performance",
+      "hash-map",
+      "algorithms",
+      "best-practices",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement createLruCache(maxSize) to keep a bounded, eviction-based cache. This is a classic way to prevent \"memory leaks\" caused by unbounded Maps in long-lived SPAs (analytics, image metadata, computed results).",
+      "arguments": [
+        {
+          "name": "maxSize",
+          "type": "number",
+          "desc": "Maximum number of entries to retain. Must be a positive integer."
+        }
+      ],
+      "returns": {
+        "type": "{ get, set, has, size, clear, keys }",
+        "desc": "An LRU cache API backed by Map insertion order."
+      },
+      "examples": [
+        "const c = createLruCache(2);\nc.set('a', 1);\nc.set('b', 2);\nc.get('a'); // => 1 (a becomes most-recent)\nc.set('c', 3); // evicts b\nc.has('b'); // => false"
+      ]
+    },
+    "starterCode": "export default function createLruCache(maxSize) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export type LruCache<K, V> = {\n  get: (key: K) => V | undefined;\n  set: (key: K, value: V) => void;\n  has: (key: K) => boolean;\n  size: () => number;\n  clear: () => void;\n  keys: () => K[];\n};\n\nexport default function createLruCache<K, V>(maxSize: number): LruCache<K, V> {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "In JavaScript, Map preserves insertion order. You can implement LRU by moving a key to the end on get/set, and evicting the first key when size exceeds maxSize.",
+      "approaches": [
+        {
+          "title": "Approach: Map insertion-order (recommended)",
+          "prose": "Rules:\n- get(key): if present, move to most-recent (delete + set).\n- set(key, value): write, then evict oldest if size > maxSize.\n\nComplexity:\n- get/set/has: O(1) average\n- keys(): O(n)",
+          "codeJs": "export default function createLruCache(maxSize) {\n  if (!Number.isFinite(maxSize) || maxSize % 1 !== 0 || maxSize <= 0) {\n    throw new TypeError('maxSize must be a positive integer');\n  }\n\n  const map = new Map();\n\n  const touch = (key, value) => {\n    map.delete(key);\n    map.set(key, value);\n  };\n\n  const evictIfNeeded = () => {\n    while (map.size > maxSize) {\n      const oldest = map.keys().next().value;\n      map.delete(oldest);\n    }\n  };\n\n  return {\n    get(key) {\n      if (!map.has(key)) return undefined;\n      const value = map.get(key);\n      touch(key, value);\n      return value;\n    },\n    set(key, value) {\n      touch(key, value);\n      evictIfNeeded();\n    },\n    has(key) {\n      return map.has(key);\n    },\n    size() {\n      return map.size;\n    },\n    clear() {\n      map.clear();\n    },\n    keys() {\n      return Array.from(map.keys());\n    }\n  };\n}\n",
+          "codeTs": "export type LruCache<K, V> = {\n  get: (key: K) => V | undefined;\n  set: (key: K, value: V) => void;\n  has: (key: K) => boolean;\n  size: () => number;\n  clear: () => void;\n  keys: () => K[];\n};\n\nexport default function createLruCache<K, V>(maxSize: number): LruCache<K, V> {\n  if (!Number.isFinite(maxSize) || maxSize % 1 !== 0 || maxSize <= 0) {\n    throw new TypeError('maxSize must be a positive integer');\n  }\n\n  const map = new Map<K, V>();\n\n  const touch = (key: K, value: V) => {\n    map.delete(key);\n    map.set(key, value);\n  };\n\n  const evictIfNeeded = () => {\n    while (map.size > maxSize) {\n      const oldest = map.keys().next().value as K;\n      map.delete(oldest);\n    }\n  };\n\n  return {\n    get(key: K) {\n      if (!map.has(key)) return undefined;\n      const value = map.get(key) as V;\n      touch(key, value);\n      return value;\n    },\n    set(key: K, value: V) {\n      touch(key, value);\n      evictIfNeeded();\n    },\n    has(key: K) {\n      return map.has(key);\n    },\n    size() {\n      return map.size;\n    },\n    clear() {\n      map.clear();\n    },\n    keys() {\n      return Array.from(map.keys());\n    }\n  };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Unbounded caches become real memory problems in long-lived tabs.",
+          "A cache key strategy matters: if you key by URL with tracking params, you will explode cardinality.",
+          "LRU helps memory, but eviction can hurt hit-rate; choose maxSize based on real usage."
+        ],
+        "edgeCases": [
+          "maxSize must be > 0; throw for invalid inputs.",
+          "Updating an existing key should refresh recency without growing size.",
+          "get() should also refresh recency."
+        ],
+        "techniques": [
+          "Map insertion order as an LRU list.",
+          "delete+set to move key to most recent.",
+          "Evict oldest via map.keys().next().value."
+        ]
+      },
+      "followUpQuestions": [
+        "js-storage-ttl-cache",
+        "js-memoize-function"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 Map",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map"
+        }
+      ]
+    },
+    "tests": "import createLruCache from './createLruCache';\n\ndescribe('createLruCache', () => {\n  test('throws for invalid maxSize', () => {\n    expect(() => createLruCache(0)).toThrow();\n    expect(() => createLruCache(-1)).toThrow();\n    expect(() => createLruCache(1.5)).toThrow();\n  });\n\n  test('evicts least-recently-used on overflow', () => {\n    const c = createLruCache(2);\n    c.set('a', 1);\n    c.set('b', 2);\n    c.set('c', 3);\n\n    expect(c.has('a')).toBe(false);\n    expect(c.has('b')).toBe(true);\n    expect(c.has('c')).toBe(true);\n    expect(c.keys()).toEqual(['b', 'c']);\n  });\n\n  test('get refreshes recency', () => {\n    const c = createLruCache(2);\n    c.set('a', 1);\n    c.set('b', 2);\n\n    expect(c.get('a')).toBe(1);\n    c.set('c', 3);\n\n    expect(c.has('b')).toBe(false);\n    expect(c.keys()).toEqual(['a', 'c']);\n  });\n\n  test('updating an existing key does not grow size', () => {\n    const c = createLruCache(2);\n    c.set('a', 1);\n    c.set('b', 2);\n    c.set('a', 10);\n\n    expect(c.size()).toBe(2);\n    expect(c.get('a')).toBe(10);\n  });\n});\n",
+    "testsTs": "import createLruCache from './createLruCache';\n\ndescribe('createLruCache (TypeScript)', () => {\n  it('evicts least-recently-used on overflow', () => {\n    const c = createLruCache<string, number>(2);\n    c.set('a', 1);\n    c.set('b', 2);\n    c.set('c', 3);\n\n    expect(c.has('a')).toBe(false);\n    expect(c.keys()).toEqual(['b', 'c']);\n  });\n\n  it('get refreshes recency', () => {\n    const c = createLruCache<string, number>(2);\n    c.set('a', 1);\n    c.set('b', 2);\n\n    expect(c.get('a')).toBe(1);\n    c.set('c', 3);\n    expect(c.has('b')).toBe(false);\n    expect(c.keys()).toEqual(['a', 'c']);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-05"
+  },
+  {
+    "id": "js-run-with-perf-budget",
+    "title": "Run With a Performance Budget (Sync or Async)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "performance",
+      "web-performance",
+      "devtools",
+      "best-practices",
+      "async",
+      "promise",
+      "utilities",
+      "debugging"
+    ],
+    "description": {
+      "summary": "Implement runWithPerfBudget(fn, budgetMs, now?) to time a sync or async function and report whether it stayed within a budget. This mirrors how teams add perf budgets in CI and how you reason about long tasks (\"why is this >16ms?\") in profiling sessions.",
+      "arguments": [
+        {
+          "name": "fn",
+          "type": "Function",
+          "desc": "The operation to run. Can return a value or a Promise."
+        },
+        {
+          "name": "budgetMs",
+          "type": "number",
+          "desc": "Budget in milliseconds (>= 0)."
+        },
+        {
+          "name": "now",
+          "type": "() => number (optional)",
+          "desc": "Time source for testability. Defaults to performance.now() when available, else Date.now()."
+        }
+      ],
+      "returns": {
+        "type": "Promise<{ ok: boolean, durationMs: number, value: any }>",
+        "desc": "Whether the run stayed within budget, measured duration, and the resolved value."
+      },
+      "examples": [
+        "await runWithPerfBudget(() => expensiveWork(), 16)\n// => { ok: false, durationMs: 42, value: ... }",
+        "await runWithPerfBudget(async () => await doFetchLikeWork(), 200)\n// => { ok: true, durationMs: 120, value: ... }"
+      ]
+    },
+    "starterCode": "export default async function runWithPerfBudget(fn, budgetMs, now) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export type PerfBudgetResult<T> = {\n  ok: boolean;\n  durationMs: number;\n  value: T;\n};\n\nexport default async function runWithPerfBudget<T>(\n  fn: () => T | Promise<T>,\n  budgetMs: number,\n  now?: () => number\n): Promise<PerfBudgetResult<T>> {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Measure time before and after running fn. If fn returns a Promise, await it before taking the end timestamp. Use an injectable now() so tests are deterministic.",
+      "approaches": [
+        {
+          "title": "Approach: Monotonic timing + async support",
+          "prose": "Steps:\n1) Validate inputs (fn is function, budgetMs >= 0).\n2) Capture start = now().\n3) Run fn(). If it returns a promise, await it.\n4) Capture end = now().\n5) durationMs = max(0, end - start).\n6) ok = durationMs <= budgetMs.\n\nComplexity: O(1) overhead.",
+          "codeJs": "const defaultNow = () => {\n  if (typeof performance !== 'undefined' && typeof performance.now === 'function') {\n    return performance.now();\n  }\n  return Date.now();\n};\n\nexport default async function runWithPerfBudget(fn, budgetMs, now = defaultNow) {\n  if (typeof fn !== 'function') throw new TypeError('fn must be a function');\n  if (!Number.isFinite(budgetMs) || budgetMs < 0) throw new TypeError('budgetMs must be a non-negative number');\n\n  const start = now();\n  const out = fn();\n  const value = out && typeof out.then === 'function' ? await out : out;\n  const end = now();\n\n  const durationMs = Math.max(0, end - start);\n  return { ok: durationMs <= budgetMs, durationMs, value };\n}\n",
+          "codeTs": "export type PerfBudgetResult<T> = {\n  ok: boolean;\n  durationMs: number;\n  value: T;\n};\n\nconst defaultNow = () => {\n  if (typeof performance !== 'undefined' && typeof (performance as any).now === 'function') {\n    return (performance as any).now();\n  }\n  return Date.now();\n};\n\nexport default async function runWithPerfBudget<T>(\n  fn: () => T | Promise<T>,\n  budgetMs: number,\n  now: () => number = defaultNow\n): Promise<PerfBudgetResult<T>> {\n  if (typeof fn !== 'function') throw new TypeError('fn must be a function');\n  if (!Number.isFinite(budgetMs) || budgetMs < 0) throw new TypeError('budgetMs must be a non-negative number');\n\n  const start = now();\n  const out = fn();\n  const value = out && typeof (out as any).then === 'function' ? await (out as any) : (out as T);\n  const end = now();\n\n  const durationMs = Math.max(0, end - start);\n  return { ok: durationMs <= budgetMs, durationMs, value };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using Date.now() can jump backwards/forwards if system time changes; prefer performance.now() when available.",
+          "Measuring tiny operations is noisy; budgets are best for user-visible work (render, parse, large transforms).",
+          "Optimizing without profiling wastes time; measure first, then fix the biggest bottleneck."
+        ],
+        "edgeCases": [
+          "budgetMs = 0: ok only when durationMs is 0.",
+          "fn can be sync or async; treat both the same.",
+          "If now() is non-monotonic, duration should be clamped to >= 0."
+        ],
+        "techniques": [
+          "Inject time source for deterministic tests.",
+          "Await promise results before final timestamp.",
+          "Clamp duration to avoid negative values."
+        ]
+      },
+      "followUpQuestions": [
+        "js-performance-profiling-workflow",
+        "js-take-latest"
+      ],
+      "resources": [
+        {
+          "title": "MDN \u2013 performance.now()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Performance/now"
+        }
+      ]
+    },
+    "tests": "import runWithPerfBudget from './runWithPerfBudget';\n\ndescribe('runWithPerfBudget', () => {\n  test('times sync functions and returns ok status', async () => {\n    const times = [100, 112];\n    const now = () => times.shift();\n\n    const res = await runWithPerfBudget(() => 123, 20, now);\n    expect(res).toEqual({ ok: true, durationMs: 12, value: 123 });\n  });\n\n  test('times async functions and awaits the result', async () => {\n    const times = [0, 50];\n    const now = () => times.shift();\n\n    const res = await runWithPerfBudget(async () => 'ok', 40, now);\n    expect(res.ok).toBe(false);\n    expect(res.durationMs).toBe(50);\n    expect(res.value).toBe('ok');\n  });\n\n  test('clamps negative duration to 0', async () => {\n    const times = [10, 5];\n    const now = () => times.shift();\n\n    const res = await runWithPerfBudget(() => 'x', 0, now);\n    expect(res.durationMs).toBe(0);\n    expect(res.ok).toBe(true);\n  });\n\n  test('throws on invalid inputs', async () => {\n    await expect(runWithPerfBudget(null, 1)).rejects.toThrow();\n    await expect(runWithPerfBudget(() => 1, -1)).rejects.toThrow();\n  });\n});\n",
+    "testsTs": "import runWithPerfBudget from './runWithPerfBudget';\n\ndescribe('runWithPerfBudget (TypeScript)', () => {\n  it('times sync functions and returns ok status', async () => {\n    const times = [100, 110];\n    const now = () => times.shift() as number;\n\n    const res = await runWithPerfBudget<number>(() => 7, 9, now);\n    expect(res).toEqual({ ok: false, durationMs: 10, value: 7 });\n  });\n\n  it('times async functions and awaits the result', async () => {\n    const times = [0, 1];\n    const now = () => times.shift() as number;\n\n    const res = await runWithPerfBudget<string>(async () => 'ok', 5, now);\n    expect(res.ok).toBe(true);\n    expect(res.durationMs).toBe(1);\n    expect(res.value).toBe('ok');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-05"
   }
 ]

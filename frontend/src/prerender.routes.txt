@@ -186,6 +186,7 @@
 /javascript/coding/js-create-cleanup-bag
 /javascript/coding/js-create-counter
 /javascript/coding/js-create-deferred-promise
+/javascript/coding/js-create-lru-cache
 /javascript/coding/js-create-spy-function
 /javascript/coding/js-curry-function
 /javascript/coding/js-debounce
@@ -232,6 +233,7 @@
 /javascript/coding/js-querystring-stringify-2
 /javascript/coding/js-recover-bst-swapped-nodes
 /javascript/coding/js-reverse-string
+/javascript/coding/js-run-with-perf-budget
 /javascript/coding/js-safe-json-parse
 /javascript/coding/js-selector-polyfill-closest-2
 /javascript/coding/js-selector-polyfill-matches-1
@@ -283,6 +285,7 @@
 /javascript/trivia/js-event-delegation
 /javascript/trivia/js-event-loop
 /javascript/trivia/js-foreach-vs-map
+/javascript/trivia/js-garbage-collection-and-gc-pauses
 /javascript/trivia/js-higher-order-function
 /javascript/trivia/js-hoisting
 /javascript/trivia/js-hoisting-tdz

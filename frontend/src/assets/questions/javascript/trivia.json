@@ -5861,5 +5861,116 @@
     },
     "access": "free",
     "updatedAt": "2026-02-05"
+  },
+  {
+    "id": "js-garbage-collection-and-gc-pauses",
+    "title": "Garbage Collection (GC) in JavaScript: Memory Pressure and Jank",
+    "description": "Explain how JavaScript garbage collection works at a high level, why memory pressure can cause UI jank (GC pauses), and how to investigate it with Chrome DevTools (Performance + Memory panels). Include WeakMap/WeakRef use cases and common pitfalls.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "memory",
+      "garbage-collection",
+      "performance",
+      "web-performance",
+      "devtools",
+      "browser",
+      "best-practices"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-recycle'></i> <strong>Big idea</strong>\n\nJavaScript is garbage-collected: you don\u2019t free memory manually. But you <em>do</em> control which objects remain reachable. If your app allocates lots of short-lived objects or accidentally retains references, the GC has more work to do \u2014 and that can show up as <strong>jank</strong> (stutters) in the UI."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Concept",
+            "What it means",
+            "Why you care (frontend)"
+          ],
+          "rows": [
+            [
+              "Reachability",
+              "If something is reachable from roots (global, closures, DOM refs), GC won't collect it",
+              "Leaks are usually \"still referenced\", not \"GC failed\""
+            ],
+            [
+              "Memory pressure",
+              "Heap grows \u2192 GC runs more often / more aggressively",
+              "Frequent GCs can compete with rendering"
+            ],
+            [
+              "GC pauses",
+              "Some GC work stops the world briefly",
+              "Pauses can push frames over 16ms and hurt INP"
+            ]
+          ],
+          "caption": "GC is automatic, but your allocation patterns and references decide the workload."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bullseye'></i> <strong>Practical scenario</strong>\n\nYou render a feed and create new objects on every scroll (formatting strings, building derived arrays, cloning objects). The UI looks fine on a dev machine, but on mid-range devices you see stutters. Often the hidden cause is allocation churn: the GC runs repeatedly, causing small pauses that add up."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Allocation-heavy pattern (creates new arrays/objects frequently)\nfunction render(items) {\n  const rows = items\n    .filter(x => x.visible)\n    .map(x => ({ id: x.id, label: `${x.name} (${x.count})` }));\n\n  // ... render rows\n}\n\n// Lower-churn patterns:\n// - avoid repeated cloning\n// - memoize derived data\n// - keep caches bounded (LRU)\n// - reuse arrays where possible (carefully)\n"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-magnifying-glass'></i> <strong>How to investigate in Chrome DevTools</strong>\n\n1) <strong>Performance panel</strong>: record a trace while reproducing jank.\n- Look for long tasks, layout thrash, and also <strong>GC activity</strong> markers.\n\n2) <strong>Memory panel</strong>:\n- Take heap snapshots before/after repeating an interaction.\n- Use <strong>Retainers</strong> to see what keeps objects alive.\n- Use Allocation instrumentation to find hot allocation sites.\n\nIf memory keeps growing and never comes down after a \"steady-state\" interaction, you likely have a retention leak."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Common leak source",
+            "Why it retains",
+            "Fix pattern"
+          ],
+          "rows": [
+            [
+              "Event listeners / subscriptions",
+              "Callback closures keep data reachable",
+              "Remove/unsubscribe on cleanup"
+            ],
+            [
+              "Unbounded caches (Map, arrays)",
+              "No eviction \u2192 heap grows forever",
+              "Bounded cache (LRU/TTL) + key hygiene"
+            ],
+            [
+              "Detached DOM nodes",
+              "JS references keep removed nodes alive",
+              "Don't store DOM nodes long-term; null references"
+            ],
+            [
+              "Timers",
+              "Intervals keep closures alive",
+              "clearInterval/clearTimeout in cleanup"
+            ]
+          ],
+          "caption": "Most \"memory leaks\" are just references that never get released."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-link'></i> <strong>WeakMap / WeakRef: when they help</strong>\n\n- <code>WeakMap</code> keys are weakly held: if the key object becomes unreachable, the entry can be collected.\n- This is useful for memoization keyed by objects (DOM nodes, component instances) where you don't want your cache to keep them alive.\n\nThey are not a silver bullet: you still need to remove event listeners, bound caches, and avoid retaining large graphs in closures."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Pitfalls</strong>\n\n- Treating GC as a fix: \"it will clean up\" \u2192 not if you still reference it.\n- Allocating aggressively in hot paths (scroll, animation frames).\n- Using caches without eviction or with high-cardinality keys.\n- Profiling only in dev builds (prod code can behave differently)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Answer to land</strong>\n\n\"If the UI is janky after repeated interactions, I profile both CPU and memory. I look for allocation churn and GC markers in the Performance panel, then use heap snapshots and retainers to confirm what stays reachable. Fixes are usually: cleanup subscriptions/listeners, bound caches (LRU/TTL), and reduce allocations in hot paths.\""
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-05"
   }
 ]
