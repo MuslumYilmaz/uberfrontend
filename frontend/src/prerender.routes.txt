@@ -236,6 +236,7 @@
 /javascript/coding/js-reverse-string
 /javascript/coding/js-run-with-perf-budget
 /javascript/coding/js-safe-json-parse
+/javascript/coding/js-sanitize-href-url
 /javascript/coding/js-selector-polyfill-closest-2
 /javascript/coding/js-selector-polyfill-matches-1
 /javascript/coding/js-selector-polyfill-qsa-3

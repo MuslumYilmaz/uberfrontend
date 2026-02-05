@@ -7551,5 +7551,90 @@
     "testsTs": "import resolvePackageEntry from './resolvePackageEntry';\n\ndescribe('resolvePackageEntry (TypeScript)', () => {\n  it('resolves conditional exports with browser + kind', () => {\n    const pkg = {\n      exports: {\n        '.': {\n          browser: {\n            import: './dist/browser.mjs',\n            require: './dist/browser.cjs'\n          },\n          default: './dist/index.js'\n        }\n      }\n    } as any;\n\n    expect(resolvePackageEntry(pkg, { kind: 'import', conditions: ['browser'] })).toBe('./dist/browser.mjs');\n    expect(resolvePackageEntry(pkg, { kind: 'require', conditions: ['browser'] })).toBe('./dist/browser.cjs');\n  });\n\n  it('falls back to module/main when exports is missing', () => {\n    const pkg = { module: './esm.js', main: './cjs.js' } as any;\n    expect(resolvePackageEntry(pkg, { kind: 'import' })).toBe('./esm.js');\n    expect(resolvePackageEntry(pkg, { kind: 'require' })).toBe('./cjs.js');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05"
+  },
+  {
+    "id": "js-sanitize-href-url",
+    "title": "Sanitize href URL (Block javascript: XSS)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "security",
+      "validation",
+      "best-practices",
+      "browser",
+      "dom",
+      "strings",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement sanitizeHrefUrl(input) to safely use user-provided URLs in an <a href=\"...\">. Use an allowlist for safe schemes (http/https/mailto/tel) and safe relative URLs, and block dangerous schemes like javascript: or data:. Trim and strip control characters to prevent sneaky inputs like \"java\\u0000script:\".",
+      "arguments": [
+        {
+          "name": "input",
+          "type": "string",
+          "desc": "User-provided URL-ish string that you want to place into href."
+        }
+      ],
+      "returns": {
+        "type": "string | null",
+        "desc": "A safe href string (normalized) or null if the input is unsafe."
+      },
+      "examples": [
+        "sanitizeHrefUrl('javascript:alert(1)') // => null",
+        "sanitizeHrefUrl('  https://example.com  ') // => 'https://example.com/'",
+        "sanitizeHrefUrl('/settings') // => '/settings'",
+        "sanitizeHrefUrl('mailto:hi@example.com') // => 'mailto:hi@example.com'"
+      ]
+    },
+    "starterCode": "export default function sanitizeHrefUrl(input) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export default function sanitizeHrefUrl(input: string): string | null {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "For href, the security goal is simple: never allow schemes that execute code (javascript:) or embed attacker-controlled markup (data:). The safest pattern is an allowlist of schemes plus safe relative URLs.",
+      "approaches": [
+        {
+          "title": "Approach: Allowlist schemes + strip control chars",
+          "prose": "Steps:\n1) Normalize: String(input).trim() and remove control characters.\n2) Block protocol-relative URLs (//example.com) and backslash-based paths.\n3) Allow safe relative URLs (#, ?, /, ./, ../, and plain paths).\n4) If a scheme exists, allow only: http, https, mailto, tel.\n5) For http/https, validate with URL() and return normalized href.\n\nComplexity: O(n) time, O(1) extra space.",
+          "codeJs": "const CONTROL_CHARS = /[\\u0000-\\u001F\\u007F]+/g;\nconst SAFE_SCHEMES = new Set(['http:', 'https:', 'mailto:', 'tel:']);\n\nfunction stripControlChars(s) {\n  return s.replace(CONTROL_CHARS, '');\n}\n\nexport default function sanitizeHrefUrl(input) {\n  if (input == null) return null;\n  let s = String(input).trim();\n  if (!s) return null;\n\n  s = stripControlChars(s);\n\n  // Protocol-relative and backslash-based URLs are surprising and often unsafe in app contexts.\n  if (s.startsWith('//') || s.startsWith('\\\\\\\\') || s.startsWith('\\\\')) return null;\n\n  // Safe relative URLs for typical SPA navigation.\n  if (\n    s.startsWith('#') ||\n    s.startsWith('?') ||\n    s.startsWith('/') ||\n    s.startsWith('./') ||\n    s.startsWith('../')\n  ) {\n    return s;\n  }\n\n  // Detect a scheme like \"https:\" or \"javascript:\".\n  const match = s.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);\n  if (!match) {\n    // e.g. \"settings\" or \"profile\" \u2192 treat as relative path.\n    return s;\n  }\n\n  const scheme = `${match[1].toLowerCase()}:`;\n  if (!SAFE_SCHEMES.has(scheme)) return null;\n\n  if (scheme === 'http:' || scheme === 'https:') {\n    try {\n      return new URL(s).toString();\n    } catch {\n      return null;\n    }\n  }\n\n  // mailto:, tel: \u2192 return as-is (trimmed + control chars stripped).\n  return s;\n}\n",
+          "codeTs": "const CONTROL_CHARS = /[\\u0000-\\u001F\\u007F]+/g;\nconst SAFE_SCHEMES = new Set(['http:', 'https:', 'mailto:', 'tel:']);\n\nfunction stripControlChars(s: string): string {\n  return s.replace(CONTROL_CHARS, '');\n}\n\nexport default function sanitizeHrefUrl(input: string): string | null {\n  if (input == null) return null;\n  let s = String(input).trim();\n  if (!s) return null;\n\n  s = stripControlChars(s);\n\n  if (s.startsWith('//') || s.startsWith('\\\\\\\\') || s.startsWith('\\\\')) return null;\n\n  if (\n    s.startsWith('#') ||\n    s.startsWith('?') ||\n    s.startsWith('/') ||\n    s.startsWith('./') ||\n    s.startsWith('../')\n  ) {\n    return s;\n  }\n\n  const match = s.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);\n  if (!match) return s;\n\n  const scheme = `${match[1].toLowerCase()}:`;\n  if (!SAFE_SCHEMES.has(scheme)) return null;\n\n  if (scheme === 'http:' || scheme === 'https:') {\n    try {\n      return new URL(s).toString();\n    } catch {\n      return null;\n    }\n  }\n\n  return s;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Escaping HTML is not enough for href: you must also validate protocols (javascript: is the classic bypass).",
+          "Sanitization is context-specific: a value safe for href is not automatically safe for CSS url() or innerHTML.",
+          "Protocol-relative URLs (//example.com) are not XSS, but they can cause unexpected external navigation."
+        ],
+        "edgeCases": [
+          "Leading whitespace and control characters can hide the true scheme (e.g., java\\u0000script:).",
+          "Empty strings should return null to avoid creating broken links.",
+          "Invalid http/https URLs should return null (URL() throws)."
+        ],
+        "techniques": [
+          "Allowlist safe schemes and block everything else.",
+          "Trim + strip control characters before checking scheme.",
+          "Validate http/https with URL() to avoid weird parsing."
+        ]
+      },
+      "followUpQuestions": [
+        "js-xss-dom-sinks",
+        "js-escape-html"
+      ],
+      "resources": [
+        {
+          "title": "OWASP \u2013 XSS Prevention Cheat Sheet",
+          "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+        },
+        {
+          "title": "MDN \u2013 URL",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/URL"
+        }
+      ]
+    },
+    "tests": "import sanitizeHrefUrl from './sanitizeHrefUrl';\n\ndescribe('sanitizeHrefUrl', () => {\n  test('blocks javascript: and data: URLs (case/whitespace/control chars)', () => {\n    expect(sanitizeHrefUrl('javascript:alert(1)')).toBe(null);\n    expect(sanitizeHrefUrl('  JaVaScRiPt:alert(1)  ')).toBe(null);\n    expect(sanitizeHrefUrl('java\\u0000script:alert(1)')).toBe(null);\n    expect(sanitizeHrefUrl('data:text/html,<svg onload=alert(1)>')).toBe(null);\n    expect(sanitizeHrefUrl('vbscript:msgbox(1)')).toBe(null);\n  });\n\n  test('blocks protocol-relative and backslash URLs', () => {\n    expect(sanitizeHrefUrl('//evil.com')).toBe(null);\n    expect(sanitizeHrefUrl('\\\\\\\\evil.com')).toBe(null);\n  });\n\n  test('allows relative URLs and fragments', () => {\n    expect(sanitizeHrefUrl('/settings')).toBe('/settings');\n    expect(sanitizeHrefUrl('./settings')).toBe('./settings');\n    expect(sanitizeHrefUrl('../settings')).toBe('../settings');\n    expect(sanitizeHrefUrl('?q=test')).toBe('?q=test');\n    expect(sanitizeHrefUrl('#section')).toBe('#section');\n    expect(sanitizeHrefUrl('profile')).toBe('profile');\n  });\n\n  test('allows http(s), mailto, tel', () => {\n    expect(sanitizeHrefUrl('https://example.com')).toBe('https://example.com/');\n    expect(sanitizeHrefUrl('https://example.com/path')).toBe('https://example.com/path');\n    expect(sanitizeHrefUrl('mailto:hi@example.com')).toBe('mailto:hi@example.com');\n    expect(sanitizeHrefUrl('tel:+15551234567')).toBe('tel:+15551234567');\n  });\n\n  test('returns null for empty input', () => {\n    expect(sanitizeHrefUrl('')).toBe(null);\n    expect(sanitizeHrefUrl('   ')).toBe(null);\n  });\n});\n",
+    "testsTs": "import sanitizeHrefUrl from './sanitizeHrefUrl';\n\ndescribe('sanitizeHrefUrl (TypeScript)', () => {\n  it('blocks javascript: and data: URLs', () => {\n    expect(sanitizeHrefUrl('javascript:alert(1)')).toBe(null);\n    expect(sanitizeHrefUrl('data:text/html,<svg onload=alert(1)>')).toBe(null);\n  });\n\n  it('allows relative and https URLs', () => {\n    expect(sanitizeHrefUrl('/settings')).toBe('/settings');\n    expect(sanitizeHrefUrl('https://example.com')).toBe('https://example.com/');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-06"
   }
 ]
