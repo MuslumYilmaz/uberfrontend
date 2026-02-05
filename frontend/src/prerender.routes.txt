@@ -232,6 +232,7 @@
 /javascript/coding/js-querystring-parse-3
 /javascript/coding/js-querystring-stringify-2
 /javascript/coding/js-recover-bst-swapped-nodes
+/javascript/coding/js-resolve-package-exports
 /javascript/coding/js-reverse-string
 /javascript/coding/js-run-with-perf-budget
 /javascript/coding/js-safe-json-parse

@@ -7502,5 +7502,90 @@
     "testsTs": "import runWithPerfBudget from './runWithPerfBudget';\n\ndescribe('runWithPerfBudget (TypeScript)', () => {\n  it('times sync functions and returns ok status', async () => {\n    const times = [100, 110];\n    const now = () => times.shift() as number;\n\n    const res = await runWithPerfBudget<number>(() => 7, 9, now);\n    expect(res).toEqual({ ok: false, durationMs: 10, value: 7 });\n  });\n\n  it('times async functions and awaits the result', async () => {\n    const times = [0, 1];\n    const now = () => times.shift() as number;\n\n    const res = await runWithPerfBudget<string>(async () => 'ok', 5, now);\n    expect(res.ok).toBe(true);\n    expect(res.durationMs).toBe(1);\n    expect(res.value).toBe('ok');\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-05"
+  },
+  {
+    "id": "js-resolve-package-exports",
+    "title": "Resolve package.json Exports (Import vs Require)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "modules",
+      "tooling",
+      "imports",
+      "exports",
+      "build",
+      "optimization",
+      "best-practices",
+      "debugging"
+    ],
+    "description": {
+      "summary": "Implement resolvePackageEntry(pkg, options) to choose the correct entry file for a package based on package.json fields like exports, module, and main. Support conditional exports (browser/import/require/default) and explain how bundlers resolve ESM vs CJS builds.",
+      "arguments": [
+        {
+          "name": "pkg",
+          "type": "object",
+          "desc": "A simplified package.json object with exports/module/main fields."
+        },
+        {
+          "name": "options",
+          "type": "{ kind?: 'import' | 'require', conditions?: string[] } (optional)",
+          "desc": "Resolution kind and extra conditions (e.g., ['browser', 'development'])."
+        }
+      ],
+      "returns": {
+        "type": "string",
+        "desc": "Resolved entry path (e.g., './dist/index.js')."
+      },
+      "examples": [
+        "resolvePackageEntry({ exports: './dist/index.js' }) // => './dist/index.js'",
+        "resolvePackageEntry({ exports: { '.': { browser: { import: './dist/browser.mjs' }, default: './dist/index.js' } } }, { kind: 'import', conditions: ['browser'] })\n// => './dist/browser.mjs'"
+      ]
+    },
+    "starterCode": "export default function resolvePackageEntry(pkg, options) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export type ExportTarget = string | { [condition: string]: ExportTarget };\n\nexport type PackageJsonLike = {\n  name?: string;\n  main?: string;\n  module?: string;\n  exports?: ExportTarget | { [subpath: string]: ExportTarget };\n};\n\nexport type ResolveOptions = {\n  kind?: 'import' | 'require';\n  conditions?: string[];\n};\n\nexport default function resolvePackageEntry(\n  pkg: PackageJsonLike,\n  options?: ResolveOptions\n): string {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Modern packages often publish multiple entry points: ESM vs CJS, browser vs node, dev vs prod. The package.json exports field can be conditional. Your resolver should pick the best match for the requested kind and conditions, with sensible fallbacks.",
+      "approaches": [
+        {
+          "title": "Approach: Resolve conditional exports with a candidate order",
+          "prose": "Algorithm (simplified, interview-friendly):\n1) Build a list of candidate conditions: [...options.conditions, kind, 'default'] (deduped).\n2) If pkg.exports is a string, return it.\n3) If pkg.exports is an object:\n   - If it has '.', treat exports['.'] as the root target.\n   - Otherwise treat the object as a conditional target.\n   - Walk the conditional object: pick the first matching condition key; if its value is another object, recurse.\n4) If exports doesn't resolve, fall back to:\n   - kind='import' => pkg.module (ESM build)\n   - otherwise => pkg.main\n5) If nothing resolves, throw.\n\nComplexity: O(d * c) where d is nesting depth and c is number of candidate conditions.",
+          "codeJs": "export default function resolvePackageEntry(pkg, options = {}) {\n  if (!pkg || typeof pkg !== 'object') throw new TypeError('pkg must be an object');\n\n  const kind = options && options.kind === 'require' ? 'require' : 'import';\n  const extra = Array.isArray(options && options.conditions)\n    ? options.conditions.filter((c) => typeof c === 'string' && c.length)\n    : [];\n\n  const candidates = Array.from(new Set([...extra, kind, 'default']));\n\n  const resolveTarget = (target) => {\n    if (typeof target === 'string') return target;\n    if (!target || typeof target !== 'object') return null;\n\n    for (const cond of candidates) {\n      if (Object.prototype.hasOwnProperty.call(target, cond)) {\n        const out = resolveTarget(target[cond]);\n        if (typeof out === 'string' && out.length) return out;\n      }\n    }\n    return null;\n  };\n\n  let resolved = null;\n\n  if (typeof pkg.exports === 'string') {\n    resolved = pkg.exports;\n  } else if (pkg.exports && typeof pkg.exports === 'object') {\n    const root = Object.prototype.hasOwnProperty.call(pkg.exports, '.')\n      ? pkg.exports['.']\n      : pkg.exports;\n    resolved = resolveTarget(root);\n  }\n\n  if (resolved) return resolved;\n\n  if (kind === 'import' && typeof pkg.module === 'string' && pkg.module) return pkg.module;\n  if (typeof pkg.main === 'string' && pkg.main) return pkg.main;\n\n  throw new Error('Unable to resolve package entry');\n}\n",
+          "codeTs": "export type ExportTarget = string | { [condition: string]: ExportTarget };\n\nexport type PackageJsonLike = {\n  name?: string;\n  main?: string;\n  module?: string;\n  exports?: ExportTarget | { [subpath: string]: ExportTarget };\n};\n\nexport type ResolveOptions = {\n  kind?: 'import' | 'require';\n  conditions?: string[];\n};\n\nfunction isObject(x: unknown): x is Record<string, any> {\n  return x !== null && typeof x === 'object';\n}\n\nexport default function resolvePackageEntry(pkg: PackageJsonLike, options: ResolveOptions = {}): string {\n  if (!isObject(pkg)) throw new TypeError('pkg must be an object');\n\n  const kind: 'import' | 'require' = options.kind === 'require' ? 'require' : 'import';\n  const extra = Array.isArray(options.conditions)\n    ? options.conditions.filter((c): c is string => typeof c === 'string' && c.length > 0)\n    : [];\n\n  const candidates = Array.from(new Set([...extra, kind, 'default']));\n\n  const resolveTarget = (target: any): string | null => {\n    if (typeof target === 'string') return target;\n    if (!isObject(target)) return null;\n\n    for (const cond of candidates) {\n      if (Object.prototype.hasOwnProperty.call(target, cond)) {\n        const out = resolveTarget((target as any)[cond]);\n        if (typeof out === 'string' && out.length) return out;\n      }\n    }\n    return null;\n  };\n\n  let resolved: string | null = null;\n\n  if (typeof (pkg as any).exports === 'string') {\n    resolved = (pkg as any).exports;\n  } else if (isObject((pkg as any).exports)) {\n    const exp = (pkg as any).exports as any;\n    const root = Object.prototype.hasOwnProperty.call(exp, '.') ? exp['.'] : exp;\n    resolved = resolveTarget(root);\n  }\n\n  if (resolved) return resolved;\n\n  if (kind === 'import' && typeof pkg.module === 'string' && pkg.module) return pkg.module;\n  if (typeof pkg.main === 'string' && pkg.main) return pkg.main;\n\n  throw new Error('Unable to resolve package entry');\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Assuming exports is always a string. Many packages use conditional exports for browser/import/require.",
+          "Choosing module/main blindly can break bundlers when exports exists (exports should generally win).",
+          "Condition order matters: for a browser build you typically prefer 'browser' over 'default'."
+        ],
+        "edgeCases": [
+          "exports can be nested objects; recurse until you reach a string target.",
+          "If exports doesn't match any condition, fall back to default, then module/main.",
+          "Throw when nothing resolves to avoid silently bundling the wrong file."
+        ],
+        "techniques": [
+          "Candidate condition list: [..conditions, kind, 'default'].",
+          "Recursive conditional resolution.",
+          "Deterministic fallbacks (module/main)."
+        ]
+      },
+      "followUpQuestions": [
+        "js-esm-vs-cjs",
+        "js-tree-shaking"
+      ],
+      "resources": [
+        {
+          "title": "Node.js \u2013 Package entry points (exports)",
+          "url": "https://nodejs.org/api/packages.html#packages_package_entry_points"
+        }
+      ]
+    },
+    "tests": "import resolvePackageEntry from './resolvePackageEntry';\n\ndescribe('resolvePackageEntry', () => {\n  test('resolves string exports', () => {\n    const pkg = { exports: './dist/index.js' };\n    expect(resolvePackageEntry(pkg)).toBe('./dist/index.js');\n  });\n\n  test('resolves conditional exports with browser + kind', () => {\n    const pkg = {\n      exports: {\n        '.': {\n          browser: {\n            import: './dist/browser.mjs',\n            require: './dist/browser.cjs'\n          },\n          default: './dist/index.js'\n        }\n      }\n    };\n\n    expect(resolvePackageEntry(pkg, { kind: 'import', conditions: ['browser'] })).toBe('./dist/browser.mjs');\n    expect(resolvePackageEntry(pkg, { kind: 'require', conditions: ['browser'] })).toBe('./dist/browser.cjs');\n    expect(resolvePackageEntry(pkg, { kind: 'import' })).toBe('./dist/index.js');\n  });\n\n  test('falls back to module/main when exports is missing', () => {\n    const pkg = { module: './esm.js', main: './cjs.js' };\n    expect(resolvePackageEntry(pkg, { kind: 'import' })).toBe('./esm.js');\n    expect(resolvePackageEntry(pkg, { kind: 'require' })).toBe('./cjs.js');\n  });\n\n  test('throws when nothing can be resolved', () => {\n    expect(() => resolvePackageEntry({})).toThrow();\n  });\n});\n",
+    "testsTs": "import resolvePackageEntry from './resolvePackageEntry';\n\ndescribe('resolvePackageEntry (TypeScript)', () => {\n  it('resolves conditional exports with browser + kind', () => {\n    const pkg = {\n      exports: {\n        '.': {\n          browser: {\n            import: './dist/browser.mjs',\n            require: './dist/browser.cjs'\n          },\n          default: './dist/index.js'\n        }\n      }\n    } as any;\n\n    expect(resolvePackageEntry(pkg, { kind: 'import', conditions: ['browser'] })).toBe('./dist/browser.mjs');\n    expect(resolvePackageEntry(pkg, { kind: 'require', conditions: ['browser'] })).toBe('./dist/browser.cjs');\n  });\n\n  it('falls back to module/main when exports is missing', () => {\n    const pkg = { module: './esm.js', main: './cjs.js' } as any;\n    expect(resolvePackageEntry(pkg, { kind: 'import' })).toBe('./esm.js');\n    expect(resolvePackageEntry(pkg, { kind: 'require' })).toBe('./cjs.js');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-05"
   }
 ]
