@@ -478,6 +478,12 @@
     <loc>https://frontendatlas.com/javascript/coding/js-create-counter</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-create-deferred-promise</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/coding/js-create-spy-function</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/javascript/coding/js-curry-function</loc>
   </url>
   <url>
@@ -791,6 +797,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-microtasks-vs-macrotasks</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/javascript/trivia/js-mock-vs-stub-vs-spy</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/javascript/trivia/js-mutability-vs-immutability</loc>

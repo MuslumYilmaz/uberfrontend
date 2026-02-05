@@ -7106,6 +7106,9 @@
     "importance": 4,
     "difficulty": "intermediate",
     "tags": [
+      "date-time",
+      "intl",
+      "time-zones",
       "timers",
       "utilities",
       "strings",
@@ -7178,5 +7181,157 @@
     "testsTs": "import formatDateInTimeZone from './formatDateInTimeZone';\n\ndescribe('formatDateInTimeZone (TypeScript)', () => {\n  it('formats date in different time zones', () => {\n    const date = new Date('2020-01-01T00:30:00Z');\n    expect(formatDateInTimeZone(date, 'America/Los_Angeles')).toBe('2019-12-31');\n    expect(formatDateInTimeZone(date, 'Asia/Tokyo')).toBe('2020-01-01');\n  });\n\n  it('accepts a timestamp', () => {\n    const ts = Date.parse('2020-07-01T23:30:00Z');\n    expect(formatDateInTimeZone(ts, 'UTC')).toBe('2020-07-01');\n  });\n\n  it('throws on invalid date', () => {\n    expect(() => formatDateInTimeZone(new Date('invalid'), 'UTC')).toThrow();\n  });\n});\n",
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-create-spy-function",
+    "title": "Create a Spy Function (Test Double)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "testing",
+      "functions",
+      "closure",
+      "this",
+      "debugging",
+      "best-practices",
+      "utilities"
+    ],
+    "description": {
+      "summary": "Implement createSpy(impl?) to produce a callable spy that records every call (args + this) and optionally delegates to an implementation. Spies are a core unit-testing tool to verify behavior at boundaries (network, storage, analytics) without needing a full mocking library.",
+      "arguments": [
+        {
+          "name": "impl",
+          "type": "Function (optional)",
+          "desc": "Optional implementation to call. The spy must preserve the caller's this value."
+        }
+      ],
+      "returns": {
+        "type": "Function",
+        "desc": "A spy function with metadata: calls, thisValues, callCount(), lastCall(), reset()."
+      },
+      "examples": [
+        "const spy = createSpy((a, b) => a + b);\nspy(1, 2); // => 3\nspy.calls; // => [[1, 2]]\nspy.callCount(); // => 1",
+        "const obj = { x: 2, fn: createSpy(function (n) { return this.x + n; }) };\nobj.fn(3); // => 5 (this preserved)\nobj.fn.thisValues[0] === obj; // true"
+      ]
+    },
+    "starterCode": "export default function createSpy(impl) {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export type SpyFn<TArgs extends any[] = any[], TResult = any> = ((...args: TArgs) => TResult) & {\n  calls: TArgs[];\n  thisValues: any[];\n  callCount: () => number;\n  lastCall: () => TArgs | null;\n  reset: () => void;\n};\n\nexport default function createSpy<TArgs extends any[] = any[], TResult = any>(\n  impl?: (this: any, ...args: TArgs) => TResult\n): SpyFn<TArgs, TResult> {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "A spy is just a function with extra state. Record calls in arrays, and if an implementation is provided, delegate to it using apply() so this binding is preserved.",
+      "approaches": [
+        {
+          "title": "Approach: Closure + attached metadata",
+          "prose": "Steps:\n1) Create a function spy(...args).\n2) Push args into spy.calls and this into spy.thisValues.\n3) If impl exists, return impl.apply(this, args).\n4) Attach helpers: callCount(), lastCall(), reset().\n\nComplexity: O(1) per call and O(k) memory for k calls.",
+          "codeJs": "export default function createSpy(impl) {\n  function spy(...args) {\n    spy.calls.push(args);\n    spy.thisValues.push(this);\n    if (typeof impl === 'function') {\n      return impl.apply(this, args);\n    }\n    return undefined;\n  }\n\n  spy.calls = [];\n  spy.thisValues = [];\n  spy.callCount = () => spy.calls.length;\n  spy.lastCall = () => (spy.calls.length ? spy.calls[spy.calls.length - 1] : null);\n  spy.reset = () => {\n    spy.calls.length = 0;\n    spy.thisValues.length = 0;\n  };\n\n  return spy;\n}\n",
+          "codeTs": "export type SpyFn<TArgs extends any[] = any[], TResult = any> = ((...args: TArgs) => TResult) & {\n  calls: TArgs[];\n  thisValues: any[];\n  callCount: () => number;\n  lastCall: () => TArgs | null;\n  reset: () => void;\n};\n\nexport default function createSpy<TArgs extends any[] = any[], TResult = any>(\n  impl?: (this: any, ...args: TArgs) => TResult\n): SpyFn<TArgs, TResult> {\n  const spy = function (this: any, ...args: TArgs) {\n    (spy as any).calls.push(args);\n    (spy as any).thisValues.push(this);\n    if (typeof impl === 'function') {\n      return impl.apply(this, args);\n    }\n    return undefined as any as TResult;\n  } as SpyFn<TArgs, TResult>;\n\n  spy.calls = [] as TArgs[];\n  spy.thisValues = [] as any[];\n  spy.callCount = () => spy.calls.length;\n  spy.lastCall = () => (spy.calls.length ? spy.calls[spy.calls.length - 1] : null);\n  spy.reset = () => {\n    spy.calls.length = 0;\n    spy.thisValues.length = 0;\n  };\n\n  return spy;\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Calling impl(...args) loses the caller's this; use impl.apply(this, args).",
+          "Forgetting to reset between tests causes order-dependent failures.",
+          "Asserting too much about call order can make tests brittle; prefer behavior-based assertions."
+        ],
+        "edgeCases": [
+          "No implementation: spy still records calls and returns undefined.",
+          "Zero calls: lastCall() should return null.",
+          "The spy may be used as a method; thisValues should reflect the receiver."
+        ],
+        "techniques": [
+          "Closure to keep state private.",
+          "Attach metadata onto the function object.",
+          "Preserve this via apply()."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN \u2013 Function.prototype.apply",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply"
+        }
+      ],
+      "followUpQuestions": [
+        "js-call-apply-bind",
+        "js-testing-edge-cases-strategy"
+      ]
+    },
+    "tests": "import createSpy from './createSpy';\n\ndescribe('createSpy', () => {\n  test('records calls and arguments', () => {\n    const spy = createSpy();\n    spy(1, 2);\n    spy('a');\n\n    expect(spy.callCount()).toBe(2);\n    expect(spy.calls).toEqual([[1, 2], ['a']]);\n    expect(spy.lastCall()).toEqual(['a']);\n  });\n\n  test('delegates to the implementation and returns its value', () => {\n    const spy = createSpy((a, b) => a + b);\n    const out = spy(2, 3);\n    expect(out).toBe(5);\n    expect(spy.calls[0]).toEqual([2, 3]);\n  });\n\n  test('preserves this binding when used as a method', () => {\n    const obj = {\n      x: 10,\n      fn: createSpy(function (n) { return this.x + n; })\n    };\n\n    const out = obj.fn(2);\n\n    expect(out).toBe(12);\n    expect(obj.fn.thisValues[0]).toBe(obj);\n  });\n\n  test('reset clears recorded calls', () => {\n    const spy = createSpy();\n    spy(1);\n    spy.reset();\n    expect(spy.callCount()).toBe(0);\n    expect(spy.calls).toEqual([]);\n    expect(spy.lastCall()).toBe(null);\n  });\n});\n",
+    "testsTs": "import createSpy from './createSpy';\n\ndescribe('createSpy (TypeScript)', () => {\n  it('records calls and arguments', () => {\n    const spy = createSpy<[number, number], number>();\n    spy(1, 2);\n\n    expect(spy.callCount()).toBe(1);\n    expect(spy.calls).toEqual([[1, 2]]);\n    expect(spy.lastCall()).toEqual([1, 2]);\n  });\n\n  it('delegates to the implementation and returns its value', () => {\n    const spy = createSpy<[number, number], number>((a, b) => a + b);\n    expect(spy(2, 3)).toBe(5);\n    expect(spy.calls[0]).toEqual([2, 3]);\n  });\n\n  it('preserves this binding when used as a method', () => {\n    const obj = {\n      x: 7,\n      fn: createSpy<[number], number>(function (this: any, n) { return this.x + n; })\n    };\n\n    expect(obj.fn(5)).toBe(12);\n    expect(obj.fn.thisValues[0]).toBe(obj);\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-05"
+  },
+  {
+    "id": "js-create-deferred-promise",
+    "title": "Create a Deferred Promise (For Async Tests)",
+    "type": "coding",
+    "technology": "javascript",
+    "importance": 4,
+    "difficulty": "intermediate",
+    "tags": [
+      "testing",
+      "promise",
+      "async",
+      "concurrency",
+      "utilities",
+      "error-handling",
+      "best-practices"
+    ],
+    "description": {
+      "summary": "Implement createDeferred() to build a controllable Promise: { promise, resolve, reject }. This is a common testing tool to make async flows deterministic (you decide exactly when something resolves/rejects).",
+      "arguments": [],
+      "returns": {
+        "type": "{ promise: Promise, resolve: Function, reject: Function }",
+        "desc": "A deferred object whose promise can be resolved/rejected from the outside."
+      },
+      "examples": [
+        "const d = createDeferred();\nsetTimeout(() => d.resolve('ok'), 0);\nawait d.promise; // => 'ok'",
+        "const d = createDeferred();\nd.reject(new Error('fail'));\nawait d.promise; // rejects"
+      ]
+    },
+    "starterCode": "export default function createDeferred() {\n  throw new Error('Not implemented');\n}\n",
+    "starterCodeTs": "export type Deferred<T> = {\n  promise: Promise<T>;\n  resolve: (value: T | PromiseLike<T>) => void;\n  reject: (reason?: any) => void;\n};\n\nexport default function createDeferred<T = unknown>(): Deferred<T> {\n  throw new Error('Not implemented');\n}\n",
+    "solutionBlock": {
+      "overview": "Create a Promise and capture its resolve/reject functions from the constructor. Return them alongside the promise. This is often used in tests to control the timing of async operations without relying on real timers.",
+      "approaches": [
+        {
+          "title": "Approach: Capture resolve/reject from new Promise",
+          "prose": "Steps:\n1) Declare variables resolve/reject.\n2) Create a new Promise((res, rej) => { resolve = res; reject = rej; }).\n3) Return { promise, resolve, reject }.\n\nComplexity: O(1) time, O(1) space.",
+          "codeJs": "export default function createDeferred() {\n  let resolve;\n  let reject;\n\n  const promise = new Promise((res, rej) => {\n    resolve = res;\n    reject = rej;\n  });\n\n  return { promise, resolve, reject };\n}\n",
+          "codeTs": "export type Deferred<T> = {\n  promise: Promise<T>;\n  resolve: (value: T | PromiseLike<T>) => void;\n  reject: (reason?: any) => void;\n};\n\nexport default function createDeferred<T = unknown>(): Deferred<T> {\n  let resolve!: (value: T | PromiseLike<T>) => void;\n  let reject!: (reason?: any) => void;\n\n  const promise = new Promise<T>((res, rej) => {\n    resolve = res;\n    reject = rej;\n  });\n\n  return { promise, resolve, reject };\n}\n"
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using deferred promises everywhere can hide real race conditions; use them for tests and controlled orchestration only.",
+          "If a deferred is never resolved/rejected, awaits can hang \u2014 add timeouts in real code.",
+          "Prefer dependency injection over global state to make async code testable."
+        ],
+        "edgeCases": [
+          "Resolving/rejecting multiple times should not throw; only the first call wins (Promise semantics).",
+          "Resolving with another Promise should adopt its eventual state.",
+          "Rejecting with non-Error values is allowed but less debuggable."
+        ],
+        "techniques": [
+          "Promise constructor captures resolve/reject.",
+          "Use in tests to control async deterministically.",
+          "Adopt states by resolving with a PromiseLike."
+        ]
+      },
+      "resources": [
+        {
+          "title": "MDN \u2013 Promise constructor",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/Promise"
+        }
+      ],
+      "followUpQuestions": [
+        "js-take-latest",
+        "js-promise-any"
+      ]
+    },
+    "tests": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred', () => {\n  test('resolves when resolve is called', async () => {\n    const d = createDeferred();\n    d.resolve(123);\n    const out = await d.promise;\n    expect(out).toBe(123);\n  });\n\n  test('rejects when reject is called', async () => {\n    const d = createDeferred();\n    const err = new Error('nope');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  test('adopts another promise when resolving', async () => {\n    const d = createDeferred();\n    d.resolve(Promise.resolve('ok'));\n    const out = await d.promise;\n    expect(out).toBe('ok');\n  });\n});\n",
+    "testsTs": "import createDeferred from './createDeferred';\n\ndescribe('createDeferred (TypeScript)', () => {\n  it('resolves when resolve is called', async () => {\n    const d = createDeferred<number>();\n    d.resolve(42);\n    const out = await d.promise;\n    expect(out).toBe(42);\n  });\n\n  it('rejects when reject is called', async () => {\n    const d = createDeferred<number>();\n    const err = new Error('fail');\n    d.reject(err);\n\n    try {\n      await d.promise;\n      throw new Error('Expected promise to reject');\n    } catch (e) {\n      expect(e).toBe(err);\n    }\n  });\n\n  it('adopts another promise when resolving', async () => {\n    const d = createDeferred<string>();\n    d.resolve(Promise.resolve('ok'));\n    expect(await d.promise).toBe('ok');\n  });\n});\n",
+    "access": "free",
+    "updatedAt": "2026-02-05"
   }
 ]

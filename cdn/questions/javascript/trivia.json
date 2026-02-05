@@ -4855,6 +4855,7 @@
     "difficulty": "intermediate",
     "tags": [
       "web-apis",
+      "web-workers",
       "concurrency",
       "performance",
       "events",
@@ -5154,6 +5155,7 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "testing",
       "edge-cases",
       "best-practices",
       "debugging",
@@ -5272,6 +5274,7 @@
     "tags": [
       "performance",
       "web-performance",
+      "devtools",
       "debugging",
       "browser",
       "best-practices"
@@ -5398,7 +5401,10 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "memory",
+      "garbage-collection",
       "performance",
+      "devtools",
       "debugging",
       "browser",
       "events",
@@ -5514,6 +5520,7 @@
       "imports",
       "exports",
       "build",
+      "tooling",
       "optimization"
     ],
     "importance": 4,
@@ -5592,6 +5599,7 @@
     "tags": [
       "modules",
       "build",
+      "tooling",
       "optimization",
       "tree",
       "performance"
@@ -5687,6 +5695,9 @@
     "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
+      "date-time",
+      "intl",
+      "time-zones",
       "timers",
       "best-practices",
       "edge-cases",
@@ -5770,5 +5781,85 @@
     },
     "access": "free",
     "updatedAt": "2026-02-03"
+  },
+  {
+    "id": "js-mock-vs-stub-vs-spy",
+    "title": "Mocks vs Stubs vs Spies (Test Doubles) in JavaScript",
+    "description": "Explain the difference between mocks, stubs, and spies in unit testing. Describe when to use each, how to avoid brittle tests, and how dependency injection helps testability. Include an async example and common pitfalls.",
+    "type": "trivia",
+    "technology": "javascript",
+    "difficulty": "intermediate",
+    "tags": [
+      "testing",
+      "best-practices",
+      "debugging",
+      "dependency-injection",
+      "functions",
+      "architecture",
+      "async-await"
+    ],
+    "importance": 4,
+    "companies": [],
+    "answer": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-vial'></i> <strong>Why this matters</strong>\n\nIn interviews and real code, testing isn't about writing 200 assertions\u2014it\u2019s about verifying behavior <strong>at the right boundary</strong>. Test doubles (mocks/stubs/spies) let you isolate a unit from slow, flaky, or external dependencies (network, storage, time, analytics)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-bullseye'></i> <strong>Practical scenario</strong>\n\nYou have <code>searchUsers(query)</code> that calls an HTTP client and returns parsed JSON. In a unit test, you don\u2019t want real network. You want to:\n\n- <strong>Stub</strong> the HTTP client to return a controlled response.\n- <strong>Spy</strong> on the client to assert it was called correctly.\n- Optionally <strong>mock</strong> the client to both define expectations and fail if they\u2019re not met."
+        },
+        {
+          "type": "list",
+          "columns": [
+            "Test double",
+            "What it is",
+            "Use it when",
+            "Common smell"
+          ],
+          "rows": [
+            [
+              "Spy",
+              "Records calls (args/call count)",
+              "You want to verify interactions at a boundary",
+              "Asserting exact call order everywhere"
+            ],
+            [
+              "Stub",
+              "Returns fake data to drive a code path",
+              "You need deterministic input (no real network/time)",
+              "Stubbing internal implementation details"
+            ],
+            [
+              "Mock",
+              "A stub + expectations (\"must be called with X\")",
+              "You want strict interaction contracts for critical boundaries",
+              "Over-mocking makes refactors painful"
+            ]
+          ],
+          "caption": "Rule of thumb: prefer stubs for inputs, spies for boundary verification, mocks only when strict contracts are worth the brittleness."
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "// Dependency injection makes testing simple.\n// Production code:\nexport async function searchUsers(query, { fetchJson }) {\n  if (!query) return [];\n  const data = await fetchJson(`/api/users?q=${encodeURIComponent(query)}`);\n  return Array.isArray(data) ? data : [];\n}\n\n// Unit test idea:\nconst calls = [];\nconst fetchJsonStub = async (url) => {\n  calls.push(url);\n  return [{ id: 1, name: 'Ada' }];\n};\n\nconst users = await searchUsers('a', { fetchJson: fetchJsonStub });\n// Assert output (preferred)\nexpect(users).toEqual([{ id: 1, name: 'Ada' }]);\n// Assert boundary interaction (spy-like)\nexpect(calls).toEqual(['/api/users?q=a']);"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n\n- <strong>Over-mocking</strong>: tests fail on harmless refactors because they assert internal steps, not outcomes.\n- <strong>Leaking globals</strong>: stubbing <code>global.fetch</code> or <code>Date.now</code> without restoring breaks other tests.\n- <strong>Async flakiness</strong>: tests that depend on real timers or network ordering become flaky.\n- <strong>Missing error paths</strong>: only testing the happy path hides retries/timeouts/empty responses bugs."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>Trade-off to mention in interviews</strong>\n\n<strong>Unit tests</strong> are fast and isolate logic but can drift from reality if you mock too much. <strong>Integration tests</strong> catch wiring issues but are slower and harder to debug. A strong strategy uses both:\n\n- Unit tests for core logic + edge cases.\n- A few integration tests for the most important flows (auth, payments, critical UI paths)."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Answer to land</strong>\n\n\"I prefer dependency injection so I can stub inputs and spy on boundaries. I assert outputs first, then interactions only when they\u2019re part of the contract (e.g., a retry policy or analytics call). Mocks are useful for strict contracts, but I avoid over-mocking because it makes tests brittle.\""
+        }
+      ]
+    },
+    "access": "free",
+    "updatedAt": "2026-02-05"
   }
 ]

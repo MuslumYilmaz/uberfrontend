@@ -185,6 +185,8 @@
 /javascript/coding/js-count-vowels
 /javascript/coding/js-create-cleanup-bag
 /javascript/coding/js-create-counter
+/javascript/coding/js-create-deferred-promise
+/javascript/coding/js-create-spy-function
 /javascript/coding/js-curry-function
 /javascript/coding/js-debounce
 /javascript/coding/js-deep-clone
@@ -290,6 +292,7 @@
 /javascript/trivia/js-memoization
 /javascript/trivia/js-memory-leaks-common-sources
 /javascript/trivia/js-microtasks-vs-macrotasks
+/javascript/trivia/js-mock-vs-stub-vs-spy
 /javascript/trivia/js-mutability-vs-immutability
 /javascript/trivia/js-nan-property
 /javascript/trivia/js-null-undefined-undeclared
