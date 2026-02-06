@@ -90,25 +90,57 @@
     <div class="demo-meta">
       <span class="pill">{{ activeDemo.pill }}</span>
       <span class="demo-active-label" aria-live="polite">{{ activeDemo.caption }}</span>
-      <button type="button" class="demo-hide-btn" *ngIf="isHideableDemo" (click)="toggleDemoVisibility()"
+      <button type="button" class="demo-hide-btn" *ngIf="isHideableDemo && !showMobileCodingGuard" (click)="toggleDemoVisibility()"
         [attr.aria-expanded]="!demoHidden" aria-controls="demo-pane">
         {{ demoHidden ? 'Show demo' : 'Hide demo' }}
       </button>
     </div>
     <div class="demo-frame-wrap" [class.hidden]="demoHidden">
-      <div class="demo-frame glass" role="tabpanel" id="demo-pane"
-        [attr.aria-labelledby]="'demo-tab-' + activeDemo.key">
-        <ng-container *ngIf="isBrowser; else demoPlaceholder">
-          <ng-container *ngIf="demoComponent; else demoPlaceholder">
-            <ng-container *ngFor="let tab of allDemoTabs">
-              <ng-container *ngIf="tab.key === activeDemoKey">
-                <ng-container *ngComponentOutlet="demoComponent; inputs: demoInputs"></ng-container>
+      <ng-container *ngIf="!showMobileCodingGuard; else demoMobileGuard">
+        <div class="demo-frame glass" role="tabpanel" id="demo-pane"
+          [attr.aria-labelledby]="'demo-tab-' + activeDemo.key">
+          <ng-container *ngIf="isBrowser; else demoPlaceholder">
+            <ng-container *ngIf="demoComponent; else demoPlaceholder">
+              <ng-container *ngFor="let tab of allDemoTabs">
+                <ng-container *ngIf="tab.key === activeDemoKey">
+                  <ng-container *ngComponentOutlet="demoComponent; inputs: demoInputs"></ng-container>
+                </ng-container>
               </ng-container>
             </ng-container>
           </ng-container>
-        </ng-container>
-      </div>
+        </div>
+      </ng-container>
     </div>
+
+    <ng-template #demoMobileGuard>
+      <div class="demo-mobile-guard-shell" data-testid="showcase-demo-mobile-guard">
+        <article class="demo-mobile-guard-card">
+          <div class="demo-mobile-guard-pill">Desktop or Tablet</div>
+          <h3 class="demo-mobile-guard-title">{{ activeDemo.label }} demo</h3>
+          <p class="demo-mobile-guard-copy">
+            The coding workspace is disabled on small mobile screens.
+            Use desktop or tablet for the editor + preview layout.
+          </p>
+          <ul class="demo-mobile-guard-list">
+            <li>Full editor with split panes</li>
+            <li>Live preview and tests side by side</li>
+            <li>Faster debugging and iteration</li>
+          </ul>
+          <div class="demo-mobile-guard-actions">
+            <a class="sk-btn sk-btn-primary"
+              [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]"
+              data-testid="showcase-demo-mobile-guard-open"
+              aria-label="Open this coding challenge">
+              Open challenge
+            </a>
+            <a class="sk-btn sk-btn-ghost" routerLink="/coding" data-testid="showcase-demo-mobile-guard-browse"
+              aria-label="Browse coding questions">
+              Browse coding
+            </a>
+          </div>
+        </article>
+      </div>
+    </ng-template>
 
     <ng-template #demoPlaceholder>
       <div class="demo-placeholder">
@@ -123,7 +155,7 @@
     </ng-template>
 
 
-    <a class="demo-banner" [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden"
+    <a class="demo-banner" [routerLink]="['/', activeDemo.questionTech, 'coding', activeDemo.questionId]" role="button" [class.hidden]="demoHidden || showMobileCodingGuard"
       aria-label="Open the live editor for this demo question" data-testid="showcase-demo-open-live">
       <span class="dot" aria-hidden="true"></span>
       <span class="text">Try the {{ activeDemo.label }} demo in the live editor</span>

@@ -420,6 +420,8 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   explanationVisible = false;
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly MOBILE_DEMO_GUARD_BREAKPOINT = 768;
+  showMobileCodingGuard = false;
   sectionVisible = {
     library: true,
     company: true,
@@ -432,6 +434,10 @@ You can also reset any task back to the starter whenever you want to re-practice
   constructor(private injector: Injector, private qs: QuestionService) { }
 
   ngOnInit(): void {
+    if (this.isBrowser) {
+      this.syncViewportState();
+      window.addEventListener('resize', this.onViewportResize, { passive: true });
+    }
     this.buildTriviaInjector();
     this.buildSystemInjector();
   }
@@ -449,6 +455,9 @@ You can also reset any task back to the starter whenever you want to re-practice
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    if (this.isBrowser) {
+      window.removeEventListener('resize', this.onViewportResize);
+    }
     if (typeof window !== 'undefined' && this.flowTimer) window.clearInterval(this.flowTimer);
   }
 
@@ -567,6 +576,15 @@ You can also reset any task back to the starter whenever you want to re-practice
     this.flowTimer = window.setInterval(() => {
       this.activeFlowIndex = (this.activeFlowIndex + 1) % this.heroFlowSteps.length;
     }, 1600);
+  }
+
+  private onViewportResize = () => {
+    this.syncViewportState();
+  };
+
+  private syncViewportState() {
+    if (!this.isBrowser) return;
+    this.showMobileCodingGuard = window.innerWidth < this.MOBILE_DEMO_GUARD_BREAKPOINT;
   }
 
   get activeDemo() {
