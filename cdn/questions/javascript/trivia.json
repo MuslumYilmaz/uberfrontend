@@ -4098,7 +4098,7 @@
     "title": "How do you optimize a web page’s response or load time?",
     "description": "This question checks if you can reason about performance across the network, render pipeline, assets, and runtime. Interviewers expect concrete tactics like caching, compression, code splitting, and image optimization.",
     "type": "trivia",
-    "technology": "web",
+    "technology": "javascript",
     "difficulty": "intermediate",
     "tags": [
       "performance",
@@ -4107,7 +4107,9 @@
       "caching",
       "cdn",
       "images",
-      "http-cache"
+      "http-cache",
+      "rendering",
+      "script-loading"
     ],
     "importance": 5,
     "companies": [
@@ -4118,57 +4120,89 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nGood answers cover multiple layers: network, caching, rendering, assets, and runtime. You should also mention measuring with Core Web Vitals or real-user metrics."
+          "text": "<i class='fa-solid fa-bolt'></i> <strong>Definition (above the fold)</strong>\n\nTo optimize a web page's response or load time, you reduce work on the critical path before first meaningful paint, then reduce repeated work on later visits. In practice that means: send fewer bytes, unblock rendering, cache aggressively but safely, and validate outcomes with Core Web Vitals (LCP, INP, CLS). Interviewers want a layered answer, not one trick. If you only mention image compression or only mention code splitting, your answer sounds partial. A strong interview answer also sequences wins by impact and engineering cost, starting with the fastest measurable improvements."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nThink in this order: 1) network handshake and transfer, 2) render-blocking resources, 3) main-thread execution, 4) repeat-visit caching. Every optimization should tie to a metric and a user-visible symptom (slow first paint, input lag, layout jump)."
         },
         {
           "type": "list",
           "columns": [
-            "Layer",
-            "What to do",
-            "Why it helps"
+            "Optimization ladder",
+            "Typical tactic",
+            "Primary metric"
           ],
           "rows": [
             [
-              "Network",
-              "Use a CDN, compression (gzip/brotli), HTTP/2 or HTTP/3",
-              "Reduce latency and payload size"
+              "Critical path",
+              "Defer non-critical JS, inline critical CSS",
+              "LCP"
+            ],
+            [
+              "Payload size",
+              "Brotli/gzip, modern image formats, dead-code removal",
+              "LCP + TTFB impact"
             ],
             [
               "Caching",
-              "Set Cache-Control + ETag, version assets",
-              "Avoid repeated downloads"
+              "Long-lived static cache + validators for HTML/API",
+              "Repeat-view speed"
             ],
             [
-              "JS/CSS",
-              "Code split, defer scripts, inline critical CSS",
-              "Reduce render blocking and main-thread work"
-            ],
-            [
-              "Images",
-              "Responsive images, modern formats, lazy loading",
-              "Biggest byte savings"
-            ],
-            [
-              "Runtime",
-              "Avoid long tasks, memoize heavy work",
-              "Keep the UI responsive"
-            ],
-            [
-              "Measurement",
-              "Track LCP, INP, CLS",
-              "Verify impact with real metrics"
+              "Main-thread work",
+              "Split heavy work, avoid long tasks",
+              "INP"
             ]
           ],
-          "caption": "A complete performance answer spans the stack"
+          "caption": "Use a layer-by-layer explanation in interviews."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nSpeed comes from smaller payloads, smart caching, non-blocking rendering, optimized assets, and continuous measurement."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: resource hints + font strategy</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<link rel='preconnect' href='https://cdn.example.com' crossorigin>\n<link rel='preload' as='style' href='/critical.css'>\n<link rel='stylesheet' href='/critical.css'>\n<link rel='preload' as='font' href='/fonts/inter-var.woff2' type='font/woff2' crossorigin>\n\n<script defer src='/app.js'></script>\n<script type='module' src='/feature.js'></script>"
+        },
+        {
+          "type": "text",
+          "text": "Why this helps: preconnect reduces connection setup latency, preload moves critical assets earlier in the waterfall, and <code>defer</code> avoids blocking HTML parsing. This is usually one of the highest-ROI first-pass fixes for LCP."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: responsive image loading</strong>"
+        },
+        {
+          "type": "code",
+          "language": "html",
+          "code": "<img\n  src='/img/hero-960.webp'\n  srcset='/img/hero-480.webp 480w, /img/hero-960.webp 960w, /img/hero-1440.webp 1440w'\n  sizes='(max-width: 768px) 100vw, 960px'\n  width='960'\n  height='540'\n  fetchpriority='high'\n  decoding='async'\n  alt='Product hero'>\n\n<img src='/img/card.webp' loading='lazy' decoding='async' width='320' height='200' alt='Card image'>"
+        },
+        {
+          "type": "text",
+          "text": "Why this helps: the hero gets high priority while below-the-fold assets lazy-load. Explicit width/height prevents CLS, and <code>srcset</code>/<code>sizes</code> avoids over-downloading on small screens."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Lazy-loading above-the-fold hero media, which can worsen LCP.</li><li>Optimizing one metric in isolation (for example, better LCP but worse INP due to heavy hydration).</li><li>Skipping real-user monitoring and trusting only synthetic lab results.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse quick wins (compression, cache headers, image sizing) first when pages are broadly slow and budgets are unclear. Use deeper changes (route-level code splitting, partial hydration, worker offload) when profiling shows persistent long tasks or framework overhead. Do not start with exotic micro-optimizations before you have a baseline and top bottleneck."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: Which metric would you prioritize for an ecommerce landing page? A: Start with LCP for conversion-sensitive first impressions, then INP for interaction-heavy flows.\nQ2: How do you prove improvement? A: Compare before/after p75 Core Web Vitals in production, segmented by device and network class.\nQ3: What if backend latency dominates? A: Improve cache hit ratio, edge rendering strategy, and payload size while coordinating API response budgets."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nSet clear budgets, fix critical path first, add safe caching rules, then verify with RUM dashboards. Strong answers are metric-driven, layered, and explicit about trade-offs."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-06"
   },
   {
     "id": "js-current-trends",
@@ -4315,7 +4349,7 @@
   {
     "id": "chat-conversation-state-management",
     "title": "How would you maintain conversation state in a chat app like ChatGPT?",
-    "technology": "web",
+    "technology": "javascript",
     "companies": [
       "openai"
     ],
@@ -4327,57 +4361,97 @@
       "state-management",
       "ux",
       "real-time",
-      "error-handling"
+      "error-handling",
+      "streaming",
+      "state"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nTreat the conversation as an ordered list of message objects with stable IDs and roles (user/assistant/system). Streaming responses update a \"draft\" message until completion."
+          "text": "<i class='fa-solid fa-comments'></i> <strong>Definition (above the fold)</strong>\n\nTo maintain conversation state in a chat app like ChatGPT, model chat history as an append-only timeline with stable IDs, explicit status transitions, and a separate streaming draft buffer. The key is deterministic state transitions: user submit, optimistic render, stream append, finalize, retry/fail. If these transitions are implicit, you get duplicate messages, stale drafts, and broken ordering under packet delay. Interviewers want a state model, not only UI screenshots. Strong answers also define persistence boundaries and recovery behavior for offline/reconnect cases, not only happy-path streaming."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nUse a finite-state message lifecycle: <code>pending -> streaming -> done | error</code>. Keep canonical message entities separate from UI-only controls (composer text, active request id, autoscroll lock) so retries and reconnects are predictable."
         },
         {
           "type": "list",
           "columns": [
-            "What to store",
-            "Example fields",
-            "Why it matters"
+            "State slice",
+            "Must-have fields",
+            "Why"
           ],
           "rows": [
             [
-              "Message list",
-              "id, role, text, createdAt",
-              "Stable rendering and ordering"
+              "messagesById",
+              "id, role, content, status, createdAt",
+              "Stable rendering and reconciliation"
             ],
             [
-              "Status",
-              "sending, streaming, done, error",
-              "Accurate UI states"
+              "orderedIds",
+              "array of message IDs",
+              "Deterministic ordering even with retries"
             ],
             [
-              "Draft message",
-              "partial text buffer",
-              "Streaming UX"
+              "activeStream",
+              "requestId, assistantMessageId, cursor",
+              "Safe chunk routing and cancellation"
             ],
             [
-              "Context window",
-              "summary or truncation",
-              "Stay within token limits"
+              "historyPolicy",
+              "tokenBudget, summaryCheckpointId",
+              "Bounded memory and request size"
             ]
           ],
-          "caption": "Conversation state you should model explicitly"
+          "caption": "Separate canonical message state from UI helper state."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-info'></i> <strong>Common details to mention</strong>\n\n- Optimistic UI: show the user message immediately with a temporary id.\n- Streaming: append chunks to the assistant message while status = streaming.\n- Persistence: keep recent conversations in memory and optionally in localStorage/IndexedDB.\n- Truncation: summarize or trim old turns when sending context to the server."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: reducer transitions</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function reducer(state, action) {\n  switch (action.type) {\n    case 'user/submitted': {\n      const userId = action.userId;\n      const assistantId = action.assistantId;\n      return {\n        ...state,\n        orderedIds: [...state.orderedIds, userId, assistantId],\n        messagesById: {\n          ...state.messagesById,\n          [userId]: { id: userId, role: 'user', content: action.text, status: 'done' },\n          [assistantId]: { id: assistantId, role: 'assistant', content: '', status: 'streaming' }\n        },\n        activeStream: { requestId: action.requestId, assistantId }\n      };\n    }\n    case 'assistant/chunk': {\n      if (action.requestId !== state.activeStream?.requestId) return state;\n      const id = state.activeStream.assistantId;\n      const prev = state.messagesById[id];\n      return {\n        ...state,\n        messagesById: { ...state.messagesById, [id]: { ...prev, content: prev.content + action.chunk } }\n      };\n    }\n    default:\n      return state;\n  }\n}"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nModel messages + status clearly, update a streaming draft in place, and handle history size with truncation or summarization."
+          "text": "This pattern avoids out-of-order updates by rejecting stale chunks that do not match the active request id."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: retry + finalize path</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function finalize(state, requestId) {\n  if (requestId !== state.activeStream?.requestId) return state;\n  const id = state.activeStream.assistantId;\n  const msg = state.messagesById[id];\n  return {\n    ...state,\n    messagesById: { ...state.messagesById, [id]: { ...msg, status: 'done' } },\n    activeStream: null\n  };\n}\n\nfunction failAndRetry(state, requestId) {\n  if (requestId !== state.activeStream?.requestId) return state;\n  const id = state.activeStream.assistantId;\n  return {\n    ...state,\n    messagesById: {\n      ...state.messagesById,\n      [id]: { ...state.messagesById[id], status: 'error', error: 'network_timeout' }\n    },\n    activeStream: null\n  };\n}"
+        },
+        {
+          "type": "text",
+          "text": "Keep retry metadata on the failed assistant turn so the user can retry that exact turn without duplicating prior history."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Appending chunks without request IDs, causing duplicate or out-of-order assistant text.</li><li>Mutating optimistic messages in place and failing to reconcile when the server returns canonical IDs.</li><li>Keeping unbounded history in memory and payloads, which slows rendering and increases token cost.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse local-only ephemeral state for short support chats or anonymous sessions. Use persisted server-backed state for cross-device continuity, analytics, moderation, and reliable retry history. Do not persist everything by default if privacy scope is unclear; define retention and redaction policies first."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: How do you prevent stale chunks after a new prompt? A: Tag every stream with a requestId and discard chunks that do not match current activeStream.\nQ2: How do you keep scroll behavior usable? A: Auto-scroll only when user is near bottom; freeze auto-scroll when user reads history.\nQ3: How do you handle token limits? A: Maintain rolling summaries/checkpoints and send only recent turns plus summary context."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nDefine message state transitions first, enforce request-scoped streaming, then add persistence and truncation rules. Strong answers show reliability under retries, reconnects, and long sessions."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-06"
   },
   {
     "id": "sse-vs-websocket-real-time",
@@ -4512,7 +4586,7 @@
   {
     "id": "prompt-engineering-frontend",
     "title": "What is prompt engineering, and how does it relate to frontend features?",
-    "technology": "web",
+    "technology": "javascript",
     "companies": [
       "openai"
     ],
@@ -4523,53 +4597,97 @@
     "tags": [
       "ux",
       "state-management",
-      "best-practices"
+      "best-practices",
+      "security",
+      "user-input"
     ],
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-brain'></i> <strong>The Core Idea</strong>\n\nPrompt engineering is the practice of structuring instructions and context so the model produces reliable outputs. Frontend UX often shapes that prompt by guiding what the user provides."
+          "text": "<i class='fa-solid fa-wand-magic-sparkles'></i> <strong>Definition (above the fold)</strong>\n\nPrompt engineering is the discipline of shaping instructions, constraints, and context so an AI model returns useful output consistently. In product teams, this directly relates to frontend features because the UI decides what structure users provide, what context is attached, and what safety rules are enforced before requests are sent. If the frontend collects ambiguous inputs, output quality drops even when the backend model is strong. Strong candidates also mention prompt versioning and output-quality observability, because model behavior drifts over time in production."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-brain'></i> <strong>Core mental model</strong>\n\nTreat the prompt as a generated artifact, not free text. A reliable frontend composes prompt parts from validated fields: goal, format, constraints, context attachments, and output checks."
         },
         {
           "type": "list",
           "columns": [
-            "Frontend feature",
-            "How it affects prompts",
-            "Why it helps"
+            "UI control",
+            "Prompt effect",
+            "Quality signal"
           ],
           "rows": [
             [
-              "Templates / presets",
-              "Provide structured inputs",
-              "More predictable output"
+              "Task template",
+              "Sets stable instruction skeleton",
+              "Lower variance across users"
             ],
             [
-              "Context selection",
-              "Choose relevant files or snippets",
-              "Better grounding"
+              "Constraint toggles",
+              "Adds format or policy rules",
+              "Higher output compliance"
             ],
             [
-              "Input validation",
-              "Prevent missing fields",
-              "Fewer bad responses"
+              "Context picker",
+              "Injects relevant snippets/files",
+              "Better grounding, fewer hallucinations"
             ],
             [
-              "Tone / style toggles",
-              "Add lightweight instructions",
-              "Consistent UX"
+              "Evaluation checklist",
+              "Validates output before accept",
+              "Fewer silent failures"
             ]
           ],
-          "caption": "How frontend UX shapes prompt quality"
+          "caption": "Frontend controls are prompt-quality controls."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nPrompt engineering is not just a backend concern. Frontend design can guide inputs and context, which directly impacts output quality."
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #1: template assembly from UI state</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function buildPrompt(ui) {\n  return [\n    'Role: Senior frontend engineer',\n    `Task: ${ui.task}`,\n    `Output format: ${ui.outputFormat}`,\n    `Constraints: ${ui.constraints.join('; ')}`,\n    'Context:',\n    ui.context.join('\\n---\\n'),\n    'Return a concise answer with concrete steps.'\n  ].join('\\n\\n');\n}\n\nconst prompt = buildPrompt({\n  task: 'Review this React component for race conditions',\n  outputFormat: 'bulleted findings',\n  constraints: ['mention severity', 'include fix'],\n  context: ['Component code...', 'User bug report...']\n});\n\nconsole.log(prompt);"
+        },
+        {
+          "type": "text",
+          "text": "This approach makes prompts auditable and easier to debug than raw free-text user input."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-code'></i> <strong>Runnable example #2: lightweight guardrail before send</strong>"
+        },
+        {
+          "type": "code",
+          "language": "javascript",
+          "code": "function sanitizeUserInput(text) {\n  return text\n    .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n    .replace(/\\b(ignore previous instructions|system prompt)\\b/gi, '[redacted]')\n    .trim();\n}\n\nfunction prepareRequest(userText, ui) {\n  const safeText = sanitizeUserInput(userText).slice(0, 4000);\n  return {\n    prompt: buildPrompt({ ...ui, task: safeText }),\n    metadata: { version: 'prompt-v3' }\n  };\n}"
+        },
+        {
+          "type": "text",
+          "text": "Guardrails reduce obvious injection patterns and keep prompt size bounded. This is not complete security, but it materially lowers avoidable failures."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Common pitfalls</strong>\n<ul><li>Allowing hidden prompt-injection text from pasted content or attachments without sanitization.</li><li>Sending unbounded context, which degrades model focus and increases latency/cost.</li><li>No prompt inspection/debug UI, so teams cannot explain why outputs changed between releases.</li></ul>"
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-scale-balanced'></i> <strong>When to use / when not to use</strong>\n\nUse strict templates when you need consistency, compliance, or deterministic UX. Use flexible free-form prompting when exploration and creativity matter more than format guarantees. Do not expose fully unconstrained prompting in production workflows that require auditability or policy enforcement."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-user-check'></i> <strong>Interview follow-ups</strong>\n\nQ1: How do you measure prompt quality? A: Track task success rate, retry rate, and format-compliance metrics by prompt version.\nQ2: How do you prevent regressions? A: Keep prompt templates versioned and run golden test prompts in CI.\nQ3: Why is frontend involved? A: Frontend controls input structure, context attachment, and guardrails that directly shape model behavior."
+        },
+        {
+          "type": "text",
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Implementation checklist / takeaway</strong>\n\nDesign UI controls as prompt controls, version templates, add guardrails, and evaluate outcomes with explicit metrics. That is the practical bridge between prompt engineering and frontend product quality."
         }
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-02-06"
   },
   {
     "id": "js-queue-vs-stack",
@@ -5140,7 +5258,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nDOM XSS is about data flow: untrusted source \u2192 dangerous sink. Break the chain with safe DOM APIs, strict validation, and layered defenses."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Summary</strong>\n\nDOM XSS is about data flow: untrusted source → dangerous sink. Break the chain with safe DOM APIs, strict validation, and layered defenses."
         }
       ]
     },
@@ -5529,7 +5647,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Big picture</strong>\n\n<strong>ES Modules (ESM)</strong> are the modern JavaScript module system with static imports/exports. <strong>CommonJS (CJS)</strong> is Node.js\u2019s legacy system using require/module.exports. The key difference is that ESM is statically analyzable, which enables tree-shaking and better tooling."
+          "text": "<i class='fa-solid fa-puzzle-piece'></i> <strong>Big picture</strong>\n\n<strong>ES Modules (ESM)</strong> are the modern JavaScript module system with static imports/exports. <strong>CommonJS (CJS)</strong> is Node.js’s legacy system using require/module.exports. The key difference is that ESM is statically analyzable, which enables tree-shaking and better tooling."
         },
         {
           "type": "list",
@@ -5565,7 +5683,7 @@
               "module.exports is a single object"
             ]
           ],
-          "caption": "ESM\u2019s static structure is the big win for tooling."
+          "caption": "ESM’s static structure is the big win for tooling."
         },
         {
           "type": "code",
@@ -5745,7 +5863,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Why manual offsets fail</strong>\n\nDaylight Saving Time changes offsets during the year. Subtracting a fixed number of hours can produce incorrect dates. Always use <code>Intl</code> or a time zone\u2013aware library when you need exact local dates."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Why manual offsets fail</strong>\n\nDaylight Saving Time changes offsets during the year. Subtracting a fixed number of hours can produce incorrect dates. Always use <code>Intl</code> or a time zone–aware library when you need exact local dates."
         },
         {
           "type": "list",
@@ -5775,7 +5893,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Best practices</strong>\n\n- Store timestamps in UTC.\n- Convert to a user\u2019s time zone at the edges (UI).\n- Use IANA time zone IDs.\n- Prefer formatToParts for stable, testable output."
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Best practices</strong>\n\n- Store timestamps in UTC.\n- Convert to a user’s time zone at the edges (UI).\n- Use IANA time zone IDs.\n- Prefer formatToParts for stable, testable output."
         }
       ]
     },
@@ -5804,11 +5922,11 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-vial'></i> <strong>Why this matters</strong>\n\nIn interviews and real code, testing isn't about writing 200 assertions\u2014it\u2019s about verifying behavior <strong>at the right boundary</strong>. Test doubles (mocks/stubs/spies) let you isolate a unit from slow, flaky, or external dependencies (network, storage, time, analytics)."
+          "text": "<i class='fa-solid fa-vial'></i> <strong>Why this matters</strong>\n\nIn interviews and real code, testing isn't about writing 200 assertions—it’s about verifying behavior <strong>at the right boundary</strong>. Test doubles (mocks/stubs/spies) let you isolate a unit from slow, flaky, or external dependencies (network, storage, time, analytics)."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-bullseye'></i> <strong>Practical scenario</strong>\n\nYou have <code>searchUsers(query)</code> that calls an HTTP client and returns parsed JSON. In a unit test, you don\u2019t want real network. You want to:\n\n- <strong>Stub</strong> the HTTP client to return a controlled response.\n- <strong>Spy</strong> on the client to assert it was called correctly.\n- Optionally <strong>mock</strong> the client to both define expectations and fail if they\u2019re not met."
+          "text": "<i class='fa-solid fa-bullseye'></i> <strong>Practical scenario</strong>\n\nYou have <code>searchUsers(query)</code> that calls an HTTP client and returns parsed JSON. In a unit test, you don’t want real network. You want to:\n\n- <strong>Stub</strong> the HTTP client to return a controlled response.\n- <strong>Spy</strong> on the client to assert it was called correctly.\n- Optionally <strong>mock</strong> the client to both define expectations and fail if they’re not met."
         },
         {
           "type": "list",
@@ -5855,7 +5973,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Answer to land</strong>\n\n\"I prefer dependency injection so I can stub inputs and spy on boundaries. I assert outputs first, then interactions only when they\u2019re part of the contract (e.g., a retry policy or analytics call). Mocks are useful for strict contracts, but I avoid over-mocking because it makes tests brittle.\""
+          "text": "<i class='fa-solid fa-circle-check'></i> <strong>Answer to land</strong>\n\n\"I prefer dependency injection so I can stub inputs and spy on boundaries. I assert outputs first, then interactions only when they’re part of the contract (e.g., a retry policy or analytics call). Mocks are useful for strict contracts, but I avoid over-mocking because it makes tests brittle.\""
         }
       ]
     },
@@ -5884,7 +6002,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-recycle'></i> <strong>Big idea</strong>\n\nJavaScript is garbage-collected: you don\u2019t free memory manually. But you <em>do</em> control which objects remain reachable. If your app allocates lots of short-lived objects or accidentally retains references, the GC has more work to do \u2014 and that can show up as <strong>jank</strong> (stutters) in the UI."
+          "text": "<i class='fa-solid fa-recycle'></i> <strong>Big idea</strong>\n\nJavaScript is garbage-collected: you don’t free memory manually. But you <em>do</em> control which objects remain reachable. If your app allocates lots of short-lived objects or accidentally retains references, the GC has more work to do — and that can show up as <strong>jank</strong> (stutters) in the UI."
         },
         {
           "type": "list",
@@ -5901,7 +6019,7 @@
             ],
             [
               "Memory pressure",
-              "Heap grows \u2192 GC runs more often / more aggressively",
+              "Heap grows → GC runs more often / more aggressively",
               "Frequent GCs can compete with rendering"
             ],
             [
@@ -5940,7 +6058,7 @@
             ],
             [
               "Unbounded caches (Map, arrays)",
-              "No eviction \u2192 heap grows forever",
+              "No eviction → heap grows forever",
               "Bounded cache (LRU/TTL) + key hygiene"
             ],
             [
@@ -5962,7 +6080,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Pitfalls</strong>\n\n- Treating GC as a fix: \"it will clean up\" \u2192 not if you still reference it.\n- Allocating aggressively in hot paths (scroll, animation frames).\n- Using caches without eviction or with high-cardinality keys.\n- Profiling only in dev builds (prod code can behave differently)."
+          "text": "<i class='fa-solid fa-triangle-exclamation'></i> <strong>Pitfalls</strong>\n\n- Treating GC as a fix: \"it will clean up\" → not if you still reference it.\n- Allocating aggressively in hot paths (scroll, animation frames).\n- Using caches without eviction or with high-cardinality keys.\n- Profiling only in dev builds (prod code can behave differently)."
         },
         {
           "type": "text",
