@@ -51,49 +51,121 @@ type VisibleEntry = {
         </button>
       </div>
 
-      <!-- RIGHT (Pricing → Avatar → CTA) -->
+      <!-- RIGHT (Desktop actions + compact mobile menu) -->
       <div class="fah-right" (click)="$event.stopPropagation()">
-        <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
-        <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
+        <div class="fah-desktop-actions">
+          <a class="fah-btn" routerLink="/dashboard">Dashboard</a>
+          <a *ngIf="!isPro()" class="fah-btn" routerLink="/pricing">Pricing</a>
 
-        <div class="fah-profile fah-profile-right">
-          <button class="fah-avatar" data-testid="header-profile-button"
-                  (click)="toggleProfileMenu()"
-                  aria-haspopup="menu"
-                  [attr.aria-expanded]="profileOpen()">
-            <i class="pi pi-user"></i>
-          </button>
-          <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu">
-            <div class="fah-menu-section">Account</div>
+          <div class="fah-profile fah-profile-right">
+            <button class="fah-avatar" data-testid="header-profile-button"
+                    (click)="toggleProfileMenu()"
+                    aria-haspopup="menu"
+                    [attr.aria-expanded]="profileOpen()">
+              <i class="pi pi-user"></i>
+            </button>
+            <div *ngIf="profileOpen()" class="fah-menu" role="menu" data-testid="header-profile-menu">
+              <div class="fah-menu-section">Account</div>
 
-            <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
-              <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()" data-testid="header-menu-profile">
-                <i class="pi pi-user"></i> My profile
-              </a>
-              <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-menu-admin-users">
-                <i class="pi pi-shield"></i> Admin: Users
-              </a>
-              <div class="fah-divider"></div>
-              <button class="fah-menu-item" (click)="logout()" data-testid="header-menu-logout"><i class="pi pi-sign-out"></i> Log out</button>
-            </ng-container>
+              <ng-container *ngIf="auth.isLoggedIn(); else profileDisabled">
+                <a class="fah-menu-item" routerLink="/profile" (click)="closeAll()" data-testid="header-menu-profile">
+                  <i class="pi pi-user"></i> My profile
+                </a>
+                <a *ngIf="isAdmin()" class="fah-menu-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-menu-admin-users">
+                  <i class="pi pi-shield"></i> Admin: Users
+                </a>
+                <div class="fah-divider"></div>
+                <button class="fah-menu-item" (click)="logout()" data-testid="header-menu-logout"><i class="pi pi-sign-out"></i> Log out</button>
+              </ng-container>
 
-            <ng-template #profileDisabled>
-              <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-menu-signup">
-                <i class="pi pi-user-plus"></i> Sign up
-              </button>
-              <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-menu-login">
-                <i class="pi pi-sign-in"></i> Log in
-              </button>
-            </ng-template>
+              <ng-template #profileDisabled>
+                <button class="fah-menu-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-menu-signup">
+                  <i class="pi pi-user-plus"></i> Sign up
+                </button>
+                <button class="fah-menu-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-menu-login">
+                  <i class="pi pi-sign-in"></i> Log in
+                </button>
+              </ng-template>
+            </div>
           </div>
+
+          <!-- Luminous CTA -->
+          <a *ngIf="!isPro()" class="fah-cta fah-cta-solid" [routerLink]="ctaLink()">
+            {{ ctaLabel() }}
+          </a>
         </div>
 
-        <!-- Luminous CTA -->
-        <a *ngIf="!isPro()" class="fah-cta fah-cta-solid" [routerLink]="ctaLink()">
-          {{ ctaLabel() }}
-        </a>
+        <div class="fah-mobile-actions">
+          <button
+            type="button"
+            class="fah-iconbtn"
+            data-testid="header-mobile-study-button"
+            (click)="toggleMega()"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="megaOpen()"
+            aria-controls="prepare-mega"
+            aria-label="Open study menu">
+            <i class="pi pi-book"></i>
+          </button>
+          <button
+            type="button"
+            class="fah-iconbtn"
+            data-testid="header-mobile-menu-button"
+            (click)="toggleMobileMenu()"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="mobileNavOpen()"
+            aria-controls="header-mobile-menu"
+            aria-label="Open navigation menu">
+            <i class="pi" [ngClass]="mobileNavOpen() ? 'pi-times' : 'pi-bars'"></i>
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- MOBILE NAV PANEL -->
+    <ng-container *ngIf="mobileNavOpen()">
+      <div class="fah-backdrop" (click)="closeAll()"></div>
+      <div id="header-mobile-menu" class="fah-mobile-panel" role="menu" (click)="$event.stopPropagation()"
+           data-testid="header-mobile-menu">
+        <a class="fah-mobile-item" routerLink="/dashboard" (click)="closeAll()" data-testid="header-mobile-dashboard">
+          <i class="pi pi-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a *ngIf="!isPro()" class="fah-mobile-item" routerLink="/pricing" (click)="closeAll()" data-testid="header-mobile-pricing">
+          <i class="pi pi-tag"></i>
+          <span>Pricing</span>
+        </a>
+        <a *ngIf="!isPro()" class="fah-mobile-item fah-mobile-item--accent" [routerLink]="ctaLink()" (click)="closeAll()" data-testid="header-mobile-cta">
+          <i class="pi pi-star"></i>
+          <span>{{ ctaLabel() }}</span>
+        </a>
+        <div class="fah-divider"></div>
+        <ng-container *ngIf="auth.isLoggedIn(); else mobileGuest">
+          <a class="fah-mobile-item" routerLink="/profile" (click)="closeAll()" data-testid="header-mobile-profile">
+            <i class="pi pi-user"></i>
+            <span>My profile</span>
+          </a>
+          <a *ngIf="isAdmin()" class="fah-mobile-item" routerLink="/admin/users" (click)="closeAll()" data-testid="header-mobile-admin-users">
+            <i class="pi pi-shield"></i>
+            <span>Admin: Users</span>
+          </a>
+          <button type="button" class="fah-mobile-item" (click)="logout()" data-testid="header-mobile-logout">
+            <i class="pi pi-sign-out"></i>
+            <span>Log out</span>
+          </button>
+        </ng-container>
+        <ng-template #mobileGuest>
+          <button type="button" class="fah-mobile-item" routerLink="/auth/signup" (click)="closeAll()" data-testid="header-mobile-signup">
+            <i class="pi pi-user-plus"></i>
+            <span>Sign up</span>
+          </button>
+          <button type="button" class="fah-mobile-item" routerLink="/auth/login" (click)="closeAll()" data-testid="header-mobile-login">
+            <i class="pi pi-sign-in"></i>
+            <span>Log in</span>
+          </button>
+        </ng-template>
+      </div>
+    </ng-container>
 
     <!-- STUDY PANEL -->
     <ng-container *ngIf="megaOpen()">
@@ -288,6 +360,7 @@ export class HeaderComponent implements OnInit {
   // menus
   megaOpen = signal(false);
   profileOpen = signal(false);
+  mobileNavOpen = signal(false);
 
   topPicks(): PrepareItem[] {
     if (this.isSearching()) return [];
@@ -540,9 +613,10 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  private openOnly(which: 'mega' | 'profile' | null) {
+  private openOnly(which: 'mega' | 'profile' | 'mobile' | null) {
     this.megaOpen.set(which === 'mega');
     this.profileOpen.set(which === 'profile');
+    this.mobileNavOpen.set(which === 'mobile');
     if (which === 'mega') {
       this.activeIndex.set(-1);
       this.browseAllOpen.set(false);
@@ -552,6 +626,7 @@ export class HeaderComponent implements OnInit {
 
   toggleMega() { this.openOnly(this.megaOpen() ? null : 'mega'); }
   toggleProfileMenu() { this.openOnly(this.profileOpen() ? null : 'profile'); }
+  toggleMobileMenu() { this.openOnly(this.mobileNavOpen() ? null : 'mobile'); }
 
   closeAll() { this.openOnly(null); }
 
