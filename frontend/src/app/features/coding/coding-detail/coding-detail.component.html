@@ -1,5 +1,6 @@
 <ng-container *ngIf="loadState() === 'loaded'; else loadingOrMissing">
 <ng-container *ngIf="!locked(); else lockedView">
+<ng-container *ngIf="!showMobileDesktopGuard(); else mobileWorkspaceGuard">
 <div class="coding-detail flex gap-[5px]" data-testid="coding-detail-page" [class.fixed-under-header]="!demoMode" [class.demo-embed]="demoMode">
   <!-- LEFT COLUMN -->
   <aside class="flex flex-col min-h-0 bg-neutral-900/95 rounded-lg shadow-sm border border-white/10 overflow-hidden coding-detail__scroll"
@@ -511,6 +512,33 @@
       [routerLink]="(footerLinkTo || ['/coding', q.id])"
       >{{ footerLinkLabel || 'Open in full workspace' }}</a>
   </div>
+</ng-template>
+</ng-container>
+
+<ng-template #mobileWorkspaceGuard>
+  <section class="mobile-workspace-shell" data-testid="coding-mobile-guard">
+    <article class="mobile-workspace-card">
+      <div class="mobile-workspace-pill">Desktop or Tablet</div>
+      <h1 class="mobile-workspace-title">{{ question()?.title }}</h1>
+      <p class="mobile-workspace-copy">
+        This coding workspace is disabled on small mobile screens.
+        For the best experience, solve coding questions on desktop or tablet.
+      </p>
+      <ul class="mobile-workspace-list">
+        <li>See the full problem statement and solution side by side.</li>
+        <li>Run tests and inspect output without layout issues.</li>
+        <li>Write and debug code with a comfortable editor width.</li>
+      </ul>
+      <div class="mobile-workspace-actions">
+        <button class="fa-btn fa-btn--primary" type="button" (click)="backToReturn()">
+          Go back
+        </button>
+        <a class="fa-btn fa-btn--ghost" [routerLink]="['/coding']">
+          Practice catalog
+        </a>
+      </div>
+    </article>
+  </section>
 </ng-template>
 
 <!-- Preview dialog (Angular only) -->

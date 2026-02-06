@@ -131,6 +131,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private liteUpgradeTimer?: number;
   private liteReadyPollTimer?: number;
   private liteReadyAttempts = 0;
+  private readonly MOBILE_WORKSPACE_BREAKPOINT = 768;
+  isPhoneViewport = signal(false);
+  showMobileDesktopGuard = computed(
+    () => this.isPhoneViewport() && !this.demoMode && !this.liteMode
+  );
 
   // JS/TS editor + tests
   editorContent = signal<string>('');
@@ -585,6 +590,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- init ----------
   ngOnInit() {
+    if (this.isBrowser) {
+      this.syncViewportState();
+      window.addEventListener('resize', this.onViewportResize, { passive: true });
+    }
+
     if (this.questionId) {
       this.initDirectQuestion();
     } else {
@@ -697,6 +707,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     this.routeParamSub?.unsubscribe();
     this.routeDataSub?.unsubscribe();
     if (this.isBrowser) {
+      window.removeEventListener('resize', this.onViewportResize);
       window.removeEventListener('pointermove', this.onPointerMove);
       window.removeEventListener('pointerup', this.onPointerUp);
     }
@@ -736,6 +747,15 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (!this.demoMode) {
       this.scheduleLiteUpgrade();
     }
+  }
+
+  private onViewportResize = () => {
+    this.syncViewportState();
+  };
+
+  private syncViewportState() {
+    if (!this.isBrowser) return;
+    this.isPhoneViewport.set(window.innerWidth < this.MOBILE_WORKSPACE_BREAKPOINT);
   }
 
   private scheduleLiteUpgrade() {

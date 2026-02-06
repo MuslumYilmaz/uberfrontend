@@ -269,13 +269,50 @@ html, body { height: 100%; background: var(--uf-bg); }
 .tip-body { background: color-mix(in srgb, var(--uf-accent) 8%, var(--uf-surface)); border-radius: 10px; }
 
 /* Markdown */
-.content { margin: 0; font-size: 14.6px; line-height: 1.72; color: var(--uf-text-primary); }
+.content {
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 14.6px;
+  line-height: 1.72;
+  color: var(--uf-text-primary);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 .content.muted { color: var(--uf-text-tertiary); }
 .content .inline-code { background: var(--uf-surface-alt); border: 1px solid var(--uf-border-subtle); border-radius: 6px; padding: .12rem .38rem; font-family: "Fira Code","JetBrains Mono",monospace; font-size: .9em; color: var(--uf-text-primary); }
 .content .md-h { margin: .9rem 0 .5rem; font-weight: 900; letter-spacing: -0.01em; color: var(--uf-text-primary); }
 .content .md-h2 { font-size: 1.35rem; } .content .md-h3 { font-size: 1.2rem; } .content .md-h4 { font-size: 1.05rem; }
 .content .md-ul, .content .md-ol { margin: .5rem 0 .5rem 1.25rem; }
 .content .md-quote { margin: .95rem 0; padding: .6rem .85rem; border-left: 3px solid var(--uf-accent); background: color-mix(in srgb, var(--uf-accent) 10%, var(--uf-surface)); color: var(--uf-text-secondary); border-radius: 8px; }
+.content p,
+.content li,
+.content blockquote { min-width: 0; }
+.content pre,
+.content .md-pre {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+:host ::ng-deep .content .inline-code {
+  background: var(--uf-surface-alt);
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 6px;
+  padding: .12rem .38rem;
+  font-family: "Fira Code","JetBrains Mono",monospace;
+  font-size: .9em;
+  color: var(--uf-text-primary);
+}
+:host ::ng-deep .content pre,
+:host ::ng-deep .content .md-pre {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 
 /* Extra spacing when blocks follow text */
 .content p + h2.md-h,
@@ -289,7 +326,22 @@ html, body { height: 100%; background: var(--uf-bg); }
 .content i.fa-solid { margin-right: .35rem; font-size: .95em; vertical-align: text-bottom; }
 
 /* Answer blocks */
-.blocks { display: grid; gap: 18px; }
+.blocks {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.blocks > * {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+.b-text,
+.b-code,
+.b-list {
+  min-width: 0;
+  max-width: 100%;
+}
 .b-text .content { white-space: pre-line; }
 
 /* Code block */
@@ -318,9 +370,35 @@ pre {
   font-size: 11.9px;
   line-height: 1.65;
   color: var(--uf-text-primary); background: var(--uf-surface);
-  overflow-x: auto; border-radius: 0 0 12px 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 0 0 12px 12px;
+  -webkit-overflow-scrolling: touch;
 }
-code { display: block; }
+pre code {
+  display: block;
+  width: fit-content;
+  min-width: 100%;
+}
+.content code,
+.table code {
+  display: inline;
+  width: auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+:host ::ng-deep .content code,
+:host ::ng-deep .table code {
+  display: inline;
+  width: auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 
 /* Prism line numbers alignment */
 pre.line-numbers { position: relative; padding-left: calc(16px + 3.8em) !important; }
@@ -333,17 +411,49 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 
 /* LIST (table) */
 .b-list { margin: 0; }
-.table-scroll { overflow: auto; border: 1px solid var(--uf-border-subtle); border-radius: 10px; }
-.table { width: 100%; border-collapse: collapse; min-width: 520px; background: var(--uf-surface); }
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: var(--uf-surface);
+}
 .table thead th {
   position: sticky; top: 0;
   background: color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface));
   color: var(--uf-text-primary); font-size: 12.5px; text-align: left; padding: 10px 12px;
   border-bottom: 1px solid var(--uf-border-subtle); font-weight: 800; letter-spacing: .02em;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .table tbody td {
   padding: 10px 12px; border-bottom: 1px solid var(--uf-border-subtle);
   vertical-align: top; color: var(--uf-text-primary); font-size: 13.2px; line-height: 1.6;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.table td > *,
+.table th > * {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+:host ::ng-deep .table td > *,
+:host ::ng-deep .table th > * {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .table tbody tr:hover td { background: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt)); }
 .tbl-caption { margin-top: 8px; color: var(--uf-text-secondary); font-size: 12.6px; text-align: center; }
@@ -480,20 +590,32 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   /* On compact screens, remove line-number gutter to keep examples readable. */
   pre.line-numbers {
     padding-left: 14px !important;
+    white-space: pre-wrap;
+    overflow-x: hidden;
   }
   pre.line-numbers .line-numbers-rows {
     display: none;
   }
+  pre code {
+    width: 100%;
+    min-width: 0;
+    white-space: inherit;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
   .table-scroll {
     margin-inline: -2px;
+    overflow-x: hidden;
   }
   .table {
-    min-width: 100%;
+    width: 100%;
+    min-width: 0;
     table-layout: fixed;
   }
   .table thead th,
   .table tbody td {
     padding: 8px 9px;
+    white-space: normal;
     word-break: break-word;
     overflow-wrap: anywhere;
   }

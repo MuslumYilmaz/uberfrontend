@@ -738,13 +738,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   dedent(source: string = ''): string {
-    const s = (source ?? '').replace(/^\n+|\n+$/g, '');
-    const lines = s.split('\n');
+    const normalized = (source ?? '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/\r\n?/g, '\n')
+      .replace(/^\n+|\n+$/g, '');
+    const lines = normalized.split('\n');
     const indents = lines
-      .filter(l => l.trim().length)
-      .map(l => (l.match(/^[ \t]*/)?.[0].length ?? 0));
+      .filter((line) => line.trim().length > 0)
+      .map((line) => (line.match(/^[^\S\r\n]*/)?.[0].length ?? 0));
     const pad = indents.length ? Math.min(...indents) : 0;
-    return lines.map(l => l.slice(pad)).join('\n');
+    return lines.map((line) => line.slice(pad)).join('\n');
   }
 
   // ================== Markdown -> HTML with a tiny HTML whitelist ==================
