@@ -91,6 +91,8 @@ type FASolutionBlock = {
   codeTs?: string;
 };
 
+type FollowUpItem = { id: string; title: string; difficulty: string; to: any[] };
+
 @Component({
   selector: 'app-coding-detail',
   standalone: true,
@@ -2111,24 +2113,85 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return (this.allQuestions || []).find(q => (q as any).id === id);
   }
 
-  /** Simple, explicit follow-ups: resolve to {title, difficulty, link} and cap to 2 */
+  private normalizeQuestionTags(tags: unknown): string[] {
+    if (!Array.isArray(tags)) return [];
+    const normalized = tags
+      .map((tag) => String(tag || '').trim().toLowerCase())
+      .filter(Boolean);
+    return Array.from(new Set(normalized));
+  }
+
+  private toFollowUpItem(target: Question, forcedId?: string): FollowUpItem | null {
+    const id = String(forcedId || (target as any).id || '').trim();
+    if (!id) return null;
+    const title = String((target as any).title || id).trim();
+    const difficulty = String((target as any).difficulty || '').trim();
+    const to = ['/', (target as any).technology ?? this.tech, (target as any).type ?? this.kind, id];
+    return { id, title, difficulty, to };
+  }
+
+  private buildFallbackFollowUps(current: Question, limit: number, seenIds: Set<string>): FollowUpItem[] {
+    if (limit <= 0) return [];
+
+    const currentTags = new Set(this.normalizeQuestionTags((current as any).tags));
+    const currentDifficulty = String((current as any).difficulty || '').trim().toLowerCase();
+
+    const candidates = (this.allQuestions || [])
+      .filter((q) => q && q.id !== current.id)
+      .map((q) => {
+        const tags = this.normalizeQuestionTags((q as any).tags);
+        let overlap = 0;
+        for (const tag of tags) {
+          if (currentTags.has(tag)) overlap += 1;
+        }
+        const sameDifficulty = String((q as any).difficulty || '').trim().toLowerCase() === currentDifficulty;
+        const importance = Number((q as any).importance ?? 0);
+        return { question: q, overlap, sameDifficulty, importance };
+      });
+
+    candidates.sort((a, b) =>
+      b.overlap - a.overlap
+      || Number(b.sameDifficulty) - Number(a.sameDifficulty)
+      || b.importance - a.importance
+      || (a.question.title || '').localeCompare(b.question.title || '')
+    );
+
+    const picks: FollowUpItem[] = [];
+    for (const candidate of candidates) {
+      if (picks.length >= limit) break;
+      const item = this.toFollowUpItem(candidate.question);
+      if (!item || seenIds.has(item.id)) continue;
+      seenIds.add(item.id);
+      picks.push(item);
+    }
+    return picks;
+  }
+
+  /** Resolve explicit follow-ups first, then fill with metadata-based similar questions. */
   followUpItems = computed(() => {
-    const q = this.question();
-    if (!q) return [] as Array<{ id: string; title: string; difficulty: string; to: any[] }>;
+    const current = this.question();
+    if (!current) return [] as FollowUpItem[];
 
-    const s = this.structuredSolution();
-    const explicit = this.normalizeFollowUpRefs(s?.followUpQuestions).slice(0, 2);
+    const maxItems = 3;
+    const explicitRefs = this.normalizeFollowUpRefs(this.structuredSolution()?.followUpQuestions).slice(0, maxItems);
+    const seenIds = new Set<string>();
+    const resolvedExplicit: FollowUpItem[] = [];
 
-    return explicit
-      .map(({ id }) => {
-        const target = this.findQuestionById(id);
-        if (!target) return null;
-        const title = (target as any).title || id;
-        const difficulty = String((target as any).difficulty || '').replace(/^\s*$/, '');
-        const to = ['/', (target as any).technology ?? this.tech, (target as any).type ?? this.kind, id];
-        return { id, title, difficulty, to };
-      })
-      .filter(Boolean) as Array<{ id: string; title: string; difficulty: string; to: any[] }>;
+    for (const { id } of explicitRefs) {
+      const target = this.findQuestionById(id);
+      if (!target) continue;
+      const item = this.toFollowUpItem(target, id);
+      if (!item || seenIds.has(item.id)) continue;
+      seenIds.add(item.id);
+      resolvedExplicit.push(item);
+    }
+
+    if (resolvedExplicit.length >= maxItems) {
+      return resolvedExplicit;
+    }
+
+    const fallback = this.buildFallbackFollowUps(current, maxItems - resolvedExplicit.length, seenIds);
+    return [...resolvedExplicit, ...fallback];
   });
 
   onChildResults = (results: TestResult[]) => {

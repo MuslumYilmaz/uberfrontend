@@ -61,21 +61,79 @@
 }
 .tags{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
 :host ::ng-deep .p-chip.custom-chip{ background:#1f2937; color:#e5e7eb; border-radius:9999px; font-size:12px; padding:2px 8px; }
-.left-foot{ border-top:1px solid rgba(255,255,255,.06); padding:10px 12px; }
+.left-foot{
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:10px 12px;
+  display:grid;
+  gap:10px;
+  min-width:0;
+  min-height:0;
+}
 .guide{ font-size: 13px; background:#141a22; border:1px solid rgba(255,255,255,.08); color:#b7c3cf; padding:10px; border-radius:8px; }
 .guide a{ color:#9ad1ff; text-decoration:underline; }
-.guide-links{
-  margin-top: 10px;
-  display: grid;
-  gap: 6px;
+.guide-collapsible{
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  background: #111722;
+}
+.guide-summary{
+  list-style: none;
+  cursor: pointer;
+  color: #c7d2de;
   font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.guide-summary::-webkit-details-marker{
+  display: none;
+}
+.guide-summary::after{
+  content: '▾';
+  font-size: 11px;
+  color: #9fb3c9;
+  transition: transform .18s ease;
+}
+.guide-collapsible[open] .guide-summary{
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.guide-collapsible[open] .guide-summary::after{
+  transform: rotate(180deg);
+}
+.guide-links{
+  margin-top: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+  min-width: 0;
+  padding: 8px;
 }
 .guide-links a{
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: #101620;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   color: #93c5fd;
   text-decoration: none;
 }
 .guide-links a:hover{
+  background: #141d2a;
+  border-color: rgba(255,255,255,.14);
   text-decoration: underline;
+}
+.left-foot .guide-collapsible .guide-links{
+  max-height: min(30vh, 220px);
+  overflow: auto;
+  padding-right: 2px;
 }
 
 /* ---------- CENTER ---------- */
@@ -602,6 +660,10 @@
 }
 .sdl-mobile-overview-body .guide-links{
   margin-top: 0;
+}
+.sdl-mobile-overview-body .guide-collapsible .guide-links{
+  max-height: min(34vh, 260px);
+  overflow: auto;
 }
 .sdl-mobile-toc-list{
   margin: 0;

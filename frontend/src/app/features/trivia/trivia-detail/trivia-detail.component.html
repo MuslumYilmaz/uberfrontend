@@ -194,24 +194,6 @@
                 </div>
             </section>
 
-            <!-- Guides -->
-            <section class="card">
-                <div class="card-head">Guides</div>
-                <div class="card-body">
-                    <ul class="guide-links">
-                        <li>
-                            <a [routerLink]="['/guides/interview-blueprint/quiz']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
-                        </li>
-                        <li>
-                            <a [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
-                        </li>
-                        <li>
-                            <a [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-
             <!-- Similar questions -->
             <section class="card" *ngIf="similarItems().length">
                 <div class="card-head card-head-toggle" (click)="similarOpen.set(!similarOpen())">
@@ -227,6 +209,24 @@
                             <span class="similar-meta">{{ s.difficulty }}</span>
                         </a>
                     </div>
+                </div>
+            </section>
+
+            <!-- Guides -->
+            <section class="card">
+                <div class="card-head">Guides</div>
+                <div class="card-body">
+                    <ul class="guide-links">
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/quiz']">Fundamentals Check: Browser, CSS, JS, HTTP</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/javascript-interviews']">JavaScript Problems That Actually Show Up</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/guides/interview-blueprint/ui-interviews']">Build Great UI in 60 Minutes</a>
+                        </li>
+                    </ul>
                 </div>
             </section>
             </ng-container>

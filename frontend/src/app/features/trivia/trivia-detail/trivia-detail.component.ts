@@ -232,25 +232,29 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     if (!current) return [];
 
     const baseTags = this.getQuestionTags(current);
-    if (!baseTags.length) return [];
-
     const baseSet = new Set(baseTags);
+    const currentDifficulty = String(current.difficulty || '').trim().toLowerCase();
     const scored = this.questionsList
       .filter((q) => q.id !== current.id)
       .map((q) => {
         const tags = this.getQuestionTags(q);
-        if (!tags.length) return null;
-        let score = 0;
+        let overlap = 0;
         for (const tag of tags) {
-          if (baseSet.has(tag)) score += 1;
+          if (baseSet.has(tag)) overlap += 1;
         }
-        if (!score) return null;
-        return { question: q, score, importance: q.importance ?? 0 };
+        const sameDifficulty = String(q.difficulty || '').trim().toLowerCase() === currentDifficulty;
+        return { question: q, overlap, sameDifficulty, importance: q.importance ?? 0 };
       })
-      .filter(Boolean) as Array<{ question: Question; score: number; importance: number }>;
+      .filter((item) => {
+        if (baseSet.size > 0) {
+          return item.overlap > 0 || item.sameDifficulty;
+        }
+        return true;
+      });
 
     scored.sort((a, b) =>
-      b.score - a.score
+      b.overlap - a.overlap
+      || Number(b.sameDifficulty) - Number(a.sameDifficulty)
       || b.importance - a.importance
       || (a.question.title || '').localeCompare(b.question.title || '')
     );

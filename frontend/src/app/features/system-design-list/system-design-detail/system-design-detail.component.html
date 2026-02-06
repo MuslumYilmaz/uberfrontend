@@ -24,12 +24,15 @@
                         New to RADIO?
                         <a routerLink="/guides/system-design-blueprint">Read the guide</a> first.
                     </div>
-                    <div class="guide-links">
-                        <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
-                        <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
-                        <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
-                        <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
-                    </div>
+                    <details class="guide-collapsible">
+                        <summary class="guide-summary">Guides</summary>
+                        <div class="guide-links">
+                            <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
+                            <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
+                            <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
+                            <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
+                        </div>
+                    </details>
                 </div>
             </div>
         </aside>
@@ -96,13 +99,16 @@
                     <div class="tags">
                         <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
                     </div>
-                    <div class="guide-links">
-                        <a routerLink="/guides/system-design-blueprint">System design blueprint</a>
-                        <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
-                        <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
-                        <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
-                        <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
-                    </div>
+                    <details class="guide-collapsible">
+                        <summary class="guide-summary">Guides</summary>
+                        <div class="guide-links">
+                            <a routerLink="/guides/system-design-blueprint">System design blueprint</a>
+                            <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
+                            <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
+                            <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
+                            <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
+                        </div>
+                    </details>
                 </div>
             </section>
 
