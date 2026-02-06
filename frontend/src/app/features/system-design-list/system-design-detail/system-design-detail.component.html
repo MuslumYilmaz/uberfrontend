@@ -36,6 +36,103 @@
 
         <!-- CENTER : article -->
         <main class="sdl-center" #centerEl>
+            <section class="sdl-mobile-controls" *ngIf="sections().length">
+                <button
+                    type="button"
+                    class="sdl-mobile-trigger"
+                    data-testid="sd-mobile-overview-trigger"
+                    [attr.aria-expanded]="mobileOverviewOpen()"
+                    aria-controls="sd-mobile-overview-panel"
+                    (click)="toggleMobileOverview()">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                    <span>Overview</span>
+                </button>
+                <button
+                    type="button"
+                    class="sdl-mobile-trigger"
+                    data-testid="sd-mobile-toc-trigger"
+                    [attr.aria-expanded]="mobileTocOpen()"
+                    aria-controls="sd-mobile-toc-panel"
+                    (click)="toggleMobileToc()">
+                    <i class="fa-solid fa-list" aria-hidden="true"></i>
+                    <span>On this page</span>
+                </button>
+            </section>
+
+            <div
+                class="sdl-mobile-backdrop"
+                data-testid="sd-mobile-backdrop"
+                *ngIf="mobileOverviewOpen() || mobileTocOpen()"
+                (click)="closeMobilePanels()"
+                aria-hidden="true">
+            </div>
+
+            <section
+                id="sd-mobile-overview-panel"
+                class="sdl-mobile-panel"
+                data-testid="sd-mobile-overview-panel"
+                *ngIf="mobileOverviewOpen()"
+                role="dialog"
+                aria-label="Question overview">
+                <div class="sdl-mobile-panel-head">
+                    <div class="sdl-mobile-panel-title">Overview</div>
+                    <button
+                        type="button"
+                        class="sdl-mobile-panel-close"
+                        data-testid="sd-mobile-overview-close"
+                        (click)="closeMobileOverview()"
+                        aria-label="Close overview panel">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <div class="sdl-mobile-overview-body">
+                    <h1 class="title" [title]="title()">{{ title() }}</h1>
+                    <div class="title-meta">
+                        By {{ authorLabel(q()) }}
+                        <ng-container *ngIf="updatedLabel(q()) as updated"> · Updated {{ updated }}</ng-container>
+                    </div>
+                    <div class="desc">{{ description() }}</div>
+                    <div class="tags">
+                        <p-chip *ngFor="let tag of tags()" [label]="tag" styleClass="custom-chip"></p-chip>
+                    </div>
+                    <div class="guide-links">
+                        <a routerLink="/guides/system-design-blueprint">System design blueprint</a>
+                        <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
+                        <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
+                        <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
+                        <a routerLink="/guides/system-design-blueprint/state-data">State & caching patterns</a>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                id="sd-mobile-toc-panel"
+                class="sdl-mobile-panel sdl-mobile-panel--toc"
+                data-testid="sd-mobile-toc-panel"
+                *ngIf="mobileTocOpen()"
+                role="dialog"
+                aria-label="Page sections">
+                <div class="sdl-mobile-panel-head">
+                    <div class="sdl-mobile-panel-title">On this page</div>
+                    <button
+                        type="button"
+                        class="sdl-mobile-panel-close"
+                        data-testid="sd-mobile-toc-close"
+                        (click)="closeMobileToc()"
+                        aria-label="Close table of contents panel">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <ul class="toc-list sdl-mobile-toc-list">
+                    <li *ngFor="let s of sections()">
+                        <button class="toc-item" [class.active]="activeKey()===s.key" (click)="scrollToKey(s.key)">
+                            {{ s.title }}
+                        </button>
+                    </li>
+                </ul>
+            </section>
+
             <ng-container *ngFor="let s of sections()">
                 <section class="sd-section" [attr.id]="anchorId(s.key)">
                     <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>

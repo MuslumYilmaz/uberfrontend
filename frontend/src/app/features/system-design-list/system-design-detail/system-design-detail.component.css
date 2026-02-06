@@ -15,6 +15,7 @@
   grid-template-columns: var(--left-w) minmax(0, 1fr) var(--right-w);
   gap: var(--gap);
   align-items: start;
+  min-width: 0;
 }
 
 /* ---------- LEFT: FIXED rail ---------- */
@@ -80,20 +81,42 @@
 /* ---------- CENTER ---------- */
 .sdl-center{
   min-width:0;
+  max-width: 100%;
   padding-bottom: calc(var(--foot-h) + 24px);
 }
-.sd-section{ padding:10px 6px 22px 6px; border-bottom:1px solid rgba(255,255,255,.06); }
+.sd-section{
+  min-width: 0;
+  max-width: 100%;
+  padding:10px 6px 22px 6px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sd-blocks{
+  min-width: 0;
+  max-width: 100%;
+}
 .sd-h2{
   font-size:18px; font-weight:700; color:#fff; margin:6px 0 12px;
   scroll-margin-top: calc(var(--app-safe-top, 64px) + 16px);
 }
-.sd-text{ white-space:pre-wrap; color:#e6eaee; line-height:1.6; font-size:14px; }
+.sd-text{
+  min-width: 0;
+  max-width: 100%;
+  white-space:pre-wrap;
+  color:#e6eaee;
+  line-height:1.6;
+  font-size:14px;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
 
 /* Monaco block */
 .sd-code{
   position: relative;
   border-radius:10px;
   border:1px solid rgba(255,255,255,.10);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: max-content;      /* 👈 sınır koyduk */
   overflow: auto;         /* 👈 scroll buradan */ 
   background:#0c0f14;
@@ -139,10 +162,14 @@
 }
 
 .sd-checklist-text {
+  min-width: 0;
+  max-width: 100%;
   font-size: 13px;
   line-height: 1.5;
   color: #e6eaee;
   white-space: pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .sd-callout {
@@ -176,7 +203,11 @@
 }
 
 .sd-callout-text {
+  min-width: 0;
+  max-width: 100%;
   white-space: pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 /* Variants */
@@ -186,6 +217,8 @@
 .sd-callout-danger::before  { background:#f97373; }
 
 .sd-table {
+  min-width: 0;
+  max-width: 100%;
   margin: 14px 0;
   padding: 10px 12px;
   background: #10141b;
@@ -201,6 +234,8 @@
 }
 
 .sd-table table {
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
   border-collapse: collapse;
 }
@@ -213,6 +248,8 @@
   color: #cfd6dd;
   border-bottom: 1px solid rgba(255,255,255,.10);
   background: #151a22;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .sd-table td {
@@ -221,6 +258,8 @@
   color: #e6eaee;
   border-bottom: 1px solid rgba(255,255,255,.06);
   white-space: pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .sd-table tr:last-child td {
@@ -260,6 +299,8 @@
 
 /* Columns */
 .sd-columns {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -267,8 +308,9 @@
 }
 
 .sd-column {
-  flex: 1 1 0;
   min-width: 220px;
+  max-width: 100%;
+  flex: 1 1 0;
 }
 
 .sd-column.w-1-3 {
@@ -380,7 +422,8 @@
 }
 
 .sd-step-body {
-  max-width: none;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sd-step-title {
@@ -391,8 +434,12 @@
 }
 
 .sd-step-text {
+  min-width: 0;
+  max-width: 100%;
   font-size: 12px;
   color: #d1d5db;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .sd-step-arrow {
@@ -470,6 +517,99 @@
   }
 }
 
+/* ---------- Compact controls (mobile/tablet) ---------- */
+.sdl-mobile-controls{
+  display: none;
+}
+.sdl-mobile-trigger{
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  background: #11151c;
+  color: #e6eaee;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.sdl-mobile-trigger:hover{
+  border-color: rgba(255,255,255,.2);
+  background: #151b24;
+}
+.sdl-mobile-backdrop{
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 56;
+  background: rgba(8, 10, 14, .62);
+}
+.sdl-mobile-panel{
+  display: none;
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  top: calc(var(--app-safe-top, 64px) + 8px);
+  z-index: 57;
+  max-height: min(72dvh, 620px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  background: #0f0f10;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, .45);
+}
+.sdl-mobile-panel-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: #141416;
+}
+.sdl-mobile-panel-title{
+  color:#e6eaee;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.sdl-mobile-panel-close{
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #0f1116;
+  color: #e6eaee;
+}
+.sdl-mobile-overview-body{
+  max-height: min(62dvh, 540px);
+  overflow: auto;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+.sdl-mobile-overview-body .title{
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+}
+.sdl-mobile-overview-body .desc{
+  font-size: 13px;
+}
+.sdl-mobile-overview-body .guide-links{
+  margin-top: 0;
+}
+.sdl-mobile-toc-list{
+  margin: 0;
+  padding: 10px;
+  max-height: min(62dvh, 540px);
+  overflow: auto;
+}
+
 /* ---------- RIGHT: FIXED TOC ---------- */
 .sdl-right{
   position: sticky;
@@ -500,11 +640,56 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1200px){
-  .sdl-main{ display: block; }
-  .sdl-left, .sdl-right{ position:static; width:auto; height:auto; }
-  .sdl-right{ display:none; }
-  .sdl-center{ margin:0; }
-  .left-inner{ height:auto; }
+  .sdl-main{
+    display: block;
+    padding: 12px;
+  }
+  .sdl-left,
+  .sdl-right{
+    display: none;
+  }
+  .sdl-center{
+    margin: 0;
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: calc(var(--foot-h) + 24px);
+  }
+  .sd-section{
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .sdl-mobile-controls{
+    display: flex;
+    gap: 10px;
+    margin: 0 0 10px;
+  }
+  .sdl-mobile-backdrop{
+    display: block;
+  }
+  .sdl-mobile-panel{
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .sd-columns{
+    flex-direction: column;
+  }
+  .sd-column{
+    flex-basis: auto;
+  }
+  .sd-table table{
+    width: 100%;
+    table-layout: fixed;
+  }
+  .sd-table th,
+  .sd-table td{
+    white-space: normal;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+  .sd-code{
+    min-width: 0;
+    max-width: 100%;
+  }
 }
 
 /* ---------- Locked state ---------- */

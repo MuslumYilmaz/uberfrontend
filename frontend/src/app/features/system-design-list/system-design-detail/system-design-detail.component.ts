@@ -219,6 +219,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   /** Active TOC key (scroll spy) */
   activeKey = signal<string | null>(null);
+  mobileOverviewOpen = signal(false);
+  mobileTocOpen = signal(false);
   @ViewChildren('sectionHeading', { read: ElementRef }) heads!: QueryList<ElementRef<HTMLElement>>;
 
   /** Lazy Monaco: observed placeholders */
@@ -310,6 +312,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy(): void {
+    this.closeMobilePanels();
     if (this.isBrowser) {
       window.removeEventListener('scroll', this.onScroll);
       window.removeEventListener('resize', this.onResize);
@@ -330,6 +333,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
    * If list is loaded and id is unknown → navigate to /404 with the missing URL.
    */
   private setCurrentById(id: string, allowPending: boolean) {
+    this.closeMobilePanels();
     if (!this.all.length) {
       // Liste henüz gelmediyse ve beklemeye izin yoksa çık
       if (!allowPending) return;
@@ -667,6 +671,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     const el = document.getElementById(this.anchorId(key));
     if (!el) return;
 
+    this.closeMobilePanels();
     this.activeKey.set(key);
 
     const desired = el.getBoundingClientRect().top + window.pageYOffset - (this.headerOffset() + 8);
@@ -750,11 +755,54 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   onPrev() {
     if (!this.hasPrev) return;
+    this.closeMobilePanels();
     this.navToIndex(this.idx - 1);
   }
 
   onNext() {
     if (!this.hasNext) return;
+    this.closeMobilePanels();
     this.navToIndex(this.idx + 1);
+  }
+
+  toggleMobileOverview() {
+    if (this.mobileOverviewOpen()) {
+      this.mobileOverviewOpen.set(false);
+      return;
+    }
+    this.mobileTocOpen.set(false);
+    this.mobileOverviewOpen.set(true);
+  }
+
+  openMobileOverview() {
+    this.mobileTocOpen.set(false);
+    this.mobileOverviewOpen.set(true);
+  }
+
+  closeMobileOverview() {
+    this.mobileOverviewOpen.set(false);
+  }
+
+  toggleMobileToc() {
+    if (this.mobileTocOpen()) {
+      this.mobileTocOpen.set(false);
+      return;
+    }
+    this.mobileOverviewOpen.set(false);
+    this.mobileTocOpen.set(true);
+  }
+
+  openMobileToc() {
+    this.mobileOverviewOpen.set(false);
+    this.mobileTocOpen.set(true);
+  }
+
+  closeMobileToc() {
+    this.mobileTocOpen.set(false);
+  }
+
+  closeMobilePanels() {
+    this.mobileOverviewOpen.set(false);
+    this.mobileTocOpen.set(false);
   }
 }
