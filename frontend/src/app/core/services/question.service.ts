@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { isPlatformServer } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { TransferState, makeStateKey } from '@angular/platform-browser';
-import { forkJoin, Observable, of } from 'rxjs';
+import { firstValueFrom, forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AccessLevel, Question } from '../models/question.model';
 import { Tech } from '../models/user.model';
 import { ASSET_READER, AssetReader } from './asset-reader';
+import { QuestionPersistenceService } from './question-persistence.service';
 import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from '../utils/asset-url.util';
 
 type Kind = 'coding' | 'trivia' | 'debug';
@@ -22,11 +23,13 @@ export class QuestionService {
   private readonly isServer = isPlatformServer(this.platformId);
   private readonly transferState = inject(TransferState);
   private readonly assetReader = inject(ASSET_READER) as AssetReader;
+  private readonly persistence = inject(QuestionPersistenceService);
 
   private readonly cachePrefix = 'qcache:';          // normalized cache
   private readonly overridePrefix = 'qoverride:';    // manual/local overrides
   private readonly dvKey = `${this.cachePrefix}dv`;
   private readonly inflightLoads = new Map<string, Observable<Question[]>>();
+  private readonly cacheVersionInflight = new Map<string, Promise<void>>();
 
   // NEW: CDN / LocalStorage switcher flag
   private readonly cdnFlagKey = 'fa:cdn:enabled';
@@ -71,7 +74,7 @@ export class QuestionService {
    * Load questions for a given tech + kind.
    *
    * Order of precedence:
-   * 1. Local override in localStorage (qoverride:<tech>:<kind>)
+   * 1. Local override in persistence store (qoverride:<tech>:<kind>)
    * 2. Cached normalized list (qcache:<tech>:<kind>)
    * 3. Preferred asset base (if enabled)
    * 4. Assets JSON under assets/questions/<tech>/<kind>.json
@@ -93,42 +96,7 @@ export class QuestionService {
     if (existing) return existing;
 
     const request$ = this.getVersion().pipe(
-      switchMap((bankVersion) => {
-        const oKey = this.overrideKey(technology, kind);
-        const cKey = this.key(technology, kind);
-
-        // 1) Local override
-        const overrideRaw = this.safeGet(oKey);
-        if (overrideRaw) {
-          const parsed = this.safeParse(overrideRaw);
-          const list = this.normalizeQuestions(parsed, technology, kind);
-          return of(list);
-        }
-
-        // 2) Normal cached list
-        const cachedRaw = this.safeGet(cKey);
-        if (cachedRaw) {
-          const parsed = this.safeParse(cachedRaw);
-          const list = this.normalizeQuestions(parsed, technology, kind);
-          return of(list);
-        }
-
-        // 3) Remote source:
-        //    - cdnEnabled === true  → CDN + fallback assets
-        //    - cdnEnabled === false → direkt assets (CDN yok)
-        const { primary, fallback } = this.getAssetUrls(`questions/${technology}/${kind}.json`, bankVersion);
-        const source$ = primary !== fallback
-          ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
-          : this.http.get<any>(fallback);
-
-        return source$.pipe(
-          map((raw) => this.normalizeQuestions(raw, technology, kind)),
-          catchError(() => of([] as Question[])),
-          tap((list) => {
-            this.safeSet(cKey, JSON.stringify(list));
-          })
-        );
-      })
+      switchMap((bankVersion) => from(this.loadQuestionsClient(technology, kind, bankVersion))),
     ).pipe(
       finalize(() => this.inflightLoads.delete(inflightKey)),
       shareReplay(1),
@@ -171,27 +139,8 @@ export class QuestionService {
       return of(list);
     }
 
-    const key = `${this.cachePrefix}system-design`;
-    const cachedRaw = this.safeGet(key);
-
-    if (cachedRaw) {
-      const parsed = this.safeParse(cachedRaw);
-      if (Array.isArray(parsed)) {
-        const hasAccess = parsed.every((q: any) => q && typeof q === 'object' && 'access' in q);
-        if (hasAccess) return of(parsed as any[]);
-        // stale cache missing access tags; drop and re-fetch
-        try { localStorage.removeItem(key); } catch { /* ignore */ }
-      }
-    }
-
-    const { primary, fallback } = this.getAssetUrls('questions/system-design/index.json');
-    const source$ = primary !== fallback
-      ? this.http.get<any[]>(primary).pipe(catchError(() => this.http.get<any[]>(fallback)))
-      : this.http.get<any[]>(fallback);
-
-    return source$.pipe(
-      catchError(() => of([] as any[])),
-      tap((qs) => this.safeSet(key, JSON.stringify(qs)))
+    return this.getVersion().pipe(
+      switchMap((bankVersion) => from(this.loadSystemDesignClient(bankVersion))),
     );
   }
 
@@ -267,10 +216,8 @@ export class QuestionService {
 
   /** Clear all normalized caches (does NOT clear local overrides). */
   clearCache(): void {
-    if (!this.hasLocalStorage()) return;
-    Object.keys(localStorage).forEach((k) => {
-      if (k.startsWith(this.cachePrefix)) localStorage.removeItem(k);
-    });
+    this.clearLocalStorageByPrefix(this.cachePrefix);
+    this.runBackground(this.persistence.clearByPrefix(this.cachePrefix));
   }
 
   // ---------- overrides (for you / devtools) --------------------------------
@@ -279,22 +226,22 @@ export class QuestionService {
   setLocalOverride(technology: Tech, kind: Kind, questions: Question[] | any): void {
     const key = this.overrideKey(technology, kind);
     const normalized = this.normalizeQuestions(questions, technology, kind);
-    this.safeSet(key, JSON.stringify(normalized));
+    const payload = JSON.stringify(normalized);
+    this.safeSet(key, payload); // immediate compatibility for same-tick reads
+    this.runBackground(this.persistence.set(key, payload));
   }
 
   /** Remove a specific override so CDN/assets are used again. */
   clearLocalOverride(technology: Tech, kind: Kind): void {
     const key = this.overrideKey(technology, kind);
-    if (!this.hasLocalStorage()) return;
-    try { localStorage.removeItem(key); } catch { /* ignore */ }
+    this.safeRemove(key);
+    this.runBackground(this.persistence.remove(key));
   }
 
   /** Nuke all overrides. */
   clearAllOverrides(): void {
-    if (!this.hasLocalStorage()) return;
-    Object.keys(localStorage).forEach((k) => {
-      if (k.startsWith(this.overridePrefix)) localStorage.removeItem(k);
-    });
+    this.clearLocalStorageByPrefix(this.overridePrefix);
+    this.runBackground(this.persistence.clearByPrefix(this.overridePrefix));
   }
 
   // ---------- internals -----------------------------------------------------
@@ -305,6 +252,74 @@ export class QuestionService {
 
   private overrideKey(tech: Tech, kind: Kind) {
     return `${this.overridePrefix}${tech}:${kind}`;
+  }
+
+  private async loadQuestionsClient(
+    technology: Tech,
+    kind: Kind,
+    bankVersion: string,
+  ): Promise<Question[]> {
+    await this.ensureCacheVersionAsync(bankVersion);
+
+    const oKey = this.overrideKey(technology, kind);
+    const cKey = this.key(technology, kind);
+
+    // 1) Local override
+    const overrideRaw = await this.persistence.get(oKey);
+    if (overrideRaw) {
+      const parsed = this.safeParse(overrideRaw);
+      return this.normalizeQuestions(parsed, technology, kind);
+    }
+
+    // 2) Normal cached list
+    const cachedRaw = await this.persistence.get(cKey);
+    if (cachedRaw) {
+      const parsed = this.safeParse(cachedRaw);
+      return this.normalizeQuestions(parsed, technology, kind);
+    }
+
+    // 3) Remote source:
+    //    - cdnEnabled === true  → CDN + fallback assets
+    //    - cdnEnabled === false → direkt assets (CDN yok)
+    const { primary, fallback } = this.getAssetUrls(`questions/${technology}/${kind}.json`, bankVersion);
+    const source$ = primary !== fallback
+      ? this.http.get<any>(primary).pipe(catchError(() => this.http.get<any>(fallback)))
+      : this.http.get<any>(fallback);
+
+    const list = await firstValueFrom(source$.pipe(
+      map((raw) => this.normalizeQuestions(raw, technology, kind)),
+      catchError(() => of([] as Question[])),
+    ));
+
+    await this.persistence.set(cKey, JSON.stringify(list));
+    return list;
+  }
+
+  private async loadSystemDesignClient(bankVersion: string): Promise<any[]> {
+    await this.ensureCacheVersionAsync(bankVersion);
+
+    const key = `${this.cachePrefix}system-design`;
+    const cachedRaw = await this.persistence.get(key);
+    if (cachedRaw) {
+      const parsed = this.safeParse(cachedRaw);
+      if (Array.isArray(parsed)) {
+        const hasAccess = parsed.every((q: any) => q && typeof q === 'object' && 'access' in q);
+        if (hasAccess) return parsed as any[];
+      }
+      await this.persistence.remove(key);
+    }
+
+    const { primary, fallback } = this.getAssetUrls('questions/system-design/index.json', bankVersion);
+    const source$ = primary !== fallback
+      ? this.http.get<any[]>(primary).pipe(catchError(() => this.http.get<any[]>(fallback)))
+      : this.http.get<any[]>(fallback);
+
+    const list = await firstValueFrom(source$.pipe(
+      catchError(() => of([] as any[])),
+    ));
+
+    await this.persistence.set(key, JSON.stringify(list));
+    return list;
   }
 
   /** Normalize any supported JSON shape to Question[] and add safe defaults. */
@@ -423,7 +438,6 @@ export class QuestionService {
       this.version$ = src$.pipe(
         map((v) => String(v?.dataVersion ?? v?.version ?? '0')),
         catchError(() => of('0')),
-        tap((ver) => this.ensureCacheVersion(ver)),
         shareReplay(1)
       );
     }
@@ -459,17 +473,28 @@ export class QuestionService {
     return `${url}${joiner}${query}`;
   }
 
-  private ensureCacheVersion(ver: string): void {
-    if (!this.hasLocalStorage()) return;
+  private async ensureCacheVersionAsync(verRaw: string): Promise<void> {
+    const ver = String(verRaw ?? '').trim();
+    if (!ver) return;
 
-    const prev = localStorage.getItem(this.dvKey);
-    if (prev !== ver) {
-      // Clear ONLY normalized caches; keep manual overrides intact.
-      Object.keys(localStorage).forEach((k) => {
-        if (k.startsWith(this.cachePrefix)) localStorage.removeItem(k);
-      });
-      localStorage.setItem(this.dvKey, ver);
+    const existingInflight = this.cacheVersionInflight.get(ver);
+    if (existingInflight) {
+      await existingInflight;
+      return;
     }
+
+    const task = (async () => {
+      const prev = await this.persistence.get(this.dvKey);
+      if (prev === ver) return;
+
+      await this.persistence.clearByPrefix(this.cachePrefix);
+      await this.persistence.set(this.dvKey, ver);
+    })().finally(() => {
+      this.cacheVersionInflight.delete(ver);
+    });
+
+    this.cacheVersionInflight.set(ver, task);
+    await task;
   }
 
   // ---------- small helpers -------------------------------------------------
@@ -502,6 +527,31 @@ export class QuestionService {
     } catch {
       // ignore quota issues; worst case falls back to network next load
     }
+  }
+
+  private safeRemove(key: string): void {
+    if (!this.hasLocalStorage()) return;
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // ignore
+    }
+  }
+
+  private clearLocalStorageByPrefix(prefixRaw: string): void {
+    const prefix = String(prefixRaw ?? '').trim();
+    if (!prefix || !this.hasLocalStorage()) return;
+    try {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith(prefix)) localStorage.removeItem(key);
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  private runBackground(task: Promise<unknown>): void {
+    void task.catch(() => { /* ignore */ });
   }
 
   private safeParse(raw: string): any | null {

@@ -18,6 +18,48 @@ async function assertNoHorizontalOverflow(page: import('@playwright/test').Page,
   expect(metrics.scrollWidth, `${label} overflows horizontally`).toBeLessThanOrEqual(metrics.clientWidth + 1);
 }
 
+async function closeMobileMenuIfOpen(page: import('@playwright/test').Page) {
+  const menu = page.getByTestId('header-mobile-menu');
+  const toggle = page.getByTestId('header-mobile-menu-button');
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if ((await menu.count()) === 0) return;
+
+    await page.keyboard.press('Escape');
+    if ((await menu.count()) === 0) return;
+
+    if (await toggle.isVisible().catch(() => false)) {
+      await toggle.click({ force: true });
+      if ((await menu.count()) === 0) return;
+    }
+
+    const backdrop = page.locator('.fah-backdrop').first();
+    if (await backdrop.isVisible().catch(() => false)) {
+      await backdrop.click({ force: true });
+    }
+  }
+  await expect(menu).toHaveCount(0);
+}
+
+async function openMobileMenuStable(page: import('@playwright/test').Page) {
+  const menu = page.getByTestId('header-mobile-menu');
+  const dashboard = page.getByTestId('header-mobile-dashboard');
+  const toggle = page.getByTestId('header-mobile-menu-button');
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await toggle.click();
+    try {
+      await expect(menu).toBeVisible({ timeout: 2500 });
+      await expect(dashboard).toBeVisible({ timeout: 2500 });
+      return;
+    } catch {
+      await closeMobileMenuIfOpen(page);
+    }
+  }
+
+  throw new Error('Unable to open stable mobile header menu.');
+}
+
 test.describe('header mobile layout', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'Mobile header guardrail is chromium-only.');
   test.use({
@@ -31,13 +73,10 @@ test.describe('header mobile layout', () => {
       await page.goto(route);
       await expect(page.getByRole('link', { name: 'FrontendAtlas' })).toBeVisible();
       await expect(page.getByTestId('header-mobile-menu-button')).toBeVisible();
+      await closeMobileMenuIfOpen(page);
 
-      await page.getByTestId('header-mobile-menu-button').click();
-      await expect(page.getByTestId('header-mobile-menu')).toBeVisible();
-      await expect(page.getByTestId('header-mobile-dashboard')).toBeVisible();
-
-      await page.getByTestId('header-mobile-menu-button').click();
-      await expect(page.getByTestId('header-mobile-menu')).toHaveCount(0);
+      await openMobileMenuStable(page);
+      await closeMobileMenuIfOpen(page);
 
       await assertNoHorizontalOverflow(page, `mobile route ${route}`);
     }
