@@ -55,4 +55,63 @@ describe('CodingJsPanelComponent', () => {
     expect(component.hasRunTests()).toBe(true);
     expect(lastConsole.length).toBe(1);
   });
+
+  it('clears stale test results when loading a different question', async () => {
+    const codeStoreStub = {
+      getJsAsync: jasmine.createSpy('getJsAsync').and.resolveTo(null),
+      cloneJsBundleAsync: jasmine.createSpy('cloneJsBundleAsync').and.resolveTo(true),
+      setJsBaselineAsync: jasmine.createSpy('setJsBaselineAsync').and.resolveTo(undefined),
+      getJsLangStateAsync: jasmine.createSpy('getJsLangStateAsync').and.resolveTo({
+        code: '',
+        baseline: '',
+        dirty: false,
+        hasUserCode: false,
+      }),
+      getJsForLangAsync: jasmine.createSpy('getJsForLangAsync').and.callFake(async (_key: string, lang: 'js' | 'ts') => {
+        return lang === 'js' ? 'const value = 1;' : 'const value: number = 1;';
+      }),
+      saveJsAsync: jasmine.createSpy('saveJsAsync').and.resolveTo(undefined),
+      initJsAsync: jasmine.createSpy('initJsAsync').and.resolveTo({
+        initial: 'const hydrated = true;',
+        restored: false,
+      }),
+      setLastLangAsync: jasmine.createSpy('setLastLangAsync').and.resolveTo(undefined),
+    };
+
+    const component = TestBed.runInInjectionContext(
+      () => new CodingJsPanelComponent(codeStoreStub as any),
+    );
+
+    component.disablePersistence = false;
+    component.question = {
+      id: 'question-a',
+      starterCode: 'export default function one() { return 1; }',
+      starterCodeTs: 'export default function one(): number { return 1; }',
+      tests: "test('one', () => expect(1).toBe(1));",
+      testsTs: "test('one', () => expect(1).toBe(1));",
+    } as any;
+
+    component.hasRunTests.set(true);
+    component.isRunningTests.set(true);
+    component.testResults.set([{ name: 'stale result', passed: false }]);
+    component.consoleEntries.set([{ level: 'error', message: 'stale log', timestamp: Date.now() }]);
+    component.subTab.set('console');
+
+    let emittedResults: TestResult[] | null = null;
+    let emittedConsole: ConsoleEntry[] | null = null;
+    component.testResultsChange.subscribe((results) => (emittedResults = results));
+    component.consoleEntriesChange.subscribe((entries) => (emittedConsole = entries));
+
+    await component.initFromQuestion();
+
+    expect(component.hasRunTests()).toBe(false);
+    expect(component.isRunningTests()).toBe(false);
+    expect(component.testResults()).toEqual([]);
+    expect(component.consoleEntries()).toEqual([]);
+    expect(component.subTab()).toBe('tests');
+    expect(emittedResults).not.toBeNull();
+    expect(emittedConsole).not.toBeNull();
+    expect(emittedResults ?? []).toEqual([]);
+    expect(emittedConsole ?? []).toEqual([]);
+  });
 });

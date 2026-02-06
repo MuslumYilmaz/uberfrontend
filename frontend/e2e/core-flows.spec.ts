@@ -77,6 +77,36 @@ test('run JS tests -> results appear with PASS/FAIL labels', async ({ page }) =>
   expect(statuses.some((s: string) => s.includes('FAIL'))).toBeTruthy();
 });
 
+test('question change via similar questions clears prior test results', async ({ page }) => {
+  await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
+  await expect(page.getByTestId('js-panel')).toBeVisible();
+  await expect(page.getByTestId('js-run-tests')).toBeEnabled();
+
+  const codeModelKey = `q-${JS_QUESTION.id}-code`;
+  await setMonacoModelValue(
+    page,
+    codeModelKey,
+    [
+      'export default function clamp(value, lower, upper) {',
+      '  return lower;',
+      '}',
+      '',
+    ].join('\n'),
+  );
+
+  await page.getByTestId('js-run-tests').click();
+  const results = page.getByTestId('js-results-panel').getByTestId('test-result');
+  await expect(results).not.toHaveCount(0);
+
+  const similarLinks = page.locator('section:has(h3:has-text("Similar questions")) a[href*="/javascript/coding/"]');
+  await expect(similarLinks.first()).toBeVisible();
+  await similarLinks.first().click();
+
+  await expect(page).not.toHaveURL(new RegExp(`/${JS_QUESTION.id}$`));
+  await expect(page.getByTestId('js-results-panel').getByTestId('test-result')).toHaveCount(0);
+  await expect(page.getByTestId('js-results-panel')).toContainText('Run tests to see results.');
+});
+
 test('persistence: partial edit -> refresh -> code restored safely', async ({ page }) => {
   await page.goto(`/${JS_QUESTION.tech}/coding/${JS_QUESTION.id}`);
   await expect(page.getByTestId('js-panel')).toBeVisible();

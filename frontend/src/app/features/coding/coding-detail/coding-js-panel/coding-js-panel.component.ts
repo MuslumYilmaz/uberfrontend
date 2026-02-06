@@ -313,6 +313,7 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
   /* ---------- Lifecycle-ish setup API (call once from parent) ---------- */
   async initFromQuestion() {
     const q = this.question as Question; if (!q) return;
+    this.resetRunnerStateForQuestionChange();
     this._hydrating = true;
     const { js: sJs, ts: sTs } = this.startersForBoth(q);
 
@@ -424,6 +425,17 @@ export class CodingJsPanelComponent implements OnChanges, OnInit, OnDestroy {
 
     // End hydration on next tick
     requestAnimationFrame(() => requestAnimationFrame(() => { this._hydrating = false; }));
+  }
+
+  private resetRunnerStateForQuestionChange(): void {
+    this._runSeq += 1; // invalidate any in-flight run for the previous question
+    this.isRunningTests.set(false);
+    this.hasRunTests.set(false);
+    this.testResults.set([]);
+    this.consoleEntries.set([]);
+    this.subTab.set('tests');
+    this.testResultsChange.emit([]);
+    this.consoleEntriesChange.emit([]);
   }
 
   dismissDraftUpdateBanner(): void {
