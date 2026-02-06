@@ -107,6 +107,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
   similarOpen = signal(true);
+  qnavOpen = signal(false);
 
   private sub?: Subscription;
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
@@ -513,10 +514,23 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   }
 
   onSelect(q: Question) {
+    this.closeQnav();
     this.ensurePracticeBuilt(q.id);
     this.router.navigate(['/', this.tech, 'trivia', q.id], {
       state: this.buildNavState(q.id),
     });
+  }
+
+  toggleQnav() {
+    this.qnavOpen.update((v) => !v);
+  }
+
+  openQnav() {
+    this.qnavOpen.set(true);
+  }
+
+  closeQnav() {
+    this.qnavOpen.set(false);
   }
 
   similarNavState(q: Question) {

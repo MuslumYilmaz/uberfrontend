@@ -39,7 +39,7 @@ type LeftNav = {
   grid-template-columns: minmax(0,1fr) var(--right-toc-w);
   gap:28px;
   align-items:start;
-  padding:8px 0 24px;
+  padding:12px 16px 40px;
 }
 .wrap.has-left{
   grid-template-columns: var(--left-nav-w) minmax(0,1fr) var(--right-toc-w);
@@ -47,17 +47,71 @@ type LeftNav = {
 
 @media (max-width:1100px){
   .wrap{ grid-template-columns:1fr; }
-  .left, .toc { position:static; }
-  .left-fixed, .toc-fixed {
-    position: static !important;
-    width: auto !important;
-    max-height: none !important;
-    left: auto !important;
-    right: auto !important;
-  }
+  .left, .toc { display:none; }
+  .mobile-panels{ display:grid; }
 }
 
 .main{ max-width: 860px; }
+
+/* mobile/tablet: collapsible menu + toc */
+.mobile-panels{
+  display:none;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 6px 0 16px;
+}
+.mp{
+  border:1px solid var(--uf-border-subtle);
+  border-radius:16px;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--uf-surface-alt) 94%, var(--uf-surface)), color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt)));
+  box-shadow:var(--uf-card-shadow);
+  overflow:hidden;
+}
+.mp summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  color:var(--uf-text-primary);
+  font-weight:800;
+}
+.mp summary::-webkit-details-marker{ display:none; }
+.mp .chev{ opacity:.85; transition: transform .14s ease; }
+.mp[open] .chev{ transform: rotate(180deg); }
+.mp-body{
+  border-top:1px solid var(--uf-border-subtle);
+  padding:10px 12px;
+  max-height: 52vh;
+  overflow:auto;
+}
+.mp .sec{ margin:10px 0 6px; padding:0 6px; font-size:12px; opacity:.7; }
+.mp a{
+  display:flex; align-items:center; gap:8px;
+  padding:10px 12px; margin:6px 4px;
+  border-radius:12px;
+  text-decoration:none; color:inherit; opacity:.9;
+  border:1px solid transparent;
+  font-size:13px;
+}
+.mp a:hover{ opacity:1; background:color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); }
+.mp a.active{ opacity:1; background:color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface)); border-color:color-mix(in srgb, var(--uf-accent) 40%, var(--uf-border-subtle)); }
+.mp a.l3{ margin-left:14px; }
+.mp .dot{ width:6px; height:6px; border-radius:999px; background:color-mix(in srgb, var(--uf-text-primary) 40%, transparent); }
+
+@media (max-width:720px){
+  .wrap{ padding:10px 14px 36px; }
+  .wrap .title{ font-size:24px; }
+  .wrap .content{ font-size:15px; line-height:1.7; }
+}
+
+@media (max-width:520px){
+  .wrap .footer-nav{ flex-direction:column; gap:10px; }
+  .wrap .footer-nav span{ display:none; }
+  .wrap .nav-btn{ width:100%; text-align:center; }
+}
 
 /* headings + meta — SIZE-ALIGNED with System Design */
 .title{ font-size:28px; font-weight:800; letter-spacing:.2px; margin:6px 0 6px; color: var(--uf-text-primary); }
@@ -212,6 +266,41 @@ type LeftNav = {
         <span *ngFor="let t of (tags||[])" class="badge">{{t}}</span>
       </div>
 
+      <div class="mobile-panels" *ngIf="leftNav || toc().length">
+        <details class="mp" *ngIf="leftNav">
+          <summary>
+            <span>Menu</span>
+            <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
+          </summary>
+          <div class="mp-body">
+            <ng-container *ngFor="let s of leftNav!.sections">
+              <div class="sec">{{ s.title }}</div>
+              <a *ngFor="let it of s.items"
+                 [class.active]="it.active"
+                 [routerLink]="it.link"
+                 (click)="closeNearestDetails($event)">
+                <span class="dot"></span>
+                <span>{{ it.title }}</span>
+              </a>
+            </ng-container>
+          </div>
+        </details>
+
+        <details class="mp" *ngIf="toc().length">
+          <summary>
+            <span>On this page</span>
+            <i class="fa-solid fa-chevron-down chev" aria-hidden="true"></i>
+          </summary>
+          <div class="mp-body">
+            <a *ngFor="let it of toc()"
+               [href]="'#'+it.id"
+               [class.active]="activeId()===it.id"
+               [class.l2]="it.level===2" [class.l3]="it.level===3"
+               (click)="smoothScroll($event, it.id); closeNearestDetails($event)">{{ it.text }}</a>
+          </div>
+        </details>
+      </div>
+
       <div #content class="content"><ng-content></ng-content></div>
 
       <div class="footer-nav">
@@ -363,6 +452,12 @@ export class GuideShellComponent implements AfterViewInit, OnDestroy {
 
   private slug(s: string) {
     return s.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').slice(0, 60);
+  }
+
+  closeNearestDetails(ev: Event) {
+    const el = ev.currentTarget as HTMLElement | null;
+    const details = el?.closest?.('details') as HTMLDetailsElement | null;
+    if (details) details.open = false;
   }
 
   smoothScroll(ev: Event, id: string) {

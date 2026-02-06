@@ -1,10 +1,6 @@
 <!-- ========================= trivia-detail.component.html ========================= -->
 <div class="page-frame">
-    <!-- Sidebar -->
-    <aside class="side">
-        <div class="side-head">
-            <div class="side-title">All Questions</div>
-        </div>
+    <ng-template #questionListTpl>
         <ul class="side-list">
             <li *ngFor="let q of questionsList">
                 <button class="side-item" [class.is-active]="isActive(q)" (click)="onSelect(q)">
@@ -18,12 +14,67 @@
                 </button>
             </li>
         </ul>
+    </ng-template>
+
+    <!-- Sidebar -->
+    <aside class="side">
+        <div class="side-head">
+            <div class="side-title">All Questions</div>
+        </div>
+        <ng-container *ngTemplateOutlet="questionListTpl"></ng-container>
     </aside>
 
     <!-- Detail -->
-    <main class="main" #mainScroll>
+    <main class="main" #mainScroll data-testid="trivia-detail-main">
         <div *ngIf="loadState() === 'loaded' && question() as q; else stateBlock" class="main-stack">
             <ng-container *ngIf="!locked(); else lockedView">
+            <!-- Mobile/tablet: closable question nav -->
+            <section class="mobile-qnav" *ngIf="questionsList?.length">
+                <button
+                    class="mobile-qnav__trigger"
+                    type="button"
+                    data-testid="trivia-mobile-qnav-trigger"
+                    (click)="toggleQnav()"
+                    [attr.aria-expanded]="qnavOpen()"
+                    aria-controls="trivia-mobile-qnav-panel">
+                    <span class="mobile-qnav__label">All questions</span>
+                    <span class="mobile-qnav__right">
+                        <span class="mobile-qnav__hint">{{ questionsList.length }} items</span>
+                        <i class="fa-solid" [ngClass]="qnavOpen() ? 'fa-chevron-up' : 'fa-chevron-down'" aria-hidden="true"></i>
+                    </span>
+                </button>
+            </section>
+
+            <div
+                class="mobile-qnav__backdrop"
+                *ngIf="qnavOpen()"
+                (click)="closeQnav()"
+                aria-hidden="true">
+            </div>
+
+            <section
+                id="trivia-mobile-qnav-panel"
+                class="mobile-qnav__panel"
+                data-testid="trivia-mobile-qnav-panel"
+                *ngIf="qnavOpen()"
+                role="dialog"
+                aria-label="All questions">
+                <div class="mobile-qnav__panel-head">
+                    <div class="mobile-qnav__panel-title">All questions</div>
+                    <button
+                        type="button"
+                        class="mobile-qnav__close"
+                        data-testid="trivia-mobile-qnav-close"
+                        (click)="closeQnav()"
+                        aria-label="Close questions panel">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="mobile-qnav__body">
+                    <ng-container *ngTemplateOutlet="questionListTpl"></ng-container>
+                </div>
+            </section>
+
             <!-- Title + chips -->
             <header class="title-block">
                 <div class="title-row">
