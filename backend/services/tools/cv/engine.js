@@ -29,6 +29,12 @@ const EXTRACTION_CONFIDENCE_MULTIPLIERS = Object.freeze({
   low: 0.56,
 });
 
+const NON_CV_CATEGORY_CAPS = Object.freeze({
+  high: Object.freeze({ impact: 6, consistency: 5 }),
+  medium: Object.freeze({ impact: 8, consistency: 6 }),
+  low: Object.freeze({ impact: 12, consistency: 8 }),
+});
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -163,6 +169,17 @@ function lowExtractionQualityIssue(ctx) {
   }, evidence);
 }
 
+function applyNonCvCategoryCaps(categoryScores, ctx) {
+  if (!ctx?.likelyNonCv) return categoryScores;
+  const extractionLevel = ctx?.extractionQuality?.level || 'high';
+  const caps = NON_CV_CATEGORY_CAPS[extractionLevel] || NON_CV_CATEGORY_CAPS.high;
+  return {
+    ...categoryScores,
+    impact: Math.min(categoryScores.impact, caps.impact),
+    consistency: Math.min(categoryScores.consistency, caps.consistency),
+  };
+}
+
 function scoreCvContext(ctx, rules) {
   const issues = [];
   for (const rule of rules) {
@@ -215,22 +232,24 @@ function scoreCvContext(ctx, rules) {
     categoryScores[category] = clamp(Math.round(categoryScores[category]), 0, max);
   }
 
-  const overall = Object.values(categoryScores).reduce((sum, value) => sum + value, 0);
+  const cappedCategoryScores = applyNonCvCategoryCaps(categoryScores, ctx);
+
+  const overall = Object.values(cappedCategoryScores).reduce((sum, value) => sum + value, 0);
   const breakdown = Object.keys(CATEGORY_MAX_SCORES).map((id) => ({
     id,
     label: CATEGORY_LABELS[id],
-    score: categoryScores[id],
+    score: cappedCategoryScores[id],
     max: CATEGORY_MAX_SCORES[id],
   }));
 
   return {
     scores: {
       overall,
-      ats: categoryScores.ats,
-      structure: categoryScores.structure,
-      impact: categoryScores.impact,
-      consistency: categoryScores.consistency,
-      keywords: categoryScores.keywords,
+      ats: cappedCategoryScores.ats,
+      structure: cappedCategoryScores.structure,
+      impact: cappedCategoryScores.impact,
+      consistency: cappedCategoryScores.consistency,
+      keywords: cappedCategoryScores.keywords,
     },
     breakdown,
     issues: adjustedIssues,

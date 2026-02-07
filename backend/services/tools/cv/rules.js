@@ -233,6 +233,35 @@ function createRules() {
       } : null),
     },
     {
+      id: 'insufficient_impact_evidence',
+      severity: 'warn',
+      category: 'impact',
+      scoreDelta: -8,
+      evaluate: (ctx) => {
+        const noExperienceBullets = ctx.experienceBulletCount === 0;
+        if (!ctx.likelyNonCv && !noExperienceBullets) return null;
+
+        const extractionLow = ctx.extractionQuality?.level === 'low';
+        const likelyParsingLoss = extractionLow && noExperienceBullets;
+
+        return {
+          severity: likelyParsingLoss ? 'info' : 'warn',
+          scoreDelta: likelyParsingLoss ? -2 : -8,
+          title: likelyParsingLoss
+            ? 'Impact evidence may be under-detected'
+            : 'Insufficient impact evidence detected',
+          message: likelyParsingLoss
+            ? 'Extraction quality is low and no experience bullets were parsed.'
+            : 'The document does not provide enough experience bullet evidence for impact scoring.',
+          why: 'Impact scoring requires structured experience bullets with measurable outcomes.',
+          fix: likelyParsingLoss
+            ? 'Try DOCX or re-export PDF with clean line breaks, then add metric-based bullets.'
+            : 'Add experience bullets with action, metric, and scope to improve impact evaluation.',
+          evidence: topLineEvidence(ctx, 2),
+        };
+      },
+    },
+    {
       id: 'low_numeric_density',
       severity: 'warn',
       category: 'impact',
@@ -413,6 +442,26 @@ function createRules() {
         fix: `Use one format consistently, e.g., ${ctx.dateFormats.suggestedFormat} (Jan 2022, Mar 2024).`,
         evidence: ctx.dateFormats.usedFormats.flatMap((format) => (ctx.dateFormats.evidence[format] || []).slice(0, 1)),
       } : null),
+    },
+    {
+      id: 'insufficient_consistency_signals',
+      severity: 'warn',
+      category: 'consistency',
+      scoreDelta: -5,
+      evaluate: (ctx) => {
+        const weakSignal =
+          ctx.likelyNonCv
+          || (ctx.sectionCount < 2 && ctx.bulletCount === 0 && ctx.dateFormats.usedCount === 0);
+        if (!weakSignal) return null;
+
+        return {
+          title: 'Insufficient consistency signals',
+          message: 'There is not enough CV-like structure to reliably assess formatting consistency.',
+          why: 'Consistency scoring needs timeline or bullet structure to evaluate formatting quality.',
+          fix: 'Use clear section headings, timeline dates, and bullet formatting for experience entries.',
+          evidence: topLineEvidence(ctx, 2),
+        };
+      },
     },
     {
       id: 'mixed_bullet_markers',

@@ -590,6 +590,17 @@ function buildCvContext(rawText, options = {}) {
 
   const stackContradictions = buildStackContradictions(lineEntriesForCoverage);
   const extractionQuality = analyzeExtractionQuality(lineEntries, mergedBulletLines);
+  const sectionCount = Object.values(sectionsPresent).filter(Boolean).length;
+  const hasContactSignal = EMAIL_RE.test(normalizedText) || PHONE_RE.test(normalizedText) || LINKEDIN_RE.test(normalizedText);
+  const cvSignalScore = (
+    (hasContactSignal ? 2 : 0)
+    + (sectionCount >= 2 ? 2 : 0)
+    + (sectionsPresent.experience ? 2 : 0)
+    + (bulletCount >= 4 ? 2 : 0)
+    + (dateFormatsUsed > 0 ? 1 : 0)
+  );
+  const likelyNonCv = cvSignalScore <= 2
+    || (!hasContactSignal && sectionCount === 0 && bulletCount === 0);
 
   return {
     roleId,
@@ -600,6 +611,9 @@ function buildCvContext(rawText, options = {}) {
     lineEntries,
     sectionsPresent,
     sectionLines,
+    sectionCount,
+    cvSignalScore,
+    likelyNonCv,
     sectionDetection: {
       explicitHeadings: explicitSectionHeadings,
       aliasDetections: {

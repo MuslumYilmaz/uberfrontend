@@ -142,4 +142,49 @@ Angular, TypeScript, RxJS
     expect(context.dateFormats.suggestedFormat).toBe('MMM YYYY');
     expect(ids.has('inconsistent_date_format')).toBe(true);
   });
+
+  test('irrelevant non-CV text does not get full impact/consistency scores', () => {
+    const text = `
+Invoice Q1
+Payment instructions and legal references.
+Project code list and operational notes.
+Section A: Fulfillment Terms
+Section B: Internal Policies
+    `.trim();
+
+    const { context, report } = runReport(text);
+    const ids = issueIds(report);
+
+    expect(context.likelyNonCv).toBe(true);
+    expect(ids.has('insufficient_impact_evidence')).toBe(true);
+    expect(ids.has('insufficient_consistency_signals')).toBe(true);
+    expect(report.scores.impact).toBeLessThanOrEqual(6);
+    expect(report.scores.consistency).toBeLessThanOrEqual(5);
+  });
+
+  test('cv-like input with structured bullets avoids non-CV guardrails', () => {
+    const text = `
+Alex Doe
+alex@example.com | +1 555 777 9999 | linkedin.com/in/alex
+Summary
+Senior frontend engineer focused on accessibility and performance.
+Skills
+Angular, TypeScript, RxJS, NgRx, Jest
+Experience
+- Improved checkout LCP by 28% across 1.2M monthly sessions.
+- Reduced regression rate by 35% by expanding Jest and Cypress coverage.
+- Built state management modules with NgRx and improved release stability by 22%.
+Education
+BSc Computer Science
+    `.trim();
+
+    const { context, report } = runReport(text);
+    const ids = issueIds(report);
+
+    expect(context.likelyNonCv).toBe(false);
+    expect(ids.has('insufficient_impact_evidence')).toBe(false);
+    expect(ids.has('insufficient_consistency_signals')).toBe(false);
+    expect(report.scores.impact).toBeGreaterThan(0);
+    expect(report.scores.consistency).toBeGreaterThan(0);
+  });
 });
