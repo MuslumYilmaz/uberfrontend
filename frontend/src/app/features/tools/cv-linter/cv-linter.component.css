@@ -1,4 +1,11 @@
 :host {
+  --cv-card-bg: var(--fa-card-bg-strong);
+  --cv-card-border: var(--fa-card-border);
+  --cv-card-shadow: var(--fa-card-shadow);
+  --cv-subcard-bg: var(--fa-card-bg);
+  --cv-subcard-bg-soft: color-mix(in srgb, var(--fa-card-bg) 88%, var(--fa-card-bg-strong));
+  --cv-subcard-bg-strong: color-mix(in srgb, var(--fa-card-bg-strong) 92%, var(--fa-card-bg));
+
   display: block;
   min-height: 100vh;
   background:
@@ -56,9 +63,10 @@
 }
 
 .card {
-  background: var(--uf-surface);
-  border: 1px solid var(--uf-border-subtle);
-  border-radius: 12px;
+  background: var(--cv-card-bg);
+  border: 1px solid var(--cv-card-border);
+  border-radius: var(--fa-card-radius);
+  box-shadow: var(--cv-card-shadow);
   padding: 18px;
 }
 
@@ -258,10 +266,10 @@ textarea {
 }
 
 .top-fixes-panel {
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--cv-card-border);
   border-radius: 10px;
   padding: 12px;
-  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-strong);
   min-width: 0;
 }
 
@@ -278,10 +286,10 @@ textarea {
 .category-card {
   display: grid;
   gap: 7px;
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--cv-card-border);
   border-radius: 8px;
   padding: 8px 9px;
-  background: color-mix(in srgb, var(--uf-surface) 96%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-soft);
 }
 
 .category-head {
@@ -393,10 +401,10 @@ textarea {
 }
 
 .meta-item {
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--cv-card-border);
   border-radius: 8px;
   padding: 8px 10px;
-  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-soft);
   min-width: 0;
 }
 
@@ -445,9 +453,9 @@ textarea {
 }
 
 .results-advanced {
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--cv-card-border);
   border-radius: 10px;
-  background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-strong);
 }
 
 .results-advanced-toggle {
@@ -567,22 +575,22 @@ textarea {
   gap: 12px;
   padding: 9px 10px;
   border-radius: 8px;
-  border: 1px solid var(--uf-border-subtle);
-  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  border: 1px solid var(--cv-card-border);
+  background: var(--cv-subcard-bg-soft);
 }
 
 .issue-group {
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--cv-card-border);
   border-radius: 10px;
   overflow: hidden;
-  background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-strong);
 }
 
 .issue-group-toggle {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid var(--uf-border-subtle);
-  background: color-mix(in srgb, var(--uf-surface-alt) 88%, var(--uf-surface));
+  border-bottom: 1px solid var(--cv-card-border);
+  background: var(--cv-subcard-bg-soft);
   color: var(--uf-text-primary);
   display: flex;
   justify-content: space-between;
@@ -600,10 +608,10 @@ textarea {
 }
 
 .issue-card {
-  border: 1px solid var(--uf-border-subtle);
+  border: 1px solid var(--cv-card-border);
   border-radius: 10px;
   padding: 10px;
-  background: var(--uf-surface);
+  background: var(--cv-subcard-bg);
   word-break: break-word;
 }
 
@@ -746,7 +754,7 @@ textarea {
 .advanced-toggle {
   width: 100%;
   border: 0;
-  background: color-mix(in srgb, var(--uf-surface) 95%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-soft);
   color: var(--uf-text-primary);
   display: flex;
   justify-content: space-between;
@@ -829,9 +837,9 @@ textarea {
 }
 
 .results-placeholder {
-  border: 1px dashed var(--uf-border-subtle);
+  border: 1px dashed var(--cv-card-border);
   border-radius: 10px;
-  background: color-mix(in srgb, var(--uf-surface) 96%, var(--uf-surface-alt));
+  background: var(--cv-subcard-bg-strong);
   padding: 14px;
 }
 

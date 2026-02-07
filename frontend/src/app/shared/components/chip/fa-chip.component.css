@@ -10,11 +10,16 @@
   --fa-chip-ring: var(--fa-focus-ring);
   --fa-chip-selected-ring: var(--fa-chip-ring);
   --fa-chip-focus-ring: var(--fa-chip-ring);
+  --fa-chip-hover-border: var(--fa-border-strong);
+  --fa-chip-active-border: var(--fa-border-strong);
   --fa-chip-gap: 6px;
   --fa-chip-pad-y: 6px;
   --fa-chip-pad-x: 10px;
   --fa-chip-font-size: 13px;
   --fa-chip-min-h: 34px;
+  --fa-chip-radius: var(--fa-radius-pill);
+  --fa-chip-width: auto;
+  --fa-chip-justify: flex-start;
 
   display: inline-block;
 }
@@ -24,9 +29,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--fa-chip-gap);
+  justify-content: var(--fa-chip-justify);
   padding: var(--fa-chip-pad-y) var(--fa-chip-pad-x);
   min-height: var(--fa-chip-min-h);
-  border-radius: var(--fa-radius-pill);
+  width: var(--fa-chip-width);
+  border-radius: var(--fa-chip-radius);
   border: 1px solid var(--fa-chip-border);
   background: var(--fa-chip-bg);
   color: var(--fa-chip-ink);
@@ -66,12 +73,13 @@
 .fa-chip:not(.fa-chip--disabled):hover {
   background: var(--fa-chip-hover);
   color: var(--fa-chip-ink-strong);
-  border-color: var(--fa-border-strong);
+  border-color: var(--fa-chip-hover-border);
 }
 
 .fa-chip:not(.fa-chip--disabled):active {
   transform: translateY(0.5px) scale(0.99);
   background: var(--fa-chip-active);
+  border-color: var(--fa-chip-active-border);
 }
 
 .fa-chip--selected {

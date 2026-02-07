@@ -50,7 +50,10 @@
 
 <!-- Section tabs + right-side count -->
 <div *ngIf="source!=='company'" class="tabs-row">
-  <div class="tabs-left tabs-left--segmented">
+  <div class="tabs-left tabs-left--segmented"
+       [class.has-tabs]="showKindTabs"
+       [class.is-quiz]="activeSegmentKind === 'trivia'">
+    <span *ngIf="showKindTabs" class="segment-indicator" aria-hidden="true"></span>
     <!-- GLOBAL (/coding): render kind pills unless System design is active -->
     <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
       <ng-container *ngIf="!isSystemCategoryActive">

@@ -49,6 +49,16 @@ export class CodingTechKindTabsComponent {
     { key: 'system', label: 'System design' },
   ];
 
+  get showKindTabs(): boolean {
+    if (this.source === 'global-coding') return !this.isSystemCategoryActive;
+    return (this.kindTabs?.length ?? 0) > 0;
+  }
+
+  get activeSegmentKind(): SelectedKind {
+    if (this.source === 'global-coding') return this.selectedKind ?? 'coding';
+    return this.kind === 'trivia' ? 'trivia' : 'coding';
+  }
+
   heading(): string {
     if (this.source === 'global-coding') {
       const k: SelectedKind = this.selectedKind ?? 'coding';
