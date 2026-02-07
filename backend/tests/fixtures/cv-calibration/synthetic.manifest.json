@@ -1,0 +1,399 @@
+{
+  "version": 1,
+  "description": "Synthetic CV calibration set for balanced precision tuning.",
+  "targetRole": "senior_frontend_angular",
+  "rules": [
+    "missing_skills_section",
+    "missing_summary_section",
+    "no_outcome_language",
+    "keyword_missing",
+    "keyword_missing_critical"
+  ],
+  "samples": [
+    {
+      "id": "balanced_alias_01",
+      "file": "balanced_alias_01.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_02",
+      "file": "balanced_alias_02.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_03",
+      "file": "balanced_alias_03.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_04",
+      "file": "balanced_alias_04.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_05",
+      "file": "balanced_alias_05.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_06",
+      "file": "balanced_alias_06.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_07",
+      "file": "balanced_alias_07.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_08",
+      "file": "balanced_alias_08.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_09",
+      "file": "balanced_alias_09.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "balanced_alias_10",
+      "file": "balanced_alias_10.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_01",
+      "file": "missing_skills_01.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_02",
+      "file": "missing_skills_02.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_03",
+      "file": "missing_skills_03.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_04",
+      "file": "missing_skills_04.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_05",
+      "file": "missing_skills_05.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_06",
+      "file": "missing_skills_06.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_skills_07",
+      "file": "missing_skills_07.txt",
+      "expect": {
+        "missing_skills_section": true,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_summary_01",
+      "file": "missing_summary_01.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": true,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_summary_02",
+      "file": "missing_summary_02.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": true,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_summary_03",
+      "file": "missing_summary_03.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": true,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_summary_04",
+      "file": "missing_summary_04.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": true,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_summary_05",
+      "file": "missing_summary_05.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": true,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "missing_summary_06",
+      "file": "missing_summary_06.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": true,
+        "no_outcome_language": false,
+        "keyword_missing": false,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "outcome_gap_01",
+      "file": "outcome_gap_01.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": true,
+        "keyword_missing": true,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "outcome_gap_02",
+      "file": "outcome_gap_02.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": true,
+        "keyword_missing": true,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "outcome_gap_03",
+      "file": "outcome_gap_03.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": true,
+        "keyword_missing": true,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "outcome_gap_04",
+      "file": "outcome_gap_04.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": true,
+        "keyword_missing": true,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "outcome_gap_05",
+      "file": "outcome_gap_05.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": true,
+        "keyword_missing": true,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "outcome_gap_06",
+      "file": "outcome_gap_06.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": true,
+        "keyword_missing": true,
+        "keyword_missing_critical": false
+      }
+    },
+    {
+      "id": "keyword_gap_01",
+      "file": "keyword_gap_01.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": true,
+        "keyword_missing_critical": true
+      }
+    },
+    {
+      "id": "keyword_gap_02",
+      "file": "keyword_gap_02.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": true,
+        "keyword_missing_critical": true
+      }
+    },
+    {
+      "id": "keyword_gap_03",
+      "file": "keyword_gap_03.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": true,
+        "keyword_missing_critical": true
+      }
+    },
+    {
+      "id": "keyword_gap_04",
+      "file": "keyword_gap_04.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": true,
+        "keyword_missing_critical": true
+      }
+    },
+    {
+      "id": "keyword_gap_05",
+      "file": "keyword_gap_05.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": true,
+        "keyword_missing_critical": true
+      }
+    },
+    {
+      "id": "keyword_gap_06",
+      "file": "keyword_gap_06.txt",
+      "expect": {
+        "missing_skills_section": false,
+        "missing_summary_section": false,
+        "no_outcome_language": false,
+        "keyword_missing": true,
+        "keyword_missing_critical": true
+      }
+    }
+  ]
+}

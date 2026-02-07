@@ -118,6 +118,9 @@ export function buildHeuristicEvidence(
 }
 
 export function computeIssueConfidence(issue: CvIssue, hasLowExtractionQuality: boolean): number {
+  if (Number.isFinite(issue?.confidence)) {
+    return clamp(Number(issue.confidence), 0, 1);
+  }
   const normalizedEvidence = normalizeIssueEvidence(issue);
   const evidenceConfidence = normalizedEvidence.find((entry) => Number.isFinite(entry.confidence))?.confidence;
   const base = Number.isFinite(evidenceConfidence) ? Number(evidenceConfidence) : SEVERITY_BASE_CONFIDENCE[issue.severity] ?? 0.7;

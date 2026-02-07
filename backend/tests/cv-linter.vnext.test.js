@@ -103,6 +103,7 @@ describe('cv-linter extraction-based penalty down-weighting', () => {
       { id: 'no_outcome_language', scoreDelta: -3 },
       { id: 'low_bullet_count', scoreDelta: -4 },
       { id: 'keyword_missing', scoreDelta: -6 },
+      { id: 'keyword_missing_critical', scoreDelta: -4 },
       { id: 'stack_contradiction', scoreDelta: -5 },
     ];
 
@@ -112,6 +113,7 @@ describe('cv-linter extraction-based penalty down-weighting', () => {
     expect(byId.get('no_outcome_language').appliedScoreDelta).toBeCloseTo(-1.2, 2);
     expect(byId.get('low_bullet_count').appliedScoreDelta).toBeCloseTo(-1.6, 2);
     expect(byId.get('keyword_missing').appliedScoreDelta).toBeCloseTo(-3.66, 2);
+    expect(byId.get('keyword_missing_critical').appliedScoreDelta).toBeCloseTo(-2.44, 2);
     expect(byId.get('stack_contradiction').appliedScoreDelta).toBe(-5);
   });
 });
@@ -224,6 +226,30 @@ Maintained apps. • Handled bugs. • Supported launches.
     const outcomeIssue = issues.get('no_outcome_language');
     if (outcomeIssue) {
       expect(outcomeIssue.severity).toBe('info');
+    }
+  });
+});
+
+describe('cv-linter confidence and evidence normalization', () => {
+  test('warn and info issues consistently include evidence and confidence', () => {
+    const report = analyze(`
+No Contact Header
+
+Experience
+- Worked on frontend tasks.
+- Built dashboard widgets.
+- Fixed bugs in UI pages.
+- Improved a flow by 10%.
+    `.trim());
+
+    for (const issue of report.issues) {
+      if (issue.severity === 'warn' || issue.severity === 'info') {
+        expect(Array.isArray(issue.evidence)).toBe(true);
+        expect(issue.evidence.length).toBeGreaterThan(0);
+      }
+      expect(Number.isFinite(issue.confidence)).toBe(true);
+      expect(issue.confidence).toBeGreaterThanOrEqual(0);
+      expect(issue.confidence).toBeLessThanOrEqual(1);
     }
   });
 });

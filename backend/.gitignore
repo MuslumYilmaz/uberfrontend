@@ -12,3 +12,6 @@ pnpm-debug.log*
 
 # MacOS
 .DS_Store
+
+# Local-only CV calibration samples (never commit real CV data)
+tests/fixtures/cv-calibration/private/*

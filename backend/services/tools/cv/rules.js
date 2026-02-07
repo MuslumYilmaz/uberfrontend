@@ -502,7 +502,7 @@ function createRules() {
       severity: 'warn',
       category: 'keywords',
       scoreDelta: -6,
-      evaluate: (ctx) => (ctx.keywordCoverage.weightedCoveragePct < 60 ? {
+      evaluate: (ctx) => (ctx.keywordCoverage.weightedCoveragePct < 50 ? {
         title: 'Keyword coverage is low',
         message: `Weighted keyword coverage is ${ctx.keywordCoverage.weightedCoveragePct}% (experience-weighted).`,
         why: 'Role-aligned terms improve ATS matching for interview screening.',

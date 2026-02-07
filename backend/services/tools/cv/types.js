@@ -25,7 +25,18 @@
  * @property {string} explanation
  * @property {string} why
  * @property {string} fix
- * @property {{snippet:string,lineStart?:number,lineEnd?:number,reason?:string}[]} [evidence]
+ * @property {number} [confidence]
+ * @property {{
+ *   snippet:string,
+ *   excerpt?:string,
+ *   details?:string,
+ *   line?:number,
+ *   lineStart?:number,
+ *   lineEnd?:number,
+ *   reason?:string,
+ *   source?:'pdf'|'docx'|'raw_text',
+ *   confidence?:number
+ * }[]} [evidence]
  */
 
 module.exports = {};

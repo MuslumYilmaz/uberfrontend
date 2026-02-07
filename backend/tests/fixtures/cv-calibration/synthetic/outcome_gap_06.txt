@@ -1,0 +1,15 @@
+Outcome Gap 6
+outcomegap6@example.com | +1 555 511 306 | linkedin.com/in/outcomegap6
+Summary
+Senior frontend engineer focused on Angular UI quality and delivery.
+Skills
+Angular, TypeScript, RxJS, state management, testing, accessibility, performance
+Experience
+- Worked on Angular pages with TypeScript and RxJS.
+- Worked on state management patterns with NgRx.
+- Managed accessibility checks with WCAG and ARIA.
+- Supported testing setup with Jest and Cypress.
+- Handled performance reviews for bundle behavior.
+- Maintained component updates across multiple modules.
+Education
+BSc Computer Science

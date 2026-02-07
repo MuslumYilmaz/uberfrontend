@@ -393,13 +393,12 @@ export class CvLinterComponent implements OnDestroy {
   }
 
   hasIssueEvidence(issue: CvIssue): boolean {
-    if (issue.severity === 'critical') return false;
-    return this.issueEvidenceEntries(issue).length > 0;
+    return issue.severity !== 'critical';
   }
 
   primaryEvidenceText(issue: CvIssue): string {
     const first = this.issueEvidenceEntries(issue)[0];
-    if (!first) return '';
+    if (!first) return 'No direct snippet available; derived from deterministic CV structure heuristics.';
     return String(first.excerpt || '').trim();
   }
 

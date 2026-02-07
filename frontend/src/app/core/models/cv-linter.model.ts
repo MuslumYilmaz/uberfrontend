@@ -8,6 +8,7 @@ export interface CvIssue {
   severity: CvSeverity;
   category: CvCategory;
   scoreDelta: number;
+  confidence?: number;
   title: string;
   message: string;
   explanation: string;

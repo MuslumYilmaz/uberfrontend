@@ -1,0 +1,12 @@
+No Summary 2
+nosummary2@example.com | +1 555 451 202 | linkedin.com/in/nosummary2
+Skills
+Angular, TypeScript, RxJS, NgRx, Jest, Cypress, accessibility, performance
+Experience
+- Improved Angular performance by 29% with TypeScript and RxJS.
+- Led state management refactor and reduced incidents by 31%.
+- Implemented accessibility standards with WCAG and ARIA, improving audit score to 94%.
+- Expanded testing with Jest and Cypress and reduced regression count by 33%.
+- Optimized web vitals by 20% for checkout flows.
+Education
+BSc Computer Science

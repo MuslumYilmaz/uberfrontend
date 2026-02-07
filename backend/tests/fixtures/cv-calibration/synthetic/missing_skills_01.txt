@@ -1,0 +1,12 @@
+No Skills 1
+noskills1@example.com | +1 555 321 101 | linkedin.com/in/noskills1
+Summary
+Senior frontend engineer focused on Angular architecture, performance, and accessibility.
+Experience
+- Improved Angular rendering performance by 26% using TypeScript and RxJS.
+- Led state management updates with NgRx and reduced failed releases by 30%.
+- Implemented accessibility audits with WCAG and ARIA, improving coverage to 95%.
+- Expanded testing with Jest and Cypress, reducing bugs by 38%.
+- Optimized runtime behavior and improved web vitals by 21%.
+Education
+BSc Computer Science

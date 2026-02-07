@@ -1,0 +1,13 @@
+Candidate 2
+candidate2@example.com | +1 555 120 002 | linkedin.com/in/candidate2
+Summary
+Senior frontend engineer building Angular platforms for scale, accessibility, and measurable performance.
+Technologies: Angular, TypeScript, RxJS, NgRx\nFrameworks: Angular, Jest, Cypress
+Experience
+- Improved Angular checkout performance by 28% using TypeScript and RxJS observables.
+- Led NgRx state management rollout and reduced defect escape rate by 35%.
+- Expanded accessibility coverage with WCAG and ARIA checks, raising compliance to 96%.
+- Implemented testing with Jest and Cypress, reducing regressions by 42%.
+- Optimized bundle strategy and improved web vitals by 24% across high-traffic flows.
+Education
+BSc Computer Science

@@ -1,0 +1,13 @@
+Keyword Gap 3
+keywordgap3@example.com | +1 555 661 403 | linkedin.com/in/keywordgap3
+Summary
+Frontend engineer delivering product UI improvements for customer workflows.
+Skills
+JavaScript, HTML, CSS, REST APIs
+Experience
+- Improved dashboard load speed by 12% for account settings pages.
+- Reduced support tickets by 18% through clearer UI states.
+- Increased conversion by 7% on profile completion flow.
+- Delivered reusable component library for internal tools.
+Education
+BSc Information Systems

@@ -83,4 +83,16 @@ describe('cv-linter issues utils', () => {
     expect(sensitiveConfidence).toBeLessThan(0.6);
     expect(nonSensitiveConfidence).toBeGreaterThan(0.6);
   });
+
+  it('prefers backend-provided issue confidence when available', () => {
+    const issue = makeIssue({
+      id: 'keyword_missing',
+      severity: 'warn',
+      confidence: 0.31,
+      evidence: [{ confidence: 0.91, snippet: 'keyword gap' }],
+    });
+
+    expect(computeIssueConfidence(issue, false)).toBeCloseTo(0.31, 2);
+    expect(computeIssueConfidence(issue, true)).toBeCloseTo(0.31, 2);
+  });
 });

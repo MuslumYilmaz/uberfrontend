@@ -2,6 +2,7 @@
 
 const EMAIL_RE = /\b([A-Z0-9._%+-])([A-Z0-9._%+-]*)([A-Z0-9._%+-])@([A-Z0-9.-]+\.[A-Z]{2,})\b/gi;
 const PHONE_RE = /(?:\+?\d[\d().\s-]{6,}\d)/g;
+const ALLOWED_EVIDENCE_SOURCES = new Set(['pdf', 'docx', 'raw_text']);
 
 function makeSnippet(text, maxLen = 140) {
   const compact = String(text || '').replace(/\s+/g, ' ').trim();
@@ -36,28 +37,55 @@ function maskPII(snippet) {
   return maskPhone(maskEmail(snippet));
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
 function normalizeEvidenceEntry(entry) {
   if (!entry) return null;
 
   if (typeof entry === 'string') {
     const safe = makeSnippet(maskPII(entry));
-    return safe ? { snippet: safe } : null;
+    return safe
+      ? {
+          snippet: safe,
+          excerpt: safe,
+        }
+      : null;
   }
 
   if (typeof entry !== 'object') return null;
 
-  const rawSnippet = String(entry.snippet || entry.text || '').trim();
+  const rawSnippet = String(entry.snippet || entry.excerpt || entry.text || '').trim();
   const snippet = makeSnippet(maskPII(rawSnippet));
   if (!snippet) return null;
+  const rawDetails = String(entry.details || '').trim();
+  const normalizedDetails = rawDetails ? makeSnippet(maskPII(rawDetails), 280) : undefined;
+  const rawReason = String(entry.reason || '').trim();
+  const lineStart = Number.isFinite(entry.lineStart)
+    ? Number(entry.lineStart)
+    : (Number.isFinite(entry.line) ? Number(entry.line) : (Number.isFinite(entry.lineNumber) ? Number(entry.lineNumber) : undefined));
+  const lineEnd = Number.isFinite(entry.lineEnd) ? Number(entry.lineEnd) : lineStart;
+  const source = ALLOWED_EVIDENCE_SOURCES.has(String(entry.source || '').toLowerCase())
+    ? String(entry.source).toLowerCase()
+    : undefined;
+  const confidence = Number.isFinite(entry.confidence)
+    ? Number(clamp(Number(entry.confidence), 0, 1).toFixed(2))
+    : undefined;
 
-  const normalized = { snippet };
-  if (Number.isFinite(entry.lineStart)) normalized.lineStart = entry.lineStart;
-  if (Number.isFinite(entry.lineEnd)) normalized.lineEnd = entry.lineEnd;
-  if (!normalized.lineStart && Number.isFinite(entry.lineNumber)) {
-    normalized.lineStart = entry.lineNumber;
-    normalized.lineEnd = entry.lineNumber;
+  const normalized = {
+    snippet,
+    excerpt: snippet,
+  };
+  if (lineStart) {
+    normalized.line = lineStart;
+    normalized.lineStart = lineStart;
+    normalized.lineEnd = lineEnd;
   }
-  if (entry.reason) normalized.reason = makeSnippet(String(entry.reason), 96);
+  if (rawReason) normalized.reason = makeSnippet(rawReason, 96);
+  if (normalizedDetails && normalizedDetails !== snippet) normalized.details = normalizedDetails;
+  if (source) normalized.source = source;
+  if (confidence !== undefined) normalized.confidence = confidence;
   return normalized;
 }
 

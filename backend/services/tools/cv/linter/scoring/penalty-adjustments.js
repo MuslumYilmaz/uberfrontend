@@ -11,6 +11,7 @@ const BULLET_DEPENDENT_ISSUE_IDS = new Set([
   'low_bullet_count',
   'low_numeric_density',
   'keyword_missing',
+  'keyword_missing_critical',
 ]);
 
 const KEYWORD_EXPERIENCE_DEPENDENT_SHARE = 0.65;
@@ -49,7 +50,7 @@ function applyExtractionPenaltyAdjustments(issues = [], extractionQuality) {
       };
     }
 
-    const adjustedDelta = issue.id === 'keyword_missing'
+    const adjustedDelta = issue.id === 'keyword_missing' || issue.id === 'keyword_missing_critical'
       ? applyKeywordAdjustment(baseDelta, extractionWeight)
       : (baseDelta * extractionWeight);
 

@@ -8,8 +8,33 @@ const {
   KEYWORD_EXPERIENCE_DEPENDENT_SHARE,
 } = require('./linter/scoring/penalty-adjustments');
 
+const EXTRACTION_SENSITIVE_ISSUE_IDS = new Set([
+  'no_outcome_language',
+  'low_bullet_count',
+  'low_numeric_density',
+  'keyword_missing',
+  'keyword_missing_critical',
+  'merged_bullets_suspected',
+]);
+
+const BASE_CONFIDENCE_BY_SEVERITY = Object.freeze({
+  critical: 0.93,
+  warn: 0.82,
+  info: 0.72,
+});
+
+const EXTRACTION_CONFIDENCE_MULTIPLIERS = Object.freeze({
+  high: 1,
+  medium: 0.82,
+  low: 0.56,
+});
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function roundConfidence(value) {
+  return Number(clamp(value, 0, 1).toFixed(2));
 }
 
 function defaultIssueEvidence(ctx, issue) {
@@ -82,6 +107,47 @@ function sortIssues(issues) {
   });
 }
 
+function ensureIssueEvidence(issues, ctx) {
+  return (issues || []).map((issue) => {
+    if (!issue || typeof issue !== 'object') return issue;
+    const shouldEnforce = issue.severity === 'warn' || issue.severity === 'info';
+    if (!shouldEnforce) return issue;
+    if (Array.isArray(issue.evidence) && issue.evidence.length > 0) return issue;
+    return addEvidence(issue, defaultIssueEvidence(ctx, issue));
+  });
+}
+
+function confidenceFromEvidence(issue) {
+  const entries = Array.isArray(issue?.evidence) ? issue.evidence : [];
+  const numeric = entries
+    .map((entry) => Number(entry?.confidence))
+    .filter((value) => Number.isFinite(value));
+  if (!numeric.length) return null;
+  const average = numeric.reduce((sum, value) => sum + value, 0) / numeric.length;
+  return roundConfidence(average);
+}
+
+function attachIssueConfidence(issues, extractionQuality) {
+  const extractionLevel = extractionQuality?.level || 'high';
+  const extractionMultiplier = EXTRACTION_CONFIDENCE_MULTIPLIERS[extractionLevel] ?? 1;
+
+  return (issues || []).map((issue) => {
+    if (!issue || typeof issue !== 'object') return issue;
+    const baseConfidence = BASE_CONFIDENCE_BY_SEVERITY[issue.severity] ?? 0.7;
+    const evidenceConfidence = confidenceFromEvidence(issue);
+    const blendedBase = evidenceConfidence == null
+      ? baseConfidence
+      : ((baseConfidence * 0.45) + (evidenceConfidence * 0.55));
+    const adjusted = EXTRACTION_SENSITIVE_ISSUE_IDS.has(issue.id)
+      ? (blendedBase * extractionMultiplier)
+      : blendedBase;
+    return {
+      ...issue,
+      confidence: roundConfidence(adjusted),
+    };
+  });
+}
+
 function lowExtractionQualityIssue(ctx) {
   const evidence = (ctx?.mergedBullets?.evidence || []).slice(0, 1);
   return addEvidence({
@@ -126,7 +192,9 @@ function scoreCvContext(ctx, rules) {
   }
 
   const orderedIssues = sortIssues(issues);
-  const adjustedIssues = applyExtractionPenaltyAdjustments(orderedIssues, ctx?.extractionQuality);
+  const normalizedIssues = ensureIssueEvidence(orderedIssues, ctx);
+  const confidentIssues = attachIssueConfidence(normalizedIssues, ctx?.extractionQuality);
+  const adjustedIssues = applyExtractionPenaltyAdjustments(confidentIssues, ctx?.extractionQuality);
 
   const categoryScores = {
     ats: CATEGORY_MAX_SCORES.ats,
