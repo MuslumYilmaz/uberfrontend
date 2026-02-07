@@ -1595,7 +1595,7 @@
       }
     },
     "sdk": {
-      "asset": "assets/sb/react/question/react-like-button.v2.json",
+      "asset": "assets/sb/react/question/react-like-button.v1.json",
       "openFile": "/src/App.tsx",
       "storageKey": "v2:ui:react:react-like-button"
     },
