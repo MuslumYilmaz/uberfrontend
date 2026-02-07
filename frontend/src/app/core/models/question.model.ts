@@ -32,6 +32,11 @@ export type StructuredSolution = {
   codeTs?: string;
 };
 
+export type QuestionSeoMeta = {
+  title?: string;
+  description?: string;
+};
+
 export interface Question {
   id: string;
   title: string;
@@ -53,6 +58,7 @@ export interface Question {
   tests?: string;
   examples?: string[]; // fallback if structured description lacks examples
   companies?: string[];  // e.g. ["google", "meta"] or ["Google"]
+  seo?: QuestionSeoMeta;
 }
 
 export const isQuestionLockedForTier = (

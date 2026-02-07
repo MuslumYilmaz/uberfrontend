@@ -414,6 +414,7 @@
 /system-design/realtime-search-debounce-cache
 /system-design/scalable-notifications-feed
 /system-design/ui-component-state-from-mock
+/tools/cv
 /vue/coding/vue-accordion-faq
 /vue/coding/vue-autocomplete-search
 /vue/coding/vue-contact-form-starter

@@ -2085,7 +2085,11 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Vue Prop Mutation: What Breaks and the Correct Update Pattern",
+      "description": "See why child prop mutation causes state bugs, how emit/v-model fixes data flow, and how to explain parent-owned state confidently."
+    }
   },
   {
     "id": "vue-composition-api-vs-mixins",
@@ -2984,7 +2988,11 @@
       "performance",
       "rendering"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Vue Virtual DOM Diffing Explained (Interview Answer + Examples)",
+      "description": "Understand how Vue computes minimal DOM patches, why stable keys matter, and how to explain diffing trade-offs clearly in interviews."
+    }
   },
   {
     "id": "vue-slots-default-named-scoped-slot-props",
@@ -4061,6 +4069,10 @@
       "structure",
       "keys"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Vue v-for keys: why index causes state bugs (Interview Answer)",
+      "description": "Learn why index keys break input state, transitions, and component reuse in Vue lists, plus the safe key strategy interviewers expect."
+    }
   }
 ]

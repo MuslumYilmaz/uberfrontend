@@ -23,7 +23,7 @@
             [
               "Manual DOM updates become complex and bug-prone",
               "Declarative rendering (re-render components from current inputs)",
-              "Reduces \u201cUI out of sync\u201d bugs"
+              "Reduces “UI out of sync” bugs"
             ],
             [
               "Hard to structure large UIs",
@@ -50,7 +50,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What React deliberately does NOT solve</strong><br><br>React is intentionally a <em>UI library</em>, not a full framework. It avoids forcing a single \u201cone true way\u201d for the rest of the app (routing, data, architecture), so teams can choose what fits their needs."
+          "text": "<strong>What React deliberately does NOT solve</strong><br><br>React is intentionally a <em>UI library</em>, not a full framework. It avoids forcing a single “one true way” for the rest of the app (routing, data, architecture), so teams can choose what fits their needs."
         },
         {
           "type": "list",
@@ -91,7 +91,7 @@
               "A build tool or a React framework (for SSR/SSG, routing, etc.)"
             ]
           ],
-          "caption": "React\u2019s non-goals (by design)"
+          "caption": "React’s non-goals (by design)"
         },
         {
           "type": "text",
@@ -99,7 +99,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>React solves: <em>predictable UI updates from state</em> using declarative components + reconciliation. React does NOT solve: routing, data fetching strategy, global state architecture, forms, styling, or build/SSR tooling \u2014 those are intentionally left to the ecosystem."
+          "text": "<strong>Summary</strong><br><br>React solves: <em>predictable UI updates from state</em> using declarative components + reconciliation. React does NOT solve: routing, data fetching strategy, global state architecture, forms, styling, or build/SSR tooling — those are intentionally left to the ecosystem."
         }
       ]
     },
@@ -118,7 +118,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>React wants rendering to be a deterministic computation: given the same <code>props</code> + <code>state</code> (+ <code>context</code>), the component should return the same UI description. That purity lets React freely re-run renders, pause/abort work, and diff trees safely without causing \u201creal-world\u201d side effects."
+          "text": "<strong>Core idea</strong><br><br>React wants rendering to be a deterministic computation: given the same <code>props</code> + <code>state</code> (+ <code>context</code>), the component should return the same UI description. That purity lets React freely re-run renders, pause/abort work, and diff trees safely without causing “real-world” side effects."
         },
         {
           "type": "list",
@@ -141,15 +141,15 @@
             [
               "React uses diffing + memoization",
               "Predictable reconciliation, <code>React.memo</code>, caching, dev tooling",
-              "Non-deterministic output makes \u201csame inputs => same UI\u201d false"
+              "Non-deterministic output makes “same inputs => same UI” false"
             ],
             [
               "StrictMode intentionally stress-tests",
               "Double-invocation in dev helps catch unsafe patterns",
-              "Impure render causes \u201cworks in prod, weird in dev\u201d behavior"
+              "Impure render causes “works in prod, weird in dev” behavior"
             ]
           ],
-          "caption": "Purity is what makes React\u2019s rendering model safe and optimizable"
+          "caption": "Purity is what makes React’s rendering model safe and optimizable"
         },
         {
           "type": "text",
@@ -158,13 +158,13 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u274c Impure render: side effects inside render\nlet renders = 0;\n\nfunction Profile({ user }) {\n  renders++; // side effect: mutating external state\n\n  // side effect: mutating props object\n  user.lastSeenAt = Date.now();\n\n  // side effect: starting async work during render\n  fetch('/api/track?u=' + user.id);\n\n  return <div>Renders: {renders} \u2014 {user.name}</div>;\n}\n"
+          "code": "// ❌ Impure render: side effects inside render\nlet renders = 0;\n\nfunction Profile({ user }) {\n  renders++; // side effect: mutating external state\n\n  // side effect: mutating props object\n  user.lastSeenAt = Date.now();\n\n  // side effect: starting async work during render\n  fetch('/api/track?u=' + user.id);\n\n  return <div>Renders: {renders} — {user.name}</div>;\n}\n"
         },
         {
           "type": "list",
           "columns": [
             "Side effect in render",
-            "Why it\u2019s bad",
+            "Why it’s bad",
             "Where it should go instead"
           ],
           "rows": [
@@ -175,7 +175,7 @@
             ],
             [
               "Network calls / subscriptions / timers",
-              "Render may be retried/aborted \u2192 duplicated work and leaks",
+              "Render may be retried/aborted → duplicated work and leaks",
               "useEffect cleanup; subscribe/unsubscribe there"
             ],
             [
@@ -194,11 +194,11 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u2705 Pure render + side effects moved out\nfunction Profile({ user }) {\n  // Pure: derived UI only\n  return <div>{user.name}</div>;\n}\n\nfunction ProfileWithTracking({ user }) {\n  React.useEffect(() => {\n    let cancelled = false;\n\n    (async () => {\n      try {\n        await fetch('/api/track?u=' + user.id);\n      } finally {\n        // optional: handle completion\n      }\n    })();\n\n    return () => {\n      cancelled = true; // example cleanup flag\n    };\n  }, [user.id]);\n\n  return <Profile user={user} />;\n}\n"
+          "code": "// ✅ Pure render + side effects moved out\nfunction Profile({ user }) {\n  // Pure: derived UI only\n  return <div>{user.name}</div>;\n}\n\nfunction ProfileWithTracking({ user }) {\n  React.useEffect(() => {\n    let cancelled = false;\n\n    (async () => {\n      try {\n        await fetch('/api/track?u=' + user.id);\n      } finally {\n        // optional: handle completion\n      }\n    })();\n\n    return () => {\n      cancelled = true; // example cleanup flag\n    };\n  }, [user.id]);\n\n  return <Profile user={user} />;\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br>If running the component body twice would cause anything \u201creal\u201d to happen twice (API call, subscription, mutation, analytics), it\u2019s not pure. Keep render as a calculation; do real work in effects and event handlers."
+          "text": "<strong>Rule of thumb</strong><br><br>If running the component body twice would cause anything “real” to happen twice (API call, subscription, mutation, analytics), it’s not pure. Keep render as a calculation; do real work in effects and event handlers."
         },
         {
           "type": "text",
@@ -258,8 +258,8 @@
             ],
             [
               "Interop",
-              "Can\u2019t use class lifecycles; but can wrap classes / call into legacy libs via effects/refs",
-              "Can\u2019t use Hooks inside classes"
+              "Can’t use class lifecycles; but can wrap classes / call into legacy libs via effects/refs",
+              "Can’t use Hooks inside classes"
             ],
             [
               "Modern React direction",
@@ -271,7 +271,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Lifecycle mapping (common interview ask)</strong><br><br>Hooks are not \u201cmagic faster\u201d. They\u2019re a different API that can express the same lifecycle behaviors with explicit dependencies + cleanup."
+          "text": "<strong>Lifecycle mapping (common interview ask)</strong><br><br>Hooks are not “magic faster”. They’re a different API that can express the same lifecycle behaviors with explicit dependencies + cleanup."
         },
         {
           "type": "list",
@@ -311,7 +311,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Important nuance (don\u2019t claim \u201cfunctional is faster\u201d)</strong><br><br>There\u2019s no inherent \u201cfunction components are faster\u201d rule. Performance depends on update patterns, memoization boundaries, and avoiding unnecessary work. Functions are preferred because Hooks give a simpler composition model for stateful logic and align with modern React features and patterns."
+          "text": "<strong>Important nuance (don’t claim “functional is faster”)</strong><br><br>There’s no inherent “function components are faster” rule. Performance depends on update patterns, memoization boundaries, and avoiding unnecessary work. Functions are preferred because Hooks give a simpler composition model for stateful logic and align with modern React features and patterns."
         },
         {
           "type": "list",
@@ -359,16 +359,16 @@
   },
   {
     "id": "react-jsx-transform-and-why-not-required",
-    "title": "How does JSX get transformed, and why doesn\u2019t React require it?",
+    "title": "How does JSX get transformed, and why doesn’t React require it?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly). Mention the two JSX runtimes (classic createElement vs automatic react/jsx-runtime) and the practical implications (React import, tooling, and why JSX isn\u2019t HTML).",
+    "description": "Explain what JSX actually is (syntax sugar), how a compiler (Babel/TypeScript) transforms it into plain JavaScript calls, and why React can work without JSX (you can call the element factory directly). Mention the two JSX runtimes (classic createElement vs automatic react/jsx-runtime) and the practical implications (React import, tooling, and why JSX isn’t HTML).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>JSX is <em>not</em> something React executes. JSX is syntax that your build tool (Babel or TypeScript) compiles into plain JavaScript function calls that create React elements. React doesn\u2019t require JSX because React only needs the <em>result</em>: a React element tree (plain JS objects) \u2014 and you can create those objects without JSX."
+          "text": "<strong>Core idea</strong><br><br>JSX is <em>not</em> something React executes. JSX is syntax that your build tool (Babel or TypeScript) compiles into plain JavaScript function calls that create React elements. React doesn’t require JSX because React only needs the <em>result</em>: a React element tree (plain JS objects) — and you can create those objects without JSX."
         },
         {
           "type": "list",
@@ -403,7 +403,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Two JSX runtimes you\u2019ll see</strong><br><br>There are two common outputs for JSX transforms: <em>classic</em> (calls <code>React.createElement</code>) and <em>automatic</em> (calls <code>jsx/jsxs</code> from <code>react/jsx-runtime</code>). Both produce the same kind of React elements."
+          "text": "<strong>Two JSX runtimes you’ll see</strong><br><br>There are two common outputs for JSX transforms: <em>classic</em> (calls <code>React.createElement</code>) and <em>automatic</em> (calls <code>jsx/jsxs</code> from <code>react/jsx-runtime</code>). Both produce the same kind of React elements."
         },
         {
           "type": "code",
@@ -437,7 +437,7 @@
             ],
             [
               "JSX is JavaScript expressions",
-              "{...} is an expression slot, not \u201ctemplate interpolation\u201d like HTML."
+              "{...} is an expression slot, not “template interpolation” like HTML."
             ],
             [
               "Lowercase vs Uppercase matters",
@@ -448,7 +448,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why React doesn\u2019t require JSX</strong><br><br>React only needs you to produce React elements. JSX is just a nicer way to write those element factory calls. You can skip JSX entirely and write <code>createElement</code> (or <code>jsx</code>) calls yourself \u2014 it\u2019s just more verbose."
+          "text": "<strong>Why React doesn’t require JSX</strong><br><br>React only needs you to produce React elements. JSX is just a nicer way to write those element factory calls. You can skip JSX entirely and write <code>createElement</code> (or <code>jsx</code>) calls yourself — it’s just more verbose."
         },
         {
           "type": "code",
@@ -457,7 +457,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say: \u201cJSX is syntax sugar compiled by Babel/TS into element-creation calls (classic <code>createElement</code> or automatic <code>jsx/jsxs</code>). React doesn\u2019t require JSX because it only consumes React elements \u2014 JSX never reaches React as JSX.\u201d"
+          "text": "<strong>Interview framing</strong><br><br>Say: “JSX is syntax sugar compiled by Babel/TS into element-creation calls (classic <code>createElement</code> or automatic <code>jsx/jsxs</code>). React doesn’t require JSX because it only consumes React elements — JSX never reaches React as JSX.”"
         }
       ]
     },
@@ -471,7 +471,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what makes React treat a function as a component (element type), the JSX naming rule (Uppercase vs lowercase), what it must return, and the practical rules around calling it (don\u2019t call directly if it uses Hooks). Include common runtime errors and gotchas.",
+    "description": "Explain what makes React treat a function as a component (element type), the JSX naming rule (Uppercase vs lowercase), what it must return, and the practical rules around calling it (don’t call directly if it uses Hooks). Include common runtime errors and gotchas.",
     "answer": {
       "blocks": [
         {
@@ -489,7 +489,7 @@
             [
               "Use it as an element type",
               "Render it as <code>&lt;MyComp /&gt;</code> (or <code>createElement(MyComp)</code>)",
-              "If you just call <code>MyComp()</code>, React isn\u2019t in control (Hooks/state model breaks)."
+              "If you just call <code>MyComp()</code>, React isn’t in control (Hooks/state model breaks)."
             ],
             [
               "Uppercase name in JSX",
@@ -512,7 +512,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u2705 Component: uppercase usage\nfunction Hello({ name }) {\n  return <h1>Hello {name}</h1>;\n}\n\nexport default function App() {\n  return <Hello name=\"Ada\" />;\n}\n\n// \u274c Not a component in JSX: lowercase means DOM tag\nfunction hello() {\n  return <h1>hi</h1>;\n}\n\nexport function Broken() {\n  return <hello />; // React treats this as <\"hello\"> DOM element, not your function.\n}\n"
+          "code": "// ✅ Component: uppercase usage\nfunction Hello({ name }) {\n  return <h1>Hello {name}</h1>;\n}\n\nexport default function App() {\n  return <Hello name=\"Ada\" />;\n}\n\n// ❌ Not a component in JSX: lowercase means DOM tag\nfunction hello() {\n  return <h1>hi</h1>;\n}\n\nexport function Broken() {\n  return <hello />; // React treats this as <\"hello\"> DOM element, not your function.\n}\n"
         },
         {
           "type": "list",
@@ -524,32 +524,32 @@
           "rows": [
             [
               "JSX element",
-              "\u2705",
+              "✅",
               "Most common: <code>&lt;div /&gt;</code>, <code>&lt;MyComp /&gt;</code>"
             ],
             [
               "string / number",
-              "\u2705",
+              "✅",
               "Renders a text node"
             ],
             [
               "<code>null</code> / <code>false</code>",
-              "\u2705",
+              "✅",
               "Renders nothing (intentional gating)"
             ],
             [
               "Array of nodes",
-              "\u2705",
+              "✅",
               "Use keys for stable lists"
             ],
             [
               "Plain object",
-              "\u274c",
+              "❌",
               "Error: <code>Objects are not valid as a React child</code>"
             ],
             [
               "Promise (async function)",
-              "\u274c (client)",
+              "❌ (client)",
               "Async component returns a Promise; not a valid React node in client rendering"
             ]
           ],
@@ -558,7 +558,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u274c Invalid return\nfunction Bad() {\n  return { ok: true }; // runtime error\n}\n\n// \u2705 Valid: render nothing\nfunction Gate({ enabled }) {\n  if (!enabled) return null;\n  return <div>Enabled</div>;\n}\n"
+          "code": "// ❌ Invalid return\nfunction Bad() {\n  return { ok: true }; // runtime error\n}\n\n// ✅ Valid: render nothing\nfunction Gate({ enabled }) {\n  if (!enabled) return null;\n  return <div>Enabled</div>;\n}\n"
         },
         {
           "type": "text",
@@ -567,11 +567,11 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Counter() {\n  const [n, setN] = React.useState(0);\n  return <button onClick={() => setN((x) => x + 1)}>{n}</button>;\n}\n\n// \u274c Don\u2019t do this\nfunction Wrong() {\n  const el = Counter(); // breaks Hooks model\n  return <div>{el}</div>;\n}\n\n// \u2705 Do this\nfunction Right() {\n  return <Counter />;\n}\n"
+          "code": "function Counter() {\n  const [n, setN] = React.useState(0);\n  return <button onClick={() => setN((x) => x + 1)}>{n}</button>;\n}\n\n// ❌ Don’t do this\nfunction Wrong() {\n  const el = Counter(); // breaks Hooks model\n  return <div>{el}</div>;\n}\n\n// ✅ Do this\nfunction Right() {\n  return <Counter />;\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>A function is treated as a React component when React sees it as the element type (<code>&lt;MyComp /&gt;</code> / <code>createElement(MyComp)</code>), it\u2019s capitalized in JSX, and it returns a valid React node. If it uses Hooks, it must only be invoked by React\u2019s render pipeline (not called directly)."
+          "text": "<strong>Summary</strong><br><br>A function is treated as a React component when React sees it as the element type (<code>&lt;MyComp /&gt;</code> / <code>createElement(MyComp)</code>), it’s capitalized in JSX, and it returns a valid React node. If it uses Hooks, it must only be invoked by React’s render pipeline (not called directly)."
         }
       ]
     },
@@ -585,12 +585,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what triggers a React component to re-render, what a \u201crender\u201d actually means (vs updating the DOM), and what role the class render() method (or function component body) plays in the render + commit pipeline.",
+    "description": "Explain what triggers a React component to re-render, what a “render” actually means (vs updating the DOM), and what role the class render() method (or function component body) plays in the render + commit pipeline.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>React re-renders a component when it thinks that component\u2019s <em>inputs</em> might have changed (state/props/context). A re-render means: \u201crun the component again to produce a new element tree.\u201d It does <em>not</em> necessarily mean the browser DOM will change."
+          "text": "<strong>Core idea</strong><br><br>React re-renders a component when it thinks that component’s <em>inputs</em> might have changed (state/props/context). A re-render means: “run the component again to produce a new element tree.” It does <em>not</em> necessarily mean the browser DOM will change."
         },
         {
           "type": "list",
@@ -605,13 +605,13 @@
               "State update",
               "<code>setState</code> / <code>setX</code> / <code>dispatch</code>",
               "Schedules a render for that component",
-              "<code>useState</code> bails out if the new state is <code>Object.is</code>-equal to the old state; new object/array references always count as \u201cchanged\u201d."
+              "<code>useState</code> bails out if the new state is <code>Object.is</code>-equal to the old state; new object/array references always count as “changed”."
             ],
             [
               "New props",
               "Parent renders and passes props down",
               "Child is rendered by default",
-              "Even if props are \u201cequal by value\u201d, React still re-renders unless the child is memoized (<code>React.memo</code>/<code>PureComponent</code>)."
+              "Even if props are “equal by value”, React still re-renders unless the child is memoized (<code>React.memo</code>/<code>PureComponent</code>)."
             ],
             [
               "Context update",
@@ -621,7 +621,7 @@
             ],
             [
               "Force update",
-              "<code>forceUpdate()</code> (class) or \u201cdummy state\u201d",
+              "<code>forceUpdate()</code> (class) or “dummy state”",
               "Forces a render",
               "Usually a code smell; prefer state/props-driven rendering."
             ]
@@ -656,11 +656,11 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  // This function body is the \u201crender\u201d for function components.\n  // It runs again when state/props/context changes.\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>\n      Count: {count}\n    </button>\n  );\n}"
+          "code": "function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  // This function body is the “render” for function components.\n  // It runs again when state/props/context changes.\n  return (\n    <button onClick={() => setCount((c) => c + 1)}>\n      Count: {count}\n    </button>\n  );\n}"
         },
         {
           "type": "text",
-          "text": "<strong>So what is <code>render()</code> doing?</strong><br><br><code>render()</code> does not \u201ctrigger\u201d updates. It\u2019s the function React calls <em>after</em> an update is scheduled, to compute the next UI description. For function components, the component function itself plays the same role as <code>render()</code>."
+          "text": "<strong>So what is <code>render()</code> doing?</strong><br><br><code>render()</code> does not “trigger” updates. It’s the function React calls <em>after</em> an update is scheduled, to compute the next UI description. For function components, the component function itself plays the same role as <code>render()</code>."
         },
         {
           "type": "code",
@@ -699,7 +699,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A \u201crender\u201d means recomputing the next React element tree, not necessarily updating the DOM. The class <code>render()</code> method (or function component body) is the pure computation React runs during the render phase; DOM updates happen later in the commit phase."
+          "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A “render” means recomputing the next React element tree, not necessarily updating the DOM. The class <code>render()</code> method (or function component body) is the pure computation React runs during the render phase; DOM updates happen later in the commit phase."
         }
       ]
     },
@@ -713,12 +713,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what React does with a component\u2019s return value, and the common reasons a component ends up rendering nothing (intentionally or by mistake).",
+    "description": "Explain what React does with a component’s return value, and the common reasons a component ends up rendering nothing (intentionally or by mistake).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>A React component is basically a function that returns a <code>ReactNode</code> (what React should render). If the returned value is \u201cempty\u201d (<code>null</code> / <code>false</code>) React mounts nothing for that component. If you accidentally return <code>undefined</code> (often due to a missing <code>return</code>), React throws an error like: <code>Nothing was returned from render</code>."
+          "text": "<strong>Overview</strong><br><br>A React component is basically a function that returns a <code>ReactNode</code> (what React should render). If the returned value is “empty” (<code>null</code> / <code>false</code>) React mounts nothing for that component. If you accidentally return <code>undefined</code> (often due to a missing <code>return</code>), React throws an error like: <code>Nothing was returned from render</code>."
         },
         {
           "type": "list",
@@ -737,11 +737,11 @@
             ],
             [
               "<code>null</code>",
-              "Renders nothing (intentional \u201cno UI\u201d)."
+              "Renders nothing (intentional “no UI”)."
             ],
             [
               "<code>false</code> / <code>true</code>",
-              "Booleans are not rendered (treated like \u201cnothing\u201d)."
+              "Booleans are not rendered (treated like “nothing”)."
             ],
             [
               "Array / iterable of nodes",
@@ -757,11 +757,11 @@
             ],
             [
               "<code>undefined</code>",
-              "\u274c Error (usually means you forgot to return)."
+              "❌ Error (usually means you forgot to return)."
             ],
             [
               "Plain object (not a React element)",
-              "\u274c Error (<code>Objects are not valid as a React child</code>)."
+              "❌ Error (<code>Objects are not valid as a React child</code>)."
             ]
           ],
           "caption": "How React interprets common component return values"
@@ -769,11 +769,11 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function LoadingGate({ isLoading, children }) {\n  if (isLoading) return null; // \u2705 intentionally render nothing\n  return <>{children}</>; // \u2705 render children\n}\n\nfunction TextOnly() {\n  return 'Hello'; // \u2705 renders a text node\n}\n\nfunction Multi() {\n  return [\n    <span key=\"a\">A</span>,\n    <span key=\"b\">B</span>\n  ]; // \u2705 multiple siblings\n}"
+          "code": "function LoadingGate({ isLoading, children }) {\n  if (isLoading) return null; // ✅ intentionally render nothing\n  return <>{children}</>; // ✅ render children\n}\n\nfunction TextOnly() {\n  return 'Hello'; // ✅ renders a text node\n}\n\nfunction Multi() {\n  return [\n    <span key=\"a\">A</span>,\n    <span key=\"b\">B</span>\n  ]; // ✅ multiple siblings\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Why it \u201crenders nothing\u201d in real life</strong><br><br>Sometimes this is intentional (feature flags, loading gates, access control). Other times it\u2019s a bug where the component returns <code>undefined</code> or produces \u201cempty\u201d output via short-circuit expressions."
+          "text": "<strong>Why it “renders nothing” in real life</strong><br><br>Sometimes this is intentional (feature flags, loading gates, access control). Other times it’s a bug where the component returns <code>undefined</code> or produces “empty” output via short-circuit expressions."
         },
         {
           "type": "list",
@@ -785,7 +785,7 @@
           "rows": [
             [
               "Missing <code>return</code> in a component",
-              "Component returns <code>undefined</code> \u2192 React error / nothing displayed.",
+              "Component returns <code>undefined</code> → React error / nothing displayed.",
               "Use explicit <code>return</code> or implicit return with parentheses."
             ],
             [
@@ -800,12 +800,12 @@
             ],
             [
               "<code>condition &amp;&amp; &lt;X /&gt;</code> patterns",
-              "If condition is <code>false</code>, result is <code>false</code> \u2192 nothing renders.",
+              "If condition is <code>false</code>, result is <code>false</code> → nothing renders.",
               "Use ternary when you want an explicit else: <code>cond ? &lt;X /&gt; : null</code>."
             ],
             [
               "Forgetting <code>return</code> inside <code>map</code>",
-              "Each item becomes <code>undefined</code> \u2192 list items render as \u201cnothing\u201d.",
+              "Each item becomes <code>undefined</code> → list items render as “nothing”.",
               "Use implicit return or add <code>return</code> inside the callback."
             ]
           ],
@@ -814,11 +814,11 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u274c BUG: braces without return\nconst Bad = () => {\n  <div>Hi</div>;\n};\n\n// \u2705 FIX 1: explicit return\nconst Good1 = () => {\n  return <div>Hi</div>;\n};\n\n// \u2705 FIX 2: implicit return\nconst Good2 = () => (<div>Hi</div>);\n\n// \u26a0\ufe0f Gotcha: && with numbers\n// If count is 0, this renders 0 (because 0 is rendered as text)\nfunction Badge({ count }) {\n  return <div>{count && <span>{count}</span>}</div>;\n}\n\n// \u2705 Safer\nfunction BadgeSafe({ count }) {\n  return <div>{count > 0 ? <span>{count}</span> : null}</div>;\n}\n\n// \u274c BUG: missing return in map\nitems.map((x) => {\n  <li key={x.id}>{x.name}</li>;\n});\n\n// \u2705 FIX: implicit return\nitems.map((x) => (\n  <li key={x.id}>{x.name}</li>\n));"
+          "code": "// ❌ BUG: braces without return\nconst Bad = () => {\n  <div>Hi</div>;\n};\n\n// ✅ FIX 1: explicit return\nconst Good1 = () => {\n  return <div>Hi</div>;\n};\n\n// ✅ FIX 2: implicit return\nconst Good2 = () => (<div>Hi</div>);\n\n// ⚠️ Gotcha: && with numbers\n// If count is 0, this renders 0 (because 0 is rendered as text)\nfunction Badge({ count }) {\n  return <div>{count && <span>{count}</span>}</div>;\n}\n\n// ✅ Safer\nfunction BadgeSafe({ count }) {\n  return <div>{count > 0 ? <span>{count}</span> : null}</div>;\n}\n\n// ❌ BUG: missing return in map\nitems.map((x) => {\n  <li key={x.id}>{x.name}</li>;\n});\n\n// ✅ FIX: implicit return\nitems.map((x) => (\n  <li key={x.id}>{x.name}</li>\n));"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>React renders whatever your component returns as a <code>ReactNode</code>. Returning <code>null</code>/<code>false</code> is a valid way to render nothing. The most common accidental \u201crenders nothing\u201d bug is returning <code>undefined</code> (missing <code>return</code>), especially with arrow functions and <code>map()</code> callbacks."
+          "text": "<strong>Summary</strong><br><br>React renders whatever your component returns as a <code>ReactNode</code>. Returning <code>null</code>/<code>false</code> is a valid way to render nothing. The most common accidental “renders nothing” bug is returning <code>undefined</code> (missing <code>return</code>), especially with arrow functions and <code>map()</code> callbacks."
         }
       ]
     },
@@ -832,12 +832,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React is designed around unidirectional data flow (state/props go down, events go up). Connect it to predictability, debugging, avoiding multiple-writers problems, and React\u2019s rendering/reconciliation model (including concurrency-friendly rendering).",
+    "description": "Explain why React is designed around unidirectional data flow (state/props go down, events go up). Connect it to predictability, debugging, avoiding multiple-writers problems, and React’s rendering/reconciliation model (including concurrency-friendly rendering).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>React\u2019s UI model is: <em>UI = f(state, props, context)</em>. One-way data flow means the \u201csource of truth\u201d lives in one place (usually the nearest common parent), and children can\u2019t directly mutate that data. Data goes <em>down</em> via props; changes go <em>up</em> via callbacks/events. This keeps updates predictable and traceable."
+          "text": "<strong>Core idea</strong><br><br>React’s UI model is: <em>UI = f(state, props, context)</em>. One-way data flow means the “source of truth” lives in one place (usually the nearest common parent), and children can’t directly mutate that data. Data goes <em>down</em> via props; changes go <em>up</em> via callbacks/events. This keeps updates predictable and traceable."
         },
         {
           "type": "list",
@@ -850,11 +850,11 @@
             [
               "Single writer per piece of state",
               "Avoids competing updates from multiple places",
-              "Prevents \u201cwho overwrote my value?\u201d bugs"
+              "Prevents “who overwrote my value?” bugs"
             ],
             [
               "Changes are explicit (events/actions)",
-              "Clear update path: handler \u2192 state update \u2192 re-render",
+              "Clear update path: handler → state update → re-render",
               "Debugging becomes follow-the-event instead of hunting side effects"
             ],
             [
@@ -877,7 +877,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What \u201cenforce\u201d means</strong><br><br>React doesn\u2019t magically block you from mutating an object passed as a prop. But the API nudges you hard: props are treated as read-only, and state updates are expected to go through setters/dispatch. If you mutate data outside that flow, you break React\u2019s mental model and optimization assumptions."
+          "text": "<strong>What “enforce” means</strong><br><br>React doesn’t magically block you from mutating an object passed as a prop. But the API nudges you hard: props are treated as read-only, and state updates are expected to go through setters/dispatch. If you mutate data outside that flow, you break React’s mental model and optimization assumptions."
         },
         {
           "type": "code",
@@ -886,7 +886,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What goes wrong with \u201ctwo-way\u201d style patterns</strong><br><br>Two-way binding often means multiple places can write to the same piece of data (child + parent, or UI + model). That creates implicit coupling and hidden update loops. In React, it typically shows up as mutating props or sharing mutable objects across components."
+          "text": "<strong>What goes wrong with “two-way” style patterns</strong><br><br>Two-way binding often means multiple places can write to the same piece of data (child + parent, or UI + model). That creates implicit coupling and hidden update loops. In React, it typically shows up as mutating props or sharing mutable objects across components."
         },
         {
           "type": "list",
@@ -898,7 +898,7 @@
           "rows": [
             [
               "Child mutates a prop object",
-              "Parent doesn\u2019t re-render (or re-renders unpredictably); UI becomes inconsistent",
+              "Parent doesn’t re-render (or re-renders unpredictably); UI becomes inconsistent",
               "Treat props as immutable; update via callbacks and immutable copies"
             ],
             [
@@ -907,7 +907,7 @@
               "Move into React state/store; update via setState/dispatch"
             ],
             [
-              "Child \u201cowns\u201d state but parent also derives from it",
+              "Child “owns” state but parent also derives from it",
               "Double sources of truth; stale derived UI",
               "Lift state up to the common owner (single source of truth)"
             ]
@@ -917,7 +917,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u274c BAD: mutating a prop object (breaks one-way assumptions)\nfunction Child({ user }) {\n  function rename() {\n    user.name = 'New Name'; // mutation\n  }\n\n  return (\n    <>\n      <div>{user.name}</div>\n      <button onClick={rename}>Rename</button>\n    </>\n  );\n}\n\n// \u2705 GOOD: parent owns state; child requests changes\nfunction ChildGood({ user, onRename }) {\n  return (\n    <>\n      <div>{user.name}</div>\n      <button onClick={() => onRename('New Name')}>Rename</button>\n    </>\n  );\n}\n\nfunction ParentGood() {\n  const [user, setUser] = React.useState({ id: 1, name: 'Ada' });\n\n  return (\n    <ChildGood\n      user={user}\n      onRename={(name) => setUser((u) => ({ ...u, name }))}\n    />\n  );\n}\n"
+          "code": "// ❌ BAD: mutating a prop object (breaks one-way assumptions)\nfunction Child({ user }) {\n  function rename() {\n    user.name = 'New Name'; // mutation\n  }\n\n  return (\n    <>\n      <div>{user.name}</div>\n      <button onClick={rename}>Rename</button>\n    </>\n  );\n}\n\n// ✅ GOOD: parent owns state; child requests changes\nfunction ChildGood({ user, onRename }) {\n  return (\n    <>\n      <div>{user.name}</div>\n      <button onClick={() => onRename('New Name')}>Rename</button>\n    </>\n  );\n}\n\nfunction ParentGood() {\n  const [user, setUser] = React.useState({ id: 1, name: 'Ada' });\n\n  return (\n    <ChildGood\n      user={user}\n      onRename={(name) => setUser((u) => ({ ...u, name }))}\n    />\n  );\n}\n"
         },
         {
           "type": "text",
@@ -925,7 +925,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>React prefers one-way data flow because it gives a single source of truth, explicit update paths, and render safety. That unlocks simpler reasoning, easier debugging, and rendering optimizations (including concurrency-friendly scheduling) that fall apart when components can \u201cpush\u201d state into each other implicitly."
+          "text": "<strong>Summary</strong><br><br>React prefers one-way data flow because it gives a single source of truth, explicit update paths, and render safety. That unlocks simpler reasoning, easier debugging, and rendering optimizations (including concurrency-friendly scheduling) that fall apart when components can “push” state into each other implicitly."
         }
       ]
     },
@@ -935,16 +935,16 @@
   },
   {
     "id": "react-why-props-immutable",
-    "title": "Why are props immutable in React, and what breaks if they aren\u2019t?",
+    "title": "Why are props immutable in React, and what breaks if they aren’t?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React treats props as read-only inputs (UI = f(props, state, context)). Connect this to predictable rendering, parent ownership, referential equality optimizations (PureComponent/React.memo), and why mutating props can cause missed updates, shared-state bugs, and inconsistent UI\u2014especially under concurrent rendering and StrictMode.",
+    "description": "Explain why React treats props as read-only inputs (UI = f(props, state, context)). Connect this to predictable rendering, parent ownership, referential equality optimizations (PureComponent/React.memo), and why mutating props can cause missed updates, shared-state bugs, and inconsistent UI—especially under concurrent rendering and StrictMode.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Props are <em>inputs</em> owned by the parent. React\u2019s mental model is: <code>UI = f(props, state, context)</code>. If a child can mutate its inputs, rendering stops being a pure computation and you get hidden side effects and shared mutable state across components."
+          "text": "<strong>Core idea</strong><br><br>Props are <em>inputs</em> owned by the parent. React’s mental model is: <code>UI = f(props, state, context)</code>. If a child can mutate its inputs, rendering stops being a pure computation and you get hidden side effects and shared mutable state across components."
         },
         {
           "type": "list",
@@ -974,7 +974,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What breaks if you mutate props</strong><br><br>JavaScript won\u2019t stop you from mutating objects/arrays passed via props, but React will still treat props as if they were immutable. That mismatch causes bugs."
+          "text": "<strong>What breaks if you mutate props</strong><br><br>JavaScript won’t stop you from mutating objects/arrays passed via props, but React will still treat props as if they were immutable. That mismatch causes bugs."
         },
         {
           "type": "list",
@@ -986,31 +986,31 @@
           "rows": [
             [
               "Missed re-renders / stale UI",
-              "You change a field, but UI doesn\u2019t update (or updates inconsistently)",
-              "Parent didn\u2019t produce a new reference; memo/shallow compare thinks \u201cnothing changed\u201d"
+              "You change a field, but UI doesn’t update (or updates inconsistently)",
+              "Parent didn’t produce a new reference; memo/shallow compare thinks “nothing changed”"
             ],
             [
               "Shared mutable state bugs",
-              "One child \u201cmysteriously\u201d affects another sibling",
+              "One child “mysteriously” affects another sibling",
               "They both reference the same mutated object/array"
             ],
             [
               "Invalid assumptions in concurrent rendering",
-              "Weird flickers, order-dependent bugs, \u201cit depends on timing\u201d",
+              "Weird flickers, order-dependent bugs, “it depends on timing”",
               "React may render, pause, retry; mutations during render leak across attempts"
             ],
             [
               "Debugging becomes painful",
-              "You can\u2019t trace where the data changed",
+              "You can’t trace where the data changed",
               "Mutation hides the real source of change (no single writer)"
             ]
           ],
-          "caption": "Mutating props breaks the parent->child contract and React\u2019s optimization model"
+          "caption": "Mutating props breaks the parent->child contract and React’s optimization model"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "import React from 'react';\n\nconst UserCard = React.memo(function UserCard({ user }) {\n  // \u274c Mutating a prop object\n  user.lastSeenAt = Date.now();\n\n  return (\n    <div>\n      <div>{user.name}</div>\n      <div>lastSeenAt: {user.lastSeenAt}</div>\n    </div>\n  );\n});\n\nexport default function App() {\n  const [user, setUser] = React.useState({ id: 1, name: 'Ada', lastSeenAt: 0 });\n\n  // Parent does NOT create a new object unless setUser is called.\n  // UserCard is memoized; shallow compare sees same `user` reference and may skip re-render.\n  return (\n    <>\n      <UserCard user={user} />\n      <button onClick={() => setUser((u) => ({ ...u, name: u.name + '!' }))}>\n        Update name (new object)\n      </button>\n    </>\n  );\n}\n"
+          "code": "import React from 'react';\n\nconst UserCard = React.memo(function UserCard({ user }) {\n  // ❌ Mutating a prop object\n  user.lastSeenAt = Date.now();\n\n  return (\n    <div>\n      <div>{user.name}</div>\n      <div>lastSeenAt: {user.lastSeenAt}</div>\n    </div>\n  );\n});\n\nexport default function App() {\n  const [user, setUser] = React.useState({ id: 1, name: 'Ada', lastSeenAt: 0 });\n\n  // Parent does NOT create a new object unless setUser is called.\n  // UserCard is memoized; shallow compare sees same `user` reference and may skip re-render.\n  return (\n    <>\n      <UserCard user={user} />\n      <button onClick={() => setUser((u) => ({ ...u, name: u.name + '!' }))}>\n        Update name (new object)\n      </button>\n    </>\n  );\n}\n"
         },
         {
           "type": "text",
@@ -1019,12 +1019,12 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function List({ items }) {\n  // \u274c Mutates parent-owned array in-place\n  items.sort((a, b) => a.label.localeCompare(b.label));\n\n  return <ul>{items.map((x) => <li key={x.id}>{x.label}</li>)}</ul>;\n}\n\n// \u2705 Make a copy\nfunction ListSafe({ items }) {\n  const sorted = [...items].sort((a, b) => a.label.localeCompare(b.label));\n  return <ul>{sorted.map((x) => <li key={x.id}>{x.label}</li>)}</ul>;\n}\n"
+          "code": "function List({ items }) {\n  // ❌ Mutates parent-owned array in-place\n  items.sort((a, b) => a.label.localeCompare(b.label));\n\n  return <ul>{items.map((x) => <li key={x.id}>{x.label}</li>)}</ul>;\n}\n\n// ✅ Make a copy\nfunction ListSafe({ items }) {\n  const sorted = [...items].sort((a, b) => a.label.localeCompare(b.label));\n  return <ul>{sorted.map((x) => <li key={x.id}>{x.label}</li>)}</ul>;\n}\n"
         },
         {
           "type": "list",
           "columns": [
-            "If you need to \u201cchange props\u201d\u2026",
+            "If you need to “change props”…",
             "Do this instead"
           ],
           "rows": [
@@ -1045,7 +1045,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Props are immutable because React\u2019s rendering model assumes components are pure functions of their inputs, and because performance optimizations depend on stable identity + parent ownership. If you mutate props, you introduce hidden side effects: missed updates, cross-component contamination, and timing-sensitive bugs\u2014especially with memoization and concurrent rendering."
+          "text": "<strong>Summary</strong><br><br>Props are immutable because React’s rendering model assumes components are pure functions of their inputs, and because performance optimizations depend on stable identity + parent ownership. If you mutate props, you introduce hidden side effects: missed updates, cross-component contamination, and timing-sensitive bugs—especially with memoization and concurrent rendering."
         }
       ]
     },
@@ -1064,7 +1064,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>useState()</code> gives a function component <em>persistent local state</em> across renders. When you call its setter, React schedules a re-render of that component so the UI can be recalculated from the new state. The key model is: <code>UI = f(props, state)</code> \u2014 you don\u2019t manually update the DOM."
+          "text": "<strong>Core idea</strong><br><br><code>useState()</code> gives a function component <em>persistent local state</em> across renders. When you call its setter, React schedules a re-render of that component so the UI can be recalculated from the new state. The key model is: <code>UI = f(props, state)</code> — you don’t manually update the DOM."
         },
         {
           "type": "list",
@@ -1104,7 +1104,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Bad() {\n  const [n, setN] = React.useState(0);\n\n  // \u274c can be stale if called multiple times in one tick\n  const incTwice = () => {\n    setN(n + 1);\n    setN(n + 1);\n  };\n\n  return <button onClick={incTwice}>{n}</button>;\n}\n\nfunction Good() {\n  const [n, setN] = React.useState(0);\n\n  // \u2705 each update reads the latest queued value\n  const incTwice = () => {\n    setN((x) => x + 1);\n    setN((x) => x + 1);\n  };\n\n  return <button onClick={incTwice}>{n}</button>;\n}\n"
+          "code": "function Bad() {\n  const [n, setN] = React.useState(0);\n\n  // ❌ can be stale if called multiple times in one tick\n  const incTwice = () => {\n    setN(n + 1);\n    setN(n + 1);\n  };\n\n  return <button onClick={incTwice}>{n}</button>;\n}\n\nfunction Good() {\n  const [n, setN] = React.useState(0);\n\n  // ✅ each update reads the latest queued value\n  const incTwice = () => {\n    setN((x) => x + 1);\n    setN((x) => x + 1);\n  };\n\n  return <button onClick={incTwice}>{n}</button>;\n}\n"
         },
         {
           "type": "list",
@@ -1122,16 +1122,16 @@
             [
               "Bailout",
               "If the new state is <code>Object.is</code>-equal to the old state, React can skip re-rendering",
-              "Don\u2019t create new objects/arrays unless something actually changed"
+              "Don’t create new objects/arrays unless something actually changed"
             ],
             [
               "Batching",
               "React may batch multiple state updates into one render",
-              "Don\u2019t rely on \u201cimmediate\u201d state after calling the setter"
+              "Don’t rely on “immediate” state after calling the setter"
             ],
             [
               "Immutability",
-              "Mutating state in place breaks React\u2019s change detection assumptions",
+              "Mutating state in place breaks React’s change detection assumptions",
               "Always create new references when updating objects/arrays"
             ]
           ],
@@ -1140,7 +1140,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function TodoApp() {\n  // \u2705 Lazy init (runs only once on mount)\n  const [todos, setTodos] = React.useState(() => {\n    const raw = localStorage.getItem('todos');\n    return raw ? JSON.parse(raw) : [];\n  });\n\n  // \u2705 Immutable update (new array)\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: crypto.randomUUID(), text }]);\n  }\n\n  // \u274c Bad: mutating state\n  function badAdd(text) {\n    todos.push({ id: 'x', text });\n    setTodos(todos); // same reference -> may not re-render\n  }\n\n  return (\n    <div>\n      <button onClick={() => addTodo('Learn useState')}>Add</button>\n      <ul>{todos.map((t) => <li key={t.id}>{t.text}</li>)}</ul>\n    </div>\n  );\n}\n"
+          "code": "function TodoApp() {\n  // ✅ Lazy init (runs only once on mount)\n  const [todos, setTodos] = React.useState(() => {\n    const raw = localStorage.getItem('todos');\n    return raw ? JSON.parse(raw) : [];\n  });\n\n  // ✅ Immutable update (new array)\n  function addTodo(text) {\n    setTodos((prev) => [...prev, { id: crypto.randomUUID(), text }]);\n  }\n\n  // ❌ Bad: mutating state\n  function badAdd(text) {\n    todos.push({ id: 'x', text });\n    setTodos(todos); // same reference -> may not re-render\n  }\n\n  return (\n    <div>\n      <button onClick={() => addTodo('Learn useState')}>Add</button>\n      <ul>{todos.map((t) => <li key={t.id}>{t.text}</li>)}</ul>\n    </div>\n  );\n}\n"
         },
         {
           "type": "text",
@@ -1162,12 +1162,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain how React\u2019s event system works (SyntheticEvent + root-level listeners) and why delegation is used: fewer listeners, easier updates for dynamic trees, consistent cross-browser behavior, and better integration with React\u2019s scheduling/batching. Mention the React 17+ change (listeners attached to the root container instead of document) and common trade-offs (native vs synthetic, non-bubbling events).",
+    "description": "Explain how React’s event system works (SyntheticEvent + root-level listeners) and why delegation is used: fewer listeners, easier updates for dynamic trees, consistent cross-browser behavior, and better integration with React’s scheduling/batching. Mention the React 17+ change (listeners attached to the root container instead of document) and common trade-offs (native vs synthetic, non-bubbling events).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>React usually doesn\u2019t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
+          "text": "<strong>Core idea</strong><br><br>React usually doesn’t attach a native DOM listener to every element that has <code>onClick</code>/<code>onChange</code>, etc. Instead, it attaches a small set of listeners at the <em>root container</em> and uses <em>event delegation</em>: when the browser event bubbles up, React catches it once and dispatches it to the correct component handler via its internal tree."
         },
         {
           "type": "list",
@@ -1185,7 +1185,7 @@
             [
               "Works with dynamic UIs",
               "No attach/detach churn as elements appear/disappear during reconciliation",
-              "You\u2019d constantly add/remove listeners on every commit"
+              "You’d constantly add/remove listeners on every commit"
             ],
             [
               "Consistent behavior (SyntheticEvent)",
@@ -1199,7 +1199,7 @@
             ],
             [
               "Portals + component tree semantics",
-              "Dispatch follows React\u2019s tree (including across portals) rather than only DOM structure",
+              "Dispatch follows React’s tree (including across portals) rather than only DOM structure",
               "Handlers become harder to reason about when UI spans multiple DOM subtrees"
             ]
           ],
@@ -1207,7 +1207,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>How it works (mental model)</strong><br><br>1) Browser fires a native event on a target node.<br>2) The event bubbles up to the root container.<br>3) React\u2019s root listener runs once, finds the closest React component instance for the target, then runs the matching handler(s) in the right order (capture/bubble)."
+          "text": "<strong>How it works (mental model)</strong><br><br>1) Browser fires a native event on a target node.<br>2) The event bubbles up to the root container.<br>3) React’s root listener runs once, finds the closest React component instance for the target, then runs the matching handler(s) in the right order (capture/bubble)."
         },
         {
           "type": "code",
@@ -1222,7 +1222,7 @@
           "type": "list",
           "columns": [
             "Trade-off / gotcha",
-            "What you\u2019ll notice",
+            "What you’ll notice",
             "What to do"
           ],
           "rows": [
@@ -1233,20 +1233,20 @@
             ],
             [
               "Non-bubbling events",
-              "Some events don\u2019t bubble in the DOM (React may emulate via capture or special handling)",
+              "Some events don’t bubble in the DOM (React may emulate via capture or special handling)",
               "Know when to use capture props (e.g., <code>onFocusCapture</code>) or native listeners"
             ],
             [
               "Propagation expectations",
-              "React propagation follows React\u2019s tree semantics (including portals), not only DOM nesting",
-              "When debugging, think in \u201cReact tree\u201d, not just \u201cDOM tree\u201d"
+              "React propagation follows React’s tree semantics (including portals), not only DOM nesting",
+              "When debugging, think in “React tree”, not just “DOM tree”"
             ]
           ],
           "caption": "Delegation is great, but understand the boundary with native DOM"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>React uses event delegation so it can handle events with a small number of root listeners, keep behavior consistent, avoid listener churn as the UI tree changes, and integrate event handling with React\u2019s scheduling and update model. If it attached native listeners per element, large trees would pay heavy setup/teardown costs and React would lose control over consistent dispatch + prioritization."
+          "text": "<strong>Summary</strong><br><br>React uses event delegation so it can handle events with a small number of root listeners, keep behavior consistent, avoid listener churn as the UI tree changes, and integrate event handling with React’s scheduling and update model. If it attached native listeners per element, large trees would pay heavy setup/teardown costs and React would lose control over consistent dispatch + prioritization."
         }
       ]
     },
@@ -1313,19 +1313,19 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Use stable and unique identifiers like database IDs for keys.</li><li>Avoid using array indices if the list can change order or length.</li><li>Do not use random or non-deterministic values as keys \u2014 React relies on key consistency across renders.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Use stable and unique identifiers like database IDs for keys.</li><li>Avoid using array indices if the list can change order or length.</li><li>Do not use random or non-deterministic values as keys — React relies on key consistency across renders.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Performance Insight</strong><br>Keys allow React\u2019s diffing algorithm (reconciliation) to skip unchanged elements and efficiently patch only modified nodes, improving render speed and stability."
+          "text": "<strong>Performance Insight</strong><br>Keys allow React’s diffing algorithm (reconciliation) to skip unchanged elements and efficiently patch only modified nodes, improving render speed and stability."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of keys like labels on moving boxes \u2014 without them, React wouldn\u2019t know which box belongs where after reordering."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of keys like labels on moving boxes — without them, React wouldn’t know which box belongs where after reordering."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Keys uniquely identify list items during rendering.</li><li>They improve performance and prevent re-rendering bugs.</li><li>Use stable, unique values like IDs \u2014 avoid indices when possible.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Keys uniquely identify list items during rendering.</li><li>They improve performance and prevent re-rendering bugs.</li><li>Use stable, unique values like IDs — avoid indices when possible.</li></ul>"
         }
       ]
     },
@@ -1344,7 +1344,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>React provides two ways to handle form inputs: <em>controlled</em> and <em>uncontrolled</em> components. Controlled components rely on React state as the single source of truth, while uncontrolled components use the DOM\u2019s internal state via <code>ref</code> to manage data."
+          "text": "<strong>Overview</strong><br><br>React provides two ways to handle form inputs: <em>controlled</em> and <em>uncontrolled</em> components. Controlled components rely on React state as the single source of truth, while uncontrolled components use the DOM’s internal state via <code>ref</code> to manage data."
         },
         {
           "type": "list",
@@ -1382,7 +1382,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Controlled components put React in charge of the form state \u2014 think of it as React 'holding the pen' while you type."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Controlled components put React in charge of the form state — think of it as React 'holding the pen' while you type."
         },
         {
           "type": "text",
@@ -1400,12 +1400,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn\u2019t actually a component.",
+    "description": "Incorrectly mixing default exports and named exports can cause React to import the wrong thing (often undefined). The app may compile, but crash at runtime when React tries to render a component that isn’t actually a component.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>React doesn\u2019t render \u201cimports\u201d \u2014 it renders the <em>value</em> you pass as a component. If you import the wrong symbol, you often end up with <code>undefined</code> (or a plain object). React then throws at runtime when it tries to treat that value like a component."
+          "text": "<strong>Core idea</strong><br><br>React doesn’t render “imports” — it renders the <em>value</em> you pass as a component. If you import the wrong symbol, you often end up with <code>undefined</code> (or a plain object). React then throws at runtime when it tries to treat that value like a component."
         },
         {
           "type": "list",
@@ -1419,25 +1419,25 @@
             [
               "Default export: <code>export default Button</code>",
               "Wrong: <code>import { Button } from './Button'</code>",
-              "Button becomes <code>undefined</code> \u2192 React error: <code>Element type is invalid...</code>",
+              "Button becomes <code>undefined</code> → React error: <code>Element type is invalid...</code>",
               "Use <code>import Button from './Button'</code>"
             ],
             [
               "Named export: <code>export const Button = ...</code>",
               "Wrong: <code>import Button from './Button'</code>",
-              "Button becomes <code>undefined</code> (or a module wrapper) \u2192 runtime crash",
+              "Button becomes <code>undefined</code> (or a module wrapper) → runtime crash",
               "Use <code>import { Button } from './Button'</code>"
             ],
             [
               "Barrel re-export mistake",
-              "Import from <code>index.ts</code> expecting a symbol that isn\u2019t exported",
-              "Import resolves but value is missing \u2192 <code>undefined</code> at render time",
+              "Import from <code>index.ts</code> expecting a symbol that isn’t exported",
+              "Import resolves but value is missing → <code>undefined</code> at render time",
               "Fix barrel: export the symbol correctly"
             ],
             [
               "Default export renamed during re-export",
               "<code>export { default } from './Button'</code> but you import <code>{ Button }</code>",
-              "Named import is missing \u2192 <code>undefined</code>",
+              "Named import is missing → <code>undefined</code>",
               "Re-export with a name: <code>export { default as Button } ...</code>"
             ]
           ],
@@ -1459,13 +1459,13 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why it can slip past \u201cbuild success\u201d</strong><br><br>Depending on tooling (JS vs TS strictness, Babel settings, path aliases, barrel files), the import might not error at compile time. But at runtime, the imported value is still wrong (often <code>undefined</code>), and React only discovers it when rendering."
+          "text": "<strong>Why it can slip past “build success”</strong><br><br>Depending on tooling (JS vs TS strictness, Babel settings, path aliases, barrel files), the import might not error at compile time. But at runtime, the imported value is still wrong (often <code>undefined</code>), and React only discovers it when rendering."
         },
         {
           "type": "list",
           "columns": [
             "Quick debug step",
-            "What you\u2019re checking",
+            "What you’re checking",
             "What it usually reveals"
           ],
           "rows": [
@@ -1477,7 +1477,7 @@
             [
               "Open the module file",
               "Check the exact export statements",
-              "Whether it\u2019s <code>export default</code> or <code>export const</code>"
+              "Whether it’s <code>export default</code> or <code>export const</code>"
             ],
             [
               "Check barrel/index files",
@@ -1513,7 +1513,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Conditional rendering in React is just JavaScript: your component returns different <code>ReactNode</code> values depending on conditions (state/props/context). React renders whatever you return. Returning <code>null</code> (or <code>false</code>) means \u201crender nothing\u201d."
+          "text": "<strong>Core idea</strong><br><br>Conditional rendering in React is just JavaScript: your component returns different <code>ReactNode</code> values depending on conditions (state/props/context). React renders whatever you return. Returning <code>null</code> (or <code>false</code>) means “render nothing”."
         },
         {
           "type": "list",
@@ -1536,7 +1536,7 @@
             [
               "Render-only-when-true (&&)",
               "<code>{cond && A}</code>",
-              "You only need the \u201ctrue\u201d branch (else = nothing)"
+              "You only need the “true” branch (else = nothing)"
             ],
             [
               "Switch / mapping",
@@ -1590,7 +1590,7 @@
             ],
             [
               "Arrow function with braces but no return",
-              "Component returns <code>undefined</code> \u2192 \u201cNothing was returned from render\u201d",
+              "Component returns <code>undefined</code> → “Nothing was returned from render”",
               "Use <code>() => ( ... )</code> or add <code>return</code>"
             ],
             [
@@ -1633,7 +1633,7 @@
             ],
             [
               "Use ternary when you truly have two alternatives",
-              "Makes the \u201celse\u201d explicit (vs implicit nothing)"
+              "Makes the “else” explicit (vs implicit nothing)"
             ],
             [
               "Use <code>&&</code> only with boolean conditions",
@@ -1674,7 +1674,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br><code>useEffect()</code> is React\u2019s API for <em>side effects</em>: code that must run <em>outside</em> rendering to keep your component synchronized with something external (network, subscriptions, browser APIs, timers, logging/analytics).<br><br>Key mental model: <strong>render computes UI</strong> (pure), then React <strong>commits</strong> DOM changes, then <code>useEffect</code> runs to \u201csync with the world.\u201d"
+          "text": "<strong>Core idea</strong><br><br><code>useEffect()</code> is React’s API for <em>side effects</em>: code that must run <em>outside</em> rendering to keep your component synchronized with something external (network, subscriptions, browser APIs, timers, logging/analytics).<br><br>Key mental model: <strong>render computes UI</strong> (pure), then React <strong>commits</strong> DOM changes, then <code>useEffect</code> runs to “sync with the world.”"
         },
         {
           "type": "list",
@@ -1686,7 +1686,7 @@
           "rows": [
             [
               "Runs after commit",
-              "Effects run after React has committed updates to the DOM (they don\u2019t run during render).",
+              "Effects run after React has committed updates to the DOM (they don’t run during render).",
               "You avoid doing real-world work in render (render may run multiple times)."
             ],
             [
@@ -1696,7 +1696,7 @@
             ],
             [
               "Dependencies define when to re-sync",
-              "The dependency array tells React when your effect\u2019s inputs changed.",
+              "The dependency array tells React when your effect’s inputs changed.",
               "Correct deps prevent stale values and accidental infinite loops."
             ]
           ],
@@ -1780,7 +1780,7 @@
             [
               "Infinite loop",
               "Effect sets state that changes a dependency, which re-runs the effect forever.",
-              "Don\u2019t use effects to derive state from state; compute derived values during render or use memoization."
+              "Don’t use effects to derive state from state; compute derived values during render or use memoization."
             ],
             [
               "Async effect function directly",
@@ -1793,7 +1793,7 @@
               "If it can be computed from props/state, compute it in render (or <code>useMemo</code> if expensive)."
             ]
           ],
-          "caption": "Most real-world bugs come from deps, stale closures, or using effects as \u201cstate sync\u201d"
+          "caption": "Most real-world bugs come from deps, stale closures, or using effects as “state sync”"
         },
         {
           "type": "text",
@@ -1801,7 +1801,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>StrictMode note (dev)</strong><br><br>In development with <code>&lt;React.StrictMode&gt;</code>, React may run an effect\u2019s setup + cleanup twice on mount to surface unsafe side effects. This is why effects must be idempotent and clean up correctly."
+          "text": "<strong>StrictMode note (dev)</strong><br><br>In development with <code>&lt;React.StrictMode&gt;</code>, React may run an effect’s setup + cleanup twice on mount to surface unsafe side effects. This is why effects must be idempotent and clean up correctly."
         },
         {
           "type": "text",
@@ -1819,12 +1819,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what React fragments change in the real DOM (no extra wrapper node) and what they still represent in React\u2019s tree (a Fragment fiber). Connect this to reconciliation: identity/type matching, keys (especially keyed fragments in lists), and common remount/state-loss gotchas when adding/removing a fragment wrapper.",
+    "description": "Explain what React fragments change in the real DOM (no extra wrapper node) and what they still represent in React’s tree (a Fragment fiber). Connect this to reconciliation: identity/type matching, keys (especially keyed fragments in lists), and common remount/state-loss gotchas when adding/removing a fragment wrapper.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React\u2019s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn\u2019t produce a DOM wrapper."
+          "text": "<strong>Core idea</strong><br><br>A fragment (<code>&lt;&gt;...&lt;/&gt;</code> / <code>React.Fragment</code>) is <em>invisible in the browser DOM</em> (no extra element node), but it is <em>still a node in React’s internal tree</em>. That means it affects reconciliation (how React matches old vs new children), even though it doesn’t produce a DOM wrapper."
         },
         {
           "type": "list",
@@ -1841,12 +1841,12 @@
             ],
             [
               "React tree",
-              "React still creates a Fragment \u201cfiber\u201d that groups children",
-              "Reconciliation can treat \u201cFragment vs not Fragment\u201d as a type change (can remount)"
+              "React still creates a Fragment “fiber” that groups children",
+              "Reconciliation can treat “Fragment vs not Fragment” as a type change (can remount)"
             ],
             [
               "Props/attributes",
-              "Fragments don\u2019t create a DOM node, so you can\u2019t attach DOM attributes/events/layout hooks to \u201cthe fragment itself\u201d",
+              "Fragments don’t create a DOM node, so you can’t attach DOM attributes/events/layout hooks to “the fragment itself”",
               "If you need a className, ref to a DOM element, or an event boundary, you need a real element wrapper"
             ]
           ],
@@ -1870,14 +1870,14 @@
               "Child components can preserve state if their own identity is stable"
             ],
             [
-              "Fragment \u2194 element wrapper swap (<code>&lt;&gt;</code> vs <code>&lt;div&gt;</code>)",
+              "Fragment ↔ element wrapper swap (<code>&lt;&gt;</code> vs <code>&lt;div&gt;</code>)",
               "Type changes at that position",
               "Subtree often remounts (state reset) because old fiber is replaced"
             ],
             [
-              "Fragment present \u2194 fragment removed (wrapping/unwrapping)",
+              "Fragment present ↔ fragment removed (wrapping/unwrapping)",
               "Type at the position changes (Fragment vs Child)",
-              "Can remount the child even if it \u201clooks like the same UI\u201d"
+              "Can remount the child even if it “looks like the same UI”"
             ],
             [
               "Fragments in lists with keys",
@@ -1890,17 +1890,17 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u2705 DOM stays clean (no wrapper)\nfunction Header() {\n  return (\n    <>\n      <h1>Title</h1>\n      <p>Subtitle</p>\n    </>\n  );\n}\n\n// DOM output is roughly:\n// <h1>Title</h1>\n// <p>Subtitle</p>"
+          "code": "// ✅ DOM stays clean (no wrapper)\nfunction Header() {\n  return (\n    <>\n      <h1>Title</h1>\n      <p>Subtitle</p>\n    </>\n  );\n}\n\n// DOM output is roughly:\n// <h1>Title</h1>\n// <p>Subtitle</p>"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u2705 Keyed Fragment in a list (group multiple siblings per item)\nfunction DefinitionList({ items }) {\n  return (\n    <dl>\n      {items.map((x) => (\n        <React.Fragment key={x.id}>\n          <dt>{x.term}</dt>\n          <dd>{x.desc}</dd>\n        </React.Fragment>\n      ))}\n    </dl>\n  );\n}\n\n// Without a keyed Fragment, you'd need a wrapper element (often invalid inside <dl>)."
+          "code": "// ✅ Keyed Fragment in a list (group multiple siblings per item)\nfunction DefinitionList({ items }) {\n  return (\n    <dl>\n      {items.map((x) => (\n        <React.Fragment key={x.id}>\n          <dt>{x.term}</dt>\n          <dd>{x.desc}</dd>\n        </React.Fragment>\n      ))}\n    </dl>\n  );\n}\n\n// Without a keyed Fragment, you'd need a wrapper element (often invalid inside <dl>)."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u26a0\ufe0f Gotcha: wrapping/unwrapping can remount (state loss)\nfunction Counter() {\n  const [n, setN] = React.useState(0);\n  return <button onClick={() => setN((x) => x + 1)}>{n}</button>;\n}\n\nfunction App({ wrap }) {\n  // If `wrap` toggles, React may replace the subtree because\n  // the element type at this position changes (Fragment vs Counter).\n  return wrap ? (\n    <>\n      <Counter />\n    </>\n  ) : (\n    <Counter />\n  );\n}\n"
+          "code": "// ⚠️ Gotcha: wrapping/unwrapping can remount (state loss)\nfunction Counter() {\n  const [n, setN] = React.useState(0);\n  return <button onClick={() => setN((x) => x + 1)}>{n}</button>;\n}\n\nfunction App({ wrap }) {\n  // If `wrap` toggles, React may replace the subtree because\n  // the element type at this position changes (Fragment vs Counter).\n  return wrap ? (\n    <>\n      <Counter />\n    </>\n  ) : (\n    <Counter />\n  );\n}\n"
         },
         {
           "type": "list",
@@ -1912,29 +1912,29 @@
           "rows": [
             [
               "Using fragment when you needed a layout hook",
-              "You can\u2019t style/measure \u201cthe fragment\u201d (no DOM node)",
+              "You can’t style/measure “the fragment” (no DOM node)",
               "Use a real element when you need className/ref/layout boundary"
             ],
             [
               "Swapping wrappers (Fragment vs <div>)",
               "Unexpected remount / lost local state / lost focus",
-              "Keep wrapper type stable; don\u2019t toggle between structurally different roots"
+              "Keep wrapper type stable; don’t toggle between structurally different roots"
             ],
             [
               "Returning multiple siblings per list item without a keyed Fragment",
               "React warns about keys or reuses siblings incorrectly on reorder",
-              "Put the <code>key</code> on <code>React.Fragment</code> (shorthand can\u2019t take a key)"
+              "Put the <code>key</code> on <code>React.Fragment</code> (shorthand can’t take a key)"
             ]
           ],
           "caption": "Common fragment pitfalls"
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>\u201cFragments don\u2019t create DOM nodes, so they keep markup/semantics clean. But they still exist in React\u2019s tree, so they participate in reconciliation: type + key + position. Keyed fragments are mainly for lists where one item returns multiple siblings. Be careful: adding/removing/swapping the fragment wrapper can change element identity and cause remounts.\u201d"
+          "text": "<strong>Interview framing</strong><br><br>“Fragments don’t create DOM nodes, so they keep markup/semantics clean. But they still exist in React’s tree, so they participate in reconciliation: type + key + position. Keyed fragments are mainly for lists where one item returns multiple siblings. Be careful: adding/removing/swapping the fragment wrapper can change element identity and cause remounts.”"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Fragments affect the <em>DOM</em> by removing unnecessary wrapper elements. They affect <em>reconciliation</em> because Fragment is still an element type in React\u2019s tree: it can change identity matching (and therefore state preservation), and keyed fragments give stable identity to grouped siblings in lists."
+          "text": "<strong>Summary</strong><br><br>Fragments affect the <em>DOM</em> by removing unnecessary wrapper elements. They affect <em>reconciliation</em> because Fragment is still an element type in React’s tree: it can change identity matching (and therefore state preservation), and keyed fragments give stable identity to grouped siblings in lists."
         }
       ]
     },
@@ -1948,12 +1948,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what people mean by \u201cVirtual DOM\u201d in React (React element tree in memory), how React re-renders to produce a new tree, how reconciliation (diffing + heuristics + keys) computes changes, and how the commit phase applies DOM mutations. Emphasize: re-render \u2260 DOM update.",
+    "description": "Explain what people mean by “Virtual DOM” in React (React element tree in memory), how React re-renders to produce a new tree, how reconciliation (diffing + heuristics + keys) computes changes, and how the commit phase applies DOM mutations. Emphasize: re-render ≠ DOM update.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>In React, \u201cVirtual DOM\u201d usually means: <em>an in-memory tree representation of your UI</em> (React elements / fibers), not the browser DOM itself. On each update, React re-runs components to produce a <em>new</em> tree, then <strong>reconciles</strong> it with the previous tree to decide what must change. Only after that, React <strong>commits</strong> the necessary changes to the real DOM."
+          "text": "<strong>Core idea</strong><br><br>In React, “Virtual DOM” usually means: <em>an in-memory tree representation of your UI</em> (React elements / fibers), not the browser DOM itself. On each update, React re-runs components to produce a <em>new</em> tree, then <strong>reconciles</strong> it with the previous tree to decide what must change. Only after that, React <strong>commits</strong> the necessary changes to the real DOM."
         },
         {
           "type": "list",
@@ -1964,23 +1964,23 @@
           ],
           "rows": [
             [
-              "\u201cVDOM is a copy of the real DOM.\u201d",
-              "\u26a0\ufe0f half-true",
-              "It\u2019s a JS representation of the UI (<code>type</code>, <code>props</code>, <code>children</code>). It models what the DOM <em>should</em> look like, not a full DOM clone."
+              "“VDOM is a copy of the real DOM.”",
+              "⚠️ half-true",
+              "It’s a JS representation of the UI (<code>type</code>, <code>props</code>, <code>children</code>). It models what the DOM <em>should</em> look like, not a full DOM clone."
             ],
             [
-              "\u201cReact updates the minimal set of DOM changes.\u201d",
-              "\u26a0\ufe0f usually",
-              "React uses reconciliation heuristics. With stable keys/types, it\u2019s very efficient, but it\u2019s not a perfect minimal-edit solver."
+              "“React updates the minimal set of DOM changes.”",
+              "⚠️ usually",
+              "React uses reconciliation heuristics. With stable keys/types, it’s very efficient, but it’s not a perfect minimal-edit solver."
             ],
             [
-              "\u201cRe-render means the DOM changed.\u201d",
-              "\u274c",
+              "“Re-render means the DOM changed.”",
+              "❌",
               "Re-render means React re-ran components to compute a new UI tree. DOM mutations only happen in the commit phase if something actually differs."
             ],
             [
-              "\u201cVDOM makes React fast.\u201d",
-              "\u26a0\ufe0f incomplete",
+              "“VDOM makes React fast.”",
+              "⚠️ incomplete",
               "The win is: predictable re-rendering + efficient diffing + batching. Many perf issues are still JS work, reconciliation work, or browser layout/paint."
             ]
           ],
@@ -2023,7 +2023,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Keys are a big part of \u201cVDOM performance\u201d</strong><br><br>Reconciliation is fast when React can match previous children to next children reliably. In lists, stable <code>key</code> values give identity; bad keys (like index in reordering lists) can cause unnecessary remounts, DOM churn, and state bugs."
+          "text": "<strong>Keys are a big part of “VDOM performance”</strong><br><br>Reconciliation is fast when React can match previous children to next children reliably. In lists, stable <code>key</code> values give identity; bad keys (like index in reordering lists) can cause unnecessary remounts, DOM churn, and state bugs."
         },
         {
           "type": "list",
@@ -2049,11 +2049,11 @@
               "The same inputs produce the same tree (when render is pure), which makes behavior easier to reason about and debug."
             ]
           ],
-          "caption": "What the \u201cVirtual DOM + reconciliation\u201d architecture buys you"
+          "caption": "What the “Virtual DOM + reconciliation” architecture buys you"
         },
         {
           "type": "text",
-          "text": "<strong>Interview-quality summary</strong><br><br>In React, \u201cVirtual DOM\u201d refers to the in-memory UI tree (React elements/fibers). On updates, React re-renders to produce a new tree, then runs reconciliation (diffing + keys + heuristics) to compute what changed, and finally commits only the necessary DOM mutations. A re-render is just recomputing UI \u2014 it does not automatically mean the browser DOM changed."
+          "text": "<strong>Interview-quality summary</strong><br><br>In React, “Virtual DOM” refers to the in-memory UI tree (React elements/fibers). On updates, React re-renders to produce a new tree, then runs reconciliation (diffing + keys + heuristics) to compute what changed, and finally commits only the necessary DOM mutations. A re-render is just recomputing UI — it does not automatically mean the browser DOM changed."
         }
       ]
     },
@@ -2070,12 +2070,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain React\u2019s update pipeline: what a \u201cre-render\u201d really is (re-running component functions to produce a new element tree), what triggers it (state/props/context/parent renders), how reconciliation decides what changed, and why a re-render often results in zero DOM mutations. Include bailouts (Object.is state equality, React.memo/PureComponent), identity pitfalls (inline objects/functions, Context value identity), StrictMode dev behavior, and keys/remount gotchas.",
+    "description": "Explain React’s update pipeline: what a “re-render” really is (re-running component functions to produce a new element tree), what triggers it (state/props/context/parent renders), how reconciliation decides what changed, and why a re-render often results in zero DOM mutations. Include bailouts (Object.is state equality, React.memo/PureComponent), identity pitfalls (inline objects/functions, Context value identity), StrictMode dev behavior, and keys/remount gotchas.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>In React, a <strong>re-render</strong> means: React runs your component again to compute the next <em>React element tree</em> (the in-memory UI description).<br><br><strong>Re-render \u2260 DOM update</strong>. After rendering, React <strong>reconciles</strong> (matches old vs new trees) and only then <strong>commits</strong> the minimal DOM mutations <em>if anything actually changed</em>."
+          "text": "<strong>Core idea</strong><br><br>In React, a <strong>re-render</strong> means: React runs your component again to compute the next <em>React element tree</em> (the in-memory UI description).<br><br><strong>Re-render ≠ DOM update</strong>. After rendering, React <strong>reconciles</strong> (matches old vs new trees) and only then <strong>commits</strong> the minimal DOM mutations <em>if anything actually changed</em>."
         },
         {
           "type": "list",
@@ -2088,17 +2088,17 @@
             [
               "State update (useState/useReducer)",
               "Schedules a render for that component",
-              "If the new state is <code>Object.is</code>-equal to the old state, React can bail out (no re-render). New object/array references are always \u201cdifferent\u201d."
+              "If the new state is <code>Object.is</code>-equal to the old state, React can bail out (no re-render). New object/array references are always “different”."
             ],
             [
               "Parent re-renders",
               "Children are rendered by default",
-              "Even if props \u201clook the same\u201d, React will call the child again unless you use <code>React.memo</code>/<code>PureComponent</code> (or a custom comparison)."
+              "Even if props “look the same”, React will call the child again unless you use <code>React.memo</code>/<code>PureComponent</code> (or a custom comparison)."
             ],
             [
               "Prop identity changes",
               "Child re-renders",
-              "Inline objects/functions create new references every render \u2192 looks like \u201cprops changed\u201d to memo/shallow compare."
+              "Inline objects/functions create new references every render → looks like “props changed” to memo/shallow compare."
             ],
             [
               "Context Provider value changes",
@@ -2142,7 +2142,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "import React from 'react';\n\nconst Child = React.memo(function Child({ onInc, config }) {\n  console.log('Child rendered');\n  return <button onClick={onInc}>Inc</button>;\n});\n\nexport default function Parent() {\n  const [count, setCount] = React.useState(0);\n\n  // \u274c NEW function/object every render -> Child sees \"new props\" -> re-renders\n  // const onInc = () => setCount(count + 1);\n  // const config = { step: 1 };\n\n  // \u2705 Stable identities -> Child can skip renders via React.memo\n  const onInc = React.useCallback(() => setCount((c) => c + 1), []);\n  const config = React.useMemo(() => ({ step: 1 }), []);\n\n  console.log('Parent rendered');\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <Child onInc={onInc} config={config} />\n    </div>\n  );\n}\n"
+          "code": "import React from 'react';\n\nconst Child = React.memo(function Child({ onInc, config }) {\n  console.log('Child rendered');\n  return <button onClick={onInc}>Inc</button>;\n});\n\nexport default function Parent() {\n  const [count, setCount] = React.useState(0);\n\n  // ❌ NEW function/object every render -> Child sees \"new props\" -> re-renders\n  // const onInc = () => setCount(count + 1);\n  // const config = { step: 1 };\n\n  // ✅ Stable identities -> Child can skip renders via React.memo\n  const onInc = React.useCallback(() => setCount((c) => c + 1), []);\n  const config = React.useMemo(() => ({ step: 1 }), []);\n\n  console.log('Parent rendered');\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <Child onInc={onInc} config={config} />\n    </div>\n  );\n}\n"
         },
         {
           "type": "text",
@@ -2156,19 +2156,19 @@
           ],
           "rows": [
             [
-              "\u201cReact re-renders the whole app.\u201d",
+              "“React re-renders the whole app.”",
               "React schedules work for the affected part of the tree. But parent renders do propagate unless you add bailout boundaries (memo) and keep identities stable."
             ],
             [
-              "\u201cVirtual DOM diff always computes the minimal edit.\u201d",
-              "Reconciliation is heuristic and optimized for common UI patterns. With good keys/types, it\u2019s very efficient; with bad keys/identity churn, it can do extra work."
+              "“Virtual DOM diff always computes the minimal edit.”",
+              "Reconciliation is heuristic and optimized for common UI patterns. With good keys/types, it’s very efficient; with bad keys/identity churn, it can do extra work."
             ],
             [
-              "\u201cIf a component re-rendered, the DOM changed.\u201d",
-              "Not necessarily. If the computed output is the same (or the changed parts don\u2019t affect the DOM), commit can be a no-op."
+              "“If a component re-rendered, the DOM changed.”",
+              "Not necessarily. If the computed output is the same (or the changed parts don’t affect the DOM), commit can be a no-op."
             ],
             [
-              "\u201cuseCallback/useMemo always improves performance.\u201d",
+              "“useCallback/useMemo always improves performance.”",
               "They help only when they prevent real work (rerenders of expensive children, expensive computations). Overuse adds complexity and overhead."
             ]
           ],
@@ -2185,12 +2185,12 @@
             [
               "Colocate state (move it down)",
               "The number of components affected by updates",
-              "Keep state as close as possible to where it\u2019s used, so fewer parents re-render."
+              "Keep state as close as possible to where it’s used, so fewer parents re-render."
             ],
             [
               "Split components",
               "The size of the rerendered subtree",
-              "Separate \u201cfast-changing\u201d parts from \u201cmostly-static\u201d parts."
+              "Separate “fast-changing” parts from “mostly-static” parts."
             ],
             [
               "React.memo / PureComponent",
@@ -2199,8 +2199,8 @@
             ],
             [
               "Stable prop identities",
-              "False-positive \u201cprop changed\u201d signals",
-              "Avoid inline objects/functions when they\u2019re passed to memoized children."
+              "False-positive “prop changed” signals",
+              "Avoid inline objects/functions when they’re passed to memoized children."
             ],
             [
               "Memoize Context value",
@@ -2212,11 +2212,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Two important gotchas</strong><br><br>\u2022 <strong>StrictMode (dev)</strong>: React may intentionally run render logic more than once to surface unsafe side effects. Don\u2019t treat \u201cdouble logs\u201d in dev as production behavior.<br>\u2022 <strong>Keys/type changes</strong>: Changing a component\u2019s key or swapping wrappers (e.g., Fragment \u2194 div) can cause a remount (state reset), not just a re-render."
+          "text": "<strong>Two important gotchas</strong><br><br>• <strong>StrictMode (dev)</strong>: React may intentionally run render logic more than once to surface unsafe side effects. Don’t treat “double logs” in dev as production behavior.<br>• <strong>Keys/type changes</strong>: Changing a component’s key or swapping wrappers (e.g., Fragment ↔ div) can cause a remount (state reset), not just a re-render."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A re-render is \u201crecompute the next UI tree\u201d, not \u201cmutate the DOM\u201d. React then reconciles and commits only necessary DOM changes. Unnecessary re-renders usually come from unclear state ownership, unstable prop identities (inline objects/functions), broad context updates, or bad keys."
+          "text": "<strong>Summary</strong><br><br>React re-renders when state/props/context might have changed. A re-render is “recompute the next UI tree”, not “mutate the DOM”. React then reconciles and commits only necessary DOM changes. Unnecessary re-renders usually come from unclear state ownership, unstable prop identities (inline objects/functions), broad context updates, or bad keys."
         }
       ]
     },
@@ -2230,12 +2230,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain what typically breaks when a component treats the same piece of data as both \u201cprops-owned\u201d and \u201cstate-owned\u201d (multiple sources of truth). Cover common symptoms (stale UI, input jumps, infinite loops, memo bugs) and the correct patterns (single source of truth, controlled vs uncontrolled, derived state).",
+    "description": "Explain what typically breaks when a component treats the same piece of data as both “props-owned” and “state-owned” (multiple sources of truth). Cover common symptoms (stale UI, input jumps, infinite loops, memo bugs) and the correct patterns (single source of truth, controlled vs uncontrolled, derived state).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>Props are <em>inputs</em> owned by the parent. State is <em>local memory</em> owned by the component. When the same value is \u201cowned\u201d by both (prop + local state trying to represent the same truth), you create <em>two sources of truth</em>. React can only re-render correctly if ownership is clear: one writer, one authoritative value."
+          "text": "<strong>Core idea</strong><br><br>Props are <em>inputs</em> owned by the parent. State is <em>local memory</em> owned by the component. When the same value is “owned” by both (prop + local state trying to represent the same truth), you create <em>two sources of truth</em>. React can only re-render correctly if ownership is clear: one writer, one authoritative value."
         },
         {
           "type": "list",
@@ -2251,29 +2251,29 @@
               "Child copied prop into state once (or with a wrong sync) so it stops reflecting prop changes"
             ],
             [
-              "Input \u201cjumps\u201d / cursor issues",
+              "Input “jumps” / cursor issues",
               "User types, then text resets or cursor jumps",
               "Both parent and child write to the input value; updates race and overwrite each other"
             ],
             [
               "Infinite update loops",
-              "\u201cMaximum update depth exceeded\u201d or render thrashing",
-              "Effect syncs prop \u2192 state, state change triggers parent callback, parent changes prop again"
+              "“Maximum update depth exceeded” or render thrashing",
+              "Effect syncs prop → state, state change triggers parent callback, parent changes prop again"
             ],
             [
               "Controlled/uncontrolled warnings",
-              "React warning about switching controlled \u2194 uncontrolled",
-              "Sometimes you pass value, sometimes you don\u2019t; or you mix value + defaultValue"
+              "React warning about switching controlled ↔ uncontrolled",
+              "Sometimes you pass value, sometimes you don’t; or you mix value + defaultValue"
             ],
             [
               "Memo / shallow-compare lies",
-              "React.memo/PureComponent skips re-render when it shouldn\u2019t (or vice versa)",
+              "React.memo/PureComponent skips re-render when it shouldn’t (or vice versa)",
               "Mutations or identity mismatches: prop reference stays same while internal state changes (or you mutate a prop object)"
             ],
             [
               "Hard-to-debug coupling",
-              "\u201cWorks sometimes\u201d, order/timing dependent behavior",
-              "Two writers + async scheduling = last write wins, but it\u2019s not obvious who wrote last"
+              "“Works sometimes”, order/timing dependent behavior",
+              "Two writers + async scheduling = last write wins, but it’s not obvious who wrote last"
             ]
           ],
           "caption": "Typical failures when prop + state compete for the same responsibility"
@@ -2281,12 +2281,12 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u274c Classic bug: copying props to state (stale after parent updates)\nfunction ProfileEditor({ user }) {\n  const [name, setName] = React.useState(user.name); // copied once\n\n  // Later: parent changes user.name (e.g., refetch) but input stays stale\n  return <input value={name} onChange={(e) => setName(e.target.value)} />;\n}\n\n// This component now has two truths:\n// - parent truth: user.name\n// - child truth: name\n"
+          "code": "// ❌ Classic bug: copying props to state (stale after parent updates)\nfunction ProfileEditor({ user }) {\n  const [name, setName] = React.useState(user.name); // copied once\n\n  // Later: parent changes user.name (e.g., refetch) but input stays stale\n  return <input value={name} onChange={(e) => setName(e.target.value)} />;\n}\n\n// This component now has two truths:\n// - parent truth: user.name\n// - child truth: name\n"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u274c Sync effect + callback can create loops / jitter\nfunction Child({ value, onChange }) {\n  const [local, setLocal] = React.useState(value);\n\n  // tries to \"keep in sync\" with prop\n  React.useEffect(() => {\n    setLocal(value);\n  }, [value]);\n\n  // tries to \"keep parent in sync\" with local\n  React.useEffect(() => {\n    onChange(local);\n  }, [local, onChange]);\n\n  return <input value={local} onChange={(e) => setLocal(e.target.value)} />;\n}\n"
+          "code": "// ❌ Sync effect + callback can create loops / jitter\nfunction Child({ value, onChange }) {\n  const [local, setLocal] = React.useState(value);\n\n  // tries to \"keep in sync\" with prop\n  React.useEffect(() => {\n    setLocal(value);\n  }, [value]);\n\n  // tries to \"keep parent in sync\" with local\n  React.useEffect(() => {\n    onChange(local);\n  }, [local, onChange]);\n\n  return <input value={local} onChange={(e) => setLocal(e.target.value)} />;\n}\n"
         },
         {
           "type": "list",
@@ -2303,7 +2303,7 @@
             ],
             [
               "Uncontrolled input + ref",
-              "You don\u2019t need every keystroke in React state",
+              "You don’t need every keystroke in React state",
               "DOM owns value; React reads it only when needed (submit, blur)"
             ],
             [
@@ -2312,7 +2312,7 @@
               "No syncing needed: compute during render (optionally memoize)"
             ],
             [
-              "Intentional \u201cdraft state\u201d with explicit reset",
+              "Intentional “draft state” with explicit reset",
               "You need editable local draft that can be reset by parent",
               "You define a reset rule (key change / reset token) instead of ambiguous syncing"
             ]
@@ -2322,11 +2322,11 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "// \u2705 Controlled: parent owns value (single source of truth)\nfunction Child({ value, onChange }) {\n  return <input value={value} onChange={(e) => onChange(e.target.value)} />;\n}\n\nfunction Parent() {\n  const [value, setValue] = React.useState('');\n  return <Child value={value} onChange={setValue} />;\n}\n\n// \u2705 Uncontrolled: DOM owns value\nfunction UncontrolledForm() {\n  const ref = React.useRef(null);\n  return (\n    <form\n      onSubmit={(e) => {\n        e.preventDefault();\n        alert(ref.current.value);\n      }}\n    >\n      <input ref={ref} defaultValue=\"\" />\n      <button>Submit</button>\n    </form>\n  );\n}\n\n// \u2705 Intentional draft with explicit reset signal\nfunction Editor({ initialName, resetKey }) {\n  const [draft, setDraft] = React.useState(initialName);\n\n  // explicit reset (not \"sync every time\")\n  React.useEffect(() => {\n    setDraft(initialName);\n  }, [resetKey]);\n\n  return <input value={draft} onChange={(e) => setDraft(e.target.value)} />;\n}\n"
+          "code": "// ✅ Controlled: parent owns value (single source of truth)\nfunction Child({ value, onChange }) {\n  return <input value={value} onChange={(e) => onChange(e.target.value)} />;\n}\n\nfunction Parent() {\n  const [value, setValue] = React.useState('');\n  return <Child value={value} onChange={setValue} />;\n}\n\n// ✅ Uncontrolled: DOM owns value\nfunction UncontrolledForm() {\n  const ref = React.useRef(null);\n  return (\n    <form\n      onSubmit={(e) => {\n        e.preventDefault();\n        alert(ref.current.value);\n      }}\n    >\n      <input ref={ref} defaultValue=\"\" />\n      <button>Submit</button>\n    </form>\n  );\n}\n\n// ✅ Intentional draft with explicit reset signal\nfunction Editor({ initialName, resetKey }) {\n  const [draft, setDraft] = React.useState(initialName);\n\n  // explicit reset (not \"sync every time\")\n  React.useEffect(() => {\n    setDraft(initialName);\n  }, [resetKey]);\n\n  return <input value={draft} onChange={(e) => setDraft(e.target.value)} />;\n}\n"
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br>If two different places can write the \u201csame\u201d value, you will eventually get drift, overwrites, loops, or UI jumps. Decide who owns it (parent via props, or child via local state/DOM), then design the API around that ownership."
+          "text": "<strong>Rule of thumb</strong><br><br>If two different places can write the “same” value, you will eventually get drift, overwrites, loops, or UI jumps. Decide who owns it (parent via props, or child via local state/DOM), then design the API around that ownership."
         }
       ]
     },
@@ -2345,7 +2345,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>In React, when two or more components need to share the same state, it\u2019s best to 'lift the state up' \u2014 move it to their nearest common parent. The parent holds the state, and passes it down to children via <code>props</code>. This ensures data consistency and centralized control."
+          "text": "<strong>Overview</strong><br><br>In React, when two or more components need to share the same state, it’s best to 'lift the state up' — move it to their nearest common parent. The parent holds the state, and passes it down to children via <code>props</code>. This ensures data consistency and centralized control."
         },
         {
           "type": "code",
@@ -2380,7 +2380,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Keep state as high as necessary, but as low as possible \u2014 avoid globalizing everything.</li><li>Use callbacks to propagate changes from children to parents.</li><li>Consider using Context API or state management libraries for complex shared state.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Keep state as high as necessary, but as low as possible — avoid globalizing everything.</li><li>Use callbacks to propagate changes from children to parents.</li><li>Consider using Context API or state management libraries for complex shared state.</li></ul>"
         },
         {
           "type": "text",
@@ -2402,12 +2402,12 @@
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They\u2019re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code.",
+    "description": "Higher-Order Components (HOCs) are a React pattern for reusing cross-cutting component logic by wrapping a component. An HOC is a function that takes a component and returns a new component with added behavior (e.g., injecting props, guarding access, subscriptions). They’re common in older/legacy React and some libraries (e.g., Redux connect), even though hooks are the modern default for new code.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Core idea</strong><br><br>A <strong>higher-order component (HOC)</strong> is a <strong>function</strong> with the shape <code>(Component) =&gt; Component</code>. It wraps a \u201cbase\u201d component and returns a new component that adds behavior around it (inject props, gate rendering, subscribe/unsubscribe, etc.).<br><br>Key rule: an HOC should be <strong>pure</strong> with respect to its input component (don\u2019t mutate the wrapped component; compose by wrapping)."
+          "text": "<strong>Core idea</strong><br><br>A <strong>higher-order component (HOC)</strong> is a <strong>function</strong> with the shape <code>(Component) =&gt; Component</code>. It wraps a “base” component and returns a new component that adds behavior around it (inject props, gate rendering, subscribe/unsubscribe, etc.).<br><br>Key rule: an HOC should be <strong>pure</strong> with respect to its input component (don’t mutate the wrapped component; compose by wrapping)."
         },
         {
           "type": "list",
@@ -2494,12 +2494,12 @@
           "rows": [
             [
               "Ref forwarding",
-              "Refs don\u2019t automatically pass through wrappers",
+              "Refs don’t automatically pass through wrappers",
               "Use <code>React.forwardRef</code> and pass <code>ref</code> down"
             ],
             [
               "Static methods lost",
-              "Statics on the wrapped component (e.g., <code>someStatic</code>) aren\u2019t present on the wrapper",
+              "Statics on the wrapped component (e.g., <code>someStatic</code>) aren’t present on the wrapper",
               "Hoist statics (e.g., <code>hoist-non-react-statics</code>) when needed"
             ],
             [
@@ -2509,7 +2509,7 @@
             ],
             [
               "Wrapper noise",
-              "DevTools shows extra wrapper layers (\u201cwrapper hell\u201d)",
+              "DevTools shows extra wrapper layers (“wrapper hell”)",
               "Set <code>displayName</code>; prefer hooks for new code"
             ],
             [
@@ -2519,11 +2519,11 @@
             ],
             [
               "Creating HOCs in render",
-              "New component type each render \u2192 remounts/state loss/perf issues",
+              "New component type each render → remounts/state loss/perf issues",
               "Create HOCs once (module scope) or memoize carefully"
             ]
           ],
-          "caption": "The parts that make HOCs \u201chard\u201d in practice"
+          "caption": "The parts that make HOCs “hard” in practice"
         },
         {
           "type": "code",
@@ -2564,7 +2564,7 @@
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
-    "description": "Both useMemo() and useCallback() are React hooks used for performance optimization. useMemo() memoizes computed values, while useCallback() memoizes functions \u2014 preventing unnecessary re-creations during re-renders.",
+    "description": "Both useMemo() and useCallback() are React hooks used for performance optimization. useMemo() memoizes computed values, while useCallback() memoizes functions — preventing unnecessary re-creations during re-renders.",
     "answer": {
       "blocks": [
         {
@@ -2602,7 +2602,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Detailed Explanation</strong><br><ul><li><strong>useMemo()</strong> recalculates a value only when dependencies change. It\u2019s ideal for optimizing expensive computations like filtering large datasets or formatting lists.</li><li><strong>useCallback()</strong> returns the same function reference between renders unless its dependencies change. It\u2019s most useful when passing callbacks to memoized child components.</li></ul>"
+          "text": "<strong>Detailed Explanation</strong><br><ul><li><strong>useMemo()</strong> recalculates a value only when dependencies change. It’s ideal for optimizing expensive computations like filtering large datasets or formatting lists.</li><li><strong>useCallback()</strong> returns the same function reference between renders unless its dependencies change. It’s most useful when passing callbacks to memoized child components.</li></ul>"
         },
         {
           "type": "text",
@@ -2615,11 +2615,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Analogy</strong><br><em>useMemo()</em> is like remembering the result of a long math calculation so you don\u2019t recalculate it unless the inputs change. <em>useCallback()</em> is like remembering the function you used to do the calculation so you don\u2019t create it again each time."
+          "text": "<strong>Analogy</strong><br><em>useMemo()</em> is like remembering the result of a long math calculation so you don’t recalculate it unless the inputs change. <em>useCallback()</em> is like remembering the function you used to do the calculation so you don’t create it again each time."
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> <code>useMemo()</code> optimizes values, <code>useCallback()</code> optimizes functions \u2014 both help React skip unnecessary work and maintain stable references."
+          "text": "<i class='fa-solid fa-lightbulb'></i> <code>useMemo()</code> optimizes values, <code>useCallback()</code> optimizes functions — both help React skip unnecessary work and maintain stable references."
         },
         {
           "type": "text",
@@ -2640,7 +2640,7 @@
     ],
     "difficulty": "hard",
     "importance": 5,
-    "description": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to minimize them \u2014 including memoization, pure components, stable references, and smart state management.",
+    "description": "Preventing unnecessary re-renders in React is crucial for maintaining optimal performance. Re-renders occur when a component's state, props, or context changes, but React provides several techniques and patterns to minimize them — including memoization, pure components, stable references, and smart state management.",
     "answer": {
       "blocks": [
         {
@@ -2667,7 +2667,7 @@
             ],
             [
               "useCallback()",
-              "Memoizes a function definition so that it doesn\u2019t re-trigger re-renders in memoized children.",
+              "Memoizes a function definition so that it doesn’t re-trigger re-renders in memoized children.",
               "When passing callbacks as props."
             ],
             [
@@ -2699,11 +2699,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Other Optimization Techniques</strong><br><ul><li>Use <code>key</code> attributes wisely \u2014 avoid changing keys unnecessarily.</li><li>Batch multiple state updates using <code>ReactDOM.flushSync()</code> or rely on React's automatic batching (React 18+).</li><li>Defer complex calculations or animations using <code>useTransition()</code> or <code>useDeferredValue()</code>.</li><li>Profile performance using React DevTools Profiler to locate render bottlenecks.</li></ul>"
+          "text": "<strong>Other Optimization Techniques</strong><br><ul><li>Use <code>key</code> attributes wisely — avoid changing keys unnecessarily.</li><li>Batch multiple state updates using <code>ReactDOM.flushSync()</code> or rely on React's automatic batching (React 18+).</li><li>Defer complex calculations or animations using <code>useTransition()</code> or <code>useDeferredValue()</code>.</li><li>Profile performance using React DevTools Profiler to locate render bottlenecks.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Efficient React apps don\u2019t avoid re-renders entirely \u2014 they control when and where they happen. The goal is to ensure only components affected by data changes re-render."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Efficient React apps don’t avoid re-renders entirely — they control when and where they happen. The goal is to ensure only components affected by data changes re-render."
         },
         {
           "type": "text",
@@ -2765,7 +2765,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Important Notes</strong><br><ul><li>Only active in development mode; it has no effect in production builds.</li><li>May cause duplicate console logs or API calls in development due to intentional double-invocation of certain functions.</li><li>Does not render any UI or change component behavior; it\u2019s purely diagnostic.</li></ul>"
+          "text": "<strong>Important Notes</strong><br><ul><li>Only active in development mode; it has no effect in production builds.</li><li>May cause duplicate console logs or API calls in development due to intentional double-invocation of certain functions.</li><li>Does not render any UI or change component behavior; it’s purely diagnostic.</li></ul>"
         },
         {
           "type": "code",
@@ -2774,7 +2774,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>React.StrictMode</code> as React\u2019s 'training mode' \u2014 it helps you find potential bugs early, making your app stronger and more resilient in production."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Think of <code>React.StrictMode</code> as React’s 'training mode' — it helps you find potential bugs early, making your app stronger and more resilient in production."
         },
         {
           "type": "text",
@@ -2819,7 +2819,7 @@
               "React updates only the changed elements in the real DOM, leaving the rest untouched."
             ]
           ],
-          "caption": "Main phases of React\u2019s reconciliation process"
+          "caption": "Main phases of React’s reconciliation process"
         },
         {
           "type": "code",
@@ -2828,11 +2828,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Why It Matters</strong><br>Direct manipulation of the DOM is expensive. React\u2019s reconciliation process ensures that only necessary updates happen, minimizing reflows and improving performance. This approach makes React declarative \u2014 you describe the UI, and React efficiently figures out how to update it."
+          "text": "<strong>Why It Matters</strong><br>Direct manipulation of the DOM is expensive. React’s reconciliation process ensures that only necessary updates happen, minimizing reflows and improving performance. This approach makes React declarative — you describe the UI, and React efficiently figures out how to update it."
         },
         {
           "type": "text",
-          "text": "<strong>Rules of Reconciliation</strong><br><ul><li>Elements of the same type are compared recursively.</li><li>If an element type changes (e.g., <code>&lt;div&gt;</code> \u2192 <code>&lt;span&gt;</code>), React destroys and rebuilds that node.</li><li>Keys help React identify elements across renders, especially in lists, ensuring stable updates instead of re-creating entire subtrees.</li></ul>"
+          "text": "<strong>Rules of Reconciliation</strong><br><ul><li>Elements of the same type are compared recursively.</li><li>If an element type changes (e.g., <code>&lt;div&gt;</code> → <code>&lt;span&gt;</code>), React destroys and rebuilds that node.</li><li>Keys help React identify elements across renders, especially in lists, ensuring stable updates instead of re-creating entire subtrees.</li></ul>"
         },
         {
           "type": "text",
@@ -2840,7 +2840,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Example</strong><br>If you render a list and change one item\u2019s position, React uses the <code>key</code> attribute to identify which element moved instead of destroying and re-creating all items."
+          "text": "<strong>Example</strong><br>If you render a list and change one item’s position, React uses the <code>key</code> attribute to identify which element moved instead of destroying and re-creating all items."
         },
         {
           "type": "code",
@@ -2849,11 +2849,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Reconciliation is React\u2019s secret engine \u2014 it ensures your UI stays fast by updating only what\u2019s necessary, not everything that changed."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Reconciliation is React’s secret engine — it ensures your UI stays fast by updating only what’s necessary, not everything that changed."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>Reconciliation is React\u2019s process for updating the DOM efficiently.</li><li>It compares old and new Virtual DOM trees using the diffing algorithm.</li><li>Only changed parts of the real DOM are updated, ensuring optimal performance.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>Reconciliation is React’s process for updating the DOM efficiently.</li><li>It compares old and new Virtual DOM trees using the diffing algorithm.</li><li>Only changed parts of the real DOM are updated, ensuring optimal performance.</li></ul>"
         }
       ]
     },
@@ -2866,16 +2866,16 @@
   },
   {
     "id": "react-diffing-algorithm",
-    "title": "Explain how React\u2019s diffing algorithm determines which parts of the DOM to update.",
+    "title": "Explain how React’s diffing algorithm determines which parts of the DOM to update.",
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
-    "description": "React\u2019s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process nearly O(n) instead of O(n\u00b3).",
+    "description": "React’s diffing algorithm efficiently compares two Virtual DOM trees to find the minimal number of operations needed to synchronize the real DOM with the new state. It uses intelligent heuristics that make the process nearly O(n) instead of O(n³).",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>The diffing algorithm is the heart of React\u2019s Virtual DOM system. Whenever a component\u2019s state or props change, React constructs a new Virtual DOM and compares it to the previous one. Instead of checking every possible change (which would be computationally expensive), React uses smart assumptions to identify the minimal changes required."
+          "text": "<strong>Overview</strong><br><br>The diffing algorithm is the heart of React’s Virtual DOM system. Whenever a component’s state or props change, React constructs a new Virtual DOM and compares it to the previous one. Instead of checking every possible change (which would be computationally expensive), React uses smart assumptions to identify the minimal changes required."
         },
         {
           "type": "list",
@@ -2890,14 +2890,14 @@
             ],
             [
               "2. Replacement on Type Change",
-              "If the element type differs (e.g., <code>&lt;div&gt;</code> \u2192 <code>&lt;span&gt;</code>), React removes the old node and creates a new one."
+              "If the element type differs (e.g., <code>&lt;div&gt;</code> → <code>&lt;span&gt;</code>), React removes the old node and creates a new one."
             ],
             [
               "3. Key-Based List Comparison",
               "When diffing lists, React uses keys to track which items changed, were added, or removed. Keys ensure minimal reordering and preserve component state."
             ]
           ],
-          "caption": "Simplified rules of React\u2019s diffing algorithm"
+          "caption": "Simplified rules of React’s diffing algorithm"
         },
         {
           "type": "code",
@@ -2910,7 +2910,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Example of Attribute Update</strong><br>React updates only what changes \u2014 not the entire node."
+          "text": "<strong>Example of Attribute Update</strong><br>React updates only what changes — not the entire node."
         },
         {
           "type": "code",
@@ -2919,7 +2919,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Performance Advantage</strong><br>The traditional approach to comparing trees is O(n\u00b3), but React\u2019s diffing algorithm achieves near O(n) by making these assumptions:<ul><li>Different element types produce different trees.</li><li>Stable keys indicate the same components across renders.</li></ul>This efficiency makes React suitable for large-scale dynamic UIs."
+          "text": "<strong>Performance Advantage</strong><br>The traditional approach to comparing trees is O(n³), but React’s diffing algorithm achieves near O(n) by making these assumptions:<ul><li>Different element types produce different trees.</li><li>Stable keys indicate the same components across renders.</li></ul>This efficiency makes React suitable for large-scale dynamic UIs."
         },
         {
           "type": "text",
@@ -2927,11 +2927,11 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> The diffing algorithm is React\u2019s performance superpower \u2014 it ensures your UI updates surgically instead of rebuilding the whole DOM every time something changes."
+          "text": "<i class='fa-solid fa-lightbulb'></i> The diffing algorithm is React’s performance superpower — it ensures your UI updates surgically instead of rebuilding the whole DOM every time something changes."
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><ul><li>React\u2019s diffing algorithm compares Virtual DOM trees efficiently.</li><li>It updates only changed attributes or elements using heuristic assumptions.</li><li>Keys play a critical role in optimizing list updates and preserving state.</li></ul>"
+          "text": "<strong>Summary</strong><br><ul><li>React’s diffing algorithm compares Virtual DOM trees efficiently.</li><li>It updates only changed attributes or elements using heuristic assumptions.</li><li>Keys play a critical role in optimizing list updates and preserving state.</li></ul>"
         }
       ]
     },
@@ -2999,11 +2999,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>When to Use Each</strong><br><ul><li><strong>Render Props:</strong> When you want full control over rendering and flexible composition.</li><li><strong>HOCs:</strong> When you want to extend or modify components\u2019 behavior in a reusable, declarative way.</li></ul>"
+          "text": "<strong>When to Use Each</strong><br><ul><li><strong>Render Props:</strong> When you want full control over rendering and flexible composition.</li><li><strong>HOCs:</strong> When you want to extend or modify components’ behavior in a reusable, declarative way.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Best Practices</strong><br><ul><li>Avoid using both patterns simultaneously in the same component \u2014 it increases complexity.</li><li>Prefer hooks in modern React for sharing logic (e.g., <code>useCustomHook()</code>).</li><li>Render props are more explicit and composable, whereas HOCs abstract logic more deeply.</li></ul>"
+          "text": "<strong>Best Practices</strong><br><ul><li>Avoid using both patterns simultaneously in the same component — it increases complexity.</li><li>Prefer hooks in modern React for sharing logic (e.g., <code>useCustomHook()</code>).</li><li>Render props are more explicit and composable, whereas HOCs abstract logic more deeply.</li></ul>"
         },
         {
           "type": "text",
@@ -3030,7 +3030,7 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>By default, components in React render into a specific section of the DOM tree \u2014 typically inside a root element. However, there are cases where you need to render an element outside of this hierarchy (like a modal that overlays the entire page). React Portals make this possible while preserving the component\u2019s state and event bubbling behavior."
+          "text": "<strong>Overview</strong><br><br>By default, components in React render into a specific section of the DOM tree — typically inside a root element. However, there are cases where you need to render an element outside of this hierarchy (like a modal that overlays the entire page). React Portals make this possible while preserving the component’s state and event bubbling behavior."
         },
         {
           "type": "code",
@@ -3070,15 +3070,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>How It Works Internally</strong><br>React\u2019s <code>createPortal()</code> function takes two arguments: a React child (JSX element) and a DOM node. It attaches the child to the specified DOM node, but keeps it part of the React component hierarchy \u2014 meaning it still shares state, context, and event propagation with its parent."
+          "text": "<strong>How It Works Internally</strong><br>React’s <code>createPortal()</code> function takes two arguments: a React child (JSX element) and a DOM node. It attaches the child to the specified DOM node, but keeps it part of the React component hierarchy — meaning it still shares state, context, and event propagation with its parent."
         },
         {
           "type": "text",
-          "text": "<strong>Advantages of Using Portals</strong><br><ul><li>Solves z-index and overflow issues by detaching UI from parent containers.</li><li>Keeps React\u2019s declarative structure intact.</li><li>Maintains event propagation and context links even when rendered outside the normal DOM flow.</li></ul>"
+          "text": "<strong>Advantages of Using Portals</strong><br><ul><li>Solves z-index and overflow issues by detaching UI from parent containers.</li><li>Keeps React’s declarative structure intact.</li><li>Maintains event propagation and context links even when rendered outside the normal DOM flow.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Portals act like \u2018wormholes\u2019 in React \u2014 they render elements somewhere else in the DOM while keeping them connected to their original logic and context."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Portals act like ‘wormholes’ in React — they render elements somewhere else in the DOM while keeping them connected to their original logic and context."
         },
         {
           "type": "text",
@@ -3092,7 +3092,7 @@
   },
   {
     "id": "react-concurrent-rendering",
-    "title": "How does React\u2019s concurrent rendering improve performance?",
+    "title": "How does React’s concurrent rendering improve performance?",
     "technology": "react",
     "difficulty": "hard",
     "importance": 5,
@@ -3101,11 +3101,11 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Overview</strong><br><br>Traditional rendering in React was synchronous \u2014 once React started rendering a component tree, it had to finish before handling new updates. Concurrent rendering changes that behavior. It allows React to work on multiple UI updates at the same time, pause work when necessary, and prioritize more important updates (like user interactions) over less critical ones."
+          "text": "<strong>Overview</strong><br><br>Traditional rendering in React was synchronous — once React started rendering a component tree, it had to finish before handling new updates. Concurrent rendering changes that behavior. It allows React to work on multiple UI updates at the same time, pause work when necessary, and prioritize more important updates (like user interactions) over less critical ones."
         },
         {
           "type": "text",
-          "text": "<strong>Key Concept</strong><br><em>Concurrent rendering</em> doesn\u2019t mean React renders components in parallel; rather, it can interrupt and resume work intelligently. This leads to smoother UIs, especially in complex applications where large updates could otherwise block input or animations."
+          "text": "<strong>Key Concept</strong><br><em>Concurrent rendering</em> doesn’t mean React renders components in parallel; rather, it can interrupt and resume work intelligently. This leads to smoother UIs, especially in complex applications where large updates could otherwise block input or animations."
         },
         {
           "type": "list",
@@ -3120,7 +3120,7 @@
             ],
             [
               "Prioritized Updates",
-              "Updates are assigned priorities \u2014 urgent ones (like typing) are handled first, while non-urgent ones (like data loading) can be delayed."
+              "Updates are assigned priorities — urgent ones (like typing) are handled first, while non-urgent ones (like data loading) can be delayed."
             ],
             [
               "Concurrent Preparation",
@@ -3140,15 +3140,15 @@
         },
         {
           "type": "text",
-          "text": "<strong>How This Improves Performance</strong><br><ul><li>By marking some updates as \u2018transitions\u2019, React knows they are not urgent and can delay them to keep the UI responsive.</li><li>React can interrupt rendering mid-way to handle urgent updates first, then continue rendering where it left off.</li><li>This prevents input lag and stuttering during large data updates or re-renders.</li></ul>"
+          "text": "<strong>How This Improves Performance</strong><br><ul><li>By marking some updates as ‘transitions’, React knows they are not urgent and can delay them to keep the UI responsive.</li><li>React can interrupt rendering mid-way to handle urgent updates first, then continue rendering where it left off.</li><li>This prevents input lag and stuttering during large data updates or re-renders.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Key APIs Enabling Concurrent Rendering</strong><br><ul><li><code>useTransition()</code>: Defers expensive updates to improve responsiveness.</li><li><code>useDeferredValue()</code>: Allows a value to \u2018lag behind\u2019 to avoid blocking fast updates.</li><li><code>startTransition()</code>: Marks non-urgent updates to be scheduled with lower priority.</li><li><code>Suspense</code>: Works with concurrent rendering to pause UI updates until asynchronous data is ready.</li></ul>"
+          "text": "<strong>Key APIs Enabling Concurrent Rendering</strong><br><ul><li><code>useTransition()</code>: Defers expensive updates to improve responsiveness.</li><li><code>useDeferredValue()</code>: Allows a value to ‘lag behind’ to avoid blocking fast updates.</li><li><code>startTransition()</code>: Marks non-urgent updates to be scheduled with lower priority.</li><li><code>Suspense</code>: Works with concurrent rendering to pause UI updates until asynchronous data is ready.</li></ul>"
         },
         {
           "type": "text",
-          "text": "<strong>Under the Hood</strong><br><br>React\u2019s concurrent renderer is built on a new architecture called the <em>Fiber Reconciler</em>. Each component update is split into small units of work (called fibers). This lets React work on these pieces incrementally and yield control back to the browser between frames, ensuring smooth rendering without blocking the main thread."
+          "text": "<strong>Under the Hood</strong><br><br>React’s concurrent renderer is built on a new architecture called the <em>Fiber Reconciler</em>. Each component update is split into small units of work (called fibers). This lets React work on these pieces incrementally and yield control back to the browser between frames, ensuring smooth rendering without blocking the main thread."
         },
         {
           "type": "text",
@@ -3156,7 +3156,7 @@
         },
         {
           "type": "text",
-          "text": "<i class='fa-solid fa-lightbulb'></i> Concurrent rendering isn\u2019t about parallelism \u2014 it\u2019s about <em>cooperative scheduling</em>. React breaks large tasks into smaller chunks and works on them over time, making your app feel faster without actually increasing raw performance."
+          "text": "<i class='fa-solid fa-lightbulb'></i> Concurrent rendering isn’t about parallelism — it’s about <em>cooperative scheduling</em>. React breaks large tasks into smaller chunks and works on them over time, making your app feel faster without actually increasing raw performance."
         },
         {
           "type": "text",
@@ -3183,16 +3183,16 @@
         },
         {
           "type": "text",
-          "text": "<strong>The mental model</strong><br><br>Internally, React stores Hooks for a component in something like an <em>array</em> and uses a pointer while rendering:<br><br><code>useState \u2192 slot 0</code><br><code>useEffect \u2192 slot 1</code><br><code>useMemo \u2192 slot 2</code><br><br>On every render, React assumes: <em>\"The first Hook call is the same Hook as last time. The second Hook call is the same Hook as last time.\"</em><br><br>So the only thing that matters is: <strong>the order of Hook calls must be identical on every render.</strong>"
+          "text": "<strong>The mental model</strong><br><br>Internally, React stores Hooks for a component in something like an <em>array</em> and uses a pointer while rendering:<br><br><code>useState → slot 0</code><br><code>useEffect → slot 1</code><br><code>useMemo → slot 2</code><br><br>On every render, React assumes: <em>\"The first Hook call is the same Hook as last time. The second Hook call is the same Hook as last time.\"</em><br><br>So the only thing that matters is: <strong>the order of Hook calls must be identical on every render.</strong>"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Example({ showExtra }) {\n  const [count, setCount] = useState(0);     // Hook slot 0\n\n  if (showExtra) {\n    const [flag, setFlag] = useState(false); // Hook slot 1 (sometimes!)\n  }\n\n  const [name, setName] = useState('Alice'); // Hook slot 1 or 2 \ud83e\udd2f\n}"
+          "code": "function Example({ showExtra }) {\n  const [count, setCount] = useState(0);     // Hook slot 0\n\n  if (showExtra) {\n    const [flag, setFlag] = useState(false); // Hook slot 1 (sometimes!)\n  }\n\n  const [name, setName] = useState('Alice'); // Hook slot 1 or 2 🤯\n}"
         },
         {
           "type": "text",
-          "text": "<strong>What breaks here?</strong><br><br>When <code>showExtra</code> is <code>false</code>, the second <code>useState</code> is skipped. That means the <code>name</code> state now occupies <em>slot 1</em> instead of <em>slot 2</em>.<br><br>On the next render when <code>showExtra</code> becomes <code>true</code>, React thinks:<br>\u2022 slot 1 = <code>flag</code> state<br>\u2022 slot 2 = <code>name</code> state<br><br>But previously:<br>\u2022 slot 1 was actually <code>name</code> state \ud83d\ude2c<br><br>So now React mixes up states. Values jump between variables. Effects attach to the wrong logic. Everything becomes <em>silently wrong</em>."
+          "text": "<strong>What breaks here?</strong><br><br>When <code>showExtra</code> is <code>false</code>, the second <code>useState</code> is skipped. That means the <code>name</code> state now occupies <em>slot 1</em> instead of <em>slot 2</em>.<br><br>On the next render when <code>showExtra</code> becomes <code>true</code>, React thinks:<br>• slot 1 = <code>flag</code> state<br>• slot 2 = <code>name</code> state<br><br>But previously:<br>• slot 1 was actually <code>name</code> state 😬<br><br>So now React mixes up states. Values jump between variables. Effects attach to the wrong logic. Everything becomes <em>silently wrong</em>."
         },
         {
           "type": "list",
@@ -3260,7 +3260,7 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain how JavaScript closures capture values from a specific render, why React renders create new closures, and how this leads to stale state bugs in effects, timeouts, and event handlers \u2014 and how to fix them.",
+    "description": "Explain how JavaScript closures capture values from a specific render, why React renders create new closures, and how this leads to stale state bugs in effects, timeouts, and event handlers — and how to fix them.",
     "answer": {
       "blocks": [
         {
@@ -3274,7 +3274,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      console.log(count); // \u274c Might log stale value\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []); // empty deps\n\n  return <button onClick={() => setCount(c => c + 1)}>+</button>;\n}"
+          "code": "function Counter() {\n  const [count, setCount] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      console.log(count); // ❌ Might log stale value\n    }, 1000);\n\n    return () => clearInterval(id);\n  }, []); // empty deps\n\n  return <button onClick={() => setCount(c => c + 1)}>+</button>;\n}"
         },
         {
           "type": "text",
@@ -3284,7 +3284,7 @@
           "type": "list",
           "columns": [
             "Cause",
-            "What\u2019s actually happening",
+            "What’s actually happening",
             "Symptom"
           ],
           "rows": [
@@ -3313,16 +3313,16 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  const id = setInterval(() => {\n    console.log(count);\n  }, 1000);\n\n  return () => clearInterval(id);\n}, [count]); // \u2705 now closure updates when count changes"
+          "code": "useEffect(() => {\n  const id = setInterval(() => {\n    console.log(count);\n  }, 1000);\n\n  return () => clearInterval(id);\n}, [count]); // ✅ now closure updates when count changes"
         },
         {
           "type": "text",
-          "text": "<strong>Fix #2: Use functional updates (most common fix)</strong><br><br>If you are <em>updating state based on previous state</em>, don\u2019t read from the closure at all:"
+          "text": "<strong>Fix #2: Use functional updates (most common fix)</strong><br><br>If you are <em>updating state based on previous state</em>, don’t read from the closure at all:"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "setCount(c => c + 1); // \u2705 always uses latest state"
+          "code": "setCount(c => c + 1); // ✅ always uses latest state"
         },
         {
           "type": "text",
@@ -3331,15 +3331,15 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "const countRef = useRef(count);\nuseEffect(() => {\n  countRef.current = count;\n}, [count]);\n\nuseEffect(() => {\n  const id = setInterval(() => {\n    console.log(countRef.current); // \u2705 always latest\n  }, 1000);\n  return () => clearInterval(id);\n}, []);"
+          "code": "const countRef = useRef(count);\nuseEffect(() => {\n  countRef.current = count;\n}, [count]);\n\nuseEffect(() => {\n  const id = setInterval(() => {\n    console.log(countRef.current); // ✅ always latest\n  }, 1000);\n  return () => clearInterval(id);\n}, []);"
         },
         {
           "type": "text",
-          "text": "<strong>Important insight</strong><br><br>This is not a React quirk. This is how <em>JavaScript closures</em> work combined with React\u2019s <em>\"each render is a snapshot\"</em> model."
+          "text": "<strong>Important insight</strong><br><br>This is not a React quirk. This is how <em>JavaScript closures</em> work combined with React’s <em>\"each render is a snapshot\"</em> model."
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Each render creates a new closure with its own state snapshot. Async callbacks keep the snapshot from the render they were created in. Stale state happens when effects or callbacks don\u2019t re-run with new dependencies. You fix it with correct deps, functional updates, or refs.\"</em>"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Each render creates a new closure with its own state snapshot. Async callbacks keep the snapshot from the render they were created in. Stale state happens when effects or callbacks don’t re-run with new dependencies. You fix it with correct deps, functional updates, or refs.\"</em>"
         },
         {
           "type": "text",
@@ -3357,15 +3357,19 @@
       "effects",
       "callbacks"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "React Stale Closures: Root Cause and Reliable Fixes",
+      "description": "Learn why closures capture old render values, when effects/timeouts go stale, and the dependency/ref fixes interviewers look for."
+    }
   },
   {
     "id": "react-useref-vs-usestate",
-    "title": "What\u2019s the difference between useRef and useState? When should each be used?",
+    "title": "What’s the difference between useRef and useState? When should each be used?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering \u2014 and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state).",
+    "description": "Explain how useState triggers re-renders and is used for UI state, while useRef holds a mutable value that persists across renders without re-rendering — and when each is the correct tool (DOM refs, timers, previous values, avoiding stale closures, and render-driving state).",
     "answer": {
       "blocks": [
         {
@@ -3383,19 +3387,19 @@
             [
               "useState",
               "A render-driving value (UI state)",
-              "\u2705 Triggers a re-render"
+              "✅ Triggers a re-render"
             ],
             [
               "useRef",
               "A mutable container: { current: ... }",
-              "\u274c Does NOT trigger a re-render"
+              "❌ Does NOT trigger a re-render"
             ]
           ],
           "caption": "The core difference"
         },
         {
           "type": "text",
-          "text": "<strong>First-principles mental model</strong><br><br>React re-renders when you want the UI to reflect new data. So ask yourself one question:<br><br><em>\"Should changing this value update what the user sees right now?\"</em><br><br>If yes \u2192 <strong>useState</strong>.<br>If no (but you still need the value to persist) \u2192 <strong>useRef</strong>."
+          "text": "<strong>First-principles mental model</strong><br><br>React re-renders when you want the UI to reflect new data. So ask yourself one question:<br><br><em>\"Should changing this value update what the user sees right now?\"</em><br><br>If yes → <strong>useState</strong>.<br>If no (but you still need the value to persist) → <strong>useRef</strong>."
         },
         {
           "type": "code",
@@ -3439,7 +3443,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Common useRef use cases</strong><br><br>Use <code>useRef</code> when you need a value to persist, but you don\u2019t want a render every time it changes."
+          "text": "<strong>Common useRef use cases</strong><br><br>Use <code>useRef</code> when you need a value to persist, but you don’t want a render every time it changes."
         },
         {
           "type": "list",
@@ -3479,16 +3483,16 @@
         },
         {
           "type": "text",
-          "text": "<strong>The big trap: using useRef as \"state\"</strong><br><br>People do this to avoid re-renders, but it\u2019s usually a bug factory. If the UI depends on it and you store it in a ref, the UI won\u2019t update and you\u2019ll get out-of-sync screens."
+          "text": "<strong>The big trap: using useRef as \"state\"</strong><br><br>People do this to avoid re-renders, but it’s usually a bug factory. If the UI depends on it and you store it in a ref, the UI won’t update and you’ll get out-of-sync screens."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Bad() {\n  const valueRef = useRef('');\n\n  return (\n    <div>\n      <input onChange={(e) => (valueRef.current = e.target.value)} />\n      <p>Typed: {valueRef.current}</p> {/* \u274c UI won't update reliably */}\n    </div>\n  );\n}\n\nfunction Good() {\n  const [value, setValue] = useState('');\n\n  return (\n    <div>\n      <input value={value} onChange={(e) => setValue(e.target.value)} />\n      <p>Typed: {value}</p> {/* \u2705 UI updates */}\n    </div>\n  );\n}"
+          "code": "function Bad() {\n  const valueRef = useRef('');\n\n  return (\n    <div>\n      <input onChange={(e) => (valueRef.current = e.target.value)} />\n      <p>Typed: {valueRef.current}</p> {/* ❌ UI won't update reliably */}\n    </div>\n  );\n}\n\nfunction Good() {\n  const [value, setValue] = useState('');\n\n  return (\n    <div>\n      <input value={value} onChange={(e) => setValue(e.target.value)} />\n      <p>Typed: {value}</p> {/* ✅ UI updates */}\n    </div>\n  );\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb that wins interviews</strong><br><br><strong>useState</strong> = \"React should re-render when this changes.\"<br><strong>useRef</strong> = \"I need to remember something between renders, but it\u2019s not part of the UI.\""
+          "text": "<strong>Rule of thumb that wins interviews</strong><br><br><strong>useState</strong> = \"React should re-render when this changes.\"<br><strong>useRef</strong> = \"I need to remember something between renders, but it’s not part of the UI.\""
         },
         {
           "type": "text",
@@ -3530,12 +3534,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>The first-principles reason</strong><br><br>Rendering is expensive. Reconciliation + DOM updates cost time. If React re-rendered after <em>every</em> <code>setState</code>, a single click handler could trigger 3\u20135 renders in a row.<br><br>Batching turns this:<br><em>\"Render \u2192 update \u2192 render \u2192 update \u2192 render\"</em><br>into this:<br><em>\"Update \u2192 update \u2192 update \u2192 render once\"</em>."
+          "text": "<strong>The first-principles reason</strong><br><br>Rendering is expensive. Reconciliation + DOM updates cost time. If React re-rendered after <em>every</em> <code>setState</code>, a single click handler could trigger 3–5 renders in a row.<br><br>Batching turns this:<br><em>\"Render → update → render → update → render\"</em><br>into this:<br><em>\"Update → update → update → render once\"</em>."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Counter() {\n  const [a, setA] = useState(0);\n  const [b, setB] = useState(0);\n\n  const onClick = () => {\n    setA(a + 1);\n    setB(b + 1);\n    // \u2705 React batches these into ONE render\n  };\n\n  console.log('render');\n\n  return <button onClick={onClick}>Click</button>;\n}"
+          "code": "function Counter() {\n  const [a, setA] = useState(0);\n  const [b, setB] = useState(0);\n\n  const onClick = () => {\n    setA(a + 1);\n    setB(b + 1);\n    // ✅ React batches these into ONE render\n  };\n\n  console.log('render');\n\n  return <button onClick={onClick}>Click</button>;\n}"
         },
         {
           "type": "text",
@@ -3569,12 +3573,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>React 18: Automatic batching</strong><br><br>Before React 18, batching only happened in <em>React event handlers</em>. In React 18+, batching happens <strong>almost everywhere</strong>:<br>\u2022 timeouts<br>\u2022 promises<br>\u2022 native event handlers<br>\u2022 async callbacks"
+          "text": "<strong>React 18: Automatic batching</strong><br><br>Before React 18, batching only happened in <em>React event handlers</em>. In React 18+, batching happens <strong>almost everywhere</strong>:<br>• timeouts<br>• promises<br>• native event handlers<br>• async callbacks"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "setTimeout(() => {\n  setA(a + 1);\n  setB(b + 1);\n  // \u2705 React 18 batches these too\n}, 1000);"
+          "code": "setTimeout(() => {\n  setA(a + 1);\n  setB(b + 1);\n  // ✅ React 18 batches these too\n}, 1000);"
         },
         {
           "type": "text",
@@ -3590,17 +3594,17 @@
           "rows": [
             [
               "Different ticks / separate tasks",
-              "\u274c No",
+              "❌ No",
               "They are not part of the same batch window"
             ],
             [
               "Using flushSync",
-              "\u274c No (forces sync render)",
+              "❌ No (forces sync render)",
               "You explicitly tell React to render immediately"
             ],
             [
               "Legacy React (<18) async callbacks",
-              "\u274c No",
+              "❌ No",
               "Batching only existed in React events"
             ]
           ],
@@ -3609,7 +3613,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "import { flushSync } from 'react-dom';\n\nflushSync(() => {\n  setA(1);\n});\n// \ud83d\udc46 Forces immediate render here\n\nsetB(2);\n// \ud83d\udc46 Causes another render"
+          "code": "import { flushSync } from 'react-dom';\n\nflushSync(() => {\n  setA(1);\n});\n// 👆 Forces immediate render here\n\nsetB(2);\n// 👆 Causes another render"
         },
         {
           "type": "text",
@@ -3618,7 +3622,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "setCount(count + 1);\nsetCount(count + 1); // \u274c still only +1"
+          "code": "setCount(count + 1);\nsetCount(count + 1); // ❌ still only +1"
         },
         {
           "type": "text",
@@ -3627,7 +3631,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "setCount(c => c + 1);\nsetCount(c => c + 1); // \u2705 +2"
+          "code": "setCount(c => c + 1);\nsetCount(c => c + 1); // ✅ +2"
         },
         {
           "type": "text",
@@ -3660,28 +3664,28 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>Derived state is considered an anti-pattern because it <strong>duplicates source data</strong>. When you store something in state that can be calculated from props or other state, you now have <em>two sources of truth</em> \u2014 and they eventually drift out of sync."
+          "text": "<strong>Short answer</strong><br><br>Derived state is considered an anti-pattern because it <strong>duplicates source data</strong>. When you store something in state that can be calculated from props or other state, you now have <em>two sources of truth</em> — and they eventually drift out of sync."
         },
         {
           "type": "text",
-          "text": "<strong>First-principles mental model</strong><br><br>React is best when your UI is a pure function of inputs:<br><br><em>UI = f(props, state)</em><br><br>If a value can be computed from existing inputs, storing it as state means you must keep it manually synced. That\u2019s extra complexity + extra failure modes."
+          "text": "<strong>First-principles mental model</strong><br><br>React is best when your UI is a pure function of inputs:<br><br><em>UI = f(props, state)</em><br><br>If a value can be computed from existing inputs, storing it as state means you must keep it manually synced. That’s extra complexity + extra failure modes."
         },
         {
           "type": "list",
           "columns": [
             "What derived state is",
-            "Why it\u2019s tempting",
+            "Why it’s tempting",
             "Why it bites later"
           ],
           "rows": [
             [
               "State that can be computed from props/other state",
-              "Feels convenient (\"I\u2019ll store it once\")",
+              "Feels convenient (\"I’ll store it once\")",
               "Creates duplication and sync bugs"
             ],
             [
               "Copying props into state",
-              "Lets you \u201cedit\u201d a prop locally",
+              "Lets you “edit” a prop locally",
               "Prop changes can get ignored"
             ],
             [
@@ -3695,24 +3699,24 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Bad({ items }) {\n  const [count, setCount] = useState(items.length); // \u274c derived from props\n\n  // Now you must remember to keep it in sync...\n  // What if items changes? count becomes wrong.\n\n  return <div>Count: {count}</div>;\n}"
+          "code": "function Bad({ items }) {\n  const [count, setCount] = useState(items.length); // ❌ derived from props\n\n  // Now you must remember to keep it in sync...\n  // What if items changes? count becomes wrong.\n\n  return <div>Count: {count}</div>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Why this breaks in real life</strong><br><br>If <code>items</code> changes (refetch, filtering, websocket update), <code>count</code> won\u2019t automatically update because React does not \u201cre-run\u201d <code>useState</code> initializers. Your UI becomes inconsistent: it shows old computed values from a previous render."
+          "text": "<strong>Why this breaks in real life</strong><br><br>If <code>items</code> changes (refetch, filtering, websocket update), <code>count</code> won’t automatically update because React does not “re-run” <code>useState</code> initializers. Your UI becomes inconsistent: it shows old computed values from a previous render."
         },
         {
           "type": "text",
-          "text": "<strong>Preferred approach: derive during render</strong><br><br>If it\u2019s cheap to compute, just compute it from the real source of truth:"
+          "text": "<strong>Preferred approach: derive during render</strong><br><br>If it’s cheap to compute, just compute it from the real source of truth:"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Good({ items }) {\n  const count = items.length; // \u2705 derived during render\n  return <div>Count: {count}</div>;\n}"
+          "code": "function Good({ items }) {\n  const count = items.length; // ✅ derived during render\n  return <div>Count: {count}</div>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>If it\u2019s expensive: memoize, don\u2019t store</strong><br><br>If computing derived data is heavy (sorting, filtering huge lists), use <code>useMemo</code> so you still have a single source of truth:"
+          "text": "<strong>If it’s expensive: memoize, don’t store</strong><br><br>If computing derived data is heavy (sorting, filtering huge lists), use <code>useMemo</code> so you still have a single source of truth:"
         },
         {
           "type": "code",
@@ -3721,13 +3725,13 @@
         },
         {
           "type": "text",
-          "text": "<strong>When derived state is OK</strong><br><br>It\u2019s acceptable when you intentionally want a <strong>snapshot</strong> or a <strong>locally editable copy</strong> that should not always follow the source automatically."
+          "text": "<strong>When derived state is OK</strong><br><br>It’s acceptable when you intentionally want a <strong>snapshot</strong> or a <strong>locally editable copy</strong> that should not always follow the source automatically."
         },
         {
           "type": "list",
           "columns": [
             "OK scenario",
-            "What you\u2019re doing",
+            "What you’re doing",
             "Example"
           ],
           "rows": [
@@ -3757,16 +3761,16 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function EditProfile({ user }) {\n  // \u2705 OK: draft state is intentionally independent\n  const [draftName, setDraftName] = useState(user.name);\n\n  const save = () => {\n    // submit draftName\n  };\n\n  return (\n    <div>\n      <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />\n      <button onClick={save}>Save</button>\n    </div>\n  );\n}"
+          "code": "function EditProfile({ user }) {\n  // ✅ OK: draft state is intentionally independent\n  const [draftName, setDraftName] = useState(user.name);\n\n  const save = () => {\n    // submit draftName\n  };\n\n  return (\n    <div>\n      <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />\n      <button onClick={save}>Save</button>\n    </div>\n  );\n}"
         },
         {
           "type": "text",
-          "text": "<strong>But\u2026 what if the prop can change while editing?</strong><br><br>This is where teams accidentally reintroduce the anti-pattern. If <code>user</code> can change (switching profiles, refetch), you must decide behavior:<br><br>\u2022 If you want to <em>reset</em> draft on user change \u2192 set draft when the identity changes (not every render).<br>\u2022 If you want to <em>preserve</em> unsaved edits \u2192 don\u2019t overwrite draft."
+          "text": "<strong>But… what if the prop can change while editing?</strong><br><br>This is where teams accidentally reintroduce the anti-pattern. If <code>user</code> can change (switching profiles, refetch), you must decide behavior:<br><br>• If you want to <em>reset</em> draft on user change → set draft when the identity changes (not every render).<br>• If you want to <em>preserve</em> unsaved edits → don’t overwrite draft."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function EditProfile({ user }) {\n  const [draftName, setDraftName] = useState(user.name);\n\n  // \u2705 reset draft only when user identity changes\n  useEffect(() => {\n    setDraftName(user.name);\n  }, [user.id]);\n\n  return <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />;\n}"
+          "code": "function EditProfile({ user }) {\n  const [draftName, setDraftName] = useState(user.name);\n\n  // ✅ reset draft only when user identity changes\n  useEffect(() => {\n    setDraftName(user.name);\n  }, [user.id]);\n\n  return <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />;\n}"
         },
         {
           "type": "text",
@@ -3774,11 +3778,11 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Derived state duplicates data and creates two sources of truth, leading to sync bugs. Prefer computing derived values during render or with useMemo. It\u2019s only OK when you intentionally need a snapshot or an editable draft that should not always track the source.\"</em>"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Derived state duplicates data and creates two sources of truth, leading to sync bugs. Prefer computing derived values during render or with useMemo. It’s only OK when you intentionally need a snapshot or an editable draft that should not always track the source.\"</em>"
         },
         {
           "type": "text",
-          "text": "<strong>Summary</strong><br><br>Derived state is an anti-pattern because it duplicates information that can be derived from props/state, causing drift and stale UI. Prefer deriving during render or memoizing expensive computations. It\u2019s OK when you intentionally need independent local state (drafts, snapshots, UI modes) and you define clear rules for when (or if) it should resync."
+          "text": "<strong>Summary</strong><br><br>Derived state is an anti-pattern because it duplicates information that can be derived from props/state, causing drift and stale UI. Prefer deriving during render or memoizing expensive computations. It’s OK when you intentionally need independent local state (drafts, snapshots, UI modes) and you define clear rules for when (or if) it should resync."
         }
       ]
     },
@@ -3804,20 +3808,20 @@
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>Context can cause performance issues because when a Provider\u2019s <code>value</code> changes, React notifies <strong>all consumers</strong> under that Provider. If the value is an object/function created inline, its identity changes on every render \u2014 causing a fan-out of re-renders even when the \u201creal data\u201d didn\u2019t change."
+          "text": "<strong>Short answer</strong><br><br>Context can cause performance issues because when a Provider’s <code>value</code> changes, React notifies <strong>all consumers</strong> under that Provider. If the value is an object/function created inline, its identity changes on every render — causing a fan-out of re-renders even when the “real data” didn’t change."
         },
         {
           "type": "text",
-          "text": "<strong>Core mechanism</strong><br><br>Context is not a \"subscription by field\" system. React tracks context updates by comparing the Provider\u2019s <code>value</code> <em>by reference</em> (identity), not by deep equality. So this is a common footgun:<br><br><em>\"Provider rerenders \u2192 new object \u2192 consumers rerender\"</em>."
+          "text": "<strong>Core mechanism</strong><br><br>Context is not a \"subscription by field\" system. React tracks context updates by comparing the Provider’s <code>value</code> <em>by reference</em> (identity), not by deep equality. So this is a common footgun:<br><br><em>\"Provider rerenders → new object → consumers rerender\"</em>."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "const AppContext = createContext(null);\n\nfunction AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n\n  // \u274c Bad: new object every render (new identity)\n  const value = { user, setUser };\n\n  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n}\n\nfunction Profile() {\n  const { user } = useContext(AppContext);\n  return <div>{user?.name}</div>;\n}"
+          "code": "const AppContext = createContext(null);\n\nfunction AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n\n  // ❌ Bad: new object every render (new identity)\n  const value = { user, setUser };\n\n  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n}\n\nfunction Profile() {\n  const { user } = useContext(AppContext);\n  return <div>{user?.name}</div>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Why this hurts</strong><br><br>Every time <code>AppProvider</code> re-renders, <code>value</code> becomes a brand-new object. React treats that as a context change and re-renders every component using <code>useContext(AppContext)</code> \u2014 even if the piece they care about didn\u2019t change."
+          "text": "<strong>Why this hurts</strong><br><br>Every time <code>AppProvider</code> re-renders, <code>value</code> becomes a brand-new object. React treats that as a context change and re-renders every component using <code>useContext(AppContext)</code> — even if the piece they care about didn’t change."
         },
         {
           "type": "list",
@@ -3838,7 +3842,7 @@
               "Memoized consumers still re-render"
             ],
             [
-              "Context holds \u201ceverything\u201d (mega context)",
+              "Context holds “everything” (mega context)",
               "Any change invalidates all consumers",
               "Small updates cause big UI work"
             ],
@@ -3857,16 +3861,16 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "function AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  // \u2705 stable object identity unless user changes\n\n  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n}"
+          "code": "function AppProvider({ children }) {\n  const [user, setUser] = useState(null);\n\n  const value = useMemo(() => ({ user, setUser }), [user]);\n  // ✅ stable object identity unless user changes\n\n  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Fix #2: Split contexts by change rate</strong><br><br>Don\u2019t put fast-changing values (like <code>theme</code>, <code>locale</code>, <code>isOnline</code>, <code>mousePosition</code>) in the same context as rarely-changing values (like <code>user</code>). Split them so updates don\u2019t cascade unnecessarily."
+          "text": "<strong>Fix #2: Split contexts by change rate</strong><br><br>Don’t put fast-changing values (like <code>theme</code>, <code>locale</code>, <code>isOnline</code>, <code>mousePosition</code>) in the same context as rarely-changing values (like <code>user</code>). Split them so updates don’t cascade unnecessarily."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "const UserContext = createContext(null);\nconst ThemeContext = createContext('light');\n\n// \u2705 user updates won't re-render theme consumers and vice versa"
+          "code": "const UserContext = createContext(null);\nconst ThemeContext = createContext('light');\n\n// ✅ user updates won't re-render theme consumers and vice versa"
         },
         {
           "type": "text",
@@ -3905,15 +3909,15 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "const UserName = React.memo(function UserName() {\n  const { user } = useContext(AppContext);\n  return <span>{user?.name}</span>;\n});\n\n// \u2705 Keep context reads in small leaf components"
+          "code": "const UserName = React.memo(function UserName() {\n  const { user } = useContext(AppContext);\n  return <span>{user?.name}</span>;\n});\n\n// ✅ Keep context reads in small leaf components"
         },
         {
           "type": "text",
-          "text": "<strong>Fix #5: Selector-based patterns for big stores</strong><br><br>If you\u2019re using Context like a global store with lots of fields, you may want a selector-based approach so consumers re-render only when the selected slice changes (instead of any change). This is where store libraries or selector patterns shine."
+          "text": "<strong>Fix #5: Selector-based patterns for big stores</strong><br><br>If you’re using Context like a global store with lots of fields, you may want a selector-based approach so consumers re-render only when the selected slice changes (instead of any change). This is where store libraries or selector patterns shine."
         },
         {
           "type": "text",
-          "text": "<strong>Rule of thumb</strong><br><br><strong>Context is great for:</strong> low-frequency global values (theme, locale, auth user, feature flags).<br><strong>Context is risky for:</strong> high-frequency state or \u201ceverything store\u201d objects (typing, forms, rapidly updating dashboards)."
+          "text": "<strong>Rule of thumb</strong><br><br><strong>Context is great for:</strong> low-frequency global values (theme, locale, auth user, feature flags).<br><strong>Context is risky for:</strong> high-frequency state or “everything store” objects (typing, forms, rapidly updating dashboards)."
         },
         {
           "type": "text",
@@ -3938,7 +3942,7 @@
   },
   {
     "id": "react-error-boundaries-what-they-solve",
-    "title": "What problem do Error Boundaries solve? What don\u2019t they catch?",
+    "title": "What problem do Error Boundaries solve? What don’t they catch?",
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
@@ -4022,16 +4026,16 @@
               "Handle on server/framework level + return error page"
             ]
           ],
-          "caption": "What Error Boundaries don\u2019t catch"
+          "caption": "What Error Boundaries don’t catch"
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Button() {\n  const onClick = () => {\n    // \u274c Error Boundaries do NOT catch this\n    throw new Error('Boom in event handler');\n  };\n\n  return <button onClick={onClick}>Click me</button>;\n}\n\nfunction SaferButton() {\n  const onClick = () => {\n    try {\n      throw new Error('Boom');\n    } catch (e) {\n      // \u2705 handle + report\n      console.error(e);\n    }\n  };\n\n  return <button onClick={onClick}>Click me</button>;\n}"
+          "code": "function Button() {\n  const onClick = () => {\n    // ❌ Error Boundaries do NOT catch this\n    throw new Error('Boom in event handler');\n  };\n\n  return <button onClick={onClick}>Click me</button>;\n}\n\nfunction SaferButton() {\n  const onClick = () => {\n    try {\n      throw new Error('Boom');\n    } catch (e) {\n      // ✅ handle + report\n      console.error(e);\n    }\n  };\n\n  return <button onClick={onClick}>Click me</button>;\n}"
         },
         {
           "type": "text",
-          "text": "<strong>Where to place Error Boundaries (practical)</strong><br><br>Don\u2019t wrap the entire app with one giant boundary only. Use a few strategically placed boundaries so failure is isolated:<br><br>\u2022 Page-level boundary (keeps navbar/layout alive)<br>\u2022 Widget/card boundary (dashboard tiles don\u2019t nuke the whole page)<br>\u2022 Route boundary (one route fails, rest of app still usable)"
+          "text": "<strong>Where to place Error Boundaries (practical)</strong><br><br>Don’t wrap the entire app with one giant boundary only. Use a few strategically placed boundaries so failure is isolated:<br><br>• Page-level boundary (keeps navbar/layout alive)<br>• Widget/card boundary (dashboard tiles don’t nuke the whole page)<br>• Route boundary (one route fails, rest of app still usable)"
         },
         {
           "type": "text",
@@ -4039,7 +4043,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Error Boundaries catch errors during rendering and lifecycle/constructor of descendants, letting React show a fallback UI instead of crashing the whole tree. They do not catch errors in event handlers, async callbacks, SSR, or errors inside the boundary itself \u2014 those need explicit try/catch or promise handling.\"</em>"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"Error Boundaries catch errors during rendering and lifecycle/constructor of descendants, letting React show a fallback UI instead of crashing the whole tree. They do not catch errors in event handlers, async callbacks, SSR, or errors inside the boundary itself — those need explicit try/catch or promise handling.\"</em>"
         },
         {
           "type": "text",
@@ -4063,12 +4067,12 @@
     "technology": "react",
     "difficulty": "intermediate",
     "importance": 5,
-    "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount\u2013unmount\u2013remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
+    "description": "Explain why React StrictMode intentionally double-invokes certain lifecycles and effects in development, how this simulates mount–unmount–remount, and what kinds of side-effect and cleanup bugs it is designed to reveal.",
     "answer": {
       "blocks": [
         {
           "type": "text",
-          "text": "<strong>Short answer</strong><br><br>React StrictMode double-invokes effects in development to <strong>stress-test your side effects</strong>. It intentionally simulates <em>mount \u2192 unmount \u2192 mount</em> to expose bugs where effects are not <strong>idempotent</strong> or don\u2019t clean up properly."
+          "text": "<strong>Short answer</strong><br><br>React StrictMode double-invokes effects in development to <strong>stress-test your side effects</strong>. It intentionally simulates <em>mount → unmount → mount</em> to expose bugs where effects are not <strong>idempotent</strong> or don’t clean up properly."
         },
         {
           "type": "text",
@@ -4076,7 +4080,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>The mental model</strong><br><br>React is preparing for a future where it can <em>pause, discard, and restart renders</em> (concurrent rendering). To make sure your code is safe for that world, StrictMode asks a brutal question:<br><br><em>\"If I mount this component, tear it down, and mount it again immediately\u2026 does anything break?\"</em>"
+          "text": "<strong>The mental model</strong><br><br>React is preparing for a future where it can <em>pause, discard, and restart renders</em> (concurrent rendering). To make sure your code is safe for that world, StrictMode asks a brutal question:<br><br><em>\"If I mount this component, tear it down, and mount it again immediately… does anything break?\"</em>"
         },
         {
           "type": "code",
@@ -4085,7 +4089,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>What exactly gets double-invoked?</strong><br><br>In React 18 StrictMode (dev):<br>\u2022 Component render functions<br>\u2022 useEffect / useLayoutEffect setup + cleanup<br>\u2022 Certain initializers<br><br>React mounts, cleans up, and mounts again immediately."
+          "text": "<strong>What exactly gets double-invoked?</strong><br><br>In React 18 StrictMode (dev):<br>• Component render functions<br>• useEffect / useLayoutEffect setup + cleanup<br>• Certain initializers<br><br>React mounts, cleans up, and mounts again immediately."
         },
         {
           "type": "list",
@@ -4112,7 +4116,7 @@
             ],
             [
               "Assuming effects run only once",
-              "\u201cThis runs once on mount\u201d logic",
+              "“This runs once on mount” logic",
               "Breaks under remounts / transitions"
             ]
           ],
@@ -4125,7 +4129,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  // \u274c No cleanup\n}, []);\n\n// In StrictMode dev, this registers the listener twice \ud83d\ude2c"
+          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  // ❌ No cleanup\n}, []);\n\n// In StrictMode dev, this registers the listener twice 😬"
         },
         {
           "type": "text",
@@ -4134,7 +4138,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  return () => {\n    window.removeEventListener('resize', onResize);\n  };\n}, []);\n\n// \u2705 Safe under mount \u2192 unmount \u2192 mount"
+          "code": "useEffect(() => {\n  window.addEventListener('resize', onResize);\n  return () => {\n    window.removeEventListener('resize', onResize);\n  };\n}, []);\n\n// ✅ Safe under mount → unmount → mount"
         },
         {
           "type": "text",
@@ -4143,19 +4147,19 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "useEffect(() => {\n  analytics.track('page_view'); // \u274c will fire twice in dev StrictMode\n}, []);"
+          "code": "useEffect(() => {\n  analytics.track('page_view'); // ❌ will fire twice in dev StrictMode\n}, []);"
         },
         {
           "type": "text",
-          "text": "Better patterns:<br><br>\u2022 Move it to a router-level boundary<br>\u2022 Or make it idempotent<br>\u2022 Or dedupe on the analytics side"
+          "text": "Better patterns:<br><br>• Move it to a router-level boundary<br>• Or make it idempotent<br>• Or dedupe on the analytics side"
         },
         {
           "type": "text",
-          "text": "<strong>Why React does this (the real reason)</strong><br><br>Concurrent React may mount, pause, throw away, and restart trees. If your effects are not resilient to being started and stopped multiple times, you\u2019ll get production-only bugs. StrictMode forces you to see them early."
+          "text": "<strong>Why React does this (the real reason)</strong><br><br>Concurrent React may mount, pause, throw away, and restart trees. If your effects are not resilient to being started and stopped multiple times, you’ll get production-only bugs. StrictMode forces you to see them early."
         },
         {
           "type": "text",
-          "text": "<strong>What this is NOT</strong><br><br>\u2022 Not a bug<br>\u2022 Not React being slow<br>\u2022 Not something to \u201cwork around\u201d<br><br>It\u2019s a correctness check."
+          "text": "<strong>What this is NOT</strong><br><br>• Not a bug<br>• Not React being slow<br>• Not something to “work around”<br><br>It’s a correctness check."
         },
         {
           "type": "text",
@@ -4163,7 +4167,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"StrictMode double-invokes effects in dev to simulate mount\u2013unmount\u2013remount and catch unsafe side effects. It exposes missing cleanups, non-idempotent logic, and code that assumes effects run only once. This is to prepare apps for concurrent rendering and only runs in development.\"</em>"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"StrictMode double-invokes effects in dev to simulate mount–unmount–remount and catch unsafe side effects. It exposes missing cleanups, non-idempotent logic, and code that assumes effects run only once. This is to prepare apps for concurrent rendering and only runs in development.\"</em>"
         },
         {
           "type": "text",
@@ -4178,11 +4182,15 @@
       "effects",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "React StrictMode Double Effects: Why It Happens and How to Fix",
+      "description": "Clear React 18 explanation of mount-unmount-remount checks, what bugs StrictMode exposes, and patterns for idempotent effects."
+    }
   },
   {
     "id": "react-useeffect-vs-uselayouteffect",
-    "title": "What\u2019s the difference between useEffect and useLayoutEffect? When does it matter?",
+    "title": "What’s the difference between useEffect and useLayoutEffect? When does it matter?",
     "technology": "react",
     "companies": [
       "bytedance"
@@ -4211,12 +4219,12 @@
             [
               "useLayoutEffect",
               "After DOM updates, before paint",
-              "\u2705 Yes (blocks paint)"
+              "✅ Yes (blocks paint)"
             ],
             [
               "useEffect",
               "After paint",
-              "\u274c No (non-blocking)"
+              "❌ No (non-blocking)"
             ]
           ],
           "caption": "The critical timing difference"
@@ -4232,12 +4240,12 @@
         },
         {
           "type": "text",
-          "text": "<strong>What happens if you use useEffect for layout work?</strong><br><br>The browser will:<br>\u2022 Paint the UI once<br>\u2022 Then your effect runs<br>\u2022 Then you update layout/state<br>\u2022 Then it paints again<br><br>The user sees a <strong>visual flicker / jump</strong>."
+          "text": "<strong>What happens if you use useEffect for layout work?</strong><br><br>The browser will:<br>• Paint the UI once<br>• Then your effect runs<br>• Then you update layout/state<br>• Then it paints again<br><br>The user sees a <strong>visual flicker / jump</strong>."
         },
         {
           "type": "code",
           "language": "jsx",
-          "code": "function Tooltip({ text }) {\n  const ref = useRef(null);\n  const [top, setTop] = useState(0);\n\n  // \u274c This can cause visible jump\n  useEffect(() => {\n    const rect = ref.current.getBoundingClientRect();\n    setTop(rect.top - 10);\n  }, []);\n\n  return (\n    <div ref={ref} style={{ position: 'absolute', top }}>\n      {text}\n    </div>\n  );\n}"
+          "code": "function Tooltip({ text }) {\n  const ref = useRef(null);\n  const [top, setTop] = useState(0);\n\n  // ❌ This can cause visible jump\n  useEffect(() => {\n    const rect = ref.current.getBoundingClientRect();\n    setTop(rect.top - 10);\n  }, []);\n\n  return (\n    <div ref={ref} style={{ position: 'absolute', top }}>\n      {text}\n    </div>\n  );\n}"
         },
         {
           "type": "text",
@@ -4246,7 +4254,7 @@
         {
           "type": "code",
           "language": "jsx",
-          "code": "useLayoutEffect(() => {\n  const rect = ref.current.getBoundingClientRect();\n  setTop(rect.top - 10);\n}, []);\n// \u2705 User never sees the wrong position"
+          "code": "useLayoutEffect(() => {\n  const rect = ref.current.getBoundingClientRect();\n  setTop(rect.top - 10);\n}, []);\n// ✅ User never sees the wrong position"
         },
         {
           "type": "text",
@@ -4285,7 +4293,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>When you should use useEffect (almost always)</strong><br><br>\u2022 Data fetching<br>\u2022 Subscriptions / event listeners<br>\u2022 Logging / analytics<br>\u2022 Timers<br>\u2022 Syncing with external systems<br><br>These do not need to block paint and should not slow down rendering."
+          "text": "<strong>When you should use useEffect (almost always)</strong><br><br>• Data fetching<br>• Subscriptions / event listeners<br>• Logging / analytics<br>• Timers<br>• Syncing with external systems<br><br>These do not need to block paint and should not slow down rendering."
         },
         {
           "type": "text",
@@ -4301,7 +4309,7 @@
         },
         {
           "type": "text",
-          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"useLayoutEffect runs synchronously after DOM mutations but before paint and blocks rendering, so it\u2019s for layout measurement and visual correctness. useEffect runs after paint and is non-blocking, so it\u2019s for side effects like data fetching and subscriptions. You should prefer useEffect unless you need to prevent visual flicker.\"</em>"
+          "text": "<strong>Interview framing</strong><br><br>Say it like this:<br><em>\"useLayoutEffect runs synchronously after DOM mutations but before paint and blocks rendering, so it’s for layout measurement and visual correctness. useEffect runs after paint and is non-blocking, so it’s for side effects like data fetching and subscriptions. You should prefer useEffect unless you need to prevent visual flicker.\"</em>"
         },
         {
           "type": "text",

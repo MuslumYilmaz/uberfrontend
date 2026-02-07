@@ -21,6 +21,7 @@ import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
+import { seoDescriptionForQuestion, seoTitleForQuestion } from './trivia-seo.util';
 import tagRegistry from '../../../../assets/questions/tag-registry.json';
 import topicRegistry from '../../../../assets/questions/topic-registry.json';
 
@@ -430,6 +431,14 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return `Front-end trivia question for ${this.tech}.`;
   }
 
+  private seoTitle(q: Question): string {
+    return seoTitleForQuestion(q);
+  }
+
+  private seoDescription(q: Question): string {
+    return seoDescriptionForQuestion(q, this.questionDescription(q), this.tech);
+  }
+
   private questionKeywords(q: Question): string[] {
     const tags = Array.isArray(q.tags) ? q.tags : [];
     const companies: string[] = (q as any).companies ?? (q as any).companyTags ?? [];
@@ -475,7 +484,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     const canonical = this.seo.buildCanonicalUrl(`/${this.tech}/trivia/${q.id}`);
-    const description = this.questionDescription(q);
+    const seoTitle = this.seoTitle(q);
+    const description = this.seoDescription(q);
     const keywords = this.questionKeywords(q);
     const isLocked = isQuestionLockedForTier(q, this.auth.user());
     const authorName = this.resolveAuthor(q);
@@ -522,7 +532,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const jsonLd = faq ? [breadcrumb, article, faq] : [breadcrumb, article];
 
     this.seo.updateTags({
-      title: q.title,
+      title: seoTitle,
       description,
       keywords,
       canonical,
