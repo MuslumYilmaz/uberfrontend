@@ -2,19 +2,31 @@
   display: block;
 }
 
+.company-loading {
+  padding: 38px 0;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.company-loading__text {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
+}
+
 .company-list {
   display: grid;
   gap: 12px;
 }
 
 .company-card {
-  --fa-card-bg: #111217;
-  --fa-card-bg-hover: #151a22;
-  --fa-card-border: rgba(255, 255, 255, 0.10);
-  --fa-card-border-strong: rgba(255, 255, 255, 0.18);
-  --fa-card-radius: 14px;
-  --fa-card-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
-  --fa-card-shadow-hover: 0 18px 44px rgba(0, 0, 0, 0.42);
+  --fa-card-bg: color-mix(in srgb, var(--uf-surface) 90%, var(--uf-surface-alt));
+  --fa-card-bg-hover: color-mix(in srgb, var(--uf-surface) 82%, var(--uf-surface-alt));
+  --fa-card-border: var(--uf-border-subtle);
+  --fa-card-border-strong: color-mix(in srgb, var(--uf-border-subtle) 66%, var(--uf-text-secondary));
+  --fa-card-radius: var(--uf-card-radius);
+  --fa-card-shadow: var(--uf-card-shadow);
+  --fa-card-shadow-hover: var(--uf-card-shadow-strong);
   display: block;
   padding: 16px 18px;
   color: inherit;
@@ -46,30 +58,30 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 34%, var(--uf-border-subtle));
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--uf-text-primary);
   font-weight: 700;
 }
 
 .company-card__title {
-  color: #fff;
+  color: var(--uf-text-primary);
   font-weight: 700;
 }
 
 .company-card__meta {
   font-size: 12px;
-  color: #9aa3ad;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
 }
 
 .company-card__chevron {
-  color: #9aa3ad;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
   transition: transform 160ms ease, color 160ms ease;
 }
 
 .company-card:hover .company-card__chevron {
   transform: translateX(4px);
-  color: #fff;
+  color: var(--uf-text-primary);
 }

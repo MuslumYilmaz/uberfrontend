@@ -2,116 +2,237 @@
   display: block;
 }
 
+.trivia-list-page {
+  display: grid;
+  gap: 18px;
+}
+
 .trivia-filter-bar {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, .9fr) minmax(220px, .8fr);
+  gap: 14px;
+  padding: 16px;
+}
+
+.trivia-filter-item {
+  min-width: 0;
+}
+
+.trivia-search-wrap {
+  position: relative;
+}
+
+.trivia-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent);
+  pointer-events: none;
+}
+
+.trivia-search-input {
+  width: 100%;
+  padding: 9px 12px 9px 38px;
+  border-radius: var(--uf-radius-12);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface-alt) 90%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  transition: border-color var(--uf-motion-fast) ease, box-shadow var(--uf-motion-fast) ease;
+}
+
+.trivia-search-input:focus-visible {
+  outline: none;
+  border-color: var(--uf-accent);
+  box-shadow: var(--uf-focus-ring);
+}
+
+.trivia-slider-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--uf-text-secondary) 82%, transparent);
+}
+
+.trivia-list-table {
+  overflow: hidden;
+}
+
+.trivia-table-head {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--uf-border-subtle);
+  font-size: 12px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
+  letter-spacing: 0.04em;
+}
+
+.trivia-loading {
+  padding: 38px 0;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.trivia-loading-text {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 80%, transparent);
+}
+
+.trivia-row {
+  padding: 14px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--uf-border-subtle) 86%, transparent);
+  transition: background-color var(--uf-motion-fast) ease;
+  cursor: pointer;
+}
+
+.trivia-row:hover {
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+}
+
+.trivia-row-title {
+  color: var(--uf-text-primary);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.trivia-row-desc {
+  margin-top: 2px;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
+  font-size: 12px;
+}
+
+.trivia-mobile-meta {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.trivia-importance {
+  color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
+  font-size: 14px;
+}
+
+.trivia-action {
+  color: color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary));
+  font-weight: 600;
+}
+
+.difficulty-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--uf-radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--uf-border-subtle);
+}
+
+.difficulty-pill.pill--easy {
+  background: color-mix(in srgb, #22c55e 20%, var(--uf-surface));
+  border-color: color-mix(in srgb, #22c55e 42%, var(--uf-border-subtle));
+  color: color-mix(in srgb, #dcfce7 88%, var(--uf-text-primary));
+}
+
+.difficulty-pill.pill--intermediate {
+  background: color-mix(in srgb, var(--uf-accent) 24%, var(--uf-surface));
+  border-color: color-mix(in srgb, var(--uf-accent) 46%, var(--uf-border-subtle));
+  color: color-mix(in srgb, #fef3c7 88%, var(--uf-text-primary));
+}
+
+.difficulty-pill.pill--hard {
+  background: color-mix(in srgb, #ef4444 22%, var(--uf-surface));
+  border-color: color-mix(in srgb, #ef4444 44%, var(--uf-border-subtle));
+  color: color-mix(in srgb, #fee2e2 90%, var(--uf-text-primary));
+}
+
+::ng-deep .difficulty-filter {
+  min-width: 220px;
   width: 100%;
 }
 
-/* Make the trigger wider and prevent it from shrinking */
-::ng-deep .difficulty-filter {
-  flex: 0 0 auto;
-  min-width: 240px; /* give it more breathing room */
-}
-
-/* Trigger box sizing */
 ::ng-deep .difficulty-filter .p-multiselect {
   display: flex;
   flex: 1;
+  width: 100%;
+  background: color-mix(in srgb, var(--uf-surface-alt) 90%, var(--uf-surface));
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-radius-12);
+  color: var(--uf-text-primary);
 }
 
-/* Ensure the panel is at least as wide as the trigger or wider */
 ::ng-deep .dark-multiselect-panel {
   min-width: 260px;
-  width: auto; /* allow it to expand if needed */
+  width: auto;
+  background: color-mix(in srgb, var(--uf-surface-alt) 92%, var(--uf-surface)) !important;
+  border: 1px solid var(--uf-border-subtle) !important;
+  color: var(--uf-text-primary) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
 }
 
-
-/* Trigger box */
-::ng-deep .difficulty-filter .p-multiselect {
-  background: #1f2737;
-  border: 1px solid #2f3750;
-  border-radius: 8px;
-  color: #e3e8ff;
-}
-
-/* Label area (when nothing selected) and tokens container */
 ::ng-deep .difficulty-filter .p-multiselect .p-multiselect-label,
 ::ng-deep .difficulty-filter .p-multiselect .p-placeholder {
   background: transparent;
-  color: #cdd6f4;
+  color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent);
 }
 
-/* Caret and trigger arrow */
 ::ng-deep .difficulty-filter .p-multiselect .p-multiselect-trigger {
-  color: #cdd6f4;
+  color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent);
 }
 
-/* Selected tokens */
 ::ng-deep .difficulty-filter .p-multiselect-token {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e3e8ff;
+  background: color-mix(in srgb, var(--uf-accent) 20%, var(--uf-surface));
+  color: var(--uf-text-primary);
   border-radius: 9999px;
   padding: 2px 8px;
   margin-right: 4px;
   font-size: 0.85rem;
 }
 
-/* Dropdown panel */
-::ng-deep .dark-multiselect-panel {
-  background: #1f2737 !important;
-  border: 1px solid #2f3750 !important;
-  color: #e3e8ff !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Header / filter row inside panel */
 ::ng-deep .dark-multiselect-panel .p-multiselect-header {
-  background: #1f2737;
-  border-bottom: 1px solid #2f3750;
+  background: color-mix(in srgb, var(--uf-surface-alt) 94%, var(--uf-surface));
+  border-bottom: 1px solid var(--uf-border-subtle);
   padding: 6px 8px;
 }
 
-/* Search input inside panel */
 ::ng-deep .dark-multiselect-panel .p-multiselect-filter-container input {
-  background: #273046;
-  border: 1px solid #2f3750;
-  color: #e3e8ff;
+  background: color-mix(in srgb, var(--uf-surface) 84%, var(--uf-surface-alt));
+  border: 1px solid var(--uf-border-subtle);
+  color: var(--uf-text-primary);
 }
 
-/* List items: remove default white; give subtle hover/selection */
 ::ng-deep .dark-multiselect-panel .p-multiselect-item {
   background: transparent;
   padding: 0.5rem 1rem;
-  color: #e3e8ff;
+  color: var(--uf-text-primary);
 }
 
 ::ng-deep .dark-multiselect-panel .p-multiselect-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, transparent);
 }
 
 ::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight {
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--uf-accent) 18%, var(--uf-surface));
 }
 
-/* Close icon */
 ::ng-deep .dark-multiselect-panel .p-multiselect-close {
-  color: #e3e8ff;
+  color: var(--uf-text-primary);
 }
 
-/* Checkbox square in list: make border/light for visibility */
 ::ng-deep .dark-multiselect-panel .p-multiselect-item .p-checkbox-box {
   background: transparent;
-  border: 1px solid #2f3750;
+  border: 1px solid var(--uf-border-subtle);
 }
 
 ::ng-deep .dark-multiselect-panel .p-multiselect-item.p-highlight .p-checkbox-box {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #5a9df9;
+  background: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
+  border-color: var(--uf-accent);
 }
 
 @media (max-width: 1200px) {
-  ::ng-deep .difficulty-filter {
-    min-width: 0;
-    width: 100%;
+  .trivia-filter-bar {
+    grid-template-columns: 1fr;
   }
 
   ::ng-deep .difficulty-filter .p-multiselect {
@@ -121,6 +242,15 @@
 
 @media (max-width: 768px) {
   .trivia-filter-bar {
+    padding: 14px;
     gap: 12px;
+  }
+
+  .trivia-row {
+    padding: 12px 14px;
+  }
+
+  .trivia-table-head {
+    padding-inline: 14px;
   }
 }

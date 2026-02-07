@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-neutral-900 text-gray-200">
+<div class="fa-app-root">
   <app-header *ngIf="showHeader()"></app-header>
 
   <!-- Full-bleed layout for auth or guide detail -->
@@ -8,9 +8,9 @@
 
   <!-- Regular app pages -->
   <ng-template #regularLayout>
-    <div class="flex">
+    <div class="app-layout">
       <app-sidebar></app-sidebar>
-      <main class="flex-1 min-h-0">
+      <main class="main">
         <router-outlet></router-outlet>
       </main>
     </div>

@@ -8,6 +8,13 @@
   --fa-chip-ink: var(--fa-text);
   --fa-chip-ink-strong: var(--fa-text);
   --fa-chip-ring: var(--fa-focus-ring);
+  --fa-chip-selected-ring: var(--fa-chip-ring);
+  --fa-chip-focus-ring: var(--fa-chip-ring);
+  --fa-chip-gap: 6px;
+  --fa-chip-pad-y: 6px;
+  --fa-chip-pad-x: 10px;
+  --fa-chip-font-size: 13px;
+  --fa-chip-min-h: 34px;
 
   display: inline-block;
 }
@@ -16,13 +23,14 @@
   appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  gap: var(--fa-chip-gap);
+  padding: var(--fa-chip-pad-y) var(--fa-chip-pad-x);
+  min-height: var(--fa-chip-min-h);
   border-radius: var(--fa-radius-pill);
   border: 1px solid var(--fa-chip-border);
   background: var(--fa-chip-bg);
   color: var(--fa-chip-ink);
-  font-size: 13px;
+  font-size: var(--fa-chip-font-size);
   font-weight: 600;
   line-height: 1.1;
   text-decoration: none;
@@ -37,13 +45,17 @@
 }
 
 .fa-chip--sm {
-  padding: 5px 9px;
-  font-size: 12px;
+  --fa-chip-pad-y: 5px;
+  --fa-chip-pad-x: 9px;
+  --fa-chip-font-size: 12px;
+  --fa-chip-min-h: 30px;
 }
 
 .fa-chip--md {
-  padding: 6px 10px;
-  font-size: 13px;
+  --fa-chip-pad-y: 6px;
+  --fa-chip-pad-x: 10px;
+  --fa-chip-font-size: 13px;
+  --fa-chip-min-h: 34px;
 }
 
 .fa-chip--filled {
@@ -66,12 +78,12 @@
   background: var(--fa-chip-selected-bg);
   border-color: var(--fa-chip-selected-border);
   color: var(--fa-chip-ink-strong);
-  box-shadow: var(--fa-chip-ring);
+  box-shadow: var(--fa-chip-selected-ring);
 }
 
 .fa-chip:focus-visible {
   outline: none;
-  box-shadow: var(--fa-chip-ring);
+  box-shadow: var(--fa-chip-focus-ring);
 }
 
 .fa-chip--disabled {

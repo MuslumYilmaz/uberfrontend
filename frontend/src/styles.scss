@@ -84,6 +84,34 @@
   --uf-radius-16: 16px;
   --uf-radius-pill: 999px;
 
+  /* Surface tiers + states */
+  --uf-surface-1: var(--uf-bg);
+  --uf-surface-2: var(--uf-surface);
+  --uf-surface-3: var(--uf-surface-alt);
+  --uf-surface-glass: color-mix(in srgb, var(--uf-surface) 86%, transparent);
+  --uf-border-strong: color-mix(in srgb, var(--uf-border-subtle) 64%, var(--uf-text-secondary) 36%);
+  --uf-shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.28);
+  --uf-shadow-md: 0 14px 36px rgba(0, 0, 0, 0.38);
+
+  /* Status palette */
+  --uf-status-info-bg: color-mix(in srgb, #38bdf8 18%, var(--uf-surface));
+  --uf-status-info-border: color-mix(in srgb, #38bdf8 44%, var(--uf-border-subtle));
+  --uf-status-info-text: color-mix(in srgb, #dbeafe 88%, var(--uf-text-primary));
+  --uf-status-warn-bg: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
+  --uf-status-warn-border: color-mix(in srgb, var(--uf-accent) 48%, var(--uf-border-subtle));
+  --uf-status-warn-text: var(--uf-text-primary);
+  --uf-status-danger-bg: color-mix(in srgb, #ef4444 18%, var(--uf-surface));
+  --uf-status-danger-border: color-mix(in srgb, #ef4444 44%, var(--uf-border-subtle));
+  --uf-status-danger-text: color-mix(in srgb, #fee2e2 90%, var(--uf-text-primary));
+
+  /* Motion + shell */
+  --uf-motion-fast: 120ms;
+  --uf-motion-base: 180ms;
+  --uf-motion-slow: 260ms;
+  --uf-page-max: 1180px;
+  --uf-page-pad-x: 24px;
+  --uf-page-pad-y: 30px;
+
   /* Legacy aliases (for migration) */
   --fa-bg: var(--uf-bg);
   --fa-surface: var(--uf-surface);
@@ -235,6 +263,65 @@ html, body {
 app-root {
   display: block;
   height: 100%;
+}
+
+.fa-app-root {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--uf-accent) 12%, transparent), transparent 32%),
+    radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--uf-text-primary) 6%, transparent), transparent 24%),
+    var(--uf-bg);
+  color: var(--uf-text-primary);
+}
+
+.fa-page-shell {
+  max-width: var(--uf-page-max);
+  margin-inline: auto;
+  padding: var(--uf-page-pad-y) var(--uf-page-pad-x) 64px;
+}
+
+.fa-section-shell {
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: var(--uf-card-radius);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt)), color-mix(in srgb, var(--uf-surface-alt) 90%, var(--uf-surface)));
+  box-shadow: var(--uf-shadow-sm);
+}
+
+.fa-divider {
+  border-top: 1px solid color-mix(in srgb, var(--uf-border-subtle) 76%, transparent);
+}
+
+.fa-empty-state {
+  border: 1px dashed var(--uf-border-subtle);
+  border-radius: var(--uf-radius-12);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+  color: var(--uf-text-secondary);
+  padding: 16px;
+  text-align: center;
+}
+
+.fa-stack-2,
+.fa-stack-3,
+.fa-stack-4 {
+  display: grid;
+}
+
+.fa-stack-2 { gap: var(--uf-space-2); }
+.fa-stack-3 { gap: var(--uf-space-3); }
+.fa-stack-4 { gap: var(--uf-space-4); }
+
+.fa-muted {
+  color: color-mix(in srgb, var(--uf-text-secondary) 78%, transparent);
+}
+
+.fa-subtle {
+  color: color-mix(in srgb, var(--uf-text-tertiary) 82%, transparent);
+}
+
+@media (max-width: 768px) {
+  .fa-page-shell {
+    padding: 20px 14px 52px;
+  }
 }
 
 @layer components {

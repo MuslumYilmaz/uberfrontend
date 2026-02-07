@@ -76,11 +76,11 @@ type Mode = 'updated' | 'older';
       position: relative;
       padding: .375rem .75rem;
       text-align: center;
-      background: #bfdbfe; /* blue-200 */
-      color: #0b1220;
+      background: var(--uf-status-info-bg);
+      color: var(--uf-status-info-text);
       font-size: .75rem;
       line-height: 1.3;
-      border-bottom: 1px solid #93c5fd; /* blue-300 */
+      border-bottom: 1px solid var(--uf-status-info-border);
       animation: fadeIn .2s ease;
     }
 
@@ -107,12 +107,13 @@ type Mode = 'updated' | 'older';
     }
 
     .select {
-      background: rgba(255,255,255,0.7);
-      border: 1px solid rgba(0,0,0,0.15);
+      background: color-mix(in srgb, var(--uf-surface) 80%, var(--uf-surface-alt));
+      border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 74%, var(--uf-text-secondary));
       border-radius: 6px;
       padding: 2px 6px;
       font-size: .75rem;
       max-width: 14rem;
+      color: inherit;
     }
 
     .close {
@@ -126,6 +127,19 @@ type Mode = 'updated' | 'older';
     }
 
     .close:hover { opacity: 1; }
+
+    @media (max-width: 900px) {
+      .draft-update-banner {
+        padding-right: .75rem;
+      }
+
+      .actions {
+        position: static;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: .25rem;
+      }
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-3px); }
@@ -151,4 +165,3 @@ export class DraftUpdateBannerComponent {
     return `${v}${stamp}`;
   }
 }
-

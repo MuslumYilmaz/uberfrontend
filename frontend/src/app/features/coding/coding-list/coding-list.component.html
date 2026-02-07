@@ -144,7 +144,7 @@
 
       <div class="list">
         <ng-container *ngIf="visible$ | async as questions; else loading">
-          <div *ngIf="questions.length === 0" class="py-6 text-center text-gray-500">
+          <div *ngIf="questions.length === 0" class="py-6 text-center fa-subtle">
             <div class="italic" data-testid="coding-empty-state">No questions match your filters.</div>
             <button type="button" class="fa-btn fa-btn--ghost fa-link-btn mt-3" data-testid="coding-empty-reset"
               (click)="resetAllFilters()">
@@ -236,8 +236,8 @@
 
         <ng-template #loading>
           <div class="py-10 flex flex-col items-center gap-3" role="status" aria-live="polite" data-testid="coding-list-loading">
-            <p-progressSpinner styleClass="text-blue-500"></p-progressSpinner>
-            <div class="text-sm text-gray-500">Loading questions…</div>
+            <p-progressSpinner></p-progressSpinner>
+            <div class="text-sm fa-subtle">Loading questions…</div>
           </div>
         </ng-template>
       </div>

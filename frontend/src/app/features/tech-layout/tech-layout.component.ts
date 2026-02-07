@@ -9,7 +9,7 @@ import { OfflineBannerComponent } from "../../shared/components/offline-banner/o
   selector: 'app-tech-layout',
   template: `
     <!-- Stretchy container; children (coding/trivia detail/list) handle their own padding -->
-    <div class="flex flex-col flex-1 min-h-0 w-full px-4 bg-neutral-950 text-gray-200">
+    <div class="fa-tech-layout">
       <router-outlet></router-outlet>
       <app-offline-banner></app-offline-banner>
     </div>
@@ -19,6 +19,23 @@ import { OfflineBannerComponent } from "../../shared/components/offline-banner/o
       display: flex;
       flex: 1;
       min-height: 0; /* allow inner scroll areas to work */
+    }
+
+    .fa-tech-layout {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      padding-inline: 16px;
+      background: transparent;
+      color: var(--uf-text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .fa-tech-layout {
+        padding-inline: 10px;
+      }
     }
   `]
 })

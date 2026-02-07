@@ -1,59 +1,70 @@
-<div class="mb-4 overflow-x-auto" *ngIf="source!=='company'">
-  <h1 class="text-4xl font-extrabold text-white mb-6">
+<div class="filterbar-shell" *ngIf="source!=='company'">
+  <h1 class="filterbar-title">
     {{ heading() }}
   </h1>
 
-  <nav class="chip-row">
-    <!-- GLOBAL (/coding): choose by viewMode -->
-    <ng-container *ngIf="source==='global-coding'">
-      <!-- Formats mode: CATEGORY pills -->
-      <ng-container *ngIf="viewMode === 'formats'; else globalTechPills">
-        <fa-chip *ngFor="let c of categoryTabs"
-                 size="md"
-                 [selected]="selectedCategory === c.key"
-                 (selectedChange)="categoryToggled.emit(c.key)">
-          <span class="whitespace-nowrap">{{ c.label }}</span>
-        </fa-chip>
+  <div class="chip-row-scroll">
+    <nav class="chip-row chip-row--primary" aria-label="Tech and category filters">
+      <!-- GLOBAL (/coding): choose by viewMode -->
+      <ng-container *ngIf="source==='global-coding'">
+        <!-- Formats mode: CATEGORY pills -->
+        <ng-container *ngIf="viewMode === 'formats'; else globalTechPills">
+          <fa-chip *ngFor="let c of categoryTabs"
+                   class="filter-chip filter-chip--primary"
+                   size="md"
+                   [selected]="selectedCategory === c.key"
+                   (selectedChange)="categoryToggled.emit(c.key)">
+            <span class="filter-chip-label">{{ c.label }}</span>
+          </fa-chip>
+        </ng-container>
+
+        <!-- Tech mode: TECH filter pills -->
+        <ng-template #globalTechPills>
+          <fa-chip *ngFor="let t of techTabs"
+                   class="filter-chip filter-chip--primary"
+                   size="md"
+                   [selected]="selectedTech === t.key"
+                   (selectedChange)="techSelected.emit(t.key)">
+            <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
+            <span class="filter-chip-label">{{ t.label }}</span>
+          </fa-chip>
+        </ng-template>
       </ng-container>
 
-      <!-- Tech mode: TECH filter pills -->
-      <ng-template #globalTechPills>
+      <!-- Per-tech routes: navigation pills -->
+      <ng-container *ngIf="source!=='global-coding'">
         <fa-chip *ngFor="let t of techTabs"
+                 class="filter-chip filter-chip--primary"
                  size="md"
-                 [selected]="selectedTech === t.key"
-                 (selectedChange)="techSelected.emit(t.key)">
+                 [routerLink]="['/', t.key, kind]"
+                 [queryParams]="navQueryParams"
+                 [toggle]="false"
+                 [selected]="t.key === tech">
           <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
-          <span class="whitespace-nowrap">{{ t.label }}</span>
+          <span class="filter-chip-label">{{ t.label }}</span>
         </fa-chip>
-      </ng-template>
-    </ng-container>
-
-    <!-- Per-tech routes: navigation pills -->
-    <ng-container *ngIf="source!=='global-coding'">
-      <fa-chip *ngFor="let t of techTabs"
-               size="md"
-               [routerLink]="['/', t.key, kind]"
-               [queryParams]="navQueryParams"
-               [toggle]="false"
-               [selected]="t.key === tech">
-        <span class="tech-badge" [ngClass]="t.cls">{{ t.badge }}</span>
-        <span class="whitespace-nowrap">{{ t.label }}</span>
-      </fa-chip>
-    </ng-container>
-  </nav>
+      </ng-container>
+    </nav>
+  </div>
 </div>
 
 <!-- Section tabs + right-side count -->
 <div *ngIf="source!=='company'" class="tabs-row">
-  <div class="tabs-left">
+  <div class="tabs-left tabs-left--segmented">
     <!-- GLOBAL (/coding): render kind pills unless System design is active -->
     <ng-container *ngIf="source==='global-coding'; else perTechKindLinks">
       <ng-container *ngIf="!isSystemCategoryActive">
-        <fa-chip size="sm" [selected]="selectedKind === 'coding'" (selectedChange)="kindSelected.emit('coding')">
+        <fa-chip class="filter-chip filter-chip--secondary"
+                 size="sm"
+                 [selected]="selectedKind === 'coding'"
+                 (selectedChange)="kindSelected.emit('coding')">
           Coding
         </fa-chip>
 
-        <fa-chip size="sm" [selected]="selectedKind === 'trivia'" (selectedChange)="kindSelected.emit('trivia')">
+        <fa-chip class="filter-chip filter-chip--secondary"
+                 size="sm"
+                 [selected]="selectedKind === 'trivia'"
+                 (selectedChange)="kindSelected.emit('trivia')">
           Quiz
         </fa-chip>
       </ng-container>
@@ -62,6 +73,7 @@
     <!-- PER-TECH pages: show nav links -->
     <ng-template #perTechKindLinks>
       <fa-chip *ngFor="let k of kindTabs"
+               class="filter-chip filter-chip--secondary"
                size="sm"
                [routerLink]="['/', tech || 'javascript', k.key]"
                [queryParams]="navQueryParams"
@@ -73,7 +85,7 @@
   </div>
 
   <div class="tabs-right">
-    <fa-chip class="count-chip" size="sm" [toggle]="false">
+    <fa-chip class="count-chip filter-chip filter-chip--count" size="sm" [toggle]="false">
       {{ filteredCount }} questions
     </fa-chip>
   </div>

@@ -168,32 +168,18 @@
 
     <!-- Bug report dialog -->
     <p-dialog [(visible)]="bugVisible" [modal]="true" [appendTo]="'body'" styleClass="bug-dialog" [showHeader]="false"
-        [style]="{
-              width: '520px',
-              maxWidth: '92vw',
-              background: '#0f131a',
-              color: '#e6e9ef',
-              border: '1px solid #242b38',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 18px 48px rgba(0,0,0,.55)'
-            }" [contentStyle]="{
-              background: '#0f131a',
-              color: '#e6e9ef',
-              padding: '0'
-            }" [baseZIndex]="10000">
+        [baseZIndex]="10000">
         <!-- header -->
-        <div
-            style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; line-height:1.2; font-weight:700; color:#e6e9ef; background:#0f131a; border-bottom:1px solid #242b38;">
+        <div class="bug-dialog__header">
             <span>Report a bug</span>
             <button type="button" (click)="bugVisible=false" aria-label="Close"
-                class="p-dialog-header-icon p-dialog-header-close p-link" style="color:#cbd5e1; border-radius:8px;">
+                class="p-dialog-header-icon p-dialog-header-close p-link bug-dialog__close">
                 <span class="p-dialog-header-close-icon pi pi-times"></span>
             </button>
         </div>
 
         <!-- body -->
-        <div class="bug-body" style="padding:12px 14px;">
+        <div class="bug-body">
             <label for="bug-note" class="bug-label">What went wrong?</label>
 
             <textarea id="bug-note" pInputTextarea [(ngModel)]="bugText" [autoResize]="true" rows="6"
@@ -202,29 +188,17 @@
 
             <div class="bug-actions">
                 <button pButton type="button" label="Cancel" (click)="closeBugModal()" [disabled]="submitting"
-                    [ngStyle]="{
-                  background: '#151a22',
-                  color: '#e6e9ef',
-                  border: '1px solid #2a3142',
-                  borderRadius: '10px',
-                  padding: '6px 14px'
-                }">
+                    class="bug-btn bug-btn--cancel">
                 </button>
 
                 <button pButton type="button" label="Send" (click)="submitBug()"
-                    [disabled]="!bugText.trim() || submitting" [loading]="submitting" [ngStyle]="{
-                  background: '#2563eb',
-                  color: '#ffffff',
-                  border: '1px solid #2563eb',
-                  borderRadius: '10px',
-                  padding: '6px 14px',
-                  fontWeight: 600
-                }">
+                    [disabled]="!bugText.trim() || submitting" [loading]="submitting"
+                    class="bug-btn bug-btn--primary">
                 </button>
             </div>
 
             <div *ngIf="submitOk" class="bug-success">
-                Thanks! Your note was sent. 💜
+                Thanks. Your note was sent.
             </div>
         </div>
     </p-dialog>

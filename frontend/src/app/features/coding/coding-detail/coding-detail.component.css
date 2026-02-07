@@ -328,22 +328,6 @@
   background:rgba(250,204,21,.08); border:1px solid rgba(250,204,21,.25); }
 .icon-warning i { font-size:16px; color:#facc15; }
 
-/* ---------- Buttons (shared) ---------- */
-.fa-btn{ display:inline-flex; align-items:center; gap:.25rem; padding:.35rem .75rem; font-size:.875rem; line-height:1.25rem; border:1px solid rgba(255,255,255,.12); border-radius:.375rem; background:#1f2937; color:#e5e7eb; transition:background .15s ease, border-color .15s ease, color .15s ease; }
-.fa-btn:hover{ background:#374151; border-color:rgba(255,255,255,.24); }
-.fa-btn:active{ transform:translateY(1px); }
-.fa-btn.fa-btn--primary{
-  background: var(--uf-accent);
-  border-color: var(--uf-accent);
-  color: var(--uf-bg);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--uf-accent) 35%, transparent);
-}
-.fa-btn.fa-btn--primary:hover{
-  background: var(--uf-accent-strong);
-  border-color: var(--uf-accent-strong);
-}
-.fa-btn--ghost{ background:transparent; border-color:rgba(255,255,255,.12); }
-.fa-btn--ghost:hover{ background:rgba(255,255,255,.06); }
 .fa-chip{ display:inline-flex; align-items:center; padding:2px 6px; border-radius:6px; font-size:10px; line-height:1; opacity:.8; border:1px solid rgba(255,255,255,.12); }
 
 /* ---------- Tiny icon button ---------- */

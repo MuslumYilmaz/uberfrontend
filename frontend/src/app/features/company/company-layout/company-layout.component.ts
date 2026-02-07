@@ -8,7 +8,7 @@ import { OfflineBannerComponent } from "../../../shared/components/offline-banne
   standalone: true,
   selector: 'app-company-layout',
   imports: [CommonModule, RouterOutlet, OfflineBannerComponent],
-  template: `<div class="container mx-auto max-w-7xl px-4 py-6">
+  template: `<div class="fa-page-shell company-shell">
     <router-outlet />
     <app-offline-banner></app-offline-banner>
     </div>`,

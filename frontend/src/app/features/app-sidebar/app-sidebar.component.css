@@ -17,33 +17,99 @@
   backdrop-filter: blur(2px);
 }
 
+:host ::ng-deep .bug-dialog {
+  width: 520px !important;
+  max-width: 92vw !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--sb-border) !important;
+  background: color-mix(in srgb, var(--sb-surface-alt) 88%, var(--sb-surface)) !important;
+  color: var(--sb-text) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .55) !important;
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .bug-dialog .p-dialog-content {
+  padding: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+}
+
 /* ==== dialog body pieces ==== */
-.bug-body { display: grid; gap: 10px; }
-.bug-label { font-size: 12.5px; color: var(--fa-text-muted, #c2c7d2); }
+.bug-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--sb-text);
+  background: color-mix(in srgb, var(--sb-surface) 90%, var(--sb-surface-alt));
+  border-bottom: 1px solid var(--sb-border);
+}
+
+.bug-dialog__close {
+  color: color-mix(in srgb, var(--sb-text-muted) 88%, transparent) !important;
+  border-radius: 8px;
+}
+
+.bug-body {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.bug-label { font-size: 12.5px; color: var(--sb-text-muted); }
+
 .bug-textarea {
   width: 100%;
   min-height: 140px;
   resize: vertical;
-  /* Dialog is appended to <body>, so avoid component-scoped --sb-* vars here. */
-  background: #151a22;
-  border: 1px solid #2a3142;
-  color: var(--fa-text, #f5f6fa);
-  border-radius: 8px;
+  background: color-mix(in srgb, var(--sb-surface) 76%, var(--sb-surface-alt));
+  border: 1px solid var(--sb-border);
+  color: var(--sb-text);
+  border-radius: 10px;
   padding: 10px;
 }
-.bug-textarea::placeholder { color: var(--fa-text-muted, #c2c7d2); opacity: 0.85; }
+
+.bug-textarea::placeholder { color: var(--sb-text-muted); opacity: 0.85; }
+
 .bug-textarea:focus {
   outline: none;
-  border-color: var(--fa-accent, #f4c15d);
-  box-shadow: 0 0 0 3px var(--fa-accent-soft, rgba(244, 193, 93, 0.25));
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 0 3px var(--fa-accent-soft);
 }
+
 .bug-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 8px;
 }
-.bug-success { color: var(--fa-accent, #f4c15d); font-size: 13px; margin-top: 6px; }
+
+.bug-btn {
+  border-radius: 10px !important;
+  padding: 6px 14px !important;
+  border: 1px solid var(--sb-border) !important;
+}
+
+.bug-btn--cancel {
+  background: color-mix(in srgb, var(--sb-surface) 82%, var(--sb-surface-alt)) !important;
+  color: var(--sb-text) !important;
+}
+
+.bug-btn--primary {
+  background: var(--uf-accent) !important;
+  color: var(--uf-bg) !important;
+  border-color: var(--uf-accent) !important;
+  font-weight: 700 !important;
+}
+
+.bug-success {
+  color: color-mix(in srgb, var(--uf-accent) 88%, var(--uf-text-primary));
+  font-size: 13px;
+  margin-top: 6px;
+}
 
 /* ==== sidebar layout ==== */
 .sidebar {

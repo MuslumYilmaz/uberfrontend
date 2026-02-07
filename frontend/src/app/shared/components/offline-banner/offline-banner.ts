@@ -42,9 +42,9 @@ import { OfflineService } from '../../../core/services/offline';
       align-items: center;
       gap: 8px;
 
-      background: rgba(248, 113, 113, 0.12);
-      border: 1px solid rgba(248, 113, 113, 0.55);
-      color: #f9fafb;
+      background: var(--uf-status-danger-bg);
+      border: 1px solid var(--uf-status-danger-border);
+      color: var(--uf-status-danger-text);
       font-size: 13px;
       font-weight: 500;
       box-shadow: 0 18px 40px rgba(0,0,0,0.75);

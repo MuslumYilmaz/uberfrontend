@@ -31,11 +31,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       position: relative;
       padding: .375rem .75rem;
       text-align: center;
-      background: #fde68a; /* yellow-200 */
-      color: #000;
+      background: var(--uf-status-warn-bg);
+      color: var(--uf-status-warn-text);
       font-size: .75rem;
       line-height: 1.3;
-      border-bottom: 1px solid #fcd34d; /* yellow-300 */
+      border-bottom: 1px solid var(--uf-status-warn-border);
       animation: fadeIn .2s ease;
     }
 
@@ -74,6 +74,18 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
     .close:hover {
       opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .restore-banner {
+        padding-right: .75rem;
+      }
+
+      .actions {
+        position: static;
+        justify-content: center;
+        margin-top: .25rem;
+      }
     }
 
     @keyframes fadeIn {
