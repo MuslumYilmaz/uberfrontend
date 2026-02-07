@@ -1,0 +1,507 @@
+<section class="cv-linter-page" data-testid="cv-linter-page">
+  <header class="page-header">
+    <div class="flow-steps" aria-hidden="true">
+      <span class="step-chip is-active">1. Analyze CV</span>
+      <span class="step-chip" [class.is-active]="!!report">2. Review Results</span>
+    </div>
+    <h1>CV Linter (ATS Score)</h1>
+    <p class="muted">
+      Upload your CV and get a deterministic, rule-based report. No AI, no rewriting, no storage.
+    </p>
+  </header>
+
+  <div class="success-toast" *ngIf="successToastVisible" role="status" aria-live="polite" data-testid="cv-success-toast">
+    <i class="pi pi-check-circle" aria-hidden="true"></i>
+    <span>{{ successToastMessage }}</span>
+  </div>
+
+  <section class="card analyze-card" #uploadSection tabindex="-1" data-testid="cv-upload-card">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Step 1</p>
+        <h2>Analyze CV</h2>
+        <p class="muted small">Upload a PDF or DOCX and run deterministic scoring.</p>
+      </div>
+      <button
+        type="button"
+        class="secondary-btn"
+        (click)="useSampleCv()"
+        [disabled]="analyzing"
+        data-testid="cv-use-sample"
+      >
+        Use sample CV
+      </button>
+    </div>
+
+    <label class="field-label" for="cv-role-select">Target role</label>
+    <select
+      id="cv-role-select"
+      [(ngModel)]="selectedRole"
+      [disabled]="analyzing"
+      [attr.disabled]="analyzing ? '' : null"
+      data-testid="cv-role-select"
+    >
+      <option *ngFor="let role of roleOptions" [value]="role.id">{{ role.label }}</option>
+    </select>
+
+    <div
+      class="dropzone"
+      [class.is-disabled]="analyzing"
+      [class.drag-active]="dragActive"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      data-testid="cv-dropzone"
+    >
+      <p class="dropzone-title">Drag and drop your CV here</p>
+      <p class="muted small">Supported: PDF, DOCX (max 5MB)</p>
+
+      <input
+        #fileInput
+        type="file"
+        [attr.accept]="fileInputAccept"
+        (change)="onFileInputChange($event)"
+        [disabled]="analyzing"
+        hidden
+      />
+      <button type="button" class="secondary-btn" [disabled]="analyzing" (click)="fileInput.click()">Browse</button>
+    </div>
+
+    <p class="privacy-copy muted small" data-testid="cv-privacy-copy">
+      We do not store your CV. It is processed to text and discarded.
+    </p>
+
+    <div class="file-pill" *ngIf="selectedFile">
+      <span data-testid="cv-selected-file">{{ selectedFile.name }} ({{ selectedFile.size }} bytes)</span>
+      <button type="button" class="link-btn" [disabled]="analyzing" (click)="clearSelectedFile()">Remove</button>
+    </div>
+
+    <div class="actions">
+      <button
+        type="button"
+        class="primary-btn"
+        (click)="analyzeFile()"
+        [disabled]="!canAnalyzeFile"
+        [attr.aria-label]="analyzeButtonLabel"
+        data-testid="cv-analyze-file"
+      >
+        <i *ngIf="analyzing" class="pi pi-spinner pi-spin" aria-hidden="true"></i>
+        {{ analyzeButtonLabel }}
+      </button>
+      <button
+        type="button"
+        class="secondary-btn"
+        *ngIf="showClearAfterAnalyze"
+        (click)="clearAnalysisState()"
+        [disabled]="analyzing"
+        data-testid="cv-clear-analysis"
+      >
+        Clear
+      </button>
+    </div>
+
+    <div class="status-row" aria-live="polite">
+      <p class="progress" *ngIf="analyzing" data-testid="cv-progress">{{ progressLabel }}</p>
+      <p class="error" *ngIf="errorMessage" data-testid="cv-error">{{ errorMessage }}</p>
+    </div>
+
+    <section class="fallback-panel" *ngIf="showFallback" data-testid="cv-fallback-card">
+      <h3>Paste text instead</h3>
+      <p class="warning" data-testid="cv-fallback-warning">
+        This file appears scanned or image-based. Paste your CV text below for analysis.
+      </p>
+
+      <textarea
+        [(ngModel)]="pasteText"
+        rows="12"
+        placeholder="Paste CV text here..."
+        [disabled]="analyzing"
+        data-testid="cv-paste-text"
+      ></textarea>
+
+      <div class="actions">
+        <button
+          type="button"
+          class="primary-btn"
+          (click)="analyzePastedText()"
+          [disabled]="!canAnalyzeText"
+          [attr.aria-label]="analyzing ? 'Analyzing pasted text' : 'Analyze pasted text'"
+          data-testid="cv-analyze-text"
+        >
+          <i *ngIf="analyzing" class="pi pi-spinner pi-spin" aria-hidden="true"></i>
+          {{ analyzing ? 'Analyzing...' : 'Analyze pasted text' }}
+        </button>
+      </div>
+    </section>
+  </section>
+
+  <section class="card results-card" #resultsSection tabindex="-1" data-testid="cv-results-shell">
+    <div class="section-head" [class.pulse-highlight]="resultsHighlighted">
+      <div>
+        <p class="kicker">Step 2</p>
+        <h2>Review Results</h2>
+      </div>
+    </div>
+
+    <ng-container *ngIf="report as reportData; else resultsPlaceholder">
+      <div class="results-content" data-testid="cv-results">
+        <section class="top-fixes" data-testid="cv-top-fixes">
+          <article class="top-fixes-panel">
+            <h3>Category breakdown</h3>
+            <div class="category-grid">
+              <div class="category-card" *ngFor="let category of reportData.breakdown">
+                <div class="category-head">
+                  <span>{{ category.label }}</span>
+                  <strong>{{ category.score }}/{{ category.max }}</strong>
+                </div>
+                <div class="category-bar" aria-hidden="true">
+                  <span [style.width.%]="category.max ? (category.score / category.max) * 100 : 0"></span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="top-fixes-panel">
+            <h3>Top 3 quick wins</h3>
+            <p class="muted small" *ngIf="!quickWins.length">
+              No urgent fixes found. Focus on polish and wording clarity.
+            </p>
+            <div class="quick-win-list" *ngIf="quickWins.length">
+              <div class="quick-win-card" *ngFor="let win of quickWins; let i = index">
+                <div class="quick-win-copy">
+                  <strong>{{ win.issue.title }}</strong>
+                  <span class="muted small">{{ win.estimatedGain }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="secondary-btn"
+                  (click)="viewIssueFromQuickWin(win.issue)"
+                  [attr.aria-label]="'View issue ' + win.issue.id"
+                  [attr.data-testid]="'cv-quick-win-view-' + i"
+                >
+                  View issue
+                </button>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <button
+          type="button"
+          class="builder-nudge"
+          *ngIf="showBuilderNudge"
+          (click)="openBulletBuilderFromNudge()"
+          data-testid="cv-open-builder-nudge"
+        >
+          Fix this fast -> Open Bullet Builder
+        </button>
+
+        <div class="results-summary">
+          <div class="overall-score" [class.pulse-highlight]="resultsHighlighted">
+            <div class="score-label">Overall Score</div>
+            <div class="score-value" data-testid="cv-overall-score">{{ reportData.scores.overall }}/100</div>
+            <div
+              class="undercounted-badge"
+              *ngIf="hasLowExtractionQuality"
+              title="Some warnings may be false positives if PDF text is merged or missing."
+              data-testid="cv-undercounted-badge"
+            >
+              Scores may be undercounted due to PDF parsing
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Role</span>
+              <strong>{{ reportData.keywordCoverage.roleLabel }}</strong>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Priority fixes</span>
+              <strong>{{ severityCounts.critical + severityCounts.warn }}</strong>
+            </div>
+          </div>
+
+          <div class="severity-row">
+            <span class="severity-chip critical">Critical: {{ severityCounts.critical }}</span>
+            <span class="severity-chip warn">Warnings: {{ severityCounts.warn }}</span>
+            <span class="severity-chip info">Info: {{ severityCounts.info }}</span>
+          </div>
+        </div>
+
+        <section class="results-advanced">
+          <button
+            type="button"
+            class="results-advanced-toggle"
+            (click)="toggleResultsAdvanced()"
+            [attr.aria-expanded]="resultsAdvancedOpen"
+            data-testid="cv-results-advanced-toggle"
+          >
+            <span>Advanced / Debug tools</span>
+            <i class="pi" [ngClass]="resultsAdvancedOpen ? 'pi-chevron-up' : 'pi-chevron-down'" aria-hidden="true"></i>
+          </button>
+          <div class="results-advanced-body" *ngIf="resultsAdvancedOpen">
+            <button type="button" class="secondary-btn" (click)="downloadReportJson()" data-testid="cv-download-json">
+              Download report JSON
+            </button>
+            <button
+              type="button"
+              class="link-btn debug-link"
+              (click)="toggleDebugDetails()"
+              [attr.aria-expanded]="debugDetailsOpen"
+              data-testid="cv-debug-toggle"
+            >
+              {{ debugDetailsOpen ? 'Hide debug details' : 'Show debug details' }}
+            </button>
+            <div class="debug-details" *ngIf="debugDetailsOpen" data-testid="cv-debug-details">
+              <p>{{ extractionStatusLabel(reportData.meta.extractionStatus) }}</p>
+              <p>Extracted text length: {{ reportData.meta.textLength }} chars</p>
+            </div>
+          </div>
+        </section>
+
+        <nav class="results-tabs" role="tablist" aria-label="CV result views" data-testid="cv-results-tabs">
+          <button
+            type="button"
+            class="tab-btn"
+            *ngFor="let tab of resultsTabs"
+            [class.active]="isResultsTabActive(tab.id)"
+            [attr.aria-selected]="isResultsTabActive(tab.id)"
+            [attr.data-testid]="'cv-tab-' + tab.id"
+            [hidden]="tab.id === 'preview' && !showPreviewTab"
+            (click)="setResultsTab(tab.id)"
+          >
+            {{ tab.label }}
+          </button>
+        </nav>
+
+        <section class="tab-panel" *ngIf="activeResultsTab === 'overview'" data-testid="cv-panel-overview">
+          <h3>Overview</h3>
+          <div class="breakdown-list">
+            <div class="breakdown-item" *ngFor="let category of reportData.breakdown">
+              <div class="label">{{ category.label }}</div>
+              <div class="value">{{ category.score }}/{{ category.max }}</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" *ngIf="activeResultsTab === 'issues'" data-testid="cv-panel-issues">
+          <h3>Issues</h3>
+          <section class="docx-cta" *ngIf="showDocxCta" data-testid="cv-docx-cta">
+            <div>
+              <h4>Parsing looks messy - try DOCX for best results</h4>
+              <p class="muted small">PDF extraction artifacts can merge bullets and undercount keywords/outcomes.</p>
+            </div>
+            <div class="docx-cta-actions">
+              <button
+                type="button"
+                class="primary-btn"
+                (click)="tryDocxUpload()"
+                aria-label="Try DOCX upload"
+                data-testid="cv-docx-cta-button"
+              >
+                Try DOCX upload
+              </button>
+              <button
+                type="button"
+                class="link-btn"
+                (click)="togglePdfTips()"
+                [attr.aria-expanded]="pdfTipsOpen"
+                data-testid="cv-pdf-tips-toggle"
+              >
+                {{ pdfTipsOpen ? 'Hide clean PDF tips' : 'How to export a clean PDF' }}
+              </button>
+            </div>
+            <ul class="pdf-tips" *ngIf="pdfTipsOpen" data-testid="cv-pdf-tips">
+              <li>Avoid columns and text boxes.</li>
+              <li>Export via "Save as PDF" instead of print-to-PDF.</li>
+              <li>Ensure each bullet starts on a new line.</li>
+            </ul>
+          </section>
+          <p class="muted small" *ngIf="!reportData.issues.length">No issues were detected for this input.</p>
+
+          <section
+            class="issue-group"
+            *ngFor="let severity of severityOrder"
+            [hidden]="issuesFor(severity).length === 0"
+          >
+            <button
+              type="button"
+              class="issue-group-toggle"
+              (click)="toggleIssueGroup(severity)"
+              [attr.aria-expanded]="issueGroupsOpen[severity]"
+              [attr.data-testid]="'cv-issue-toggle-' + severity"
+            >
+              <span>{{ severityLabel(severity) }}</span>
+              <span>{{ issuesFor(severity).length }}</span>
+            </button>
+
+            <div class="issue-list" *ngIf="issueGroupsOpen[severity]">
+              <article
+                class="issue-card"
+                [ngClass]="severity"
+                *ngFor="let issue of issuesFor(severity)"
+                [attr.id]="issueElementId(issue.id)"
+                [class.jump-highlight]="highlightedIssueId === issue.id"
+                tabindex="-1"
+                [attr.data-testid]="'cv-issue-' + severity"
+              >
+                <div class="issue-title"><code>{{ issue.id }}</code> - {{ issue.title }}</div>
+                <span
+                  class="confidence-badge"
+                  *ngIf="isLowConfidence(issue)"
+                  data-testid="cv-low-confidence"
+                >
+                  Low confidence
+                </span>
+                <p><strong>Explanation:</strong> {{ issue.explanation }}</p>
+                <p><strong>Why it matters:</strong> {{ issue.why }}</p>
+                <p>
+                  <strong>Fix:</strong>
+                  {{ issue.fix }}
+                  <span *ngIf="isKeywordIssue(issue)"> Use the suggestions below to copy a starter phrase.</span>
+                </p>
+
+                <div class="issue-evidence" *ngIf="hasIssueEvidence(issue)" [attr.data-testid]="'cv-issue-evidence-' + issue.id">
+                  <div class="evidence-primary">
+                    <span class="evidence-label">Triggered by:</span>
+                    <span class="evidence-text">{{ primaryEvidenceText(issue) }}</span>
+                    <span class="evidence-lines muted small" *ngIf="primaryEvidenceLineRef(issue)">
+                      {{ primaryEvidenceLineRef(issue) }}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="link-btn evidence-toggle"
+                    *ngIf="additionalEvidenceCount(issue) > 0"
+                    (click)="toggleIssueEvidence(issue.id)"
+                    [attr.aria-expanded]="isIssueEvidenceExpanded(issue.id)"
+                    [attr.data-testid]="'cv-evidence-toggle-' + issue.id"
+                  >
+                    {{ isIssueEvidenceExpanded(issue.id) ? 'Show less' : 'Show more' }}
+                  </button>
+
+                  <ul class="evidence-list" *ngIf="isIssueEvidenceExpanded(issue.id)">
+                    <li *ngFor="let evidence of additionalEvidenceEntries(issue)">
+                      <span>{{ formatEvidenceEntry(evidence) }}</span>
+                      <span class="muted small" *ngIf="evidenceLineRef(evidence)">{{ evidenceLineRef(evidence) }}</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="keyword-suggestions" *ngIf="isKeywordIssue(issue) && keywordSuggestionChips(issue).length">
+                  <span class="keyword-suggestions-label">Suggested keywords</span>
+                  <p class="keyword-suggestion-copy muted small">
+                    Use where true - avoid stuffing Skills; prefer Experience bullets.
+                  </p>
+                  <div class="keyword-chip-row">
+                    <button
+                      type="button"
+                      class="keyword-chip"
+                      *ngFor="let suggestion of keywordSuggestionChips(issue)"
+                      (click)="copyKeywordSuggestion(issue, suggestion)"
+                      [attr.aria-label]="'Copy keyword suggestion: ' + suggestion"
+                      [attr.data-testid]="'cv-keyword-chip-' + issue.id"
+                    >
+                      {{ copiedKeywordSuggestion === suggestion ? 'Copied' : suggestion }}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <section class="tab-panel" *ngIf="activeResultsTab === 'keywords'" data-testid="cv-panel-keywords">
+          <h3>Keyword coverage</h3>
+          <p>
+            {{ reportData.keywordCoverage.found.length }}/{{ reportData.keywordCoverage.total }} found
+            ({{ reportData.keywordCoverage.coveragePct }}%)
+          </p>
+          <p *ngIf="reportData.keywordCoverage.missing.length">
+            Missing: {{ reportData.keywordCoverage.missing.join(', ') }}
+          </p>
+          <p *ngIf="reportData.keywordCoverage.skillsOnly.length">
+            Skills only: {{ reportData.keywordCoverage.skillsOnly.join(', ') }}
+          </p>
+        </section>
+
+        <section
+          class="tab-panel"
+          *ngIf="activeResultsTab === 'preview' && reportData.textPreview"
+          data-testid="cv-panel-preview"
+        >
+          <h3>Text preview</h3>
+          <p class="muted small">Preview is intentionally truncated for quick inspection.</p>
+          <p>{{ reportData.textPreview }}</p>
+        </section>
+      </div>
+    </ng-container>
+
+    <ng-template #resultsPlaceholder>
+      <div class="results-placeholder" data-testid="cv-results-placeholder">
+        <h3>Upload a CV to see your report here.</h3>
+        <p class="muted">You will get category scores, quick wins, and actionable issues in this section.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="card advanced-card" #bulletBuilderSection tabindex="-1" data-testid="cv-advanced-tools">
+    <button
+      type="button"
+      class="advanced-toggle"
+      (click)="toggleAdvancedTools()"
+      [attr.aria-expanded]="advancedToolsOpen"
+      aria-controls="cv-advanced-panel"
+      data-testid="cv-advanced-toggle"
+    >
+      <span>Advanced tools</span>
+      <span class="muted small">{{ advancedToolsOpen ? 'Hide' : 'Show' }} Bullet Builder</span>
+    </button>
+
+    <div id="cv-advanced-panel" class="advanced-body" *ngIf="advancedToolsOpen">
+      <section class="bullet-builder" data-testid="cv-bullet-builder">
+        <h2>Bullet Builder</h2>
+        <p class="muted small">Deterministic templates (no AI).</p>
+
+        <div class="tone-row" role="radiogroup" aria-label="Bullet tone">
+          <button
+            type="button"
+            class="tone-btn"
+            *ngFor="let tone of toneOptions"
+            [class.active]="selectedTone === tone.id"
+            [attr.aria-pressed]="selectedTone === tone.id"
+            (click)="setTone(tone.id)"
+            [attr.data-testid]="'cv-tone-' + tone.id"
+          >
+            {{ tone.label }}
+          </button>
+        </div>
+
+        <div class="builder-grid">
+          <label>Action verb <input [(ngModel)]="actionVerb" /></label>
+          <label>What built <input [(ngModel)]="whatBuilt" /></label>
+          <label>Tech <input [(ngModel)]="tech" /></label>
+          <label>Metric <input [(ngModel)]="metric" /></label>
+          <label>Scale <input [(ngModel)]="scale" /></label>
+          <label>Context <input [(ngModel)]="context" /></label>
+        </div>
+
+        <ol class="template-list">
+          <li *ngFor="let line of bulletTemplates; let i = index" data-testid="cv-bullet-template">
+            <p>{{ line }}</p>
+            <button
+              type="button"
+              class="link-btn copy-btn"
+              (click)="copyTemplate(line, i)"
+              [attr.aria-label]="'Copy template ' + (i + 1)"
+              [attr.data-testid]="'cv-copy-template-' + i"
+            >
+              {{ copiedTemplateIndex === i ? 'Copied' : 'Copy' }}
+            </button>
+          </li>
+        </ol>
+      </section>
+    </div>
+  </section>
+</section>

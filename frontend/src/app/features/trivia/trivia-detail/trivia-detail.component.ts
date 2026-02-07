@@ -1,6 +1,6 @@
 /* ========================= trivia-detail.component.ts ========================= */
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, PLATFORM_ID, ViewChild, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -96,7 +96,8 @@ function buildTagRegex(tag: string): RegExp {
   templateUrl: './trivia-detail.component.html',
   styleUrls: ['./trivia-detail.component.css'],
 })
-export class TriviaDetailComponent implements OnInit, OnDestroy {
+export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('sideScroll') sideScroll?: ElementRef<HTMLElement>;
   @ViewChild('mainScroll') mainScroll?: ElementRef<HTMLElement>;
   tech!: Tech;
 
@@ -113,6 +114,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private dataLoaded = false;
+  private readonly sideScrollStoragePrefix = 'fa:trivia:side-scroll:';
 
   // practice session
   private practice: PracticeSession = null;
@@ -308,7 +310,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  ngOnDestroy() { this.sub?.unsubscribe(); }
+  ngAfterViewInit() {
+    this.syncSidebarAfterSelection();
+  }
+
+  ngOnDestroy() {
+    this.saveSidebarScrollPosition();
+    this.sub?.unsubscribe();
+  }
+
+  onSideScroll() {
+    this.saveSidebarScrollPosition();
+  }
 
   private applyResolved(resolved: QuestionDetailResolved) {
     this.tech = resolved.tech;
@@ -377,6 +390,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     this.setLoadState(found);
     this.updateSeo(found);
     this.scrollMainToTop();
+    this.syncSidebarAfterSelection();
   }
 
   private setLoadState(found: Question | null) {
@@ -519,6 +533,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
 
   onSelect(q: Question) {
     this.closeQnav();
+    this.saveSidebarScrollPosition();
     this.ensurePracticeBuilt(q.id);
     this.router.navigate(['/', this.tech, 'trivia', q.id], {
       state: this.buildNavState(q.id),
@@ -739,6 +754,72 @@ export class TriviaDetailComponent implements OnInit, OnDestroy {
     requestAnimationFrame(() => {
       el.scrollTo({ top: 0 });
     });
+  }
+
+  private sideScrollStorageKey(): string {
+    return `${this.sideScrollStoragePrefix}${this.tech || 'unknown'}`;
+  }
+
+  private saveSidebarScrollPosition(scrollTop?: number) {
+    if (!this.isBrowser) return;
+    const current = typeof scrollTop === 'number' ? scrollTop : this.sideScroll?.nativeElement?.scrollTop;
+    if (typeof current !== 'number' || !Number.isFinite(current)) return;
+    const normalized = Math.max(0, Math.round(current));
+    try {
+      sessionStorage.setItem(this.sideScrollStorageKey(), String(normalized));
+    } catch {
+      return;
+    }
+  }
+
+  private readSidebarScrollPosition(): number | null {
+    if (!this.isBrowser) return null;
+    try {
+      const raw = sessionStorage.getItem(this.sideScrollStorageKey());
+      if (raw == null) return null;
+      const parsed = Number(raw);
+      if (!Number.isFinite(parsed)) return null;
+      return Math.max(0, parsed);
+    } catch {
+      return null;
+    }
+  }
+
+  private syncSidebarAfterSelection() {
+    if (!this.isBrowser) return;
+    requestAnimationFrame(() => {
+      const container = this.sideScroll?.nativeElement;
+      if (!container) return;
+
+      const storedTop = this.readSidebarScrollPosition();
+      if (storedTop != null && Math.abs(container.scrollTop - storedTop) > 1) {
+        container.scrollTop = storedTop;
+      }
+
+      const activeItem = container.querySelector<HTMLElement>('.side-item.is-active');
+      if (activeItem) {
+        this.ensureItemVisible(container, activeItem);
+      }
+
+      this.saveSidebarScrollPosition(container.scrollTop);
+    });
+  }
+
+  private ensureItemVisible(container: HTMLElement, item: HTMLElement) {
+    const padding = 10;
+    const containerTop = container.scrollTop;
+    const containerBottom = containerTop + container.clientHeight;
+    const itemTop = item.offsetTop;
+    const itemBottom = itemTop + item.offsetHeight;
+
+    if (itemTop >= containerTop + padding && itemBottom <= containerBottom - padding) {
+      return;
+    }
+
+    const maxTop = Math.max(0, container.scrollHeight - container.clientHeight);
+    const centeredTop = itemTop - (container.clientHeight - item.offsetHeight) / 2;
+    const targetTop = Math.max(0, Math.min(maxTop, centeredTop - padding));
+    container.scrollTop = targetTop;
   }
 
   dedent(source: string = ''): string {

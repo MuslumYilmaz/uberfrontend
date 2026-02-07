@@ -51,6 +51,7 @@ function buildUrls() {
     '/pricing',
     '/coding',
     '/system-design',
+    '/tools/cv',
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',

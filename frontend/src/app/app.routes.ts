@@ -433,6 +433,26 @@ export const routes: Routes = [
     ],
   },
 
+  // Tools
+  {
+    path: 'tools/cv-linter',
+    pathMatch: 'full',
+    redirectTo: 'tools/cv',
+  },
+  {
+    path: 'tools/cv',
+    loadComponent: () =>
+      import('./features/tools/cv-linter/cv-linter.component').then((m) => m.CvLinterComponent),
+    data: {
+      seo: {
+        title: 'CV Linter (ATS Score)',
+        description:
+          'Upload your CV for a deterministic ATS-style lint report with actionable fixes. No AI and no file storage.',
+        keywords: ['cv linter', 'ats score', 'resume checker', 'frontend cv review'],
+      },
+    },
+  },
+
   // Guides
   {
     path: 'guides',

@@ -108,6 +108,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
         { type: 'link', label: 'Question formats', to: '/coding', icon: 'pi pi-clone', query: { view: 'formats' } },
         { type: 'link', label: 'Tracks', to: '/tracks', icon: 'pi pi-directions' },
         { type: 'link', label: 'Companies', to: '/companies', icon: 'pi pi-building' },
+        { type: 'link', label: 'CV Linter', to: '/tools/cv', icon: 'pi pi-file-edit' },
       ],
     },
   ];

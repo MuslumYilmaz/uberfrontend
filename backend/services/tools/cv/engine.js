@@ -1,0 +1,202 @@
+'use strict';
+
+const { CATEGORY_LABELS, CATEGORY_MAX_SCORES, SEVERITY_ORDER } = require('./constants');
+const { addEvidence } = require('./linter/evidence');
+const {
+  applyExtractionPenaltyAdjustments,
+  EXTRACTION_PENALTY_WEIGHTS,
+  KEYWORD_EXPERIENCE_DEPENDENT_SHARE,
+} = require('./linter/scoring/penalty-adjustments');
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function defaultIssueEvidence(ctx, issue) {
+  if (!ctx || !issue) return [];
+
+  if (issue.id === 'merged_bullets_suspected') {
+    return (ctx.mergedBullets?.evidence || []).slice(0, 2);
+  }
+
+  if (issue.id === 'stack_contradiction') {
+    return (ctx.stackContradictions || []).slice(0, 2).map((item) => ({
+      lineStart: item.lineStart,
+      lineEnd: item.lineEnd,
+      snippet: item.snippet,
+      reason: item.reason,
+    }));
+  }
+
+  if (issue.id === 'inconsistent_date_format') {
+    return (ctx.dateFormats?.usedFormats || [])
+      .flatMap((format) => (ctx.dateFormats.evidence?.[format] || []).slice(0, 1))
+      .slice(0, 2);
+  }
+
+  if (issue.category === 'impact' && (ctx.bulletLines || []).length > 0) {
+    return ctx.bulletLines.slice(0, 2).map((bullet) => ({
+      lineStart: bullet.lineNumber,
+      lineEnd: bullet.lineNumber,
+      snippet: bullet.line,
+      reason: 'impact bullet sample',
+    }));
+  }
+
+  return (ctx.lineEntries || [])
+    .filter((line) => !line.isHeading)
+    .slice(0, 2)
+    .map((line) => ({
+      lineStart: line.lineNumber,
+      lineEnd: line.lineNumber,
+      snippet: line.text,
+      reason: 'source line sample',
+    }));
+}
+
+function issueFromRule(rule, override = null, ctx = null) {
+  const merged = override && typeof override === 'object' ? { ...rule, ...override } : rule;
+  const issue = {
+    id: merged.id,
+    severity: merged.severity,
+    category: merged.category,
+    scoreDelta: Number(merged.scoreDelta || 0),
+    title: merged.title,
+    message: merged.message,
+    explanation: merged.explanation || merged.message,
+    why: merged.why,
+    fix: merged.fix,
+  };
+
+  const withRuleEvidence = addEvidence(issue, merged.evidence);
+  if (withRuleEvidence.evidence && withRuleEvidence.evidence.length > 0) return withRuleEvidence;
+  return addEvidence(withRuleEvidence, defaultIssueEvidence(ctx, merged));
+}
+
+function sortIssues(issues) {
+  return [...issues].sort((a, b) => {
+    const sa = SEVERITY_ORDER[a.severity] ?? 999;
+    const sb = SEVERITY_ORDER[b.severity] ?? 999;
+    if (sa !== sb) return sa - sb;
+    return String(a.id).localeCompare(String(b.id));
+  });
+}
+
+function lowExtractionQualityIssue(ctx) {
+  const evidence = (ctx?.mergedBullets?.evidence || []).slice(0, 1);
+  return addEvidence({
+    id: 'low_extraction_quality',
+    severity: 'info',
+    category: 'ats',
+    scoreDelta: 0,
+    title: 'PDF extraction quality is low; some scores may be undercounted',
+    message: 'Bullet and line parsing quality is low, so some impact-related checks are softened.',
+    explanation: 'Extraction artifacts can affect bullet parsing, outcome detection, and keyword signals.',
+    why: 'Score accuracy depends on reliable text extraction.',
+    fix: 'Try re-exporting PDF (avoid columns/text boxes), or upload DOCX for best results.',
+  }, evidence);
+}
+
+function scoreCvContext(ctx, rules) {
+  const issues = [];
+  for (const rule of rules) {
+    let result = null;
+    try {
+      if (typeof rule.evaluate === 'function') {
+        result = rule.evaluate(ctx);
+      } else if (typeof rule.check === 'function') {
+        result = rule.check(ctx) ? true : null;
+      }
+    } catch {
+      result = null;
+    }
+
+    if (!result) continue;
+    if (result === true) {
+      issues.push(issueFromRule(rule, null, ctx));
+      continue;
+    }
+    if (typeof result === 'object') {
+      issues.push(issueFromRule(rule, result, ctx));
+    }
+  }
+
+  if (ctx?.extractionQuality?.level === 'low') {
+    issues.push(lowExtractionQualityIssue(ctx));
+  }
+
+  const orderedIssues = sortIssues(issues);
+  const adjustedIssues = applyExtractionPenaltyAdjustments(orderedIssues, ctx?.extractionQuality);
+
+  const categoryScores = {
+    ats: CATEGORY_MAX_SCORES.ats,
+    structure: CATEGORY_MAX_SCORES.structure,
+    impact: CATEGORY_MAX_SCORES.impact,
+    consistency: CATEGORY_MAX_SCORES.consistency,
+    keywords: CATEGORY_MAX_SCORES.keywords,
+  };
+
+  for (const issue of adjustedIssues) {
+    const category = issue.category;
+    if (!Object.prototype.hasOwnProperty.call(categoryScores, category)) continue;
+    const appliedDelta = Number(issue.appliedScoreDelta ?? issue.scoreDelta ?? 0);
+    categoryScores[category] += appliedDelta;
+  }
+
+  for (const [category, max] of Object.entries(CATEGORY_MAX_SCORES)) {
+    categoryScores[category] = clamp(Math.round(categoryScores[category]), 0, max);
+  }
+
+  const overall = Object.values(categoryScores).reduce((sum, value) => sum + value, 0);
+  const breakdown = Object.keys(CATEGORY_MAX_SCORES).map((id) => ({
+    id,
+    label: CATEGORY_LABELS[id],
+    score: categoryScores[id],
+    max: CATEGORY_MAX_SCORES[id],
+  }));
+
+  return {
+    scores: {
+      overall,
+      ats: categoryScores.ats,
+      structure: categoryScores.structure,
+      impact: categoryScores.impact,
+      consistency: categoryScores.consistency,
+      keywords: categoryScores.keywords,
+    },
+    breakdown,
+    issues: adjustedIssues,
+    keywordCoverage: {
+      role: ctx.keywordCoverage.role,
+      roleLabel: ctx.keywordCoverage.roleLabel,
+      total: ctx.keywordCoverage.total,
+      criticalTotal: ctx.keywordCoverage.criticalTotal,
+      strongTotal: ctx.keywordCoverage.strongTotal,
+      found: ctx.keywordCoverage.found,
+      missing: ctx.keywordCoverage.missing,
+      missingCritical: ctx.keywordCoverage.missingCritical,
+      missingStrong: ctx.keywordCoverage.missingStrong,
+      missingByTier: ctx.keywordCoverage.missingByTier,
+      skillsOnly: ctx.keywordCoverage.skillsOnly,
+      foundInExperienceCount: ctx.keywordCoverage.foundInExperienceCount,
+      foundInSkillsCount: ctx.keywordCoverage.foundInSkillsCount,
+      coveragePct: ctx.keywordCoverage.coveragePct,
+      weightedCoveragePct: ctx.keywordCoverage.weightedCoveragePct,
+      keywordStuffingSuspected: ctx.keywordCoverage.keywordStuffingSuspected,
+    },
+    debug: {
+      extractionQuality: ctx.extractionQuality,
+      missingKeywords: {
+        critical: ctx.keywordCoverage.missingByTier.critical,
+        strong: ctx.keywordCoverage.missingByTier.strong,
+        nice: ctx.keywordCoverage.missingByTier.nice,
+      },
+      penaltyWeights: EXTRACTION_PENALTY_WEIGHTS,
+      keywordExperienceDependentShare: KEYWORD_EXPERIENCE_DEPENDENT_SHARE,
+    },
+  };
+}
+
+module.exports = {
+  scoreCvContext,
+};

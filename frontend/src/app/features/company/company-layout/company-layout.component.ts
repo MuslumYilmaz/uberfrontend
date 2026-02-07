@@ -11,6 +11,7 @@ import { OfflineBannerComponent } from "../../../shared/components/offline-banne
   template: `<div class="container mx-auto max-w-7xl px-4 py-6">
     <router-outlet />
     <app-offline-banner></app-offline-banner>
-    </div>`
+    </div>`,
+  styleUrls: ['./company-layout.component.css'],
 })
 export class CompanyLayoutComponent { }

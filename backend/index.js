@@ -70,7 +70,7 @@ app.use(cookieParser());
 const SKIP_DB_PATHS = new Set(['/', '/api/hello', '/api/bug-report', '/api/health']);
 app.use(async (req, res, next) => {
     try {
-        if (SKIP_DB_PATHS.has(req.path)) return next();
+        if (SKIP_DB_PATHS.has(req.path) || req.path.startsWith('/api/tools/')) return next();
         await connectToMongo(MONGO_URL);
         return next();
     } catch (err) {
@@ -174,6 +174,8 @@ function escapeAttr(s = '') {
 app.use('/api/auth', require('./routes/auth'));
 // ---- Billing routes ----
 app.use('/api/billing', require('./routes/billing'));
+// ---- Tools routes ----
+app.use('/api/tools', require('./routes/tools'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));
