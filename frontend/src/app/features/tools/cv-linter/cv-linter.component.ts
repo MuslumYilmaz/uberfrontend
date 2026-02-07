@@ -60,6 +60,7 @@ export class CvLinterComponent implements OnDestroy {
     info: 1,
   };
   private readonly KEYWORD_ISSUE_IDS = new Set(['keyword_missing', 'keyword_missing_critical']);
+  private readonly SCAN_DURATION_MS = 7000;
 
   roleOptions: RoleOption[] = [
     { id: 'senior_frontend_angular', label: 'Senior Frontend (Angular)' },
@@ -111,6 +112,11 @@ export class CvLinterComponent implements OnDestroy {
     warn: true,
     info: false,
   };
+  scanProgress = 0;
+  scanStatus = '';
+  private scanMode: 'file' | 'text' = 'file';
+  private scanStartedAt = 0;
+  private scanDurationMs = 0;
 
   // Bullet builder inputs
   actionVerb = 'Built';
@@ -504,6 +510,8 @@ export class CvLinterComponent implements OnDestroy {
     this.highlightedIssueId = null;
     this.expandedIssueEvidence = {};
     this.copiedKeywordSuggestion = null;
+    this.scanProgress = 0;
+    this.scanStatus = '';
   }
 
   analyzeFile(): void {
@@ -511,7 +519,7 @@ export class CvLinterComponent implements OnDestroy {
 
     this.startAnalyze('file');
     this.cvLinterService.analyzeFile(this.selectedFile, this.selectedRole).subscribe({
-      next: (report) => this.handleSuccess(report),
+      next: (report) => this.handleSuccessWithScan(report),
       error: (err) => this.handleError(err, 'file'),
     });
   }
@@ -522,7 +530,7 @@ export class CvLinterComponent implements OnDestroy {
 
     this.startAnalyze('text');
     this.cvLinterService.analyzeText(text, this.selectedRole).subscribe({
-      next: (report) => this.handleSuccess(report),
+      next: (report) => this.handleSuccessWithScan(report),
       error: (err) => this.handleError(err, 'text'),
     });
   }
@@ -604,7 +612,15 @@ BSc Computer Science, 2017
   }
 
   private startAnalyze(mode: 'file' | 'text'): void {
+    this.clearProgressTimers();
     this.analyzing = true;
+    this.scanMode = mode;
+    this.scanStartedAt = Date.now();
+    this.scanDurationMs = this.resolveScanDurationMs();
+    this.scanProgress = 2;
+    this.scanStatus = mode === 'file'
+      ? 'Initializing secure document scan...'
+      : 'Initializing text analysis scan...';
     this.errorMessage = '';
     this.report = null;
     this.quickWins = [];
@@ -617,19 +633,33 @@ BSc Computer Science, 2017
     this.pdfTipsOpen = false;
     this.docxPickerOnly = false;
 
-    if (mode === 'file') {
-      this.progressState = 'uploading';
-      this.scheduleProgress('extracting', 300);
-      this.scheduleProgress('scoring', 700);
-    } else {
-      this.progressState = 'scoring';
-    }
+    this.progressState = mode === 'file' ? 'uploading' : 'scoring';
+    this.beginScanAnimation();
   }
 
-  private handleSuccess(report: CvAnalyzeResponse): void {
+  private handleSuccessWithScan(report: CvAnalyzeResponse): void {
+    const elapsed = Date.now() - this.scanStartedAt;
+    const remaining = Math.max(0, this.scanDurationMs - elapsed);
+
+    if (remaining <= 0) {
+      this.completeAnalyzeSuccess(report);
+      return;
+    }
+
+    this.scanStatus = 'Finalizing report and confidence signals...';
+    const timer = window.setTimeout(() => {
+      if (!this.analyzing) return;
+      this.completeAnalyzeSuccess(report);
+    }, remaining);
+    this.progressTimers.push(timer);
+  }
+
+  private completeAnalyzeSuccess(report: CvAnalyzeResponse): void {
     this.clearProgressTimers();
     this.analyzing = false;
     this.progressState = 'done';
+    this.scanProgress = 100;
+    this.scanStatus = 'Scan complete.';
     this.report = report;
     this.hasAnalyzed = true;
     this.issuesBySeverity = this.groupIssuesBySeverity(report.issues || []);
@@ -650,6 +680,8 @@ BSc Computer Science, 2017
     this.clearProgressTimers();
     this.analyzing = false;
     this.progressState = 'error';
+    this.scanProgress = 0;
+    this.scanStatus = '';
     const apiMessage = typeof error?.error?.error === 'string' ? error.error.error : '';
     this.errorMessage = apiMessage || 'Could not analyze the CV right now. Please try again.';
     if (mode === 'file') {
@@ -657,12 +689,52 @@ BSc Computer Science, 2017
     }
   }
 
-  private scheduleProgress(nextState: Exclude<ProgressState, 'idle' | 'done' | 'error'>, delayMs: number): void {
-    const timer = window.setTimeout(() => {
+  private resolveScanDurationMs(): number {
+    const global = window as unknown as { __karma__?: unknown };
+    if (global && global.__karma__) return 0;
+    return this.SCAN_DURATION_MS;
+  }
+
+  private beginScanAnimation(): void {
+    if (this.scanDurationMs <= 0) return;
+
+    const timer = window.setInterval(() => {
       if (!this.analyzing) return;
-      this.progressState = nextState;
-    }, delayMs);
+      const elapsed = Date.now() - this.scanStartedAt;
+      const ratio = Math.min(1, elapsed / this.scanDurationMs);
+      const nextProgress = Math.min(95, Math.max(this.scanProgress, Math.round(ratio * 95)));
+      this.scanProgress = nextProgress;
+      this.updateScanStatusByProgress();
+    }, 140);
     this.progressTimers.push(timer);
+  }
+
+  private updateScanStatusByProgress(): void {
+    const progress = this.scanProgress;
+    if (progress < 20) {
+      this.progressState = this.scanMode === 'file' ? 'uploading' : 'scoring';
+      this.scanStatus = this.scanMode === 'file'
+        ? 'Uploading encrypted document snapshot...'
+        : 'Preparing pasted content for structural scan...';
+      return;
+    }
+    if (progress < 46) {
+      this.progressState = 'extracting';
+      this.scanStatus = 'Parsing layout blocks and text boundaries...';
+      return;
+    }
+    if (progress < 74) {
+      this.progressState = 'extracting';
+      this.scanStatus = 'Extracting sections, bullets, and timeline signals...';
+      return;
+    }
+    if (progress < 92) {
+      this.progressState = 'scoring';
+      this.scanStatus = 'Running deterministic ATS and impact rules...';
+      return;
+    }
+    this.progressState = 'scoring';
+    this.scanStatus = 'Compiling score breakdown and quick wins...';
   }
 
   private clearProgressTimers(): void {

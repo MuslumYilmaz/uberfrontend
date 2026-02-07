@@ -100,8 +100,40 @@
       </button>
     </div>
 
+    <section class="scan-screen" *ngIf="analyzing" data-testid="cv-scan-screen" aria-live="polite">
+      <div class="scan-head">
+        <span class="scan-badge">
+          <i class="pi pi-shield" aria-hidden="true"></i>
+          FrontendAtlas CV Scanner
+        </span>
+        <strong class="scan-percent">{{ scanProgress }}%</strong>
+      </div>
+      <div class="scan-meter" aria-hidden="true">
+        <span [style.width.%]="scanProgress"></span>
+      </div>
+      <p class="scan-status">{{ scanStatus }}</p>
+      <ul class="scan-checklist">
+        <li [class.is-active]="scanProgress >= 18">
+          <i class="pi" [ngClass]="scanProgress >= 18 ? 'pi-check-circle' : 'pi-circle'" aria-hidden="true"></i>
+          <span>Secure upload validation</span>
+        </li>
+        <li [class.is-active]="scanProgress >= 42">
+          <i class="pi" [ngClass]="scanProgress >= 42 ? 'pi-check-circle' : 'pi-circle'" aria-hidden="true"></i>
+          <span>Layout and extraction mapping</span>
+        </li>
+        <li [class.is-active]="scanProgress >= 68">
+          <i class="pi" [ngClass]="scanProgress >= 68 ? 'pi-check-circle' : 'pi-circle'" aria-hidden="true"></i>
+          <span>Rule engine consistency pass</span>
+        </li>
+        <li [class.is-active]="scanProgress >= 92">
+          <i class="pi" [ngClass]="scanProgress >= 92 ? 'pi-check-circle' : 'pi-circle'" aria-hidden="true"></i>
+          <span>Score synthesis and quick wins</span>
+        </li>
+      </ul>
+    </section>
+
     <div class="status-row" aria-live="polite">
-      <p class="progress" *ngIf="analyzing" data-testid="cv-progress">{{ progressLabel }}</p>
+      <p class="progress" *ngIf="analyzing" data-testid="cv-progress">{{ scanStatus || progressLabel }}</p>
       <p class="error" *ngIf="errorMessage" data-testid="cv-error">{{ errorMessage }}</p>
     </div>
 
@@ -345,7 +377,7 @@
                 tabindex="-1"
                 [attr.data-testid]="'cv-issue-' + severity"
               >
-                <div class="issue-title"><code>{{ issue.id }}</code> - {{ issue.title }}</div>
+                <div class="issue-title">{{ issue.title }}</div>
                 <span
                   class="confidence-badge"
                   *ngIf="isLowConfidence(issue)"

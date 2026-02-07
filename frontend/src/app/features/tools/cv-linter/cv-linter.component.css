@@ -218,6 +218,90 @@ textarea {
   margin-top: 8px;
 }
 
+.scan-screen {
+  margin-top: 12px;
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 34%, var(--uf-border-subtle));
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--uf-accent) 20%, transparent), transparent 48%),
+    color-mix(in srgb, var(--uf-surface-alt) 88%, var(--uf-surface));
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.scan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--uf-text-secondary);
+}
+
+.scan-percent {
+  font-size: 1rem;
+  color: var(--uf-text-primary);
+}
+
+.scan-meter {
+  height: 9px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 84%, transparent);
+  background: color-mix(in srgb, var(--uf-surface) 72%, var(--uf-surface-alt));
+}
+
+.scan-meter span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--uf-accent) 84%, #fff), color-mix(in srgb, var(--uf-accent) 55%, #8bc0ff));
+  box-shadow: 0 0 16px color-mix(in srgb, var(--uf-accent) 34%, transparent);
+  transition: width 220ms ease;
+}
+
+.scan-status {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--uf-text-secondary);
+}
+
+.scan-checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 10px;
+}
+
+.scan-checklist li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: var(--uf-text-tertiary);
+}
+
+.scan-checklist li i {
+  font-size: 0.8rem;
+}
+
+.scan-checklist li.is-active {
+  color: var(--uf-text-primary);
+}
+
 .progress {
   margin: 0;
   color: var(--uf-accent);
@@ -384,14 +468,17 @@ textarea {
 
 .undercounted-badge {
   margin-top: 8px;
-  border-radius: 999px;
+  border-radius: 12px;
   border: 1px solid rgba(243, 197, 49, 0.45);
   background: rgba(243, 197, 49, 0.12);
   color: #f4cf72;
   font-size: 0.78rem;
-  padding: 4px 9px;
+  line-height: 1.35;
+  padding: 6px 10px;
   display: inline-flex;
+  width: fit-content;
   max-width: 100%;
+  white-space: normal;
 }
 
 .meta-grid {
@@ -928,5 +1015,9 @@ input:focus-visible,
   .file-pill {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .scan-checklist {
+    grid-template-columns: 1fr;
   }
 }
