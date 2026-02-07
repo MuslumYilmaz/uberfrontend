@@ -138,11 +138,6 @@ export class SeoService {
         url: siteUrl,
         name: this.defaults.siteName,
         publisher: { '@id': `${siteUrl}/#organization` },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${siteUrl}/coding?q={search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
       },
     ];
 

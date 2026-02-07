@@ -463,7 +463,11 @@
     },
     "access": "free",
     "type": "trivia",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "React JSX Transform: Why React Import Is No Longer Required",
+      "description": "Understand the new JSX transform, how Babel/TypeScript compile JSX now, and when explicit React imports are still needed in modern projects."
+    }
   },
   {
     "id": "react-function-treated-as-component-rules",
@@ -3166,7 +3170,11 @@
     },
     "access": "free",
     "type": "trivia",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "React Concurrent Rendering: What It Is and Why It Matters",
+      "description": "A practical explanation of React concurrent rendering, interruptible work, and how to reason about UI responsiveness in interview answers."
+    }
   },
   {
     "id": "react-why-hooks-have-rules",

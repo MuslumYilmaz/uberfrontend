@@ -10,12 +10,14 @@ describe('trivia-seo.util', () => {
     expect(title).toBe('Custom SERP title for CTR');
   });
 
-  it('falls back to deterministic interview framing when override is absent', () => {
+  it('falls back to framework-first deterministic title when override is absent', () => {
     const title = seoTitleForQuestion({
+      technology: 'react',
       title: 'Why does React sometimes show stale state in closures?',
     } as any);
 
-    expect(title).toContain('Intervie');
+    expect(title).toContain('React');
+    expect(title).toContain('Interview');
   });
 
   it('sanitizes html and clamps long strings', () => {
@@ -41,11 +43,28 @@ describe('trivia-seo.util', () => {
     expect(override).toBe('Custom SERP description.');
 
     const fallback = seoDescriptionForQuestion(
-      { title: 'Question title without override' } as any,
+      { title: 'Question title without override', technology: 'vue' } as any,
       '',
       'vue'
     );
-    expect(fallback).toContain('Question title without override');
+    expect(fallback).toContain('Vue explanation');
     expect(fallback.length).toBeLessThanOrEqual(156);
+  });
+
+  it('derives unique fallback titles from question slug when needed', () => {
+    const first = seoTitleForQuestion({
+      id: 'vue-v-if-component-creation-destruction',
+      title: '',
+      technology: 'vue',
+    } as any);
+    const second = seoTitleForQuestion({
+      id: 'vue-v-show-vs-v-if-dom-lifecycle',
+      title: '',
+      technology: 'vue',
+    } as any);
+
+    expect(first).not.toEqual(second);
+    expect(first).toContain('Vue');
+    expect(second).toContain('Vue');
   });
 });

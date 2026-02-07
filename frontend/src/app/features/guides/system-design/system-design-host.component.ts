@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { GuideEntry, SYSTEM, SYSTEM_GROUPS } from '../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
+import { SeoService } from '../../../core/services/seo.service';
+import { buildGuideDetailSeo } from '../guide-seo.util';
 
 type GuideArticleInputs = {
     prev?: any[] | null;
@@ -27,6 +29,7 @@ export class SystemDesignHostComponent implements OnDestroy {
 
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private seo = inject(SeoService);
     private sub?: Subscription;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -69,6 +72,10 @@ export class SystemDesignHostComponent implements OnDestroy {
 
         const prev = idx > 0 ? ['/', 'guides', 'system-design-blueprint', SYSTEM[idx - 1].slug] : null;
         const next = idx < SYSTEM.length - 1 ? ['/', 'guides', 'system-design-blueprint', SYSTEM[idx + 1].slug] : null;
+
+        this.seo.updateTags(
+            buildGuideDetailSeo(this.seo, 'System Design Blueprint', 'system-design-blueprint', current)
+        );
 
         this.vc.clear();
         try {

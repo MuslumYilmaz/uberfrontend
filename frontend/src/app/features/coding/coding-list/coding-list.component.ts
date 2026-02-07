@@ -28,6 +28,7 @@ import { CodingTechKindTabsComponent } from '../../filters/coding-tech-kind-tabs
 import { AuthService } from '../../../core/services/auth.service';
 import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
+import { buildCodingListSeoMeta } from './coding-list-seo.util';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -222,6 +223,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
 
   currentCompanySlug: string | null = null;
   private readonly maxItemListItems = 50;
+  private latestSeoList: Row[] = [];
 
   // company slug from parent param (:slug) OR ?c=
   companySlug$ = (this.route.parent
@@ -973,16 +975,33 @@ export class CodingListComponent implements OnInit, OnDestroy {
         map(list => ({ list, key: list.map((q) => q.id).join('|') })),
         distinctUntilChanged((a, b) => a.key === b.key),
       )
-      .subscribe(({ list }) => this.updateListSeo(list));
+      .subscribe(({ list }) => {
+        this.latestSeoList = list;
+        this.updateListSeo(list);
+      });
+
+    this.route.queryParamMap
+      .pipe(
+        takeUntil(this.destroy$),
+        map((params) => params.keys.slice().sort().join('|')),
+        distinctUntilChanged(),
+      )
+      .subscribe(() => {
+        this.updateListSeo(this.latestSeoList);
+      });
   }
 
   private updateListSeo(list: Row[]): void {
     const baseSeo = this.getRouteSeo();
-    if (!baseSeo || this.isNoIndex(baseSeo) || list.length === 0) return;
+    if (!baseSeo || this.isNoIndex(baseSeo)) return;
+    const queryKeys = this.route.snapshot.queryParamMap.keys;
+    const seoMeta = buildCodingListSeoMeta(baseSeo, queryKeys);
     const itemList = this.buildItemListSchema(list);
-    if (!itemList) return;
-    const canonical = this.seo.buildCanonicalUrl(this.router.url);
-    this.seo.updateTags({ ...baseSeo, canonical, jsonLd: itemList });
+    this.seo.updateTags({
+      ...seoMeta,
+      canonical: this.seo.buildCanonicalUrl('/coding'),
+      jsonLd: itemList || undefined,
+    });
   }
 
   private buildItemListSchema(list: Row[]): Record<string, any> | null {

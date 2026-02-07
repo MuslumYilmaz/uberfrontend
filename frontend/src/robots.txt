@@ -6,5 +6,6 @@ Disallow: /profile
 Disallow: /admin
 Disallow: /tracks
 Disallow: /companies/
+Disallow: /coding?
 
 Sitemap: https://frontendatlas.com/sitemap-index.xml

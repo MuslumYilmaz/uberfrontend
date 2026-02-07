@@ -4,6 +4,20 @@ import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 import { SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './environments/sentry.env';
 
+function enforceCanonicalOrigin(): void {
+  if (typeof window === 'undefined') return;
+  if (!environment.production) return;
+
+  const { protocol, hostname, pathname, search, hash } = window.location;
+  const normalizedHost = String(hostname || '').toLowerCase();
+  const forceHost = normalizedHost === 'www.frontendatlas.com';
+  const forceHttps = protocol === 'http:';
+  if (!forceHost && !forceHttps) return;
+
+  const target = `https://frontendatlas.com${pathname}${search}${hash}`;
+  window.location.replace(target);
+}
+
 function shouldRunSentrySmoke(): boolean {
   if (typeof window === 'undefined') return false;
   let fromQuery = false;
@@ -54,6 +68,8 @@ if (environment.sentryDsn) {
     }
   });
 }
+
+enforceCanonicalOrigin();
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

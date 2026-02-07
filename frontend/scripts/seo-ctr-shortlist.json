@@ -1,0 +1,22 @@
+[
+  { "url": "/vue/trivia/vue-v-show-vs-v-if-dom-lifecycle", "impressions": 315, "position": 8.7, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-v-if-component-creation-destruction", "impressions": 130, "position": 8.0, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-v-for-keys", "impressions": 88, "position": 7.9, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-virtual-dom-diffing", "impressions": 82, "position": 6.6, "ctr": 0, "type": "trivia" },
+  { "url": "/angular/trivia/angular-prevent-memory-leaks-unsubscribe-patterns", "impressions": 70, "position": 8.1, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-methods-in-templates", "impressions": 55, "position": 9.3, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-child-mutates-prop-directly", "impressions": 34, "position": 9.3, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-destructuring-breaks-reactivity-toRefs-toRef", "impressions": 32, "position": 7.6, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-composition-api-vs-mixins", "impressions": 21, "position": 6.0, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-nexttick-dom-update-queue", "impressions": 21, "position": 7.9, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-internal-rendering-pipeline", "impressions": 20, "position": 8.2, "ctr": 0, "type": "trivia" },
+  { "url": "/coding?q={search_term_string}", "impressions": 19, "position": 3.9, "ctr": 0, "type": "coding-search" },
+  { "url": "/vue/trivia/vue-reactivity-system", "impressions": 14, "position": 8.1, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-native-vs-component-events", "impressions": 9, "position": 8.6, "ctr": 0, "type": "trivia" },
+  { "url": "/guides/system-design-blueprint/architecture", "impressions": 7, "position": 5.9, "ctr": 0, "type": "guide" },
+  { "url": "/react/trivia/react-jsx-transform-and-why-not-required", "impressions": 6, "position": 6.7, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-reactive-interpolation-into-dom", "impressions": 6, "position": 8.5, "ctr": 0, "type": "trivia" },
+  { "url": "/react/trivia/react-concurrent-rendering", "impressions": 6, "position": 9.8, "ctr": 0, "type": "trivia" },
+  { "url": "/vue/trivia/vue-reactivity-vs-react-concepts", "impressions": 5, "position": 9.4, "ctr": 0, "type": "trivia" },
+  { "url": "http://frontendatlas.com/", "impressions": 4, "position": 1.0, "ctr": 0, "type": "home-http" }
+]

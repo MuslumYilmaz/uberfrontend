@@ -4460,7 +4460,11 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "seo": {
+      "title": "Angular Unsubscribe Patterns to Prevent Memory Leaks",
+      "description": "Compare Angular unsubscribe strategies, when each works best, and the leak-prone anti-patterns interviewers ask about in RxJS-heavy code."
+    }
   },
   {
     "id": "angular-controlvalueaccessor-vs-custom-two-way-binding",

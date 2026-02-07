@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { navFor, PLAYBOOK, PLAYBOOK_GROUPS } from '../../../shared/guides/guide.registry';
+import { SeoService } from '../../../core/services/seo.service';
+import { buildGuideDetailSeo } from '../guide-seo.util';
 
 // Inputs that every article supports
 type GuideArticleInputs = {
@@ -29,6 +31,7 @@ export class PlaybookHostComponent implements OnDestroy {
 
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private seo = inject(SeoService);
     private sub?: Subscription;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -70,6 +73,10 @@ export class PlaybookHostComponent implements OnDestroy {
                     })
             }))
         };
+
+        this.seo.updateTags(
+            buildGuideDetailSeo(this.seo, 'Interview Blueprint', 'interview-blueprint', current)
+        );
 
         // Recreate the article component for the new slug
         this.vc.clear();

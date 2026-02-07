@@ -58,4 +58,14 @@ describe('SeoService', () => {
     const robots = meta.getTag('name="robots"');
     expect(robots?.content).toBe('noindex,nofollow');
   });
+
+  it('does not emit SearchAction in default WebSite json-ld', () => {
+    service.updateTags({ title: 'SEO Test' });
+    const script = doc.head.querySelector('script#seo-jsonld');
+    const parsed = JSON.parse(script?.textContent || '{}');
+    const graph = Array.isArray(parsed?.['@graph']) ? parsed['@graph'] : [];
+    const website = graph.find((node: any) => node?.['@type'] === 'WebSite');
+    expect(website).toBeTruthy();
+    expect(website?.potentialAction).toBeUndefined();
+  });
 });
