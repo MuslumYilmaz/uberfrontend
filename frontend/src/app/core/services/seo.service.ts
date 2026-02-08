@@ -46,7 +46,9 @@ export class SeoService {
     const description = payload.description || this.defaults.description;
     const keywordsArr = payload.keywords?.length ? payload.keywords : this.defaults.keywords;
     const keywords = keywordsArr.join(', ');
-    const robots = this.resolveRobots(payload.robots);
+    const hasQueryParams =
+      this.hasCurrentQueryParams() || this.hasQueryInValue(payload.canonical);
+    const robots = this.resolveRobots(payload.robots, hasQueryParams);
     const image = this.toAbsoluteUrl(payload.image || this.defaults.image);
     const canonical = this.normalizeCanonical(payload.canonical || this.currentUrl());
     const title = payload.title
@@ -197,9 +199,11 @@ export class SeoService {
     return raw.replace(/\/$/, '');
   }
 
-  private resolveRobots(requested?: string): string {
+  private resolveRobots(requested?: string, hasQueryParams = false): string {
     if (this.isNonProductionHost()) return 'noindex,nofollow';
-    return requested || this.defaults.robots;
+    if (requested) return requested;
+    if (hasQueryParams) return 'noindex,follow';
+    return this.defaults.robots;
   }
 
   private isNonProductionHost(): boolean {
@@ -256,5 +260,25 @@ export class SeoService {
     const stripped = withSlash.split('?')[0].split('#')[0];
     if (stripped === '/' || stripped === '') return '/';
     return stripped.replace(/\/+$/, '');
+  }
+
+  private hasCurrentQueryParams(): boolean {
+    const search = this.doc?.location?.search || '';
+    return search.startsWith('?') && search.length > 1;
+  }
+
+  private hasQueryInValue(value?: string): boolean {
+    const raw = String(value || '').trim();
+    if (!raw) return false;
+
+    if (/^https?:\/\//i.test(raw)) {
+      try {
+        return Boolean(new URL(raw).search);
+      } catch {
+        return raw.includes('?');
+      }
+    }
+
+    return raw.includes('?');
   }
 }

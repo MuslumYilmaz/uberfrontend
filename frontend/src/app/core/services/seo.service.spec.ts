@@ -27,6 +27,10 @@ describe('SeoService', () => {
     if (win && '__FA_SEO_HOST__' in win) {
       delete win.__FA_SEO_HOST__;
     }
+
+    if (win?.history) {
+      win.history.replaceState({}, '', '/');
+    }
   });
 
   it('sets title, description, canonical, and json-ld', () => {
@@ -67,5 +71,33 @@ describe('SeoService', () => {
     const website = graph.find((node: any) => node?.['@type'] === 'WebSite');
     expect(website).toBeTruthy();
     expect(website?.potentialAction).toBeUndefined();
+  });
+
+  it('sets noindex,follow for query URLs on production host', () => {
+    const win = doc.defaultView as (Window & { __FA_SEO_HOST__?: string }) | null;
+    if (win) {
+      win.__FA_SEO_HOST__ = 'frontendatlas.com';
+      win.history.pushState({}, '', '/coding?q=react');
+    }
+
+    service.updateTags({ title: 'Coding Search' });
+    const robots = meta.getTag('name="robots"');
+    expect(robots?.content).toBe('noindex,follow');
+
+    const canonical = doc.head.querySelector('link[rel="canonical"]')?.getAttribute('href') || '';
+    expect(canonical).toContain('/coding');
+    expect(canonical).not.toContain('?q=');
+  });
+
+  it('respects explicit robots value for query URLs', () => {
+    const win = doc.defaultView as (Window & { __FA_SEO_HOST__?: string }) | null;
+    if (win) {
+      win.__FA_SEO_HOST__ = 'frontendatlas.com';
+      win.history.pushState({}, '', '/coding?q=react');
+    }
+
+    service.updateTags({ title: 'Coding Search', robots: 'index,follow' });
+    const robots = meta.getTag('name="robots"');
+    expect(robots?.content).toBe('index,follow');
   });
 });

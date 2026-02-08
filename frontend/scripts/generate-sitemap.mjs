@@ -6,6 +6,7 @@ const SRC_DIR = path.resolve('src');
 const ASSETS_DIR = path.join(SRC_DIR, 'assets');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
+const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
 const OUT_PATH = path.join(SRC_DIR, 'sitemap.xml');
 const INDEX_PATH = path.join(SRC_DIR, 'sitemap-index.xml');
 const MAX_URLS = 50000;
@@ -41,6 +42,23 @@ function addQuestionUrls(urls, tech, kind, list) {
     if (!q?.id) return;
     urls.add(toUrl(`/${tech}/${kind}/${q.id}`));
   });
+}
+
+function extractGuideSlugs(content, exportName) {
+  const marker = `export const ${exportName}`;
+  const start = content.indexOf(marker);
+  if (start === -1) return [];
+  const rest = content.slice(start);
+  const end = rest.indexOf('];');
+  if (end === -1) return [];
+  const block = rest.slice(0, end);
+  const slugs = [];
+  const re = /slug:\s*['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = re.exec(block))) {
+    slugs.push(match[1]);
+  }
+  return slugs;
 }
 
 function buildUrls() {
@@ -88,6 +106,17 @@ function buildUrls() {
         urls.add(toUrl(`/system-design/${q.id}`));
       });
     }
+  }
+
+  if (fs.existsSync(GUIDE_REGISTRY)) {
+    const registrySource = fs.readFileSync(GUIDE_REGISTRY, 'utf8');
+    const playbook = extractGuideSlugs(registrySource, 'PLAYBOOK');
+    const system = extractGuideSlugs(registrySource, 'SYSTEM');
+    const behavioral = extractGuideSlugs(registrySource, 'BEHAVIORAL');
+
+    playbook.forEach((slug) => urls.add(toUrl(`/guides/interview-blueprint/${slug}`)));
+    system.forEach((slug) => urls.add(toUrl(`/guides/system-design-blueprint/${slug}`)));
+    behavioral.forEach((slug) => urls.add(toUrl(`/guides/behavioral/${slug}`)));
   }
 
   return Array.from(urls).sort();
