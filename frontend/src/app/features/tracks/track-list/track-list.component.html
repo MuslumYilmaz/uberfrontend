@@ -19,10 +19,10 @@
           <span class="badge">HTML • CSS • JS</span>
         </div>
         <div class="hero-links">
-          <a [routerLink]="['/javascript/coding']">JavaScript hub</a>
-          <a [routerLink]="['/angular/coding']">Angular hub</a>
-          <a [routerLink]="['/react/coding']">React hub</a>
-          <a [routerLink]="['/vue/coding']">Vue hub</a>
+          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'javascript', kind: 'coding' }">JavaScript hub</a>
+          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'angular', kind: 'coding' }">Angular hub</a>
+          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'react', kind: 'coding' }">React hub</a>
+          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'vue', kind: 'coding' }">Vue hub</a>
           <a [routerLink]="['/system-design']">System Design hub</a>
         </div>
       </div>
