@@ -2,6 +2,54 @@
   display: block;
 }
 
+.company-intro {
+  margin: 0 0 16px;
+  padding: 16px 18px;
+  border-radius: var(--uf-card-radius);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+  box-shadow: var(--uf-card-shadow);
+}
+
+.company-intro p {
+  margin: 0 0 10px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.company-intro p:last-of-type {
+  margin-bottom: 0;
+}
+
+.company-intro a {
+  color: color-mix(in srgb, var(--uf-accent) 80%, var(--uf-text-primary));
+  text-decoration: underline;
+}
+
+.company-intro__actions {
+  margin-top: 14px;
+}
+
+.company-intro__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--uf-accent) 60%, var(--uf-border-subtle));
+  background: color-mix(in srgb, var(--uf-accent) 22%, var(--uf-surface));
+  color: var(--uf-text-primary);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.company-intro__cta:hover {
+  background: color-mix(in srgb, var(--uf-accent) 28%, var(--uf-surface));
+}
+
 .company-loading {
   padding: 38px 0;
   display: grid;

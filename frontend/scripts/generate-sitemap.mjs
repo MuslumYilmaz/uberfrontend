@@ -68,6 +68,8 @@ function buildUrls() {
     '/',
     '/pricing',
     '/coding',
+    '/tracks',
+    '/companies',
     '/system-design',
     '/tools/cv',
     '/guides/interview-blueprint',

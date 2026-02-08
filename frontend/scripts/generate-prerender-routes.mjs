@@ -78,6 +78,8 @@ function buildRoutes() {
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',
+    '/tracks',
+    '/companies',
     '/system-design',
     '/tools/cv',
     '/legal',

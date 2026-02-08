@@ -51,6 +51,49 @@
   font-size: 12px;
 }
 
+.detail-prep-bridge {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-text-primary) 4%, var(--uf-surface));
+  display: grid;
+  gap: 10px;
+}
+
+.detail-prep-bridge__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+}
+
+.detail-prep-bridge__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-prep-bridge__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface));
+  color: var(--uf-text-secondary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.detail-prep-bridge__links a:hover {
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
+  color: var(--uf-text-primary);
+}
+
 /* ---------- Monaco: never overflow horizontally ---------- */
 :host ::ng-deep .monaco-editor,
 :host ::ng-deep .monaco-editor .overflow-guard { max-width: 100% !important; width: 100% !important; }

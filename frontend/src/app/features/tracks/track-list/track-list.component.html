@@ -3,20 +3,34 @@
     <div class="hero-inner">
       <div>
         <p class="eyebrow">Tracks</p>
-        <h1>Curated interview tracks</h1>
+        <h1>Frontend Interview Preparation Tracks</h1>
         <p class="lede">
-          Choose the set that matches your timeline. No calendars—just the right mix of questions and a fast path into practice.
+          Choose the path that matches your timeline and interview goal. Each track bundles coding, trivia, and system design practice into one focused progression.
+        </p>
+        <p class="lede lede-sub">
+          Use tracks when you need structure: foundations for long-term prep, crash plans for short deadlines, and role-focused sets for frontend interviews.
+        </p>
+        <p class="lede lede-sub">
+          Track pages are previewable so you can evaluate scope first, then unlock full guided flows when you are ready.
         </p>
         <div class="badges">
           <span class="badge">UI + System Design</span>
           <span class="badge">React / Angular / Vue</span>
           <span class="badge">HTML • CSS • JS</span>
         </div>
+        <div class="hero-links">
+          <a [routerLink]="['/javascript/coding']">JavaScript hub</a>
+          <a [routerLink]="['/angular/coding']">Angular hub</a>
+          <a [routerLink]="['/react/coding']">React hub</a>
+          <a [routerLink]="['/vue/coding']">Vue hub</a>
+          <a [routerLink]="['/system-design']">System Design hub</a>
+        </div>
       </div>
       <div class="hero-callout">
         <div class="hero-num">{{ tracks.length }}</div>
         <div class="hero-text">Tracks to jump-start prep</div>
         <div class="hero-note">Pick one, then dive into the questions.</div>
+        <a class="hero-cta" [routerLink]="['/pricing']">Unlock full interview prep</a>
       </div>
     </div>
   </div>

@@ -163,17 +163,16 @@ export const routes: Routes = [
   // Companies
   {
     path: 'companies',
-    canActivate: [premiumGuard],
     loadComponent: () =>
       import('./features/company/company-layout/company-layout.component').then(
         (m) => m.CompanyLayoutComponent,
       ),
     data: {
-      premiumGate: 'company',
       seo: {
-        title: 'Company interview prep',
-        description: 'Company-specific front-end interview guides, drills, and question banks.',
-        robots: 'noindex,nofollow',
+        title: 'Company Frontend Interview Questions',
+        description:
+          'Practice company-specific frontend interview questions and compare patterns used by top engineering teams.',
+        robots: 'index,follow',
       },
     },
     children: [
@@ -186,19 +185,22 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Company interview guides',
-            description: 'Pick a company to see tailored front-end interview questions and tips.',
-            robots: 'noindex,nofollow',
+            title: 'Company Frontend Interview Questions',
+            description:
+              'Explore frontend interview question sets grouped by company and prepare with realistic coding, trivia, and system-design coverage.',
+            robots: 'index,follow',
           },
         },
       },
       {
         path: ':slug',
+        canActivate: [premiumGuard],
         loadComponent: () =>
           import('./features/company/company-detail/company-detail.component').then(
             (m) => m.CompanyDetailComponent,
           ),
         data: {
+          premiumGate: 'company',
           seo: {
             title: 'Company front-end interview questions',
             description: 'Focused coding, trivia, and system design practice for a specific company.',
@@ -341,8 +343,6 @@ export const routes: Routes = [
   },
   {
     path: 'tracks',
-    canActivate: [premiumGuard],
-    data: { premiumGate: 'tracks' },
     children: [
       {
         path: '',
@@ -352,19 +352,22 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'Interview prep tracks',
-            description: 'Pick a curated set of questions for FAANG, senior roles, crash prep, or fundamentals.',
-            robots: 'noindex,nofollow',
+            title: 'Frontend Interview Preparation Tracks',
+            description:
+              'Choose a frontend interview preparation track by timeline and focus, then practice coding, trivia, and system design in one path.',
+            robots: 'index,follow',
           },
         },
       },
       {
         path: ':slug',
+        canActivate: [premiumGuard],
         loadComponent: () =>
           import('./features/tracks/track-detail/track-detail.component').then(
             (m) => m.TrackDetailComponent,
           ),
         data: {
+          premiumGate: 'tracks',
           seo: {
             title: 'Interview prep track',
             description: 'Curated front-end interview questions aligned to a specific goal.',

@@ -82,7 +82,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       children: [
         { type: 'link', label: 'Crash Track (7 days)', to: '/tracks/crash-7d', icon: 'pi pi-bolt' },
         { type: 'link', label: 'Foundations Track (30 days)', to: '/tracks/foundations-30d', icon: 'pi pi-calendar' },
-        { type: 'link', label: 'Companies', to: '/companies', icon: 'pi pi-building' },
+        { type: 'link', label: 'Company interview questions', to: '/companies', icon: 'pi pi-building' },
       ],
     },
 
@@ -106,8 +106,8 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       children: [
         { type: 'link', label: 'Question library', to: '/coding', icon: 'pi pi-database' },
         { type: 'link', label: 'Question formats', to: '/coding', icon: 'pi pi-clone', query: { view: 'formats' } },
-        { type: 'link', label: 'Tracks', to: '/tracks', icon: 'pi pi-directions' },
-        { type: 'link', label: 'Companies', to: '/companies', icon: 'pi pi-building' },
+        { type: 'link', label: 'Interview prep tracks', to: '/tracks', icon: 'pi pi-directions' },
+        { type: 'link', label: 'Company interview questions', to: '/companies', icon: 'pi pi-building' },
         { type: 'link', label: 'CV Linter', to: '/tools/cv', icon: 'pi pi-file-edit' },
       ],
     },

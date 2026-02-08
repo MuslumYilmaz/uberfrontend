@@ -61,6 +61,7 @@
 /angular/trivia/rxjs-sharereplay-angular-how-it-breaks-your-app
 /angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use
 /coding
+/companies
 /css/coding/css-box-model-margin-padding-border
 /css/coding/css-flexbox-navbar
 /css/coding/css-fluid-clamp
@@ -415,6 +416,7 @@
 /system-design/scalable-notifications-feed
 /system-design/ui-component-state-from-mock
 /tools/cv
+/tracks
 /vue/coding/vue-accordion-faq
 /vue/coding/vue-autocomplete-search
 /vue/coding/vue-contact-form-starter

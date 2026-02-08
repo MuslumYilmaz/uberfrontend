@@ -4,7 +4,9 @@ Disallow: /auth/
 Disallow: /dashboard
 Disallow: /profile
 Disallow: /admin
-Disallow: /tracks
+Allow: /tracks
+Disallow: /tracks/
+Allow: /companies
 Disallow: /companies/
 Disallow: /coding?
 

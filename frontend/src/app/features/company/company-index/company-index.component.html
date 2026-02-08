@@ -1,10 +1,25 @@
 <header class="fa-page-header">
     <p class="fa-page-kicker">Company prep</p>
-    <h1 class="fa-page-title">Company guides</h1>
+    <h1 class="fa-page-title">Company Frontend Interview Questions</h1>
     <p class="fa-page-subtitle">
-        Prepare for specific companies by learning insider tips and practicing known questions.
+        Compare company-oriented frontend interview question sets before unlocking premium drills and guided solutions.
     </p>
 </header>
+
+<section class="company-intro fa-card">
+    <p>
+        Company pages focus on realistic coding, trivia, and system design patterns used in interviews at top product teams.
+    </p>
+    <p>
+        You can preview coverage and question volume by company, then upgrade when you want full access to detailed solutions and interview-ready walkthroughs.
+    </p>
+    <p>
+        Start with broad preparation in <a [routerLink]="['/coding']">Question Library</a> and <a [routerLink]="['/tracks']">Interview Tracks</a>, then target specific company sets.
+    </p>
+    <div class="company-intro__actions">
+        <a class="company-intro__cta" [routerLink]="['/pricing']">View premium plans</a>
+    </div>
+</section>
 
 <ng-container *ngIf="loading; else loaded">
     <div class="company-loading" role="status" aria-live="polite" data-testid="company-index-loading">
