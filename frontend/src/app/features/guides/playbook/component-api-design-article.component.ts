@@ -46,8 +46,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
   <fa-guide-shell
-    title="Designing Component APIs That Scale"
-    subtitle="How to design reusable, interview-ready UI component APIs."
+    title="Component API Design for Frontend Interviews: Props, Events, Trade-offs"
+    subtitle="How to present props, events, composition, and accessibility trade-offs in UI interviews."
     [minutes]="18"
     [tags]="['ui','api-design','react','composition','interviews']"
     [prev]="prev"

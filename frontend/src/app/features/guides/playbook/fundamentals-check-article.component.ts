@@ -41,8 +41,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     }`,
     template: `
   <fa-guide-shell
-    title="Fundamentals Check: Browser, CSS, JS, HTTP"
-    subtitle="Quick-fire questions that test your grasp of the essentials."
+    title="Frontend Interview Fundamentals Quiz: Browser, CSS, JavaScript, HTTP"
+    subtitle="Fast interview check for browser/CSS/JavaScript/HTTP topics with clear answer framing."
     [minutes]="15"
     [tags]="['javascript','css','browser','http','fundamentals']"
     [prev]="prev"

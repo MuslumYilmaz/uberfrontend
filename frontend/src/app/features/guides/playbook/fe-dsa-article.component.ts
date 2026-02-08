@@ -47,8 +47,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
     template: `
   <fa-guide-shell
-    title="Just-Enough DSA for Front-End"
-    subtitle="The subset of algorithms & data structures you actually need for FE interviews."
+    title="DSA for Frontend Interviews: Just Enough to Pass Coding Rounds"
+    subtitle="The minimum arrays/maps/queues toolkit and patterns you need to solve frontend coding interviews."
     [minutes]="12"
     [tags]="['coding','fundamentals','practice']"
     [prev]="prev"

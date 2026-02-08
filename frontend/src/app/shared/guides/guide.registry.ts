@@ -73,9 +73,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'dsa-for-fe',
-        title: 'Just-Enough DSA for Front-End',
+        title: 'DSA for Frontend Interviews: Just Enough to Pass Coding Rounds',
         minutes: 18,
-        summary: 'The subset of algorithms & data structures you actually need for front-end roles.',
+        summary: 'Learn the exact arrays/maps/queues patterns frontend interviews test and what problems you should solve confidently after this guide.',
         load: () =>
             import('../../features/guides/playbook/fe-dsa-article.component')
                 .then(m => m.FeDsaArticle),
@@ -91,9 +91,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'api-design',
-        title: 'Designing Component APIs That Scale',
+        title: 'Component API Design for Frontend Interviews: Props, Events, Trade-offs',
         minutes: 14,
-        summary: 'Best practices for reusable, maintainable UI component APIs.',
+        summary: 'Interview-focused patterns for designing reusable components with clear APIs, accessibility, and scalable composition decisions.',
         load: () =>
             import('../../features/guides/playbook/component-api-design-article.component')
                 .then(m => m.ComponentApiDesignArticle),
@@ -109,9 +109,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'quiz',
-        title: 'Fundamentals Check: Browser, CSS, JS, HTTP',
+        title: 'Frontend Interview Fundamentals Quiz: Browser, CSS, JavaScript, HTTP',
         minutes: 10,
-        summary: 'Quick-fire questions that test your grasp of the essentials.',
+        summary: 'Use this quick fundamentals check to find weak spots before interviews and practice concise, high-signal answers hiring teams expect.',
         load: () =>
             import('../../features/guides/playbook/fundamentals-check-article.component')
                 .then(m => m.FundamentalsCheckArticle),
