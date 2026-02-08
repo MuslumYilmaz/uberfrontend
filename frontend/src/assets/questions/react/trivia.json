@@ -507,11 +507,7 @@
       "build",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "React JSX Transform: Why React Import Is No Longer Required",
-      "description": "Understand the new JSX transform, how Babel/TypeScript compile JSX now, and when explicit React imports are still needed in modern projects."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-function-treated-as-component-rules",
@@ -3440,11 +3436,7 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "React Concurrent Rendering: What It Is and Why It Matters",
-      "description": "A practical explanation of React concurrent rendering, interruptible work, and how to reason about UI responsiveness in interview answers."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-why-hooks-have-rules",
@@ -3639,11 +3631,7 @@
       "effects",
       "callbacks"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "React Stale Closures: Root Cause and Reliable Fixes",
-      "description": "Learn why closures capture old render values, when effects/timeouts go stale, and the dependency/ref fixes interviewers look for."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-useref-vs-usestate",
@@ -4464,11 +4452,7 @@
       "effects",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "React StrictMode Double Effects: Why It Happens and How to Fix",
-      "description": "Clear React 18 explanation of mount-unmount-remount checks, what bugs StrictMode exposes, and patterns for idempotent effects."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "react-useeffect-vs-uselayouteffect",

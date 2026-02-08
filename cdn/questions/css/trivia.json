@@ -1823,11 +1823,7 @@
       "display",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "CSS display:flex Explained with Real Interview Use Cases",
-      "description": "What display:flex actually changes, how axis alignment works, and the fastest way to answer flexbox interview questions correctly."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "css-z-index",

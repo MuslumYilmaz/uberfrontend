@@ -1,16 +1,7 @@
 import { seoDescriptionForQuestion, seoTitleForQuestion, sanitizeSerpText } from './trivia-seo.util';
 
 describe('trivia-seo.util', () => {
-  it('uses seo title override when present', () => {
-    const title = seoTitleForQuestion({
-      title: 'Original question title',
-      seo: { title: 'Custom SERP title for CTR' },
-    } as any);
-
-    expect(title).toBe('Custom SERP title for CTR');
-  });
-
-  it('falls back to framework-first deterministic title when override is absent', () => {
+  it('generates framework-first deterministic title', () => {
     const title = seoTitleForQuestion({
       technology: 'react',
       title: 'Why does React sometimes show stale state in closures?',
@@ -31,17 +22,7 @@ describe('trivia-seo.util', () => {
     expect(sanitized.endsWith('…')).toBeTrue();
   });
 
-  it('uses override description and keeps fallback deterministic', () => {
-    const override = seoDescriptionForQuestion(
-      {
-        title: 'Question title',
-        seo: { description: 'Custom SERP description.' },
-      } as any,
-      'Base plain description.',
-      'react'
-    );
-    expect(override).toBe('Custom SERP description.');
-
+  it('generates deterministic description from framework + content', () => {
     const fallback = seoDescriptionForQuestion(
       { title: 'Question title without override', technology: 'vue' } as any,
       '',

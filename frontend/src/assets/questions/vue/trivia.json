@@ -128,11 +128,7 @@
       "virtual-dom",
       "frameworks"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Reactivity vs React Concepts: Mapping the Core Mental Model",
-      "description": "Map Vue reactivity ideas to familiar React concepts so you can explain differences in state updates, rendering, and performance trade-offs."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-internal-rendering-pipeline",
@@ -259,11 +255,7 @@
       "virtual-dom",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Rendering Pipeline: From Reactive Change to DOM Patch",
-      "description": "Step through Vue’s render pipeline, batching, and patching so you can explain update timing, performance behavior, and debugging clues."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-data-must-be-function",
@@ -452,11 +444,7 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Reactive Interpolation into DOM: What Updates and When",
-      "description": "See how Vue interpolation stays reactive, what triggers rerenders, and the pitfalls around expensive expressions and DOM update timing."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-v-bind-reactive-attributes",
@@ -721,11 +709,7 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue v-if: Component Creation, Destruction, and Side Effects",
-      "description": "Learn exactly what Vue mounts/unmounts with v-if, how lifecycle hooks fire, and the mistakes that cause state resets or wasted renders."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-v-for-keys",
@@ -840,11 +824,7 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue v-for Keys: Why Stable Identity Prevents UI Bugs",
-      "description": "See how Vue diffing uses keys, why unstable keys break state and inputs, and the safe key strategy interviewers expect in list rendering."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-v-model-syntax-sugar-expansion",
@@ -1096,11 +1076,7 @@
       "performance",
       "lifecycle"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue v-if vs v-show: DOM Lifecycle, Performance, and Gotchas",
-      "description": "Understand when Vue creates/destroys nodes vs toggles visibility, plus real performance trade-offs and interview-ready rules for v-if and v-show."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-computed-properties",
@@ -1303,11 +1279,7 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Methods in Templates: Re-render Cost and Better Patterns",
-      "description": "Why calling methods in Vue templates can rerun work on every render, when it is acceptable, and how computed properties avoid subtle slowdowns."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-native-vs-component-events",
@@ -1461,11 +1433,7 @@
       "emits",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Native vs Component Events: Correct Event Boundaries",
-      "description": "Learn the difference between DOM-native and component-emitted events in Vue, plus patterns that prevent silent handler bugs in parent-child flows."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-architecture-decisions-scalability",
@@ -2117,11 +2085,7 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Prop Mutation: What Breaks and the Correct Update Flow",
-      "description": "Understand why child prop mutation causes hidden state bugs, and how emit plus v-model preserves one-way data flow and predictable updates."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-composition-api-vs-mixins",
@@ -2242,11 +2206,7 @@
       "maintainability",
       "typescript"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Composition API vs Mixins: Trade-offs and Migration Path",
-      "description": "A practical comparison of Composition API and mixins for reuse, readability, and type safety, plus when migration is worth the cost."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-sfc-vs-global-components",
@@ -2693,11 +2653,7 @@
       "core",
       "basics"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Reactivity System: Track, Trigger, and Update Explained",
-      "description": "A clear mental model for Vue dependency tracking and effect triggering, with practical gotchas that appear in advanced interview rounds."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-composition-api",
@@ -3028,11 +2984,7 @@
       "performance",
       "rendering"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Virtual DOM Diffing: How Updates Stay Fast and Correct",
-      "description": "Clear Vue diffing walkthrough with keyed list behavior, patch strategy, and common mistakes that hurt correctness or render performance."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-slots-default-named-scoped-slot-props",
@@ -3648,11 +3600,7 @@
       "state",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue Destructuring Reactivity: Fix with toRefs and toRef",
-      "description": "Learn why destructuring can drop Vue reactivity, how toRefs/toRef preserve tracking, and the interview-safe way to expose reactive state."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-watch-vs-watcheffect-differences-infinite-loops",
@@ -3974,11 +3922,7 @@
       "performance",
       "reactivity"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue nextTick and DOM Update Queue: When You Actually Need It",
-      "description": "Understand Vue’s async DOM flush timing, why nextTick exists, and the common mistakes when reading layout right after state updates."
-    }
+    "updatedAt": "2026-01-30"
   },
   {
     "id": "vue-v-for-keys-why-not-index",
@@ -4117,10 +4061,6 @@
       "structure",
       "keys"
     ],
-    "updatedAt": "2026-01-30",
-    "seo": {
-      "title": "Vue v-for keys: why index causes state bugs (Interview Answer)",
-      "description": "Learn why index keys break input state, transitions, and component reuse in Vue lists, plus the safe key strategy interviewers expect."
-    }
+    "updatedAt": "2026-01-30"
   }
 ]

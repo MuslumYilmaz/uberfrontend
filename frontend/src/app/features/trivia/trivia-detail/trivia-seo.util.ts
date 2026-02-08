@@ -79,10 +79,7 @@ function titleConcept(q: Pick<Question, 'title' | 'id' | 'technology'>): string 
   return slugToConcept((q as any).id, (q as any).technology);
 }
 
-export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>): string {
-  const override = sanitizeSerpText(q.seo?.title || '', TITLE_MAX_LEN);
-  if (override) return override;
-
+export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology'>): string {
   const framework = frameworkLabel(q.technology);
   const concept = titleConcept(q) || 'Interview Concept';
   const candidate = `${framework} ${concept} — Interview Answer`;
@@ -93,13 +90,10 @@ export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technolo
 }
 
 export function seoDescriptionForQuestion(
-  q: Pick<Question, 'id' | 'title' | 'technology' | 'seo'>,
+  q: Pick<Question, 'id' | 'title' | 'technology'>,
   plainDescription: string,
   tech: string
 ): string {
-  const override = sanitizeSerpText(q.seo?.description || '', DESCRIPTION_MAX_LEN);
-  if (override) return override;
-
   const framework = frameworkLabel(q.technology || tech);
   const concept = titleConcept(q) || slugToConcept((q as any).id, (q as any).technology || tech) || 'front-end concept';
   const descFromContent = sanitizeSerpText(plainDescription || '', 120);
