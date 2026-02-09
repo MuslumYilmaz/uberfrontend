@@ -152,6 +152,13 @@ describe('DashboardComponent', () => {
     expect(pageText).toContain('Progress');
   });
 
+  it('renders focus areas browse action linking to /focus-areas', () => {
+    const link: HTMLAnchorElement | null =
+      fixture.nativeElement.querySelector('[data-testid="dashboard-focus-areas-link"]');
+    expect(link).toBeTruthy();
+    expect(link?.getAttribute('href') || '').toContain('/focus-areas');
+  });
+
   it('marks daily challenge complete from dashboard card', () => {
     const component = fixture.componentInstance;
     component.markDailyChallengeComplete();

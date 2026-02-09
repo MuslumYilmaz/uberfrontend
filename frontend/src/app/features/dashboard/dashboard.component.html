@@ -414,9 +414,18 @@
 
     <!-- Focus areas -->
     <section class="block block--focus">
-      <div class="block-head">
-        <h2 class="block-title fa-section-title">Focus areas</h2>
-        <p class="block-subtitle fa-meta-text">Compact map of topic density to steer what to practice next.</p>
+      <div class="block-head block-head--with-action">
+        <div class="block-head__content">
+          <h2 class="block-title fa-section-title">Focus areas</h2>
+          <p class="block-subtitle fa-meta-text">Compact map of topic density to steer what to practice next.</p>
+        </div>
+        <a
+          class="fa-btn fa-btn--ghost block-head__action"
+          [routerLink]="['/focus-areas']"
+          data-testid="dashboard-focus-areas-link"
+        >
+          Browse all focus areas
+        </a>
       </div>
 
       <ng-container *ngIf="stats$ | async as stats">

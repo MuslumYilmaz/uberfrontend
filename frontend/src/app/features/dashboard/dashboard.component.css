@@ -134,11 +134,25 @@
   gap: 12px;
 }
 
+.block-head--with-action {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
 .block-head__content {
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.block-head__action {
+  min-height: 36px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .block-toggle-btn {
@@ -891,6 +905,15 @@
   .block-head--collapsible {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .block-head--with-action {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .block-head__action {
+    align-self: flex-start;
   }
 
   .block-toggle-btn {
