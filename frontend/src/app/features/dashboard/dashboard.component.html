@@ -452,20 +452,28 @@
 
       <ng-container *ngIf="stats$ | async as stats">
         <div class="section-grid">
-          <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-            [queryParams]="card.queryParams">
-            <div class="row-main">
-              <div class="row-icon">
+          <a
+            *ngFor="let card of questionFormats; trackBy: trackByTitle"
+            class="row format-row fa-card fa-card--interactive"
+            [attr.data-tone]="getFormatTone(card)"
+            [routerLink]="card.route"
+            [queryParams]="card.queryParams"
+          >
+            <div class="row-main format-row__main">
+              <div class="row-icon format-row__icon">
                 <i [ngClass]="piIcon(card.icon)"></i>
               </div>
-              <div class="row-body">
-                <div class="row-title fa-card-title">{{ card.title }}</div>
-                <div class="row-sub fa-meta-text">
-                  {{ getFormatSubtitle(card, stats) }}
+              <div class="row-body format-row__body">
+                <div class="row-title fa-card-title format-row__title-row">
+                  <span>{{ card.title }}</span>
+                  <span class="format-row__kind-pill">{{ getFormatKindLabel(card) }}</span>
+                </div>
+                <div class="row-sub fa-meta-text format-row__meta">
+                  <span class="format-row__count-pill">{{ getFormatSubtitle(card, stats) }}</span>
                 </div>
               </div>
             </div>
-            <div class="row-arrow">→</div>
+            <div class="row-arrow format-row__cta">Open</div>
           </a>
         </div>
       </ng-container>

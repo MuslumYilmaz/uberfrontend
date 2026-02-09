@@ -385,7 +385,7 @@ export class DashboardComponent {
     {
       title: 'User Interface',
       subtitle: '0 questions',
-      icon: 'list',
+      icon: 'grid',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'ui', reset: 1 },       // 👈
       formatKey: 'ui',
@@ -394,7 +394,7 @@ export class DashboardComponent {
     {
       title: 'JavaScript / Typescript',
       subtitle: '0 questions',
-      icon: 'list',
+      icon: 'bolt',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'js-fn', reset: 1 },    // 👈
       formatKey: 'js-fn',
@@ -403,7 +403,7 @@ export class DashboardComponent {
     {
       title: 'Front End System Design',
       subtitle: '0 questions',
-      icon: 'list',
+      icon: 'building',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'system', kind: 'coding', reset: 1 }, // 👈
       formatKey: 'system',
@@ -412,7 +412,7 @@ export class DashboardComponent {
     {
       title: 'Trivia',
       subtitle: '0 questions',
-      icon: 'list',
+      icon: 'book',
       route: ['/coding'],
       queryParams: { kind: 'trivia', reset: 1 },       // 👈
       kindKey: 'trivia',
@@ -420,7 +420,7 @@ export class DashboardComponent {
     {
       title: 'Data Structures & Algorithms',
       subtitle: '0 questions',
-      icon: 'list',
+      icon: 'star',
       route: ['/coding'],
       queryParams: { view: 'formats', category: 'algo', reset: 1 },     // 👈
       formatKey: 'algo',
@@ -429,7 +429,7 @@ export class DashboardComponent {
     {
       title: 'Behavioral Interviews',
       subtitle: '0/8 articles',
-      icon: 'list',
+      icon: 'clock',
       route: ['/guides', 'behavioral'],
       kindKey: 'behavioral',
     },
@@ -570,6 +570,30 @@ export class DashboardComponent {
     }
 
     return card.subtitle ?? '';
+  }
+
+  getFormatKindLabel(card: Card): string {
+    switch (card.kindKey) {
+      case 'trivia':
+        return 'Trivia';
+      case 'system-design':
+        return 'System design';
+      case 'behavioral':
+        return 'Behavioral';
+      default:
+        return 'Coding';
+    }
+  }
+
+  getFormatTone(card: Card): string {
+    if (card.kindKey === 'behavioral') return 'behavioral';
+    if (card.kindKey === 'trivia') return 'trivia';
+    if (card.kindKey === 'system-design') return 'system-design';
+    if (card.formatKey === 'ui') return 'ui';
+    if (card.formatKey === 'js-fn') return 'js';
+    if (card.formatKey === 'html-css') return 'html-css';
+    if (card.formatKey === 'algo') return 'algo';
+    return 'default';
   }
 
   private buildFocusIntensityMap(stats: Stats): Record<string, FocusIntensity> {
