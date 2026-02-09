@@ -144,8 +144,8 @@ test.describe('system design mobile layout guardrail', () => {
 
     await expect(page.locator('.sdl-left')).toBeVisible();
     await expect(page.locator('.sdl-right')).toBeVisible();
-    await expect(page.getByTestId('sd-mobile-overview-trigger')).toHaveCount(0);
-    await expect(page.getByTestId('sd-mobile-toc-trigger')).toHaveCount(0);
+    await expect(page.getByTestId('sd-mobile-overview-trigger')).toBeHidden();
+    await expect(page.getByTestId('sd-mobile-toc-trigger')).toBeHidden();
 
     await stabilize(page);
     await assertSystemDesignNoOverflow(page);

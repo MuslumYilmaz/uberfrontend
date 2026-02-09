@@ -272,7 +272,7 @@ test.describe('lemonsqueezy integration (local)', () => {
       localStorage.setItem('fa:auth:session', '1');
     });
 
-    await page.goto('/tracks');
+    await page.goto('/tracks/foundations-30d');
     await expect(page.getByText('Premium tracks')).toBeVisible();
   });
 

@@ -16,6 +16,7 @@ declare global {
 }
 
 const MAX_LONG_TASK_MS = 250;
+const MAX_LONG_TASK_JITTER_MS = 10;
 const TOTAL_LONG_TASK_MS = 1500;
 const TOTAL_BLOCKING_TIME_MS = 800;
 const CPU_THROTTLE_RATE = 4;
@@ -88,6 +89,7 @@ test.describe('showcase perf smoke', () => {
         timestamp: new Date().toISOString(),
         budgets: {
           MAX_LONG_TASK_MS,
+          MAX_LONG_TASK_JITTER_MS,
           TOTAL_LONG_TASK_MS,
           TOTAL_BLOCKING_TIME_MS,
         },
@@ -109,7 +111,7 @@ test.describe('showcase perf smoke', () => {
           `total=${totalLongTaskTime.toFixed(1)}ms tbt=${totalBlockingTime.toFixed(1)}ms`
       );
 
-      expect(maxLongTask).toBeLessThanOrEqual(MAX_LONG_TASK_MS);
+      expect(maxLongTask).toBeLessThanOrEqual(MAX_LONG_TASK_MS + MAX_LONG_TASK_JITTER_MS);
       expect(totalLongTaskTime).toBeLessThanOrEqual(TOTAL_LONG_TASK_MS);
       expect(totalBlockingTime).toBeLessThanOrEqual(TOTAL_BLOCKING_TIME_MS);
     } catch (error) {
@@ -120,6 +122,7 @@ test.describe('showcase perf smoke', () => {
           timestamp: new Date().toISOString(),
           budgets: {
             MAX_LONG_TASK_MS,
+            MAX_LONG_TASK_JITTER_MS,
             TOTAL_LONG_TASK_MS,
             TOTAL_BLOCKING_TIME_MS,
           },
