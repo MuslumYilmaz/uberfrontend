@@ -4,6 +4,7 @@ import { Observable, Subject, catchError, of, shareReplay, tap, throwError } fro
 import { Tech } from '../models/user.model';
 import { AuthService } from './auth.service';
 import { apiUrl } from '../utils/api-base';
+import { AnalyticsService } from './analytics.service';
 
 export interface ActivityEvent {
   _id: string;
@@ -34,6 +35,8 @@ export type ActivityCompletedEvent = {
   kind?: 'coding' | 'trivia' | 'debug';
   tech?: Tech | 'system-design';
   itemId?: string;
+  xpAwarded?: number;
+  weeklyGoalCompleted?: boolean;
 };
 
 type CachedObs<T> = { ts: number; obs: Observable<T> };
@@ -54,7 +57,7 @@ export class ActivityService {
   private recentCache = new Map<string, CachedObs<ActivityEvent[]>>();
   private heatmapCache = new Map<string, CachedObs<any>>();
 
-  constructor(private http: HttpClient, private auth: AuthService) {
+  constructor(private http: HttpClient, private auth: AuthService, private analytics: AnalyticsService) {
     // Invalidate on completion (so widgets refresh immediately)
     this.activityCompleted$.subscribe(() => {
       this.invalidateAll();
@@ -198,20 +201,51 @@ export class ActivityService {
     durationMin?: number;
     xp?: number;
     solved?: boolean;
+    difficulty?: string;
   }) {
     // 🛑 If logged out, act like a no-op (no error, no network)
     if (!this.isLoggedIn()) {
-      return of({ credited: false, stats: null } as { credited: boolean; stats: any });
+      return of({ credited: false, stats: null } as any);
     }
 
-    return this.http.post<{ credited: boolean; stats: any }>(
+    return this.http.post<any>(
       `${this.base}/complete`,
       payload,
       { headers: this.headers() }
     ).pipe(
-      tap(() => {
+      tap((res) => {
         this.invalidateAll();
-        this.activityCompleted$.next({ kind: payload.kind, tech: payload.tech, itemId: payload.itemId });
+        const xpAwarded = Number(res?.xpAwarded || 0);
+        const weeklyGoalCompleted = !!res?.weeklyGoal?.reached;
+        this.activityCompleted$.next({
+          kind: payload.kind,
+          tech: payload.tech,
+          itemId: payload.itemId,
+          xpAwarded,
+          weeklyGoalCompleted,
+        });
+        if (xpAwarded > 0) {
+          this.analytics.track('xp_awarded', {
+            source: 'question_complete',
+            kind: payload.kind,
+            tech: payload.tech,
+            item_id: payload.itemId,
+            xp: xpAwarded,
+          });
+        }
+        this.analytics.track('weekly_goal_progressed', {
+          completed: Number(res?.weeklyGoal?.completed || 0),
+          target: Number(res?.weeklyGoal?.target || 0),
+        });
+        if (weeklyGoalCompleted) {
+          this.analytics.track('weekly_goal_completed', {
+            completed: Number(res?.weeklyGoal?.completed || 0),
+            target: Number(res?.weeklyGoal?.target || 0),
+          });
+        }
+        if (res?.levelUp) {
+          this.analytics.track('level_up', { source: 'question_complete' });
+        }
         this.getSummary({ force: true }).subscribe();
       }),
       catchError(err => {

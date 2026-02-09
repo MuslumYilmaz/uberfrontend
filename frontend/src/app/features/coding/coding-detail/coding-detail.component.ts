@@ -457,8 +457,8 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.question();
     if (!q) return '';
     const d = q.description;
-    if (typeof d === 'string') return d;
-    if (d && typeof d === 'object') return (d as StructuredDescription).summary || '';
+    if (typeof d === 'string') return this.displayText(d);
+    if (d && typeof d === 'object') return this.displayText((d as StructuredDescription).summary || '');
     return '';
   });
 
@@ -1652,11 +1652,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       source: 'tech',
       durationMin: minutes,
       xp: this.xpFor(q),
+      difficulty: q.difficulty,
     }).subscribe({
-      next: (res: any) => {
+      next: (_res: any) => {
         this.recorded = true;
-        this.activity.activityCompleted$.next({ kind: this.kind, tech: this.tech, stats: res?.stats });
-        this.activity.refreshSummary();
       },
       error: () => { },
     });
@@ -1782,7 +1781,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   descSummary = computed(() => {
     const q = this.question(); if (!q) return '';
     if (q.description && typeof q.description === 'object') {
-      return (q.description as StructuredDescription).summary || '';
+      return this.displayText((q.description as StructuredDescription).summary || '');
     }
     // fallback to plain description (what you already had)
     return this.descriptionText(); // uses your existing helper
@@ -2084,6 +2083,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&');
     return s;
+  }
+
+  public displayText(value: string | null | undefined): string {
+    return this.decodeHtmlEntities(this.unescapeJsLiterals(value ?? ''));
   }
 
   // Computed value you can bind to

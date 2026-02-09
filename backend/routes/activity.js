@@ -5,20 +5,11 @@ const User = require('../models/User');
 const ActivityEvent = require('../models/ActivityEvent');
 const XpCredit = require('../models/XpCredit');
 const { requireAuth } = require('../middleware/Auth');
+const { getQuestionMeta } = require('../services/gamification/question-catalog');
+const { xpForCompletion, normalizeDifficulty, computeLevel } = require('../services/gamification/engine');
+const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
 
 const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
-const XP_BY_KIND = {
-    coding: 20,
-    trivia: 10,
-    debug: 15,
-};
-
-function xpForKind(kind) {
-    const raw = XP_BY_KIND[kind];
-    const xp = Number.isFinite(raw) ? raw : 0;
-    return Math.max(0, Math.min(100, Math.round(xp)));
-}
-
 // ---------- date helpers ----------
 function utcDayStr(d = new Date()) {
     return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
@@ -69,26 +60,40 @@ router.post('/complete', requireAuth, async (req, res) => {
         const user = await User.findById(req.auth.userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const { kind, tech, itemId, source = 'tech', durationMin = 0 } = req.body || {};
+        const { kind, tech, itemId, source = 'tech', durationMin = 0, difficulty } = req.body || {};
         if (!kind || !tech) return res.status(400).json({ error: 'Missing kind or tech' });
         if (!['coding', 'trivia', 'debug'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' });
         if (!VALID_TECHS.includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
 
         const durationMinSafe = Math.min(Math.max(Number(durationMin) || 0, 0), 24 * 60);
-        const baseXp = xpForKind(kind);
+        const prevLevel = computeLevel(user.stats?.xpTotal || 0).level;
+        const questionMeta = getQuestionMeta({ kind, itemId: String(itemId || '') });
+        const resolvedDifficulty = normalizeDifficulty(
+            difficulty
+            || questionMeta?.difficulty
+            || 'intermediate'
+        );
 
         const completedAt = new Date();
         const dayUTC = utcDayStr(completedAt);
 
-        // Award XP once per (userId, dayUTC, kind)
-        let awardedXp = 0;
-        try {
-            await XpCredit.create({ userId: String(user._id), dayUTC, kind });
-            awardedXp = baseXp;
-        } catch (e) {
-            // Duplicate credit => 0 XP; keep logging the event
+        // Legacy daily credit record (kept for old summary widgets).
+        try { await XpCredit.create({ userId: String(user._id), dayUTC, kind }); } catch (e) {
             if (!(e && e.code === 11000)) throw e;
-            awardedXp = 0;
+        }
+
+        // MVP gamification XP: award on first solve per (kind + itemId), deterministic by difficulty.
+        let awardedXp = 0;
+        const itemIdText = typeof itemId === 'string' ? itemId.trim() : '';
+        if (itemIdText) {
+            const firstCompletion = !(await ActivityEvent.exists({
+                userId: user._id,
+                kind,
+                itemId: itemIdText,
+            }));
+            if (firstCompletion) {
+                awardedXp = xpForCompletion({ kind, difficulty: resolvedDifficulty });
+            }
         }
 
         // Log event (with awardedXp — may be 0 on repeats)
@@ -96,7 +101,7 @@ router.post('/complete', requireAuth, async (req, res) => {
             userId: user._id,
             kind,
             tech,
-            itemId,
+            itemId: itemIdText || undefined,
             source,
             durationMin: durationMinSafe,
             xp: awardedXp,
@@ -123,10 +128,25 @@ router.post('/complete', requireAuth, async (req, res) => {
         user.stats.streak.longest = Math.max(user.stats.streak.longest || 0, user.stats.streak.current || 0);
         user.stats.streak.lastActiveUTCDate = dayUTC;
 
+        const weekly = await awardWeeklyGoalBonusIfEligible(user);
         await user.save();
+        const nextLevel = computeLevel(user.stats?.xpTotal || 0).level;
+        const levelUp = nextLevel > prevLevel;
 
         const recent = await ActivityEvent.find({ userId: user._id }).sort({ completedAt: -1 }).limit(10).lean();
-        res.json({ stats: user.stats, event, recent });
+        res.json({
+            stats: user.stats,
+            event,
+            recent,
+            xpAwarded: awardedXp + weekly.bonusXp,
+            levelUp,
+            weeklyGoal: {
+                completed: weekly.weeklyCompleted,
+                target: weekly.settings.target,
+                reached: weekly.reached,
+                bonusGranted: weekly.awarded || weekly.bonusAlreadyGranted,
+            },
+        });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

@@ -45,7 +45,7 @@ export class DailyHeatmapComponent implements OnDestroy {
   /** Track last local calendar day for visibility/resume checks */
   private lastLocalDayKey = this.dayKeyLocal();
 
-  private midnightTimer: ReturnType<typeof setTimeout> | ReturnType<typeof setInterval> | null = null;
+  private midnightTimer: number | null = null;
   private activitySub: { unsubscribe?: () => void } | null = null;
 
   private visHandler = () => this.onVisibility();
@@ -165,15 +165,15 @@ export class DailyHeatmapComponent implements OnDestroy {
     const now = new Date();
     const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
     const delay = Math.max(100, nextMidnight.getTime() - now.getTime());
-    this.midnightTimer = setTimeout(() => {
+    this.midnightTimer = window.setTimeout(() => {
       this.load(true); // force just after midnight
-      this.midnightTimer = setInterval(() => this.load(true), 24 * 60 * 60 * 1000);
+      this.midnightTimer = window.setInterval(() => this.load(true), 24 * 60 * 60 * 1000);
     }, delay);
   }
   private clearLocalMidnightTimer() {
-    if (this.midnightTimer) {
-      clearTimeout(this.midnightTimer as number);
-      clearInterval(this.midnightTimer as number);
+    if (this.midnightTimer !== null) {
+      window.clearTimeout(this.midnightTimer);
+      window.clearInterval(this.midnightTimer);
       this.midnightTimer = null;
     }
   }

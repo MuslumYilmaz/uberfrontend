@@ -176,6 +176,10 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/billing', require('./routes/billing'));
 // ---- Tools routes ----
 app.use('/api/tools', require('./routes/tools'));
+// ---- Dashboard / Gamification routes ----
+app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/daily', require('./routes/daily'));
+app.use('/api/weekly-goal', require('./routes/weekly-goal'));
 
 // ---- Activity routes ----
 app.use('/api/activity', require('./routes/activity'));

@@ -1,159 +1,491 @@
 <div class="dash" data-testid="dashboard-page">
-    <div class="container">
-        <header class="page-header fa-page-header">
-            <h1 class="fa-page-title">Prepare</h1>
-        </header>
+  <div class="container">
+    <section class="command-center fa-card fa-card--elevated">
+      <div class="command-center__grid">
+        <div class="command-center__intro">
+          <p class="fa-page-kicker">Command center</p>
+          <h1 class="fa-page-title">Prepare with intent</h1>
+          <p class="hero-copy fa-body">
+            Build daily momentum, focus on high-signal interview areas, and keep your prep loop tight.
+          </p>
+          <div class="hero-actions">
+            <a class="fa-btn fa-btn--primary" [routerLink]="continueCta.route">{{ continueCta.label }}</a>
+            <a class="fa-btn fa-btn--ghost" [routerLink]="['/guides', 'interview-blueprint']">Review blueprint</a>
+          </div>
+          <p class="hero-hint fa-meta-text" *ngIf="!auth.isLoggedIn()">
+            Sign in to track streaks and weekly completions.
+          </p>
+        </div>
 
-        <!-- Recommended -->
-        <section class="block">
-            <h2 class="block-title fa-section-title">Recommended preparation</h2>
-            <div class="section-grid">
-                <ng-container *ngFor="let card of recommended; trackBy: trackByTitle">
-                    <!-- Enabled -->
-                    <a *ngIf="card.route && !card.disabled; else recDisabled" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-                        [queryParams]="card.queryParams">
-                        <div class="row-main">
-                            <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                            <div class="row-body">
-                                <div class="row-title fa-card-title">{{ card.title }}</div>
-                                <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
-                            </div>
-                        </div>
-                        <div class="row-arrow">→</div>
-                    </a>
+        <div class="command-center__stats" aria-live="polite">
+          <article class="hero-stat" *ngIf="!auth.isLoggedIn() || shouldShowStreak()">
+            <div class="hero-stat__label">Streak</div>
+            <div class="hero-stat__value">{{ streakCurrent() }}</div>
+            <div class="hero-stat__sub">days active</div>
+          </article>
+          <article class="hero-stat">
+            <div class="hero-stat__label">Solved this week</div>
+            <div class="hero-stat__value">{{ weeklySolvedCount() }}</div>
+            <div class="hero-stat__sub">unique completions</div>
+          </article>
+          <article class="hero-stat">
+            <div class="hero-stat__label">Total solved</div>
+            <div class="hero-stat__value">{{ solvedTotal() }}</div>
+            <div class="hero-stat__sub">all-time questions</div>
+          </article>
+        </div>
+      </div>
 
-                    <!-- Disabled -->
-                    <ng-template #recDisabled>
-                        <div class="row fa-card disabled">
-                            <div class="row-main">
-                                <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                                <div class="row-body">
-                                    <div class="row-title fa-card-title">
-                                        {{ card.title }}
-                                        <span *ngIf="card.badge" class="badge">{{ card.badge }}</span>
-                                    </div>
-                                    <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
-                                </div>
-                            </div>
-                            <div class="row-arrow">→</div>
-                        </div>
-                    </ng-template>
-                </ng-container>
+    </section>
+
+    <section class="block block--gamification">
+      <div class="block-head block-head--collapsible">
+        <div class="block-head__content">
+          <h2 class="block-title fa-section-title">Interview prep progress</h2>
+          <p class="block-subtitle fa-meta-text">Optional gamification widgets to keep momentum and clarity.</p>
+        </div>
+        <button
+          class="fa-btn fa-btn--ghost block-toggle-btn"
+          type="button"
+          [attr.aria-expanded]="isGamificationExpanded()"
+          aria-controls="dashboard-gamification-content"
+          (click)="toggleGamificationSection()"
+        >
+          {{ isGamificationExpanded() ? 'Collapse' : 'Expand' }}
+        </button>
+      </div>
+
+      <ng-container *ngIf="isGamificationExpanded()">
+      <div class="gamification-grid" id="dashboard-gamification-content">
+        <article class="widget widget--next-action fa-card fa-card--interactive">
+          <div class="widget-kicker">Next best action</div>
+          <h3 class="widget-title">{{ nextBestAction().title }}</h3>
+          <p class="widget-copy fa-meta-text">{{ nextBestAction().description }}</p>
+          <a
+            class="fa-btn fa-btn--primary"
+            [routerLink]="nextBestAction().route"
+            (click)="trackNextActionClick()"
+          >
+            {{ nextBestAction().cta }}
+          </a>
+        </article>
+
+        <article class="widget widget--daily fa-card" *ngIf="dailyChallenge() as daily; else dailyChallengeFallback">
+          <div class="widget-kicker">Daily challenge</div>
+          <h3 class="widget-title">{{ daily.title }}</h3>
+          <div class="widget-meta-chips" *ngIf="daily.available !== false; else challengeUnavailable">
+            <span class="meta-chip">{{ daily.tech | titlecase }}</span>
+            <span class="meta-chip">{{ daily.difficulty | titlecase }}</span>
+            <ng-container *ngIf="shouldShowStreak(); else streakHidden">
+              <span class="meta-chip">{{ daily.streak.current }} day streak</span>
+            </ng-container>
+            <ng-template #streakHidden>
+              <span class="meta-chip">Streak hidden in settings</span>
+            </ng-template>
+          </div>
+          <ng-template #challengeUnavailable>
+            <p class="widget-copy fa-meta-text">Could not load today’s challenge. You can still continue normal practice.</p>
+          </ng-template>
+          <div class="widget-actions widget-actions--challenge">
+            <a class="fa-btn fa-btn--ghost" [routerLink]="daily.route">{{ daily.available === false ? 'Continue practice' : 'Open challenge' }}</a>
+            <button
+              *ngIf="auth.isLoggedIn() && !daily.completed && daily.available !== false"
+              class="fa-btn fa-btn--primary"
+              type="button"
+              data-testid="dashboard-daily-complete"
+              [disabled]="dailyCompletePending()"
+              (click)="markDailyChallengeComplete()"
+            >
+              {{ dailyCompletePending() ? 'Completing…' : 'Mark complete' }}
+            </button>
+            <span *ngIf="daily.completed && daily.available !== false" class="status-chip status-chip--ok">Completed today</span>
+          </div>
+          <p class="widget-feedback widget-feedback--ok" *ngIf="dailyCompleteMessage()">{{ dailyCompleteMessage() }}</p>
+          <p class="widget-feedback widget-feedback--warn" *ngIf="dailyCompleteError()">{{ dailyCompleteError() }}</p>
+        </article>
+
+        <ng-template #dailyChallengeFallback>
+          <article class="widget fa-card">
+            <div class="widget-kicker">Daily challenge</div>
+            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load daily challenge' : 'Sign in to get today’s challenge' }}</h3>
+            <p class="widget-copy fa-meta-text">
+              {{ auth.isLoggedIn()
+                ? 'Progress widgets are temporarily unavailable. You can continue practicing normally.'
+                : 'The challenge is deterministic per day and powers optional streak tracking.' }}
+            </p>
+            <a class="fa-btn fa-btn--ghost" [routerLink]="auth.isLoggedIn() ? ['/coding'] : ['/auth/login']">
+              {{ auth.isLoggedIn() ? 'Continue practice' : 'Sign in' }}
+            </a>
+          </article>
+        </ng-template>
+
+        <article class="widget widget--weekly fa-card" *ngIf="weeklyGoal() as weekly; else weeklyGoalFallback">
+          <div class="widget-kicker">Weekly goal</div>
+          <h3 class="widget-title">{{ weekly.completed }} / {{ weekly.target }} completed</h3>
+          <div class="mini-progress">
+            <span [style.width.%]="weekly.progress * 100"></span>
+          </div>
+          <p class="widget-copy fa-meta-text">
+            Week starts Monday (Europe/Istanbul). Bonus: +{{ weekly.bonusXp }} XP when completed.
+          </p>
+
+          <div class="settings-grid settings-grid--weekly">
+            <label class="settings-item settings-item--toggle settings-item--goal-toggle">
+              <input
+                class="settings-checkbox"
+                type="checkbox"
+                [checked]="weeklyGoalEnabled()"
+                (change)="onWeeklyGoalEnabledChange($event)"
+              />
+              <span class="settings-switch" aria-hidden="true"></span>
+              <span class="settings-toggle-label">Weekly goal enabled</span>
+            </label>
+            <label class="settings-item settings-item--field settings-item--target">
+              <span class="settings-label">Target</span>
+              <select [value]="weeklyGoalTarget()" (change)="onWeeklyGoalTargetChange($event)" aria-label="Weekly goal target">
+                <option [value]="5">5 / week</option>
+                <option [value]="10">10 / week</option>
+                <option [value]="15">15 / week</option>
+                <option [value]="20">20 / week</option>
+                <option [value]="30">30 / week</option>
+              </select>
+            </label>
+            <label class="settings-item settings-item--field settings-item--daily-tech">
+              <span class="settings-label">Daily challenge tech</span>
+              <select [value]="dailyChallengeTech()" (change)="onDailyChallengeTechChange($event)" aria-label="Daily challenge framework">
+                <option value="auto">Auto (based on progress)</option>
+                <option value="javascript">JavaScript</option>
+                <option value="react">React</option>
+                <option value="angular">Angular</option>
+                <option value="vue">Vue</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+              </select>
+            </label>
+            <label class="settings-item settings-item--toggle settings-item--streak-toggle">
+              <input
+                class="settings-checkbox"
+                type="checkbox"
+                [checked]="showStreakWidget()"
+                (change)="onShowStreakWidgetChange($event)"
+              />
+              <span class="settings-switch" aria-hidden="true"></span>
+              <span class="settings-toggle-label">Show streak widget</span>
+            </label>
+          </div>
+
+          <div class="widget-actions">
+            <button
+              class="fa-btn fa-btn--ghost"
+              type="button"
+              [disabled]="settingsSaving()"
+              (click)="saveGamificationSettings()"
+            >
+              {{ settingsSaving() ? 'Saving…' : 'Save settings' }}
+            </button>
+            <span *ngIf="weekly.bonusGranted" class="status-chip status-chip--ok">Weekly bonus granted</span>
+          </div>
+        </article>
+
+        <ng-template #weeklyGoalFallback>
+          <article class="widget fa-card">
+            <div class="widget-kicker">Weekly goal</div>
+            <h3 class="widget-title">Optional goal: 10 per week</h3>
+            <p class="widget-copy fa-meta-text">Sign in to set your own weekly target and track completion.</p>
+          </article>
+        </ng-template>
+
+        <article class="widget widget--xp fa-card" *ngIf="xpLevel() as xp; else xpFallback">
+          <div class="widget-kicker">XP + level</div>
+          <h3 class="widget-title">Level {{ xp.level }} · {{ xp.totalXp }} XP</h3>
+          <div class="mini-progress">
+            <span [style.width.%]="xp.progress * 100"></span>
+          </div>
+          <p class="widget-copy fa-meta-text">
+            {{ xp.currentLevelXp }}/{{ xp.levelStepXp }} XP to this level, {{ xp.nextLevelXp - xp.totalXp }} XP to next level.
+          </p>
+        </article>
+
+        <ng-template #xpFallback>
+          <article class="widget fa-card">
+            <div class="widget-kicker">XP + level</div>
+            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Leveling data unavailable' : 'Sign in to start leveling' }}</h3>
+            <p class="widget-copy fa-meta-text">
+              {{ auth.isLoggedIn()
+                ? 'We could not load your XP right now. Continue solving questions and try again shortly.'
+                : 'Earn XP from solved coding/trivia/debug questions and weekly completion bonuses.' }}
+            </p>
+          </article>
+        </ng-template>
+
+        <article class="widget widget--progress fa-card" *ngIf="progressSummary() as progress; else progressFallback">
+          <div class="widget-kicker">Progress</div>
+          <h3 class="widget-title">{{ progress.solvedPercent }}% overall solved</h3>
+          <p class="widget-copy fa-meta-text">{{ progress.solvedCount }} solved out of {{ progress.totalCount }} total.</p>
+          <div class="mini-progress mini-progress--overall">
+            <span [style.width.%]="progress.solvedPercent"></span>
+          </div>
+          <ul class="topic-list topic-list--bars" *ngIf="progress.topTopics.length > 0; else noTopics">
+            <li *ngFor="let topic of progress.topTopics; trackBy: trackTopic">
+              <div class="topic-row">
+                <div class="topic-row__label">
+                  <span>{{ topic.label }}</span>
+                  <span>{{ topic.percent }}%</span>
+                </div>
+                <div class="topic-row__bar">
+                  <span [style.width.%]="topic.percent"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <ng-template #noTopics>
+            <p class="widget-copy fa-meta-text">Solve a few questions to populate top topics.</p>
+          </ng-template>
+        </article>
+
+        <ng-template #progressFallback>
+          <article class="widget fa-card">
+            <div class="widget-kicker">Progress</div>
+            <h3 class="widget-title">Start solving to unlock progress insights</h3>
+            <p class="widget-copy fa-meta-text">Your top completion topics and solved coverage appear here after a few solved questions.</p>
+          </article>
+        </ng-template>
+      </div>
+
+      <p *ngIf="gamificationLoading()" class="fa-meta-text widget-status">Refreshing gamification widgets…</p>
+      <p *ngIf="gamificationError()" class="widget-feedback widget-feedback--warn">{{ gamificationError() }}</p>
+      </ng-container>
+    </section>
+
+    <!-- Recommended -->
+    <section class="block block--guides">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Recommended preparation</h2>
+        <p class="block-subtitle fa-meta-text">Start with structured guides, then drill deeper by practice type.</p>
+      </div>
+
+      <div class="recommended-layout" *ngIf="recommendedPrimary as primary">
+        <a
+          *ngIf="primary.route && !primary.disabled; else primaryDisabled"
+          class="recommend-spotlight fa-card fa-card--interactive"
+          [routerLink]="primary.route"
+          [queryParams]="primary.queryParams"
+        >
+          <div class="spotlight-head">
+            <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
+            <span class="recommend-chip">{{ recommendedBadgeForIndex(0) }}</span>
+          </div>
+          <div class="row-title fa-card-title">{{ primary.title }}</div>
+          <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
+          <div class="spotlight-cta">Open guide →</div>
+        </a>
+
+        <ng-template #primaryDisabled>
+          <div class="recommend-spotlight fa-card disabled">
+            <div class="spotlight-head">
+              <div class="row-icon row-icon--lg"><i [ngClass]="piIcon(primary.icon)"></i></div>
+              <span class="recommend-chip">{{ recommendedBadgeForIndex(0) }}</span>
             </div>
-        </section>
+            <div class="row-title fa-card-title">{{ primary.title }}</div>
+            <div class="row-sub fa-meta-text">{{ primary.subtitle }}</div>
+          </div>
+        </ng-template>
 
-        <!-- Learning tracks -->
-        <section class="block">
-            <h2 class="block-title fa-section-title">Learning tracks</h2>
-            <div class="section-grid">
-                <a *ngFor="let card of tracks; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-                    [queryParams]="card.queryParams">
-                    <div class="row-main">
-                        <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                        <div class="row-body">
-                            <div class="row-title fa-card-title">{{ card.title }}</div>
-                            <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
-                        </div>
+        <div class="recommended-stack">
+          <ng-container *ngFor="let card of recommendedSecondary; let i = index; trackBy: trackByTitle">
+            <a
+              *ngIf="card.route && !card.disabled; else recDisabled"
+              class="row fa-card fa-card--interactive"
+              [routerLink]="card.route"
+              [queryParams]="card.queryParams"
+            >
+              <div class="row-main">
+                <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+                <div class="row-body">
+                  <div class="row-title fa-card-title">
+                    {{ card.title }}
+                    <span class="badge">{{ recommendedBadgeForIndex(i + 1) }}</span>
+                  </div>
+                  <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
+                </div>
+              </div>
+              <div class="row-arrow">→</div>
+            </a>
+
+            <ng-template #recDisabled>
+              <div class="row fa-card disabled">
+                <div class="row-main">
+                  <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+                  <div class="row-body">
+                    <div class="row-title fa-card-title">
+                      {{ card.title }}
+                      <span *ngIf="card.badge" class="badge">{{ card.badge }}</span>
                     </div>
-                    <div class="row-arrow">→</div>
-                </a>
+                    <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
+                  </div>
+                </div>
+                <div class="row-arrow">→</div>
+              </div>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learning tracks -->
+    <section class="block block--tracks">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Learning tracks</h2>
+        <p class="block-subtitle fa-meta-text">Progress-style view for guided paths and completion momentum.</p>
+      </div>
+
+      <div class="track-list">
+        <a
+          *ngFor="let card of tracks; trackBy: trackByTitle"
+          class="track-row fa-card fa-card--interactive"
+          [routerLink]="card.route"
+          [queryParams]="card.queryParams"
+        >
+          <ng-container *ngIf="trackProgress(card) as progress">
+            <div class="track-row__main">
+              <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+              <div class="track-row__body">
+                <div class="row-title fa-card-title">{{ card.title }}</div>
+                <div class="row-sub fa-meta-text">{{ card.subtitle }}</div>
+                <div class="track-meta">
+                  <span class="meta-pill">{{ card.durationLabel }}</span>
+                  <span class="meta-pill">{{ card.focusCount || 0 }} focus areas</span>
+                  <span class="meta-pill">{{ card.featuredTotal || 0 }} featured questions</span>
+                </div>
+              </div>
             </div>
-        </section>
 
-        <!-- Company guides -->
-        <section class="block">
-            <h2 class="block-title fa-section-title">Company guides</h2>
+            <div class="track-row__progress">
+              <div class="track-progress__label">
+                <span>{{ progress.solved }} / {{ progress.total }} complete</span>
+                <span>{{ progress.pct }}%</span>
+              </div>
+              <div class="track-progress__bar">
+                <span [style.width.%]="progress.pct"></span>
+              </div>
+            </div>
+          </ng-container>
+        </a>
+      </div>
+    </section>
 
-            <ng-container *ngIf="stats$ | async as stats">
-                <div class="section-grid company-grid">
-                    <a *ngFor="let card of companyGuides; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route">
-                        <div class="row-main">
-                            <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                            <div class="row-body">
-                                <div class="row-title fa-card-title">{{ card.title }}</div>
-                                <div class="row-sub fa-meta-text">
-                                    {{ getCompanySubtitle(card, stats.companyCounts) }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row-arrow">→</div>
-                    </a>
+    <!-- Company guides -->
+    <section class="block block--companies">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Company guides</h2>
+        <p class="block-subtitle fa-meta-text">Targeted practice sets and interview-style question banks by company.</p>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="company-showcase-grid">
+          <a
+            *ngFor="let card of companyGuides; trackBy: trackByTitle"
+            class="company-showcase-card fa-card fa-card--interactive"
+            [routerLink]="card.route"
+          >
+            <div
+              class="company-showcase__logo"
+              [style.background]="card.companyColor || '#1f2937'"
+              [style.color]="card.companyFg || '#ffffff'"
+            >
+              <span aria-hidden="true">{{ card.companyGlyph || card.title[0] }}</span>
+              <span class="sr-only">{{ card.title }}</span>
+            </div>
+            <div class="company-showcase__meta">
+              <div class="company-showcase__title-row">
+                <div class="company-showcase__name fa-card-title">{{ card.title }}</div>
+                <span class="company-showcase__count">{{ getCompanyCountLabel(card, stats.companyCounts) }}</span>
+              </div>
+              <div class="company-showcase__note fa-meta-text">{{ card.companyNote || 'Interview-focused question bank' }}</div>
+              <span class="company-showcase__cta">
+                View set
+                <i class="pi pi-arrow-right" aria-hidden="true"></i>
+              </span>
+            </div>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- Focus areas -->
+    <section class="block block--focus">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Focus areas</h2>
+        <p class="block-subtitle fa-meta-text">Compact map of topic density to steer what to practice next.</p>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="focus-chip-grid">
+          <a
+            *ngFor="let topic of stats.topics; trackBy: trackByTopicId"
+            class="focus-chip fa-card fa-card--interactive"
+            [attr.data-intensity]="focusAreaIntensity(stats, topic.id)"
+            [routerLink]="['/coding']"
+            [queryParams]="{ topic: topic.id, reset: 1 }"
+          >
+            <span class="focus-chip__title">{{ topic.title }}</span>
+            <span class="focus-chip__count">{{ stats.topicCounts[topic.id] || 0 }} questions</span>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+
+    <!-- Question formats -->
+    <section class="block block--formats">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Question formats</h2>
+      </div>
+
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="section-grid">
+          <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
+            [queryParams]="card.queryParams">
+            <div class="row-main">
+              <div class="row-icon">
+                <i [ngClass]="piIcon(card.icon)"></i>
+              </div>
+              <div class="row-body">
+                <div class="row-title fa-card-title">{{ card.title }}</div>
+                <div class="row-sub fa-meta-text">
+                  {{ getFormatSubtitle(card, stats) }}
                 </div>
-            </ng-container>
-        </section>
+              </div>
+            </div>
+            <div class="row-arrow">→</div>
+          </a>
+        </div>
+      </ng-container>
+    </section>
 
-        <!-- Focus areas -->
-        <section class="block">
-            <h2 class="block-title fa-section-title">Focus areas</h2>
+    <!-- Frameworks & languages -->
+    <section class="block block--frameworks">
+      <div class="block-head">
+        <h2 class="block-title fa-section-title">Frameworks and languages</h2>
+      </div>
 
-            <ng-container *ngIf="stats$ | async as stats">
-                <div class="section-grid">
-                    <a *ngFor="let topic of stats.topics; trackBy: trackByTopicId" class="row fa-card fa-card--interactive" [routerLink]="['/coding']"
-                        [queryParams]="{ topic: topic.id, reset: 1 }">
-                        <div class="row-main">
-                            <div class="row-icon">
-                                <i [ngClass]="piIcon('grid')"></i>
-                            </div>
-                            <div class="row-body">
-                                <div class="row-title fa-card-title">{{ topic.title }}</div>
-                                <div class="row-sub fa-meta-text">
-                                    {{ stats.topicCounts[topic.id] || 0 }} questions
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row-arrow">→</div>
-                    </a>
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="section-grid">
+          <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
+            [queryParams]="card.queryParams">
+            <div class="row-main">
+              <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
+              <div class="row-body">
+                <div class="row-title fa-card-title">{{ card.title }}</div>
+                <div class="row-sub fa-meta-text">
+                  {{ getFrameworkSubtitle(card, stats.techCounts) }}
                 </div>
-            </ng-container>
-        </section>
-
-        <!-- Question formats -->
-        <section class="block">
-            <h2 class="block-title fa-section-title">Question formats</h2>
-
-            <ng-container *ngIf="stats$ | async as stats">
-                <div class="section-grid">
-                    <a *ngFor="let card of questionFormats; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-                        [queryParams]="card.queryParams">
-                        <div class="row-main">
-                            <div class="row-icon">
-                                <i [ngClass]="piIcon(card.icon)"></i>
-                            </div>
-                            <div class="row-body">
-                                <div class="row-title fa-card-title">{{ card.title }}</div>
-                                <div class="row-sub fa-meta-text">
-                                    {{ getFormatSubtitle(card, stats) }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row-arrow">→</div>
-                    </a>
-                </div>
-            </ng-container>
-        </section>
-
-        <!-- Frameworks & languages -->
-        <section class="block">
-            <h2 class="block-title fa-section-title">Frameworks and languages</h2>
-
-            <ng-container *ngIf="stats$ | async as stats">
-                <div class="section-grid">
-                    <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-                        [queryParams]="card.queryParams">
-                    <div class="row-main">
-                        <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-                        <div class="row-body">
-                            <div class="row-title fa-card-title">{{ card.title }}</div>
-                            <div class="row-sub fa-meta-text">
-                                {{ getFrameworkSubtitle(card, stats.techCounts) }}
-                            </div>
-                        </div>
-                        </div>
-                        <div class="row-arrow">→</div>
-                    </a>
-                </div>
-            </ng-container>
-        </section>
-    </div>
-    <app-offline-banner></app-offline-banner>
+              </div>
+            </div>
+            <div class="row-arrow">→</div>
+          </a>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+  <app-offline-banner></app-offline-banner>
 </div>

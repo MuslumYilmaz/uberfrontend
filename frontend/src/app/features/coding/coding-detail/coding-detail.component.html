@@ -58,7 +58,7 @@
 
             <!-- Özet / prose -->
             <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3">
-              {{ prose }}
+              {{ displayText(prose) }}
             </div>
 
             <!-- Algo-style questions: Arguments -->
@@ -108,7 +108,7 @@
               <div *ngIf="specs.requirements?.length" class="mt-4">
                 <h3 class="text-sm font-semibold mb-1">Requirements</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let r of specs.requirements">{{ r }}</li>
+                  <li *ngFor="let r of specs.requirements">{{ displayText(r) }}</li>
                 </ul>
               </div>
 
@@ -116,7 +116,7 @@
               <div *ngIf="specs.expectedBehavior?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Expected behavior</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let b of specs.expectedBehavior">{{ b }}</li>
+                  <li *ngFor="let b of specs.expectedBehavior">{{ displayText(b) }}</li>
                 </ul>
               </div>
 
@@ -124,7 +124,7 @@
               <div *ngIf="specs.implementationNotes?.length" class="mt-3">
                 <h3 class="text-sm font-semibold mb-1">Implementation notes</h3>
                 <ul class="list-disc list-inside text-sm opacity-90 space-y-1">
-                  <li *ngFor="let n of specs.implementationNotes">{{ n }}</li>
+                  <li *ngFor="let n of specs.implementationNotes">{{ displayText(n) }}</li>
                 </ul>
               </div>
             </ng-container>

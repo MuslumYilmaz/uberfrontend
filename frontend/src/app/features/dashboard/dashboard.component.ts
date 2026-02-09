@@ -1,17 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Params, RouterModule } from '@angular/router';
-import { forkJoin, from, map, Observable, shareReplay } from 'rxjs';
+import { forkJoin, from, map, Observable, shareReplay, take } from 'rxjs';
+import { ActivityService } from '../../core/services/activity.service';
+import { AnalyticsService } from '../../core/services/analytics.service';
+import { AuthService } from '../../core/services/auth.service';
+import { DashboardGamificationResponse } from '../../core/models/gamification.model';
+import { GamificationService } from '../../core/services/gamification.service';
 import { MixedQuestion, QuestionService } from '../../core/services/question.service';
+import { UserProgressService } from '../../core/services/user-progress.service';
 import { deriveTopicIdsFromTags, loadTopics, TopicDefinition } from '../../core/utils/topics.util';
 import { collectCompanyCounts } from '../../shared/company-counts.util';
 import { OfflineBannerComponent } from '../../shared/components/offline-banner/offline-banner';
 import { TRACKS } from '../tracks/track.data';
 
 type IconKey = 'book' | 'grid' | 'list' | 'cap' | 'building' | 'bolt' | 'star' | 'clock';
+type DailyChallengeTech = 'auto' | 'javascript' | 'react' | 'angular' | 'vue' | 'html' | 'css';
 
 type FormatCounts = Record<CategoryKeyInternal, number>;
 type TopicCounts = Record<string, number>;
+type FocusIntensity = 'core' | 'rising' | 'light';
+type TrackProgress = { solved: number; total: number; pct: number };
 
 type Stats = {
   companyCounts: Record<string, number>;
@@ -28,6 +38,10 @@ type Card = {
   title: string;
   subtitle?: string;
   icon?: IconKey;
+  trackSlug?: string;
+  durationLabel?: string;
+  focusCount?: number;
+  featuredTotal?: number;
   route?: any[];
   queryParams?: Params;
   disabled?: boolean;
@@ -35,6 +49,10 @@ type Card = {
   metaLeft?: string;
   metaRight?: string;
   companyKey?: string;
+  companyGlyph?: string;
+  companyColor?: string;
+  companyFg?: string;
+  companyNote?: string;
   techKey?: 'javascript' | 'react' | 'angular' | 'vue' | 'css' | 'html';
   formatKey?: CategoryKeyInternal;
   kindKey?: 'coding' | 'trivia' | 'system-design' | 'behavioral';
@@ -49,7 +67,93 @@ type Card = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  constructor(private questions: QuestionService) { }
+  private readonly authService = inject(AuthService);
+  private readonly progress = inject(UserProgressService);
+  private readonly activity = inject(ActivityService);
+  private readonly gamification = inject(GamificationService);
+  private readonly analytics = inject(AnalyticsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly focusIntensityCache = new WeakMap<Stats, Record<string, FocusIntensity>>();
+  private readonly emptyTrackProgress: TrackProgress = { solved: 0, total: 0, pct: 0 };
+  private dashboardTracked = false;
+  private lastDailyChallengeTrackedKey: string | null = null;
+
+  auth = this.authService;
+
+  readonly continueCta = {
+    label: 'Continue practice',
+    route: ['/coding'] as any[],
+  };
+
+  solvedTotal = computed(() => this.progress.solvedIds().length);
+  streakCurrent = computed(() => {
+    const liveStreak = this.activity.summarySig()?.streak?.current;
+    if (typeof liveStreak === 'number') return liveStreak;
+    return this.authService.user()?.stats?.streak?.current ?? 0;
+  });
+  weeklySolvedCount = signal(0);
+  gamificationState = signal<DashboardGamificationResponse | null>(null);
+  gamificationLoading = signal(false);
+  gamificationError = signal<string | null>(null);
+  settingsSaving = signal(false);
+  dailyCompletePending = signal(false);
+  dailyCompleteMessage = signal<string | null>(null);
+  dailyCompleteError = signal<string | null>(null);
+  isGamificationExpanded = signal(true);
+
+  weeklyGoalEnabled = signal(true);
+  weeklyGoalTarget = signal(10);
+  showStreakWidget = signal(true);
+  dailyChallengeTech = signal<DailyChallengeTech>('auto');
+
+  nextBestAction = computed(() => {
+    const payload = this.gamificationState();
+    return (
+      payload?.nextBestAction ?? {
+        id: 'fallback_continue',
+        title: 'Keep your preparation momentum',
+        description: 'Continue with one focused coding question and build consistency.',
+        route: '/coding',
+        cta: 'Continue practice',
+      }
+    );
+  });
+  dailyChallenge = computed(() => this.gamificationState()?.dailyChallenge ?? null);
+  weeklyGoal = computed(() => this.gamificationState()?.weeklyGoal ?? null);
+  xpLevel = computed(() => this.gamificationState()?.xpLevel ?? null);
+  progressSummary = computed(() => this.gamificationState()?.progress ?? null);
+  shouldShowStreak = computed(() => this.showStreakWidget());
+
+  private solvedSet = computed(() => new Set(this.progress.solvedIds()));
+
+  constructor(private questions: QuestionService) {
+    effect(() => {
+      const isLoggedIn = this.authService.isLoggedIn();
+      if (!isLoggedIn) {
+        this.weeklySolvedCount.set(0);
+        this.gamificationState.set(null);
+        this.gamificationLoading.set(false);
+        this.gamificationError.set(null);
+        this.weeklyGoalEnabled.set(true);
+        this.weeklyGoalTarget.set(10);
+        this.showStreakWidget.set(true);
+        this.dailyChallengeTech.set('auto');
+        this.dashboardTracked = false;
+        this.lastDailyChallengeTrackedKey = null;
+        return;
+      }
+      this.activity.getSummary().pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe();
+      this.refreshWeeklySolved(false);
+      this.loadGamification(false);
+    }, { allowSignalWrites: true });
+
+    this.activity.activityCompleted$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.refreshWeeklySolved(true);
+        this.loadGamification(true);
+      });
+  }
 
   private readonly ICON_MAP: Record<IconKey, string> = {
     book: 'book',
@@ -200,6 +304,8 @@ export class DashboardComponent {
       route: ['/guides', 'behavioral'],
     },
   ];
+  recommendedPrimary: Card | null = this.recommended[0] ?? null;
+  recommendedSecondary: Card[] = this.recommended.slice(1);
 
   /** ===== Learning tracks (new) ===== */
   tracks: Card[] = TRACKS
@@ -208,17 +314,69 @@ export class DashboardComponent {
       title: t.title,
       subtitle: t.subtitle,
       icon: t.slug === 'crash-7d' ? 'clock' : 'book',
+      trackSlug: t.slug,
+      durationLabel: t.durationLabel,
+      focusCount: t.focus?.length ?? 0,
+      featuredTotal: t.featured?.length ?? 0,
       route: ['/track', t.slug],
     }));
 
   /** ===== Company guides ===== */
   companyGuides: Card[] = [
-    { title: 'Google', icon: 'building', route: ['/companies', 'google'], companyKey: 'google' },
-    { title: 'Amazon', icon: 'building', route: ['/companies', 'amazon'], companyKey: 'amazon' },
-    { title: 'Netflix', icon: 'building', route: ['/companies', 'netflix'], companyKey: 'netflix' },
-    { title: 'ByteDance', icon: 'building', route: ['/companies', 'bytedance'], companyKey: 'bytedance' },
-    { title: 'Apple', icon: 'building', route: ['/companies', 'apple'], companyKey: 'apple' },
-    { title: 'OpenAI', icon: 'building', route: ['/companies', 'openai'], companyKey: 'openai' },
+    {
+      title: 'Google',
+      route: ['/companies', 'google'],
+      companyKey: 'google',
+      companyGlyph: 'G',
+      companyColor: '#4285F4',
+      companyFg: '#FFFFFF',
+      companyNote: 'UI, JS, systems',
+    },
+    {
+      title: 'Amazon',
+      route: ['/companies', 'amazon'],
+      companyKey: 'amazon',
+      companyGlyph: 'A',
+      companyColor: '#232F3E',
+      companyFg: '#FBBF24',
+      companyNote: 'Scaling lists, auth, UX',
+    },
+    {
+      title: 'Netflix',
+      route: ['/companies', 'netflix'],
+      companyKey: 'netflix',
+      companyGlyph: 'N',
+      companyColor: '#E50914',
+      companyFg: '#FFFFFF',
+      companyNote: 'UI architecture, state',
+    },
+    {
+      title: 'ByteDance',
+      route: ['/companies', 'bytedance'],
+      companyKey: 'bytedance',
+      companyGlyph: 'B',
+      companyColor: '#1F6FFF',
+      companyFg: '#FFFFFF',
+      companyNote: 'Feed ranking, growth, UX',
+    },
+    {
+      title: 'Apple',
+      route: ['/companies', 'apple'],
+      companyKey: 'apple',
+      companyGlyph: '',
+      companyColor: '#0A0A0A',
+      companyFg: '#F5F5F5',
+      companyNote: 'UI polish, accessibility',
+    },
+    {
+      title: 'OpenAI',
+      route: ['/companies', 'openai'],
+      companyKey: 'openai',
+      companyGlyph: '◎',
+      companyColor: '#111827',
+      companyFg: '#D1FAE5',
+      companyNote: 'Reasoning UX, evals, systems',
+    },
   ];
 
 
@@ -324,8 +482,44 @@ export class DashboardComponent {
     },
   ];
 
+  trackProgressMap = computed<Record<string, TrackProgress>>(() => {
+    const solved = this.solvedSet();
+    const mapBySlug: Record<string, TrackProgress> = {};
+
+    for (const t of TRACKS) {
+      if (t.hidden) continue;
+      const total = t.featured?.length ?? 0;
+      const solvedCount = (t.featured ?? []).reduce((acc, item) => acc + (solved.has(item.id) ? 1 : 0), 0);
+      mapBySlug[t.slug] = {
+        solved: solvedCount,
+        total,
+        pct: total > 0 ? Math.round((solvedCount / total) * 100) : 0,
+      };
+    }
+
+    return mapBySlug;
+  });
+
   trackByTitle = (_: number, it: Card) => it.title;
   trackByTopicId = (_: number, it: TopicDefinition) => it.id;
+
+  recommendedBadgeForIndex(index: number): string {
+    return index === 0 ? 'Best next step' : 'Interview-ready';
+  }
+
+  trackProgress(card: Card): TrackProgress {
+    if (!card.trackSlug) return this.emptyTrackProgress;
+    return this.trackProgressMap()[card.trackSlug] ?? this.emptyTrackProgress;
+  }
+
+  focusAreaIntensity(stats: Stats, topicId: string): FocusIntensity {
+    let intensityMap = this.focusIntensityCache.get(stats);
+    if (!intensityMap) {
+      intensityMap = this.buildFocusIntensityMap(stats);
+      this.focusIntensityCache.set(stats, intensityMap);
+    }
+    return intensityMap[topicId] ?? 'light';
+  }
 
   getCompanySubtitle(card: Card, counts: Record<string, number> | null | undefined): string {
     if (!card.companyKey || !counts) {
@@ -333,6 +527,14 @@ export class DashboardComponent {
     }
     const count = counts[card.companyKey] ?? 0;
     return `${count} questions`;
+  }
+
+  getCompanyCountLabel(card: Card, counts: Record<string, number> | null | undefined): string {
+    if (!card.companyKey || !counts) {
+      return '0 questions';
+    }
+    const count = counts[card.companyKey] ?? 0;
+    return `${count} question${count === 1 ? '' : 's'}`;
   }
 
   getFrameworkSubtitle(card: Card, counts: Record<string, number> | null | undefined): string {
@@ -369,5 +571,236 @@ export class DashboardComponent {
 
     return card.subtitle ?? '';
   }
+
+  private buildFocusIntensityMap(stats: Stats): Record<string, FocusIntensity> {
+    const entries = Object.entries(stats.topicCounts ?? {});
+    if (!entries.length) return {};
+
+    const sortedValues = entries.map(([, count]) => count).sort((a, b) => a - b);
+    const coreThreshold = sortedValues[Math.floor((sortedValues.length - 1) * 0.7)] ?? 0;
+    const risingThreshold = sortedValues[Math.floor((sortedValues.length - 1) * 0.35)] ?? 0;
+
+    const intensityMap: Record<string, FocusIntensity> = {};
+    for (const [topicId, count] of entries) {
+      if (count <= 0) {
+        intensityMap[topicId] = 'light';
+      } else if (count >= coreThreshold && coreThreshold > 0) {
+        intensityMap[topicId] = 'core';
+      } else if (count >= risingThreshold && risingThreshold > 0) {
+        intensityMap[topicId] = 'rising';
+      } else {
+        intensityMap[topicId] = 'light';
+      }
+    }
+
+    return intensityMap;
+  }
+
+  private refreshWeeklySolved(force = false) {
+    if (!this.authService.isLoggedIn()) {
+      this.weeklySolvedCount.set(0);
+      return;
+    }
+
+    const since = this.isoDateDaysAgo(6);
+    this.activity.getRecent({ since }, { force })
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (rows) => {
+          const uniqueCompleted = new Set<string>();
+          for (const row of rows ?? []) {
+            if (row.kind !== 'coding' && row.kind !== 'trivia' && row.kind !== 'debug') continue;
+            const fallback = `${row.kind}:${row.tech}:${row.dayUTC}:${row.completedAt}`;
+            uniqueCompleted.add(row.itemId?.trim() ? `${row.kind}:${row.itemId}` : fallback);
+          }
+          this.weeklySolvedCount.set(uniqueCompleted.size);
+        },
+        error: () => this.weeklySolvedCount.set(0),
+      });
+  }
+
+  private isoDateDaysAgo(days: number): string {
+    const now = new Date();
+    const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    utcDate.setUTCDate(utcDate.getUTCDate() - days);
+    return utcDate.toISOString().slice(0, 10);
+  }
+
+  private loadGamification(force = false) {
+    if (!this.authService.isLoggedIn()) return;
+    this.gamificationLoading.set(true);
+    this.gamificationError.set(null);
+
+    this.gamification
+      .getDashboard({ force })
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (payload) => {
+          this.gamificationLoading.set(false);
+          this.gamificationState.set(payload);
+          this.weeklyGoalEnabled.set(payload?.weeklyGoal?.enabled !== false);
+          this.weeklyGoalTarget.set(payload?.weeklyGoal?.target || 10);
+          this.showStreakWidget.set(payload?.settings?.showStreakWidget !== false);
+          this.dailyChallengeTech.set((payload?.settings?.dailyChallengeTech as DailyChallengeTech) || 'auto');
+          this.dailyCompleteMessage.set(null);
+          this.dailyCompleteError.set(null);
+
+          if (!this.dashboardTracked) {
+            this.analytics.track('dashboard_viewed', {
+              has_auth: true,
+              has_daily: Boolean(payload?.dailyChallenge),
+            });
+            this.dashboardTracked = true;
+          }
+
+          const dayKey = payload?.dailyChallenge?.dayKey || null;
+          if (dayKey && this.lastDailyChallengeTrackedKey !== dayKey) {
+            this.analytics.track('daily_challenge_viewed', {
+              day_key: dayKey,
+              question_id: payload?.dailyChallenge?.questionId,
+              completed: payload?.dailyChallenge?.completed,
+            });
+            this.lastDailyChallengeTrackedKey = dayKey;
+          }
+        },
+        error: () => {
+          this.gamificationLoading.set(false);
+          this.gamificationError.set('Unable to load progress widgets right now.');
+        },
+      });
+  }
+
+  markDailyChallengeComplete() {
+    const daily = this.dailyChallenge();
+    if (!daily || daily.available === false || this.dailyCompletePending()) return;
+
+    this.dailyCompletePending.set(true);
+    this.dailyCompleteError.set(null);
+    this.dailyCompleteMessage.set(null);
+
+    this.gamification
+      .completeDailyChallenge(daily.questionId)
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.dailyCompletePending.set(false);
+          this.dailyCompleteMessage.set(
+            res.alreadyCompleted ? 'Already completed for today.' : 'Daily challenge completed.'
+          );
+          this.analytics.track('daily_challenge_completed', {
+            day_key: res.dayKey,
+            question_id: daily.questionId,
+            already_completed: Boolean(res.alreadyCompleted),
+          });
+          if (res.streakIncremented) this.analytics.track('streak_incremented', { day_key: res.dayKey });
+          if (res.streakBroken) this.analytics.track('streak_broken', { day_key: res.dayKey });
+          if (res.weeklyGoal?.completed >= 0) {
+            this.analytics.track('weekly_goal_progressed', {
+              completed: res.weeklyGoal.completed,
+              target: res.weeklyGoal.target,
+            });
+          }
+          if (res.weeklyGoal?.reached) {
+            this.analytics.track('weekly_goal_completed', {
+              completed: res.weeklyGoal.completed,
+              target: res.weeklyGoal.target,
+            });
+          }
+          if ((res.xpAwarded || 0) > 0) {
+            this.analytics.track('xp_awarded', {
+              source: 'daily_challenge',
+              xp: res.xpAwarded,
+            });
+          }
+          if (res.levelUp) this.analytics.track('level_up', { source: 'daily_challenge' });
+          this.loadGamification(true);
+        },
+        error: (err) => {
+          this.dailyCompletePending.set(false);
+          this.dailyCompleteError.set(
+            err?.error?.error || 'Complete the challenge question first, then mark it complete.'
+          );
+        },
+      });
+  }
+
+  saveGamificationSettings() {
+    if (!this.authService.isLoggedIn() || this.settingsSaving()) return;
+    this.settingsSaving.set(true);
+    this.gamificationError.set(null);
+
+    const payload = {
+      enabled: this.weeklyGoalEnabled(),
+      target: this.weeklyGoalTarget(),
+      showStreakWidget: this.showStreakWidget(),
+      dailyChallengeTech: this.dailyChallengeTech(),
+    };
+
+    this.gamification
+      .updateWeeklyGoal(payload)
+      .pipe(take(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.settingsSaving.set(false);
+          this.analytics.track('weekly_goal_set', {
+            enabled: payload.enabled,
+            target: payload.target,
+            daily_tech: payload.dailyChallengeTech,
+          });
+          this.analytics.track('weekly_goal_progressed', {
+            completed: res.weeklyGoal.completed,
+            target: res.weeklyGoal.target,
+          });
+          if (res.weeklyGoal.completed >= res.weeklyGoal.target) {
+            this.analytics.track('weekly_goal_completed', {
+              completed: res.weeklyGoal.completed,
+              target: res.weeklyGoal.target,
+            });
+          }
+          this.loadGamification(true);
+        },
+        error: () => {
+          this.settingsSaving.set(false);
+          this.gamificationError.set('Could not save your gamification settings.');
+        },
+      });
+  }
+
+  onWeeklyGoalEnabledChange(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    this.weeklyGoalEnabled.set(Boolean(target?.checked));
+  }
+
+  onShowStreakWidgetChange(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    this.showStreakWidget.set(Boolean(target?.checked));
+  }
+
+  onWeeklyGoalTargetChange(event: Event) {
+    const target = event.target as HTMLSelectElement | null;
+    const value = Number(target?.value || this.weeklyGoalTarget());
+    this.weeklyGoalTarget.set(Number.isFinite(value) ? value : 10);
+  }
+
+  onDailyChallengeTechChange(event: Event) {
+    const target = event.target as HTMLSelectElement | null;
+    const value = String(target?.value || 'auto').toLowerCase() as DailyChallengeTech;
+    const allowed: DailyChallengeTech[] = ['auto', 'javascript', 'react', 'angular', 'vue', 'html', 'css'];
+    this.dailyChallengeTech.set(allowed.includes(value) ? value : 'auto');
+  }
+
+  trackNextActionClick() {
+    const action = this.nextBestAction();
+    this.analytics.track('next_action_clicked', {
+      action_id: action.id,
+      route: action.route,
+    });
+  }
+
+  toggleGamificationSection() {
+    this.isGamificationExpanded.update((value) => !value);
+  }
+
+  trackTopic = (_: number, item: { topic: string }) => item.topic;
 
 }

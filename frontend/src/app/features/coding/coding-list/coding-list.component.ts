@@ -1059,11 +1059,21 @@ export class CodingListComponent implements OnInit, OnDestroy {
   // ---------- helpers used by template ----------
   descriptionText(q: Question): string {
     const d: any = (q as any).description;
-    if (typeof d === 'string') return d;
+    if (typeof d === 'string') return this.decodeHtmlEntities(d);
     if (d && typeof d === 'object') {
-      return (d.summary || d.text || '') as string;
+      return this.decodeHtmlEntities((d.summary || d.text || '') as string);
     }
     return '';
+  }
+
+  private decodeHtmlEntities(value: string): string {
+    return (value || '')
+      .replace(/&amp;(?=lt;|gt;|amp;|quot;|#39;)/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
   }
 
   linkTo(q: Row): any[] {

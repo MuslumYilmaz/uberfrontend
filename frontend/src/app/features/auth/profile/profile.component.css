@@ -25,8 +25,29 @@
   font-weight: 800; font-size: 18px; color: #15130b;
   box-shadow: 0 8px 18px color-mix(in srgb, var(--uf-accent) 55%, transparent);
 }
-.name { margin: 0; font-size: 15px; font-weight: 600; }
-.badge-premium { background: var(--uf-accent); color: var(--uf-bg); padding: 2px 6px; border-radius: 6px; font-size: 11px; margin-left: 6px; font-weight: 700; }
+.name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.badge-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  line-height: 1;
+  min-height: 26px;
+  background: var(--uf-accent);
+  color: var(--uf-bg);
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
 .email { font-size: 12px; color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-top: 2px; }
 
 .profile-info { list-style: none; margin: 16px 0; padding: 0; }

@@ -14,93 +14,95 @@
   </app-coding-tech-kind-tabs>
 
   <div class="fa-questions-layout">
-    <aside class="fa-filter-panel fa-card fa-card--elevated" aria-label="Filters">
-      <div class="fa-filter-panel__header">
-        <div>
-          <p class="fa-filter-panel__eyebrow fa-meta-label">All Questions</p>
-          <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
+    <aside class="fa-filter-panel" aria-label="Filters">
+      <div class="fa-filter-panel__surface fa-card fa-card--elevated">
+        <div class="fa-filter-panel__header">
+          <div>
+            <p class="fa-filter-panel__eyebrow fa-meta-label">All Questions</p>
+            <h2 class="fa-filter-panel__title fa-section-title">Refine the list</h2>
+          </div>
+          <div class="fa-filter-panel__count">
+            <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
+          </div>
         </div>
-        <div class="fa-filter-panel__count">
-          <span class="pill fa-chip fa-chip--label">{{ (filteredCount$ | async) || 0 }} items</span>
-        </div>
-      </div>
 
-      <div class="fa-filter-section">
-        <div class="fa-filter-section__title fa-meta-label">Difficulty</div>
-        <div class="fa-filter-options">
-          <label *ngFor="let opt of difficultyOptions" class="fa-filter-option"
-            [attr.data-testid]="'filter-difficulty-' + opt.value">
-            <input type="checkbox" [checked]="((diffs$ | async) || []).includes(opt.value)"
-              (change)="onDiffChange(opt.value, $event)">
-            <span class="fa-chip fa-chip--label fa-filter-chip">
-              <span class="fa-filter-chip__icon" aria-hidden="true">⬤</span>
-              {{ opt.label }}
-            </span>
-          </label>
+        <div class="fa-filter-section">
+          <div class="fa-filter-section__title fa-meta-label">Difficulty</div>
+          <div class="fa-filter-options">
+            <label *ngFor="let opt of difficultyOptions" class="fa-filter-option"
+              [attr.data-testid]="'filter-difficulty-' + opt.value">
+              <input type="checkbox" [checked]="((diffs$ | async) || []).includes(opt.value)"
+                (change)="onDiffChange(opt.value, $event)">
+              <span class="fa-chip fa-chip--label fa-filter-chip">
+                <span class="fa-filter-chip__icon" aria-hidden="true">⬤</span>
+                {{ opt.label }}
+              </span>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="fa-filter-section">
-        <div class="fa-filter-section__title fa-meta-label">Importance</div>
-        <div class="fa-filter-options">
-          <label class="fa-filter-option" data-testid="filter-importance-low">
-            <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('low')"
-              (change)="onImpChange('low', $event)">
-            <span class="fa-chip fa-chip--label fa-filter-chip">
-              <span class="fa-filter-chip__icon" aria-hidden="true">△</span>
-              Low
-            </span>
-          </label>
-          <label class="fa-filter-option" data-testid="filter-importance-medium">
-            <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('medium')"
-              (change)="onImpChange('medium', $event)">
-            <span class="fa-chip fa-chip--label fa-filter-chip">
-              <span class="fa-filter-chip__icon" aria-hidden="true">▣</span>
-              Medium
-            </span>
-          </label>
-          <label class="fa-filter-option" data-testid="filter-importance-high">
-            <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('high')"
-              (change)="onImpChange('high', $event)">
-            <span class="fa-chip fa-chip--label fa-filter-chip">
-              <span class="fa-filter-chip__icon" aria-hidden="true">▲</span>
-              High
-            </span>
-          </label>
+        <div class="fa-filter-section">
+          <div class="fa-filter-section__title fa-meta-label">Importance</div>
+          <div class="fa-filter-options">
+            <label class="fa-filter-option" data-testid="filter-importance-low">
+              <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('low')"
+                (change)="onImpChange('low', $event)">
+              <span class="fa-chip fa-chip--label fa-filter-chip">
+                <span class="fa-filter-chip__icon" aria-hidden="true">△</span>
+                Low
+              </span>
+            </label>
+            <label class="fa-filter-option" data-testid="filter-importance-medium">
+              <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('medium')"
+                (change)="onImpChange('medium', $event)">
+              <span class="fa-chip fa-chip--label fa-filter-chip">
+                <span class="fa-filter-chip__icon" aria-hidden="true">▣</span>
+                Medium
+              </span>
+            </label>
+            <label class="fa-filter-option" data-testid="filter-importance-high">
+              <input type="checkbox" [checked]="((impTiers$ | async) || []).includes('high')"
+                (change)="onImpChange('high', $event)">
+              <span class="fa-chip fa-chip--label fa-filter-chip">
+                <span class="fa-filter-chip__icon" aria-hidden="true">▲</span>
+                High
+              </span>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="fa-filter-section" *ngIf="source === 'global-coding'">
-        <div class="fa-filter-section__title fa-meta-label">Technologies</div>
-        <div class="fa-filter-options fa-filter-options--pills">
-          <button *ngFor="let tab of techTabs" type="button" class="fa-chip fa-chip--accent fa-tech-pill"
-            [attr.data-testid]="'filter-tech-' + tab.key"
-            [class.is-active]="(selectedTech$ | async) === tab.key" (click)="toggleTech(tab.key)">
-            <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
-            <span class="fa-tech-pill__label">{{ tab.label }}</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="fa-filter-section" *ngIf="(popularTags$ | async) as tagList">
-        <div class="fa-filter-section__header">
-          <div class="fa-filter-section__title fa-meta-label">Tags</div>
-          <div class="fa-filter-section__actions">
-            <button type="button" class="fa-btn fa-btn--ghost fa-toggle" (click)="toggleTagMatchMode()">
-              Match {{ tagMatchMode === 'all' ? 'all' : 'any' }}
-            </button>
-            <button type="button" class="fa-btn fa-btn--ghost fa-link-btn"
-              [disabled]="!((selectedTags$ | async)?.length)" (click)="clearAllTags()">
-              Clear
+        <div class="fa-filter-section" *ngIf="source === 'global-coding'">
+          <div class="fa-filter-section__title fa-meta-label">Technologies</div>
+          <div class="fa-filter-options fa-filter-options--pills">
+            <button *ngFor="let tab of techTabs" type="button" class="fa-chip fa-chip--accent fa-tech-pill"
+              [attr.data-testid]="'filter-tech-' + tab.key"
+              [class.is-active]="(selectedTech$ | async) === tab.key" (click)="toggleTech(tab.key)">
+              <span class="fa-tech-pill__badge">{{ tab.badge }}</span>
+              <span class="fa-tech-pill__label">{{ tab.label }}</span>
             </button>
           </div>
         </div>
-        <div class="fa-chip-rail" role="listbox" aria-label="Filter by tags">
-          <fa-chip *ngFor="let tag of tagList" class="fa-chip--topic tag-chip" size="sm"
-            [selected]="((selectedTags$ | async) || []).includes(tag)" (selectedChange)="toggleTag(tag)">
-            <span class="chip-icon" aria-hidden="true">#</span>
-            {{ tag }}
-          </fa-chip>
+
+        <div class="fa-filter-section" *ngIf="(popularTags$ | async) as tagList">
+          <div class="fa-filter-section__header">
+            <div class="fa-filter-section__title fa-meta-label">Tags</div>
+            <div class="fa-filter-section__actions">
+              <button type="button" class="fa-btn fa-btn--ghost fa-toggle" (click)="toggleTagMatchMode()">
+                Match {{ tagMatchMode === 'all' ? 'all' : 'any' }}
+              </button>
+              <button type="button" class="fa-btn fa-btn--ghost fa-link-btn"
+                [disabled]="!((selectedTags$ | async)?.length)" (click)="clearAllTags()">
+                Clear
+              </button>
+            </div>
+          </div>
+          <div class="fa-chip-rail" role="listbox" aria-label="Filter by tags">
+            <fa-chip *ngFor="let tag of tagList" class="fa-chip--topic tag-chip" size="sm"
+              [selected]="((selectedTags$ | async) || []).includes(tag)" (selectedChange)="toggleTag(tag)">
+              <span class="chip-icon" aria-hidden="true">#</span>
+              {{ tag }}
+            </fa-chip>
+          </div>
         </div>
       </div>
     </aside>

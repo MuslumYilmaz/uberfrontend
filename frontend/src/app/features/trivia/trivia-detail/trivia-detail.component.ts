@@ -17,6 +17,7 @@ import { FooterComponent } from '../../../shared/components/footer/footer.compon
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ActivityService } from '../../../core/services/activity.service';
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
@@ -274,7 +275,8 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     private qs: QuestionService,
     private seo: SeoService,
     private progress: UserProgressService,
-    public auth: AuthService
+    public auth: AuthService,
+    private activity: ActivityService
   ) { }
 
   ngOnInit() {
@@ -602,6 +604,17 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       await this.progress.markSolved(q.id);
       this.solved.set(true);
+      this.activity.complete({
+        kind: 'trivia',
+        tech: this.tech,
+        itemId: q.id,
+        source: 'tech',
+        durationMin: 3,
+        difficulty: q.difficulty,
+      }).subscribe({
+        next: () => { },
+        error: () => { },
+      });
     }
   }
 

@@ -73,6 +73,16 @@ const UserSchema = new mongoose.Schema(
       defaultTech: { type: String, enum: ['javascript', 'angular'], default: 'javascript' },
       keyboard: { type: String, enum: ['default', 'vim'], default: 'default' },
       marketingEmails: { type: Boolean, default: false },
+      gamification: {
+        weeklyGoalEnabled: { type: Boolean, default: true },
+        weeklyGoalTarget: { type: Number, default: 10 },
+        showStreakWidget: { type: Boolean, default: true },
+        dailyChallengeTech: {
+          type: String,
+          enum: ['auto', 'javascript', 'react', 'angular', 'vue', 'html', 'css'],
+          default: 'auto',
+        },
+      },
     },
 
     // aggregates for fast UI
@@ -87,6 +97,11 @@ const UserSchema = new mongoose.Schema(
         current: { type: Number, default: 0 },
         longest: { type: Number, default: 0 },
         lastActiveUTCDate: { type: String, default: null }, // 'YYYY-MM-DD'
+      },
+      challengeStreak: {
+        current: { type: Number, default: 0 },
+        longest: { type: Number, default: 0 },
+        lastCompletedLocalDate: { type: String, default: null }, // 'YYYY-MM-DD' in Europe/Istanbul
       },
     },
 
