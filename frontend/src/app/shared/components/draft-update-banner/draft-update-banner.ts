@@ -74,8 +74,12 @@ type Mode = 'updated' | 'older';
 
     .draft-update-banner {
       position: relative;
-      padding: .375rem .75rem;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem .75rem;
+      padding: .45rem .75rem;
       background: var(--uf-status-info-bg);
       color: var(--uf-status-info-text);
       font-size: .75rem;
@@ -84,15 +88,22 @@ type Mode = 'updated' | 'older';
       animation: fadeIn .2s ease;
     }
 
-    .msg { font-weight: 500; }
+    .msg {
+      font-weight: 500;
+      flex: 1 1 28rem;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      text-align: left;
+    }
 
     .actions {
-      position: absolute;
-      right: .5rem;
-      inset-block: 0;
+      position: static;
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: .6rem;
+      flex: 0 1 auto;
     }
 
     .action {
@@ -130,14 +141,19 @@ type Mode = 'updated' | 'older';
 
     @media (max-width: 900px) {
       .draft-update-banner {
-        padding-right: .75rem;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .msg {
+        flex: 1 1 100%;
+        text-align: center;
       }
 
       .actions {
-        position: static;
         justify-content: center;
-        flex-wrap: wrap;
-        margin-top: .25rem;
+        width: 100%;
+        margin-top: .1rem;
       }
     }
 

@@ -56,16 +56,6 @@
               <ng-container *ngIf="updatedLabel(question()) as updated"> · Updated {{ updated }}</ng-container>
             </div>
 
-            <section class="detail-prep-bridge" data-testid="coding-prep-entry">
-              <p class="detail-prep-bridge__text">
-                Preparing for interviews? Use guided tracks for structure, then drill company-specific question sets when you need targeted practice.
-              </p>
-              <div class="detail-prep-bridge__links">
-                <a [routerLink]="['/tracks']">Explore interview tracks</a>
-                <a [routerLink]="['/companies']">Browse company questions</a>
-              </div>
-            </section>
-
             <!-- Özet / prose -->
             <div *ngIf="(descSummary() || descriptionText()) as prose" class="whitespace-pre-wrap opacity-90 mt-3">
               {{ prose }}
@@ -228,6 +218,16 @@
                   <span class="truncate">Build Great UI in 60 Minutes</span>
                   <span class="text-yellow-300 text-sm ml-4">Playbook</span>
                 </a>
+              </div>
+            </section>
+
+            <section class="detail-prep-bridge" data-testid="coding-prep-entry">
+              <p class="detail-prep-bridge__text">
+                Preparing for interviews? Use guided tracks for structure, then drill company-specific question sets when you need targeted practice.
+              </p>
+              <div class="detail-prep-bridge__links">
+                <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                <a [routerLink]="['/companies']">Browse company questions</a>
               </div>
             </section>
 

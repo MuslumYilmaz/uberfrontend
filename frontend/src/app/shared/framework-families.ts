@@ -181,6 +181,14 @@ export const FRAMEWORK_FAMILIES: FrameworkFamily[] = [
       { tech: 'vue', id: 'vue-dynamic-counter-buttons', kind: 'coding' },
     ],
   },
+  {
+    key: 'chips-input-autocomplete',
+    members: [
+      { tech: 'react', id: 'react-chips-input-autocomplete', kind: 'coding' },
+      { tech: 'angular', id: 'angular-chips-input-autocomplete', kind: 'coding' },
+      { tech: 'vue', id: 'vue-chips-input-autocomplete', kind: 'coding' },
+    ],
+  },
 ];
 
 export const FRAMEWORK_FAMILY_BY_ID = FRAMEWORK_FAMILIES.reduce((acc, fam) => {

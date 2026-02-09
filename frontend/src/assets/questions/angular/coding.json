@@ -38,12 +38,12 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise requires a single piece of state: the number of times the user has interacted with the counter. Store it in a component property (e.g. `count = 0`) on a standalone root component. Use three buttons wired with Angular event bindings to increment, decrement, and reset that state. Guard the decrement so the value never drops below zero and expose a simple derived flag to control the disabled state of the \"-\" button.\n\n**Test cases**\n- Click \"+\" once \u2192 count becomes `1`.\n- Click \"+\" multiple times \u2192 count increases by 1 on each click.\n- With count at `0`, \"-\" is disabled and clicking it does nothing.\n- From a positive value, clicking \"-\" decreases the count by 1, but never below `0`.\n- From a positive value, clicking \"Reset\" sets count back to `0` and disables \"-\" again.",
+      "overview": "This exercise requires a single piece of state: the number of times the user has interacted with the counter. Store it in a component property (e.g. `count = 0`) on a standalone root component. Use three buttons wired with Angular event bindings to increment, decrement, and reset that state. Guard the decrement so the value never drops below zero and expose a simple derived flag to control the disabled state of the \"-\" button.\n\n**Test cases**\n- Click \"+\" once → count becomes `1`.\n- Click \"+\" multiple times → count increases by 1 on each click.\n- With count at `0`, \"-\" is disabled and clicking it does nothing.\n- From a positive value, clicking \"-\" decreases the count by 1, but never below `0`.\n- From a positive value, clicking \"Reset\" sets count back to `0` and disables \"-\" again.",
       "approaches": [
         {
           "title": "Standalone component with internal state and guarded decrement",
           "prose": "Use a single standalone `AppComponent` that holds the `count` state.\n\n1. Declare `count = 0` as a class property.\n2. Add methods `inc()`, `dec()`, and `reset()`.\n   - `inc()` increments `count` by 1.\n   - `dec()` decrements only when `count` is greater than 0.\n   - `reset()` sets `count` to 0.\n3. Bind the methods to the buttons with `(click)` in the template.\n4. Bind the disabled state of the decrement button to a derived check, e.g. `isZero` getter returning `count === 0`.\n\nThis keeps the implementation minimal while showing how to wire state, events, and disabled UI in a standalone Angular component.",
-          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Counter</h1>\n        <div class=\"value\">{{ count }}</div>\n        <div class=\"actions\">\n          <button (click)=\"dec()\" [disabled]=\"isZero\" aria-label=\"decrement\">\u2212</button>\n          <button (click)=\"inc()\" aria-label=\"increment\">+</button>\n          <button (click)=\"reset()\" class=\"ghost\" aria-label=\"reset\">Reset</button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#e5e7eb;}`,\n    `.card{padding:16px 20px;background:#0b1020;border-radius:12px;border:1px solid #1f2937;display:grid;gap:12px;}`,\n    `.value{font-size:40px;font-weight:800;text-align:center;}`,\n    `.actions{display:flex;gap:8px;justify-content:center;}`,\n    `button{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;}`,\n    `button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;}`\n  ]\n})\nexport class AppComponent {\n  count = 0;\n\n  get isZero(): boolean {\n    return this.count === 0;\n  }\n\n  inc(): void {\n    this.count++;\n  }\n\n  dec(): void {\n    if (!this.isZero) {\n      this.count--;\n    }\n  }\n\n  reset(): void {\n    this.count = 0;\n  }\n}\n"
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <h1>Counter</h1>\n        <div class=\"value\">{{ count }}</div>\n        <div class=\"actions\">\n          <button (click)=\"dec()\" [disabled]=\"isZero\" aria-label=\"decrement\">−</button>\n          <button (click)=\"inc()\" aria-label=\"increment\">+</button>\n          <button (click)=\"reset()\" class=\"ghost\" aria-label=\"reset\">Reset</button>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#0a0a0a;color:#e5e7eb;}`,\n    `.card{padding:16px 20px;background:#0b1020;border-radius:12px;border:1px solid #1f2937;display:grid;gap:12px;}`,\n    `.value{font-size:40px;font-weight:800;text-align:center;}`,\n    `.actions{display:flex;gap:8px;justify-content:center;}`,\n    `button{padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;}`,\n    `button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.ghost{background:transparent;color:#e5e7eb;border:1px solid #374151;}`\n  ]\n})\nexport class AppComponent {\n  count = 0;\n\n  get isZero(): boolean {\n    return this.count === 0;\n  }\n\n  inc(): void {\n    this.count++;\n  }\n\n  dec(): void {\n    if (!this.isZero) {\n      this.count--;\n    }\n  }\n\n  reset(): void {\n    this.count = 0;\n  }\n}\n"
         }
       ],
       "notes": {
@@ -83,7 +83,7 @@
       "user-input"
     ],
     "description": {
-      "summary": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` \u2013 the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "summary": "Build a contact form using an Angular standalone component and reactive forms. You will only work in `src/app/app.component.ts` – the HTML, CSS, and bootstrapping are already set up. On submit, validate the input and send the form data with a POST request to a fake JSON API endpoint, showing loading, success, and error states. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Work only inside the standalone root component in `src/app/app.component.ts` (template and styles are already provided).",
@@ -184,7 +184,7 @@
         "expectedBehavior": [
           "Typing a non-empty value and clicking \"Add\" appends a new todo to the list and clears the input.",
           "Empty or whitespace-only values are ignored (no item is added).",
-          "Clicking a todo\u2019s checkbox toggles its completed state.",
+          "Clicking a todo’s checkbox toggles its completed state.",
           "Completed todos are visually distinguished (e.g. line-through).",
           "Clicking a remove button deletes that specific todo.",
           "If you implement \"Clear completed\", it removes only the completed todos."
@@ -497,7 +497,7 @@
       "specs": {
         "requirements": [
           "Use a standalone root component and at least one child component for a single FAQ item.",
-          "Render a list of 3\u20134 FAQ items (question + answer) from an in-memory array.",
+          "Render a list of 3–4 FAQ items (question + answer) from an in-memory array.",
           "Clicking on a question toggles its answer open/closed.",
           "In the default mode, only one FAQ item can be open at a time.",
           "Add a simple control (e.g. a toggle or checkbox) to switch to 'allow multiple open' mode.",
@@ -517,7 +517,7 @@
           "You can use simple CSS transitions (e.g. `max-height` or `opacity`) for a smooth open/close animation, but this is optional."
         ],
         "techFocus": [
-          "Parent \u2192 child data flow with `@Input` and `@Output`",
+          "Parent → child data flow with `@Input` and `@Output`",
           "Controlled vs uncontrolled state (parent controlling which index is open)",
           "Conditional rendering with `*ngIf` or `ngClass`",
           "Basic UI state toggling and list rendering"
@@ -525,11 +525,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question \u2192 its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode \u2192 currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes. Key concepts: components, inputs, outputs.",
+      "overview": "This exercise is about lifting state up to the parent component and controlling which FAQ items are open. The parent holds an array of FAQ items (question + answer) and a representation of which indexes are currently open. Each child row displays a question and conditionally shows its answer.\n\nIn the default (single-open) mode, the parent keeps at most one index in its open list. When the user clicks a question, the parent either sets that index as the only open one or clears it if it was already open. In multi-open mode, the parent treats the list of open indexes like a set: clicking an item either adds or removes that index.\n\n**Test cases**\n- Initially, all answers are hidden.\n- Click the first question → its answer becomes visible, others stay closed.\n- In single-open mode, clicking a second question closes the first and opens the second.\n- Switch to multi-open mode → currently open item(s) stay open, and you can open additional ones without closing the others.\n- Clicking an open item closes it in both modes. Key concepts: components, inputs, outputs.",
       "approaches": [
         {
           "title": "Parent-controlled open indexes with a child FAQ item component",
-          "prose": "Use a standalone `AppComponent` as the parent that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` flag controlled by a checkbox or toggle in the UI.\n3. An array `openIndexes: number[]` that stores the indexes of currently open FAQ items.\n\nImplement two methods:\n- `isItemOpen(index: number): boolean` \u2192 returns whether the given index is currently open.\n- `onItemToggle(index: number)` \u2192 updates `openIndexes` based on `allowMultiple`.\n\nIn single-open mode, `onItemToggle` should behave like a radio group: either an item is the only open one or there are none. In multi-open mode, it behaves like a set: clicking an item toggles its presence in `openIndexes`. The child `FaqItemComponent` is kept dumb \u2013 it only receives data and emits a `toggle` event, leaving all state decisions to the parent.",
+          "prose": "Use a standalone `AppComponent` as the parent that owns:\n\n1. A `faqItems` array of plain objects (`{ question, answer }`).\n2. A boolean `allowMultiple` flag controlled by a checkbox or toggle in the UI.\n3. An array `openIndexes: number[]` that stores the indexes of currently open FAQ items.\n\nImplement two methods:\n- `isItemOpen(index: number): boolean` → returns whether the given index is currently open.\n- `onItemToggle(index: number)` → updates `openIndexes` based on `allowMultiple`.\n\nIn single-open mode, `onItemToggle` should behave like a radio group: either an item is the only open one or there are none. In multi-open mode, it behaves like a set: clicking an item toggles its presence in `openIndexes`. The child `FaqItemComponent` is kept dumb – it only receives data and emits a `toggle` event, leaving all state decisions to the parent.",
           "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ninterface FaqItem {\n  question: string;\n  answer: string;\n}\n\n@Component({\n  selector: 'app-faq-item',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <article class=\"faq-item\" [class.open]=\"isOpen\">\n      <button class=\"faq-header\" type=\"button\" (click)=\"toggle.emit()\" aria-expanded=\"{{ isOpen }}\">\n        <span class=\"question\">{{ question }}</span>\n        <span class=\"indicator\">{{ isOpen ? '-' : '+' }}</span>\n      </button>\n      <div class=\"faq-body\" *ngIf=\"isOpen\">\n        <p>{{ answer }}</p>\n      </div>\n    </article>\n  `,\n  styles: [\n    `.faq-item{border-radius:12px;background:#0b1020;border:1px solid #1f2937;overflow:hidden;}`,\n    `.faq-item + .faq-item{margin-top:8px;}`,\n    `.faq-header{width:100%;padding:12px 14px;background:transparent;border:none;display:flex;justify-content:space-between;align-items:center;color:#e5e7eb;cursor:pointer;font-size:14px;}`,\n    `.indicator{font-weight:700;}`,\n    `.faq-body{padding:0 14px 12px;font-size:13px;color:#9ca3af;}`\n  ]\n})\nexport class FaqItemComponent {\n  @Input() question = '';\n  @Input() answer = '';\n  @Input() isOpen = false;\n  @Output() toggle = new EventEmitter<void>();\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, FaqItemComponent],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\">\n        <header class=\"header\">\n          <h1>FAQ</h1>\n          <label class=\"switch\">\n            <input type=\"checkbox\" [checked]=\"allowMultiple\" (change)=\"onToggleAllowMultiple()\" />\n            <span>Allow multiple open</span>\n          </label>\n        </header>\n\n        <div class=\"list\">\n          <app-faq-item\n            *ngFor=\"let item of faqItems; index as i\"\n            [question]=\"item.question\"\n            [answer]=\"item.answer\"\n            [isOpen]=\"isItemOpen(i)\"\n            (toggle)=\"onItemToggle(i)\">\n          </app-faq-item>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px;}`,\n    `.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}`,\n    `.header h1{font-size:20px;margin:0;}`,\n    `.switch{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  faqItems: FaqItem[] = [\n    {\n      question: 'Lorem ipsum dolor sit amet?',\n      answer: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus euismod, posuere justo ut, pulvinar neque.'\n    },\n    {\n      question: 'Curabitur blandit tempus porttitor?',\n      answer: 'Curabitur blandit tempus porttitor. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.'\n    },\n    {\n      question: 'Aenean lacinia bibendum nulla sed consectetur?',\n      answer: 'Aenean lacinia bibendum nulla sed consectetur. Cras justo odio, dapibus ac facilisis in, egestas eget quam.'\n    },\n    {\n      question: 'Vivamus sagittis lacus vel augue laoreet rutrum?',\n      answer: 'Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Maecenas faucibus mollis interdum.'\n    }\n  ];\n\n  allowMultiple = false;\n  openIndexes: number[] = [];\n\n  isItemOpen(index: number): boolean {\n    return this.openIndexes.includes(index);\n  }\n\n  onItemToggle(index: number): void {\n    const currentlyOpen = this.isItemOpen(index);\n\n    if (this.allowMultiple) {\n      // Treat as a set\n      this.openIndexes = currentlyOpen\n        ? this.openIndexes.filter(i => i !== index)\n        : [...this.openIndexes, index];\n      return;\n    }\n\n    // Single-open mode\n    if (currentlyOpen) {\n      this.openIndexes = [];\n    } else {\n      this.openIndexes = [index];\n    }\n  }\n\n  onToggleAllowMultiple(): void {\n    this.allowMultiple = !this.allowMultiple;\n    if (!this.allowMultiple && this.openIndexes.length > 1) {\n      // Keep only the first open item in single-open mode\n      this.openIndexes = this.openIndexes.length ? [this.openIndexes[0]] : [];\n    }\n  }\n}\n"
         }
       ],
@@ -574,7 +574,7 @@
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
-          "Render a static list (20\u201330 items) of users in a table (id, name, email, role).",
+          "Render a static list (20–30 items) of users in a table (id, name, email, role).",
           "Show 5 rows per page.",
           "Add \"Previous\" and \"Next\" buttons to change the current page.",
           "Display the current page and total pages (e.g. \"Page 2 of 5\").",
@@ -604,11 +604,11 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render \u2192 shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled. Key concepts: components, state, pagination.",
+      "overview": "This exercise centers around a single state variable: the current page index. The full dataset lives in a static array on the component. From that, you derive everything else: the total number of pages, the slice of users to display, and whether Previous/Next buttons should be disabled.\n\n**Core ideas**\n- Keep `currentPage` as a number (0-based is convenient for array math).\n- Use a constant `pageSize = 5`.\n- Compute `totalPages` with `Math.ceil(users.length / pageSize)`.\n- Derive `pagedUsers` by slicing the big array based on `currentPage` and `pageSize`.\n- Expose small boolean getters like `isFirstPage` and `isLastPage` to keep the template clean.\n\n**Test cases**\n- Initial render → shows the first 5 users, label reads `Page 1 of N`, and Previous is disabled.\n- Clicking Next repeatedly moves through the list in chunks of 5 until the last page, then Next becomes disabled.\n- Clicking Previous from any page > 1 moves back a page until page 1.\n- The label always matches the current page index, and buttons are never enabled when they should be disabled. Key concepts: components, state, pagination.",
       "approaches": [
         {
           "title": "Standalone component with derived pagination slice",
-          "prose": "Use a single standalone `AppComponent` that holds the full users array and pagination state.\n\n1. Define a `User` type and a constant `USERS` array with ~20\u201330 users.\n2. In the component, expose `readonly users = USERS;`, a `pageSize = 5;` and `currentPage = 0;`.\n3. Add getters `totalPages`, `pagedUsers`, `isFirstPage`, and `isLastPage`.\n   - `totalPages` uses `Math.ceil(this.users.length / this.pageSize)`.\n   - `pagedUsers` computes `start = currentPage * pageSize` and `end = start + pageSize` and returns `this.users.slice(start, end)`.\n4. Implement `goToPrevious()` and `goToNext()` so they guard against going before page 0 or past the last page.\n5. In the template, render the table rows with `*ngFor=\"let user of pagedUsers\"` and bind the button `disabled` flags to `isFirstPage` / `isLastPage`.\n\nThis keeps the logic simple, shows a clear separation between state and derived data, and matches how you'd wire pagination in a real-world Angular component.",
+          "prose": "Use a single standalone `AppComponent` that holds the full users array and pagination state.\n\n1. Define a `User` type and a constant `USERS` array with ~20–30 users.\n2. In the component, expose `readonly users = USERS;`, a `pageSize = 5;` and `currentPage = 0;`.\n3. Add getters `totalPages`, `pagedUsers`, `isFirstPage`, and `isLastPage`.\n   - `totalPages` uses `Math.ceil(this.users.length / this.pageSize)`.\n   - `pagedUsers` computes `start = currentPage * pageSize` and `end = start + pageSize` and returns `this.users.slice(start, end)`.\n4. Implement `goToPrevious()` and `goToNext()` so they guard against going before page 0 or past the last page.\n5. In the template, render the table rows with `*ngFor=\"let user of pagedUsers\"` and bind the button `disabled` flags to `isFirstPage` / `isLastPage`.\n\nThis keeps the logic simple, shows a clear separation between state and derived data, and matches how you'd wire pagination in a real-world Angular component.",
           "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\ntype User = {\n  id: number;\n  name: string;\n  email: string;\n  role: string;\n};\n\nconst USERS: User[] = [\n  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin' },\n  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor' },\n  { id: 3, name: 'Carla Perez', email: 'carla@example.com', role: 'Viewer' },\n  { id: 4, name: 'David Kim', email: 'david@example.com', role: 'Editor' },\n  { id: 5, name: 'Emma Brown', email: 'emma@example.com', role: 'Viewer' },\n  { id: 6, name: 'Frank Wu', email: 'frank@example.com', role: 'Admin' },\n  { id: 7, name: 'Grace Lee', email: 'grace@example.com', role: 'Viewer' },\n  { id: 8, name: 'Henry Ford', email: 'henry@example.com', role: 'Editor' },\n  { id: 9, name: 'Ivy Stone', email: 'ivy@example.com', role: 'Viewer' },\n  { id: 10, name: 'Jack Ryan', email: 'jack@example.com', role: 'Viewer' },\n  { id: 11, name: 'Karen Diaz', email: 'karen@example.com', role: 'Editor' },\n  { id: 12, name: 'Leo Walker', email: 'leo@example.com', role: 'Viewer' },\n  { id: 13, name: 'Mia Clark', email: 'mia@example.com', role: 'Admin' },\n  { id: 14, name: 'Noah Hall', email: 'noah@example.com', role: 'Viewer' },\n  { id: 15, name: 'Olivia King', email: 'olivia@example.com', role: 'Editor' },\n  { id: 16, name: 'Paul Green', email: 'paul@example.com', role: 'Viewer' },\n  { id: 17, name: 'Quinn Ross', email: 'quinn@example.com', role: 'Viewer' },\n  { id: 18, name: 'Rita Long', email: 'rita@example.com', role: 'Editor' },\n  { id: 19, name: 'Sam Young', email: 'sam@example.com', role: 'Viewer' },\n  { id: 20, name: 'Tina Fox', email: 'tina@example.com', role: 'Viewer' }\n];\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly users = USERS;\n  readonly pageSize = 5;\n  currentPage = 0; // 0-based\n\n  get totalPages(): number {\n    return Math.ceil(this.users.length / this.pageSize) || 1;\n  }\n\n  get pagedUsers(): User[] {\n    const start = this.currentPage * this.pageSize;\n    const end = start + this.pageSize;\n    return this.users.slice(start, end);\n  }\n\n  get isFirstPage(): boolean {\n    return this.currentPage === 0;\n  }\n\n  get isLastPage(): boolean {\n    return this.currentPage >= this.totalPages - 1;\n  }\n\n  goToPrevious(): void {\n    if (!this.isFirstPage) {\n      this.currentPage--;\n    }\n  }\n\n  goToNext(): void {\n    if (!this.isLastPage) {\n      this.currentPage++;\n    }\n  }\n}\n"
         }
       ],
@@ -667,7 +667,7 @@
         "expectedBehavior": [
           "By default, the app starts in light mode if there is no previous theme stored.",
           "If the user toggles to dark mode, the page background, text, and card colors change.",
-          "Reloading the page keeps the user\u2019s last theme selection (light or dark).",
+          "Reloading the page keeps the user’s last theme selection (light or dark).",
           "The toggle UI (label or icon) always reflects the actual current theme.",
           "Switching themes is instant and does not require a full reload."
         ],
@@ -688,7 +688,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage \u2192 app starts in light mode and shows the light theme.\n- Click the toggle once \u2192 app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode \u2192 app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light \u2192 theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme. Key concepts: components, services, dependency-injection.",
+      "overview": "This exercise is about lifting theme state into a global Angular service and wiring it to both the UI and the DOM. You store the current theme (\"light\" or \"dark\") in a `ThemeService`, read an initial value from localStorage when the service is created, and apply that value to the `<html>` element via a `data-theme` attribute. The root `AppComponent` injects this service, shows a toggle in the top-right corner, and delegates all theme changes to the service. The provided CSS (in `styles.css` and `app.component.css`) already listens to `data-theme` using `:root[data-theme='dark']` and `:host-context([data-theme='dark'])`, so you don't need to touch any styles.\n\n**Test cases**\n- First visit with empty localStorage → app starts in light mode and shows the light theme.\n- Click the toggle once → app switches to dark mode, the page background becomes dark, and the toggle shows dark mode.\n- Reload the page after switching to dark mode → app initializes in dark mode, without a visible flash back to light.\n- Toggle back to light → theme changes immediately and localStorage is updated.\n- The toggle label/icon always matches the active theme. Key concepts: components, services, dependency-injection.",
       "approaches": [
         {
           "title": "Global ThemeService with `data-theme` on `<html>`",
@@ -774,12 +774,12 @@
       }
     },
     "solutionBlock": {
-      "overview": "This exercise is about centralizing form state with Angular reactive forms and wiring a simple stepper on top of it. A good solution uses a single top-level `FormGroup` with nested groups for each step (`basic`, `address`) and a `currentStep` number to control which UI section is visible.\n\nThe core idea is:\n- Model all fields in one `FormGroup` to avoid juggling separate pieces of state.\n- Use per-step validation by checking only the current group's validity when deciding if the user can go to the next step.\n- Derive booleans for `canGoNext`, `isFirstStep`, and `isLastStep` instead of hard-coding conditions in the template.\n\n**Test cases**\n- Initial load \u2192 Step 1 is shown, `Next` is disabled.\n- Fill valid `name` and `email`, click `Next` \u2192 moves to Step 2.\n- On Step 2 with invalid address fields \u2192 `Next` stays disabled and/or shows validation errors when attempted.\n- After filling valid address, click `Next` \u2192 Step 3 shows a summary of all values.\n- Click `Back` from Step 3 \u2192 Step 2 is shown with previously entered data intact.\n- Click `Submit` on Step 3 with valid data \u2192 form is processed (e.g. logged) and no validation errors are shown.",
+      "overview": "This exercise is about centralizing form state with Angular reactive forms and wiring a simple stepper on top of it. A good solution uses a single top-level `FormGroup` with nested groups for each step (`basic`, `address`) and a `currentStep` number to control which UI section is visible.\n\nThe core idea is:\n- Model all fields in one `FormGroup` to avoid juggling separate pieces of state.\n- Use per-step validation by checking only the current group's validity when deciding if the user can go to the next step.\n- Derive booleans for `canGoNext`, `isFirstStep`, and `isLastStep` instead of hard-coding conditions in the template.\n\n**Test cases**\n- Initial load → Step 1 is shown, `Next` is disabled.\n- Fill valid `name` and `email`, click `Next` → moves to Step 2.\n- On Step 2 with invalid address fields → `Next` stays disabled and/or shows validation errors when attempted.\n- After filling valid address, click `Next` → Step 3 shows a summary of all values.\n- Click `Back` from Step 3 → Step 2 is shown with previously entered data intact.\n- Click `Submit` on Step 3 with valid data → form is processed (e.g. logged) and no validation errors are shown.",
       "approaches": [
         {
           "title": "Single reactive FormGroup with nested groups and step index",
           "prose": "Use one top-level reactive `FormGroup` that contains nested groups for each logical step, plus a simple `currentStep` number to control the view.\n\n1. Inject `FormBuilder` and create the form in the constructor or as a class property. For example:\n   - `basic` group with `name` and `email` (required + email validator).\n   - `address` group with `street`, `city`, `country`, and optional `postalCode`.\n2. Keep `currentStep` as a number (0, 1, 2) and derive helpers like `isFirstStep`, `isLastStep`, and `canGoNext`.\n3. When the user clicks `Next`, call `markAllAsTouched()` on the current group's controls. Only move to the next step if that group is valid.\n4. Implement `Back` by simply decrementing `currentStep` when possible.\n5. For `Submit`, mark the whole form as touched, check `form.valid`, and then log or otherwise handle the data.\n\nThis approach keeps all state and rules in one place, and the template becomes mostly a projection of the current step with bindings to the appropriate nested group.",
-          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\" [formGroup]=\"form\">\n        <header class=\"header\">\n          <h1>Multi-step Signup</h1>\n          <p class=\"subtitle\">Step {{ currentStep + 1 }} of 3</p>\n        </header>\n\n        <section class=\"steps\" [ngSwitch]=\"currentStep\">\n          <!-- Step 1: Basic info -->\n          <div *ngSwitchCase=\"0\" formGroupName=\"basic\" class=\"step\">\n            <h2 class=\"step-title\">Basic info</h2>\n            <label class=\"field\">\n              <span>Name</span>\n              <input type=\"text\" formControlName=\"name\" placeholder=\"Jane Doe\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('name')?.touched && basicGroup.get('name')?.invalid\">\n                Name is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Email</span>\n              <input type=\"email\" formControlName=\"email\" placeholder=\"jane@example.com\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('email')?.touched && basicGroup.get('email')?.invalid\">\n                Please enter a valid email.\n              </small>\n            </label>\n          </div>\n\n          <!-- Step 2: Address info -->\n          <div *ngSwitchCase=\"1\" formGroupName=\"address\" class=\"step\">\n            <h2 class=\"step-title\">Address</h2>\n            <label class=\"field\">\n              <span>Street</span>\n              <input type=\"text\" formControlName=\"street\" placeholder=\"123 Main St\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('street')?.touched && addressGroup.get('street')?.invalid\">\n                Street is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>City</span>\n              <input type=\"text\" formControlName=\"city\" placeholder=\"Istanbul\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('city')?.touched && addressGroup.get('city')?.invalid\">\n                City is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Country</span>\n              <input type=\"text\" formControlName=\"country\" placeholder=\"T\u00fcrkiye\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('country')?.touched && addressGroup.get('country')?.invalid\">\n                Country is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Postal code (optional)</span>\n              <input type=\"text\" formControlName=\"postalCode\" placeholder=\"34000\" />\n            </label>\n          </div>\n\n          <!-- Step 3: Summary -->\n          <div *ngSwitchCase=\"2\" class=\"step\">\n            <h2 class=\"step-title\">Summary</h2>\n            <div class=\"summary\">\n              <h3>Basic info</h3>\n              <p><strong>Name:</strong> {{ basicGroup.get('name')?.value }}</p>\n              <p><strong>Email:</strong> {{ basicGroup.get('email')?.value }}</p>\n\n              <h3>Address</h3>\n              <p><strong>Street:</strong> {{ addressGroup.get('street')?.value }}</p>\n              <p><strong>City:</strong> {{ addressGroup.get('city')?.value }}</p>\n              <p><strong>Country:</strong> {{ addressGroup.get('country')?.value }}</p>\n              <p><strong>Postal code:</strong> {{ addressGroup.get('postalCode')?.value || '\u2014' }}</p>\n            </div>\n          </div>\n        </section>\n\n        <footer class=\"actions\">\n          <button type=\"button\" class=\"ghost\" (click)=\"prev()\" [disabled]=\"isFirstStep\">\n            Back\n          </button>\n\n          <button\n            *ngIf=\"!isLastStep\"\n            type=\"button\"\n            (click)=\"next()\"\n            [disabled]=\"!canGoNext\"\n          >\n            Next\n          </button>\n\n          <button\n            *ngIf=\"isLastStep\"\n            type=\"button\"\n            class=\"primary\"\n            (click)=\"submit()\"\n          >\n            Submit\n          </button>\n        </footer>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 16px;display:grid;gap:16px;}`,\n    `.header h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}`,\n    `.steps{min-height:260px;}`,\n    `.step{display:grid;gap:12px;}`,\n    `.step-title{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.field{display:grid;gap:4px;font-size:13px;}`,\n    `.field span{color:#e5e7eb;}`,\n    `.field input{border-radius:10px;border:1px solid #374151;background:#020617;padding:8px 10px;color:#e5e7eb;font-size:14px;}`,\n    `.field input:focus{outline:none;border-color:#a3e635;}`,\n    `.error{font-size:11px;color:#f97316;}`,\n    `.summary{display:grid;gap:4px;font-size:14px;}`,\n    `.summary h3{margin:8px 0 2px;font-size:14px;font-weight:600;color:#e5e7eb;}`,\n    `.actions{display:flex;justify-content:space-between;gap:8px;margin-top:4px;}`,\n    `.actions button{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;}`,\n    `.actions button.primary{background:#a3e635;color:#020617;border-color:#a3e635;}`,\n    `.actions button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.actions button.ghost{background:transparent;}`\n  ]\n})\nexport class AppComponent {\n  readonly lastStepIndex = 2;\n  currentStep = 0;\n\n  constructor(private fb: FormBuilder) {}\n\n  form: FormGroup = this.fb.group({\n    basic: this.fb.group({\n      name: ['', Validators.required],\n      email: ['', [Validators.required, Validators.email]]\n    }),\n    address: this.fb.group({\n      street: ['', Validators.required],\n      city: ['', Validators.required],\n      country: ['', Validators.required],\n      postalCode: ['']\n    })\n  });\n\n  get basicGroup(): FormGroup {\n    return this.form.get('basic') as FormGroup;\n  }\n\n  get addressGroup(): FormGroup {\n    return this.form.get('address') as FormGroup;\n  }\n\n  get isFirstStep(): boolean {\n    return this.currentStep === 0;\n  }\n\n  get isLastStep(): boolean {\n    return this.currentStep === this.lastStepIndex;\n  }\n\n  get canGoNext(): boolean {\n    if (this.currentStep === 0) {\n      return this.basicGroup.valid;\n    }\n    if (this.currentStep === 1) {\n      return this.addressGroup.valid;\n    }\n    return false;\n  }\n\n  private currentGroup(): FormGroup {\n    if (this.currentStep === 0) return this.basicGroup;\n    if (this.currentStep === 1) return this.addressGroup;\n    return this.form;\n  }\n\n  next(): void {\n    const group = this.currentGroup();\n    group.markAllAsTouched();\n    if (group.invalid) {\n      return;\n    }\n    if (!this.isLastStep) {\n      this.currentStep++;\n    }\n  }\n\n  prev(): void {\n    if (!this.isFirstStep) {\n      this.currentStep--;\n    }\n  }\n\n  submit(): void {\n    this.form.markAllAsTouched();\n    if (this.form.invalid) {\n      return;\n    }\n    console.log('Signup submitted', this.form.value);\n  }\n}\n"
+          "codeTs": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  template: `\n    <main class=\"app\">\n      <section class=\"card\" [formGroup]=\"form\">\n        <header class=\"header\">\n          <h1>Multi-step Signup</h1>\n          <p class=\"subtitle\">Step {{ currentStep + 1 }} of 3</p>\n        </header>\n\n        <section class=\"steps\" [ngSwitch]=\"currentStep\">\n          <!-- Step 1: Basic info -->\n          <div *ngSwitchCase=\"0\" formGroupName=\"basic\" class=\"step\">\n            <h2 class=\"step-title\">Basic info</h2>\n            <label class=\"field\">\n              <span>Name</span>\n              <input type=\"text\" formControlName=\"name\" placeholder=\"Jane Doe\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('name')?.touched && basicGroup.get('name')?.invalid\">\n                Name is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Email</span>\n              <input type=\"email\" formControlName=\"email\" placeholder=\"jane@example.com\" />\n              <small class=\"error\" *ngIf=\"basicGroup.get('email')?.touched && basicGroup.get('email')?.invalid\">\n                Please enter a valid email.\n              </small>\n            </label>\n          </div>\n\n          <!-- Step 2: Address info -->\n          <div *ngSwitchCase=\"1\" formGroupName=\"address\" class=\"step\">\n            <h2 class=\"step-title\">Address</h2>\n            <label class=\"field\">\n              <span>Street</span>\n              <input type=\"text\" formControlName=\"street\" placeholder=\"123 Main St\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('street')?.touched && addressGroup.get('street')?.invalid\">\n                Street is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>City</span>\n              <input type=\"text\" formControlName=\"city\" placeholder=\"Istanbul\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('city')?.touched && addressGroup.get('city')?.invalid\">\n                City is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Country</span>\n              <input type=\"text\" formControlName=\"country\" placeholder=\"Türkiye\" />\n              <small class=\"error\" *ngIf=\"addressGroup.get('country')?.touched && addressGroup.get('country')?.invalid\">\n                Country is required.\n              </small>\n            </label>\n\n            <label class=\"field\">\n              <span>Postal code (optional)</span>\n              <input type=\"text\" formControlName=\"postalCode\" placeholder=\"34000\" />\n            </label>\n          </div>\n\n          <!-- Step 3: Summary -->\n          <div *ngSwitchCase=\"2\" class=\"step\">\n            <h2 class=\"step-title\">Summary</h2>\n            <div class=\"summary\">\n              <h3>Basic info</h3>\n              <p><strong>Name:</strong> {{ basicGroup.get('name')?.value }}</p>\n              <p><strong>Email:</strong> {{ basicGroup.get('email')?.value }}</p>\n\n              <h3>Address</h3>\n              <p><strong>Street:</strong> {{ addressGroup.get('street')?.value }}</p>\n              <p><strong>City:</strong> {{ addressGroup.get('city')?.value }}</p>\n              <p><strong>Country:</strong> {{ addressGroup.get('country')?.value }}</p>\n              <p><strong>Postal code:</strong> {{ addressGroup.get('postalCode')?.value || '—' }}</p>\n            </div>\n          </div>\n        </section>\n\n        <footer class=\"actions\">\n          <button type=\"button\" class=\"ghost\" (click)=\"prev()\" [disabled]=\"isFirstStep\">\n            Back\n          </button>\n\n          <button\n            *ngIf=\"!isLastStep\"\n            type=\"button\"\n            (click)=\"next()\"\n            [disabled]=\"!canGoNext\"\n          >\n            Next\n          </button>\n\n          <button\n            *ngIf=\"isLastStep\"\n            type=\"button\"\n            class=\"primary\"\n            (click)=\"submit()\"\n          >\n            Submit\n          </button>\n        </footer>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.app{min-height:100vh;display:grid;place-items:center;background:#020617;color:#e5e7eb;padding:24px;}`,\n    `.card{width:100%;max-width:520px;background:#020617;border-radius:16px;border:1px solid #1f2937;padding:20px 20px 16px;display:grid;gap:16px;}`,\n    `.header h1{margin:0;font-size:20px;font-weight:700;}`,\n    `.subtitle{margin:4px 0 0;font-size:13px;color:#9ca3af;}`,\n    `.steps{min-height:260px;}`,\n    `.step{display:grid;gap:12px;}`,\n    `.step-title{margin:0 0 4px;font-size:16px;font-weight:600;}`,\n    `.field{display:grid;gap:4px;font-size:13px;}`,\n    `.field span{color:#e5e7eb;}`,\n    `.field input{border-radius:10px;border:1px solid #374151;background:#020617;padding:8px 10px;color:#e5e7eb;font-size:14px;}`,\n    `.field input:focus{outline:none;border-color:#a3e635;}`,\n    `.error{font-size:11px;color:#f97316;}`,\n    `.summary{display:grid;gap:4px;font-size:14px;}`,\n    `.summary h3{margin:8px 0 2px;font-size:14px;font-weight:600;color:#e5e7eb;}`,\n    `.actions{display:flex;justify-content:space-between;gap:8px;margin-top:4px;}`,\n    `.actions button{border-radius:999px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;}`,\n    `.actions button.primary{background:#a3e635;color:#020617;border-color:#a3e635;}`,\n    `.actions button[disabled]{opacity:.5;cursor:not-allowed;}`,\n    `.actions button.ghost{background:transparent;}`\n  ]\n})\nexport class AppComponent {\n  readonly lastStepIndex = 2;\n  currentStep = 0;\n\n  constructor(private fb: FormBuilder) {}\n\n  form: FormGroup = this.fb.group({\n    basic: this.fb.group({\n      name: ['', Validators.required],\n      email: ['', [Validators.required, Validators.email]]\n    }),\n    address: this.fb.group({\n      street: ['', Validators.required],\n      city: ['', Validators.required],\n      country: ['', Validators.required],\n      postalCode: ['']\n    })\n  });\n\n  get basicGroup(): FormGroup {\n    return this.form.get('basic') as FormGroup;\n  }\n\n  get addressGroup(): FormGroup {\n    return this.form.get('address') as FormGroup;\n  }\n\n  get isFirstStep(): boolean {\n    return this.currentStep === 0;\n  }\n\n  get isLastStep(): boolean {\n    return this.currentStep === this.lastStepIndex;\n  }\n\n  get canGoNext(): boolean {\n    if (this.currentStep === 0) {\n      return this.basicGroup.valid;\n    }\n    if (this.currentStep === 1) {\n      return this.addressGroup.valid;\n    }\n    return false;\n  }\n\n  private currentGroup(): FormGroup {\n    if (this.currentStep === 0) return this.basicGroup;\n    if (this.currentStep === 1) return this.addressGroup;\n    return this.form;\n  }\n\n  next(): void {\n    const group = this.currentGroup();\n    group.markAllAsTouched();\n    if (group.invalid) {\n      return;\n    }\n    if (!this.isLastStep) {\n      this.currentStep++;\n    }\n  }\n\n  prev(): void {\n    if (!this.isFirstStep) {\n      this.currentStep--;\n    }\n  }\n\n  submit(): void {\n    this.form.markAllAsTouched();\n    if (this.form.invalid) {\n      return;\n    }\n    console.log('Signup submitted', this.form.value);\n  }\n}\n"
         }
       ],
       "notes": {
@@ -830,7 +830,7 @@
           "Render a static product list with name and price for each product.",
           "Each product should have an \"Add to cart\" button.",
           "Render a cart section that lists all items currently in the cart.",
-          "Each cart item should show name, unit price, quantity, and line total (price \u00d7 quantity).",
+          "Each cart item should show name, unit price, quantity, and line total (price × quantity).",
           "In the cart, allow increasing and decreasing the quantity of an item.",
           "Allow removing an item from the cart entirely.",
           "Show derived totals: overall item count (total quantity) and total price for the entire cart.",
@@ -839,7 +839,7 @@
         "expectedBehavior": [
           "Clicking \"Add to cart\" for a product adds it to the cart with quantity 1 (or increments the quantity if it already exists).",
           "Clicking \"+\" in the cart increases that item's quantity by 1.",
-          "Clicking \"\u2212\" in the cart decreases that item's quantity by 1; if it reaches 0, the item can be removed or clamped at 1 (depending on your chosen UX).",
+          "Clicking \"−\" in the cart decreases that item's quantity by 1; if it reaches 0, the item can be removed or clamped at 1 (depending on your chosen UX).",
           "Clicking \"Remove\" deletes the item from the cart.",
           "Total quantity updates whenever items are added, removed, or their quantities change.",
           "Total price updates whenever items are added, removed, or their quantities change.",
@@ -928,7 +928,7 @@
         ],
         "expectedBehavior": [
           "Typing quickly in the input does not trigger multiple API calls; only the final value after the user pauses for 500ms is searched.",
-          "While a search is running, a small loading label (e.g. \"Searching\u2026\") is visible.",
+          "While a search is running, a small loading label (e.g. \"Searching…\") is visible.",
           "If the fake API throws an error, an error message is displayed and loading is cleared.",
           "On success, results are rendered as a list. Updating the query triggers a new debounced search.",
           "Clearing the query clears both the loading state and the results list.",
@@ -1025,19 +1025,19 @@
         ],
         "techFocus": [
           "Standalone child components",
-          "Inputs & outputs (parent\u2013child communication)",
+          "Inputs & outputs (parent–child communication)",
           "Template loops and class binding",
           "Simple, accessible UI widgets"
         ]
       }
     },
     "solutionBlock": {
-      "overview": "This exercise builds a small but reusable UI widget: a star rating control. The key is to keep the rendering logic in the star-rating component and let the parent own the current rating value. The widget exposes `@Input()`s for `max` and `rating`, and an `@Output()` `ratingChange` emitter so the parent can use Angular's two-way binding convention `[(rating)]`.\n\n**Test cases**\n- Initial state: rating is `0` \u2192 no stars are filled.\n- Click the 3rd star \u2192 rating becomes `3` and three stars appear filled.\n- Click the 5th star \u2192 rating becomes `5` and five stars appear filled.\n- Updating the rating from the parent (e.g. `currentRating = 2`) updates the visual state of the widget.\n- When `max` is changed (e.g. to 10), the component renders that many stars.",
+      "overview": "This exercise builds a small but reusable UI widget: a star rating control. The key is to keep the rendering logic in the star-rating component and let the parent own the current rating value. The widget exposes `@Input()`s for `max` and `rating`, and an `@Output()` `ratingChange` emitter so the parent can use Angular's two-way binding convention `[(rating)]`.\n\n**Test cases**\n- Initial state: rating is `0` → no stars are filled.\n- Click the 3rd star → rating becomes `3` and three stars appear filled.\n- Click the 5th star → rating becomes `5` and five stars appear filled.\n- Updating the rating from the parent (e.g. `currentRating = 2`) updates the visual state of the widget.\n- When `max` is changed (e.g. to 10), the component renders that many stars.",
       "approaches": [
         {
           "title": "Standalone child component with Input/Output and ngFor",
           "prose": "Encapsulate the star UI into a dedicated `StarRatingComponent` and let a simple `AppComponent` host it.\n\n1. In `StarRatingComponent`, define `@Input() max = 5`, `@Input() rating = 0`, and `@Output() ratingChange = new EventEmitter<number>()`.\n2. Expose a `stars` getter that returns an array `[1, 2, ..., max]` for the template.\n3. Use `*ngFor` to render one button per star. Bind `[class.filled]` when `star <= rating`.\n4. When a star is clicked, update `rating` and emit `ratingChange.emit(newValue)`.\n5. In `AppComponent`, hold a `currentRating` property and bind the widget using `[(rating)]=\"currentRating\"` to wire up two-way binding.\n\nThis approach keeps the widget focused on presentation and simple state, while the parent component controls the rating value and can display or persist it as needed.",
-          "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-star-rating',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      <button\n        *ngFor=\"let star of stars\"\n        type=\"button\"\n        class=\"star\"\n        [class.filled]=\"star <= rating\"\n        (click)=\"onRate(star)\"\n        [attr.aria-label]=\"star + ' out of ' + max\"\n        [attr.aria-pressed]=\"star <= rating\"\n      >\n        \u2605\n      </button>\n    </div>\n  `,\n  styles: [\n    `:host{display:inline-flex;}`,\n    `.stars{display:inline-flex;gap:4px;}`,\n    `.star{background:transparent;border:none;font-size:28px;cursor:pointer;padding:4px;line-height:1;color:#4b5563;transition:transform .1s ease,color .1s ease;}`,\n    `.star.filled{color:#facc15;}`,\n    `.star:focus-visible{outline:2px solid #facc15;outline-offset:2px;}`,\n    `.star:hover{transform:scale(1.1);}`\n  ]\n})\nexport class StarRatingComponent {\n  @Input() max = 5;\n  @Input() rating = 0;\n  @Output() ratingChange = new EventEmitter<number>();\n\n  get stars(): number[] {\n    return Array.from({ length: this.max }, (_, i) => i + 1);\n  }\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max) {\n      return;\n    }\n    this.rating = value;\n    this.ratingChange.emit(this.rating);\n  }\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, StarRatingComponent],\n  template: `\n    <main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n      <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n        <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Star Rating Widget</h1>\n        <div class=\"panel\">\n          <app-star-rating [(rating)]=\"currentRating\"></app-star-rating>\n          <p class=\"hint\">Current rating: {{ currentRating }} / 5</p>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}`,\n    `.hint{margin:0;font-size:14px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  currentRating = 0;\n}\n"
+          "codeTs": "import { Component, EventEmitter, Input, Output } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-star-rating',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"stars\" role=\"radiogroup\" aria-label=\"Star rating\">\n      <button\n        *ngFor=\"let star of stars\"\n        type=\"button\"\n        class=\"star\"\n        [class.filled]=\"star <= rating\"\n        (click)=\"onRate(star)\"\n        [attr.aria-label]=\"star + ' out of ' + max\"\n        [attr.aria-pressed]=\"star <= rating\"\n      >\n        ★\n      </button>\n    </div>\n  `,\n  styles: [\n    `:host{display:inline-flex;}`,\n    `.stars{display:inline-flex;gap:4px;}`,\n    `.star{background:transparent;border:none;font-size:28px;cursor:pointer;padding:4px;line-height:1;color:#4b5563;transition:transform .1s ease,color .1s ease;}`,\n    `.star.filled{color:#facc15;}`,\n    `.star:focus-visible{outline:2px solid #facc15;outline-offset:2px;}`,\n    `.star:hover{transform:scale(1.1);}`\n  ]\n})\nexport class StarRatingComponent {\n  @Input() max = 5;\n  @Input() rating = 0;\n  @Output() ratingChange = new EventEmitter<number>();\n\n  get stars(): number[] {\n    return Array.from({ length: this.max }, (_, i) => i + 1);\n  }\n\n  onRate(value: number): void {\n    if (value < 1 || value > this.max) {\n      return;\n    }\n    this.rating = value;\n    this.ratingChange.emit(this.rating);\n  }\n}\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule, StarRatingComponent],\n  template: `\n    <main style=\"min-height:100vh; background:#0a0a0a; color:#e5e7eb; display:grid; place-items:center; padding:24px;\">\n      <section style=\"width:100%; max-width:420px; display:grid; gap:16px;\">\n        <h1 style=\"margin:0; font-size:20px; font-weight:700;\">Star Rating Widget</h1>\n        <div class=\"panel\">\n          <app-star-rating [(rating)]=\"currentRating\"></app-star-rating>\n          <p class=\"hint\">Current rating: {{ currentRating }} / 5</p>\n        </div>\n      </section>\n    </main>\n  `,\n  styles: [\n    `.panel{background:#0b1020;border:1px solid #1f2937;border-radius:12px;padding:16px;display:grid;gap:12px;}`,\n    `.hint{margin:0;font-size:14px;color:#9ca3af;}`\n  ]\n})\nexport class AppComponent {\n  currentRating = 0;\n}\n"
         }
       ],
       "notes": {
@@ -1068,7 +1068,7 @@
   },
   {
     "id": "angular-dynamic-table-starter",
-    "title": "Angular Dynamic Table (Rows \u00d7 Columns)",
+    "title": "Angular Dynamic Table (Rows × Columns)",
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
@@ -1166,9 +1166,9 @@
           "Checking the parent selects all children.",
           "Unchecking the parent clears all children.",
           "When children are toggled manually:",
-          "- If all are checked \u2192 parent becomes checked.",
-          "- If none are checked \u2192 parent becomes unchecked.",
-          "- If some are checked \u2192 parent becomes indeterminate.",
+          "- If all are checked → parent becomes checked.",
+          "- If none are checked → parent becomes unchecked.",
+          "- If some are checked → parent becomes indeterminate.",
           "Use a standalone Angular component.",
           "Use simple arrays or booleans for state (no signals needed)."
         ],
@@ -1180,7 +1180,7 @@
         ],
         "implementationNotes": [
           "Use a boolean array like `[false, false, false]` to track child states.",
-          "Bind the parent checkbox\u2019s `indeterminate` property via `@ViewChild` or a template reference.",
+          "Bind the parent checkbox’s `indeterminate` property via `@ViewChild` or a template reference.",
           "Use `(change)` event bindings for checkbox toggles.",
           "Derive parent state after each child change."
         ],
@@ -1197,14 +1197,14 @@
       "approaches": [
         {
           "title": "Boolean array with derived parent state",
-          "prose": "Use an array like `children = [false, false, false]`. The parent is derived based on the number of checked children. When clicking the parent checkbox, the entire array is updated. When children are toggled individually, run a helper that updates the parent checkbox's `checked` and `indeterminate` state. Angular does not have a native `indeterminate` input property \u2014 you must assign it manually on the element.",
+          "prose": "Use an array like `children = [false, false, false]`. The parent is derived based on the number of checked children. When clicking the parent checkbox, the entire array is updated. When children are toggled individually, run a helper that updates the parent checkbox's `checked` and `indeterminate` state. Angular does not have a native `indeterminate` input property — you must assign it manually on the element.",
           "codeTs": "import { Component, ViewChild, ElementRef } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  // Child checkbox states\n  children = [false, false, false];\n\n  @ViewChild('parentBox', { static: true }) parentBox!: ElementRef<HTMLInputElement>;\n\n  // --- Parent toggle ---\n  toggleParent(event: Event): void {\n    const checked = (event.target as HTMLInputElement).checked;\n    this.children = this.children.map(() => checked);\n    this.updateParentState();\n  }\n\n  // --- Child toggle ---\n  toggleChild(index: number): void {\n    this.children[index] = !this.children[index];\n    this.updateParentState();\n  }\n\n  // --- Derive parent state ---\n  private updateParentState(): void {\n    const total = this.children.length;\n    const checkedCount = this.children.filter(x => x).length;\n\n    const parent = this.parentBox.nativeElement;\n\n    if (checkedCount === total) {\n      parent.checked = true;\n      parent.indeterminate = false;\n    } else if (checkedCount === 0) {\n      parent.checked = false;\n      parent.indeterminate = false;\n    } else {\n      parent.checked = false;\n      parent.indeterminate = true;\n    }\n  }\n}\n"
         }
       ],
       "notes": {
         "pitfalls": [
-          "Trying to bind `[indeterminate]` in Angular \u2014 it does NOT work because it's not a real DOM property.",
-          "Mutating the parent checkbox without using `@ViewChild` \u2014 required for indeterminate logic.",
+          "Trying to bind `[indeterminate]` in Angular — it does NOT work because it's not a real DOM property.",
+          "Mutating the parent checkbox without using `@ViewChild` — required for indeterminate logic.",
           "Forgetting to recalc parent state after each child toggle."
         ],
         "techniques": [
@@ -1240,13 +1240,13 @@
       "keyboard"
     ],
     "description": {
-      "summary": "Build an **autocomplete search bar** in Angular. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, and keyboard navigation (\u2191/\u2193/Enter/Escape). Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "summary": "Build an **autocomplete search bar** in Angular. As the user types, show a dropdown of suggestions filtered from a dataset. Add debounced searching, mouse selection, and keyboard navigation (↑/↓/Enter/Escape). Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
           "Use `ReactiveFormsModule` and a `FormControl` for the input binding.",
           "Show a dropdown of suggestions filtered by the current query (case-insensitive, substring match).",
-          "Debounce input changes (e.g. 250\u2013400ms) before searching.",
+          "Debounce input changes (e.g. 250–400ms) before searching.",
           "Support mouse selection (mousedown on a suggestion sets the input value and closes dropdown).",
           "Support keyboard navigation: ArrowDown/ArrowUp moves active option, Enter selects, Escape closes.",
           "Close the dropdown when clicking outside the component.",
@@ -1276,7 +1276,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Model the query with a `FormControl`, but drive the search pipeline via a `Subject<string>` that receives values from the input `(input)` event. Debounce and dedupe query updates, then `switchMap` into a fake async `search()` that filters a local dataset and returns an RxJS stream (simulated latency via `delay`). Render results with the `async` pipe. Track `isOpen` and `activeIndex` for dropdown visibility and keyboard navigation. Close on outside click using a `HostListener` that checks whether the click target is inside the component root.\n\n**Test cases**\n- Type \"san\" \u2192 after debounce, suggestions include \"San Francisco\" / \"San Jose\".\n- Type \"\" (empty) \u2192 dropdown closes, no results shown.\n- ArrowDown twice \u2192 activeIndex changes accordingly.\n- Enter on active option \u2192 input becomes that value, dropdown closes.\n- Escape \u2192 dropdown closes.\n- Click outside \u2192 dropdown closes.\n- Mouse down on an option \u2192 selects it and closes.",
+      "overview": "Model the query with a `FormControl`, but drive the search pipeline via a `Subject<string>` that receives values from the input `(input)` event. Debounce and dedupe query updates, then `switchMap` into a fake async `search()` that filters a local dataset and returns an RxJS stream (simulated latency via `delay`). Render results with the `async` pipe. Track `isOpen` and `activeIndex` for dropdown visibility and keyboard navigation. Close on outside click using a `HostListener` that checks whether the click target is inside the component root.\n\n**Test cases**\n- Type \"san\" → after debounce, suggestions include \"San Francisco\" / \"San Jose\".\n- Type \"\" (empty) → dropdown closes, no results shown.\n- ArrowDown twice → activeIndex changes accordingly.\n- Enter on active option → input becomes that value, dropdown closes.\n- Escape → dropdown closes.\n- Click outside → dropdown closes.\n- Mouse down on an option → selects it and closes.",
       "approaches": [
         {
           "title": "Subject-driven results$ stream + keyboard navigation + outside click close",
@@ -1332,14 +1332,14 @@
         "requirements": [
           "Render two lists: Top and Bottom.",
           "Each list renders items with a checkbox for selection.",
-          "Provide two transfer buttons between lists: \"\u2193\" moves selected Top items to Bottom; \"\u2191\" moves selected Bottom items to Top.",
-          "Disable \"\u2193\" when no Top items are selected; disable \"\u2191\" when no Bottom items are selected.",
+          "Provide two transfer buttons between lists: \"↓\" moves selected Top items to Bottom; \"↑\" moves selected Bottom items to Top.",
+          "Disable \"↓\" when no Top items are selected; disable \"↑\" when no Bottom items are selected.",
           "After transfer, moved items must be unselected in the destination list.",
           "Preserve item order within each list (append moved items to the end of destination list)."
         ],
         "expectedBehavior": [
-          "Selecting items in Top and clicking \"\u2193\" removes them from Top and appends them to Bottom.",
-          "Selecting items in Bottom and clicking \"\u2191\" removes them from Bottom and appends them to Top.",
+          "Selecting items in Top and clicking \"↓\" removes them from Top and appends them to Bottom.",
+          "Selecting items in Bottom and clicking \"↑\" removes them from Bottom and appends them to Top.",
           "If nothing is selected in a list, its transfer button is disabled and does nothing.",
           "Selections are independent per list and are cleared for moved items after transfer."
         ],
@@ -1411,7 +1411,7 @@
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
-          "Render a 3\u00d73 board (9 cells).",
+          "Render a 3×3 board (9 cells).",
           "Alternate turns between players 'X' and 'O'.",
           "Clicking a cell places the current player's mark (only if the cell is empty and the game is not over).",
           "Detect a winner (3 in a row) and stop further moves.",
@@ -1444,7 +1444,7 @@
     },
     "starterCodeHint": "Store the board as an array of 9 cells and render it with *ngFor. On click, if the cell is empty and there is no winner, place the current player's mark and switch turns. Compute winner by checking the 8 winning line combinations.",
     "solutionBlock": {
-      "overview": "Use a 9-cell board (`('X'|'O'|null)[]`) and a `currentPlayer` flag. Each click attempts to place a mark if the game is still active and the cell is empty. After each move, compute winner by checking the 8 winning line combinations; if none and the board has no empty cells, it's a draw. Provide a reset that restores initial state.\n\n**Test cases**\n- Start \u2192 status is `Next: X`.\n- Place X then O \u2192 turns alternate.\n- Clicking a filled cell \u2192 no change.\n- Winning line (e.g., 0-1-2) \u2192 status becomes `Winner: X` and further clicks do nothing.\n- Full board with no winner \u2192 status becomes `Draw`.\n- Reset \u2192 clears everything.",
+      "overview": "Use a 9-cell board (`('X'|'O'|null)[]`) and a `currentPlayer` flag. Each click attempts to place a mark if the game is still active and the cell is empty. After each move, compute winner by checking the 8 winning line combinations; if none and the board has no empty cells, it's a draw. Provide a reset that restores initial state.\n\n**Test cases**\n- Start → status is `Next: X`.\n- Place X then O → turns alternate.\n- Clicking a filled cell → no change.\n- Winning line (e.g., 0-1-2) → status becomes `Winner: X` and further clicks do nothing.\n- Full board with no winner → status becomes `Draw`.\n- Reset → clears everything.",
       "approaches": [
         {
           "title": "Single standalone component with board array + winner helper",
@@ -1601,7 +1601,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Angular\u2019s two-way binding is syntactic sugar for [value] and (valueChange). The child emits updates and the parent updates its own state. This keeps data flow explicit and testable. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
+      "overview": "Angular’s two-way binding is syntactic sugar for [value] and (valueChange). The child emits updates and the parent updates its own state. This keeps data flow explicit and testable. Performance & pitfalls: consider edge cases (empty state, rapid clicks), trade-offs in state shape, and accessibility of interactive controls.",
       "approaches": [
         {
           "title": "Two-way binding via value/valueChange + submit output",
@@ -1635,7 +1635,7 @@
   },
   {
     "id": "angular-progress-bar-thresholds",
-    "title": "Angular Progress Bar (0\u2013100 with Threshold Colors)",
+    "title": "Angular Progress Bar (0–100 with Threshold Colors)",
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
@@ -1648,7 +1648,7 @@
       "derived-state"
     ],
     "description": {
-      "summary": "Build an Angular progress bar for values 0\u2013100 with +10/\u221210 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
+      "summary": "Build an Angular progress bar for values 0–100 with +10/−10 controls. Clamp the value, show the percentage, and change the fill color based on thresholds (red/orange/green) to reflect status and urgency. Concepts: components, event binding, state, styling, derived state. Angular focus: use [ngStyle]/[ngClass] to map thresholds to styles. Framework focus: Angular templates + standalone components, @Input/@Output, and RxJS/async pipe patterns.",
       "specs": {
         "requirements": [
           "Use a standalone Angular component as the root component.",
@@ -1663,7 +1663,7 @@
           "Clicking \"+10%\" increases progress by 10 up to 100.",
           "Clicking \"-10%\" decreases progress by 10 down to 0.",
           "Progress never renders below 0% or above 100%.",
-          "Bar color changes by thresholds (example: <34 red, 34\u201366 orange, >66 green)."
+          "Bar color changes by thresholds (example: <34 red, 34–66 orange, >66 green)."
         ],
         "implementationNotes": [
           "Store progress as a number (e.g., `progress = 0`).",
@@ -1741,7 +1741,7 @@
         ],
         "expectedBehavior": [
           "Submitting a top-level comment adds it to the list.",
-          "Clicking Reply on one comment toggles only that comment\u2019s reply input.",
+          "Clicking Reply on one comment toggles only that comment’s reply input.",
           "Submitting a reply appends a child comment under the correct parent.",
           "Replies can be nested indefinitely.",
           "UI indentation increases with depth."
@@ -1763,7 +1763,7 @@
       }
     },
     "solutionBlock": {
-      "overview": "Model comments as a tree. Use one input for adding top-level comments and a second input for replying. Store `activeReplyId` to ensure only one reply input is open at a time (and only under the clicked comment). Render the tree recursively via an `ng-template` with `ngTemplateOutlet`, passing `depth` to compute indentation.\n\n**Test cases**\n- Add a top-level comment \u2192 it appears in the list.\n- Click Reply on comment A \u2192 reply input appears only under A.\n- Click Reply on comment B \u2192 input moves to B; A\u2019s input disappears.\n- Submit a reply under A \u2192 reply is added to A.children.\n- Reply to a reply (depth 2+) \u2192 nested indentation increases and tree stays correct.",
+      "overview": "Model comments as a tree. Use one input for adding top-level comments and a second input for replying. Store `activeReplyId` to ensure only one reply input is open at a time (and only under the clicked comment). Render the tree recursively via an `ng-template` with `ngTemplateOutlet`, passing `depth` to compute indentation.\n\n**Test cases**\n- Add a top-level comment → it appears in the list.\n- Click Reply on comment A → reply input appears only under A.\n- Click Reply on comment B → input moves to B; A’s input disappears.\n- Submit a reply under A → reply is added to A.children.\n- Reply to a reply (depth 2+) → nested indentation increases and tree stays correct.",
       "approaches": [
         {
           "title": "Single component + recursive template (ngTemplateOutlet)",
@@ -1775,7 +1775,7 @@
         "pitfalls": [
           "Using per-node booleans for reply inputs (hard to manage as tree grows).",
           "Mutating the wrong branch because parent lookup is incorrect.",
-          "Trying to render recursively without `ngTemplateOutlet` (Angular doesn\u2019t allow direct component recursion unless you create a child component)."
+          "Trying to render recursively without `ngTemplateOutlet` (Angular doesn’t allow direct component recursion unless you create a child component)."
         ],
         "techniques": [
           "Tree structure + DFS lookup for insertion.",
@@ -1814,21 +1814,21 @@
         "requirements": [
           "Use a standalone Angular root component.",
           "Initially render exactly 1 counter button with value 0.",
-          "Clicking any button increments ONLY that button\u2019s value by 1.",
+          "Clicking any button increments ONLY that button’s value by 1.",
           "After each click, append a NEW button at the bottom with value 0.",
           "All buttons keep their own values independently."
         ],
         "expectedBehavior": [
           "Initial UI: one button showing 0.",
-          "Click first button once \u2192 first becomes 1, and a second button (0) appears below.",
-          "Click second button twice \u2192 second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
+          "Click first button once → first becomes 1, and a second button (0) appears below.",
+          "Click second button twice → second becomes 2, and two more new buttons (0, 0) are appended over those clicks.",
           "Existing button values never reset when new buttons appear."
         ],
         "implementationNotes": [
           "Store button values in an array like `counts: number[]`.",
           "Render buttons with `*ngFor`.",
           "On click: increment `counts[i]` and then `counts.push(0)`.",
-          "Keep styling consistent with your dark UI theme (\uc12d: explicit text color)."
+          "Keep styling consistent with your dark UI theme (섭: explicit text color)."
         ],
         "techFocus": [
           "Array state in Angular components",
@@ -1868,5 +1868,95 @@
     "companies": [],
     "access": "premium",
     "updatedAt": "2026-01-30"
+  },
+  {
+    "id": "angular-chips-input-autocomplete",
+    "title": "Invite Chips Input (Tags + Autocomplete)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "medium",
+    "importance": 4,
+    "tags": [
+      "components",
+      "forms",
+      "state",
+      "event-handlers",
+      "autocomplete",
+      "keyboard",
+      "accessibility",
+      "ui-components"
+    ],
+    "description": {
+      "summary": "Build a Material-like invite field in Angular. As users type, show autocomplete suggestions, convert selections into removable chips, and support keyboard shortcuts (Enter/comma/backspace).",
+      "specs": {
+        "requirements": [
+          "Use a standalone Angular component as the root component.",
+          "Render an input that creates chips below/inside the field.",
+          "Show autocomplete suggestions filtered from a fixed users list.",
+          "Exclude already-selected users from suggestions.",
+          "Clicking a suggestion creates a chip and clears the input.",
+          "Pressing Enter or comma creates/selects a chip.",
+          "Backspace on empty input removes the last chip.",
+          "Each chip has a remove button that updates state correctly.",
+          "Support ArrowUp/ArrowDown + Enter keyboard navigation in the suggestion list."
+        ],
+        "expectedBehavior": [
+          "Typing \"al\" surfaces matching user suggestions (name or email).",
+          "Selecting \"Alice\" adds one chip and it no longer appears in suggestions.",
+          "Typing custom text and pressing comma adds a custom chip.",
+          "Pressing Enter with an active suggestion selects that suggestion.",
+          "Pressing Enter/comma with no active suggestion adds a custom chip.",
+          "Pressing backspace on empty input removes the most recently added chip."
+        ],
+        "implementationNotes": [
+          "Model selected chips as an array of `{ id, label, value }`.",
+          "Use a normalized id for custom chips (for example `custom-<slug>`).",
+          "Prevent duplicates by id or case-insensitive value match.",
+          "Use `(mousedown)` for suggestion selection to avoid blur race conditions.",
+          "Keep combobox/listbox/option roles and active-descendant wiring for accessibility."
+        ],
+        "techFocus": [
+          "Angular standalone components",
+          "Template event binding + local state",
+          "Derived suggestion filtering",
+          "Keyboard interaction state",
+          "Accessible combobox patterns"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement TODOs in app.component.ts: derive suggestions, wire keyboard behavior (arrow/enter/comma/backspace), prevent duplicates, and support suggestion selection + custom chips.",
+    "solutionBlock": {
+      "overview": "Keep `chips`, `query`, `isOpen`, and `activeIndex` in component state. Derive suggestions from query + selected chips. Handle Enter/comma for add/select, Arrow keys for navigation, Backspace for last-chip delete, and outside click for dropdown close.",
+      "approaches": [
+        {
+          "title": "Single standalone component with derived suggestions and keyboard UX",
+          "prose": "Use a getter to filter a static dataset by query while excluding already selected chips. Add a helper that inserts chips only when unique. In `handleKeyDown`, map ArrowUp/ArrowDown to active option movement, Enter/comma to select/create, and Backspace (when input is empty) to remove the last chip. Use `@HostListener(document:mousedown)` to close the dropdown on outside clicks."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Using `(click)` instead of `(mousedown)` on suggestions can lose selection because blur runs first.",
+          "Not normalizing text for duplicate checks leads to repeated chips with casing differences.",
+          "Not resetting `activeIndex` when query changes causes stale keyboard focus."
+        ],
+        "techniques": [
+          "Derived data via getter for suggestions.",
+          "Stable keyboard interaction with `activeIndex` state.",
+          "Case-insensitive de-duplication by id/value."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-chips-input-autocomplete.v1.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v1:ui:angular:angular-chips-input-autocomplete"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-chips-input-autocomplete-solution.v1.json",
+    "companies": [
+      "amazon",
+      "airbnb"
+    ],
+    "access": "premium",
+    "updatedAt": "2026-02-09"
   }
 ]
