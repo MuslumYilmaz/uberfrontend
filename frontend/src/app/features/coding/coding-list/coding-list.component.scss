@@ -327,8 +327,75 @@ app-coding-tech-kind-tabs {
 .list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   min-height: 55vh;
+}
+
+.list-row.fa-question-card--compact {
+  padding: 10px;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__grid {
+  gap: 8px;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__main {
+  gap: 5px;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__eyebrow {
+  padding: 4px 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__title {
+  margin-top: 0;
+  font-size: 14.5px;
+  line-height: 1.25;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__description {
+  margin-top: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__meta-row {
+  gap: 6px;
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__meta-item {
+  gap: 5px;
+  padding: 4px 6px;
+}
+
+.list-row.fa-question-card--compact .fa-question-card__meta-item .fa-meta-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+.list-row.fa-question-card--compact .ghost-link.meta-open {
+  min-height: 32px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.list-row.fa-question-card--compact .solved-pill {
+  margin-top: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+@media (max-width: 640px) {
+  .list-row.fa-question-card--compact .fa-question-card__description {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
 }
 
 .desc-tip-target {
