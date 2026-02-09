@@ -189,6 +189,14 @@ export const FRAMEWORK_FAMILIES: FrameworkFamily[] = [
       { tech: 'vue', id: 'vue-chips-input-autocomplete', kind: 'coding' },
     ],
   },
+  {
+    key: 'snake-game',
+    members: [
+      { tech: 'react', id: 'react-snake-game', kind: 'coding' },
+      { tech: 'angular', id: 'angular-snake-game', kind: 'coding' },
+      { tech: 'vue', id: 'vue-snake-game', kind: 'coding' },
+    ],
+  },
 ];
 
 export const FRAMEWORK_FAMILY_BY_ID = FRAMEWORK_FAMILIES.reduce((acc, fam) => {

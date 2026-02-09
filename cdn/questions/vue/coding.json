@@ -1954,5 +1954,92 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09"
+  },
+  {
+    "id": "vue-snake-game",
+    "title": "Vue Snake Game (Grid + Food + Collision)",
+    "type": "coding",
+    "technology": "vue",
+    "difficulty": "hard",
+    "importance": 3,
+    "tags": [
+      "vue",
+      "composition-api",
+      "reactivity",
+      "event-handlers",
+      "grid",
+      "dom",
+      "accessibility"
+    ],
+    "description": {
+      "summary": "Build a Snake game in Vue 3 using a grid board. Support keyboard controls, food spawning, score updates, and game-over handling for wall/body collisions.",
+      "specs": {
+        "requirements": [
+          "Render a fixed-size board (for example 14×14) with snake body and food cells.",
+          "Move the snake using Arrow keys (optionally WASD).",
+          "Run game ticks on an interval while the game is running.",
+          "Eating food should grow the snake and increment score.",
+          "Colliding with walls or snake body should end the game.",
+          "Provide Start/Pause and Reset controls.",
+          "Expose score and current snake length in the UI.",
+          "Keep keyboard interactions stable (no reverse-direction bug)."
+        ],
+        "expectedBehavior": [
+          "Initial state shows a short snake, one food cell, and score 0.",
+          "Press Start to begin movement; snake advances one cell per tick.",
+          "When head reaches food, score increases and snake length grows by 1.",
+          "Pressing opposite direction immediately should be ignored for safety.",
+          "Hitting boundary or own body stops the game and shows game-over state.",
+          "Reset returns to initial state with a new food position."
+        ],
+        "implementationNotes": [
+          "Store snake as ordered coordinates, with index 0 as the head.",
+          "Track both current direction and pending direction to avoid race conditions.",
+          "Use Set/string keys for fast cell occupancy checks.",
+          "Generate food only on free cells that are not occupied by snake.",
+          "Clear interval correctly on pause, game over, and unmount."
+        ],
+        "techFocus": [
+          "Vue 3 Composition API (ref/computed)",
+          "Interval lifecycle management",
+          "Keyboard event handling",
+          "Deterministic state updates for moving/growing arrays"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement TODOs in <script setup>: keyboard direction updates, game loop movement, collision checks, food growth, and reset flow.",
+    "solutionBlock": {
+      "overview": "Keep snake coordinates, direction, pendingDirection, food, score, and run state in refs. Tick with setInterval, prepend next head, and pop tail unless food is eaten. End the game on wall/body collision.",
+      "approaches": [
+        {
+          "title": "Single Vue component with deterministic game-loop state",
+          "prose": "On each tick, compute the next head from current direction. Validate collisions before mutating state. If food is eaten, keep the tail (grow) and spawn new food on a free cell. Otherwise remove tail for standard movement. Use key mapping and block immediate opposite-direction turns."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Allowing immediate reverse direction can cause instant self-collision artifacts.",
+          "Forgetting interval cleanup leads to duplicate timers and speed glitches.",
+          "Spawning food without excluding snake cells can make unreachable food."
+        ],
+        "techniques": [
+          "Occupancy keys like `x,y` for constant-time lookups.",
+          "Pending direction buffer to avoid same-tick race conditions.",
+          "Deterministic tick flow with explicit collision branches."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/vue/question/vue-snake-game.v2.json",
+      "openFile": "/src/App.vue",
+      "storageKey": "v3:ui:vue:vue-snake-game"
+    },
+    "solutionAsset": "assets/sb/vue/solution/vue-snake-game-solution.v2.json",
+    "companies": [
+      "amazon",
+      "microsoft"
+    ],
+    "access": "premium",
+    "updatedAt": "2026-02-09"
   }
 ]
