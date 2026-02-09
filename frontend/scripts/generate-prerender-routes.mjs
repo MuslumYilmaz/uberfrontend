@@ -79,6 +79,7 @@ function buildRoutes() {
     '/guides/system-design-blueprint',
     '/guides/behavioral',
     '/tracks',
+    '/focus-areas',
     '/companies',
     '/system-design',
     '/tools/cv',

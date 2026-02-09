@@ -385,6 +385,21 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'focus-areas',
+    loadComponent: () =>
+      import('./features/tracks/focus-areas/focus-areas.component').then(
+        (m) => m.FocusAreasComponent,
+      ),
+    data: {
+      seo: {
+        title: 'Frontend Interview Focus Areas',
+        description:
+          'Browse all focus areas covered by FrontendAtlas interview tracks and jump directly to the prep path that matches your goal.',
+        robots: 'index,follow',
+      },
+    },
+  },
 
   // System design (practice/problems area, not the guide)
   {

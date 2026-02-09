@@ -1,5 +1,6 @@
 /
 /angular/coding/angular-autocomplete-search-starter
+/angular/coding/angular-chips-input-autocomplete
 /angular/coding/angular-contact-form-starter
 /angular/coding/angular-counter-starter
 /angular/coding/angular-debounced-search
@@ -102,6 +103,7 @@
 /css/trivia/css-units-em-rem-percent-px
 /css/trivia/css-visibility-vs-display
 /css/trivia/css-z-index
+/focus-areas
 /guides/behavioral
 /guides/behavioral/big-picture
 /guides/behavioral/checklist
@@ -331,6 +333,7 @@
 /react/coding/react-accordion-faq
 /react/coding/react-autocomplete-search-starter
 /react/coding/react-chat-streaming-ui
+/react/coding/react-chips-input-autocomplete
 /react/coding/react-contact-form-starter
 /react/coding/react-counter
 /react/coding/react-debounced-search
@@ -419,6 +422,7 @@
 /tracks
 /vue/coding/vue-accordion-faq
 /vue/coding/vue-autocomplete-search
+/vue/coding/vue-chips-input-autocomplete
 /vue/coding/vue-contact-form-starter
 /vue/coding/vue-counter
 /vue/coding/vue-debounced-search

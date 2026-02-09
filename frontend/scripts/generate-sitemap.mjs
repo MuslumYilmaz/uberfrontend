@@ -69,6 +69,7 @@ function buildUrls() {
     '/pricing',
     '/coding',
     '/tracks',
+    '/focus-areas',
     '/companies',
     '/system-design',
     '/tools/cv',

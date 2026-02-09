@@ -7,6 +7,9 @@
     <loc>https://frontendatlas.com/angular/coding/angular-autocomplete-search-starter</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-chips-input-autocomplete</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-contact-form-starter</loc>
   </url>
   <url>
@@ -311,6 +314,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/css/trivia/css-z-index</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/focus-areas</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/behavioral</loc>
@@ -1000,6 +1006,9 @@
     <loc>https://frontendatlas.com/react/coding/react-chat-streaming-ui</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/coding/react-chips-input-autocomplete</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/coding/react-contact-form-starter</loc>
   </url>
   <url>
@@ -1262,6 +1271,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-autocomplete-search</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-chips-input-autocomplete</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-contact-form-starter</loc>

@@ -82,6 +82,7 @@ export class AppSidebarComponent implements OnInit, OnDestroy {
       children: [
         { type: 'link', label: 'Crash Track (7 days)', to: '/tracks/crash-7d', icon: 'pi pi-bolt' },
         { type: 'link', label: 'Foundations Track (30 days)', to: '/tracks/foundations-30d', icon: 'pi pi-calendar' },
+        { type: 'link', label: 'All focus areas', to: '/focus-areas', icon: 'pi pi-compass' },
         { type: 'link', label: 'Company interview questions', to: '/companies', icon: 'pi pi-building' },
       ],
     },

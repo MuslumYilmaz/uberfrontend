@@ -1,0 +1,61 @@
+<div class="focus-page">
+  <div class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Dashboard</p>
+      <h1>Frontend Interview Focus Areas</h1>
+      <p class="lede">
+        Same focus areas you see on the Dashboard, now in one page. Pick a focus area and jump
+        straight to the all-questions page with that topic filter applied.
+      </p>
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-value">{{ stats.rows.length }}</span>
+            <span class="stat-label">Focus areas</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{{ stats.totalQuestions }}</span>
+            <span class="stat-label">Coding + trivia questions</span>
+          </div>
+        </div>
+      </ng-container>
+      <a class="hero-cta" [routerLink]="['/coding']">Browse all questions</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <ng-container *ngIf="stats$ | async as stats; else loading">
+      <div class="grid" *ngIf="stats.rows.length; else emptyState">
+        <a
+          *ngFor="let row of stats.rows"
+          class="row fa-card fa-card--interactive"
+          [routerLink]="['/coding']"
+          [queryParams]="{ topic: row.id, reset: 1 }"
+          [attr.aria-label]="'Open ' + row.title + ' questions'"
+        >
+          <div class="row-main">
+            <div class="row-icon"><i class="pi pi-th-large"></i></div>
+            <div class="row-body">
+              <div class="row-title">{{ row.title }}</div>
+              <div class="row-sub">{{ row.questionCount }} questions</div>
+            </div>
+          </div>
+          <div class="row-arrow">→</div>
+        </a>
+      </div>
+    </ng-container>
+
+    <ng-template #loading>
+      <div class="empty fa-card">
+        <h2>Loading focus areas</h2>
+      </div>
+    </ng-template>
+
+    <ng-template #emptyState>
+      <div class="empty fa-card">
+        <h2>No focus areas found</h2>
+        <p>Add topic registry entries or tagged questions to populate this page.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>
