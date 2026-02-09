@@ -10,7 +10,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <fa-guide-shell
-      title="Final Checklist"
+      title="Behavioral Interview Checklist: Last-Minute Prep Before the Call"
       [minutes]="8"
       [tags]="['behavioral','checklist','prep']"
       [prev]="prev"

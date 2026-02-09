@@ -10,7 +10,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <fa-guide-shell
-      title="What You’re Evaluated On"
+      title="Behavioral Interview Scoring Rubric: What Interviewers Evaluate"
       [minutes]="12"
       [tags]="['behavioral','signals','evaluation']"
       [prev]="prev"

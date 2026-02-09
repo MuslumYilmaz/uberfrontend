@@ -56,8 +56,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
 `,
   template: `
   <fa-guide-shell
-    title="Shipping Code Under Pressure"
-    subtitle="How to tackle coding rounds without freezing or over-engineering."
+    title="Frontend Coding Interviews: Solve Prompts Under Pressure"
+    subtitle="How to turn ambiguous interview prompts into working solutions without freezing or over-engineering."
     [minutes]="8"
     [tags]="['coding','ui','practice']"
     [prev]="prev"

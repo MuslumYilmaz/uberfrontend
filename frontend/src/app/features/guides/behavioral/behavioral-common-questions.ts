@@ -10,7 +10,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     <fa-guide-shell
-      title="Common Behavioral Questions (and How to Nail Them)"
+      title="Behavioral Interview Questions: How to Answer Common Prompts"
       [minutes]="20"
       [tags]="['behavioral','questions','prep']"
       [prev]="prev"

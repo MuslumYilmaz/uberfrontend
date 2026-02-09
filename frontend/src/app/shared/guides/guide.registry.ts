@@ -46,27 +46,27 @@ function inferBase(registry: GuideEntry[]): string | null {
 export const PLAYBOOK: GuideEntry[] = [
     {
         slug: 'intro',
-        title: 'How Front-End Interviews Really Work (and How to Prep)',
+        title: 'Frontend Interview Preparation Guide: Process, Rounds, and Plan',
         minutes: 10,
-        summary: 'Formats you’ll face, what companies actually evaluate, and how to plan your prep.',
+        summary: 'Understand each interview stage, what frontend hiring teams evaluate, and how to build a realistic prep plan that leads to stronger interview performance.',
         load: () =>
             import('../../features/guides/playbook/fe-intro-article.component')
                 .then(m => m.FeIntroArticle),
     },
     {
         slug: 'coding-interviews',
-        title: 'Shipping Code Under Pressure',
+        title: 'Frontend Coding Interviews: Solve Prompts Under Pressure',
         minutes: 12,
-        summary: 'The coding round, demystified: types of problems, strategies, and pitfalls.',
+        summary: 'A practical framework to turn ambiguous prompts into working solutions fast, avoid common coding-round mistakes, and communicate clearly under time limits.',
         load: () =>
             import('../../features/guides/playbook/fe-coding-article.component')
                 .then(m => m.FeCodingArticle),
     },
     {
         slug: 'javascript-interviews',
-        title: 'JavaScript Problems That Actually Show Up',
+        title: 'Frontend JavaScript Interviews: Problems, Patterns, and Answer Strategy',
         minutes: 15,
-        summary: 'Essential JS patterns and real interview-style problems.',
+        summary: 'Learn the JavaScript problem types interviewers ask most, the patterns to apply fast, and how to explain decisions clearly under pressure.',
         load: () =>
             import('../../features/guides/playbook/js-problems-article.component')
                 .then(m => m.JsProblemsArticle),
@@ -82,9 +82,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'ui-interviews',
-        title: 'Build Great UI in 60 Minutes',
+        title: 'Frontend UI Interviews: Build Accessible Components Under Time',
         minutes: 20,
-        summary: 'UI coding interviews: from layout to logic to polish under time pressure.',
+        summary: 'Learn exactly what to build first, how to add accessibility and polish, and how to finish UI interview prompts with a complete, explainable result.',
         load: () =>
             import('../../features/guides/playbook/fe-ui-in-60.component')
                 .then(m => m.FeUiIn60Article),
@@ -100,9 +100,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'system-design',
-        title: 'Client-Side System Design: A Fast Framework',
+        title: 'Frontend System Design Interviews: A Fast Answer Framework',
         minutes: 8,
-        summary: 'How to think about front-end system design in interviews.',
+        summary: 'Use a step-by-step framework to answer frontend system design questions, cover trade-offs clearly, and avoid common interview anti-patterns.',
         load: () =>
             import('../../features/guides/playbook/fe-system-design-fast-framework-article.component')
                 .then(m => m.FeSystemDesignFastFrameworkArticle),
@@ -118,9 +118,9 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'resume',
-        title: 'A Front-End Resume That Gets Calls Back',
+        title: 'Frontend Resume for Interviews: What Gets Calls and What Gets Rejected',
         minutes: 12,
-        summary: 'How to write a CV that gets you interviews instead of rejections.',
+        summary: 'A practical frontend resume blueprint with impact-focused bullets, section-by-section rules, and common mistakes to remove before applying.',
         load: () =>
             import('../../features/guides/playbook/resume-article.component')
                 .then(m => m.ResumeArticle),
@@ -263,18 +263,18 @@ export const BEHAVIORAL: GuideEntry[] = [
     },
     {
         slug: 'big-picture',
-        title: 'The Big Picture: Why Behavioral Rounds Matter in Tech',
+        title: 'Behavioral Interview Big Picture: How It Impacts Screening and Onsite',
         minutes: 8,
-        summary: 'Where behavioral fits in the funnel and what hiring teams really optimize for.',
+        summary: 'Understand where behavioral rounds affect screening and onsite decisions, and how to frame answers around the exact signals hiring teams score.',
         load: () =>
             import('../../features/guides/behavioral/behavioral-big-picture')
                 .then(m => m.BehavioralBigPictureArticle),
     },
     {
         slug: 'evaluation-areas',
-        title: 'What You’re Evaluated On',
+        title: 'Behavioral Interview Scoring Rubric: What Interviewers Evaluate',
         minutes: 10,
-        summary: 'Communication, collaboration, ownership, growth mindset, and leadership—decoded.',
+        summary: 'A clear rubric for communication, collaboration, ownership, growth, and leadership so you can map each story to what interviewers actually score.',
         load: () =>
             import('../../features/guides/behavioral/behavioral-evaluation-areas')
                 .then(m => m.BehavioralEvaluationAreasArticle),
@@ -299,36 +299,36 @@ export const BEHAVIORAL: GuideEntry[] = [
     },
     {
         slug: 'common-questions',
-        title: 'Solving Common Questions',
+        title: 'Behavioral Interview Questions: How to Answer Common Prompts',
         minutes: 18,
-        summary: 'Frameworks + sample outlines for “Tell me about yourself”, “Why here”, conflict, failure, more.',
+        summary: 'Use clear frameworks and sample answer structures for top behavioral interview questions like conflict, failure, leadership, and “tell me about yourself.”',
         load: () =>
             import('../../features/guides/behavioral/behavioral-common-questions')
                 .then(m => m.BehavioralQuestionsArticle),
     },
     {
         slug: 'fe-advanced',
-        title: 'Front-End Specific Scenarios',
+        title: 'Frontend Behavioral Interview Scenarios: How to Answer Technical Prompts',
         minutes: 13,
-        summary: 'Design trade-offs, accessibility, performance, and cross-functional collaboration examples.',
+        summary: 'Answer frontend-specific behavioral prompts on trade-offs, accessibility, performance, and cross-team collaboration with structured, interview-ready examples.',
         load: () =>
             import('../../features/guides/behavioral/behavioral-fe-advanced')
                 .then(m => m.BehavioralFeAdvancedArticle),
     },
     {
         slug: 'practical-tips',
-        title: 'Practical Tips & Anti-Patterns',
+        title: 'Behavioral Interview Tips: Common Mistakes and Better Answers',
         minutes: 8,
-        summary: 'Avoid rambling, stay specific, quantify impact, and handle Zoom dynamics smoothly.',
+        summary: 'Fix the delivery mistakes that weaken behavioral interviews: rambling, vague answers, weak impact, and poor remote interview habits.',
         load: () =>
             import('../../features/guides/behavioral/behavioral-practical-tips')
                 .then(m => m.BehavioralTipsArticle),
     },
     {
         slug: 'checklist',
-        title: 'Final Checklist',
+        title: 'Behavioral Interview Checklist: Last-Minute Prep Before the Call',
         minutes: 5,
-        summary: 'One-pager before the interview: story bank, company research, and questions to ask.',
+        summary: 'A fast pre-interview checklist for behavioral rounds: story bank, company research, questions to ask, and final delivery checks.',
         load: () =>
             import('../../features/guides/behavioral/behavioral-checklist')
                 .then(m => m.BehavioralChecklistArticle),

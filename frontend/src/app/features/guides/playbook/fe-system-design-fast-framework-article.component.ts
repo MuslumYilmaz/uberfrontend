@@ -42,8 +42,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
   <fa-guide-shell
-    title="Client-Side System Design: A Fast Framework"
-    subtitle="How to think about front-end system design in interviews."
+    title="Frontend System Design Interviews: A Fast Answer Framework"
+    subtitle="A repeatable framework to explain trade-offs clearly and avoid common system design interview mistakes."
     [minutes]="15"
     [tags]="['system-design','frontend','architecture']"
     [prev]="prev"

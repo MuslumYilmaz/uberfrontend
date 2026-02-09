@@ -137,8 +137,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
   template: `
   <fa-guide-shell
-    title="How Front-End Interviews Really Work (and How to Prep)"
-    subtitle="Formats you’ll face, what companies actually evaluate, and how to plan your prep."
+    title="Frontend Interview Preparation Guide: Process, Rounds, and Plan"
+    subtitle="A clear map of interview stages, evaluation criteria, and a practical prep plan for frontend roles."
     [minutes]="10"
     [tags]="['overview','strategy','checklists']"
     [prev]="prev"

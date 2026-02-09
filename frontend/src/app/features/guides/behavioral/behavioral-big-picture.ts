@@ -10,7 +10,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     <fa-guide-shell
-      title="The Big Picture: Why Behavioral Rounds Matter in Tech"
+      title="Behavioral Interview Big Picture: How It Impacts Screening and Onsite"
       [minutes]="8"
       [tags]="['behavioral','hiring','signals']"
       [prev]="prev"

@@ -10,7 +10,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <fa-guide-shell
-      title="Front-End Specific Scenarios"
+      title="Frontend Behavioral Interview Scenarios: How to Answer Technical Prompts"
       [minutes]="15"
       [tags]="['behavioral','frontend','scenarios']"
       [prev]="prev"

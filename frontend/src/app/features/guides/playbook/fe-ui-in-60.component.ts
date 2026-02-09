@@ -55,8 +55,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
     template: `
   <fa-guide-shell
-    title="Build Great UI in 60 Minutes"
-    subtitle="UI coding interviews: from layout to logic to polish under time pressure."
+    title="Frontend UI Interviews: Build Accessible Components Under Time"
+    subtitle="A practical order-of-operations for shipping complete, interview-ready UI solutions fast."
     [minutes]="20"
     [tags]="['ui','html','css','javascript','accessibility','performance']"
     [prev]="prev"

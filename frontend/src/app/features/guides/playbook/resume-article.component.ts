@@ -39,8 +39,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   `],
     template: `
   <fa-guide-shell
-    title="A Front-End Resume That Gets Calls Back"
-    subtitle="How to write a CV that gets you interviews instead of rejections."
+    title="Frontend Resume for Interviews: What Gets Calls and What Gets Rejected"
+    subtitle="A practical frontend resume blueprint with impact bullets and common mistakes to remove before applying."
     [minutes]="10"
     [tags]="['resume','career','frontend']"
     [prev]="prev"

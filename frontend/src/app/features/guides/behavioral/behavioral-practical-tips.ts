@@ -10,7 +10,7 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <fa-guide-shell
-      title="Practical Tips & Anti-Patterns"
+      title="Behavioral Interview Tips: Common Mistakes and Better Answers"
       [minutes]="12"
       [tags]="['behavioral','tips','anti-patterns']"
       [prev]="prev"

@@ -12,8 +12,8 @@ import { GuideShellComponent } from '../../../shared/components/guide/guide-shel
     imports: [GuideShellComponent, RouterModule],
     template: `
   <fa-guide-shell
-    title="JavaScript Problems That Actually Show Up"
-    subtitle="Essential patterns and interview-style problems that real companies ask"
+    title="Frontend JavaScript Interviews: Problems, Patterns, and Answer Strategy"
+    subtitle="Core JavaScript patterns interviewers ask most and how to explain your approach under pressure."
     [minutes]="14"
     [tags]="['javascript','coding','practice']"
     [prev]="prev"
