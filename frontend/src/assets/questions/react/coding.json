@@ -2082,5 +2082,88 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09"
+  },
+  {
+    "id": "react-chessboard-click-highlight",
+    "title": "React Chessboard Click/Highlight (N×N Board)",
+    "type": "coding",
+    "technology": "react",
+    "difficulty": "medium",
+    "importance": 3,
+    "tags": [
+      "react",
+      "state",
+      "event-handlers",
+      "grid",
+      "components",
+      "dom"
+    ],
+    "description": {
+      "summary": "Build an interactive N×N chessboard in React. Clicking a cell should highlight it and clear the previous selection. Include a size control so users can switch board dimensions.",
+      "specs": {
+        "requirements": [
+          "Render an N×N chessboard where light/dark squares alternate correctly.",
+          "Allow changing N via a numeric input (for example 2..20).",
+          "Clicking a square highlights that square.",
+          "Only one square can stay highlighted at a time.",
+          "Changing board size re-renders the board and resets selection safely.",
+          "Expose selected cell coordinates in the UI (row/column).",
+          "Keep keyboard accessibility with semantic button/grid roles."
+        ],
+        "expectedBehavior": [
+          "Initial render shows an 8×8 board with no selected square.",
+          "Clicking row 3 column 5 highlights that square and updates status text.",
+          "Clicking a different square removes previous highlight and applies new one.",
+          "Entering N=4 re-renders as a 4×4 board and clears previous selection.",
+          "Board never renders below min or above max size."
+        ],
+        "implementationNotes": [
+          "Store board size in state and clamp updates inside input handler.",
+          "Store selected square as a stable key like `row-col`.",
+          "Compute checker pattern with `(row + col) % 2`.",
+          "Use CSS classes for light/dark/active state and avoid inline color toggles."
+        ],
+        "techFocus": [
+          "React hooks (useState/useMemo)",
+          "Derived grid rendering",
+          "Event handling for board interaction",
+          "Accessible interactive UI"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement TODOs in App.tsx: clamp board size, keep one active square, and keep selected coordinate text in sync.",
+    "solutionBlock": {
+      "overview": "Keep `size` and `selectedKey` in state. Render rows/columns from size, compute light/dark classes with parity, and set the selected key on click so only one square is active.",
+      "approaches": [
+        {
+          "title": "State-driven board rendering with a selected-cell key",
+          "prose": "Use one state variable for board size and one for selected cell (`row-col`). Map row/column indices to render buttons. Apply active style based on key equality. Clamp size changes to a safe range and clear selection on resize to avoid stale coordinates."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Forgetting to clear selection after size change can reference out-of-range cells.",
+          "Using array index alone for keys in nested loops can create unstable highlight behavior.",
+          "Inline style branching can make active/dark/light states harder to maintain than CSS classes."
+        ],
+        "techniques": [
+          "Deterministic cell keys (`row-col`).",
+          "Parity-based checker pattern: `(row + col) % 2`.",
+          "Input clamping for predictable board constraints."
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/react/question/react-chessboard-click-highlight.v1.json",
+      "openFile": "/src/App.tsx",
+      "storageKey": "v1:ui:react:react-chessboard-click-highlight"
+    },
+    "solutionAsset": "assets/sb/react/solution/react-chessboard-click-highlight-solution.v1.json",
+    "companies": [
+      "amazon",
+      "microsoft"
+    ],
+    "access": "premium",
+    "updatedAt": "2026-02-09"
   }
 ]

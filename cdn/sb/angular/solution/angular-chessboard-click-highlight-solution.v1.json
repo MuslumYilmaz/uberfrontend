@@ -1,0 +1,40 @@
+{
+  "version": "v2",
+  "type": "user-interface",
+  "title": "Angular Chessboard Click/Highlight (solution)",
+  "openFile": "/src/app/app.component.ts",
+  "dependencies": {
+    "@angular/core": "17.1.0",
+    "@angular/common": "17.1.0",
+    "@angular/platform-browser": "17.1.0",
+    "@angular/forms": "17.1.0",
+    "rxjs": "7.8.1",
+    "zone.js": "^0.14.2"
+  },
+  "files": {
+    "/package.json": {
+      "code": "{\n  \"name\": \"angular-chessboard-click-highlight-solution\",\n  \"private\": true\n}\n"
+    },
+    "/src/main.ts": {
+      "code": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent).catch(console.error);\n"
+    },
+    "/src/index.html": {
+      "code": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Angular SDK • Chessboard Click Highlight (solution)</title>\n  </head>\n  <body>\n    <app-root></app-root>\n  </body>\n</html>\n"
+    },
+    "/src/app/app.component.ts": {
+      "code": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [CommonModule],\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.css']\n})\nexport class AppComponent {\n  readonly minSize = 2;\n  readonly maxSize = 20;\n\n  size = 8;\n  selectedKey: string | null = null;\n\n  onSizeInput(raw: string): void {\n    const next = Number(raw);\n    if (!Number.isFinite(next)) return;\n    const clamped = Math.max(this.minSize, Math.min(this.maxSize, Math.trunc(next)));\n    this.size = clamped;\n    this.selectedKey = null;\n  }\n\n  onCellClick(row: number, col: number): void {\n    this.selectedKey = this.cellKey(row, col);\n  }\n\n  get rows(): number[] {\n    return Array.from({ length: this.size }, (_, index) => index);\n  }\n\n  get selectedLabel(): string {\n    if (!this.selectedKey) return 'Selected: none';\n    const [row, col] = this.selectedKey.split('-').map(Number);\n    return 'Selected: row ' + String(row + 1) + ', column ' + String(col + 1);\n  }\n\n  cellKey(row: number, col: number): string {\n    return String(row) + '-' + String(col);\n  }\n\n  cellClass(row: number, col: number): string {\n    const dark = (row + col) % 2 === 1;\n    const active = this.selectedKey === this.cellKey(row, col);\n    return 'cell ' + (dark ? 'cell--dark' : 'cell--light') + (active ? ' cell--active' : '');\n  }\n}\n"
+    },
+    "/src/app/app.component.html": {
+      "code": "<main class=\"page\">\n  <section class=\"card\">\n    <h1 class=\"title\">Chessboard Click / Highlight</h1>\n    <p class=\"subtitle\">\n      Build an N×N chessboard where clicking one cell highlights it and clears previous selection.\n    </p>\n\n    <label class=\"size\" for=\"board-size\">\n      Board size (N)\n      <input\n        id=\"board-size\"\n        type=\"number\"\n        [attr.min]=\"minSize\"\n        [attr.max]=\"maxSize\"\n        [value]=\"size\"\n        (input)=\"onSizeInput($any($event.target).value ?? '')\"\n      />\n    </label>\n\n    <p class=\"status\" aria-live=\"polite\">{{ selectedLabel }}</p>\n\n    <div\n      class=\"board\"\n      role=\"grid\"\n      aria-label=\"interactive chessboard\"\n      [style.gridTemplateColumns]=\"'repeat(' + size + ', minmax(0, 1fr))'\"\n    >\n      <ng-container *ngFor=\"let row of rows; let rowIndex = index\">\n        <button\n          *ngFor=\"let col of rows; let colIndex = index\"\n          type=\"button\"\n          role=\"gridcell\"\n          [class]=\"cellClass(rowIndex, colIndex)\"\n          (click)=\"onCellClick(rowIndex, colIndex)\"\n          [attr.aria-label]=\"'Row ' + (rowIndex + 1) + ' Column ' + (colIndex + 1)\"\n          [attr.aria-pressed]=\"selectedKey === cellKey(rowIndex, colIndex)\"\n        ></button>\n      </ng-container>\n    </div>\n  </section>\n</main>\n"
+    },
+    "/src/app/app.component.css": {
+      "code": ".page{min-height:100vh;display:grid;place-items:center;padding:24px;background:#0a0a0a;color:#e5e7eb;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}\n.card{width:min(760px,100%);background:#0b1020;border:1px solid #1f2937;border-radius:14px;padding:18px;display:grid;gap:14px;}\n.title{margin:0;font-size:20px;font-weight:800;}\n.subtitle{margin:0;color:#9ca3af;font-size:13px;}\n.size{display:inline-grid;gap:6px;font-size:12px;color:#9ca3af;width:max-content;}\n.size input{width:90px;background:#0a0f1e;color:#e5e7eb;border:1px solid #374151;border-radius:10px;padding:8px 10px;}\n.status{margin:0;padding:8px 10px;border:1px solid #1f2937;border-radius:10px;background:#0a0f1e;font-size:13px;}\n.board{width:min(560px,100%);display:grid;border:1px solid #374151;border-radius:12px;overflow:hidden;}\n.cell{aspect-ratio:1/1;border:none;cursor:pointer;outline:none;box-shadow:inset 0 0 0 1px rgba(15,23,42,.15);transition:box-shadow 120ms ease;}\n.cell--light{background:#e5e7eb;}\n.cell--dark{background:#334155;}\n.cell:hover{box-shadow:inset 0 0 0 2px rgba(14,165,233,.65);}\n.cell--active{box-shadow:inset 0 0 0 3px #facc15 !important;}\n.cell:focus-visible{box-shadow:inset 0 0 0 3px #a3e635 !important;}\n"
+    },
+    "/src/styles.css": {
+      "code": ":root { color-scheme: dark; }\nhtml, body { margin: 0; height: 100%; background:#0a0a0a; }\nbody { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }\n"
+    },
+    "/tsconfig.json": {
+      "code": "{\n  \"compilerOptions\": {\n    \"target\": \"es2022\",\n    \"strict\": true,\n    \"noEmitOnError\": false\n  }\n}\n"
+    }
+  }
+}

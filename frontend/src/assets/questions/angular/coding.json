@@ -1958,5 +1958,86 @@
     ],
     "access": "premium",
     "updatedAt": "2026-02-09"
+  },
+  {
+    "id": "angular-chessboard-click-highlight",
+    "title": "Angular Chessboard Click/Highlight (N×N Board)",
+    "type": "coding",
+    "technology": "angular",
+    "difficulty": "intermediate",
+    "importance": 3,
+    "tags": [
+      "components",
+      "state",
+      "event-handlers",
+      "grid",
+      "dom",
+      "accessibility"
+    ],
+    "description": {
+      "summary": "Build an interactive N×N chessboard in Angular. Clicking a cell should highlight it and clear the previous selection. Add a size control so users can change board dimensions.",
+      "specs": {
+        "requirements": [
+          "Render an N×N chessboard with alternating light/dark squares.",
+          "Add a numeric size input and clamp size between 2 and 20.",
+          "Clicking a cell highlights it and removes highlight from the previously selected cell.",
+          "Show selected cell coordinates (row/column) in a status region.",
+          "Keep keyboard focus visibility and proper grid semantics."
+        ],
+        "expectedBehavior": [
+          "Initial board renders at size 8×8.",
+          "Changing board size updates the grid and clears previous selection.",
+          "Clicking one cell activates only that cell.",
+          "Status text updates to the selected row/column.",
+          "If nothing is selected, status shows no selection."
+        ],
+        "implementationNotes": [
+          "Use standalone component state for `size` and `selectedKey`.",
+          "Compute rows/columns from the current size.",
+          "Use class binding for dark/light and active styles.",
+          "Keep logic deterministic and avoid external libraries."
+        ],
+        "techFocus": [
+          "Angular standalone components",
+          "Event handling and local state",
+          "Grid rendering with nested *ngFor",
+          "Accessible interaction patterns"
+        ]
+      }
+    },
+    "starterCodeHint": "Implement TODOs in app.component.ts: clamp size input (2..20), reset selection when size changes, and activate only the clicked cell.",
+    "solutionBlock": {
+      "overview": "Track `size` and `selectedKey` in component state. On size change, parse and clamp the input, then clear selection. On cell click, derive a stable key from row/col and store it. Use class bindings to render checkerboard colors and active state.",
+      "approaches": [
+        {
+          "title": "Standalone component with derived grid and selected-key state",
+          "prose": "Store `size` and `selectedKey` in the root standalone component. Build rows with `Array.from({ length: size })`, render nested loops, and map each cell to a unique key like `row-col`. On click, assign the clicked key; on size input, clamp within bounds and reset selection so state is always valid."
+        }
+      ],
+      "notes": {
+        "pitfalls": [
+          "Not clamping board size can break layout and state assumptions.",
+          "Tracking selection by array index alone becomes brittle after size changes.",
+          "Forgetting to clear selection on resize can leave stale coordinates."
+        ],
+        "techniques": [
+          "Derived arrays for grid rendering",
+          "Stable key modeling for selected cell",
+          "Simple ARIA roles for grid and gridcell semantics"
+        ]
+      }
+    },
+    "sdk": {
+      "asset": "assets/sb/angular/question/angular-chessboard-click-highlight.v1.json",
+      "openFile": "/src/app/app.component.ts",
+      "storageKey": "v1:ui:angular:angular-chessboard-click-highlight"
+    },
+    "solutionAsset": "assets/sb/angular/solution/angular-chessboard-click-highlight-solution.v1.json",
+    "companies": [
+      "amazon",
+      "microsoft"
+    ],
+    "access": "premium",
+    "updatedAt": "2026-02-09"
   }
 ]
