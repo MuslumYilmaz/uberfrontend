@@ -8,6 +8,7 @@ jest.setTimeout(120000);
 
 let app;
 let User;
+let DailyChallengeAssignment;
 let connectToMongo;
 let disconnectMongo;
 let mongoServer;
@@ -28,6 +29,7 @@ beforeAll(async () => {
   app = require('../index');
   ({ connectToMongo, disconnectMongo } = require('../config/mongo'));
   User = require('../models/User');
+  DailyChallengeAssignment = require('../models/DailyChallengeAssignment');
 
   await connectToMongo(process.env.MONGO_URL_TEST);
 });
@@ -39,6 +41,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await User.deleteMany({});
+  await DailyChallengeAssignment.deleteMany({});
 });
 
 describe('GET /api/dashboard', () => {
@@ -96,5 +99,36 @@ describe('GET /api/dashboard', () => {
         }),
       })
     );
+  });
+
+  test('keeps same challenge for the same user/day after assignment is created', async () => {
+    const user = await User.create({
+      email: 'stable@example.com',
+      username: 'stable_user',
+      passwordHash: 'hash',
+      solvedQuestionIds: ['react-counter', 'vue-counter'],
+      prefs: { gamification: { dailyChallengeTech: 'react' } },
+    });
+
+    const first = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+    expect(first.status).toBe(200);
+    const firstChallengeId = first.body?.dailyChallenge?.questionId;
+    expect(firstChallengeId).toEqual(expect.any(String));
+
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { 'prefs.gamification.dailyChallengeTech': 'vue' } }
+    );
+
+    const second = await request(app)
+      .get('/api/dashboard')
+      .set('Authorization', authHeader(user._id));
+    expect(second.status).toBe(200);
+    const secondChallengeId = second.body?.dailyChallenge?.questionId;
+
+    expect(secondChallengeId).toBe(firstChallengeId);
+    expect(second.body?.dailyChallenge?.dayKey).toBe(first.body?.dailyChallenge?.dayKey);
   });
 });

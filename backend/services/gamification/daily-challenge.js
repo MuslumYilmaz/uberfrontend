@@ -1,4 +1,5 @@
 const DailyChallenge = require('../../models/DailyChallenge');
+const DailyChallengeAssignment = require('../../models/DailyChallengeAssignment');
 const {
   DAILY_CHALLENGE_RECENT_WINDOW_DAYS,
   APP_TIMEZONE,
@@ -72,20 +73,31 @@ function selectDailyChallengeQuestion({ basePool, dayKey, userId, preferredTech,
 }
 
 function toChallengeDoc(question, dayKey) {
+  const questionId = question?.questionId || question?.id;
   return {
     dayKey,
-    questionId: question.id,
-    title: question.title,
-    kind: question.kind,
-    tech: question.tech,
-    difficulty: question.difficulty || 'intermediate',
-    route: question.route,
+    questionId,
+    title: question?.title,
+    kind: question?.kind,
+    tech: question?.tech,
+    difficulty: question?.difficulty || 'intermediate',
+    route: question?.route,
   };
 }
 
 async function getOrCreateDailyChallenge({ user = null, now = new Date(), timeZone = APP_TIMEZONE } = {}) {
   const dayKey = dayKeyInTimezone(now, timeZone);
   const existing = await DailyChallenge.findOne({ dayKey }).lean();
+
+  if (user?._id) {
+    const existingAssignment = await DailyChallengeAssignment.findOne({
+      userId: user._id,
+      dayKey,
+    }).lean();
+    if (existingAssignment) {
+      return toChallengeDoc(existingAssignment, dayKey);
+    }
+  }
 
   const catalog = loadQuestionCatalog();
   const basePool = (catalog.freeCodingPool || []).slice().sort((a, b) => a.id.localeCompare(b.id));
@@ -122,8 +134,27 @@ async function getOrCreateDailyChallenge({ user = null, now = new Date(), timeZo
     preferredTech,
     recentIds,
   });
+  const challengeDoc = toChallengeDoc(selected, dayKey);
 
-  return toChallengeDoc(selected, dayKey);
+  if (!user?._id) {
+    return challengeDoc;
+  }
+
+  try {
+    await DailyChallengeAssignment.create({
+      userId: user._id,
+      ...challengeDoc,
+    });
+    return challengeDoc;
+  } catch (error) {
+    if (!(error && error.code === 11000)) throw error;
+  }
+
+  const existingAssignment = await DailyChallengeAssignment.findOne({
+    userId: user._id,
+    dayKey,
+  }).lean();
+  return existingAssignment ? toChallengeDoc(existingAssignment, dayKey) : challengeDoc;
 }
 
 module.exports = {
