@@ -126,6 +126,148 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
   const signupSequence = Array.isArray(opts.signupSequence) ? [...opts.signupSequence] : [];
   const changePasswordSequence = Array.isArray(opts.changePasswordSequence) ? [...opts.changePasswordSequence] : [];
 
+  const isAuthorized = (req: Request) => {
+    const auth = req.headers()['authorization'] || '';
+    const cookie = cookieValueFromHeader(req.headers()['cookie'] || '', 'access_token');
+    return cookie === encodeURIComponent(opts.token) || auth === `Bearer ${opts.token}`;
+  };
+
+  // Activity + dashboard endpoints hit after auth redirects; mock them to avoid noisy 401s in E2E.
+  await page.route(/\/api\/(activity\/.*|dashboard$|daily\/complete$|weekly-goal$).*/, async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const path = url.pathname;
+
+    if (req.method() === 'OPTIONS') {
+      return route.fulfill({ status: 204, headers: getCorsHeaders(req) });
+    }
+
+    if (!isAuthorized(req)) {
+      return jsonResponse(route, req, 401, { error: 'Invalid or expired token' });
+    }
+
+    if (req.method() === 'GET' && path.endsWith('/activity/summary')) {
+      return jsonResponse(route, req, 200, {
+        totalXp: 0,
+        level: 1,
+        nextLevelXp: 200,
+        levelProgress: { current: 0, needed: 200, pct: 0 },
+        streak: { current: 0, best: 0 },
+        freezeTokens: 0,
+        weekly: { completed: 0, target: 10, progress: 0 },
+        today: { completed: 0, total: 1, progress: 0 },
+      });
+    }
+
+    if (req.method() === 'GET' && path.endsWith('/activity/recent')) {
+      return jsonResponse(route, req, 200, []);
+    }
+
+    if (req.method() === 'GET' && path.endsWith('/activity/heatmap')) {
+      return jsonResponse(route, req, 200, []);
+    }
+
+    if (req.method() === 'GET' && path.endsWith('/dashboard')) {
+      const today = new Date();
+      const dayKey = `${today.getUTCFullYear()}-${String(today.getUTCMonth() + 1).padStart(2, '0')}-${String(today.getUTCDate()).padStart(2, '0')}`;
+      return jsonResponse(route, req, 200, {
+        nextBestAction: {
+          id: 'practice_next',
+          title: 'Keep your momentum',
+          description: 'Continue with one focused coding question.',
+          route: '/coding',
+          cta: 'Continue practice',
+        },
+        dailyChallenge: {
+          dayKey,
+          questionId: 'mock-daily-challenge',
+          title: 'Daily challenge',
+          kind: 'coding',
+          tech: 'javascript',
+          difficulty: 'easy',
+          route: '/coding',
+          available: true,
+          completed: false,
+          streak: { current: 0, longest: 0 },
+        },
+        weeklyGoal: {
+          enabled: true,
+          target: 10,
+          completed: 0,
+          progress: 0,
+          weekKey: 'mock-week',
+          bonusXp: 50,
+          bonusGranted: false,
+        },
+        xpLevel: {
+          totalXp: 0,
+          level: 1,
+          levelStepXp: 200,
+          currentLevelXp: 0,
+          nextLevelXp: 200,
+          progress: 0,
+        },
+        progress: {
+          solvedCount: 0,
+          totalCount: 0,
+          solvedPercent: 0,
+          topTopics: [],
+        },
+        settings: {
+          showStreakWidget: true,
+          dailyChallengeTech: 'auto',
+        },
+      });
+    }
+
+    if (req.method() === 'POST' && path.endsWith('/daily/complete')) {
+      return jsonResponse(route, req, 200, {
+        completed: true,
+        dayKey: 'mock-day',
+        streak: { current: 1, longest: 1 },
+        weeklyGoal: {
+          completed: 1,
+          target: 10,
+          progress: 10,
+          reached: false,
+          bonusGranted: false,
+        },
+        xpAwarded: 10,
+        xp: {
+          totalXp: 10,
+          level: 1,
+          levelStepXp: 200,
+          currentLevelXp: 10,
+          nextLevelXp: 200,
+          progress: 5,
+        },
+      });
+    }
+
+    if (req.method() === 'POST' && path.endsWith('/weekly-goal')) {
+      const body = parseJsonBody(req) || {};
+      const enabled = typeof body.enabled === 'boolean' ? body.enabled : true;
+      const target = Number(body.target || 10);
+      const showStreakWidget = typeof body.showStreakWidget === 'boolean' ? body.showStreakWidget : true;
+      const dailyChallengeTech = typeof body.dailyChallengeTech === 'string' ? body.dailyChallengeTech : 'auto';
+      return jsonResponse(route, req, 200, {
+        weeklyGoal: {
+          enabled,
+          target,
+          completed: 0,
+          progress: 0,
+          weekKey: 'mock-week',
+        },
+        settings: {
+          showStreakWidget,
+          dailyChallengeTech,
+        },
+      });
+    }
+
+    return jsonResponse(route, req, 404, { error: `Not mocked: ${path}` });
+  });
+
   await page.route(/\/api\/auth\/.*/, async (route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -243,10 +385,7 @@ export async function installAuthMock(page: Page, opts: AuthMockOptions) {
 
     // Me
     if (req.method() === 'GET' && path.endsWith('/me')) {
-      const auth = req.headers()['authorization'] || '';
-      const cookie = cookieValueFromHeader(req.headers()['cookie'] || '', 'access_token');
-      const ok = cookie === encodeURIComponent(opts.token) || auth === `Bearer ${opts.token}`;
-      if (!ok) return jsonResponse(route, req, 401, { error: 'Invalid or expired token' });
+      if (!isAuthorized(req)) return jsonResponse(route, req, 401, { error: 'Invalid or expired token' });
       return jsonResponse(route, req, 200, opts.user);
     }
 
