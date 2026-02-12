@@ -1,8 +1,8 @@
 <div class="coding-shell mx-auto max-w-7xl px-4 py-6" data-testid="coding-list-page">
   <header class="fa-page-header">
     <p class="fa-page-kicker">Practice library</p>
-    <h1 class="fa-page-title">All questions</h1>
-    <p class="fa-page-subtitle fa-body">Explore every prompt and slice the library by difficulty, tech, or tags.</p>
+    <h1 class="fa-page-title">Frontend interview questions</h1>
+    <p class="fa-page-subtitle fa-body">Use this coding hub as part of your interview roadmap: filter by framework, difficulty, and focus area to prepare with intent.</p>
   </header>
 
   <app-coding-tech-kind-tabs *ngIf="source!=='company'" [source]="source" [techTabs]="techTabs" [kindTabs]="kindTabs"
@@ -12,6 +12,45 @@
     [filteredCount]="(filteredCount$ | async) || 0" [navQueryParams]="tabsQueryParams()" (techSelected)="toggleTech($event)"
     (categoryToggled)="toggleCategory($event)" (kindSelected)="selectKind($event)">
   </app-coding-tech-kind-tabs>
+
+  <section class="fa-prep-cluster fa-card" *ngIf="source === 'global-coding'" aria-label="Framework prep path guidance">
+    <div class="fa-prep-cluster__header">
+      <h2 class="fa-section-title">Framework prep paths</h2>
+      <a class="fa-btn fa-btn--ghost fa-link-btn" [routerLink]="['/guides/framework-prep']">Browse all prep paths</a>
+    </div>
+    <p class="fa-meta-text">
+      Use framework-specific interview paths to avoid random practice: pick one stack, complete a sequence, then expand to system design and behavioral rounds.
+    </p>
+    <div class="fa-prep-cluster__links">
+      <a *ngFor="let prep of frameworkPrepLinks()" [routerLink]="['/guides/framework-prep', prep.slug]">
+        {{ prep.label }}
+      </a>
+    </div>
+    <div class="fa-prep-cluster__grid">
+      <article>
+        <h3>Outcomes</h3>
+        <ul>
+          <li>Build a repeatable interview roadmap by framework.</li>
+          <li>Improve answer quality for coding, trivia, and architecture prompts.</li>
+        </ul>
+      </article>
+      <article>
+        <h3>Common mistakes</h3>
+        <ul>
+          <li>Mixing frameworks every day without closing weak areas.</li>
+          <li>Solving prompts without a sequence or interview communication focus.</li>
+        </ul>
+      </article>
+      <article>
+        <h3>Suggested sequence</h3>
+        <ol>
+          <li><a [routerLink]="['/guides/interview-blueprint/coding-interviews']">Coding framework</a></li>
+          <li><a [routerLink]="['/guides/interview-blueprint/ui-interviews']">UI execution</a></li>
+          <li><a [routerLink]="['/guides/interview-blueprint/system-design']">System design</a></li>
+        </ol>
+      </article>
+    </div>
+  </section>
 
   <div class="fa-questions-layout">
     <aside class="fa-filter-panel" aria-label="Filters">

@@ -61,6 +61,17 @@
               {{ displayText(prose) }}
             </div>
 
+            <section class="detail-prep-bridge" data-testid="coding-prep-entry">
+              <p class="detail-prep-bridge__text">
+                Preparing for interviews? Use guided tracks for structure, then drill company-specific question sets when you need targeted practice.
+              </p>
+              <div class="detail-prep-bridge__links">
+                <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                <a [routerLink]="['/companies']">Browse company questions</a>
+                <a [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
+              </div>
+            </section>
+
             <!-- Algo-style questions: Arguments -->
             <div *ngIf="!isFrameworkTech() && !isWebTech() && descArgs().length" class="mt-4">
               <h3 class="text-sm font-semibold mb-1">Arguments</h3>
@@ -218,16 +229,6 @@
                   <span class="truncate">Build Great UI in 60 Minutes</span>
                   <span class="text-yellow-300 text-sm ml-4">Playbook</span>
                 </a>
-              </div>
-            </section>
-
-            <section class="detail-prep-bridge" data-testid="coding-prep-entry">
-              <p class="detail-prep-bridge__text">
-                Preparing for interviews? Use guided tracks for structure, then drill company-specific question sets when you need targeted practice.
-              </p>
-              <div class="detail-prep-bridge__links">
-                <a [routerLink]="['/tracks']">Explore interview tracks</a>
-                <a [routerLink]="['/companies']">Browse company questions</a>
               </div>
             </section>
 

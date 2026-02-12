@@ -35,9 +35,9 @@ export const routes: Routes = [
       import('./features/showcase/showcase.page').then((m) => m.ShowcasePageComponent),
     data: {
       seo: {
-        title: 'High-signal frontend interview prep',
+        title: 'Frontend interview preparation roadmap',
         description:
-          'FrontendAtlas — High-signal frontend interview preparation platform. Practice front-end coding, trivia, and system design interview questions with curated guides and company-specific tracks.',
+          'FrontendAtlas is a frontend interview preparation platform with a clear interview roadmap, curated frontend interview questions, and guided coding, trivia, and system design practice.',
         keywords: [
           'front end interview questions',
           'javascript interview',
@@ -171,7 +171,7 @@ export const routes: Routes = [
       seo: {
         title: 'Company Frontend Interview Questions',
         description:
-          'Practice company-specific frontend interview questions and compare patterns used by top engineering teams.',
+          'Use company-specific frontend interview questions as part of your interview roadmap, compare hiring patterns, and focus prep where each team interviews.',
         robots: 'index,follow',
       },
     },
@@ -187,7 +187,7 @@ export const routes: Routes = [
           seo: {
             title: 'Company Frontend Interview Questions',
             description:
-              'Explore frontend interview question sets grouped by company and prepare with realistic coding, trivia, and system-design coverage.',
+              'Explore frontend interview questions grouped by company, then follow an interview roadmap across coding, trivia, and system design coverage.',
             robots: 'index,follow',
           },
         },
@@ -354,7 +354,7 @@ export const routes: Routes = [
           seo: {
             title: 'Frontend Interview Preparation Tracks',
             description:
-              'Choose a frontend interview preparation track by timeline and focus, then practice coding, trivia, and system design in one path.',
+              'Choose a frontend interview preparation track with structured coding, trivia, and system design question paths.',
             robots: 'index,follow',
           },
         },
@@ -476,12 +476,43 @@ export const routes: Routes = [
     path: 'guides',
     data: {
       seo: {
-        title: 'Front-end interview blueprints',
-        description: 'Blueprints for coding, system design, and behavioral front-end interviews.',
+        title: 'Frontend interview preparation guides',
+        description: 'Interview blueprints and framework prep paths for frontend coding, system design, and behavioral rounds.',
       },
     },
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'interview-blueprint' },
+
+      {
+        path: 'framework-prep',
+        loadComponent: () =>
+          import('./features/guides/framework-prep/framework-prep-index.component').then(
+            (m) => m.FrameworkPrepIndexComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Framework prep paths',
+            description: 'Frontend interview prep paths by framework.',
+          },
+        },
+      },
+      {
+        path: 'framework-prep/:slug',
+        loadComponent: () =>
+          import('./features/guides/playbook/playbook-host.component').then(
+            (m) => m.PlaybookHostComponent,
+          ),
+        data: {
+          guideBase: 'framework-prep',
+          guideTitle: 'FrontendAtlas Framework Prep Paths',
+          seoSectionTitle: 'Framework Prep Paths',
+          frameworkOnly: true,
+          seo: {
+            title: 'Framework prep path',
+            description: 'Framework-specific frontend interview prep path.',
+          },
+        },
+      },
 
       {
         path: 'playbook',
@@ -502,8 +533,8 @@ export const routes: Routes = [
           ),
         data: {
           seo: {
-            title: 'FrontendAtlas Interview Blueprint',
-            description: 'Step-by-step plan to prepare for front-end interviews with checklists and tracks.',
+            title: 'Frontend interview preparation roadmap',
+            description: 'Use this step-by-step interview roadmap to prepare for frontend interview questions with checklists, tracks, and focused practice.',
           },
         },
       },
@@ -736,8 +767,8 @@ export const routes: Routes = [
       source: 'global-coding',
       kind: 'coding',
       seo: {
-        title: 'Front-end coding interview questions',
-        description: 'Solve curated front-end coding interview questions with filters for tech, difficulty, and tags.',
+        title: 'Frontend interview questions (coding)',
+        description: 'Practice frontend coding interview questions and follow an interview roadmap by framework, difficulty, and focus area.',
       },
     },
   },

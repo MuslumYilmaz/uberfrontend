@@ -7,6 +7,9 @@
     <loc>https://frontendatlas.com/angular/coding/angular-autocomplete-search-starter</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-chessboard-click-highlight</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/angular/coding/angular-chips-input-autocomplete</loc>
   </url>
   <url>
@@ -56,6 +59,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-shopping-cart-mini</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/angular/coding/angular-snake-game</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/angular/coding/angular-star-rating</loc>
@@ -349,7 +355,13 @@
     <loc>https://frontendatlas.com/guides/behavioral/stories</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/guides/framework-prep</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/interview-blueprint/angular-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/api-design</loc>
@@ -358,7 +370,13 @@
     <loc>https://frontendatlas.com/guides/interview-blueprint/coding-interviews</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/guides/interview-blueprint/css-prep-path</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/dsa-for-fe</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/interview-blueprint/html-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/intro</loc>
@@ -367,7 +385,13 @@
     <loc>https://frontendatlas.com/guides/interview-blueprint/javascript-interviews</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/guides/interview-blueprint/javascript-prep-path</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/quiz</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/interview-blueprint/react-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/resume</loc>
@@ -377,6 +401,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint/ui-interviews</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/interview-blueprint/vue-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/system-design-blueprint</loc>
@@ -1006,6 +1033,9 @@
     <loc>https://frontendatlas.com/react/coding/react-chat-streaming-ui</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/react/coding/react-chessboard-click-highlight</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/react/coding/react-chips-input-autocomplete</loc>
   </url>
   <url>
@@ -1052,6 +1082,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-shopping-cart</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/react/coding/react-snake-game</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/react/coding/react-star-rating</loc>
@@ -1273,6 +1306,9 @@
     <loc>https://frontendatlas.com/vue/coding/vue-autocomplete-search</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-chessboard-click-highlight</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/vue/coding/vue-chips-input-autocomplete</loc>
   </url>
   <url>
@@ -1316,6 +1352,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-shopping-cart</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/vue/coding/vue-snake-game</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/vue/coding/vue-star-rating</loc>

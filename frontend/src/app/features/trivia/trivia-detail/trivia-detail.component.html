@@ -96,6 +96,20 @@
                 </div>
             </header>
 
+            <section class="card prep-bridge" data-testid="trivia-prep-entry">
+                <div class="card-head">Preparing for interviews?</div>
+                <div class="card-body prep-bridge__body">
+                    <p class="prep-bridge__text">
+                        Use guided tracks for structured prep, then practice company-specific question sets when you want targeted interview coverage.
+                    </p>
+                    <div class="prep-bridge__links">
+                        <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                        <a [routerLink]="['/companies']">Browse company questions</a>
+                        <a [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
+                    </div>
+                </div>
+            </section>
+
             <!-- Quick Answer -->
             <section class="card">
                 <div class="card-head">Quick Answer</div>
@@ -230,18 +244,6 @@
                 </div>
             </section>
 
-            <section class="card prep-bridge" data-testid="trivia-prep-entry">
-                <div class="card-head">Preparing for interviews?</div>
-                <div class="card-body prep-bridge__body">
-                    <p class="prep-bridge__text">
-                        Use guided tracks for structured prep, then practice company-specific question sets when you want targeted interview coverage.
-                    </p>
-                    <div class="prep-bridge__links">
-                        <a [routerLink]="['/tracks']">Explore interview tracks</a>
-                        <a [routerLink]="['/companies']">Browse company questions</a>
-                    </div>
-                </div>
-            </section>
             </ng-container>
         </div>
 

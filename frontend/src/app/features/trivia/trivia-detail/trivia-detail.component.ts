@@ -589,6 +589,49 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  frameworkPrepRoute(): any[] {
+    const slug = this.frameworkPrepSlugForTech();
+    return slug ? ['/guides/framework-prep', slug] : ['/guides/framework-prep'];
+  }
+
+  frameworkPrepLabel(): string {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+        return 'JavaScript';
+      case 'react':
+        return 'React';
+      case 'angular':
+        return 'Angular';
+      case 'vue':
+        return 'Vue';
+      case 'html':
+        return 'HTML';
+      case 'css':
+        return 'CSS';
+      default:
+        return 'Framework';
+    }
+  }
+
+  private frameworkPrepSlugForTech(): string | null {
+    switch ((this.tech || '').toLowerCase()) {
+      case 'javascript':
+        return 'javascript-prep-path';
+      case 'react':
+        return 'react-prep-path';
+      case 'angular':
+        return 'angular-prep-path';
+      case 'vue':
+        return 'vue-prep-path';
+      case 'html':
+        return 'html-prep-path';
+      case 'css':
+        return 'css-prep-path';
+      default:
+        return null;
+    }
+  }
+
   /** ============== UI: interactions ============== */
   async markComplete() {
     const q = this.question();

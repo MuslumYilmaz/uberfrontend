@@ -45,6 +45,99 @@ app-coding-tech-kind-tabs {
   max-width: 720px;
 }
 
+.fa-prep-cluster {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: var(--fa-radius-12);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 92%, var(--surface-1));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38);
+  display: grid;
+  gap: 10px;
+}
+
+.fa-prep-cluster__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fa-prep-cluster__header .fa-link-btn {
+  text-decoration: none;
+}
+
+.fa-prep-cluster__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fa-prep-cluster__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: var(--fa-radius-pill);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 94%, var(--surface-1));
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.fa-prep-cluster__links a:hover {
+  border-color: color-mix(in srgb, var(--border) 60%, var(--fa-accent) 40%);
+  background: color-mix(in srgb, var(--fa-accent-soft) 72%, var(--surface-2));
+  color: var(--ink-sub);
+}
+
+.fa-prep-cluster__grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fa-prep-cluster__grid article {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 94%, var(--surface-1));
+}
+
+.fa-prep-cluster__grid h3 {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.fa-prep-cluster__grid ul,
+.fa-prep-cluster__grid ol {
+  margin: 8px 0 0 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
+.fa-prep-cluster__grid li {
+  margin: 5px 0;
+}
+
+.fa-prep-cluster__grid li a {
+  color: var(--ink-sub);
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .fa-prep-cluster__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .fa-questions-layout {
   display: grid;
   grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);

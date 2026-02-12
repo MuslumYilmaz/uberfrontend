@@ -38,6 +38,25 @@ describe('guide-seo.util', () => {
     );
 
     expect(meta.description).toContain('Behavioral Blueprint');
+    expect(meta.description || '').toMatch(/frontend interview preparation/i);
+    expect(meta.description || '').toMatch(/interview roadmap/i);
+    expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
+  });
+
+  it('normalizes non-interview summaries to keep interview intent explicit', () => {
+    const meta = buildGuideDetailSeo(
+      seoMock,
+      'System Design Blueprint',
+      'system-design-blueprint',
+      {
+        slug: 'state-data',
+        title: 'State and Data',
+        summary: 'Patterns for state management and caching in modern apps.',
+      } as any
+    );
+
+    expect(meta.description || '').toMatch(/frontend interview preparation/i);
+    expect(meta.description || '').toMatch(/interview roadmap/i);
     expect(meta.description?.length || 0).toBeLessThanOrEqual(158);
   });
 });

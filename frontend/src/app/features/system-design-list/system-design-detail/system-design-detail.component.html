@@ -139,6 +139,18 @@
                 </ul>
             </section>
 
+            <section class="sd-prep-bridge" data-testid="system-design-prep-entry">
+                <div class="sd-related-head">Preparing for interviews?</div>
+                <p class="sd-prep-bridge__text">
+                    Use guided tracks for structured prep, then drill company-specific question sets when you need targeted practice.
+                </p>
+                <div class="sd-prep-bridge__links">
+                    <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                    <a [routerLink]="['/companies']">Browse company questions</a>
+                    <a [routerLink]="['/guides/framework-prep']">View framework prep paths</a>
+                </div>
+            </section>
+
             <ng-container *ngFor="let s of sections()">
                 <section class="sd-section" [attr.id]="anchorId(s.key)">
                     <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
@@ -303,16 +315,6 @@
                 </div>
             </section>
 
-            <section class="sd-prep-bridge" data-testid="system-design-prep-entry">
-                <div class="sd-related-head">Preparing for interviews?</div>
-                <p class="sd-prep-bridge__text">
-                    Use guided tracks for structured prep, then drill company-specific question sets when you need targeted practice.
-                </p>
-                <div class="sd-prep-bridge__links">
-                    <a [routerLink]="['/tracks']">Explore interview tracks</a>
-                    <a [routerLink]="['/companies']">Browse company questions</a>
-                </div>
-            </section>
         </main>
 
         <!-- RIGHT : fixed TOC -->

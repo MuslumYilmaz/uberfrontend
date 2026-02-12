@@ -75,6 +75,7 @@ function buildRoutes() {
     '/',
     '/coding',
     '/pricing',
+    '/guides/framework-prep',
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',

@@ -73,6 +73,7 @@ function buildUrls() {
     '/companies',
     '/system-design',
     '/tools/cv',
+    '/guides/framework-prep',
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',

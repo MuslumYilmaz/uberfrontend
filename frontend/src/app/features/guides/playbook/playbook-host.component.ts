@@ -47,7 +47,16 @@ export class PlaybookHostComponent implements OnDestroy {
     }
 
     private async load(slug: string) {
-        const { current, prev, next } = navFor(PLAYBOOK, slug);
+        const hostConfig = this.getHostConfig();
+        const groups = hostConfig.frameworkOnly
+            ? PLAYBOOK_GROUPS.filter((g) => g.key === 'framework-paths')
+            : PLAYBOOK_GROUPS;
+        const allowedSlugs = new Set(groups.flatMap((group) => group.items.map((item) => item.slug)));
+        const registry = hostConfig.frameworkOnly
+            ? PLAYBOOK.filter((entry) => allowedSlugs.has(entry.slug))
+            : PLAYBOOK;
+
+        const { current, prev, next } = navFor(registry, slug, hostConfig.guideBase);
 
         // If the slug isn't in the registry -> go to 404 and show the missing path
         if (!current) {
@@ -56,26 +65,36 @@ export class PlaybookHostComponent implements OnDestroy {
         }
 
         // Build the left navigator safely (hide unknown slugs to avoid dead links)
-        const registryMap = new Map(PLAYBOOK.map(e => [e.slug, e]));
+        const registryMap = new Map(registry.map(e => [e.slug, e]));
+        const leftNavSections = groups.map(g => ({
+            title: g.title,
+            items: g.items
+                .filter(it => registryMap.has(it.slug))
+                .map(it => {
+                    const entry = registryMap.get(it.slug)!;
+                    return {
+                        title: entry.title,
+                        link: ['/', 'guides', hostConfig.guideBase, entry.slug],
+                        active: entry.slug === slug,
+                    };
+                })
+        }));
+        const normalizedSections = hostConfig.frameworkOnly
+            ? leftNavSections
+                .map((section) => ({
+                    title: section.title,
+                    items: section.items.filter((item) => item.active),
+                }))
+                .filter((section) => section.items.length > 0)
+            : leftNavSections;
+
         const leftNav = {
-            title: 'FrontendAtlas Interview Blueprint',
-            sections: PLAYBOOK_GROUPS.map(g => ({
-                title: g.title,
-                items: g.items
-                    .filter(it => registryMap.has(it.slug))
-                    .map(it => {
-                        const entry = registryMap.get(it.slug)!;
-                        return {
-                            title: entry.title,
-                            link: ['/', 'guides', 'interview-blueprint', entry.slug],
-                            active: entry.slug === slug,
-                        };
-                    })
-            }))
+            title: hostConfig.guideTitle,
+            sections: normalizedSections,
         };
 
         this.seo.updateTags(
-            buildGuideDetailSeo(this.seo, 'Interview Blueprint', 'interview-blueprint', current)
+            buildGuideDetailSeo(this.seo, hostConfig.seoSectionTitle, hostConfig.guideBase, current)
         );
 
         // Recreate the article component for the new slug
@@ -94,6 +113,27 @@ export class PlaybookHostComponent implements OnDestroy {
 
         // Ensure we start at the top for each article
         if (this.isBrowser) window.scrollTo({ top: 0 });
+    }
+
+    private getHostConfig(): {
+        guideBase: string;
+        guideTitle: string;
+        seoSectionTitle: string;
+        frameworkOnly: boolean;
+    } {
+        const data = this.route.snapshot.data as Record<string, unknown>;
+        return {
+            guideBase: typeof data['guideBase'] === 'string' ? data['guideBase'] : 'interview-blueprint',
+            guideTitle:
+                typeof data['guideTitle'] === 'string'
+                    ? data['guideTitle']
+                    : 'FrontendAtlas Interview Blueprint',
+            seoSectionTitle:
+                typeof data['seoSectionTitle'] === 'string'
+                    ? data['seoSectionTitle']
+                    : 'Interview Blueprint',
+            frameworkOnly: data['frameworkOnly'] === true,
+        };
     }
 
     private go404() {

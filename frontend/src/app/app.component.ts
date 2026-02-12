@@ -42,6 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // any of: /guides/interview-blueprint/*, /guides/system-design-blueprint/*, /guides/behavioral/*
   private readonly HIDE_SIDEBAR_PATTERNS = [
     /^\/guides\/interview-blueprint\/.+/,
+    /^\/guides\/framework-prep\/.+/,
     /^\/guides\/system-design-blueprint\/.+/,
     /^\/guides\/playbook\/.+/,
     /^\/guides\/system-design\/.+/,

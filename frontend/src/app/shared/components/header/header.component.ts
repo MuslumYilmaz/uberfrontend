@@ -575,6 +575,7 @@ export class HeaderComponent implements OnInit {
       case 'guides': {
         const section = (t.params?.['section'] as string | undefined) ?? '';
         if (section === 'playbook' || section === 'interview-blueprint') return (['/guides', 'interview-blueprint']);
+        if (section === 'framework-prep') return (['/guides', 'framework-prep']);
         if (section === 'behavioral') return (['/guides', 'behavioral']);
         if (section === 'system-design' || section === 'system-design-blueprint') return (['/guides', 'system-design-blueprint']);
         return ['/guides'];

@@ -13,6 +13,20 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
     .hero-sub { color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent); margin-bottom: 18px; }
     .pill-row { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0 18px; }
     .pill { border:1px solid var(--uf-border-subtle); background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); padding:6px 12px; border-radius:999px; font-size:12px; color: var(--uf-text-secondary); }
+    .prep-links { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 16px; }
+    .prep-links a {
+      display:inline-flex; align-items:center; min-height:30px; padding:0 12px;
+      border-radius:999px; text-decoration:none; font-size:12px; font-weight:600;
+      border:1px solid var(--uf-border-subtle);
+      background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+      color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
+      transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+    }
+    .prep-links a:hover {
+      border-color: color-mix(in srgb, var(--uf-border-subtle) 58%, var(--uf-accent) 42%);
+      background: color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface));
+      color: var(--uf-text-primary);
+    }
 
     .section { margin: 28px 0; }
     .sec-head { font-weight: 800; color: var(--uf-text-primary); margin-bottom: 10px; }
@@ -41,11 +55,17 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
   `], template: `
     <div class="wrap">
       <h1 class="hero-title">Behavioral Interview Blueprint</h1>
-      <div class="hero-sub">Show your impact with crisp stories and strong signals.</div>
+      <div class="hero-sub">Build an interview roadmap for behavioral rounds with clear stories, stronger signals, and repeatable answer structure.</div>
       <div class="pill-row">
         <span class="pill fa-chip fa-chip--label">STAR stories</span>
         <span class="pill fa-chip fa-chip--label">Signals & examples</span>
         <span class="pill fa-chip fa-chip--label">FE-focused prompts</span>
+      </div>
+      <div class="prep-links">
+        <a [routerLink]="['/guides/interview-blueprint']">Interview blueprint hub</a>
+        <a [routerLink]="['/guides/framework-prep']">Framework prep paths</a>
+        <a [routerLink]="['/tracks']">Interview tracks</a>
+        <a [routerLink]="['/companies']">Company question sets</a>
       </div>
 
       <div *ngFor="let g of groups(); let gi = index" class="section">

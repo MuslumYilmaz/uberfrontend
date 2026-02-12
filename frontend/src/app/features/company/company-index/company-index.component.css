@@ -31,6 +31,73 @@
   margin-top: 14px;
 }
 
+.company-intro__links {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.company-intro__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: var(--uf-radius-pill);
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.company-intro__links a:hover {
+  border-color: color-mix(in srgb, var(--uf-border-subtle) 58%, var(--uf-accent) 42%);
+  background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
+  color: var(--uf-text-primary);
+}
+
+.company-intro__prep-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.company-intro__prep-grid article {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+}
+
+.company-intro__prep-grid h2 {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.company-intro__prep-grid ul,
+.company-intro__prep-grid ol {
+  margin: 8px 0 0 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+}
+
+.company-intro__prep-grid li {
+  margin: 5px 0;
+}
+
+.company-intro__prep-grid li a {
+  color: var(--uf-text-primary);
+  text-decoration: underline;
+}
+
 .company-intro__cta {
   display: inline-flex;
   align-items: center;
@@ -132,4 +199,10 @@
 .company-card:hover .company-card__chevron {
   transform: translateX(4px);
   color: var(--uf-text-primary);
+}
+
+@media (max-width: 900px) {
+  .company-intro__prep-grid {
+    grid-template-columns: 1fr;
+  }
 }

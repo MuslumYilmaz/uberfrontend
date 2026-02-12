@@ -2,6 +2,7 @@ import { SeoMeta, SeoService } from '../../core/services/seo.service';
 import { GuideEntry } from '../../shared/guides/guide.registry';
 
 const DESCRIPTION_MAX_LEN = 158;
+const INTERVIEW_INTENT_RX = /\b(interview|prep|preparation|roadmap|hiring|onsite|screen)\b/i;
 
 function normalizeText(input: string): string {
   return String(input || '')
@@ -19,7 +20,20 @@ function clamp(input: string, maxLen: number): string {
 
 function fallbackGuideDescription(sectionTitle: string, title: string): string {
   return clamp(
-    `${sectionTitle}: ${title}. Clear explanation, practical trade-offs, and interview-ready guidance for frontend engineers.`,
+    `${sectionTitle}: ${title}. Frontend interview preparation guide with a practical interview roadmap, trade-offs, and interview-ready explanations.`,
+    DESCRIPTION_MAX_LEN
+  );
+}
+
+function ensureInterviewIntent(
+  description: string,
+  sectionTitle: string,
+  title: string
+): string {
+  const normalized = clamp(description, DESCRIPTION_MAX_LEN);
+  if (normalized && INTERVIEW_INTENT_RX.test(normalized)) return normalized;
+  return clamp(
+    `${sectionTitle}: ${title}. Frontend interview preparation guide with interview roadmap context, practical examples, and common mistakes to avoid.`,
     DESCRIPTION_MAX_LEN
   );
 }
@@ -32,8 +46,12 @@ export function buildGuideDetailSeo(
 ): SeoMeta {
   const canonical = seo.buildCanonicalUrl(`/guides/${sectionPath}/${entry.slug}`);
   const title = clamp(entry.title, 74) || 'Frontend guide';
-  const description = clamp(entry.summary || '', DESCRIPTION_MAX_LEN)
-    || fallbackGuideDescription(sectionTitle, title);
+  const description = ensureInterviewIntent(
+    clamp(entry.summary || '', DESCRIPTION_MAX_LEN)
+      || fallbackGuideDescription(sectionTitle, title),
+    sectionTitle,
+    title
+  );
 
   const breadcrumb = {
     '@type': 'BreadcrumbList',

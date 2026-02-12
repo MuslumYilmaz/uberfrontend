@@ -33,8 +33,8 @@ type LeftNav = {
 
 /* layout */
 .wrap{
-  --left-nav-w: 350px;
-  --right-toc-w: 350px;
+  --left-nav-w: 320px;
+  --right-toc-w: 320px;
   display:grid;
   grid-template-columns: minmax(0,1fr) var(--right-toc-w);
   gap:28px;
@@ -43,6 +43,13 @@ type LeftNav = {
 }
 .wrap.has-left{
   grid-template-columns: var(--left-nav-w) minmax(0,1fr) var(--right-toc-w);
+}
+
+@media (max-width:1500px){
+  .wrap.has-left{
+    grid-template-columns: var(--left-nav-w) minmax(0,1fr);
+  }
+  .wrap.has-left .toc{ display:none; }
 }
 
 @media (max-width:1100px){
@@ -118,6 +125,14 @@ type LeftNav = {
 .subtitle{ color: color-mix(in srgb, var(--uf-text-secondary) 85%, transparent); margin-bottom:14px; font-size:14px; }
 .meta{ display:flex; gap:8px; font-size:12px; color: color-mix(in srgb, var(--uf-text-tertiary) 80%, transparent); margin-bottom:18px; align-items:center; flex-wrap:wrap; }
 .badge{ border:1px solid var(--uf-border-subtle); padding:2px 10px; border-radius:999px; font-size:11.5px; background: color-mix(in srgb, var(--uf-text-primary) 6%, var(--uf-surface)); color: var(--uf-text-secondary); }
+.intent-lead{
+  margin: 0 0 14px;
+  padding-left: 10px;
+  border-left: 2px solid color-mix(in srgb, var(--uf-accent) 36%, var(--uf-border-subtle));
+  color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
+  font-size: 13px;
+  line-height: 1.55;
+}
 
 /* article body — SIZE-ALIGNED with System Design (14px base) */
 .content{ line-height:1.6; font-size:14px; letter-spacing:.01em; color: color-mix(in srgb, var(--uf-text-secondary) 88%, transparent); }
@@ -265,6 +280,9 @@ type LeftNav = {
         <span *ngIf="minutes as m" class="badge">{{m}} min</span>
         <span *ngFor="let t of (tags||[])" class="badge">{{t}}</span>
       </div>
+      <p class="intent-lead">
+        This guide is part of the FrontendAtlas frontend interview preparation roadmap, focused on interview questions, practical trade-offs, and high-signal decision patterns.
+      </p>
 
       <div class="mobile-panels" *ngIf="leftNav || toc().length">
         <details class="mp" *ngIf="leftNav">

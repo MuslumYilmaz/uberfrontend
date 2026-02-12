@@ -19,12 +19,38 @@
           <span class="badge">HTML • CSS • JS</span>
         </div>
         <div class="hero-links">
-          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'javascript', kind: 'coding' }">JavaScript hub</a>
-          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'angular', kind: 'coding' }">Angular hub</a>
-          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'react', kind: 'coding' }">React hub</a>
-          <a [routerLink]="['/coding']" [queryParams]="{ tech: 'vue', kind: 'coding' }">Vue hub</a>
-          <a [routerLink]="['/system-design']">System Design hub</a>
+          <a [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
+          <a [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
+          <a [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
+          <a [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
+          <a [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
+          <a [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
           <a [routerLink]="['/focus-areas']">All focus areas</a>
+        </div>
+        <div class="prep-path-panel">
+          <article>
+            <h2>Outcomes</h2>
+            <ul>
+              <li>Follow a clear interview roadmap instead of random practice.</li>
+              <li>Connect framework drills to system design and behavioral rounds.</li>
+            </ul>
+          </article>
+          <article>
+            <h2>Common mistakes</h2>
+            <ul>
+              <li>Switching between stacks every day without finishing one path.</li>
+              <li>Focusing only on trivia instead of mixed interview signal areas.</li>
+            </ul>
+          </article>
+          <article>
+            <h2>Suggested sequence</h2>
+            <ol>
+              <li><a [routerLink]="['/guides/interview-blueprint']">Interview blueprint</a></li>
+              <li><a [routerLink]="['/guides/framework-prep']">Framework prep path</a></li>
+              <li><a [routerLink]="['/tracks']">Guided tracks</a></li>
+              <li><a [routerLink]="['/companies']">Company question sets</a></li>
+            </ol>
+          </article>
         </div>
       </div>
       <div class="hero-callout">

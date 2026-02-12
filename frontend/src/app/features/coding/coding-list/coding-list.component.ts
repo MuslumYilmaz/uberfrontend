@@ -60,6 +60,8 @@ type SortKey =
   // for compatibility with shared filter panel in other contexts
   | 'diff-asc' | 'diff-desc';
 
+type FrameworkPrepLink = { tech: Tech; slug: string; label: string };
+
 type FocusSlug =
   | 'accessibility'
   | 'async'
@@ -113,6 +115,14 @@ const SYSTEM_TITLE_HINTS = [
 ];
 
 const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
+const FRAMEWORK_PREP_LINKS: FrameworkPrepLink[] = [
+  { tech: 'javascript', slug: 'javascript-prep-path', label: 'JavaScript prep' },
+  { tech: 'react', slug: 'react-prep-path', label: 'React prep' },
+  { tech: 'angular', slug: 'angular-prep-path', label: 'Angular prep' },
+  { tech: 'vue', slug: 'vue-prep-path', label: 'Vue prep' },
+  { tech: 'html', slug: 'html-prep-path', label: 'HTML prep' },
+  { tech: 'css', slug: 'css-prep-path', label: 'CSS prep' },
+];
 const DEBUG_FILTER_STATE = true;
 
 function inferCategory(q: any): CategoryKey {
@@ -536,6 +546,13 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'coding', label: 'Coding' },
     { key: 'trivia', label: 'Quiz' }
   ];
+
+  frameworkPrepLinks(): FrameworkPrepLink[] {
+    if (this.currentViewKey === 'formats') return FRAMEWORK_PREP_LINKS;
+    const selectedTech = this.selectedTech$.value;
+    if (!selectedTech) return FRAMEWORK_PREP_LINKS;
+    return FRAMEWORK_PREP_LINKS.filter((entry) => entry.tech === selectedTech);
+  }
 
   // --- UI handlers for sorting ---
   currentSortLabel(k: SortKey | null | undefined): string {

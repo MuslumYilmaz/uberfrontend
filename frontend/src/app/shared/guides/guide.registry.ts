@@ -99,6 +99,60 @@ export const PLAYBOOK: GuideEntry[] = [
                 .then(m => m.ComponentApiDesignArticle),
     },
     {
+        slug: 'javascript-prep-path',
+        title: 'JavaScript Interview Preparation Path: Async, Closures, and State Transitions',
+        minutes: 9,
+        summary: 'JavaScript interview prep path for async flow, event loop, closures, stale state, race conditions, cleanup, and state transitions with practical drills.',
+        load: () =>
+            import('../../features/guides/playbook/framework-prep-path-article.component')
+                .then(m => m.FrameworkPrepPathArticle),
+    },
+    {
+        slug: 'react-prep-path',
+        title: 'React Interview Preparation Path: Components, State, and Performance',
+        minutes: 9,
+        summary: 'A React interview prep path covering high-signal question types, what to practice first, and mistakes that reduce interview scores.',
+        load: () =>
+            import('../../features/guides/playbook/framework-prep-path-article.component')
+                .then(m => m.FrameworkPrepPathArticle),
+    },
+    {
+        slug: 'angular-prep-path',
+        title: 'Angular Interview Preparation Path: RxJS, Architecture, and Testing',
+        minutes: 9,
+        summary: 'A structured Angular interview roadmap with practical outcomes, common anti-patterns, and focused prep steps for frontend interviews.',
+        load: () =>
+            import('../../features/guides/playbook/framework-prep-path-article.component')
+                .then(m => m.FrameworkPrepPathArticle),
+    },
+    {
+        slug: 'vue-prep-path',
+        title: 'Vue Interview Preparation Path: Reactivity, Rendering, and Patterns',
+        minutes: 9,
+        summary: 'A Vue-focused interview preparation sequence with key outcomes, common mistakes, and targeted practice order.',
+        load: () =>
+            import('../../features/guides/playbook/framework-prep-path-article.component')
+                .then(m => m.FrameworkPrepPathArticle),
+    },
+    {
+        slug: 'html-prep-path',
+        title: 'HTML Interview Preparation Path: Semantics, Forms, and Accessibility',
+        minutes: 8,
+        summary: 'A focused HTML interview prep path for semantic structure, forms, and accessibility questions that appear in frontend screens.',
+        load: () =>
+            import('../../features/guides/playbook/framework-prep-path-article.component')
+                .then(m => m.FrameworkPrepPathArticle),
+    },
+    {
+        slug: 'css-prep-path',
+        title: 'CSS Interview Preparation Path: Layout, Specificity, and Responsiveness',
+        minutes: 8,
+        summary: 'A CSS interview roadmap for layout systems, debugging style conflicts, and building production-quality UI under interview constraints.',
+        load: () =>
+            import('../../features/guides/playbook/framework-prep-path-article.component')
+                .then(m => m.FrameworkPrepPathArticle),
+    },
+    {
         slug: 'system-design',
         title: 'Frontend System Design Interviews: A Fast Answer Framework',
         minutes: 8,
@@ -140,6 +194,16 @@ export const PLAYBOOK_GROUPS: Array<{ key: string; title: string; items: Array<{
         key: 'ui', title: 'User interface', items: [
             { slug: 'ui-interviews' },
             { slug: 'api-design' },
+        ]
+    },
+    {
+        key: 'framework-paths', title: 'Framework prep paths', items: [
+            { slug: 'javascript-prep-path' },
+            { slug: 'react-prep-path' },
+            { slug: 'angular-prep-path' },
+            { slug: 'vue-prep-path' },
+            { slug: 'html-prep-path' },
+            { slug: 'css-prep-path' },
         ]
     },
     { key: 'system', title: 'System design', items: [{ slug: 'system-design' }] },

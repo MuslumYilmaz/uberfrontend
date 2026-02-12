@@ -45,6 +45,14 @@ export const PREPARE_GROUPS: PrepareGroup[] = [
                 intent: 'route',
                 target: { name: 'guides', params: { section: 'interview-blueprint' } }
             },
+            {
+                key: 'framework-prep',
+                title: 'Framework Prep Paths',
+                subtitle: 'JavaScript, React, Angular, Vue, HTML, CSS',
+                pi: 'pi pi-compass',
+                intent: 'route',
+                target: { name: 'guides', params: { section: 'framework-prep' } }
+            },
             // NEW
             {
                 key: 'behavioral',
