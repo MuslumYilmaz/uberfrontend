@@ -79,18 +79,9 @@ export class PlaybookHostComponent implements OnDestroy {
                     };
                 })
         }));
-        const normalizedSections = hostConfig.frameworkOnly
-            ? leftNavSections
-                .map((section) => ({
-                    title: section.title,
-                    items: section.items.filter((item) => item.active),
-                }))
-                .filter((section) => section.items.length > 0)
-            : leftNavSections;
-
         const leftNav = {
             title: hostConfig.guideTitle,
-            sections: normalizedSections,
+            sections: leftNavSections,
         };
 
         this.seo.updateTags(
