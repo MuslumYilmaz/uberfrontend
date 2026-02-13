@@ -100,7 +100,7 @@ export const PLAYBOOK: GuideEntry[] = [
     },
     {
         slug: 'javascript-prep-path',
-        title: 'JavaScript Interview Preparation Path: Async, Closures, and State Transitions',
+        title: 'JavaScript Interview Prep Playbook: Async, Closures, and State Transitions',
         minutes: 9,
         summary: 'JavaScript interview prep path for async flow, event loop, closures, stale state, race conditions, cleanup, and state transitions with practical drills.',
         load: () =>
