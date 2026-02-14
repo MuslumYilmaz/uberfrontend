@@ -135,24 +135,6 @@ export const PLAYBOOK: GuideEntry[] = [
                 .then(m => m.FrameworkPrepPathArticle),
     },
     {
-        slug: 'html-prep-path',
-        title: 'HTML Interview Preparation Path: Semantics, Forms, and Accessibility',
-        minutes: 8,
-        summary: 'A focused HTML interview prep path for semantic structure, forms, and accessibility questions that appear in frontend screens.',
-        load: () =>
-            import('../../features/guides/playbook/framework-prep-path-article.component')
-                .then(m => m.FrameworkPrepPathArticle),
-    },
-    {
-        slug: 'css-prep-path',
-        title: 'CSS Interview Preparation Path: Layout, Specificity, and Responsiveness',
-        minutes: 8,
-        summary: 'A CSS interview roadmap for layout systems, debugging style conflicts, and building production-quality UI under interview constraints.',
-        load: () =>
-            import('../../features/guides/playbook/framework-prep-path-article.component')
-                .then(m => m.FrameworkPrepPathArticle),
-    },
-    {
         slug: 'system-design',
         title: 'Frontend System Design Interviews: A Fast Answer Framework',
         minutes: 8,
@@ -202,8 +184,6 @@ export const PLAYBOOK_GROUPS: Array<{ key: string; title: string; items: Array<{
             { slug: 'react-prep-path' },
             { slug: 'angular-prep-path' },
             { slug: 'vue-prep-path' },
-            { slug: 'html-prep-path' },
-            { slug: 'css-prep-path' },
         ]
     },
     { key: 'system', title: 'System design', items: [{ slug: 'system-design' }] },

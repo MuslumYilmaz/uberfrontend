@@ -89,3 +89,17 @@
   font-size: 15px;
   overflow-wrap: anywhere;
 }
+
+.faq-a a {
+  color: var(--uf-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: color-mix(in srgb, var(--uf-accent) 72%, transparent);
+  font-weight: 600;
+}
+
+.faq-a a:hover {
+  color: var(--uf-accent-strong);
+  text-decoration-color: color-mix(in srgb, var(--uf-accent) 90%, transparent);
+}

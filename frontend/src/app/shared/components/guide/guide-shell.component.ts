@@ -111,7 +111,7 @@ type LeftNav = {
 @media (max-width:720px){
   .wrap{ padding:10px 14px 36px; }
   .wrap .title{ font-size:24px; }
-  .wrap .content{ font-size:14.5px; line-height:1.68; }
+  .wrap .content{ font-size:var(--uf-body-size); line-height:var(--uf-body-line); }
 }
 
 @media (max-width:520px){
@@ -136,8 +136,8 @@ type LeftNav = {
 
 /* article body readability */
 .content{
-  line-height:1.7;
-  font-size:15px;
+  line-height:var(--uf-body-line);
+  font-size:var(--uf-body-size);
   letter-spacing:.01em;
   color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
 }
@@ -145,9 +145,9 @@ type LeftNav = {
 .content .code-wrap,
 .content .table-scroll,
 .content app-faq-section{ max-width: none; }
-.content>p:first-of-type{ font-size:15px; color: color-mix(in srgb, var(--uf-text-secondary) 94%, transparent); }
+.content>p:first-of-type{ font-size:var(--uf-body-size); color: color-mix(in srgb, var(--uf-text-secondary) 94%, transparent); }
 .content h2{
-  font-size:20px; font-weight:700;
+  font-size:var(--uf-section-title-size); font-weight:700;
   margin:34px 0 14px; padding:10px 12px;
   border:1px solid var(--uf-border-subtle);
   border-left:3px solid color-mix(in srgb, var(--uf-accent) 42%, var(--uf-border-subtle));
@@ -157,14 +157,14 @@ type LeftNav = {
   color: var(--uf-text-primary);
 }
 .content h3{
-  font-size:16px; font-weight:700;
+  font-size:var(--uf-subsection-title-size); font-weight:700;
   margin:22px 0 9px;
   scroll-margin-top: calc(var(--app-safe-top, 64px) + 12px);
   color: color-mix(in srgb, var(--uf-text-secondary) 96%, transparent);
 }
 .content p, .content ul, .content ol{ margin:12px 0; }
 .content ul, .content ol{ padding-left:1.3rem; }
-.content li{ margin:8px 0; line-height:1.64; }
+.content li{ margin:8px 0; line-height:var(--uf-body-line); }
 .content li::marker{ color:color-mix(in srgb, var(--uf-text-tertiary) 70%, transparent); }
 .content strong{ font-weight:800; }
 .content hr{

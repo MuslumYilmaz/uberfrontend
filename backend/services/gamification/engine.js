@@ -103,6 +103,17 @@ function applyChallengeStreak(previous, completionDayKey) {
   };
 }
 
+function readActiveActivityStreakCurrent(streak, todayDayKey) {
+  const rawCurrent = Math.max(0, Number(streak?.current) || 0);
+  const lastActiveUTCDate = streak?.lastActiveUTCDate || null;
+  const diff = dayDiffByKey(lastActiveUTCDate, todayDayKey);
+
+  if (!Number.isFinite(diff)) return 0;
+  // If at least one full day was missed, the active streak is broken for today.
+  if (diff > 1) return 0;
+  return rawCurrent;
+}
+
 module.exports = {
   normalizeDifficulty,
   xpForCompletion,
@@ -113,4 +124,5 @@ module.exports = {
   sanitizeDailyChallengeTech,
   readDailyChallengeTech,
   applyChallengeStreak,
+  readActiveActivityStreakCurrent,
 };

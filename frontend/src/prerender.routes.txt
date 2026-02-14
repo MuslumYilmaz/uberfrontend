@@ -121,9 +121,7 @@
 /guides/interview-blueprint/angular-prep-path
 /guides/interview-blueprint/api-design
 /guides/interview-blueprint/coding-interviews
-/guides/interview-blueprint/css-prep-path
 /guides/interview-blueprint/dsa-for-fe
-/guides/interview-blueprint/html-prep-path
 /guides/interview-blueprint/intro
 /guides/interview-blueprint/javascript-interviews
 /guides/interview-blueprint/javascript-prep-path

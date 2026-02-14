@@ -68,7 +68,7 @@
               <div class="detail-prep-bridge__links">
                 <a [routerLink]="['/tracks']">Explore interview tracks</a>
                 <a [routerLink]="['/companies']">Browse company questions</a>
-                <a [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
+                <a *ngIf="hasFrameworkPrepPath()" [routerLink]="frameworkPrepRoute()">Open {{ frameworkPrepLabel() }} prep path</a>
               </div>
             </section>
 

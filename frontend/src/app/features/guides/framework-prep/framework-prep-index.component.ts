@@ -181,17 +181,5 @@ export class FrameworkPrepIndexComponent {
       summary: 'Reactivity internals, rendering updates, and component communication.',
       focus: 'Reactivity correctness, predictable state',
     },
-    {
-      slug: 'html-prep-path',
-      title: 'HTML Prep Path',
-      summary: 'Semantics, form behavior, and accessibility-first interview answers.',
-      focus: 'Markup correctness, accessibility fundamentals',
-    },
-    {
-      slug: 'css-prep-path',
-      title: 'CSS Prep Path',
-      summary: 'Layout systems, specificity debugging, and responsive implementation.',
-      focus: 'Layout trade-offs, styling reliability',
-    },
   ];
 }

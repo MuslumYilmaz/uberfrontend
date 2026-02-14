@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { firstValueFrom, of, Subject } from 'rxjs';
 import { DashboardGamificationResponse } from '../../core/models/gamification.model';
 import { ActivityService } from '../../core/services/activity.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
@@ -157,6 +157,21 @@ describe('DashboardComponent', () => {
       fixture.nativeElement.querySelector('[data-testid="dashboard-focus-areas-link"]');
     expect(link).toBeTruthy();
     expect(link?.getAttribute('href') || '').toContain('/focus-areas');
+  });
+
+  it('shows solved trivia progress in question formats', async () => {
+    const progressService = TestBed.inject(UserProgressService) as any;
+    progressService.solvedIds.and.returnValue(['react-closures']);
+
+    const localFixture = TestBed.createComponent(DashboardComponent);
+    localFixture.detectChanges();
+
+    const component = localFixture.componentInstance;
+    const stats = await firstValueFrom(component.stats$);
+    const triviaCard = component.questionFormats.find((card) => card.kindKey === 'trivia');
+
+    expect(triviaCard).toBeTruthy();
+    expect(component.getFormatSubtitle(triviaCard!, stats)).toBe('1/1 questions');
   });
 
   it('marks daily challenge complete from dashboard card', () => {

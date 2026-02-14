@@ -27,8 +27,11 @@ type Stats = {
   companyCounts: Record<string, number>;
   techCounts: Record<string, number>;
   formatCounts: FormatCounts;
+  formatQuestionIds: Record<CategoryKeyInternal, string[]>;
   triviaTotal: number;
+  triviaQuestionIds: string[];
   systemDesignTotal: number;
+  systemDesignQuestionIds: string[];
   topics: TopicDefinition[];
   topicCounts: TopicCounts;
 };
@@ -219,6 +222,15 @@ export class DashboardComponent {
         algo: 0,
         system: 0,
       };
+      const formatQuestionIds: Record<CategoryKeyInternal, string[]> = {
+        ui: [],
+        'js-fn': [],
+        'html-css': [],
+        algo: [],
+        system: [],
+      };
+      const triviaQuestionIds: string[] = [];
+      const systemDesignQuestionIds: string[] = [];
 
       const topicCounts: TopicCounts = {};
       for (const t of topics.topics ?? []) {
@@ -243,6 +255,7 @@ export class DashboardComponent {
 
         const cat = this.inferFormatCategory(q);
         formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
+        if (q?.id) formatQuestionIds[cat].push(q.id);
 
         bumpTopics(q);
       }
@@ -256,12 +269,20 @@ export class DashboardComponent {
 
         const cat = this.inferFormatCategory(q as MixedQuestion);
         formatCounts[cat] = (formatCounts[cat] ?? 0) + 1;
+        if (q?.id) {
+          formatQuestionIds[cat].push(q.id);
+          triviaQuestionIds.push(q.id);
+        }
 
         bumpTopics(q);
       }
 
       const systemDesignTotal = Array.isArray(system) ? system.length : 0;
+      for (const q of system ?? []) {
+        if ((q as any)?.id) systemDesignQuestionIds.push((q as any).id);
+      }
       formatCounts.system = systemDesignTotal;
+      formatQuestionIds.system = [...systemDesignQuestionIds];
 
       const triviaTotal = trivia.length;
 
@@ -274,8 +295,11 @@ export class DashboardComponent {
         companyCounts,
         techCounts,
         formatCounts,
+        formatQuestionIds,
         triviaTotal,
+        triviaQuestionIds,
         systemDesignTotal,
+        systemDesignQuestionIds,
         topics: topics.topics ?? [],
         topicCounts,
       };
@@ -556,17 +580,20 @@ export class DashboardComponent {
 
     if (card.kindKey === 'trivia') {
       const total = stats.triviaTotal ?? 0;
-      return `0/${total} questions`;
+      const solved = this.countSolvedQuestionIds(stats.triviaQuestionIds);
+      return `${solved}/${total} questions`;
     }
 
     if (card.kindKey === 'system-design') {
       const total = stats.systemDesignTotal ?? 0;
-      return `0/${total} questions`;
+      const solved = this.countSolvedQuestionIds(stats.systemDesignQuestionIds);
+      return `${solved}/${total} questions`;
     }
 
     if (card.formatKey) {
       const total = stats.formatCounts[card.formatKey] ?? 0;
-      return `0/${total} questions`;
+      const solved = this.countSolvedQuestionIds(stats.formatQuestionIds[card.formatKey] ?? []);
+      return `${solved}/${total} questions`;
     }
 
     return card.subtitle ?? '';
@@ -618,6 +645,19 @@ export class DashboardComponent {
     }
 
     return intensityMap;
+  }
+
+  private countSolvedQuestionIds(ids: readonly string[]): number {
+    if (!ids?.length) return 0;
+    const solved = this.solvedSet();
+    const seen = new Set<string>();
+    let count = 0;
+    for (const id of ids) {
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      if (solved.has(id)) count += 1;
+    }
+    return count;
   }
 
   private refreshWeeklySolved(force = false) {

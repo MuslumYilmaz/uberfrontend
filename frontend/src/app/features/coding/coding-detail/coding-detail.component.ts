@@ -1690,6 +1690,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     return slug ? ['/guides/framework-prep', slug] : ['/guides/framework-prep'];
   }
 
+  hasFrameworkPrepPath(): boolean {
+    return this.frameworkPrepSlugForTech() !== null;
+  }
+
   frameworkPrepLabel(): string {
     switch ((this.tech || '').toLowerCase()) {
       case 'javascript':
@@ -1700,10 +1704,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         return 'Angular';
       case 'vue':
         return 'Vue';
-      case 'html':
-        return 'HTML';
-      case 'css':
-        return 'CSS';
       default:
         return 'Framework';
     }
@@ -1719,10 +1719,6 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
         return 'angular-prep-path';
       case 'vue':
         return 'vue-prep-path';
-      case 'html':
-        return 'html-prep-path';
-      case 'css':
-        return 'css-prep-path';
       default:
         return null;
     }

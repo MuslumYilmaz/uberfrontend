@@ -11,7 +11,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SliderModule } from 'primeng/slider';
 
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subject, Subscription } from 'rxjs';
-import { distinctUntilChanged, map, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { TooltipModule } from 'primeng/tooltip';
 import { Difficulty, Question, QuestionKind, Technology, isQuestionLockedForTier } from '../../../core/models/question.model';
@@ -60,7 +60,17 @@ type SortKey =
   // for compatibility with shared filter panel in other contexts
   | 'diff-asc' | 'diff-desc';
 
-type FrameworkPrepLink = { tech: Tech; slug: string; label: string };
+type SupportedPrepTech = Extract<Tech, 'javascript' | 'react' | 'angular' | 'vue'>;
+
+type FrameworkPrepLink = {
+  tech: SupportedPrepTech;
+  slug: string;
+  label: string;
+  summary: string;
+  outcomes: string[];
+  mistakes: string[];
+  sequenceLabel: string;
+};
 
 type FocusSlug =
   | 'accessibility'
@@ -116,12 +126,66 @@ const SYSTEM_TITLE_HINTS = [
 
 const ALLOWED_CATEGORIES: CategoryKey[] = ['ui', 'js-fn', 'html-css', 'algo', 'system'];
 const FRAMEWORK_PREP_LINKS: FrameworkPrepLink[] = [
-  { tech: 'javascript', slug: 'javascript-prep-path', label: 'JavaScript prep' },
-  { tech: 'react', slug: 'react-prep-path', label: 'React prep' },
-  { tech: 'angular', slug: 'angular-prep-path', label: 'Angular prep' },
-  { tech: 'vue', slug: 'vue-prep-path', label: 'Vue prep' },
-  { tech: 'html', slug: 'html-prep-path', label: 'HTML prep' },
-  { tech: 'css', slug: 'css-prep-path', label: 'CSS prep' },
+  {
+    tech: 'javascript',
+    slug: 'javascript-prep-path',
+    label: 'JavaScript prep',
+    summary: 'Lock async flows, closures, and state transitions before mixing framework rounds.',
+    outcomes: [
+      'Answer algorithmic and coding prompts with cleaner state reasoning.',
+      'Explain async trade-offs and edge cases without drifting off-topic.',
+    ],
+    mistakes: [
+      'Jumping into framework APIs before mastering core JavaScript behavior.',
+      'Practicing random prompts without reviewing async and closure fundamentals.',
+    ],
+    sequenceLabel: 'JavaScript foundation path',
+  },
+  {
+    tech: 'react',
+    slug: 'react-prep-path',
+    label: 'React prep',
+    summary: 'Sharpen hook decisions, rerender reasoning, and component architecture communication.',
+    outcomes: [
+      'Write predictable hook-based solutions under interview time pressure.',
+      'Defend component boundaries and performance choices with clear trade-offs.',
+    ],
+    mistakes: [
+      'Memorizing hook rules without explaining dependency and rerender behavior.',
+      'Over-optimizing early instead of first building readable, correct flows.',
+    ],
+    sequenceLabel: 'React interview path',
+  },
+  {
+    tech: 'angular',
+    slug: 'angular-prep-path',
+    label: 'Angular prep',
+    summary: 'Focus on RxJS operators, architecture boundaries, and maintainable component contracts.',
+    outcomes: [
+      'Handle reactive streams and form flows with deliberate operator choices.',
+      'Explain module, service, and component boundaries in senior-level terms.',
+    ],
+    mistakes: [
+      'Using RxJS operators without explaining cancellation and memory implications.',
+      'Mixing state and side effects across components without clear ownership.',
+    ],
+    sequenceLabel: 'Angular architecture path',
+  },
+  {
+    tech: 'vue',
+    slug: 'vue-prep-path',
+    label: 'Vue prep',
+    summary: 'Improve reactivity correctness, composition patterns, and component communication clarity.',
+    outcomes: [
+      'Reason about state updates and computed/watch choices without hesitation.',
+      'Structure component communication with predictable, testable patterns.',
+    ],
+    mistakes: [
+      'Treating template convenience as architecture instead of design decisions.',
+      'Skipping discussion of reactivity pitfalls in larger component trees.',
+    ],
+    sequenceLabel: 'Vue reactivity path',
+  },
 ];
 const DEBUG_FILTER_STATE = true;
 
@@ -219,6 +283,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
   private hydrated = false;
   private lastScopedFilter: { topic: string | null; focus: string | null } = { topic: null, focus: null };
   private resolvedList: QuestionListResolved | null = null;
+  private systemDesignRowsCache$: Observable<Row[]> | null = null;
 
   viewMode$ = this.route.queryParamMap.pipe(
     map(qp => (qp.get('view') === 'formats' ? 'formats' : 'tech') as ViewMode),
@@ -265,7 +330,7 @@ export class CodingListComponent implements OnInit, OnDestroy {
             return this.selectedKind$.pipe(
               switchMap((k) => {
                 const preloaded = this.resolvedGlobalList(k);
-                let base$: Observable<Row[] | null>;
+                let base$: Observable<Row[]>;
                 if (preloaded) {
                   base$ = of(preloaded).pipe(
                     map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech })))
@@ -273,16 +338,15 @@ export class CodingListComponent implements OnInit, OnDestroy {
                 } else {
                   base$ = this.qs.loadAllQuestions(k as any).pipe(
                     map((list: MixedQuestion[]) => list.map<Row>(q => ({ ...q, __kind: k as any, tech: q.tech }))),
-                    startWith<Row[] | null>(null)
                   );
                 }
 
                 if (this.viewMode === 'formats') {
-                  return combineLatest<[Row[] | null, Row[] | null]>([
+                  return combineLatest<[Row[], Row[]]>([
                     base$,
-                    this.loadSystemDesignRows$().pipe(startWith<Row[] | null>(null))
+                    this.loadSystemDesignRows$()
                   ]).pipe(
-                    map(([a, sys]) => (a === null || sys === null) ? null : [...a, ...sys]),
+                    map(([a, sys]) => [...a, ...sys]),
                   );
                 }
                 return base$;
@@ -547,11 +611,23 @@ export class CodingListComponent implements OnInit, OnDestroy {
     { key: 'trivia', label: 'Quiz' }
   ];
 
-  frameworkPrepLinks(): FrameworkPrepLink[] {
-    if (this.currentViewKey === 'formats') return FRAMEWORK_PREP_LINKS;
+  currentFrameworkPrep(): FrameworkPrepLink | null {
+    if (this.currentViewKey === 'formats') return null;
     const selectedTech = this.selectedTech$.value;
-    if (!selectedTech) return FRAMEWORK_PREP_LINKS;
-    return FRAMEWORK_PREP_LINKS.filter((entry) => entry.tech === selectedTech);
+    if (!selectedTech) return null;
+    return FRAMEWORK_PREP_LINKS.find((entry) => entry.tech === selectedTech) ?? null;
+  }
+
+  isUnsupportedPrepTechSelected(): boolean {
+    const selectedTech = this.selectedTech$.value;
+    return selectedTech === 'html' || selectedTech === 'css';
+  }
+
+  selectedPrepTechLabel(): string {
+    const selectedTech = this.selectedTech$.value;
+    if (!selectedTech) return '';
+    const selectedTab = this.techTabs.find((tab) => tab.key === selectedTech);
+    return selectedTab?.label ?? selectedTech;
   }
 
   // --- UI handlers for sorting ---
@@ -1303,7 +1379,12 @@ export class CodingListComponent implements OnInit, OnDestroy {
     this.saveFiltersTo(this.getActiveViewKey());
   }
 
-  private loadSystemDesignRows$() {
+  private loadSystemDesignRows$(): Observable<Row[]> {
+    const cached = this.systemDesignRowsCache$;
+    if (cached) {
+      return cached;
+    }
+
     const anyQs = this.qs as any;
     const fn =
       anyQs.loadSystemDesignList ||
@@ -1311,9 +1392,11 @@ export class CodingListComponent implements OnInit, OnDestroy {
       anyQs.loadSystemDesign;
 
     if (typeof fn !== 'function') {
-      return of<Row[]>([]);
+      const empty$ = of<Row[]>([]);
+      this.systemDesignRowsCache$ = empty$;
+      return empty$;
     }
-    return (fn.call(anyQs) as any).pipe(
+    const rows$ = (fn.call(anyQs) as any).pipe(
       map((items: any[]) =>
         (items || []).map<Row>(it => ({
           id: it.id,
@@ -1333,7 +1416,10 @@ export class CodingListComponent implements OnInit, OnDestroy {
           __sd: true
         }))
       ),
+      shareReplay(1),
     );
+    this.systemDesignRowsCache$ = rows$;
+    return rows$;
   }
 
   private isFormatsMode(): boolean {

@@ -1,6 +1,9 @@
 'use strict';
 
-const { applyChallengeStreak } = require('../services/gamification/engine');
+const {
+  applyChallengeStreak,
+  readActiveActivityStreakCurrent,
+} = require('../services/gamification/engine');
 const { weekBoundsFromDayKey, dayDiffByKey } = require('../services/gamification/timezone');
 const {
   resolveDailyChallengeTechPreference,
@@ -30,6 +33,24 @@ describe('gamification logic', () => {
     expect(out.broken).toBe(true);
     expect(out.next.current).toBe(1);
     expect(out.next.longest).toBe(7);
+  });
+
+  test('activity streak summary returns 0 after at least one missed day', () => {
+    const active = readActiveActivityStreakCurrent(
+      { current: 4, longest: 7, lastActiveUTCDate: '2026-02-07' },
+      '2026-02-09'
+    );
+
+    expect(active).toBe(0);
+  });
+
+  test('activity streak summary keeps value when last activity was yesterday', () => {
+    const active = readActiveActivityStreakCurrent(
+      { current: 4, longest: 7, lastActiveUTCDate: '2026-02-08' },
+      '2026-02-09'
+    );
+
+    expect(active).toBe(4);
   });
 
   test('week bounds use monday to sunday', () => {

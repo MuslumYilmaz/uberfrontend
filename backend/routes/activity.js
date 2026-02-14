@@ -6,7 +6,12 @@ const ActivityEvent = require('../models/ActivityEvent');
 const XpCredit = require('../models/XpCredit');
 const { requireAuth } = require('../middleware/Auth');
 const { getQuestionMeta } = require('../services/gamification/question-catalog');
-const { xpForCompletion, normalizeDifficulty, computeLevel } = require('../services/gamification/engine');
+const {
+    xpForCompletion,
+    normalizeDifficulty,
+    computeLevel,
+    readActiveActivityStreakCurrent,
+} = require('../services/gamification/engine');
 const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
 
 const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
@@ -191,15 +196,15 @@ router.get('/summary', requireAuth, async (req, res) => {
         // Level from total XP
         const { level, nextLevelXp, levelProgress } = computeLevelFromXp(totalXp);
 
+        const todayStr = utcDayStr();
         // Streaks
-        const current = user.stats?.streak?.current ?? 0;
+        const current = readActiveActivityStreakCurrent(user.stats?.streak, todayStr);
         const best = user.stats?.streak?.longest ?? user.stats?.streak?.best ?? 0;
 
         // Freeze tokens (optional, defaults 0)
         const freezeTokens = Number(user.stats?.freezeTokens ?? 0);
 
         // Today credits (0..3)
-        const todayStr = utcDayStr();
         const todayCompleted = await XpCredit.countDocuments({
             userId: String(req.auth.userId),
             dayUTC: todayStr,

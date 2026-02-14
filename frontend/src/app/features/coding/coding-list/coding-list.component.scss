@@ -47,61 +47,85 @@ app-coding-tech-kind-tabs {
 
 .fa-prep-cluster {
   margin: 0 0 18px;
-  padding: 14px 16px;
-  border-radius: var(--fa-radius-12);
+  padding: 16px 18px;
+  border-radius: var(--fa-radius-16);
   border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-2) 92%, var(--surface-1));
+  background:
+    linear-gradient(180deg, rgba(var(--fa-accent-rgb), 0.08), transparent 42%),
+    color-mix(in srgb, var(--surface-2) 92%, var(--surface-1));
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.38);
   display: grid;
-  gap: 10px;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fa-prep-cluster::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(var(--fa-accent-rgb), 0.85), rgba(var(--fa-accent-rgb), 0));
+  pointer-events: none;
 }
 
 .fa-prep-cluster__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 14px;
 }
 
-.fa-prep-cluster__header .fa-link-btn {
-  text-decoration: none;
+.fa-prep-cluster__heading {
+  display: grid;
+  gap: 6px;
 }
 
-.fa-prep-cluster__links {
-  display: flex;
+.fa-prep-cluster__intro {
+  margin: 0;
+  max-width: 760px;
+}
+
+.fa-prep-cluster__actions {
+  display: inline-flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
 }
 
-.fa-prep-cluster__links a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: var(--fa-radius-pill);
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-2) 94%, var(--surface-1));
-  color: var(--ink-dim);
+.fa-prep-cluster__actions .fa-link-btn {
   text-decoration: none;
-  font-size: 12px;
-  font-weight: 600;
-  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+  white-space: nowrap;
 }
 
-.fa-prep-cluster__links a:hover {
-  border-color: color-mix(in srgb, var(--border) 60%, var(--fa-accent) 40%);
-  background: color-mix(in srgb, var(--fa-accent-soft) 72%, var(--surface-2));
-  color: var(--ink-sub);
+.fa-prep-cluster__active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, rgba(var(--fa-accent-rgb), 0.45));
+  background: color-mix(in srgb, var(--surface-2) 86%, rgba(var(--fa-accent-rgb), 0.12));
+}
+
+.fa-prep-cluster__active-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.fa-prep-cluster__active-copy p {
+  margin: 0;
 }
 
 .fa-prep-cluster__grid {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .fa-prep-cluster__grid article {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface-2) 94%, var(--surface-1));
@@ -117,8 +141,8 @@ app-coding-tech-kind-tabs {
 
 .fa-prep-cluster__grid ul,
 .fa-prep-cluster__grid ol {
-  margin: 8px 0 0 16px;
-  font-size: 12px;
+  margin: 10px 0 0 16px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--ink-dim);
 }
@@ -132,10 +156,46 @@ app-coding-tech-kind-tabs {
   text-decoration: underline;
 }
 
+.fa-prep-cluster__empty {
+  display: grid;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed color-mix(in srgb, var(--border) 74%, rgba(var(--fa-text-rgb), 0.25));
+  background: color-mix(in srgb, var(--surface-2) 95%, var(--surface-1));
+}
+
+.fa-prep-cluster__empty p {
+  margin: 0;
+}
+
 @media (max-width: 900px) {
+  .fa-prep-cluster {
+    padding: 14px;
+  }
+
+  .fa-prep-cluster__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fa-prep-cluster__actions {
+    justify-content: flex-start;
+  }
+
+  .fa-prep-cluster__actions .fa-link-btn {
+    white-space: normal;
+  }
+
+  .fa-prep-cluster__active {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .fa-prep-cluster__grid {
     grid-template-columns: 1fr;
   }
+
 }
 
 .fa-questions-layout {
