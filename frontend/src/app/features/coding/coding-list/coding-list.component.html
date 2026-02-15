@@ -46,28 +46,11 @@
         </div>
       </div>
 
-      <div class="fa-prep-cluster__grid">
-        <article>
-          <h3>Outcomes</h3>
-          <ul>
-            <li *ngFor="let item of prep.outcomes">{{ item }}</li>
-          </ul>
-        </article>
-        <article>
-          <h3>Common mistakes</h3>
-          <ul>
-            <li *ngFor="let item of prep.mistakes">{{ item }}</li>
-          </ul>
-        </article>
-        <article>
-          <h3>Suggested sequence</h3>
-          <ol>
-            <li><a [routerLink]="['/guides/framework-prep', prep.slug]">{{ prep.sequenceLabel }}</a></li>
-            <li><a [routerLink]="['/guides/interview-blueprint/ui-interviews']">UI execution drills</a></li>
-            <li><a [routerLink]="['/guides/interview-blueprint/system-design']">System design + communication</a></li>
-          </ol>
-        </article>
-      </div>
+      <app-prep-signal-grid
+        [outcomes]="prep.outcomes"
+        [mistakes]="prep.mistakes"
+        [sequence]="prepSequenceItems(prep)">
+      </app-prep-signal-grid>
     </ng-container>
 
     <ng-template #prepSelectState>

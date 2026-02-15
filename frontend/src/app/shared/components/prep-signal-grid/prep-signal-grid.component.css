@@ -1,0 +1,159 @@
+:host {
+  display: block;
+}
+
+.prep-signal-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.prep-signal-card {
+  --prep-accent: color-mix(in srgb, var(--uf-accent) 58%, #60a5fa);
+  --prep-icon-bg: color-mix(in srgb, var(--prep-accent) 24%, var(--uf-surface));
+  --prep-icon-ink: color-mix(in srgb, var(--prep-accent) 86%, var(--uf-text-primary) 14%);
+  --prep-glow: color-mix(in srgb, var(--prep-accent) 22%, transparent);
+
+  position: relative;
+  padding: 13px 14px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 70%, var(--prep-accent) 30%);
+  background:
+    linear-gradient(170deg, color-mix(in srgb, var(--prep-accent) 10%, transparent), transparent 44%),
+    color-mix(in srgb, var(--uf-surface) 94%, var(--uf-surface-alt));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--uf-text-primary) 10%, transparent),
+    0 10px 22px color-mix(in srgb, var(--prep-glow) 55%, transparent);
+}
+
+.prep-signal-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 999px 999px 0;
+  background: var(--prep-accent);
+}
+
+.prep-signal-card--outcomes {
+  --prep-accent: color-mix(in srgb, #22c55e 72%, var(--uf-accent) 28%);
+}
+
+.prep-signal-card--mistakes {
+  --prep-accent: color-mix(in srgb, #fb923c 75%, var(--uf-accent) 25%);
+}
+
+.prep-signal-card--sequence {
+  --prep-accent: color-mix(in srgb, #60a5fa 72%, var(--uf-accent) 28%);
+}
+
+.prep-signal-card__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prep-signal-card__icon {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--prep-icon-bg);
+  border: 1px solid color-mix(in srgb, var(--prep-accent) 45%, transparent);
+  color: var(--prep-icon-ink);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--uf-text-primary) 10%, transparent);
+}
+
+.prep-signal-card h3 {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--uf-text-tertiary) 84%, transparent);
+}
+
+.prep-signal-card ul,
+.prep-signal-card ol {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+}
+
+.prep-signal-card li {
+  position: relative;
+  padding-left: 20px;
+}
+
+.prep-signal-card ul li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  top: 0;
+  color: var(--prep-accent);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.prep-signal-card--outcomes ul li::before {
+  content: '✓';
+  left: 2px;
+}
+
+.prep-signal-card--mistakes ul li::before {
+  content: '×';
+  left: 2px;
+}
+
+.prep-signal-card--sequence ol {
+  counter-reset: prep-seq;
+}
+
+.prep-signal-card--sequence ol li {
+  padding-left: 28px;
+}
+
+.prep-signal-card--sequence ol li::before {
+  counter-increment: prep-seq;
+  content: counter(prep-seq);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid color-mix(in srgb, var(--prep-accent) 45%, transparent);
+  color: color-mix(in srgb, var(--prep-accent) 84%, var(--uf-text-primary) 16%);
+  background: color-mix(in srgb, var(--prep-accent) 18%, var(--uf-surface));
+}
+
+.prep-signal-card li a {
+  color: var(--uf-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prep-signal-card li a:hover {
+  color: color-mix(in srgb, var(--uf-text-primary) 94%, white 6%);
+}
+
+@media (max-width: 900px) {
+  .prep-signal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -56,6 +56,10 @@
   background:color-mix(in srgb,var(--uf-surface) 94%,var(--uf-text-primary) 6%);
   box-shadow:var(--uf-card-shadow);
 }
+.plan-compare > .pr-section-title,
+.plan-compare > .pr-section-subtitle{
+  padding-inline: 16px;
+}
 .plan-compare table{
   width:100%;
   border-collapse:collapse;
@@ -84,23 +88,58 @@
 }
 .risk-reversal{
   margin-top:18px;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid color-mix(in srgb,var(--uf-accent) 30%,var(--uf-border-subtle));
-  background:color-mix(in srgb,var(--uf-accent-soft) 65%,var(--uf-surface));
+  padding:16px;
+  border-radius:14px;
+  border:1px solid color-mix(in srgb, #6cc2ff 34%, var(--uf-border-subtle) 66%);
+  background:
+    radial-gradient(circle at 92% 10%, rgba(108, 194, 255, 0.16), transparent 38%),
+    linear-gradient(145deg, color-mix(in srgb, #6cc2ff 10%, var(--uf-surface)), color-mix(in srgb, var(--uf-accent) 14%, var(--uf-surface)));
+  box-shadow: var(--uf-card-shadow);
+  display: grid;
+  gap: 12px;
 }
-.risk-reversal h3{margin:4px 0;font-size:18px;letter-spacing:-0.01em}
+.risk-reversal__head {
+  display: grid;
+  gap: 6px;
+  max-width: 74ch;
+}
+.risk-reversal h3{
+  margin:0;
+  font-size:20px;
+  letter-spacing:-0.015em;
+}
+.risk-reversal__copy {
+  margin: 0;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--uf-text-secondary) 90%, transparent);
+}
 .risk-reversal__links{
-  margin-top:8px;
   display:flex;
-  gap:14px;
+  gap:10px;
   flex-wrap:wrap;
 }
-.risk-reversal__links a{
+.risk-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, #8bb9ff 42%, var(--uf-border-subtle) 58%);
+  background: color-mix(in srgb, #6cc2ff 15%, var(--uf-surface));
   color:var(--uf-text-primary);
-  text-decoration:underline;
-  text-underline-offset:2px;
+  text-decoration:none;
   font-weight:700;
+  transition: border-color 150ms ease, background-color 150ms ease, transform 120ms ease;
+}
+.risk-link i {
+  font-size: 12px;
+  color: color-mix(in srgb, #d5e7ff 88%, transparent);
+}
+.risk-link:hover {
+  border-color: color-mix(in srgb, #9ec4ff 60%, var(--uf-border-subtle));
+  background: color-mix(in srgb, #6cc2ff 22%, var(--uf-surface));
+  transform: translateY(-1px);
 }
 .weekly-changelog{
   margin-top:18px;

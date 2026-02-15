@@ -2,7 +2,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
-import { SENTRY_DSN, SENTRY_RELEASE, SENTRY_TRACES_SAMPLE_RATE } from './environments/sentry.env';
+
+const CHUNK_RELOAD_SESSION_KEY = 'c';
 
 function enforceCanonicalOrigin(): void {
   if (typeof window === 'undefined') return;
@@ -44,6 +45,38 @@ function shouldRunSentrySmoke(): boolean {
   return fromQuery || fromStorage;
 }
 
+function installChunkLoadRecovery(): void {
+  if (typeof window === 'undefined' || !environment.production) return;
+
+  const maybeRecover = (reason: unknown) => {
+    const msg = String((reason as any)?.message ?? reason ?? '').toLowerCase();
+    if (
+      !msg.includes('dynamically imported module') &&
+      !msg.includes('chunkloaderror') &&
+      !msg.includes('loading chunk') &&
+      !msg.includes('module script failed')
+    ) {
+      return;
+    }
+    try {
+      if (window.sessionStorage.getItem(CHUNK_RELOAD_SESSION_KEY)) return;
+      window.sessionStorage.setItem(CHUNK_RELOAD_SESSION_KEY, '1');
+    } catch {
+      // ignore session storage failures
+    }
+    window.location.reload();
+  };
+
+  window.addEventListener('unhandledrejection', (event) => {
+    maybeRecover((event as PromiseRejectionEvent).reason);
+  });
+
+  window.addEventListener('error', (event) => {
+    const err = event as ErrorEvent;
+    maybeRecover(err.error ?? err.message);
+  }, true);
+}
+
 if (environment.sentryDsn) {
   const runSmoke = shouldRunSentrySmoke();
   import('@sentry/angular').then(({ browserTracingIntegration, init, captureException }) => {
@@ -60,7 +93,6 @@ if (environment.sentryDsn) {
       const release = environment.sentryRelease || 'unknown';
       const message = `[sentry] smoke test ${new Date().toISOString()} release=${release}`;
       const err = new Error(message);
-      console.info('[sentry] smoke test fired', { message });
       captureException(err);
       setTimeout(() => {
         throw err;
@@ -70,6 +102,7 @@ if (environment.sentryDsn) {
 }
 
 enforceCanonicalOrigin();
+installChunkLoadRecovery();
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

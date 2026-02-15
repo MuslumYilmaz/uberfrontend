@@ -3,10 +3,11 @@ import { Component, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PLAYBOOK, PLAYBOOK_GROUPS } from '../../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../../shared/components/offline-banner/offline-banner";
+import { PrepSignalGridComponent, PrepSignalItem } from '../../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, OfflineBannerComponent],
+  imports: [CommonModule, RouterModule, OfflineBannerComponent, PrepSignalGridComponent],
   styles: [`
     :host { display:block; color: var(--uf-text-primary); background: var(--uf-bg); }
     .wrap { max-width: 980px; margin: 0 auto; padding: 24px 0 48px; }
@@ -25,30 +26,7 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
       display: grid;
       gap: 12px;
     }
-    .prep-grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    .prep-card {
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--uf-border-subtle);
-      background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-surface-alt));
-    }
-    .prep-card h3 {
-      margin: 0;
-      font-size: 13px;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: color-mix(in srgb, var(--uf-text-tertiary) 85%, transparent);
-    }
-    .prep-card ul, .prep-card ol {
-      margin: 8px 0 0 18px;
-      color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
-      font-size: 13px;
-    }
-    .prep-card li { margin: 6px 0; }
+    .prep-grid-shared { margin: 0; }
     .framework-links {
       display: flex;
       flex-wrap: wrap;
@@ -72,9 +50,6 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
       border-color: color-mix(in srgb, var(--uf-border-subtle) 60%, var(--uf-accent) 40%);
       background: color-mix(in srgb, var(--uf-accent) 12%, var(--uf-surface));
       color: var(--uf-text-primary);
-    }
-    @media (max-width: 900px) {
-      .prep-grid { grid-template-columns: 1fr; }
     }
 
     .section { margin: 28px 0; }
@@ -114,33 +89,12 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
       </div>
 
       <section class="prep-cluster" aria-label="Interview preparation path and outcomes">
-        <div class="prep-grid">
-          <article class="prep-card">
-            <h3>Outcomes</h3>
-            <ul>
-              <li>Know exactly what to practice each week for frontend interview preparation.</li>
-              <li>Move from random solving to a repeatable interview roadmap.</li>
-              <li>Improve coding, UI, system design, and behavioral consistency.</li>
-            </ul>
-          </article>
-          <article class="prep-card">
-            <h3>Common mistakes</h3>
-            <ul>
-              <li>Over-focusing on trivia without implementation practice.</li>
-              <li>Ignoring communication quality and trade-off reasoning.</li>
-              <li>Switching topics daily instead of completing one prep loop.</li>
-            </ul>
-          </article>
-          <article class="prep-card">
-            <h3>Suggested sequence</h3>
-            <ol>
-              <li><a [routerLink]="['/guides/interview-blueprint/intro']">Interview process</a></li>
-              <li><a [routerLink]="['/guides/interview-blueprint/coding-interviews']">Coding rounds</a></li>
-              <li><a [routerLink]="['/guides/interview-blueprint/ui-interviews']">UI rounds</a></li>
-              <li><a [routerLink]="['/guides/interview-blueprint/system-design']">System design rounds</a></li>
-            </ol>
-          </article>
-        </div>
+        <app-prep-signal-grid
+          class="prep-grid-shared"
+          [outcomes]="prepOutcomes"
+          [mistakes]="prepMistakes"
+          [sequence]="prepSequence">
+        </app-prep-signal-grid>
 
         <div class="framework-links">
           <a [routerLink]="['/guides/framework-prep']">Browse all framework prep paths</a>
@@ -171,6 +125,25 @@ import { OfflineBannerComponent } from "../../../../shared/components/offline-ba
   `
 })
 export class PlaybookIndexComponent {
+  readonly prepOutcomes: PrepSignalItem[] = [
+    'Know exactly what to practice each week for frontend interview preparation.',
+    'Move from random solving to a repeatable interview roadmap.',
+    'Improve coding, UI, system design, and behavioral consistency.',
+  ];
+
+  readonly prepMistakes: PrepSignalItem[] = [
+    'Over-focusing on trivia without implementation practice.',
+    'Ignoring communication quality and trade-off reasoning.',
+    'Switching topics daily instead of completing one prep loop.',
+  ];
+
+  readonly prepSequence: PrepSignalItem[] = [
+    { text: 'Interview process', route: ['/guides/interview-blueprint/intro'] },
+    { text: 'Coding rounds', route: ['/guides/interview-blueprint/coding-interviews'] },
+    { text: 'UI rounds', route: ['/guides/interview-blueprint/ui-interviews'] },
+    { text: 'System design rounds', route: ['/guides/interview-blueprint/system-design'] },
+  ];
+
   /** Section groups (order matters). */
   groups = computed(() => PLAYBOOK_GROUPS);
 

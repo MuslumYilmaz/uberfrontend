@@ -7,6 +7,7 @@ import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { QuestionService } from '../../../core/services/question.service';
 import { collectCompanyCounts } from '../../../shared/company-counts.util';
+import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 type CompanyCard = { slug: string; label: string; count: number };
 
@@ -26,7 +27,7 @@ const SEED: ReadonlyArray<Pick<CompanyCard, 'slug' | 'label'>> = [
 @Component({
   standalone: true,
   selector: 'app-company-index',
-  imports: [CommonModule, RouterModule, ProgressSpinnerModule],
+  imports: [CommonModule, RouterModule, ProgressSpinnerModule, PrepSignalGridComponent],
   templateUrl: './company-index.component.html',
   styleUrls: ['./company-index.component.css']
 })
@@ -34,6 +35,23 @@ export class CompanyIndexComponent {
   companies: CompanyCard[] = [];
   loading = true;
   private qs = inject(QuestionService);
+
+  companyPrepOutcomes: PrepSignalItem[] = [
+    'Understand interview style differences across companies.',
+    'Use framework prep paths before company-specific drills.',
+  ];
+
+  companyPrepMistakes: PrepSignalItem[] = [
+    'Jumping into company sets without a baseline interview roadmap.',
+    'Practicing one question type only and missing full-round readiness.',
+  ];
+
+  companyPrepSequence: PrepSignalItem[] = [
+    { text: 'Interview blueprint', route: ['/guides/interview-blueprint'] },
+    { text: 'Framework path', route: ['/guides/framework-prep'] },
+    { text: 'Guided tracks', route: ['/tracks'] },
+    { text: 'Company-specific practice', route: ['/companies'] },
+  ];
 
   ngOnInit() {
     this.loading = true;

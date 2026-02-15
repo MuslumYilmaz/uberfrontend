@@ -105,7 +105,7 @@
         </article>
 
         <ng-template #dailyChallengeFallback>
-          <article class="widget fa-card">
+          <article class="widget widget--daily fa-card" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Daily challenge</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Could not load daily challenge' : 'Sign in to get today’s challenge' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -113,9 +113,27 @@
                 ? 'Progress widgets are temporarily unavailable. You can continue practicing normally.'
                 : 'The challenge is deterministic per day and powers optional streak tracking.' }}
             </p>
-            <a class="fa-btn fa-btn--ghost" [routerLink]="auth.isLoggedIn() ? ['/coding'] : ['/auth/login']">
-              {{ auth.isLoggedIn() ? 'Continue practice' : 'Sign in' }}
-            </a>
+            <div class="widget-actions widget-actions--guest">
+              <a *ngIf="auth.isLoggedIn()" class="fa-btn fa-btn--ghost" [routerLink]="['/coding']">
+                Continue practice
+              </a>
+              <a
+                *ngIf="!auth.isLoggedIn()"
+                class="fa-btn fa-btn--primary"
+                [routerLink]="['/auth/login']"
+                [queryParams]="{ redirectTo: '/dashboard' }"
+              >
+                Sign in
+              </a>
+              <a
+                *ngIf="!auth.isLoggedIn()"
+                class="fa-btn fa-btn--ghost"
+                [routerLink]="['/auth/signup']"
+                [queryParams]="{ redirectTo: '/dashboard' }"
+              >
+                Create account
+              </a>
+            </div>
           </article>
         </ng-template>
 
@@ -188,10 +206,23 @@
         </article>
 
         <ng-template #weeklyGoalFallback>
-          <article class="widget fa-card">
+          <article class="widget widget--weekly fa-card" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Weekly goal</div>
-            <h3 class="widget-title">Optional goal: 10 per week</h3>
-            <p class="widget-copy fa-meta-text">Sign in to set your own weekly target and track completion.</p>
+            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Weekly goal unavailable' : 'Optional goal: 10 per week' }}</h3>
+            <p class="widget-copy fa-meta-text">
+              {{ auth.isLoggedIn()
+                ? 'We could not load your weekly goal settings right now. Continue solving and try again shortly.'
+                : 'Sign in to set your own weekly target and track completion.' }}
+            </p>
+            <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
+              <a
+                class="fa-btn fa-btn--ghost"
+                [routerLink]="['/auth/login']"
+                [queryParams]="{ redirectTo: '/dashboard' }"
+              >
+                Sign in to personalize
+              </a>
+            </div>
           </article>
         </ng-template>
 
@@ -207,7 +238,7 @@
         </article>
 
         <ng-template #xpFallback>
-          <article class="widget fa-card">
+          <article class="widget widget--xp fa-card" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">XP + level</div>
             <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Leveling data unavailable' : 'Sign in to start leveling' }}</h3>
             <p class="widget-copy fa-meta-text">
@@ -215,6 +246,15 @@
                 ? 'We could not load your XP right now. Continue solving questions and try again shortly.'
                 : 'Earn XP from solved coding/trivia/debug questions and weekly completion bonuses.' }}
             </p>
+            <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
+              <a
+                class="fa-btn fa-btn--ghost"
+                [routerLink]="['/auth/login']"
+                [queryParams]="{ redirectTo: '/dashboard' }"
+              >
+                Sign in to track XP
+              </a>
+            </div>
           </article>
         </ng-template>
 
@@ -244,10 +284,23 @@
         </article>
 
         <ng-template #progressFallback>
-          <article class="widget fa-card">
+          <article class="widget widget--progress fa-card" [class.widget--guest]="!auth.isLoggedIn()">
             <div class="widget-kicker">Progress</div>
-            <h3 class="widget-title">Start solving to unlock progress insights</h3>
-            <p class="widget-copy fa-meta-text">Your top completion topics and solved coverage appear here after a few solved questions.</p>
+            <h3 class="widget-title">{{ auth.isLoggedIn() ? 'Progress insights unavailable' : 'Start solving to unlock progress insights' }}</h3>
+            <p class="widget-copy fa-meta-text">
+              {{ auth.isLoggedIn()
+                ? 'We could not load your solved coverage right now. Keep practicing and refresh shortly.'
+                : 'Your top completion topics and solved coverage appear here after a few solved questions.' }}
+            </p>
+            <div class="widget-actions widget-actions--guest" *ngIf="!auth.isLoggedIn()">
+              <a
+                class="fa-btn fa-btn--ghost"
+                [routerLink]="['/auth/login']"
+                [queryParams]="{ redirectTo: '/dashboard' }"
+              >
+                Sign in to save progress
+              </a>
+            </div>
           </article>
         </ng-template>
       </div>
@@ -487,18 +540,28 @@
 
       <ng-container *ngIf="stats$ | async as stats">
         <div class="section-grid">
-          <a *ngFor="let card of frameworks; trackBy: trackByTitle" class="row fa-card fa-card--interactive" [routerLink]="card.route"
-            [queryParams]="card.queryParams">
-            <div class="row-main">
-              <div class="row-icon"><i [ngClass]="piIcon(card.icon)"></i></div>
-              <div class="row-body">
-                <div class="row-title fa-card-title">{{ card.title }}</div>
-                <div class="row-sub fa-meta-text">
-                  {{ getFrameworkSubtitle(card, stats.techCounts) }}
+          <a
+            *ngFor="let card of frameworks; trackBy: trackByTitle"
+            class="row framework-row fa-card fa-card--interactive"
+            [attr.data-tone]="getFrameworkTone(card)"
+            [routerLink]="card.route"
+            [queryParams]="card.queryParams"
+          >
+            <div class="row-main framework-row__main">
+              <div class="row-icon framework-row__icon" [attr.data-tone]="getFrameworkTone(card)">
+                <span class="framework-row__logo" aria-hidden="true">{{ getFrameworkLogo(card) }}</span>
+              </div>
+              <div class="row-body framework-row__body">
+                <div class="row-title fa-card-title framework-row__title-row">
+                  <span>{{ card.title }}</span>
+                  <span class="framework-row__type-pill">{{ getFrameworkTypeLabel(card) }}</span>
+                </div>
+                <div class="row-sub fa-meta-text framework-row__meta">
+                  <span class="framework-row__count-pill">{{ getFrameworkSubtitle(card, stats.techCounts) }}</span>
                 </div>
               </div>
             </div>
-            <div class="row-arrow">→</div>
+            <div class="row-arrow framework-row__cta">Open</div>
           </a>
         </div>
       </ng-container>

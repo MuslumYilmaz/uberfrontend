@@ -17,37 +17,18 @@
         Start with broad preparation in <a [routerLink]="['/coding']">Question Library</a> and <a [routerLink]="['/tracks']">Interview Tracks</a>, then target specific company sets.
     </p>
     <div class="company-intro__links">
-        <a [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
-        <a [routerLink]="['/guides/framework-prep/react-prep-path']">React prep path</a>
-        <a [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular prep path</a>
-        <a [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue prep path</a>
-        <a [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
+        <a class="company-link company-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
+        <a class="company-link company-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React prep path</a>
+        <a class="company-link company-link--angular" [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular prep path</a>
+        <a class="company-link company-link--vue" [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue prep path</a>
+        <a class="company-link company-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
     </div>
-    <div class="company-intro__prep-grid">
-        <article>
-            <h2>Outcomes</h2>
-            <ul>
-                <li>Understand interview style differences across companies.</li>
-                <li>Use framework prep paths before company-specific drills.</li>
-            </ul>
-        </article>
-        <article>
-            <h2>Common mistakes</h2>
-            <ul>
-                <li>Jumping into company sets without a baseline interview roadmap.</li>
-                <li>Practicing one question type only and missing full-round readiness.</li>
-            </ul>
-        </article>
-        <article>
-            <h2>Suggested sequence</h2>
-            <ol>
-                <li><a [routerLink]="['/guides/interview-blueprint']">Interview blueprint</a></li>
-                <li><a [routerLink]="['/guides/framework-prep']">Framework path</a></li>
-                <li><a [routerLink]="['/tracks']">Guided tracks</a></li>
-                <li><a [routerLink]="['/companies']">Company-specific practice</a></li>
-            </ol>
-        </article>
-    </div>
+    <app-prep-signal-grid
+        class="company-intro__prep-grid"
+        [outcomes]="companyPrepOutcomes"
+        [mistakes]="companyPrepMistakes"
+        [sequence]="companyPrepSequence">
+    </app-prep-signal-grid>
     <div class="company-intro__actions">
         <a class="company-intro__cta" [routerLink]="['/pricing']">View premium plans</a>
     </div>

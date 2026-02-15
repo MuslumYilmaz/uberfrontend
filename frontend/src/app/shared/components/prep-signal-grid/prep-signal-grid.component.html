@@ -1,0 +1,55 @@
+<div class="prep-signal-grid">
+  <article class="prep-signal-card prep-signal-card--outcomes">
+    <div class="prep-signal-card__head">
+      <span class="prep-signal-card__icon" aria-hidden="true">✓</span>
+      <h3>{{ outcomesTitle }}</h3>
+    </div>
+    <ul>
+      <li *ngFor="let item of outcomes">
+        <ng-container *ngTemplateOutlet="signalItem; context: { $implicit: item }"></ng-container>
+      </li>
+    </ul>
+  </article>
+
+  <article class="prep-signal-card prep-signal-card--mistakes">
+    <div class="prep-signal-card__head">
+      <span class="prep-signal-card__icon" aria-hidden="true">!</span>
+      <h3>{{ mistakesTitle }}</h3>
+    </div>
+    <ul>
+      <li *ngFor="let item of mistakes">
+        <ng-container *ngTemplateOutlet="signalItem; context: { $implicit: item }"></ng-container>
+      </li>
+    </ul>
+  </article>
+
+  <article class="prep-signal-card prep-signal-card--sequence">
+    <div class="prep-signal-card__head">
+      <span class="prep-signal-card__icon" aria-hidden="true">→</span>
+      <h3>{{ sequenceTitle }}</h3>
+    </div>
+    <ol>
+      <li *ngFor="let item of sequence">
+        <ng-container *ngTemplateOutlet="signalItem; context: { $implicit: item }"></ng-container>
+      </li>
+    </ol>
+  </article>
+</div>
+
+<ng-template #signalItem let-item>
+  <ng-container *ngIf="routeOf(item) as route; else linkOrText">
+    <a [routerLink]="route" [queryParams]="queryParamsOf(item) || undefined">{{ labelOf(item) }}</a>
+  </ng-container>
+  <ng-template #linkOrText>
+    <ng-container *ngIf="hrefOf(item) as href; else plainText">
+      <a
+        [href]="href"
+        [attr.target]="isExternalHref(item) ? '_blank' : null"
+        [attr.rel]="isExternalHref(item) ? 'noopener noreferrer' : null">
+        {{ labelOf(item) }}
+      </a>
+    </ng-container>
+  </ng-template>
+  <ng-template #plainText>{{ labelOf(item) }}</ng-template>
+</ng-template>
+

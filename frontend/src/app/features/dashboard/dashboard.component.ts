@@ -569,6 +569,37 @@ export class DashboardComponent {
     return `${count} questions`;
   }
 
+  getFrameworkTypeLabel(card: Card): string {
+    if (card.techKey === 'javascript' || card.techKey === 'css' || card.techKey === 'html') {
+      return 'Language';
+    }
+    return 'Framework';
+  }
+
+  getFrameworkLogo(card: Card): string {
+    switch (card.techKey) {
+      case 'javascript':
+        return 'JS';
+      case 'react':
+        return 'R';
+      case 'angular':
+        return 'A';
+      case 'vue':
+        return 'V';
+      case 'html':
+        return 'H5';
+      case 'css':
+        return 'C3';
+      default:
+        return '•';
+    }
+  }
+
+  getFrameworkTone(card: Card): string {
+    if (!card.techKey) return 'default';
+    return card.techKey;
+  }
+
   getFormatSubtitle(card: Card, stats: Stats | null | undefined): string {
     if (!stats) {
       return card.subtitle ?? '';

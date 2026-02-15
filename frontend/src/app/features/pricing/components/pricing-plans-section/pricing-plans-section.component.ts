@@ -177,13 +177,24 @@ type CtaMode = 'emit' | 'navigatePricing';
 
       <ng-template #riskReversalBlock>
         <section class="risk-reversal">
-          <p class="eyebrow">Risk reversal</p>
-          <h3>Pay only after you’ve used the free workflow</h3>
-          <p class="muted">Clear billing terms and a public refund policy. No hidden conditions at checkout.</p>
+          <div class="risk-reversal__head">
+            <p class="eyebrow">Risk reversal</p>
+            <h3>Pay only after you’ve used the free workflow</h3>
+            <p class="muted risk-reversal__copy">Clear billing terms and a public refund policy. No hidden conditions at checkout.</p>
+          </div>
           <div class="risk-reversal__links">
-            <a [routerLink]="['/legal/refund']">Refund policy</a>
-            <a [routerLink]="['/legal/editorial-policy']">Editorial policy</a>
-            <a [routerLink]="['/changelog']" (click)="trackChangelogClick('risk_reversal')">Public changelog</a>
+            <a class="risk-link" [routerLink]="['/legal/refund']">
+              <i class="pi pi-replay" aria-hidden="true"></i>
+              <span>Refund policy</span>
+            </a>
+            <a class="risk-link" [routerLink]="['/legal/editorial-policy']">
+              <i class="pi pi-file-edit" aria-hidden="true"></i>
+              <span>Editorial policy</span>
+            </a>
+            <a class="risk-link" [routerLink]="['/changelog']" (click)="trackChangelogClick('risk_reversal')">
+              <i class="pi pi-history" aria-hidden="true"></i>
+              <span>Public changelog</span>
+            </a>
           </div>
         </section>
       </ng-template>

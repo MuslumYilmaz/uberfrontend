@@ -13,45 +13,28 @@
         <p class="lede lede-sub">
           Track pages are previewable so you can evaluate scope first, then unlock full guided flows when you are ready.
         </p>
-        <div class="badges">
-          <span class="badge">UI + System Design</span>
-          <span class="badge">React / Angular / Vue</span>
-          <span class="badge">HTML • CSS • JS</span>
+        <p class="chip-group-title">Coverage areas</p>
+        <div class="badges" aria-label="Coverage areas">
+          <span class="badge badge--system">UI + System Design</span>
+          <span class="badge badge--framework">React / Angular / Vue</span>
+          <span class="badge badge--foundation">HTML • CSS • JS</span>
         </div>
-        <div class="hero-links">
-          <a [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
-          <a [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
-          <a [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
-          <a [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
-          <a [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
-          <a [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
-          <a [routerLink]="['/focus-areas']">All focus areas</a>
+        <p class="chip-group-title chip-group-title--links">Quick links</p>
+        <div class="hero-links" aria-label="Quick links">
+          <a class="hero-link hero-link--hub" [routerLink]="['/guides/framework-prep']">Framework prep hub</a>
+          <a class="hero-link hero-link--js" [routerLink]="['/guides/framework-prep/javascript-prep-path']">JavaScript path</a>
+          <a class="hero-link hero-link--react" [routerLink]="['/guides/framework-prep/react-prep-path']">React path</a>
+          <a class="hero-link hero-link--angular" [routerLink]="['/guides/framework-prep/angular-prep-path']">Angular path</a>
+          <a class="hero-link hero-link--vue" [routerLink]="['/guides/framework-prep/vue-prep-path']">Vue path</a>
+          <a class="hero-link hero-link--system" [routerLink]="['/guides/system-design-blueprint']">System design blueprint</a>
+          <a class="hero-link hero-link--focus" [routerLink]="['/focus-areas']">All focus areas</a>
         </div>
-        <div class="prep-path-panel">
-          <article>
-            <h2>Outcomes</h2>
-            <ul>
-              <li>Follow a clear interview roadmap instead of random practice.</li>
-              <li>Connect framework drills to system design and behavioral rounds.</li>
-            </ul>
-          </article>
-          <article>
-            <h2>Common mistakes</h2>
-            <ul>
-              <li>Switching between stacks every day without finishing one path.</li>
-              <li>Focusing only on trivia instead of mixed interview signal areas.</li>
-            </ul>
-          </article>
-          <article>
-            <h2>Suggested sequence</h2>
-            <ol>
-              <li><a [routerLink]="['/guides/interview-blueprint']">Interview blueprint</a></li>
-              <li><a [routerLink]="['/guides/framework-prep']">Framework prep path</a></li>
-              <li><a [routerLink]="['/tracks']">Guided tracks</a></li>
-              <li><a [routerLink]="['/companies']">Company question sets</a></li>
-            </ol>
-          </article>
-        </div>
+        <app-prep-signal-grid
+          class="prep-path-panel"
+          [outcomes]="trackPrepOutcomes"
+          [mistakes]="trackPrepMistakes"
+          [sequence]="trackPrepSequence">
+        </app-prep-signal-grid>
       </div>
       <div class="hero-callout">
         <div class="hero-num">{{ tracks.length }}</div>

@@ -29,6 +29,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { expandTopicsToTags, loadTopics } from '../../../core/utils/topics.util';
 import { SeoMeta, SeoService } from '../../../core/services/seo.service';
 import { buildCodingListSeoMeta } from './coding-list-seo.util';
+import { PrepSignalGridComponent, PrepSignalItem } from '../../../shared/components/prep-signal-grid/prep-signal-grid.component';
 
 type StructuredDescription = { text?: string; summary?: string; examples?: string[] };
 type ListSource = 'tech' | 'company' | 'global-coding';
@@ -224,7 +225,8 @@ function inferCategory(q: any): CategoryKey {
     CodingTechKindTabsComponent,
     CodingFilterPanelComponent,
     OfflineBannerComponent,
-    FaChipComponent
+    FaChipComponent,
+    PrepSignalGridComponent,
   ],
   templateUrl: './coding-list.component.html',
   styleUrls: ['./coding-list.component.scss']
@@ -628,6 +630,14 @@ export class CodingListComponent implements OnInit, OnDestroy {
     if (!selectedTech) return '';
     const selectedTab = this.techTabs.find((tab) => tab.key === selectedTech);
     return selectedTab?.label ?? selectedTech;
+  }
+
+  prepSequenceItems(prep: FrameworkPrepLink): PrepSignalItem[] {
+    return [
+      { text: prep.sequenceLabel, route: ['/guides/framework-prep', prep.slug] },
+      { text: 'UI execution drills', route: ['/guides/interview-blueprint/ui-interviews'] },
+      { text: 'System design + communication', route: ['/guides/interview-blueprint/system-design'] },
+    ];
   }
 
   // --- UI handlers for sorting ---
