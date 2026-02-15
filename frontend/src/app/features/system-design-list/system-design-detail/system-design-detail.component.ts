@@ -14,6 +14,7 @@ import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
+import { buildSystemDesignGuideRoute } from './system-design-guide-link.util';
 
 type Block =
   | { type: 'text'; text: string }
@@ -167,6 +168,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
       candidates: this.all as any,
     });
   });
+  radioGuideRoute = computed<string[]>(() => buildSystemDesignGuideRoute(this.q()));
 
   sections = computed<Required<RadioSection>[]>(() => {
     const item = this.q(); if (!item) return [];

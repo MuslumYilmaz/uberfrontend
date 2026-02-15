@@ -22,7 +22,7 @@
                 <div class="left-foot">
                     <div class="guide">
                         New to RADIO?
-                        <a routerLink="/guides/system-design-blueprint">Read the guide</a> first.
+                        <a [routerLink]="radioGuideRoute()">Read the guide</a> first.
                     </div>
                     <details class="guide-collapsible">
                         <summary class="guide-summary">Guides</summary>
@@ -102,7 +102,7 @@
                     <details class="guide-collapsible">
                         <summary class="guide-summary">Guides</summary>
                         <div class="guide-links">
-                            <a routerLink="/guides/system-design-blueprint">System design blueprint</a>
+                            <a [routerLink]="radioGuideRoute()">System design blueprint</a>
                             <a routerLink="/guides/system-design-blueprint/intro">System design: what it tests</a>
                             <a routerLink="/guides/system-design-blueprint/framework">Reusable 5‑step approach</a>
                             <a routerLink="/guides/system-design-blueprint/performance">Performance & Web Vitals</a>
