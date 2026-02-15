@@ -4,11 +4,11 @@
       <h1 class="auth-title">Create a new account</h1>
 
       <div class="auth-socials">
-        <button type="button" class="btn-surface" data-testid="signup-google" (click)="auth.oauthStart('google','signup')">
+        <button type="button" class="btn-surface" data-testid="signup-google" (click)="continueWithGoogle()">
           <i class="fa-brands fa-google social-icon" aria-hidden="true"></i>
           Continue with Google
         </button>
-        <button type="button" class="btn-surface" data-testid="signup-github" (click)="auth.oauthStart('github','signup')">
+        <button type="button" class="btn-surface" data-testid="signup-github" (click)="continueWithGithub()">
           <i class="fa-brands fa-github social-icon" aria-hidden="true"></i>
           Continue with GitHub
         </button>
@@ -74,7 +74,7 @@
 
       <p class="meta">
         Already have an account?
-        <a routerLink="/auth/login" data-testid="signup-link-login">Sign in</a>
+        <a routerLink="/auth/login" [queryParams]="redirectToPresent ? { redirectTo: redirectTo } : null" data-testid="signup-link-login">Sign in</a>
       </p>
     </div>
   </section>

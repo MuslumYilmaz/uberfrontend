@@ -3,19 +3,27 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 import { PremiumGateReason } from '../../../core/services/premium-gate.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
+import {
+  freeChallengeForFramework,
+  frameworkLabel,
+  preferredFramework,
+  timelineLabel,
+} from '../../../core/utils/onboarding-personalization.util';
 
 const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
   tracks: {
     title: 'Premium tracks',
-    body: 'These learning tracks are available on Premium. Upgrade to follow structured paths and practice end-to-end.',
+    body: 'These learning tracks are available on Premium. Use previews/free practice now, then upgrade when you need full depth.',
   },
   company: {
     title: 'Premium company questions',
-    body: 'Access real interview questions from top companies with a Premium plan.',
+    body: 'Company routes stay premium. You can still review public previews and free challenges before buying.',
   },
   generic: {
     title: 'This question is part of Premium',
-    body: 'Upgrade to Premium to unlock this challenge and practice with full access.',
+    body: 'This challenge is premium. Keep practicing free questions now, or upgrade to unlock full access.',
   },
 };
 
@@ -117,6 +125,44 @@ const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
       line-height: 1.55;
     }
 
+    .premium-dialog__meta {
+      margin: -2px 0 0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: color-mix(in srgb, var(--uf-text-secondary) 86%, transparent);
+      font-weight: 600;
+    }
+
+    .premium-dialog__paths {
+      display: grid;
+      gap: 8px;
+      margin-top: 2px;
+      text-align: left;
+    }
+
+    .premium-dialog__path {
+      border: 1px solid color-mix(in srgb, var(--uf-border-subtle) 75%, transparent);
+      background: color-mix(in srgb, var(--uf-surface) 86%, transparent);
+      border-radius: 10px;
+      color: var(--uf-text-primary);
+      padding: 9px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: border-color .15s ease, background-color .15s ease;
+    }
+    .premium-dialog__path:hover {
+      border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+      background: color-mix(in srgb, var(--uf-surface) 78%, transparent);
+    }
+    .premium-dialog__path i {
+      color: var(--uf-accent);
+      font-size: 12px;
+    }
+
     .premium-dialog__actions {
       display: flex;
       justify-content: center;
@@ -155,6 +201,18 @@ const COPY: Record<PremiumGateReason, { title: string; body: string }> = {
         <div class="premium-dialog__pill">Premium</div>
         <h3 class="premium-dialog__title" [id]="dialogTitleId">{{ title }}</h3>
         <p class="premium-dialog__text" [id]="dialogDescId">{{ body }}</p>
+        <p class="premium-dialog__meta" *ngIf="personalizedLine">{{ personalizedLine }}</p>
+
+        <div class="premium-dialog__paths">
+          <button class="premium-dialog__path" type="button" (click)="goToFreeChallenge()">
+            <span>{{ freeChallengeLabel }}</span>
+            <i class="pi pi-arrow-right"></i>
+          </button>
+          <button class="premium-dialog__path" type="button" *ngIf="hasPreviewAction" (click)="goToPreview()">
+            <span>Open public preview first</span>
+            <i class="pi pi-arrow-right"></i>
+          </button>
+        </div>
 
         <div class="premium-dialog__actions">
           <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricing()">View pricing</button>
@@ -175,7 +233,11 @@ export class PremiumRequiredDialogComponent {
   dialogTitleId = 'premium-dialog-title';
   dialogDescId = 'premium-dialog-desc';
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private analytics: AnalyticsService,
+    private onboarding: OnboardingService,
+  ) { }
 
   get title(): string {
     return (COPY[this.context] || COPY.generic).title;
@@ -185,22 +247,94 @@ export class PremiumRequiredDialogComponent {
     return (COPY[this.context] || COPY.generic).body;
   }
 
+  get personalizedLine(): string | null {
+    const profile = this.onboarding.getProfile();
+    if (!profile) return null;
+    const framework = preferredFramework(profile);
+    return `You selected ${frameworkLabel(framework)} with a ${timelineLabel(profile.timeline)}. Premium unlocks deeper guided coverage for that path.`;
+  }
+
+  get freeChallengeLabel(): string {
+    const profile = this.onboarding.getProfile();
+    return freeChallengeForFramework(preferredFramework(profile)).label;
+  }
+
+  get hasPreviewAction(): boolean {
+    return !!this.resolvePreviewRoute();
+  }
+
   onClose() {
     this.visible = false;
     this.visibleChange.emit(false);
   }
 
   goToPricing() {
+    this.trackGateClick('view_pricing');
     this.onClose();
     this.router.navigate(['/pricing'], {
-      queryParams: this.targetUrl ? { redirectTo: this.targetUrl } : undefined,
+      queryParams: this.buildPricingParams(),
     });
   }
 
   goToLogin() {
+    this.trackGateClick('go_login');
     this.onClose();
     this.router.navigate(['/auth/login'], {
       queryParams: this.targetUrl ? { redirectTo: this.targetUrl } : undefined,
+    });
+  }
+
+  goToFreeChallenge() {
+    this.trackGateClick('free_challenge');
+    this.onClose();
+    const profile = this.onboarding.getProfile();
+    const challenge = freeChallengeForFramework(preferredFramework(profile));
+    this.router.navigate(challenge.route, {
+      queryParams: { src: 'premium_gate_free_path' },
+    });
+  }
+
+  goToPreview() {
+    const preview = this.resolvePreviewRoute();
+    if (!preview) return;
+    this.trackGateClick('open_preview');
+    this.onClose();
+    this.router.navigate(preview, {
+      queryParams: { src: 'premium_gate_preview_path' },
+    });
+  }
+
+  private buildPricingParams(): Record<string, string> {
+    const params: Record<string, string> = { src: 'premium_gate_dialog' };
+    const profile = this.onboarding.getProfile();
+    if (this.targetUrl) params['redirectTo'] = this.targetUrl;
+    if (profile) {
+      params['framework'] = profile.framework;
+      params['timeline'] = profile.timeline;
+    }
+    return params;
+  }
+
+  private resolvePreviewRoute(): any[] | null {
+    if (!this.targetUrl) return null;
+    const normalized = this.targetUrl.split('?')[0];
+    const trackMatch = normalized.match(/^\/tracks\/([^/]+)/i);
+    if (trackMatch?.[1]) return ['/tracks', trackMatch[1], 'preview'];
+    const companyMatch = normalized.match(/^\/companies\/([^/]+)/i);
+    if (companyMatch?.[1]) return ['/companies', companyMatch[1], 'preview'];
+    return null;
+  }
+
+  private trackGateClick(action: string): void {
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('premium_gate_path_clicked', {
+      action,
+      context: this.context,
+      target_url: this.targetUrl || null,
+      is_logged_in: this.isLoggedIn,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+      target_role: profile?.targetRole ?? null,
     });
   }
 }

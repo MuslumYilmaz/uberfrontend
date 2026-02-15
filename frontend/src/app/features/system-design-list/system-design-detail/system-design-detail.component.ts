@@ -15,6 +15,14 @@ import { SeoService } from '../../../core/services/seo.service';
 import { isQuestionLockedForTier } from '../../../core/models/question.model';
 import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../core/utils/locked-preview.util';
 import { buildSystemDesignGuideRoute } from './system-design-guide-link.util';
+import { OnboardingService } from '../../../core/services/onboarding.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import {
+  freeChallengeForFramework,
+  frameworkLabel,
+  preferredFramework,
+  timelineLabel,
+} from '../../../core/utils/onboarding-personalization.util';
 
 type Block =
   | { type: 'text'; text: string }
@@ -110,6 +118,12 @@ type RelatedItem = {
   title: string;
   access?: 'free' | 'premium';
 };
+type LockedPath = {
+  id: string;
+  label: string;
+  route: any[];
+  queryParams?: Record<string, string>;
+};
 
 @Component({
   selector: 'app-system-design-detail',
@@ -125,6 +139,8 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private seo = inject(SeoService);
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   readonly auth = inject(AuthService);
+  private onboarding = inject(OnboardingService);
+  private analytics = inject(AnalyticsService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   q: WritableSignal<SDQuestion | null> = signal(null);
@@ -142,6 +158,49 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     return isQuestionLockedForTier({ access } as any, user);
   });
   lockedTitle = computed(() => this.q()?.title ?? 'Premium question');
+  lockedPersonalizationLine = computed(() => {
+    const profile = this.onboarding.getProfile();
+    if (!profile) return '';
+    const framework = preferredFramework(profile);
+    return `Selected path: ${frameworkLabel(framework)} · ${timelineLabel(profile.timeline)}.`;
+  });
+  lockedMemberCopy = computed(() => {
+    const profile = this.onboarding.getProfile();
+    if (!profile) return "You're on the free tier. Upgrade to access this system design scenario.";
+    const framework = preferredFramework(profile);
+    return `You’re on the ${frameworkLabel(framework)} ${timelineLabel(profile.timeline)}. Upgrade to access this premium system design scenario.`;
+  });
+  lockedGuestCopy = computed(() => {
+    const profile = this.onboarding.getProfile();
+    if (!profile) return 'Upgrade to FrontendAtlas Premium to access this system design scenario. Already upgraded? Sign in to continue.';
+    const framework = preferredFramework(profile);
+    return `This system design scenario is premium for your ${frameworkLabel(framework)} path. Upgrade, or sign in if you already upgraded.`;
+  });
+  lockedPaths = computed<LockedPath[]>(() => {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile);
+    const challenge = freeChallengeForFramework(framework);
+    return [
+      {
+        id: 'free_challenge',
+        label: challenge.label,
+        route: challenge.route,
+        queryParams: { src: 'system_design_locked' },
+      },
+      {
+        id: 'track_previews',
+        label: 'Open track previews',
+        route: ['/tracks'],
+        queryParams: { src: 'system_design_locked' },
+      },
+      {
+        id: 'company_previews',
+        label: 'Browse company previews',
+        route: ['/companies'],
+        queryParams: { src: 'system_design_locked' },
+      },
+    ];
+  });
   lockedSummary = computed(() => {
     const q = this.q();
     if (!q) return '';
@@ -322,6 +381,41 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
     }
     clearInterval(this.settleWatcher);
     this.io?.disconnect();
+  }
+
+  trackLockedPathClick(pathId: string): void {
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('premium_unlock_path_clicked', {
+      context: 'system_design_locked',
+      path_id: pathId,
+      question_id: this.q()?.id ?? null,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+  }
+
+  goToPricingFromLocked(): void {
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('premium_gate_path_clicked', {
+      action: 'view_pricing',
+      context: 'system_design_locked',
+      question_id: this.q()?.id ?? null,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+    this.router.navigate(['/pricing'], {
+      queryParams: {
+        src: 'system_design_locked',
+        framework: profile?.framework ?? undefined,
+        timeline: profile?.timeline ?? undefined,
+      },
+    });
+  }
+
+  goToLoginFromLocked(): void {
+    this.router.navigate(['/auth/login'], {
+      queryParams: { redirectTo: this.router.url || '/' },
+    });
   }
 
   // ---- helpers ----

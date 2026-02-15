@@ -61,6 +61,18 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'changelog',
+    loadComponent: () =>
+      import('./features/changelog/changelog.component').then((m) => m.ChangelogComponent),
+    data: {
+      seo: {
+        title: 'FrontendAtlas changelog',
+        description: 'Weekly product updates and shipped improvements in FrontendAtlas.',
+        robots: 'index,follow',
+      },
+    },
+  },
+  {
     path: 'admin',
     canMatch: [adminMatchGuard],
     children: [
@@ -129,6 +141,25 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'onboarding',
+    children: [
+      {
+        path: 'quick-start',
+        loadComponent: () =>
+          import('./features/onboarding/quick-start/onboarding-quick-start.component').then(
+            (m) => m.OnboardingQuickStartComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Quick onboarding',
+            description: 'Set your interview timeline, framework, and role to get a focused next-action plan.',
+            robots: 'noindex,nofollow',
+          },
+        },
+      },
+    ],
+  },
 
   // Courses
   // {
@@ -188,6 +219,21 @@ export const routes: Routes = [
             title: 'Company Frontend Interview Questions',
             description:
               'Explore frontend interview questions grouped by company, then follow an interview roadmap across coding, trivia, and system design coverage.',
+            robots: 'index,follow',
+          },
+        },
+      },
+      {
+        path: ':slug/preview',
+        loadComponent: () =>
+          import('./features/company/company-preview/company-preview.component').then(
+            (m) => m.CompanyPreviewComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Company Interview Preview',
+            description:
+              'Preview company-specific frontend interview question coverage and sample prompts before unlocking premium.',
             robots: 'index,follow',
           },
         },
@@ -339,7 +385,7 @@ export const routes: Routes = [
   },
   {
     path: 'track/:slug',
-    redirectTo: 'tracks/:slug',
+    redirectTo: 'tracks/:slug/preview',
   },
   {
     path: 'tracks',
@@ -355,6 +401,21 @@ export const routes: Routes = [
             title: 'Frontend Interview Preparation Tracks',
             description:
               'Choose a frontend interview preparation track with structured coding, trivia, and system design question paths.',
+            robots: 'index,follow',
+          },
+        },
+      },
+      {
+        path: ':slug/preview',
+        loadComponent: () =>
+          import('./features/tracks/track-preview/track-preview.component').then(
+            (m) => m.TrackPreviewComponent,
+          ),
+        data: {
+          seo: {
+            title: 'Interview Track Preview',
+            description:
+              'Preview track outcomes, sample frontend interview questions, and premium unlock details.',
             robots: 'index,follow',
           },
         },

@@ -62,7 +62,7 @@
 
 <ng-template #loaded>
     <div class="company-list">
-        <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'all']">
+        <a *ngFor="let c of companies" class="company-card fa-card" [routerLink]="['/companies', c.slug, 'preview']">
             <div class="company-card__content">
                 <div class="company-card__left">
                     <div class="company-card__avatar">{{ c.label[0] }}</div>

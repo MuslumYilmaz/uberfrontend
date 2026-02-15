@@ -6,6 +6,7 @@ import { Entitlements, Tech } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { apiUrl, getApiBase, getFrontendBase } from '../utils/api-base';
 import { resolvePaymentsProvider } from '../utils/payments-provider.util';
+import { sanitizeRedirectTarget } from '../utils/redirect.util';
 
 export type Role = 'user' | 'admin';
 export type Theme = 'dark' | 'light' | 'system';
@@ -90,6 +91,9 @@ export class AuthService {
   private base = apiUrl('/auth');
   private frontendBase = getFrontendBase();
   private static readonly SESSION_HINT_KEY = 'fa:auth:session';
+  private static readonly OAUTH_STATE_KEY = 'oauth:state';
+  private static readonly OAUTH_REDIRECT_KEY = 'oauth:redirect';
+  private static readonly OAUTH_MODE_KEY = 'oauth:mode';
 
   /** Reactive user */
   user = signal<User | null>(null);
@@ -278,11 +282,21 @@ export class AuthService {
   }
 
   /** Start OAuth: redirects to backend which 302s to Google */
-  oauthStart(provider: 'google' | 'github', mode: 'login' | 'signup' = 'login') {
+  oauthStart(
+    provider: 'google' | 'github',
+    mode: 'login' | 'signup' = 'login',
+    redirectTo?: string | null,
+  ) {
     const base = this.frontendBase || (typeof window !== 'undefined' ? window.location.origin : '');
     const redirectUri = `${base}/auth/callback`;
     const state = (crypto as any).randomUUID ? (crypto as any).randomUUID() : `${Date.now()}-${Math.random()}`;
-    sessionStorage.setItem('oauth:state', state);
+    const safeRedirect = sanitizeRedirectTarget(redirectTo, '');
+    try {
+      sessionStorage.setItem(AuthService.OAUTH_STATE_KEY, state);
+      sessionStorage.setItem(AuthService.OAUTH_MODE_KEY, mode);
+      if (safeRedirect) sessionStorage.setItem(AuthService.OAUTH_REDIRECT_KEY, safeRedirect);
+      else sessionStorage.removeItem(AuthService.OAUTH_REDIRECT_KEY);
+    } catch { }
 
     // Adjust path if your backend differs (e.g., /auth/google)
     const url =
@@ -304,11 +318,13 @@ export class AuthService {
    * Legacy: backend may still include ?token=... or #token=... (we do not store it).
    */
   completeOAuthCallback(qp: Record<string, any>): Observable<User | null> {
-    const expected = sessionStorage.getItem('oauth:state');
+    const expected = sessionStorage.getItem(AuthService.OAUTH_STATE_KEY);
     if (qp['state'] && expected && qp['state'] !== expected) {
       return throwError(() => new Error('Invalid OAuth state'));
     }
-    sessionStorage.removeItem('oauth:state');
+    try {
+      sessionStorage.removeItem(AuthService.OAUTH_STATE_KEY);
+    } catch { }
 
     if (qp['error']) {
       return throwError(() => new Error(String(qp['error'])));
@@ -355,6 +371,26 @@ export class AuthService {
       url.hash = '';
       window.history.replaceState({}, document.title, `${url.pathname}${url.search}`);
     } catch { }
+  }
+
+  consumeOAuthRedirect(fallback = '/dashboard'): string {
+    try {
+      const stored = sessionStorage.getItem(AuthService.OAUTH_REDIRECT_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_REDIRECT_KEY);
+      return sanitizeRedirectTarget(stored, fallback);
+    } catch {
+      return fallback;
+    }
+  }
+
+  consumeOAuthMode(): 'login' | 'signup' | null {
+    try {
+      const stored = sessionStorage.getItem(AuthService.OAUTH_MODE_KEY);
+      sessionStorage.removeItem(AuthService.OAUTH_MODE_KEY);
+      return stored === 'login' || stored === 'signup' ? stored : null;
+    } catch {
+      return null;
+    }
   }
 
 }

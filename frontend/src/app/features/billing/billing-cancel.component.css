@@ -15,6 +15,8 @@
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  display: grid;
+  gap: 14px;
 }
 
 .eyebrow {
@@ -33,7 +35,44 @@ h1 {
 .muted {
   color: rgba(230, 232, 238, 0.7);
   font-size: 14px;
-  margin-bottom: 18px;
+  margin: 0;
+}
+
+.winback {
+  border: 1px solid rgba(120, 140, 180, 0.28);
+  background: rgba(26, 34, 52, 0.84);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.winback h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.winback p {
+  margin: 0;
+  color: rgba(230, 232, 238, 0.86);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.winback ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: rgba(230, 232, 238, 0.74);
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .btn {
@@ -48,4 +87,26 @@ h1 {
 
 .btn:hover {
   background: #2563eb;
+}
+
+.btn-ghost {
+  background: rgba(36, 44, 64, 0.85);
+  border: 1px solid rgba(120, 140, 180, 0.35);
+}
+
+.btn-ghost:hover {
+  background: rgba(45, 56, 80, 0.95);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.links a {
+  color: rgba(230, 232, 238, 0.86);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }

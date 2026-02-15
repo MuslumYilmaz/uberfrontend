@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
   selector: 'app-login-required-dialog',
@@ -235,8 +236,9 @@ export class LoginRequiredDialogComponent {
 
   goToLogin() {
     this.onClose();
+    const redirectTo = sanitizeRedirectTarget(this.redirectTo || this.router.url || '/');
     this.router.navigate(['/auth/login'], {
-      queryParams: this.redirectTo ? { redirectTo: this.redirectTo } : undefined,
+      queryParams: { redirectTo },
     });
   }
 }

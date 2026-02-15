@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { BillingCheckoutService } from '../../../../core/services/billing-checkout.service';
 import { PlanId } from '../../../../core/utils/payments-provider.util';
 import { isProActive } from '../../../../core/utils/entitlements.util';
 import { LoginRequiredDialogComponent } from '../../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { FaqSectionComponent } from '../../../../shared/faq-section/faq-section.component';
+import { PUBLIC_CHANGELOG_ENTRIES } from '../../../../core/content/public-changelog';
 
 type PricingVariant = 'full' | 'compact';
 type CtaMode = 'emit' | 'navigatePricing';
@@ -15,7 +17,7 @@ type CtaMode = 'emit' | 'navigatePricing';
 @Component({
   standalone: true,
   selector: 'app-pricing-plans-section',
-  imports: [CommonModule, FaqSectionComponent, LoginRequiredDialogComponent],
+  imports: [CommonModule, RouterModule, FaqSectionComponent, LoginRequiredDialogComponent],
   styleUrls: ['./pricing-plans-section.component.css'],
   template: `
     <section class="pr-wrap">
@@ -23,8 +25,54 @@ type CtaMode = 'emit' | 'navigatePricing';
         <p class="pr-kicker">Pricing</p>
         <h1>Practice frontend the way interviews actually work</h1>
         <p class="muted">One place to code, preview, test, and review — with continuous updates.</p>
-        <p class="pr-early">Early access pricing — prices may increase as the platform grows.</p>
+        <p class="pr-early">No fake urgency. Start free, then upgrade only if the workflow fits your prep.</p>
       </header>
+
+      <section class="free-explorer" *ngIf="variant === 'full'">
+        <div class="free-explorer__head">
+          <p class="eyebrow">Free Explorer</p>
+          <h2>Free forever, no card required</h2>
+        </div>
+        <ul class="free-explorer__list">
+          <li>Open and solve free coding, trivia, and system design questions.</li>
+          <li>Run tests and use live preview where the question supports it.</li>
+          <li>Browse track and company previews before deciding to buy.</li>
+        </ul>
+        <div class="free-explorer__actions">
+          <a
+            class="link-btn link-btn--primary"
+            [routerLink]="['/react', 'coding', 'react-counter']"
+            [queryParams]="{ src: 'pricing_free_explorer' }">
+            Try free challenge
+          </a>
+          <a class="link-btn" [routerLink]="['/coding']">Browse free library</a>
+        </div>
+      </section>
+
+      <section class="plan-compare" *ngIf="variant === 'full'">
+        <h2 class="pr-section-title">Free vs Premium</h2>
+        <p class="muted pr-section-subtitle">Use Premium when you want depth and speed, not because free access is blocked.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>What matters</th>
+              <th>Free Explorer</th>
+              <th>Premium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of comparisonRows">
+              <th scope="row">{{ row.label }}</th>
+              <td>{{ row.freeValue }}</td>
+              <td>{{ row.premiumValue }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <ng-container *ngIf="variant === 'full' && riskReversalPlacement === 'top'">
+        <ng-container [ngTemplateOutlet]="riskReversalBlock"></ng-container>
+      </ng-container>
 
       <div class="included-box">
         <h4>Included in all plans</h4>
@@ -62,6 +110,10 @@ type CtaMode = 'emit' | 'navigatePricing';
           </div>
         </article>
       </div>
+
+      <ng-container *ngIf="variant === 'full' && riskReversalPlacement === 'after_plans'">
+        <ng-container [ngTemplateOutlet]="riskReversalBlock"></ng-container>
+      </ng-container>
 
       <section class="pr-features" *ngIf="variant === 'full'">
         <h2 class="pr-section-title">What you get in FrontendAtlas</h2>
@@ -123,8 +175,47 @@ type CtaMode = 'emit' | 'navigatePricing';
       </p>
     </section>
 
-    <app-login-required-dialog
-      [(visible)]="loginRequiredOpen"
+      <ng-template #riskReversalBlock>
+        <section class="risk-reversal">
+          <p class="eyebrow">Risk reversal</p>
+          <h3>Pay only after you’ve used the free workflow</h3>
+          <p class="muted">Clear billing terms and a public refund policy. No hidden conditions at checkout.</p>
+          <div class="risk-reversal__links">
+            <a [routerLink]="['/legal/refund']">Refund policy</a>
+            <a [routerLink]="['/legal/editorial-policy']">Editorial policy</a>
+            <a [routerLink]="['/changelog']" (click)="trackChangelogClick('risk_reversal')">Public changelog</a>
+          </div>
+        </section>
+      </ng-template>
+
+      <section class="weekly-changelog" *ngIf="variant === 'full'">
+        <div class="weekly-changelog__head">
+          <p class="eyebrow">Build in public</p>
+          <h3>What changed this week</h3>
+          <p class="muted">Recent shipped updates so you can evaluate momentum before buying.</p>
+        </div>
+        <ul class="weekly-changelog__list">
+          <li *ngFor="let entry of changelogPreview">
+            <div class="weekly-changelog__row">
+              <strong>{{ entry.title }}</strong>
+              <span>{{ formatWeek(entry.weekOf) }}</span>
+            </div>
+            <ul class="weekly-changelog__bullets">
+              <li *ngFor="let item of entry.changes">{{ item }}</li>
+            </ul>
+          </li>
+        </ul>
+        <a
+          class="weekly-changelog__link"
+          [routerLink]="['/changelog']"
+          [queryParams]="{ src: analyticsSource + '_weekly_changelog' }"
+          (click)="trackChangelogClick('pricing_changelog_block')">
+          View full changelog
+        </a>
+      </section>
+
+      <app-login-required-dialog
+        [(visible)]="loginRequiredOpen"
       [title]="loginRequiredTitle"
       [body]="loginRequiredBody"
       [ctaLabel]="loginRequiredCta"
@@ -133,10 +224,16 @@ type CtaMode = 'emit' | 'navigatePricing';
   `,
 })
 export class PricingPlansSectionComponent implements OnInit, OnDestroy {
+  private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';
+  private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
+  private static readonly SOURCE_PATTERN = /^[a-z0-9_-]{1,64}$/;
+
   @Input() variant: PricingVariant = 'full';
   @Input() paymentsEnabled = false;
   @Input() ctaMode: CtaMode = 'navigatePricing';
   @Input() ctaLabel?: string;
+  @Input() analyticsSource = 'pricing';
+  @Input() riskReversalPlacement: 'top' | 'after_plans' = 'top';
   @Input() checkoutUrls: Partial<Record<PlanId, string>> | null = null;
   @Output() ctaClick = new EventEmitter<{ planId: PlanId }>();
 
@@ -148,6 +245,25 @@ export class PricingPlansSectionComponent implements OnInit, OnDestroy {
   loginRequiredCta = 'Sign in / create account';
   checkoutNotice: string | null = null;
   private checkoutNoticeTimer?: number;
+  changelogPreview = PUBLIC_CHANGELOG_ENTRIES.slice(0, 3);
+
+  comparisonRows: Array<{ label: string; freeValue: string; premiumValue: string }> = [
+    {
+      label: 'Interactive practice',
+      freeValue: 'Selected free questions',
+      premiumValue: 'Full question library and track depth',
+    },
+    {
+      label: 'Track and company guidance',
+      freeValue: 'Public previews only',
+      premiumValue: 'Full guided sets and premium-only sections',
+    },
+    {
+      label: 'Upgrade confidence',
+      freeValue: 'Try first without account',
+      premiumValue: 'Paid access with refund policy and legal transparency',
+    },
+  ];
 
   plans: Array<{
     id: PlanId;
@@ -383,8 +499,27 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
   constructor(
     private router: Router,
     private auth: AuthService,
-    private billingCheckout: BillingCheckoutService
+    private billingCheckout: BillingCheckoutService,
+    private analytics: AnalyticsService,
   ) { }
+
+  formatWeek(value: string): string {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return parsed.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+
+  trackChangelogClick(location: string): void {
+    this.analytics.track('changelog_link_clicked', {
+      src: this.normalizedSource(),
+      location,
+      page: 'pricing',
+    });
+  }
 
   ngOnInit(): void {
     if (this.paymentsEnabled) {
@@ -430,14 +565,60 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
     }, 8000);
   }
 
+  private normalizedSource(): string {
+    const raw = String(this.analyticsSource || '').trim().toLowerCase();
+    if (!raw || !PricingPlansSectionComponent.SOURCE_PATTERN.test(raw)) return 'pricing';
+    return raw;
+  }
+
+  private trackPlanClick(planId: PlanId, method: string) {
+    this.analytics.track('pricing_plan_cta_clicked', {
+      plan_id: planId,
+      src: this.normalizedSource(),
+      variant: this.variant,
+      method,
+      redirect_to_present: false,
+      risk_reversal_variant: this.riskReversalPlacement,
+    });
+  }
+
+  private trackCheckoutStarted(planId: PlanId, method: string, mode: string) {
+    this.analytics.track('checkout_started', {
+      plan_id: planId,
+      src: this.normalizedSource(),
+      method,
+      checkout_mode: mode,
+      risk_reversal_variant: this.riskReversalPlacement,
+    });
+  }
+
+  private persistCheckoutContext(planId: PlanId) {
+    if (typeof window === 'undefined') return;
+    try {
+      sessionStorage.setItem(PricingPlansSectionComponent.CHECKOUT_PLAN_KEY, planId);
+      sessionStorage.setItem(PricingPlansSectionComponent.CHECKOUT_SOURCE_KEY, this.normalizedSource());
+    } catch { }
+  }
+
+  private clearCheckoutContext() {
+    if (typeof window === 'undefined') return;
+    try {
+      sessionStorage.removeItem(PricingPlansSectionComponent.CHECKOUT_PLAN_KEY);
+      sessionStorage.removeItem(PricingPlansSectionComponent.CHECKOUT_SOURCE_KEY);
+    } catch { }
+  }
+
   async onCta(planId: PlanId) {
+    const source = this.normalizedSource();
     if (isProActive(this.auth.user())) {
+      this.trackPlanClick(planId, 'manage_subscription');
       this.openManageSubscription(planId);
       return;
     }
     if (this.paymentsEnabled) {
       const checkoutUrl = this.resolveCheckoutUrl(planId);
       if (checkoutUrl) {
+        this.trackPlanClick(planId, 'checkout');
         this.checkoutLoading = planId;
         try {
           let user = this.auth.user();
@@ -455,12 +636,14 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
             return;
           }
 
+          this.persistCheckoutContext(planId);
           const result = await this.billingCheckout.checkout(planId, {
             userId: user._id,
             email: user.email,
             username: user.username,
           });
           if (!result.ok) {
+            this.clearCheckoutContext();
             if (result.reason === 'invalid-url') {
               this.setCheckoutNotice('Checkout is misconfigured right now. Please contact support.');
             } else {
@@ -468,6 +651,7 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
             }
             return;
           }
+          this.trackCheckoutStarted(planId, result.provider, result.mode);
           if (result.mode === 'new-tab') {
             this.setCheckoutNotice('Checkout opened in a new tab. If it did not open, allow popups and try again.');
           }
@@ -478,15 +662,20 @@ If it still fails: email <code>support@frontendatlas.com</code> with the time of
         }
         return;
       }
+      this.trackPlanClick(planId, 'checkout_unavailable');
       this.setCheckoutNotice('Checkout is not configured for this plan yet. Please try again later.');
       return;
     }
 
     if (this.ctaMode === 'navigatePricing') {
-      this.router.navigateByUrl('/pricing').catch(() => void 0);
+      this.trackPlanClick(planId, 'navigate_pricing');
+      this.router.navigate(['/pricing'], {
+        queryParams: { src: source },
+      }).catch(() => void 0);
       return;
     }
 
+    this.trackPlanClick(planId, 'emit');
     this.ctaClick.emit({ planId });
   }
 

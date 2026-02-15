@@ -1,0 +1,95 @@
+<ng-container *ngIf="track as t; else missing">
+  <section class="track-preview" data-testid="track-preview-page">
+    <nav class="preview-breadcrumb" aria-label="Track preview breadcrumb">
+      <a [routerLink]="['/tracks']">Tracks</a>
+      <span>/</span>
+      <span>{{ t.title }} preview</span>
+    </nav>
+
+    <header class="preview-hero fa-card fa-card--elevated">
+      <p class="preview-kicker">Public preview</p>
+      <h1>{{ t.title }}</h1>
+      <p class="preview-subtitle">{{ t.subtitle }}</p>
+
+      <div class="preview-meta">
+        <span class="preview-chip">{{ t.durationLabel }}</span>
+        <span class="preview-chip">{{ t.featured.length }} curated questions</span>
+        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+      </div>
+
+      <ul class="outcomes">
+        <li *ngFor="let focus of t.focus">{{ focus }}</li>
+      </ul>
+    </header>
+
+    <ng-container *ngIf="previewQuestions$ | async as questions">
+      <section class="proof-grid">
+        <article class="proof-card">
+          <h2>What you can do now for free</h2>
+          <ul>
+            <li>See this track scope and sample questions before paying.</li>
+            <li>Open free coding challenges and run tests immediately.</li>
+            <li>Use previews to evaluate if this track matches your interview timeline.</li>
+          </ul>
+        </article>
+
+        <article class="proof-card">
+          <h2>What unlocks with premium</h2>
+          <ul>
+            <li>Full guided flow at <code>/tracks/{{ t.slug }}</code> with all question links.</li>
+            <li>Complete track list depth, not only preview samples.</li>
+            <li>Premium-only questions and full route access.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="sample-card fa-card" aria-label="Sample track questions">
+        <div class="sample-head">
+          <h2>Sample included questions</h2>
+          <p class="sample-summary">
+            Free in sample: <strong>{{ freeCount(questions) }}</strong> · Locked in full track:
+            <strong>{{ premiumCount(questions) }}</strong>
+          </p>
+        </div>
+
+        <ul class="sample-list">
+          <li *ngFor="let item of questions">
+            <div class="sample-title-row">
+              <span class="sample-title">{{ item.title }}</span>
+              <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
+                {{ item.access === 'free' ? 'Free now' : 'Premium in full track' }}
+              </span>
+            </div>
+            <div class="sample-meta">
+              <span>{{ displayKind(item.kind) }}</span>
+              <span *ngIf="item.tech">{{ item.tech | titlecase }}</span>
+              <span>{{ item.difficulty | titlecase }}</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="cta-stack">
+        <a
+          class="preview-btn preview-btn--primary"
+          [routerLink]="['/react', 'coding', 'react-counter']"
+          [queryParams]="{ src: 'track_preview_' + t.slug }">
+          Try free challenge
+        </a>
+        <a
+          class="preview-btn"
+          [routerLink]="['/pricing']"
+          [queryParams]="{ src: 'track_preview_' + t.slug }">
+          View pricing
+        </a>
+      </section>
+    </ng-container>
+  </section>
+</ng-container>
+
+<ng-template #missing>
+  <section class="track-preview">
+    <h1>Track preview not found</h1>
+    <a [routerLink]="['/tracks']">Back to tracks</a>
+  </section>
+</ng-template>

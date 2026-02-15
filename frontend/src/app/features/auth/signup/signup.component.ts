@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
   selector: 'app-signup',
@@ -15,6 +17,8 @@ export class SignupComponent {
   loading = false;
   error = '';
   submitted = false;
+  redirectTo = '/dashboard';
+  redirectToPresent = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -25,7 +29,16 @@ export class SignupComponent {
     })
   }, { validators: this.matchPasswords });
 
-  constructor(private fb: FormBuilder, public auth: AuthService, private router: Router) { }
+  constructor(
+    private fb: FormBuilder,
+    public auth: AuthService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private analytics: AnalyticsService,
+  ) {
+    this.redirectTo = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
+    this.redirectToPresent = this.redirectTo !== '/dashboard';
+  }
 
   get emailCtrl() { return this.form.get('email'); }
   get usernameCtrl() { return this.form.get('username'); }
@@ -66,8 +79,18 @@ export class SignupComponent {
 
     this.loading = true;
     this.error = '';
+    this.analytics.track('signup_started', {
+      method: 'password',
+      redirect_to_present: this.redirectToPresent,
+    });
     this.auth.signup({ email, username, password }).subscribe({
-      next: () => this.router.navigateByUrl('/dashboard'),
+      next: () => {
+        this.analytics.track('signup_completed', {
+          method: 'password',
+          redirect_to_present: this.redirectToPresent,
+        });
+        this.router.navigateByUrl(this.redirectTo);
+      },
       error: (err: any) => {
         const data = err?.error || {};
         if (err?.status === 409) {
@@ -86,7 +109,19 @@ export class SignupComponent {
   }
 
   continueWithGoogle() {
-    this.auth.oauthStart('google', 'signup');
+    this.analytics.track('signup_started', {
+      method: 'oauth_google',
+      redirect_to_present: this.redirectToPresent,
+    });
+    this.auth.oauthStart('google', 'signup', this.redirectTo);
+  }
+
+  continueWithGithub() {
+    this.analytics.track('signup_started', {
+      method: 'oauth_github',
+      redirect_to_present: this.redirectToPresent,
+    });
+    this.auth.oauthStart('github', 'signup', this.redirectTo);
   }
 
   private setCtrlError(ctrl: any, key: string) {

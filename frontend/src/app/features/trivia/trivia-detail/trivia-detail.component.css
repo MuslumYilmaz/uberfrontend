@@ -575,6 +575,12 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
   font-size: 14px;
   line-height: 1.55;
 }
+.locked-persona{
+  margin: 0;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--uf-text-secondary) 84%, transparent);
+  font-weight: 600;
+}
 .locked-preview{
   text-align: left;
   padding: 12px;
@@ -599,6 +605,32 @@ pre.line-numbers .line-numbers-rows { left: 16px; opacity: .55; border-right: 1p
 }
 .locked-preview__list li{
   margin: 0 0 4px;
+}
+.locked-paths{
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+.locked-paths__item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 10px;
+  padding: 9px 10px;
+  text-decoration: none;
+  color: var(--uf-text-primary);
+  background: color-mix(in srgb, var(--uf-surface) 90%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+}
+.locked-paths__item:hover{
+  border-color: color-mix(in srgb, var(--uf-accent) 45%, var(--uf-border-subtle));
+}
+.locked-paths__item i{
+  color: var(--uf-accent);
+  font-size: 12px;
 }
 .locked-actions{
   display: flex;

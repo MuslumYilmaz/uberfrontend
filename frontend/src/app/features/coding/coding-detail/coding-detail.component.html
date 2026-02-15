@@ -567,10 +567,67 @@
   </div>
 </p-dialog>
 
-<app-login-required-dialog [(visible)]="loginPromptOpen" title="Sign in to save progress"
-  body="To track completed questions and keep your progress synced, sign in or create a free account."
-  ctaLabel="Go to login">
+<app-login-required-dialog [(visible)]="loginPromptOpen"
+  [title]="loginPromptTitle"
+  [body]="loginPromptBody"
+  [ctaLabel]="loginPromptCta"
+  [redirectTo]="router.url">
 </app-login-required-dialog>
+
+<p-dialog
+  [(visible)]="onboardingPromptOpen"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="false"
+  styleClass="onboarding-nudge-dialog">
+  <ng-template pTemplate="header">
+    <div class="font-semibold">Personalize your next actions</div>
+  </ng-template>
+  <div class="p-4 flex flex-col gap-3" data-testid="onboarding-prompt-dialog">
+    <p class="m-0 text-sm opacity-90">
+      Great momentum. Answer three quick questions and we’ll generate your next highest-signal steps.
+    </p>
+    <div class="flex gap-2 flex-wrap">
+      <button class="fa-btn fa-btn--primary" type="button" (click)="openOnboardingQuickStart()">
+        Get my next actions
+      </button>
+      <button class="fa-btn fa-btn--ghost" type="button" (click)="dismissOnboardingPrompt()">
+        Maybe later
+      </button>
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog
+  [(visible)]="lifecyclePromptOpen"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="false"
+  [showHeader]="false"
+  styleClass="fa-modal"
+>
+  <div class="fa-modal__panel">
+    <h3 class="text-lg font-semibold mb-2">{{ lifecyclePromptTitle() }}</h3>
+    <p class="text-sm opacity-80 mb-4">
+      {{ lifecyclePromptBody() }}
+    </p>
+    <div class="flex gap-2 flex-wrap">
+      <button class="fa-btn fa-btn--primary" type="button" (click)="openLifecycleOnboarding()">
+        Get next actions
+      </button>
+      <button class="fa-btn fa-btn--ghost" type="button" (click)="openLifecyclePricing()">
+        View premium depth
+      </button>
+      <button class="fa-btn fa-btn--ghost" type="button" (click)="dismissLifecyclePrompt()">
+        Later
+      </button>
+    </div>
+  </div>
+</p-dialog>
 </ng-container>
 </ng-container>
 
@@ -602,12 +659,24 @@
         </ul>
       </div>
       <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
+      <p class="locked-persona" *ngIf="lockedPersonalizationLine">{{ lockedPersonalizationLine }}</p>
+      <div class="locked-paths" *ngIf="lockedPaths.length">
+        <a
+          class="locked-paths__item"
+          *ngFor="let path of lockedPaths"
+          [routerLink]="path.route"
+          [queryParams]="path.queryParams"
+          (click)="trackLockedPathClick(path.id)">
+          <span>{{ path.label }}</span>
+          <i class="pi pi-arrow-right"></i>
+        </a>
+      </div>
       <p class="locked-copy">
         <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
-          You're on the free tier. Upgrade to unlock this challenge.
+          {{ lockedMemberCopy }}
         </ng-container>
         <ng-template #lockedGuest>
-          Upgrade to FrontendAtlas Premium to unlock this challenge. Already upgraded? Sign in to continue.
+          {{ lockedGuestCopy }}
         </ng-template>
       </p>
       <div class="locked-actions">

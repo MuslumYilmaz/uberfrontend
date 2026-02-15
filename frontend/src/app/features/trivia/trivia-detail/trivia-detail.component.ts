@@ -18,11 +18,21 @@ import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ActivityService } from '../../../core/services/activity.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { ExperimentService } from '../../../core/services/experiment.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
+import { LifecycleMilestoneId, LifecyclePromptService } from '../../../core/services/lifecycle-prompt.service';
 import { DialogModule } from 'primeng/dialog';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
 import { LockedPreviewComponent } from '../../../shared/components/locked-preview/locked-preview.component';
 import { SafeHtmlPipe } from '../../../core/pipes/safe-html.pipe';
 import { seoDescriptionForQuestion, seoTitleForQuestion } from './trivia-seo.util';
+import {
+  freeChallengeForFramework,
+  frameworkLabel,
+  preferredFramework,
+  timelineLabel,
+} from '../../../core/utils/onboarding-personalization.util';
 import tagRegistry from '../../../../assets/questions/tag-registry.json';
 import topicRegistry from '../../../../assets/questions/topic-registry.json';
 
@@ -52,6 +62,12 @@ type PracticeItem = { tech: Tech; kind: 'trivia' | 'coding'; id: string };
 type PracticeSession = { items: PracticeItem[]; index: number } | null;
 type SimilarItem = { question: Question; difficulty: string };
 type TagMatcher = { tag: string; re: RegExp };
+type LockedPath = {
+  id: string;
+  label: string;
+  route: any[];
+  queryParams?: Record<string, string>;
+};
 
 const TAG_MATCHERS: TagMatcher[] = buildTagMatchers([
   ...(Array.isArray(tagRegistry?.tags) ? tagRegistry.tags : []),
@@ -109,6 +125,17 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   solved = signal(false);
   loadState = signal<'loading' | 'loaded' | 'notFound'>('loading');
   loginPromptOpen = false;
+  lifecyclePromptOpen = false;
+  lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
+  lifecyclePromptSolvedTotal = 0;
+  private lifecyclePromptQuestionId: string | null = null;
+  loginPromptTitle = 'Sign in to save progress';
+  loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
+  loginPromptCta = 'Go to login';
+  private signupPromptVariant: 'control' | 'benefit' = 'control';
+  private premiumGateVariant: 'control' | 'value' = 'control';
+  lockedPersonalizationLine = '';
+  lockedPaths: LockedPath[] = [];
   similarOpen = signal(true);
   qnavOpen = signal(false);
 
@@ -129,6 +156,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     return q ? isQuestionLockedForTier(q, user) : false;
   });
   lockedTitle = computed(() => this.question()?.title || 'Premium question');
+  lockedMemberCopy = computed(() =>
+    this.premiumGateVariant === 'value'
+      ? this.personalizedMemberCopy('value')
+      : this.personalizedMemberCopy('control')
+  );
+  lockedGuestCopy = computed(() =>
+    this.premiumGateVariant === 'value'
+      ? this.personalizedGuestCopy('value')
+      : this.personalizedGuestCopy('control')
+  );
   lockedSummary = computed(() => {
     const q = this.question();
     if (!q) return '';
@@ -276,10 +313,18 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     private seo: SeoService,
     private progress: UserProgressService,
     public auth: AuthService,
-    private activity: ActivityService
+    private activity: ActivityService,
+    private analytics: AnalyticsService,
+    private experiments: ExperimentService,
+    private onboarding: OnboardingService,
+    private lifecyclePrompts: LifecyclePromptService,
   ) { }
 
   ngOnInit() {
+    this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'trivia_detail');
+    this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'trivia_detail');
+    this.applySignupPromptCopy();
+
     this.hydrateState();
 
     this.sub = this.route.data
@@ -390,7 +435,16 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const found = this.questionsList.find((q) => q.id === id) ?? null;
     this.question.set(found);
     this.solved.set(found ? this.progress.isSolved(found.id) : false);
+    this.refreshLockedPersonalization();
     this.setLoadState(found);
+    if (found && isQuestionLockedForTier(found, this.auth.user())) {
+      this.experiments.expose(
+        'premium_gate_copy_v1',
+        this.premiumGateVariant,
+        `trivia_locked_${found.id}`,
+        'trivia_detail',
+      );
+    }
     this.updateSeo(found);
     this.scrollMainToTop();
     this.syncSidebarAfterSelection();
@@ -633,6 +687,19 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     const q = this.question();
     if (!q) return;
     if (!this.auth.isLoggedIn()) {
+      this.experiments.expose(
+        'signup_prompt_copy_v1',
+        this.signupPromptVariant,
+        'trivia_mark_complete_prompt',
+        'trivia_detail',
+      );
+      this.analytics.track('signup_prompt_shown', {
+        context: 'trivia_mark_complete',
+        question_id: q.id,
+        tech: this.tech,
+        variant: this.signupPromptVariant,
+      });
+      this.onboarding.markPending('save_prompt');
       this.loginPromptOpen = true;
       return;
     }
@@ -643,6 +710,7 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       await this.progress.markSolved(q.id);
       this.solved.set(true);
+      this.maybePromptLifecycle('trivia_mark_complete', q.id);
       this.activity.complete({
         kind: 'trivia',
         tech: this.tech,
@@ -663,11 +731,214 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
   goToLogin() {
     this.loginPromptOpen = false;
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/auth/login'], {
+      queryParams: { redirectTo: this.router.url || '/' },
+    });
   }
 
   goToPricing() {
-    this.router.navigate(['/pricing']);
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('premium_gate_path_clicked', {
+      action: 'view_pricing',
+      context: 'trivia_locked',
+      question_id: this.question()?.id ?? null,
+      tech: this.tech,
+      kind: 'trivia',
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+    this.router.navigate(['/pricing'], {
+      queryParams: {
+        src: `trivia_locked_${this.tech || 'javascript'}`,
+        framework: profile?.framework ?? undefined,
+        timeline: profile?.timeline ?? undefined,
+      },
+    });
+  }
+
+  lifecyclePromptTitle(): string {
+    if (!this.lifecyclePromptMilestone) return 'Keep your momentum';
+    const target = this.lifecyclePrompts.thresholdFor(this.lifecyclePromptMilestone);
+    return `${target} solved. Keep your interview signal rising.`;
+  }
+
+  lifecyclePromptBody(): string {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    if (profile) {
+      return `You selected ${frameworkLabel(framework)} with a ${timelineLabel(profile.timeline)}. Choose the next high-signal action now.`;
+    }
+    return 'Set your next focused action while this concept is still fresh.';
+  }
+
+  dismissLifecyclePrompt() {
+    if (this.lifecyclePromptMilestone) {
+      this.lifecyclePrompts.markDismissed(this.lifecyclePromptMilestone);
+      this.analytics.track('lifecycle_prompt_dismissed', {
+        milestone_id: this.lifecyclePromptMilestone,
+        solved_total: this.lifecyclePromptSolvedTotal,
+        question_id: this.lifecyclePromptQuestionId,
+        tech: this.tech,
+        kind: 'trivia',
+      });
+    }
+    this.lifecyclePromptOpen = false;
+  }
+
+  openLifecycleOnboarding() {
+    const profile = this.onboarding.getProfile();
+    if (this.lifecyclePromptMilestone) {
+      this.lifecyclePrompts.markAccepted(this.lifecyclePromptMilestone);
+      this.analytics.track('lifecycle_prompt_cta_clicked', {
+        action: 'next_actions',
+        milestone_id: this.lifecyclePromptMilestone,
+        solved_total: this.lifecyclePromptSolvedTotal,
+        question_id: this.lifecyclePromptQuestionId,
+        tech: this.tech,
+        kind: 'trivia',
+        framework: profile?.framework ?? null,
+        timeline: profile?.timeline ?? null,
+      });
+    }
+    this.lifecyclePromptOpen = false;
+    this.router.navigate(['/onboarding/quick-start'], {
+      queryParams: {
+        src: 'lifecycle_prompt',
+        trigger: 'save_prompt',
+        tech: this.tech,
+        view: profile ? 'next' : undefined,
+      },
+    });
+  }
+
+  openLifecyclePricing() {
+    const profile = this.onboarding.getProfile();
+    if (this.lifecyclePromptMilestone) {
+      this.lifecyclePrompts.markAccepted(this.lifecyclePromptMilestone);
+      this.analytics.track('lifecycle_prompt_cta_clicked', {
+        action: 'view_pricing',
+        milestone_id: this.lifecyclePromptMilestone,
+        solved_total: this.lifecyclePromptSolvedTotal,
+        question_id: this.lifecyclePromptQuestionId,
+        tech: this.tech,
+        kind: 'trivia',
+        framework: profile?.framework ?? null,
+        timeline: profile?.timeline ?? null,
+      });
+    }
+    this.lifecyclePromptOpen = false;
+    this.router.navigate(['/pricing'], {
+      queryParams: {
+        src: 'lifecycle_prompt',
+        framework: profile?.framework ?? undefined,
+        timeline: profile?.timeline ?? undefined,
+      },
+    });
+  }
+
+  trackLockedPathClick(pathId: string) {
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('premium_unlock_path_clicked', {
+      path_id: pathId,
+      context: 'trivia_locked',
+      question_id: this.question()?.id ?? null,
+      tech: this.tech,
+      kind: 'trivia',
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+  }
+
+  private applySignupPromptCopy() {
+    if (this.signupPromptVariant === 'benefit') {
+      this.loginPromptTitle = 'Save this streak and keep momentum';
+      this.loginPromptBody = 'Create a free account to keep solved progress and continue with personalized next steps.';
+      this.loginPromptCta = 'Save progress free';
+      return;
+    }
+
+    this.loginPromptTitle = 'Sign in to save progress';
+    this.loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
+    this.loginPromptCta = 'Go to login';
+  }
+
+  private personalizedMemberCopy(variant: 'control' | 'value'): string {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    if (profile) {
+      if (variant === 'value') {
+        return `You’re previewing premium depth for ${frameworkLabel(framework)} in a ${timelineLabel(profile.timeline)}. Upgrade to unlock full guided answers.`;
+      }
+      return `You’re on a ${frameworkLabel(framework)} ${timelineLabel(profile.timeline)}. Upgrade to view full premium answers for this path.`;
+    }
+    return variant === 'value'
+      ? 'You’re viewing a premium preview. Upgrade to unlock the complete answer and guided reasoning.'
+      : "You're on the free tier. Upgrade to view this answer.";
+  }
+
+  private personalizedGuestCopy(variant: 'control' | 'value'): string {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    if (profile) {
+      return `This answer is premium for your ${frameworkLabel(framework)} path. Upgrade for full detail, or sign in if you already upgraded.`;
+    }
+    return variant === 'value'
+      ? 'This answer is premium. Upgrade for full detail, or sign in if you already upgraded.'
+      : 'Upgrade to FrontendAtlas Premium to view this answer. Already upgraded? Sign in to continue.';
+  }
+
+  private refreshLockedPersonalization() {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    const challenge = freeChallengeForFramework(framework);
+    this.lockedPersonalizationLine = profile
+      ? `Selected path: ${frameworkLabel(framework)} · ${timelineLabel(profile.timeline)}.`
+      : '';
+    this.lockedPaths = [
+      {
+        id: 'free_challenge',
+        label: challenge.label,
+        route: challenge.route,
+        queryParams: { src: `trivia_locked_${this.tech || 'javascript'}` },
+      },
+      {
+        id: 'tracks_preview',
+        label: 'Open track previews',
+        route: ['/tracks'],
+        queryParams: { src: `trivia_locked_${this.tech || 'javascript'}` },
+      },
+      {
+        id: 'companies_preview',
+        label: 'Browse company previews',
+        route: ['/companies'],
+        queryParams: { src: `trivia_locked_${this.tech || 'javascript'}` },
+      },
+    ];
+  }
+
+  private maybePromptLifecycle(source: string, questionId: string) {
+    if (!this.auth.isLoggedIn()) return;
+    const solvedTotal = this.progress.solvedIds().length;
+    const milestone = this.lifecyclePrompts.nextMilestone(solvedTotal);
+    if (!milestone) return;
+
+    this.lifecyclePrompts.markShown(milestone);
+    this.lifecyclePromptMilestone = milestone;
+    this.lifecyclePromptSolvedTotal = solvedTotal;
+    this.lifecyclePromptQuestionId = questionId;
+    this.lifecyclePromptOpen = true;
+
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('lifecycle_prompt_shown', {
+      source,
+      milestone_id: milestone,
+      solved_total: solvedTotal,
+      question_id: questionId,
+      tech: this.tech,
+      kind: 'trivia',
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
   }
 
   copy(code: string, idx: number) {

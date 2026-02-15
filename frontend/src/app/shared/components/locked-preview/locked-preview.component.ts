@@ -58,7 +58,11 @@ import { LockedPreviewData } from '../../../core/utils/locked-preview.util';
         <h2 class="locked-preview-rich__title">Related questions</h2>
         <ul class="locked-preview-rich__links">
           <li *ngFor="let item of data.related">
-            <a [routerLink]="item.to">{{ item.title }}</a>
+            <a [routerLink]="item.to">
+              <span>{{ item.title }}</span>
+              <span *ngIf="item.premium" class="locked-preview-rich__pill">Premium</span>
+              <span *ngIf="!item.premium" class="locked-preview-rich__pill locked-preview-rich__pill--free">Free</span>
+            </a>
           </li>
         </ul>
       </section>

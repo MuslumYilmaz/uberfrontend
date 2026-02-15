@@ -1,0 +1,72 @@
+<section class="onboarding-shell" data-testid="onboarding-quick-start-page">
+  <header class="onboarding-hero fa-card fa-card--elevated">
+    <p class="onboarding-kicker">Onboarding</p>
+    <h1>Personalize your next frontend interview reps</h1>
+    <p class="onboarding-sub">
+      Quick setup: timeline, framework, and target role. Then we generate a focused next-action list.
+    </p>
+  </header>
+
+  <ng-container *ngIf="view === 'form'; else nextActions">
+    <form class="onboarding-form fa-card" (ngSubmit)="submit()">
+      <label>
+        <span>Interview timeline</span>
+        <select [(ngModel)]="form.timeline" name="timeline" required>
+          <option *ngFor="let option of timelineOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Primary framework focus</span>
+        <select [(ngModel)]="form.framework" name="framework" required>
+          <option *ngFor="let option of frameworkOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Target role</span>
+        <select [(ngModel)]="form.targetRole" name="targetRole" required>
+          <option *ngFor="let option of roleOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+
+      <div class="onboarding-actions">
+        <button class="fa-btn fa-btn--primary" type="submit">Show my next actions</button>
+      </div>
+    </form>
+  </ng-container>
+
+  <ng-template #nextActions>
+    <section class="onboarding-next fa-card">
+      <div class="next-head">
+        <h2>Your personalized next action list</h2>
+        <p>
+          Built for {{ form.targetRole.replace('_', ' ') }} with a {{ form.timeline.replace('_', ' ') }} horizon.
+        </p>
+      </div>
+
+      <ol class="next-list">
+        <li *ngFor="let action of actions">
+          <div class="next-card">
+            <h3>{{ action.title }}</h3>
+            <p>{{ action.body }}</p>
+            <a
+              class="fa-btn fa-btn--ghost"
+              [routerLink]="action.route"
+              [queryParams]="action.queryParams || null"
+              (click)="trackAction(action)">
+              Open
+            </a>
+          </div>
+        </li>
+      </ol>
+
+      <div class="onboarding-actions">
+        <button class="fa-btn fa-btn--ghost" type="button" (click)="editAnswers()">Edit answers</button>
+        <a class="fa-btn fa-btn--primary" [routerLink]="['/dashboard']" [queryParams]="{ src: 'onboarding_complete' }">
+          Go to dashboard
+        </a>
+      </div>
+    </section>
+  </ng-template>
+</section>

@@ -4,9 +4,9 @@
   <div class="shell hero-grid">
       <div class="hero-copy">
       <p class="eyebrow">Frontend interview preparation platform</p>
-      <h1 id="showcase-hero-title" data-testid="showcase-hero-title">Follow a clear roadmap for frontend interviews.</h1>
+      <h1 id="showcase-hero-title" data-testid="showcase-hero-title">{{ heroHeadline }}</h1>
       <p class="lede">
-        Practice frontend interview questions in a real workflow: code, preview, tests, and guided interview-ready review signals.
+        {{ heroLede }}
       </p>
       <div class="proof-row" aria-label="Platform proof points">
         <span class="proof-chip"><i class="pi pi-sitemap"></i>Real workflow</span>
@@ -14,8 +14,15 @@
         <span class="proof-chip"><i class="pi pi-check-circle"></i>Fast feedback</span>
       </div>
       <div class="hero-actions">
-        <a class="sk-btn sk-btn-primary" routerLink="/coding" aria-label="Explore coding examples">Explore examples</a>
-        <a class="sk-btn sk-btn-ghost" routerLink="/tracks" aria-label="Open the playground">Open playground</a>
+        <a
+          class="sk-btn sk-btn-primary"
+          [routerLink]="['/react', 'coding', 'react-counter']"
+          [queryParams]="{ src: 'lp_hero' }"
+          (click)="onHeroPrimaryClick()"
+          aria-label="Start with a free React challenge">
+          {{ heroPrimaryCtaLabel }}
+        </a>
+        <a class="sk-btn sk-btn-ghost" routerLink="/coding" aria-label="Browse coding challenges">Browse challenges</a>
       </div>
       <div class="chip-cloud" aria-hidden="true">
         <span class="floating-chip" *ngFor="let chip of heroBadges; let i = index" [attr.data-tone]="chip.tone"
@@ -311,7 +318,7 @@
           <ng-container *ngIf="companyCounts$ && (companyCounts$ | async) as cc">
             <span class="company-count" *ngIf="cc[c.slug]">{{ cc[c.slug].all }} questions</span>
           </ng-container>
-          <a class="company-link" [routerLink]="c.link">View set <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+          <a class="company-link" [routerLink]="c.link">View preview <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
         </div>
       </article>
     </div>
@@ -388,6 +395,7 @@
     variant="compact"
     [paymentsEnabled]="paymentsEnabled"
     [checkoutUrls]="checkoutUrls"
+    analyticsSource="showcase_pricing"
     ctaMode="navigatePricing">
   </app-pricing-plans-section>
 </section>

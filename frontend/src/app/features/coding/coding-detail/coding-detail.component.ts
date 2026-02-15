@@ -39,10 +39,20 @@ import { ActivityService } from '../../../core/services/activity.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DailyService } from '../../../core/services/daily.service';
 import { QuestionDetailResolved } from '../../../core/resolvers/question-detail.resolver';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { ExperimentService } from '../../../core/services/experiment.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
+import { LifecycleMilestoneId, LifecyclePromptService } from '../../../core/services/lifecycle-prompt.service';
 import { SEO_SUPPRESS_TOKEN } from '../../../core/services/seo-context';
 import { SeoService } from '../../../core/services/seo.service';
 import { UserProgressService } from '../../../core/services/user-progress.service';
 import { writeHtmlToIframe } from '../../../core/utils/iframe-preview.util';
+import {
+  freeChallengeForFramework,
+  frameworkLabel,
+  preferredFramework,
+  timelineLabel,
+} from '../../../core/utils/onboarding-personalization.util';
 import { fetchSdkAsset, resolveSolutionFiles } from '../../../core/utils/solution-asset.util';
 import { PreviewBuilderService } from '../../../core/services/preview-builder.service';
 import { LoginRequiredDialogComponent } from '../../../shared/components/login-required-dialog/login-required-dialog.component';
@@ -92,6 +102,12 @@ type FASolutionBlock = {
 };
 
 type FollowUpItem = { id: string; title: string; difficulty: string; to: any[] };
+type LockedPath = {
+  id: string;
+  label: string;
+  route: any[];
+  queryParams?: Record<string, string>;
+};
 
 @Component({
   selector: 'app-coding-detail',
@@ -121,6 +137,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   private readonly suppressSeo = inject(SEO_SUPPRESS_TOKEN);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly previewBuilder = inject(PreviewBuilderService);
+  private readonly analytics = inject(AnalyticsService);
 
   tech!: Tech;
   kind: Kind = 'coding';
@@ -242,6 +259,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   copiedIdx: number | null = null;
   private copyTimer?: any;
+  private challengeSource = 'direct';
+  private lastTrackedChallengeOpenKey: string | null = null;
+  private ahaFirstTestRunTracked = false;
+  private ahaFirstPassTracked = false;
 
   // Practice session
   private practice: PracticeSession = null;
@@ -350,6 +371,21 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
   previewVisible = false;
   previewOnlyUrl: SafeResourceUrl | null = null;
   loginPromptOpen = false;
+  onboardingPromptOpen = false;
+  lifecyclePromptOpen = false;
+  lifecyclePromptMilestone: LifecycleMilestoneId | null = null;
+  lifecyclePromptSolvedTotal = 0;
+  private lifecyclePromptQuestionId: string | null = null;
+  private onboardingPromptReason: 'first_pass' | 'save_prompt' = 'first_pass';
+  private signupPromptVariant: 'control' | 'benefit' = 'control';
+  private premiumGateVariant: 'control' | 'value' = 'control';
+  loginPromptTitle = 'Sign in to save progress';
+  loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
+  loginPromptCta = 'Go to login';
+  lockedMemberCopy = "You're on the free tier. Upgrade to unlock this challenge.";
+  lockedGuestCopy = 'Upgrade to FrontendAtlas Premium to unlock this challenge. Already upgraded? Sign in to continue.';
+  lockedPersonalizationLine = '';
+  lockedPaths: LockedPath[] = [];
 
   // computed
   passedCount = computed(() => this.testResults().filter(r => r.passed).length);
@@ -379,17 +415,51 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   ensureAuthenticated(): boolean {
     if (this.auth.isLoggedIn()) return true;
+    this.experiments.expose(
+      'signup_prompt_copy_v1',
+      this.signupPromptVariant,
+      'coding_submit_prompt',
+      'coding_detail',
+    );
+    const q = this.question();
+    this.analytics.track('signup_prompt_shown', {
+      context: 'coding_submit',
+      question_id: q?.id ?? null,
+      tech: this.tech,
+      src: this.challengeSource,
+      variant: this.signupPromptVariant,
+    });
+    this.onboarding.markPending('save_prompt');
     this.loginPromptOpen = true;
     return false;
   }
 
   goToLogin() {
     this.loginPromptOpen = false;
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/auth/login'], {
+      queryParams: { redirectTo: this.router.url || '/' },
+    });
   }
 
   goToPricing() {
-    this.router.navigate(['/pricing']);
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('premium_gate_path_clicked', {
+      action: 'view_pricing',
+      context: 'coding_locked',
+      question_id: this.question()?.id ?? null,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+    this.router.navigate(['/pricing'], {
+      queryParams: {
+        src: `coding_locked_${this.tech || 'javascript'}`,
+        framework: profile?.framework ?? undefined,
+        timeline: profile?.timeline ?? undefined,
+      },
+    });
   }
 
   // --- file explorer state for framework techs ---
@@ -495,7 +565,10 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     private seo: SeoService,
     private http: HttpClient,
     private progress: UserProgressService,
-    public auth: AuthService
+    public auth: AuthService,
+    private experiments: ExperimentService,
+    private onboarding: OnboardingService,
+    private lifecyclePrompts: LifecyclePromptService,
   ) {
     this.codeStore.migrateAllJsToIndexedDbOnce().catch(() => { });
 
@@ -592,6 +665,11 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
 
   // ---------- init ----------
   ngOnInit() {
+    this.signupPromptVariant = this.experiments.variant('signup_prompt_copy_v1', 'coding_detail');
+    this.premiumGateVariant = this.experiments.variant('premium_gate_copy_v1', 'coding_detail');
+    this.applySignupPromptCopy();
+    this.applyPremiumGateCopy();
+
     if (this.isBrowser) {
       this.syncViewportState();
       window.addEventListener('resize', this.onViewportResize, { passive: true });
@@ -1055,6 +1133,20 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     const q = this.allQuestions[idx];
     this.question.set(q);
     this.loadState.set('loaded');
+    this.challengeSource = this.readChallengeSource();
+    this.ahaFirstTestRunTracked = false;
+    this.ahaFirstPassTracked = false;
+    this.trackChallengeOpened(q.id);
+    this.maybePromptOnboardingFromPending(q.id);
+    this.refreshLockedPersonalization();
+    if (isQuestionLockedForTier(q, this.auth.user())) {
+      this.experiments.expose(
+        'premium_gate_copy_v1',
+        this.premiumGateVariant,
+        `coding_locked_${q.id}`,
+        'coding_detail',
+      );
+    }
     this.updateSeoForQuestion(q);
 
     // reset solution files for new question before loading
@@ -1295,6 +1387,28 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     await this.jsPanel?.runTests();
     this.hasRunTests = true;
 
+    if (!this.ahaFirstTestRunTracked) {
+      this.ahaFirstTestRunTracked = true;
+      this.analytics.track('aha_first_test_run', {
+        question_id: q.id,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+      });
+    }
+
+    if (this.allPassing() && !this.ahaFirstPassTracked) {
+      this.ahaFirstPassTracked = true;
+      this.analytics.track('aha_first_pass', {
+        question_id: q.id,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+        elapsed_sec: Math.max(0, Math.round((Date.now() - this.sessionStart) / 1000)),
+      });
+      this.maybePromptOnboarding('first_pass', q.id);
+    }
+
     this.subTab.set('tests');
   }
 
@@ -1318,6 +1432,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     if (this.isFrameworkTech() || this.isWebTech()) {
       await this.progress.markSolved(q.id);
       this.solved.set(true);
+      this.maybePromptLifecycle('coding_submit', q.id);
       this.creditDaily();
       this.recordCompletion('submit');
       await this.celebrate('submit');
@@ -1335,6 +1450,7 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     await this.progress.markSolved(q.id);
+    this.maybePromptLifecycle('coding_submit', q.id);
     this.creditDaily();
     this.recordCompletion('submit');
     await this.celebrate('submit');
@@ -1407,6 +1523,261 @@ export class CodingDetailComponent implements OnInit, OnChanges, AfterViewInit, 
     newRatio = Math.max(0.2, Math.min(0.9, newRatio));
     this.zone.run(() => this.editorRatio.set(newRatio));
   };
+
+  private readChallengeSource(): string {
+    const raw = String(this.route.snapshot.queryParamMap.get('src') || '').trim().toLowerCase();
+    if (!raw) return 'direct';
+    if (!/^[a-z0-9_-]{1,64}$/.test(raw)) return 'direct';
+    return raw;
+  }
+
+  private trackChallengeOpened(questionId: string) {
+    const key = `${questionId}|${this.challengeSource}|${this.kind}`;
+    if (this.lastTrackedChallengeOpenKey === key) return;
+    this.lastTrackedChallengeOpenKey = key;
+    this.analytics.track('aha_challenge_opened', {
+      question_id: questionId,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+    });
+  }
+
+  private applySignupPromptCopy() {
+    if (this.signupPromptVariant === 'benefit') {
+      this.loginPromptTitle = 'Save this progress and keep momentum';
+      this.loginPromptBody = 'Create a free account to save solved status and continue with personalized next steps.';
+      this.loginPromptCta = 'Save progress free';
+      return;
+    }
+
+    this.loginPromptTitle = 'Sign in to save progress';
+    this.loginPromptBody = 'To track completed questions and keep your progress synced, sign in or create a free account.';
+    this.loginPromptCta = 'Go to login';
+  }
+
+  private applyPremiumGateCopy() {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    const personalizedMember = profile
+      ? `You’re on the ${frameworkLabel(framework)} ${timelineLabel(profile.timeline)}. Upgrade to unlock the full workflow and premium depth for that path.`
+      : "You're on the free tier. Upgrade to unlock this challenge.";
+    const personalizedGuest = profile
+      ? `This challenge is premium for your ${frameworkLabel(framework)} path. Upgrade to unlock it, or sign in if you already upgraded.`
+      : 'Upgrade to FrontendAtlas Premium to unlock this challenge. Already upgraded? Sign in to continue.';
+
+    if (this.premiumGateVariant === 'value') {
+      this.lockedMemberCopy = profile
+        ? `You’re previewing premium depth for your ${frameworkLabel(framework)} path. Upgrade to unlock the full challenge workflow and complete solution context.`
+        : 'You’re viewing a premium preview. Upgrade to unlock the full challenge workflow and complete solution context.';
+      this.lockedGuestCopy = personalizedGuest;
+      return;
+    }
+
+    this.lockedMemberCopy = personalizedMember;
+    this.lockedGuestCopy = personalizedGuest;
+  }
+
+  private refreshLockedPersonalization() {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    const free = freeChallengeForFramework(framework);
+    this.lockedPersonalizationLine = profile
+      ? `Selected path: ${frameworkLabel(framework)} · ${timelineLabel(profile.timeline)}.`
+      : '';
+    this.lockedPaths = [
+      {
+        id: 'free_challenge',
+        label: free.label,
+        route: free.route,
+        queryParams: { src: `coding_locked_${this.tech || 'javascript'}` },
+      },
+      {
+        id: 'tracks_preview',
+        label: 'Open track previews',
+        route: ['/tracks'],
+        queryParams: { src: `coding_locked_${this.tech || 'javascript'}` },
+      },
+      {
+        id: 'companies_preview',
+        label: 'Browse company previews',
+        route: ['/companies'],
+        queryParams: { src: `coding_locked_${this.tech || 'javascript'}` },
+      },
+    ];
+    this.applyPremiumGateCopy();
+  }
+
+  lifecyclePromptTitle(): string {
+    if (!this.lifecyclePromptMilestone) return 'Keep your momentum';
+    const target = this.lifecyclePrompts.thresholdFor(this.lifecyclePromptMilestone);
+    return `${target} solved. Keep momentum while signal is high.`;
+  }
+
+  lifecyclePromptBody(): string {
+    const profile = this.onboarding.getProfile();
+    const framework = preferredFramework(profile, this.tech);
+    if (profile) {
+      return `You’re progressing on ${frameworkLabel(framework)} with a ${timelineLabel(profile.timeline)}. Pick your next step before context fades.`;
+    }
+    return 'Capture your progress with a focused next action while this question context is still fresh.';
+  }
+
+  dismissLifecyclePrompt() {
+    if (this.lifecyclePromptMilestone) {
+      this.lifecyclePrompts.markDismissed(this.lifecyclePromptMilestone);
+      this.analytics.track('lifecycle_prompt_dismissed', {
+        milestone_id: this.lifecyclePromptMilestone,
+        solved_total: this.lifecyclePromptSolvedTotal,
+        question_id: this.lifecyclePromptQuestionId,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+      });
+    }
+    this.lifecyclePromptOpen = false;
+  }
+
+  openLifecycleOnboarding() {
+    const profile = this.onboarding.getProfile();
+    const q = this.question();
+    if (this.lifecyclePromptMilestone) {
+      this.lifecyclePrompts.markAccepted(this.lifecyclePromptMilestone);
+      this.analytics.track('lifecycle_prompt_cta_clicked', {
+        action: 'next_actions',
+        milestone_id: this.lifecyclePromptMilestone,
+        solved_total: this.lifecyclePromptSolvedTotal,
+        question_id: q?.id ?? null,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+        framework: profile?.framework ?? null,
+        timeline: profile?.timeline ?? null,
+      });
+    }
+    this.lifecyclePromptOpen = false;
+    this.router.navigate(['/onboarding/quick-start'], {
+      queryParams: {
+        src: 'lifecycle_prompt',
+        trigger: 'first_pass',
+        tech: this.tech,
+        view: profile ? 'next' : undefined,
+      },
+    });
+  }
+
+  openLifecyclePricing() {
+    const profile = this.onboarding.getProfile();
+    if (this.lifecyclePromptMilestone) {
+      this.lifecyclePrompts.markAccepted(this.lifecyclePromptMilestone);
+      this.analytics.track('lifecycle_prompt_cta_clicked', {
+        action: 'view_pricing',
+        milestone_id: this.lifecyclePromptMilestone,
+        solved_total: this.lifecyclePromptSolvedTotal,
+        question_id: this.lifecyclePromptQuestionId,
+        tech: this.tech,
+        kind: this.kind,
+        src: this.challengeSource,
+        framework: profile?.framework ?? null,
+        timeline: profile?.timeline ?? null,
+      });
+    }
+    this.lifecyclePromptOpen = false;
+    this.router.navigate(['/pricing'], {
+      queryParams: {
+        src: 'lifecycle_prompt',
+        framework: profile?.framework ?? undefined,
+        timeline: profile?.timeline ?? undefined,
+      },
+    });
+  }
+
+  trackLockedPathClick(pathId: string) {
+    const profile = this.onboarding.getProfile();
+    const q = this.question();
+    this.analytics.track('premium_unlock_path_clicked', {
+      path_id: pathId,
+      context: 'coding_locked',
+      question_id: q?.id ?? null,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+  }
+
+  private maybePromptLifecycle(source: string, questionId: string) {
+    if (!this.auth.isLoggedIn()) return;
+    const solvedTotal = this.progress.solvedIds().length;
+    const milestone = this.lifecyclePrompts.nextMilestone(solvedTotal);
+    if (!milestone) return;
+
+    this.lifecyclePrompts.markShown(milestone);
+    this.lifecyclePromptMilestone = milestone;
+    this.lifecyclePromptSolvedTotal = solvedTotal;
+    this.lifecyclePromptQuestionId = questionId;
+    this.lifecyclePromptOpen = true;
+
+    const profile = this.onboarding.getProfile();
+    this.analytics.track('lifecycle_prompt_shown', {
+      source,
+      milestone_id: milestone,
+      solved_total: solvedTotal,
+      question_id: questionId,
+      tech: this.tech,
+      kind: this.kind,
+      src: this.challengeSource,
+      framework: profile?.framework ?? null,
+      timeline: profile?.timeline ?? null,
+    });
+  }
+
+  private maybePromptOnboardingFromPending(questionId: string) {
+    if (!this.auth.isLoggedIn() || this.onboarding.isCompleted()) return;
+    const trigger = this.onboarding.consumePendingTrigger();
+    if (!trigger) return;
+    this.maybePromptOnboarding(trigger, questionId);
+  }
+
+  private maybePromptOnboarding(reason: 'first_pass' | 'save_prompt', questionId: string) {
+    if (!this.auth.isLoggedIn() || this.onboarding.isCompleted()) return;
+    this.onboardingPromptReason = reason;
+    this.onboardingPromptOpen = true;
+    this.analytics.track('onboarding_prompt_shown', {
+      src: this.challengeSource,
+      trigger: reason,
+      question_id: questionId,
+      tech: this.tech,
+      kind: this.kind,
+    });
+  }
+
+  dismissOnboardingPrompt() {
+    this.onboardingPromptOpen = false;
+    this.onboarding.markPending(this.onboardingPromptReason);
+  }
+
+  openOnboardingQuickStart() {
+    const q = this.question();
+    this.onboardingPromptOpen = false;
+    this.analytics.track('onboarding_started', {
+      src: this.challengeSource,
+      trigger: this.onboardingPromptReason,
+      method: 'coding_prompt',
+      question_id: q?.id ?? null,
+      tech: this.tech,
+      kind: this.kind,
+    });
+    this.router.navigate(['/onboarding/quick-start'], {
+      queryParams: {
+        src: this.challengeSource,
+        trigger: this.onboardingPromptReason,
+        tech: this.tech,
+        question_id: q?.id ?? '',
+      },
+    });
+  }
 
   private onPointerUp = () => {
     if (this.dragging) this.dragging = false;

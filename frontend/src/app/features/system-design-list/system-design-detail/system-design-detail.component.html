@@ -357,6 +357,7 @@
                 </ul>
             </div>
             <app-locked-preview *ngIf="lockedPreview()" [data]="lockedPreview()!"></app-locked-preview>
+            <p class="locked-persona" *ngIf="lockedPersonalizationLine()">{{ lockedPersonalizationLine() }}</p>
             <div class="locked-related" *ngIf="relatedItems().length">
                 <div class="locked-related__title">Related questions</div>
                 <div class="locked-related__list">
@@ -367,17 +368,28 @@
                     </a>
                 </div>
             </div>
+            <div class="locked-paths" *ngIf="lockedPaths().length">
+                <a
+                    class="locked-paths__item"
+                    *ngFor="let path of lockedPaths()"
+                    [routerLink]="path.route"
+                    [queryParams]="path.queryParams"
+                    (click)="trackLockedPathClick(path.id)">
+                    <span>{{ path.label }}</span>
+                    <i class="pi pi-arrow-right"></i>
+                </a>
+            </div>
             <p class="locked-copy">
                 <ng-container *ngIf="auth.isLoggedIn(); else lockedGuest">
-                    You're on the free tier. Upgrade to access this system design scenario.
+                    {{ lockedMemberCopy() }}
                 </ng-container>
                 <ng-template #lockedGuest>
-                    Upgrade to FrontendAtlas Premium to access this system design scenario. Already upgraded? Sign in to continue.
+                    {{ lockedGuestCopy() }}
                 </ng-template>
             </p>
             <div class="locked-actions">
-                <button class="fa-btn fa-btn--primary" type="button" (click)="router.navigate(['/pricing'])">View pricing</button>
-                <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="router.navigate(['/auth/login'])">Sign in</button>
+                <button class="fa-btn fa-btn--primary" type="button" (click)="goToPricingFromLocked()">View pricing</button>
+                <button *ngIf="!auth.isLoggedIn()" class="fa-btn fa-btn--ghost" type="button" (click)="goToLoginFromLocked()">Sign in</button>
             </div>
         </div>
     </div>

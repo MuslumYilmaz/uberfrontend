@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription, of, timer } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { AuthService } from '../../core/services/auth.service';
 import { isProActive } from '../../core/utils/entitlements.util';
 
@@ -14,6 +15,9 @@ import { isProActive } from '../../core/utils/entitlements.util';
   styleUrls: ['./billing-success.component.css'],
 })
 export class BillingSuccessComponent implements OnInit, OnDestroy {
+  private static readonly CHECKOUT_PLAN_KEY = 'fa:checkout:last_plan_id';
+  private static readonly CHECKOUT_SOURCE_KEY = 'fa:checkout:last_source';
+
   state = signal<'syncing' | 'timeout' | 'error' | 'login-required'>('syncing');
   errorMessage = signal<string | null>(null);
   attempts = signal(0);
@@ -21,9 +25,14 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
   private pollSub?: Subscription;
   private readonly pollConfig = this.resolvePollConfig();
 
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private analytics: AnalyticsService,
+  ) { }
 
   ngOnInit(): void {
+    this.trackCheckoutCompleted();
     this.startPolling();
   }
 
@@ -43,6 +52,26 @@ export class BillingSuccessComponent implements OnInit, OnDestroy {
       }
     }
     return { maxAttempts: 15, intervalMs: 2000 };
+  }
+
+  private trackCheckoutCompleted() {
+    const event: Record<string, unknown> = {
+      src: 'billing_success',
+      method: 'billing_success_page',
+    };
+
+    if (typeof window !== 'undefined') {
+      try {
+        const planId = sessionStorage.getItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
+        const source = sessionStorage.getItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
+        if (planId) event['plan_id'] = planId;
+        if (source) event['src'] = source;
+        sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_PLAN_KEY);
+        sessionStorage.removeItem(BillingSuccessComponent.CHECKOUT_SOURCE_KEY);
+      } catch { }
+    }
+
+    this.analytics.track('checkout_completed', event);
   }
 
   startPolling(): void {

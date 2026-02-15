@@ -17,6 +17,8 @@ import { ActivatedRoute, RouterModule, convertToParamMap } from '@angular/router
 import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Tech } from '../../core/models/user.model';
+import { AnalyticsService } from '../../core/services/analytics.service';
+import { ExperimentService } from '../../core/services/experiment.service';
 import { QuestionService } from '../../core/services/question.service';
 import { SEO_SUPPRESS_TOKEN } from '../../core/services/seo-context';
 import { collectCompanyCounts } from '../../shared/company-counts.util';
@@ -157,6 +159,11 @@ export class ShowcasePageComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Frontend system design', tone: 'outline' },
     { label: 'High-signal feedback', tone: 'muted' },
   ];
+
+  heroHeadline = 'Follow a clear roadmap for frontend interviews.';
+  heroLede = 'Practice frontend interview questions in a real workflow: code, preview, tests, and guided interview-ready review signals.';
+  heroPrimaryCtaLabel = 'Start free challenge';
+  private heroExperimentVariant: 'control' | 'outcome' = 'control';
 
   heroFlowSteps = [
     { key: 'editor', title: 'Editor', subtitle: 'Solve UI tasks with real constraints', icon: 'pi pi-code', status: 'active' },
@@ -409,10 +416,10 @@ You can also reset any task back to the starter whenever you want to re-practice
   ];
 
   companyQuestions = [
-    { name: 'Google', slug: 'google', icon: 'G', color: '#4285F4', note: 'UI, JS, systems', link: ['/companies', 'google'] },
-    { name: 'Amazon', slug: 'amazon', icon: 'A', color: '#232F3E', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon'] },
-    { name: 'Netflix', slug: 'netflix', icon: 'N', color: '#E50914', note: 'UI architecture, state', link: ['/companies', 'netflix'] },
-    { name: 'Apple', slug: 'apple', icon: '', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple'] },
+    { name: 'Google', slug: 'google', icon: 'G', color: '#4285F4', note: 'UI, JS, systems', link: ['/companies', 'google', 'preview'] },
+    { name: 'Amazon', slug: 'amazon', icon: 'A', color: '#232F3E', note: 'Scaling lists, auth, UX', link: ['/companies', 'amazon', 'preview'] },
+    { name: 'Netflix', slug: 'netflix', icon: 'N', color: '#E50914', note: 'UI architecture, state', link: ['/companies', 'netflix', 'preview'] },
+    { name: 'Apple', slug: 'apple', icon: '', color: '#0A0A0A', note: 'UI polish, accessibility', link: ['/companies', 'apple', 'preview'] },
   ];
 
   companyCounts$?: Observable<Record<string, { all: number; coding: number; trivia: number; system: number }>>;
@@ -431,9 +438,31 @@ You can also reset any task back to the starter whenever you want to re-practice
     contact: true,
   };
 
-  constructor(private injector: Injector, private qs: QuestionService) { }
+  private readonly LP_SRC_PATTERN = /^[a-z0-9_-]{1,64}$/;
+
+  constructor(
+    private injector: Injector,
+    private qs: QuestionService,
+    private analytics: AnalyticsService,
+    private experiments: ExperimentService,
+    private route: ActivatedRoute,
+  ) { }
 
   ngOnInit(): void {
+    this.heroExperimentVariant = this.experiments.variant('hero_headline_cta_v1', 'showcase');
+    this.experiments.expose(
+      'hero_headline_cta_v1',
+      this.heroExperimentVariant,
+      'showcase_hero',
+      'showcase',
+    );
+    this.applyHeroExperimentCopy();
+
+    this.analytics.track('lp_viewed', {
+      src: this.readLandingSource(),
+      page: 'showcase',
+      hero_variant: this.heroExperimentVariant,
+    });
     if (this.isBrowser) {
       this.syncViewportState();
       window.addEventListener('resize', this.onViewportResize, { passive: true });
@@ -630,6 +659,15 @@ You can also reset any task back to the starter whenever you want to re-practice
     }
   }
 
+  onHeroPrimaryClick() {
+    this.analytics.track('lp_primary_cta_clicked', {
+      src: 'lp_hero',
+      question_id: 'react-counter',
+      tech: 'react',
+      hero_variant: this.heroExperimentVariant,
+    });
+  }
+
   get demoInputs() {
     const tab = this.activeDemo;
     return {
@@ -702,6 +740,27 @@ You can also reset any task back to the starter whenever you want to re-practice
       ],
       parent: this.injector,
     });
+  }
+
+  private readLandingSource(): string {
+    const raw = String(this.route.snapshot.queryParamMap.get('src') || '')
+      .trim()
+      .toLowerCase();
+    if (!raw || !this.LP_SRC_PATTERN.test(raw)) return 'direct';
+    return raw;
+  }
+
+  private applyHeroExperimentCopy() {
+    if (this.heroExperimentVariant === 'outcome') {
+      this.heroHeadline = 'Get interview-ready reps in under 2 minutes.';
+      this.heroLede = 'Open a free challenge instantly, run tests, and see the exact workflow used throughout FrontendAtlas.';
+      this.heroPrimaryCtaLabel = 'Try 2-minute challenge';
+      return;
+    }
+
+    this.heroHeadline = 'Follow a clear roadmap for frontend interviews.';
+    this.heroLede = 'Practice frontend interview questions in a real workflow: code, preview, tests, and guided interview-ready review signals.';
+    this.heroPrimaryCtaLabel = 'Start free challenge';
   }
 
   private buildSystemInjector() {

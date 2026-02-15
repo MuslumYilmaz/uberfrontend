@@ -1,0 +1,117 @@
+.onboarding-shell {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 18px 0 34px;
+  display: grid;
+  gap: 14px;
+}
+
+.onboarding-hero {
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.onboarding-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--uf-text-secondary);
+  font-weight: 800;
+}
+
+.onboarding-hero h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+}
+
+.onboarding-sub {
+  margin: 0;
+  color: var(--uf-text-secondary);
+}
+
+.onboarding-form,
+.onboarding-next {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.onboarding-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.onboarding-form span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--uf-text-secondary);
+}
+
+.onboarding-form select {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--uf-border-subtle);
+  background: color-mix(in srgb, var(--uf-surface) 92%, var(--uf-text-primary) 8%);
+  color: var(--uf-text-primary);
+  padding: 0 10px;
+}
+
+.next-head h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.next-head p {
+  margin: 4px 0 0;
+  color: var(--uf-text-secondary);
+}
+
+.next-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.next-card {
+  border: 1px solid var(--uf-border-subtle);
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.next-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.next-card p {
+  margin: 0;
+  color: var(--uf-text-secondary);
+  line-height: 1.4;
+}
+
+.onboarding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .onboarding-hero h1 {
+    font-size: 26px;
+  }
+
+  .onboarding-actions {
+    flex-direction: column;
+  }
+
+  .onboarding-actions .fa-btn {
+    width: 100%;
+  }
+}

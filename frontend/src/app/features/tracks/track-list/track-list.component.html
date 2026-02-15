@@ -64,7 +64,7 @@
 
   <div class="container">
     <div class="grid">
-      <a class="card fa-card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug]" [attr.data-slot]="i">
+      <a class="card fa-card" *ngFor="let track of tracks; let i = index" [routerLink]="['/tracks', track.slug, 'preview']" [attr.data-slot]="i">
         <div class="card-top">
           <span class="pill">{{ track.durationLabel }}</span>
           <span class="pill muted">{{ track.featured.length }} questions</span>
@@ -85,7 +85,7 @@
           <span class="meta">System design included</span>
         </div>
 
-        <div class="card-footer">View track →</div>
+        <div class="card-footer">View preview →</div>
       </a>
     </div>
   </div>

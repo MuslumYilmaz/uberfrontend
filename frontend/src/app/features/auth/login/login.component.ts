@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,8 @@ export class LoginComponent {
   loading = false;
   error = '';
   submitted = false;
+  redirectTo = '/dashboard';
+  redirectToPresent = false;
 
   form = this.fb.group({
     email: ['', [Validators.required]],    // can be email OR username
@@ -24,8 +27,12 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     public auth: AuthService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
+    this.redirectTo = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
+    this.redirectToPresent = this.redirectTo !== '/dashboard';
+  }
 
   get emailCtrl() { return this.form.get('email'); }
   get passwordCtrl() { return this.form.get('password'); }
@@ -61,7 +68,7 @@ export class LoginComponent {
     this.auth
       .login({ emailOrUsername: emailValue, password })
       .subscribe({
-        next: () => this.router.navigateByUrl('/dashboard'),
+        next: () => this.router.navigateByUrl(this.redirectTo),
         error: (err) => {
           const data = err?.error || {};
           if (err?.status === 401) {
@@ -76,7 +83,11 @@ export class LoginComponent {
   }
 
   continueWithGoogle() {
-    this.auth.oauthStart('google', 'login');
+    this.auth.oauthStart('google', 'login', this.redirectTo);
+  }
+
+  continueWithGithub() {
+    this.auth.oauthStart('github', 'login', this.redirectTo);
   }
 
   private clearFormError(key: string) {

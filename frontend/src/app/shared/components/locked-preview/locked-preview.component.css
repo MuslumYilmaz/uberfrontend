@@ -62,8 +62,30 @@
 .locked-preview-rich__links a {
   color: #93c5fd;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .locked-preview-rich__links a:hover {
   text-decoration: underline;
+}
+
+.locked-preview-rich__pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.locked-preview-rich__pill--free {
+  border-color: rgba(74, 222, 128, 0.55);
+  color: #86efac;
 }

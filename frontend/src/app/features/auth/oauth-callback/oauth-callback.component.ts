@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 
 @Component({
   standalone: true,
@@ -20,12 +22,28 @@ import { AuthService } from '../../../core/services/auth.service';
 export class OAuthCallbackComponent implements OnInit {
   error = '';
 
-  constructor(private route: ActivatedRoute, private router: Router, private auth: AuthService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private auth: AuthService,
+    private analytics: AnalyticsService,
+  ) { }
 
   ngOnInit(): void {
     const qp = this.route.snapshot.queryParams || {};
+    const queryRedirect = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
+    const oauthMode = this.auth.consumeOAuthMode();
+    const redirectTo = this.auth.consumeOAuthRedirect(queryRedirect);
     this.auth.completeOAuthCallback(qp).subscribe({
-      next: () => this.router.navigateByUrl('/dashboard'),
+      next: () => {
+        if (oauthMode === 'signup') {
+          this.analytics.track('signup_completed', {
+            method: 'oauth',
+            redirect_to_present: redirectTo !== '/dashboard',
+          });
+        }
+        this.router.navigateByUrl(redirectTo);
+      },
       error: (e) => this.error = e?.message || 'OAuth failed'
     });
   }

@@ -2,7 +2,39 @@
   <div class="billing-card">
     <p class="eyebrow">Billing</p>
     <h1 data-testid="billing-cancel-title">Checkout canceled</h1>
-    <p class="muted">No payment was made. You can return to pricing whenever you’re ready.</p>
-    <a class="btn" routerLink="/pricing">Back to pricing</a>
+    <p class="muted">No payment was made and your current access is unchanged.</p>
+
+    <section class="winback" data-testid="billing-cancel-winback">
+      <h2>Keep momentum without paying today</h2>
+      <p>{{ personalizedHint }}</p>
+      <ul>
+        <li>Continue free coding/trivia/system design practice.</li>
+        <li>Review preview routes before deciding on premium.</li>
+        <li>Upgrade later when premium depth matches your prep window.</li>
+      </ul>
+    </section>
+
+    <div class="actions">
+      <a
+        class="btn"
+        [routerLink]="freeChallengeRoute"
+        [queryParams]="{ src: 'billing_cancel_winback' }"
+        (click)="trackWinback('free_challenge')">
+        {{ freeChallengeLabel }}
+      </a>
+      <a
+        class="btn btn-ghost"
+        routerLink="/pricing"
+        [queryParams]="{ src: 'billing_cancel_return' }"
+        (click)="trackWinback('return_pricing')">
+        Back to pricing
+      </a>
+    </div>
+
+    <div class="links">
+      <a routerLink="/legal/refund" (click)="trackWinback('refund_policy')">Refund policy</a>
+      <a routerLink="/changelog" [queryParams]="{ src: 'billing_cancel' }" (click)="trackWinback('changelog')">What changed this week</a>
+      <a href="mailto:support@frontendatlas.com" (click)="trackWinback('support_email')">support&#64;frontendatlas.com</a>
+    </div>
   </div>
 </section>

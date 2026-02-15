@@ -1,0 +1,90 @@
+<section class="company-preview" data-testid="company-preview-page">
+  <nav class="preview-breadcrumb" aria-label="Company preview breadcrumb">
+    <a [routerLink]="['/companies']">Companies</a>
+    <span>/</span>
+    <span>{{ label }} preview</span>
+  </nav>
+
+  <header class="preview-hero fa-card fa-card--elevated">
+    <p class="preview-kicker">Public preview</p>
+    <h1>{{ label }} Frontend Interview Preview</h1>
+    <p class="preview-subtitle">
+      Review sample prompts and coverage before unlocking the full premium company guide.
+    </p>
+
+    <ng-container *ngIf="data$ | async as data">
+      <div class="preview-meta">
+        <span class="preview-chip">{{ data.counts.all }} known questions</span>
+        <span class="preview-chip">Coding {{ data.counts.coding }} · Trivia {{ data.counts.trivia }} · System {{ data.counts.system }}</span>
+        <span class="preview-chip preview-chip--lock">Full route stays premium</span>
+      </div>
+    </ng-container>
+  </header>
+
+  <ng-container *ngIf="data$ | async as data">
+    <section class="proof-grid">
+      <article class="proof-card">
+        <h2>What you can do now for free</h2>
+        <ul>
+          <li>Inspect company coverage before paying.</li>
+          <li>Open free challenges from the public question library.</li>
+          <li>Evaluate whether this company set matches your target interviews.</li>
+        </ul>
+      </article>
+
+      <article class="proof-card">
+        <h2>What unlocks with premium</h2>
+        <ul>
+          <li>Full guided route at <code>/companies/{{ slug }}</code>.</li>
+          <li>All premium company questions across coding, trivia, and system design.</li>
+          <li>Depth-focused question navigation for interview-specific preparation.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="sample-card fa-card" aria-label="Sample company questions">
+      <div class="sample-head">
+        <h2>Sample included questions</h2>
+        <p class="sample-summary">
+          Free in sample: <strong>{{ freeCount(data.samples) }}</strong> · Locked in full set:
+          <strong>{{ premiumCount(data.samples) }}</strong>
+        </p>
+      </div>
+
+      <ul class="sample-list" *ngIf="data.samples.length; else noSamples">
+        <li *ngFor="let item of data.samples">
+          <div class="sample-title-row">
+            <span class="sample-title">{{ item.title }}</span>
+            <span class="access-badge" [class.access-badge--free]="item.access === 'free'">
+              {{ item.access === 'free' ? 'Free now' : 'Premium in full set' }}
+            </span>
+          </div>
+          <div class="sample-meta">
+            <span>{{ displayKind(item.kind) }}</span>
+            <span *ngIf="item.tech">{{ item.tech | titlecase }}</span>
+            <span>{{ item.difficulty | titlecase }}</span>
+          </div>
+        </li>
+      </ul>
+
+      <ng-template #noSamples>
+        <p class="empty-state">No public samples yet for this company slug.</p>
+      </ng-template>
+    </section>
+
+    <section class="cta-stack">
+      <a
+        class="preview-btn preview-btn--primary"
+        [routerLink]="['/react', 'coding', 'react-counter']"
+        [queryParams]="{ src: 'company_preview_' + slug }">
+        Try free challenge
+      </a>
+      <a
+        class="preview-btn"
+        [routerLink]="['/pricing']"
+        [queryParams]="{ src: 'company_preview_' + slug }">
+        View pricing
+      </a>
+    </section>
+  </ng-container>
+</section>
