@@ -1207,6 +1207,41 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
+    // Protect standalone HTML tag mentions so they stay visible as text.
+    const literalTagTokens: string[] = [];
+    const looksLikeInlineTagMention = (suffix: string): boolean =>
+      /^\s*(?:,|\.|;|:|\(|\)|\]|\?|!|and\b|or\b|tags?\b|elements?\b|defines?\b|means?\b|does\b|is\b|stands?\b|used\b|for\b)/i
+        .test(suffix);
+
+    html = html.replace(
+      /&lt;(\/?)(ol|ul|li|br|table|thead|tbody|tr|th|td|blockquote|h[1-6])&gt;/gi,
+      (fullMatch: string, slash: string, rawTag: string, offset: number, full: string) => {
+        const tag = rawTag.toLowerCase();
+        const isClosing = slash === '/';
+        const before = full.slice(0, offset);
+        const after = full.slice(offset + fullMatch.length);
+        const mentionByContext = looksLikeInlineTagMention(after);
+
+        let shouldLiteralize = false;
+
+        if (tag === 'br') {
+          shouldLiteralize = mentionByContext;
+        } else if (isClosing) {
+          const openRe = new RegExp(`&lt;${tag}&gt;`, 'i');
+          shouldLiteralize = !openRe.test(before);
+        } else {
+          const closeRe = new RegExp(`&lt;\\/${tag}&gt;`, 'i');
+          shouldLiteralize = mentionByContext || !closeRe.test(after);
+        }
+
+        if (!shouldLiteralize) return fullMatch;
+
+        const token = `__LIT_TAG_${literalTagTokens.length}__`;
+        literalTagTokens.push(`<code class="inline-code">&lt;${isClosing ? '/' : ''}${tag}&gt;</code>`);
+        return token;
+      }
+    );
+
     // -------- 3) Font Awesome <i class="..."></i> — handle first --------
     html = html.replace(
       /&lt;i\s+class=(?:"|')([^"'&]+)(?:"|')\s*&gt;(?:&lt;\/i&gt;|<\/i>)/g,
@@ -1274,6 +1309,11 @@ export class TriviaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
           : `<p>${chunk.replace(/\n/g, '<br/>')}</p>`
       )
       .join('');
+
+    // Restore protected literal tag mentions after all markdown/html transforms.
+    literalTagTokens.forEach((literalHtml, i) => {
+      html = html.replace(new RegExp(`__LIT_TAG_${i}__`, 'g'), literalHtml);
+    });
 
     return html;
   }
