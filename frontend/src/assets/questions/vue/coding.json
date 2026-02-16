@@ -72,7 +72,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-counter-solution.v1.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-contact-form-starter",
@@ -80,7 +87,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "forms",
@@ -155,7 +162,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-contact-form-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-todo-list",
@@ -163,7 +177,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "vue",
       "lists",
@@ -235,7 +249,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-todo-list-solution.v1.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-image-slider",
@@ -247,7 +268,7 @@
       "google"
     ],
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "components",
@@ -318,7 +339,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-image-slider-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-tabs-switcher",
@@ -394,7 +422,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-tabs-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-filterable-user-list",
@@ -402,7 +437,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -476,7 +511,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-filterable-user-list-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-accordion-faq",
@@ -484,7 +526,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "vue",
       "components",
@@ -555,7 +597,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-accordion-faq-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-pagination-table",
@@ -563,7 +612,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -634,7 +683,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-pagination-table-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-theme-toggle",
@@ -642,7 +698,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "composition-api",
@@ -717,7 +773,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/vue/solution/vue-theme-toggle-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-multi-step-form",
@@ -725,7 +788,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "forms",
@@ -806,7 +869,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-multi-step-form-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-shopping-cart",
@@ -814,7 +884,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "components",
@@ -891,7 +961,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-shopping-cart-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-debounced-search",
@@ -899,7 +976,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 2,
     "tags": [
       "vue",
       "composition-api",
@@ -977,7 +1054,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-debounced-search-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-star-rating",
@@ -1056,7 +1140,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-star-rating-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-dynamic-table",
@@ -1133,7 +1224,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-table-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-nested-checkboxes",
@@ -1141,7 +1239,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -1211,7 +1309,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-checkboxes-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-autocomplete-search",
@@ -1219,7 +1324,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 1,
     "tags": [
       "vue",
       "composition-api",
@@ -1306,7 +1411,14 @@
       "apple"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-transfer-list",
@@ -1314,7 +1426,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "vue",
       "components",
@@ -1384,7 +1496,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-transfer-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-tictactoe",
@@ -1392,7 +1511,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "vue",
       "composition-api",
@@ -1471,7 +1590,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-like-button",
@@ -1551,7 +1677,14 @@
       "amazon"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-progress-bar-thresholds",
@@ -1559,7 +1692,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "vue",
       "reactivity",
@@ -1628,7 +1761,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-progress-bar-thresholds-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-nested-comments",
@@ -1636,7 +1776,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "composition-api",
@@ -1706,7 +1846,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-nested-comments-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-dynamic-counter-buttons",
@@ -1714,7 +1861,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "vue",
       "components",
@@ -1781,7 +1928,14 @@
     },
     "solutionAsset": "assets/sb/vue/solution/vue-dynamic-counter-buttons-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-chips-input-autocomplete",
@@ -1871,7 +2025,14 @@
       "airbnb"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-chessboard-click-highlight",
@@ -1879,7 +2040,7 @@
     "type": "coding",
     "technology": "vue",
     "difficulty": "medium",
-    "importance": 3,
+    "importance": 4,
     "tags": [
       "vue",
       "composition-api",
@@ -1953,7 +2114,14 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-snake-game",
@@ -2040,6 +2208,13 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   }
 ]

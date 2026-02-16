@@ -4,7 +4,7 @@
     "title": "What problems does Vue’s reactivity system solve, and how does Vue differ from React conceptually?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Vue’s reactivity system tracks data dependencies and updates only the affected DOM bindings, reducing manual state wiring. Compared to React’s explicit state updates and reconciliation, Vue offers automatic dependency tracking with template-level reactivity.",
     "answer": {
       "blocks": [
@@ -128,14 +128,21 @@
       "virtual-dom",
       "frameworks"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-internal-rendering-pipeline",
     "title": "How does Vue track state changes and trigger re-renders internally?",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 2,
     "description": "Vue re-renders components by combining (1) reactive state (Proxy-based in Vue 3), (2) dependency tracking (track/trigger), and (3) a scheduler that batches component updates, then patches the DOM via virtual DOM diffing (optimized with compiler hints like patch flags).",
     "answer": {
       "blocks": [
@@ -255,14 +262,21 @@
       "virtual-dom",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-data-must-be-function",
     "title": "Why must data be a function in Vue components, and what breaks if it isn’t?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "In Vue, component data must be a function so each instance gets its own state object. If it were a shared object, multiple instances would mutate the same reference and leak state between components. This avoids shared state bugs and makes components safer to reuse and test.",
     "answer": {
       "blocks": [
@@ -355,14 +369,21 @@
       "instances",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-reactive-interpolation-into-dom",
     "title": "How does Vue interpolate reactive state into the DOM?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Explain what happens from a template expression like {{ count }} to a real DOM text node update: template compilation, dependency tracking during render, scheduling/batching, and DOM patching. Mention how Vue handles refs in templates and why interpolation escapes HTML by default.",
     "answer": {
       "blocks": [
@@ -444,14 +465,21 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-bind-reactive-attributes",
     "title": "How does v-bind connect reactive state to DOM attributes?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Explain how v-bind (:) turns reactive state into DOM attribute/prop updates: template compilation into a render function, dependency tracking during render, scheduled component updates, and how the runtime patches attributes vs DOM properties (including class/style and boolean attrs).",
     "answer": {
       "blocks": [
@@ -573,7 +601,14 @@
       "reactivity",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-if-component-creation-destruction",
@@ -709,14 +744,21 @@
       "lifecycle",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-for-keys",
     "title": "Why are keys critical in v-for, and what breaks without them?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Explain why :key is required/recommended in v-for, what Vue uses it for during virtual DOM diffing, and give concrete examples of bugs you can get when keys are missing or unstable (including why using the index as key is usually wrong).",
     "answer": {
       "blocks": [
@@ -824,14 +866,21 @@
       "rendering",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-model-syntax-sugar-expansion",
     "title": "Why is v-model syntax sugar, and what does it expand to?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Explain why v-model is considered syntax sugar in Vue: it’s compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in Vue 3 (modelValue + update:modelValue). Include how v-model arguments (v-model:foo) and common modifiers (.trim, .number, .lazy) change the expansion.",
     "answer": {
       "blocks": [
@@ -956,14 +1005,21 @@
       "forms",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-show-vs-v-if-dom-lifecycle",
     "title": "How do v-show and v-if differ in DOM behavior and lifecycle impact?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "v-if adds/removes elements from the DOM (mount/unmount lifecycle), while v-show toggles display via CSS and keeps elements in the DOM. Use v-if for expensive components; v-show for frequent toggles.",
     "answer": {
       "blocks": [
@@ -1076,14 +1132,21 @@
       "performance",
       "lifecycle"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-computed-properties",
     "title": "What are computed properties in Vue?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Computed properties are cached, reactive getters that recompute only when their dependencies change. Use them for derived state instead of methods to avoid unnecessary recalculation. Computed values improve performance by caching, so test dependency changes and edge cases.",
     "answer": {
       "blocks": [
@@ -1179,14 +1242,21 @@
       "derived-state",
       "performance"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-methods-in-templates",
     "title": "What happens when you call methods inside Vue templates?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Explain how template method calls are executed during render, why they run again on every component re-render, the performance/correctness pitfalls (expensive work, unstable references, side effects), and when to prefer computed properties or precomputed data.",
     "answer": {
       "blocks": [
@@ -1279,7 +1349,14 @@
       "performance",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-native-vs-component-events",
@@ -1433,14 +1510,21 @@
       "emits",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-architecture-decisions-scalability",
     "title": "What architectural decisions are made when creating a Vue project, and how do they affect scalability?",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 2,
     "description": "When starting a Vue app, teams choose the build/runtime platform, state and routing strategy, code organization, and quality/performance tooling. These decisions directly affect maintainability, performance, testability, and how well multiple teams can work in parallel.",
     "answer": {
       "blocks": [
@@ -1557,14 +1641,21 @@
       "state-management",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-computed-vs-watchers",
     "title": "Computed vs watch in Vue: derived state (cached) vs side effects (imperative)",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Computed properties and watchers both react to reactive changes, but they solve different problems: &lt;strong&gt;computed&lt;/strong&gt; is for &lt;strong&gt;derived state&lt;/strong&gt; (cached, declarative), while &lt;strong&gt;watch&lt;/strong&gt; is for &lt;strong&gt;side effects&lt;/strong&gt; (async/imperative work triggered by changes).",
     "answer": {
       "blocks": [
@@ -1650,14 +1741,21 @@
       "reactivity",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-lifecycle-hooks",
     "title": "What are lifecycle hooks in Vue and when are they used?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
     "answer": {
       "blocks": [
@@ -1765,14 +1863,21 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-directives",
     "title": "What are Vue directives and how do they work?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
     "answer": {
       "blocks": [
@@ -1872,14 +1977,21 @@
       "v-model",
       "templates"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-bind-v-on-fundamental-template-syntax",
     "title": "Why are v-bind and v-on fundamental to Vue’s template syntax?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Explain why Vue templates are basically HTML + data bindings + event bindings. Cover what v-bind and v-on compile to (VNode props + event listeners), how they connect reactivity to DOM updates, and why features like v-model build on them.",
     "answer": {
       "blocks": [
@@ -1988,14 +2100,21 @@
       "v-on",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-child-mutates-prop-directly",
     "title": "What breaks if a child mutates a prop directly?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "In Vue, props are meant to be read-only inputs from parent to child. Explain what breaks (correctness + debugging) when a child component directly mutates a prop, including the nested object/array case, and show the correct patterns (emit updates / v-model).",
     "answer": {
       "blocks": [
@@ -2085,14 +2204,21 @@
       "components",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-composition-api-vs-mixins",
     "title": "Why does Vue recommend the Composition API over mixins today?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Vue recommends the Composition API over mixins because it avoids implicit merging and name collisions, improves code organization, and offers better TypeScript inference for reusable logic.",
     "answer": {
       "blocks": [
@@ -2206,14 +2332,21 @@
       "maintainability",
       "typescript"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-sfc-vs-global-components",
     "title": "What is the difference between single-file components and global components?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Single-File Components (SFCs) and global components differ in scope and structure. SFCs define components in .vue files with encapsulated templates, scripts, and styles, while global components are registered once and accessible throughout the application.",
     "answer": {
       "blocks": [
@@ -2316,14 +2449,21 @@
       "architecture",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-conditional-list-rendering",
     "title": "How does Vue handle conditional rendering and list rendering efficiently?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Vue handles conditional and list rendering efficiently through its virtual DOM diffing system. Directives like v-if, v-show, and v-for control what is rendered while Vue updates only the necessary parts of the DOM when data changes.",
     "answer": {
       "blocks": [
@@ -2406,14 +2546,21 @@
       "v-for",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-router-navigation",
     "title": "What is the Vue Router and how is it used for navigation?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading. Routing impacts UX and data fetching; test guards, async navigation, and scroll restoration.",
     "answer": {
       "blocks": [
@@ -2520,7 +2667,14 @@
       "routes",
       "guards"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-reactivity-system",
@@ -2653,14 +2807,21 @@
       "core",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-composition-api",
     "title": "What are Vue Composition APIs (setup(), ref, reactive) and why were they introduced?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "The Vue Composition API provides a flexible and scalable way to organize component logic using functions like setup(), ref(), and reactive(). It was introduced in Vue 3 to improve reusability, maintainability, and TypeScript support compared to the Options API.",
     "answer": {
       "blocks": [
@@ -2740,7 +2901,14 @@
       "reactivity",
       "basics"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vuex-state-management",
@@ -2852,14 +3020,21 @@
       "mutations",
       "architecture"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-virtual-dom-diffing",
     "title": "How does Vue’s virtual DOM and diffing algorithm optimize updates?",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 2,
     "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable identity matter for performance and correctness.",
     "answer": {
       "blocks": [
@@ -2984,14 +3159,21 @@
       "performance",
       "rendering"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-slots-default-named-scoped-slot-props",
     "title": "Explain Slots in Vue: default vs named vs scoped slots — and how slot props enable child-to-parent data flow",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "Explain how Vue slots work (default, named, and scoped slots), what problem they solve, and how slot props allow a child component to pass data back to the parent’s template while still keeping one-way data flow.",
     "answer": {
       "blocks": [
@@ -3107,14 +3289,21 @@
       "inputs-outputs",
       "slots"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-provide-inject-vs-prop-drilling-tradeoffs",
     "title": "Provide / Inject in Vue: when should you use it instead of prop drilling, and what are the hidden trade-offs?",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 2,
     "description": "Explain how provide/inject works in Vue, what problem it solves (prop drilling), when it is appropriate to use, and the architectural trade-offs and pitfalls compared to explicit props and state management.",
     "answer": {
       "blocks": [
@@ -3240,14 +3429,21 @@
       "state-management",
       "architecture"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-why-declare-emits-type-safety-maintenance",
     "title": "Why should you declare emits in Vue? What breaks if you don’t, and how does it affect type safety and maintenance?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "description": "Explain why Vue encourages declaring emitted events (emits option / defineEmits), what can go wrong when events are not declared (silent typos, confusing APIs, missing validation), and how emits declarations improve type safety, refactoring, and long-term maintainability—especially in Vue 3 + TypeScript.",
     "answer": {
       "blocks": [
@@ -3348,14 +3544,21 @@
       "components",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-ref-vs-reactive-difference-traps",
     "title": "ref vs reactive in Vue: what’s the real difference, when should you use each, and what are the common reactivity traps?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 3,
     "description": "Explain the real difference between ref() and reactive() in Vue 3’s Composition API, when each is the better choice (primitives vs objects, replacement vs mutation, destructuring, template unwrapping), and the most common traps that lead to “why isn’t this updating?” bugs.",
     "answer": {
       "blocks": [
@@ -3495,14 +3698,21 @@
       "primitives",
       "objects"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-destructuring-breaks-reactivity-toRefs-toRef",
     "title": "Why does destructuring break reactivity in Vue? Explain toRefs, toRef, and how to safely extract reactive state",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 5,
     "description": "Explain why destructuring a reactive object in Vue breaks reactivity, how Vue’s Proxy-based tracking works, and how to use toRefs() and toRef() to safely extract reactive properties without losing updates.",
     "answer": {
       "blocks": [
@@ -3600,14 +3810,21 @@
       "state",
       "best-practices"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-watch-vs-watcheffect-differences-infinite-loops",
     "title": "watch vs watchEffect in Vue: what’s the difference, when does each run, and how can you accidentally create infinite loops?",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 1,
     "description": "Explain the difference between watch() and watchEffect() in Vue 3, when each one runs, how dependency tracking works (explicit vs automatic), and the common patterns that accidentally cause infinite update loops.",
     "answer": {
       "blocks": [
@@ -3775,14 +3992,21 @@
       "reactivity",
       "performance"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-nexttick-dom-update-queue",
     "title": "What does nextTick() do in Vue, and why are DOM measurements wrong immediately after a state change?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "description": "Explain what nextTick() does in Vue, how Vue batches and schedules DOM updates asynchronously, why the DOM is not updated immediately after reactive state changes, and when you must wait for nextTick() to safely read layout or measure elements.",
     "answer": {
       "blocks": [
@@ -3922,14 +4146,21 @@
       "performance",
       "reactivity"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "vue-v-for-keys-why-not-index",
     "title": "Why are keys critical in v-for? What exactly breaks when you use array index as a key?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 5,
+    "importance": 2,
     "description": "Explain why keys are required in v-for, how Vue uses them during virtual DOM diffing, and what subtle but serious bugs happen when you use array index as a key (state reuse, wrong DOM nodes, broken animations, and input mix-ups).",
     "answer": {
       "blocks": [
@@ -4061,6 +4292,13 @@
       "structure",
       "keys"
     ],
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   }
 ]

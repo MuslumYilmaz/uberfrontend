@@ -128,7 +128,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-closures",
@@ -204,7 +211,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-this-keyword",
@@ -320,7 +334,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-hoisting-tdz",
@@ -421,7 +442,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-var-let-const-hoisting",
@@ -437,7 +465,7 @@
       "const",
       "scope"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [
       "google",
       "apple"
@@ -515,7 +543,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-promises-async-await",
@@ -660,7 +695,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-event-delegation",
@@ -675,7 +717,7 @@
       "events",
       "bubbling"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [
       "bytedance",
       "meta"
@@ -755,7 +797,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-null-undefined-undeclared",
@@ -771,7 +820,7 @@
       "types",
       "variables"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [
       "google"
     ],
@@ -858,7 +907,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-equality-vs-strict-equality",
@@ -873,7 +929,7 @@
       "types",
       "javascript"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "google",
       "apple"
@@ -953,7 +1009,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-hoisting",
@@ -968,7 +1031,7 @@
       "variables",
       "functions"
     ],
-    "importance": 2,
+    "importance": 5,
     "companies": [
       "google",
       "meta"
@@ -1075,7 +1138,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-higher-order-function",
@@ -1090,7 +1160,7 @@
       "functional-programming",
       "functions"
     ],
-    "importance": 4,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1152,7 +1222,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-event-bubbling-capturing",
@@ -1168,7 +1245,7 @@
       "capturing",
       "event-propagation"
     ],
-    "importance": 3,
+    "importance": 5,
     "companies": [
       "google"
     ],
@@ -1259,7 +1336,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-call-apply-bind",
@@ -1375,7 +1459,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-foreach-vs-map",
@@ -1390,7 +1481,7 @@
       "functional-programming",
       "array-methods"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1476,7 +1567,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-cookie-sessionstorage-localstorage",
@@ -1492,7 +1590,7 @@
       "storage",
       "web-apis"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1579,7 +1677,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-prototypal-inheritance",
@@ -1594,7 +1699,7 @@
       "oop",
       "objects"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "google",
       "netflix",
@@ -1696,7 +1801,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-data-types",
@@ -1712,7 +1824,7 @@
       "primitives",
       "objects"
     ],
-    "importance": 2,
+    "importance": 4,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1817,7 +1929,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-nan-property",
@@ -1833,7 +1952,7 @@
       "numbers",
       "type-coercion"
     ],
-    "importance": 2,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -1896,7 +2015,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-currying",
@@ -1971,7 +2097,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-callbacks",
@@ -1987,7 +2120,7 @@
       "functions",
       "higher-order-functions"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2050,7 +2183,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-arrow-functions",
@@ -2140,7 +2280,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-object-destructuring",
@@ -2156,7 +2303,7 @@
       "variables",
       "objects"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2243,7 +2390,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-design-patterns",
@@ -2259,7 +2413,7 @@
       "functional-programming",
       "best-practices"
     ],
-    "importance": 2,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2347,7 +2501,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-deferred-scripts",
@@ -2363,7 +2524,7 @@
       "defer",
       "async"
     ],
-    "importance": 1,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2439,7 +2600,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-classes",
@@ -2455,7 +2623,7 @@
       "es6",
       "syntax"
     ],
-    "importance": 3,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2536,7 +2704,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-object-creation-methods",
@@ -2552,7 +2727,7 @@
       "prototypes",
       "es6"
     ],
-    "importance": 2,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2716,7 +2891,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-memoization",
@@ -2732,7 +2914,7 @@
       "functions",
       "cache"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -2813,7 +2995,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-microtasks-vs-macrotasks",
@@ -2905,7 +3094,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-promise-combinators-all-allsettled-race-any",
@@ -3007,7 +3203,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-object-create-vs-new",
@@ -3024,7 +3227,7 @@
       "oop",
       "classes"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3110,7 +3313,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-prototype-vs-__proto__",
@@ -3126,7 +3336,7 @@
       "oop",
       "object-creation"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [
       "apple"
     ],
@@ -3202,7 +3412,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-shallow-vs-deep-copy",
@@ -3219,7 +3436,7 @@
       "arrays",
       "state"
     ],
-    "importance": 5,
+    "importance": 3,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3297,7 +3514,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-map-filter-reduce",
@@ -3315,7 +3539,7 @@
       "immutability",
       "accumulators"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3413,7 +3637,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-array-sort-pitfalls",
@@ -3430,7 +3661,7 @@
       "immutability",
       "array-methods"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -3503,7 +3734,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-mutability-vs-immutability",
@@ -3625,7 +3863,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-secure-cors-handling",
@@ -3647,7 +3892,7 @@
       "bff",
       "fetch"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [
       "netflix",
       "meta"
@@ -3742,7 +3987,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "content-delivery-caching-strategies-streaming",
@@ -3761,7 +4013,7 @@
       "system-design",
       "web-performance"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "netflix"
     ],
@@ -3842,7 +4094,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "debounce-vs-throttle-search-input",
@@ -3862,7 +4121,7 @@
       "optimization",
       "frontend-interview"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "netflix"
     ],
@@ -3933,7 +4192,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-map-vs-object",
@@ -3943,7 +4209,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "Map is a dedicated key-value collection with any key type, stable iteration order, and a size property. Plain Objects are great for structured records, but keys are limited to strings/symbols and require care with prototypes and ordering.",
     "type": "trivia",
     "tags": [
@@ -4013,7 +4279,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "http-caching-basics",
@@ -4030,7 +4303,7 @@
       "http-cache",
       "web-performance"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "bytedance"
     ],
@@ -4091,7 +4364,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "web-performance-optimize-load-time",
@@ -4111,7 +4391,7 @@
       "rendering",
       "script-loading"
     ],
-    "importance": 5,
+    "importance": 1,
     "companies": [
       "bytedance",
       "apple"
@@ -4202,7 +4482,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06"
+    "updatedAt": "2026-02-06",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-current-trends",
@@ -4212,7 +4499,7 @@
       "bytedance"
     ],
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 1,
     "description": "This is a breadth check. The best answers mention a few durable themes and explain how you stay current rather than naming one library.",
     "type": "trivia",
     "tags": [
@@ -4274,7 +4561,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "ai-streaming-data-handling",
@@ -4284,7 +4578,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "This checks whether you know how to implement streaming responses (SSE/WebSocket/ReadableStream), update the UI incrementally, and handle cancellation or errors cleanly.",
     "type": "trivia",
     "tags": [
@@ -4344,7 +4638,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "chat-conversation-state-management",
@@ -4354,7 +4655,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "description": "This probes your ability to model a conversation, manage streaming messages, and handle memory limits or truncation without breaking UX.",
     "type": "trivia",
     "tags": [
@@ -4451,7 +4752,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06"
+    "updatedAt": "2026-02-06",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "sse-vs-websocket-real-time",
@@ -4461,7 +4769,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "Interviewers want to hear trade-offs: SSE is server-to-client, simple, and great for streaming responses, while WebSockets are bidirectional and better for interactive or collaborative apps.",
     "type": "trivia",
     "tags": [
@@ -4514,7 +4822,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "ai-ux-integration-challenges",
@@ -4524,7 +4839,7 @@
       "openai"
     ],
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 1,
     "description": "This checks if you understand AI-specific UX constraints like latency, streaming, error handling, and unpredictable outputs.",
     "type": "trivia",
     "tags": [
@@ -4581,7 +4896,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-01-31"
+    "updatedAt": "2026-01-31",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "prompt-engineering-frontend",
@@ -4687,7 +5009,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-06"
+    "updatedAt": "2026-02-06",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-queue-vs-stack",
@@ -4697,7 +5026,7 @@
       "meta"
     ],
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Explain the difference between stack (LIFO) and queue (FIFO) in JavaScript, list core operations, compare time complexity, and show clean O(1) implementations (array head index or two-stacks). Include practical use cases (call stack, BFS, task queue) and common pitfalls.",
     "type": "trivia",
     "tags": [
@@ -4762,7 +5091,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-big-o-notation",
@@ -4772,7 +5108,7 @@
       "meta"
     ],
     "difficulty": "easy",
-    "importance": 4,
+    "importance": 1,
     "description": "Define Big-O time and space complexity, explain why it matters for scalability, show how to derive it with rules of thumb, and list common classes. Include best/average/worst-case and amortized complexity examples.",
     "type": "trivia",
     "tags": [
@@ -4865,7 +5201,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-01"
+    "updatedAt": "2026-02-01",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-async-race-conditions",
@@ -4881,7 +5224,7 @@
       "abort-controller",
       "ui"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -4962,7 +5305,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-web-workers-basics",
@@ -4979,7 +5329,7 @@
       "events",
       "browser"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5046,7 +5396,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-escape-vs-sanitize",
@@ -5062,7 +5419,7 @@
       "dom",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5157,7 +5514,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-xss-dom-sinks",
@@ -5173,7 +5537,7 @@
       "best-practices",
       "validation"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5263,7 +5627,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-testing-edge-cases-strategy",
@@ -5280,7 +5651,7 @@
       "validation",
       "error-handling"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5380,7 +5751,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-performance-profiling-workflow",
@@ -5397,7 +5775,7 @@
       "browser",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5509,7 +5887,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-memory-leaks-common-sources",
@@ -5528,7 +5913,7 @@
       "events",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5624,7 +6009,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-esm-vs-cjs",
@@ -5641,7 +6033,7 @@
       "tooling",
       "optimization"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5705,7 +6097,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-tree-shaking",
@@ -5722,7 +6121,7 @@
       "tree",
       "performance"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5803,7 +6202,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-intl-datetime-timezone",
@@ -5822,7 +6228,7 @@
       "strings",
       "browser"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5898,7 +6304,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-03"
+    "updatedAt": "2026-02-03",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 2,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-mock-vs-stub-vs-spy",
@@ -5916,7 +6329,7 @@
       "architecture",
       "async-await"
     ],
-    "importance": 4,
+    "importance": 5,
     "companies": [],
     "answer": {
       "blocks": [
@@ -5978,7 +6391,14 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-05"
+    "updatedAt": "2026-02-05",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "js-garbage-collection-and-gc-pauses",
@@ -5996,7 +6416,7 @@
       "browser",
       "best-practices"
     ],
-    "importance": 4,
+    "importance": 1,
     "companies": [],
     "answer": {
       "blocks": [
@@ -6089,6 +6509,13 @@
       ]
     },
     "access": "free",
-    "updatedAt": "2026-02-05"
+    "updatedAt": "2026-02-05",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 0,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   }
 ]

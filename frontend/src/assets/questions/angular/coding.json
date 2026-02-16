@@ -5,7 +5,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -67,7 +67,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-counter-solution.v2.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-contact-form-starter",
@@ -75,7 +82,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "forms",
       "http",
@@ -154,7 +161,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-contact-form-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-todo-list-starter",
@@ -162,7 +176,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "forms",
@@ -237,7 +251,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-todo-list-solution.v2.json",
     "access": "free",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-image-slider-starter",
@@ -245,7 +266,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -320,7 +341,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-image-slider-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-tabs-switcher",
@@ -395,7 +423,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tabs-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-filterable-user-list",
@@ -403,7 +438,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "state",
@@ -476,7 +511,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-filterable-user-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-faq-accordion",
@@ -484,7 +526,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "inputs",
@@ -553,7 +595,14 @@
     },
     "solutionAsset": "assets/sb/angular/solution/angular-faq-accordion-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-pagination-table",
@@ -561,7 +610,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -635,7 +684,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-pagination-table-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-theme-toggle",
@@ -643,7 +699,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "services",
@@ -719,7 +775,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-theme-toggle-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-multi-step-form-starter",
@@ -727,7 +790,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "forms",
       "reactive-forms",
@@ -805,7 +868,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-multi-step-form-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-shopping-cart-mini",
@@ -813,7 +883,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -894,7 +964,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-shopping-cart-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-debounced-search",
@@ -902,7 +979,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 5,
+    "importance": 2,
     "tags": [
       "angular",
       "rxjs",
@@ -984,7 +1061,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-debounced-search-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 1,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-star-rating",
@@ -1064,7 +1148,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-star-rating-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-dynamic-table-starter",
@@ -1072,7 +1163,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 2,
     "tags": [
       "components",
       "dynamic-ui",
@@ -1141,7 +1232,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-table-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 0,
+      "passCritical": 0,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-nested-checkboxes",
@@ -1149,7 +1247,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "dom",
@@ -1221,7 +1319,14 @@
     },
     "solutionAsset": "assets/sb/angular/solution/angular-nested-checkboxes-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-autocomplete-search-starter",
@@ -1229,7 +1334,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "forms",
@@ -1310,7 +1415,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-autocomplete-search-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-transfer-list",
@@ -1389,7 +1501,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-transfer-list-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-tictactoe-starter",
@@ -1397,7 +1516,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -1476,7 +1595,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-tictactoe-solution.v1.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-like-button",
@@ -1484,7 +1610,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -1552,7 +1678,14 @@
     ],
     "solutionAsset": "assets/sb/angular/solution/angular-like-button-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-input-output-two-way",
@@ -1560,7 +1693,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "inputs-outputs",
@@ -1631,7 +1764,14 @@
       "google"
     ],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-progress-bar-thresholds",
@@ -1639,7 +1779,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -1711,7 +1851,14 @@
     "companies": [],
     "solutionAsset": "assets/sb/angular/solution/angular-progress-bar-thresholds-solution.v2.json",
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-nested-comments",
@@ -1719,7 +1866,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 3,
     "tags": [
       "components",
       "recursion",
@@ -1792,7 +1939,14 @@
     "solutionAsset": "assets/sb/angular/solution/angular-nested-comments-solution.v2.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 1,
+      "passCritical": 1,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-dynamic-counter-buttons",
@@ -1800,7 +1954,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "event-binding",
@@ -1867,7 +2021,14 @@
     "solutionAsset": "assets/sb/angular/solution/angular-dynamic-counter-buttons-solution.v2.json",
     "companies": [],
     "access": "premium",
-    "updatedAt": "2026-01-30"
+    "updatedAt": "2026-01-30",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 0,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-chips-input-autocomplete",
@@ -1875,7 +2036,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "medium",
-    "importance": 4,
+    "importance": 5,
     "tags": [
       "components",
       "forms",
@@ -1957,7 +2118,14 @@
       "airbnb"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-chessboard-click-highlight",
@@ -1965,7 +2133,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "intermediate",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -2038,7 +2206,14 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   },
   {
     "id": "angular-snake-game",
@@ -2046,7 +2221,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "hard",
-    "importance": 3,
+    "importance": 5,
     "tags": [
       "components",
       "state",
@@ -2124,6 +2299,13 @@
       "microsoft"
     ],
     "access": "premium",
-    "updatedAt": "2026-02-09"
+    "updatedAt": "2026-02-09",
+    "importanceRubric": {
+      "coreness": 2,
+      "passCritical": 2,
+      "detailPenalty": 0,
+      "crossCompany": 1,
+      "frequencyBonus": 0
+    }
   }
 ]
