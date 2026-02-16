@@ -1,6 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { HttpRequest } from '@angular/common/http';
+import { TransferState, makeStateKey } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { Question } from '../models/question.model';
 import { QuestionPersistenceService } from './question-persistence.service';
@@ -10,6 +11,7 @@ describe('QuestionService', () => {
   let service: QuestionService;
   let persistence: QuestionPersistenceService;
   let httpMock: HttpTestingController;
+  let transferState: TransferState;
 
   const cacheKey = 'qcache:javascript:coding';
   const overrideKey = 'qoverride:javascript:coding';
@@ -61,6 +63,7 @@ describe('QuestionService', () => {
     service = TestBed.inject(QuestionService);
     persistence = TestBed.inject(QuestionPersistenceService);
     httpMock = TestBed.inject(HttpTestingController);
+    transferState = TestBed.inject(TransferState);
 
     service.setCdnEnabled(false);
 
@@ -111,6 +114,25 @@ describe('QuestionService', () => {
     httpMock.expectNone((req) => req.url.includes('questions/javascript/coding.json'));
     const list = await resultPromise;
     expect(list[0]?.id).toBe('ls-fallback');
+  });
+
+  it('can bypass TransferState payload when transferState option is disabled', async () => {
+    const tsKey = makeStateKey<Question[]>('questions:javascript:coding');
+    transferState.set(tsKey, [makeCodingQuestion('transfer-hit') as Question]);
+
+    const resultPromise = firstValueFrom(
+      service.loadQuestions('javascript', 'coding', { transferState: false }),
+    );
+    flushDataVersion('bank-v1');
+
+    const req = await waitForRequest(
+      (r) => r.url.includes('questions/javascript/coding.json'),
+      'coding fetch after transfer state bypass',
+    );
+    req.flush([makeCodingQuestion('network-hit')]);
+
+    const list = await resultPromise;
+    expect(list[0]?.id).toBe('network-hit');
   });
 
   it('invalidates qcache keys on version change but keeps overrides', async () => {

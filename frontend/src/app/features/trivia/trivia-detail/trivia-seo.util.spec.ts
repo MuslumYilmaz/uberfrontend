@@ -11,7 +11,7 @@ describe('trivia-seo.util', () => {
     expect(title).toContain('Interview');
   });
 
-  it('sanitizes html and clamps long strings', () => {
+  it('sanitizes html and clamps long strings without ellipsis padding', () => {
     const sanitized = sanitizeSerpText(
       '<strong>Hello</strong> world '.repeat(20),
       40
@@ -19,7 +19,7 @@ describe('trivia-seo.util', () => {
 
     expect(sanitized).not.toContain('<strong>');
     expect(sanitized.length).toBeLessThanOrEqual(40);
-    expect(sanitized.endsWith('…')).toBeTrue();
+    expect(sanitized.endsWith('…')).toBeFalse();
   });
 
   it('generates deterministic description from framework + content', () => {
@@ -28,7 +28,7 @@ describe('trivia-seo.util', () => {
       '',
       'vue'
     );
-    expect(fallback).toContain('Vue explanation');
+    expect(fallback).toContain('Vue interview question answer');
     expect(fallback.length).toBeLessThanOrEqual(156);
   });
 

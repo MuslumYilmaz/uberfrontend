@@ -13,6 +13,9 @@ import { QuestionPersistenceService } from './question-persistence.service';
 import { buildAssetUrl, getSafeAssetBase, normalizeAssetPath } from '../utils/asset-url.util';
 
 type Kind = 'coding' | 'trivia' | 'debug';
+type LoadQuestionsOptions = {
+  transferState?: boolean;
+};
 export type MixedQuestion = Question & { tech: Tech };
 
 type DataVersion = { dataVersion?: string; version?: string };
@@ -79,13 +82,18 @@ export class QuestionService {
    * 3. Preferred asset base (if enabled)
    * 4. Assets JSON under assets/questions/<tech>/<kind>.json
    */
-  loadQuestions(technology: Tech, kind: Kind): Observable<Question[]> {
+  loadQuestions(
+    technology: Tech,
+    kind: Kind,
+    options: LoadQuestionsOptions = {},
+  ): Observable<Question[]> {
+    const useTransferState = options.transferState !== false;
     if (this.isServer) {
-      return this.loadQuestionsFromFs(technology, kind);
+      return this.loadQuestionsFromFs(technology, kind, useTransferState);
     }
 
     const tsKey = this.questionsStateKey(technology, kind);
-    if (this.transferState.hasKey(tsKey)) {
+    if (useTransferState && this.transferState.hasKey(tsKey)) {
       const list = this.transferState.get(tsKey, [] as Question[]);
       this.transferState.remove(tsKey);
       return of(list);
@@ -364,12 +372,18 @@ export class QuestionService {
     return makeStateKey<any>(`system-design:${id}`);
   }
 
-  private loadQuestionsFromFs(technology: Tech, kind: Kind): Observable<Question[]> {
+  private loadQuestionsFromFs(
+    technology: Tech,
+    kind: Kind,
+    transferState = true,
+  ): Observable<Question[]> {
     const rel = `assets/questions/${technology}/${kind}.json`;
     const key = this.questionsStateKey(technology, kind);
     return this.assetReader.readJson(rel).pipe(
       map((raw) => this.normalizeQuestions(raw, technology, kind)),
-      tap((list) => this.transferState.set(key, list)),
+      tap((list) => {
+        if (transferState) this.transferState.set(key, list);
+      }),
       catchError(() => of([] as Question[])),
     );
   }

@@ -17,7 +17,7 @@ export type QuestionDetailResolved = {
 
 function resolveDetail(tech: Tech, kind: QuestionKind, id: string) {
   const qs = inject(QuestionService);
-  return qs.loadQuestions(tech, kind).pipe(
+  return qs.loadQuestions(tech, kind, { transferState: false }).pipe(
     map((list) => ({
       tech,
       kind,

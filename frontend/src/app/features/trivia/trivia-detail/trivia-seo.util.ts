@@ -26,6 +26,16 @@ function decodeHtmlEntities(value: string): string {
     .replace(/&amp;/g, '&');
 }
 
+function trimWordBoundary(value: string, maxLen: number): string {
+  if (value.length <= maxLen) return value;
+
+  const sliced = value.slice(0, Math.max(0, maxLen)).trimEnd();
+  const minSoftBreak = Math.floor(maxLen * 0.65);
+  const breakAt = sliced.lastIndexOf(' ');
+  const clipped = breakAt >= minSoftBreak ? sliced.slice(0, breakAt) : sliced;
+  return clipped.replace(/[\s,;:/-]+$/g, '').trim();
+}
+
 export function sanitizeSerpText(input: string, maxLen: number): string {
   const normalized = normalizeWhitespace(
     decodeHtmlEntities(String(input || ''))
@@ -33,8 +43,7 @@ export function sanitizeSerpText(input: string, maxLen: number): string {
   );
 
   if (!normalized) return '';
-  if (normalized.length <= maxLen) return normalized;
-  return `${normalized.slice(0, Math.max(0, maxLen - 1)).trimEnd()}…`;
+  return trimWordBoundary(normalized, maxLen);
 }
 
 function frameworkLabel(tech?: string): string {
@@ -79,14 +88,30 @@ function titleConcept(q: Pick<Question, 'title' | 'id' | 'technology'>): string 
   return slugToConcept((q as any).id, (q as any).technology);
 }
 
+function normalizedQuestionTitle(q: Pick<Question, 'title'>): string {
+  const title = sanitizeSerpText(String(q.title || '').trim(), 96);
+  if (!title) return '';
+
+  const cleaned = title
+    .replace(/^(what|why|how|when|where)\s+(does|is|are|to|can|do)\s+/i, '')
+    .replace(/^(what|why|how|when|where)\s+/i, '')
+    .replace(/\?+$/, '')
+    .trim();
+
+  return cleaned.length >= 8 ? sanitizeSerpText(cleaned, 88) : title;
+}
+
 export function seoTitleForQuestion(q: Pick<Question, 'id' | 'title' | 'technology'>): string {
   const framework = frameworkLabel(q.technology);
+  const questionTitle = normalizedQuestionTitle(q);
   const concept = titleConcept(q) || 'Interview Concept';
-  const candidate = `${framework} ${concept} — Interview Answer`;
+  const candidate = questionTitle
+    ? `${framework} Interview Question: ${questionTitle}`
+    : `${framework} Interview Question: ${concept}`;
   const normalized = sanitizeSerpText(candidate, TITLE_MAX_LEN);
   if (normalized) return normalized;
 
-  return sanitizeSerpText(`${framework} front-end trivia — Interview Answer`, TITLE_MAX_LEN);
+  return sanitizeSerpText(`${framework} Interview Question Answer`, TITLE_MAX_LEN);
 }
 
 export function seoDescriptionForQuestion(
@@ -95,10 +120,18 @@ export function seoDescriptionForQuestion(
   tech: string
 ): string {
   const framework = frameworkLabel(q.technology || tech);
-  const concept = titleConcept(q) || slugToConcept((q as any).id, (q as any).technology || tech) || 'front-end concept';
+  const concept = titleConcept(q)
+    || slugToConcept((q as any).id, (q as any).technology || tech)
+    || 'front-end concept';
+  const questionTitle = normalizedQuestionTitle(q);
   const descFromContent = sanitizeSerpText(plainDescription || '', 120);
+  const lead = `${framework} interview question answer for ${concept}.`;
+  const questionLine = questionTitle ? `Question focus: ${questionTitle}.` : '';
+  const body = descFromContent
+    || `${framework} explanation with tradeoffs, common mistakes, and real-world examples.`;
+
   return sanitizeSerpText(
-    `${framework} explanation of ${concept}. Common mistakes, gotchas, and interview-ready reasoning with quick examples. ${descFromContent}`,
+    `${lead} ${questionLine} ${body}`,
     DESCRIPTION_MAX_LEN
   );
 }
