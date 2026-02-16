@@ -1163,7 +1163,7 @@
     "type": "coding",
     "technology": "angular",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "components",
       "dynamic-ui",

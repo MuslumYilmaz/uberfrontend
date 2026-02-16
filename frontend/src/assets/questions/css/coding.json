@@ -99,7 +99,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "box-model",
@@ -189,7 +189,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "layout",
@@ -279,7 +279,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "easy",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "layout",
@@ -368,7 +368,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "layout",
@@ -458,7 +458,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "layout",
@@ -547,7 +547,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "responsive",
@@ -636,7 +636,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "forms",
@@ -707,7 +707,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "animation",
@@ -806,7 +806,7 @@
     "type": "coding",
     "technology": "css",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "tags": [
       "css",
       "variables",

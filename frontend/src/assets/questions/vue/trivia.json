@@ -758,7 +758,7 @@
     "title": "Why are keys critical in v-for, and what breaks without them?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Explain why :key is required/recommended in v-for, what Vue uses it for during virtual DOM diffing, and give concrete examples of bugs you can get when keys are missing or unstable (including why using the index as key is usually wrong).",
     "answer": {
       "blocks": [
@@ -880,7 +880,7 @@
     "title": "Why is v-model syntax sugar, and what does it expand to?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Explain why v-model is considered syntax sugar in Vue: it’s compiled into a prop binding + an event listener. Show what it expands to for native form elements (text input, checkbox, select) and for custom components in Vue 3 (modelValue + update:modelValue). Include how v-model arguments (v-model:foo) and common modifiers (.trim, .number, .lazy) change the expansion.",
     "answer": {
       "blocks": [
@@ -1019,7 +1019,7 @@
     "title": "How do v-show and v-if differ in DOM behavior and lifecycle impact?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "v-if adds/removes elements from the DOM (mount/unmount lifecycle), while v-show toggles display via CSS and keeps elements in the DOM. Use v-if for expensive components; v-show for frequent toggles.",
     "answer": {
       "blocks": [
@@ -1256,7 +1256,7 @@
     "title": "What happens when you call methods inside Vue templates?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Explain how template method calls are executed during render, why they run again on every component re-render, the performance/correctness pitfalls (expensive work, unstable references, side effects), and when to prefer computed properties or precomputed data.",
     "answer": {
       "blocks": [
@@ -1755,7 +1755,7 @@
     "title": "What are lifecycle hooks in Vue and when are they used?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Lifecycle hooks in Vue are special methods that run at specific stages of a component’s lifecycle — from creation to destruction. They allow developers to perform logic like fetching data, manipulating the DOM, or cleaning up resources. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
     "answer": {
       "blocks": [
@@ -1877,7 +1877,7 @@
     "title": "What are Vue directives and how do they work?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Vue directives are special attributes (v-if, v-for, v-model, v-bind, v-on) that apply reactive behavior to DOM elements. They control rendering, bind data, and handle events. Framework focus: Vue SFC patterns, ref/reactive state, computed/watch, and v-model bindings.",
     "answer": {
       "blocks": [
@@ -1991,7 +1991,7 @@
     "title": "Why are v-bind and v-on fundamental to Vue’s template syntax?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Explain why Vue templates are basically HTML + data bindings + event bindings. Cover what v-bind and v-on compile to (VNode props + event listeners), how they connect reactivity to DOM updates, and why features like v-model build on them.",
     "answer": {
       "blocks": [
@@ -2218,7 +2218,7 @@
     "title": "Why does Vue recommend the Composition API over mixins today?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Vue recommends the Composition API over mixins because it avoids implicit merging and name collisions, improves code organization, and offers better TypeScript inference for reusable logic.",
     "answer": {
       "blocks": [
@@ -2346,7 +2346,7 @@
     "title": "What is the difference between single-file components and global components?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Single-File Components (SFCs) and global components differ in scope and structure. SFCs define components in .vue files with encapsulated templates, scripts, and styles, while global components are registered once and accessible throughout the application.",
     "answer": {
       "blocks": [
@@ -2463,7 +2463,7 @@
     "title": "How does Vue handle conditional rendering and list rendering efficiently?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Vue handles conditional and list rendering efficiently through its virtual DOM diffing system. Directives like v-if, v-show, and v-for control what is rendered while Vue updates only the necessary parts of the DOM when data changes.",
     "answer": {
       "blocks": [
@@ -2560,7 +2560,7 @@
     "title": "What is the Vue Router and how is it used for navigation?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Vue Router enables client-side navigation with routes mapped to components. It supports dynamic params, nested routes, and navigation guards for auth and data loading. Routing impacts UX and data fetching; test guards, async navigation, and scroll restoration.",
     "answer": {
       "blocks": [
@@ -2821,7 +2821,7 @@
     "title": "What are Vue Composition APIs (setup(), ref, reactive) and why were they introduced?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "The Vue Composition API provides a flexible and scalable way to organize component logic using functions like setup(), ref(), and reactive(). It was introduced in Vue 3 to improve reusability, maintainability, and TypeScript support compared to the Options API.",
     "answer": {
       "blocks": [
@@ -3034,7 +3034,7 @@
     "title": "How does Vue’s virtual DOM and diffing algorithm optimize updates?",
     "technology": "vue",
     "difficulty": "hard",
-    "importance": 2,
+    "importance": 1,
     "description": "Vue uses a virtual DOM to compute minimal DOM updates. The diffing algorithm compares old and new virtual trees and patches only changed nodes, improving performance. Diffing optimizes updates, but keys and stable identity matter for performance and correctness.",
     "answer": {
       "blocks": [
@@ -4160,7 +4160,7 @@
     "title": "Why are keys critical in v-for? What exactly breaks when you use array index as a key?",
     "technology": "vue",
     "difficulty": "intermediate",
-    "importance": 2,
+    "importance": 1,
     "description": "Explain why keys are required in v-for, how Vue uses them during virtual DOM diffing, and what subtle but serious bugs happen when you use array index as a key (state reuse, wrong DOM nodes, broken animations, and input mix-ups).",
     "answer": {
       "blocks": [
