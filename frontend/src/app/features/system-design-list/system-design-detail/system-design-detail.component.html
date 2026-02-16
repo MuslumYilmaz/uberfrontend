@@ -139,18 +139,6 @@
                 </ul>
             </section>
 
-            <section class="sd-prep-bridge" data-testid="system-design-prep-entry">
-                <div class="sd-related-head">Preparing for interviews?</div>
-                <p class="sd-prep-bridge__text">
-                    Use guided tracks for structured prep, then drill company-specific question sets when you need targeted practice.
-                </p>
-                <div class="sd-prep-bridge__links">
-                    <a [routerLink]="['/tracks']">Explore interview tracks</a>
-                    <a [routerLink]="['/companies']">Browse company questions</a>
-                    <a [routerLink]="['/guides/framework-prep']">View framework prep paths</a>
-                </div>
-            </section>
-
             <ng-container *ngFor="let s of sections()">
                 <section class="sd-section" [attr.id]="anchorId(s.key)">
                     <h2 class="sd-h2" #sectionHeading [attr.data-key]="s.key">{{ s.title }}</h2>
@@ -312,6 +300,18 @@
                     <a class="sd-related-item" [routerLink]="['/guides/system-design-blueprint/performance']">
                         <span class="sd-related-title">Performance & Web Vitals at Scale</span>
                     </a>
+                </div>
+            </section>
+
+            <section class="sd-prep-bridge" data-testid="system-design-prep-entry">
+                <div class="sd-related-head">Preparing for interviews?</div>
+                <p class="sd-prep-bridge__text">
+                    Use guided tracks for structured prep, then drill company-specific question sets when you need targeted practice.
+                </p>
+                <div class="sd-prep-bridge__links">
+                    <a [routerLink]="['/tracks']">Explore interview tracks</a>
+                    <a [routerLink]="['/companies']">Browse company questions</a>
+                    <a [routerLink]="['/guides/framework-prep']">View framework prep paths</a>
                 </div>
             </section>
 
