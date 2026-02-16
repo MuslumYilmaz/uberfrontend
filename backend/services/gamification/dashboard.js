@@ -18,18 +18,20 @@ function toTitleCase(input) {
     .join(' ');
 }
 
-async function countWeeklySolvedUnique(userId, weekBounds, { timeZone = APP_TIMEZONE } = {}) {
+async function countWeeklySolvedUnique(userId, weekBounds, { timeZone = APP_TIMEZONE, session = null } = {}) {
   const since = new Date();
   since.setUTCDate(since.getUTCDate() - 14);
 
-  const rows = await ActivityEvent.find({
+  const query = ActivityEvent.find({
     userId,
     kind: { $in: Array.from(SOLVE_KINDS) },
     itemId: { $exists: true, $ne: '' },
     completedAt: { $gte: since },
   })
-    .select('kind itemId completedAt')
-    .lean();
+    .select('kind itemId completedAt');
+  if (session) query.session(session);
+
+  const rows = await query.lean();
 
   const unique = new Set();
   for (const row of rows) {

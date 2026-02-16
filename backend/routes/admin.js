@@ -35,6 +35,8 @@ router.put('/users/:id', async (req, res) => {
 
         const user = await User.findByIdAndUpdate(req.params.id, update, {
             new: true,
+            runValidators: true,
+            context: 'query',
         }).select('-passwordHash');
 
         if (!user) return res.status(404).json({ error: 'User not found' });

@@ -223,6 +223,149 @@ function getClientMode(req) {
     return typeof m === 'string' ? m.slice(0, 64) : '';
 }
 
+function normalizeEmailInput(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function normalizeUsernameInput(value) {
+    return String(value || '').trim();
+}
+
+function normalizeLoginIdentifier(value) {
+    return String(value || '').trim();
+}
+
+function buildDefaultPrefs() {
+    return {
+        tz: 'Europe/Istanbul',
+        theme: 'dark',
+        defaultTech: 'javascript',
+        keyboard: 'default',
+    };
+}
+
+const OAUTH_USERNAME_MAX_BASE_LENGTH = 32;
+const OAUTH_USERNAME_RETRY_LIMIT = 20;
+
+function normalizeOAuthUsernameBase(value, email) {
+    const normalizedValue = normalizeUsernameInput(value);
+    const emailLocalPart = normalizeEmailInput(email).split('@')[0] || '';
+    const seed = normalizedValue || emailLocalPart || 'user';
+    const cleaned = seed
+        .replace(/\s+/g, '_')
+        .replace(/[^A-Za-z0-9._-]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^[._-]+|[._-]+$/g, '');
+    const safe = cleaned || 'user';
+    return safe.slice(0, OAUTH_USERNAME_MAX_BASE_LENGTH);
+}
+
+function buildOAuthUsernameCandidate(base, attempt) {
+    if (attempt <= 0) return base;
+    const suffix = String(attempt);
+    const maxBaseLength = Math.max(1, OAUTH_USERNAME_MAX_BASE_LENGTH - suffix.length - 1);
+    return `${base.slice(0, maxBaseLength)}_${suffix}`;
+}
+
+function isGithubNoreplyEmail(value) {
+    return normalizeEmailInput(value).endsWith('@users.noreply.github.com');
+}
+
+async function createOAuthUserWithUniqueUsername({ email, usernameHint, avatarUrl }) {
+    const normalizedEmail = normalizeEmailInput(email);
+    if (!normalizedEmail) throw new Error('Missing email for OAuth user');
+
+    const randomPwd = crypto.randomBytes(32).toString('hex');
+    const passwordHash = await bcrypt.hash(randomPwd, 10);
+    const usernameBase = normalizeOAuthUsernameBase(usernameHint, normalizedEmail);
+
+    for (let attempt = 0; attempt < OAUTH_USERNAME_RETRY_LIMIT; attempt += 1) {
+        const candidate = buildOAuthUsernameCandidate(usernameBase, attempt);
+        try {
+            return await User.create({
+                email: normalizedEmail,
+                username: candidate,
+                avatarUrl: avatarUrl || undefined,
+                passwordHash,
+                lastLoginAt: new Date(),
+                prefs: buildDefaultPrefs(),
+            });
+        } catch (e) {
+            if (!isDuplicateKeyError(e)) throw e;
+            const fields = parseDuplicateFieldsFromError(e);
+
+            if (fields.email) {
+                const existingByEmail = await User.findOne({ email: normalizedEmail });
+                if (existingByEmail) return existingByEmail;
+                continue;
+            }
+            if (fields.username || !hasDuplicateField(fields)) continue;
+        }
+    }
+
+    const fallbackUsername = `${usernameBase.slice(0, Math.max(1, OAUTH_USERNAME_MAX_BASE_LENGTH - 7))}_${crypto.randomBytes(3).toString('hex')}`;
+    try {
+        return await User.create({
+            email: normalizedEmail,
+            username: fallbackUsername,
+            avatarUrl: avatarUrl || undefined,
+            passwordHash,
+            lastLoginAt: new Date(),
+            prefs: buildDefaultPrefs(),
+        });
+    } catch (e) {
+        if (!isDuplicateKeyError(e)) throw e;
+        const existingByEmail = await User.findOne({ email: normalizedEmail });
+        if (existingByEmail) return existingByEmail;
+        throw e;
+    }
+}
+
+function isDuplicateKeyError(error) {
+    return Boolean(error && error.code === 11000);
+}
+
+function parseDuplicateFieldsFromError(error) {
+    const fields = { email: false, username: false };
+
+    const markField = (name) => {
+        if (name === 'email' || name === 'username') fields[name] = true;
+    };
+
+    if (error?.keyPattern && typeof error.keyPattern === 'object') {
+        for (const key of Object.keys(error.keyPattern)) markField(key);
+    }
+    if (error?.keyValue && typeof error.keyValue === 'object') {
+        for (const key of Object.keys(error.keyValue)) markField(key);
+    }
+
+    const msg = String(error?.message || '');
+    if (/email/i.test(msg)) fields.email = true;
+    if (/username/i.test(msg)) fields.username = true;
+
+    return fields;
+}
+
+function hasDuplicateField(fields) {
+    return Boolean(fields?.email || fields?.username);
+}
+
+async function resolveDuplicateSignupFields({ email, username, initialFields }) {
+    if (hasDuplicateField(initialFields)) return initialFields;
+    try {
+        const [emailExists, usernameExists] = await Promise.all([
+            User.exists({ email }),
+            User.exists({ username }),
+        ]);
+        return {
+            email: Boolean(emailExists),
+            username: Boolean(usernameExists),
+        };
+    } catch {
+        return initialFields;
+    }
+}
+
 const pick = (u) => {
     const { entitlements, effectiveProActive } = resolveEntitlements(u);
     return {
@@ -313,25 +456,27 @@ router.get('/oauth/google/callback', async (req, res) => {
         // Verify ID token
         const ticket = await oauth.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
         const payload = ticket.getPayload(); // { email, name, picture, sub, ... }
-        const email = payload.email;
-        const name = payload.name || (email ? email.split('@')[0] : `user_${payload.sub.slice(-6)}`);
+        const email = normalizeEmailInput(payload?.email);
+        if (!email) return res.status(400).send('No email');
+        const name = payload.name || (email ? email.split('@')[0] : `user_${String(payload?.sub || '').slice(-6)}`);
+        const avatarUrl = payload?.picture || undefined;
 
         // Find or create local user
         let user = await User.findOne({ email });
+        const isExistingUser = Boolean(user);
         if (!user) {
-            const randomPwd = crypto.randomBytes(32).toString('hex');
-            const passwordHash = await bcrypt.hash(randomPwd, 10);
-            user = await User.create({
+            user = await createOAuthUserWithUniqueUsername({
                 email,
-                username: name,
-                avatarUrl: payload.picture || undefined,
-                passwordHash,  // stored to satisfy schema; not used by OAuth logins
-                prefs: { tz: 'Europe/Istanbul', theme: 'dark', defaultTech: 'javascript', keyboard: 'default' },
+                usernameHint: name,
+                avatarUrl,
             });
         }
 
-        user.lastLoginAt = new Date();
-        await user.save();
+        if (isExistingUser) {
+            user.avatarUrl = avatarUrl || user.avatarUrl;
+            user.lastLoginAt = new Date();
+            await user.save();
+        }
 
         const token = sign(user);
 
@@ -415,37 +560,33 @@ router.get('/oauth/github/callback', async (req, res) => {
         const meRes = await fetch('https://api.github.com/user', { headers: ghHeaders });
         const gh = await meRes.json(); // { id, login, name, email, avatar_url, ... }
 
-        let email = gh.email || null;
+        let email = normalizeEmailInput(gh.email || '');
         if (!email) {
             const emailsRes = await fetch('https://api.github.com/user/emails', { headers: ghHeaders });
             const emails = await emailsRes.json(); // [{email, primary, verified, visibility}, ...]
-            const primary = emails.find(e => e.primary && e.verified)?.email;
-            const verified = emails.find(e => e.verified)?.email;
-            email = primary || verified || `${gh.id}+${gh.login}@users.noreply.github.com`;
+            const primary = normalizeEmailInput(emails.find(e => e.primary && e.verified)?.email || '');
+            const verified = normalizeEmailInput(emails.find(e => e.verified)?.email || '');
+            email = primary || verified || normalizeEmailInput(`${gh.id}+${gh.login}@users.noreply.github.com`);
         }
 
         const username = gh.name || gh.login;
         const avatarUrl = gh.avatar_url;
 
         let user = await User.findOne({ email });
+        const noreplyAlias = normalizeEmailInput(`${gh.id}+${gh.login}@users.noreply.github.com`);
         if (!user) {
-            const noreplyAlias = `${gh.id}+${gh.login}@users.noreply.github.com`;
             user = await User.findOne({ email: noreplyAlias });
         }
 
         if (!user) {
-            const randomPwd = crypto.randomBytes(32).toString('hex');
-            const passwordHash = await bcrypt.hash(randomPwd, 10);
-            user = await User.create({
+            user = await createOAuthUserWithUniqueUsername({
                 email,
-                username,
+                usernameHint: username,
                 avatarUrl,
-                passwordHash,
-                prefs: { tz: 'Europe/Istanbul', theme: 'dark', defaultTech: 'javascript', keyboard: 'default' },
             });
         } else {
-            if (user.email.endsWith('@users.noreply.github.com') &&
-                email && !email.endsWith('@users.noreply.github.com')) {
+            if (isGithubNoreplyEmail(user.email) &&
+                email && !isGithubNoreplyEmail(email)) {
                 user.email = email;
             }
             user.avatarUrl = avatarUrl || user.avatarUrl;
@@ -469,9 +610,13 @@ router.get('/oauth/github/callback', async (req, res) => {
 
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
+    let normalizedEmail = '';
+    let normalizedUsername = '';
     try {
         const { email, username, password } = req.body || {};
-        if (!email || !username || !password) {
+        normalizedEmail = normalizeEmailInput(email);
+        normalizedUsername = normalizeUsernameInput(username);
+        if (!normalizedEmail || !normalizedUsername || !password) {
             return res.status(400).json({ error: 'Missing fields' });
         }
         if (!isStrongPassword(password)) {
@@ -479,8 +624,8 @@ router.post('/signup', async (req, res) => {
         }
 
         const [emailExists, usernameExists] = await Promise.all([
-            User.exists({ email }),
-            User.exists({ username }),
+            User.exists({ email: normalizedEmail }),
+            User.exists({ username: normalizedUsername }),
         ]);
         if (emailExists || usernameExists) {
             return res.status(409).json({
@@ -494,20 +639,30 @@ router.post('/signup', async (req, res) => {
 
         const passwordHash = await bcrypt.hash(password, 10);
         const user = await User.create({
-            email,
-            username,
+            email: normalizedEmail,
+            username: normalizedUsername,
             passwordHash,
-            prefs: { tz: 'Europe/Istanbul', theme: 'dark', defaultTech: 'javascript', keyboard: 'default' },
+            lastLoginAt: new Date(),
+            prefs: buildDefaultPrefs(),
         });
-
-        user.lastLoginAt = new Date();
-        await user.save();
 
         const token = sign(user);
         setAuthCookies(res, token);
-        res.status(201).json({ token, user: pick(user) });
+        return res.status(201).json({ token, user: pick(user) });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        if (isDuplicateKeyError(e)) {
+            const initialFields = parseDuplicateFieldsFromError(e);
+            const fields = await resolveDuplicateSignupFields({
+                email: normalizedEmail,
+                username: normalizedUsername,
+                initialFields,
+            });
+            return res.status(409).json({
+                error: 'Email or username already in use',
+                fields,
+            });
+        }
+        return res.status(500).json({ error: e.message });
     }
 });
 
@@ -515,11 +670,12 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { emailOrUsername, password } = req.body || {};
-        if (!emailOrUsername || !password) return res.status(400).json({ error: 'Missing fields' });
+        const identifier = normalizeLoginIdentifier(emailOrUsername);
+        if (!identifier || !password) return res.status(400).json({ error: 'Missing fields' });
 
-        const query = /@/.test(emailOrUsername)
-            ? { email: emailOrUsername }
-            : { username: emailOrUsername };
+        const query = /@/.test(identifier)
+            ? { email: normalizeEmailInput(identifier) }
+            : { username: normalizeUsernameInput(identifier) };
 
         const user = await User.findOne(query);
         if (!user) return res.status(401).json({ error: 'Invalid credentials' });

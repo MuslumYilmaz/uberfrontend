@@ -3,6 +3,7 @@ const router = require('express').Router();
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const ActivityEvent = require('../models/ActivityEvent');
+const FirstCompletionCredit = require('../models/FirstCompletionCredit');
 const XpCredit = require('../models/XpCredit');
 const { requireAuth } = require('../middleware/Auth');
 const { getQuestionMeta } = require('../services/gamification/question-catalog');
@@ -10,11 +11,16 @@ const {
     xpForCompletion,
     normalizeDifficulty,
     computeLevel,
+    readWeeklyGoalSettings,
     readActiveActivityStreakCurrent,
 } = require('../services/gamification/engine');
+const { countWeeklySolvedUnique } = require('../services/gamification/dashboard');
+const { currentWeekBounds } = require('../services/gamification/timezone');
 const { awardWeeklyGoalBonusIfEligible } = require('../services/gamification/weekly-goal');
 
 const VALID_TECHS = ['javascript', 'angular', 'react', 'vue', 'html', 'css', 'system-design'];
+const DEFAULT_RECENT_LIMIT = 20;
+const MAX_RECENT_LIMIT = 200;
 // ---------- date helpers ----------
 function utcDayStr(d = new Date()) {
     return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
@@ -26,52 +32,36 @@ function dayDiffUTC(aStr, bStr) {
     return Math.round((b - a) / 86400000);
 }
 
-// ---------- leveling helpers (simple exponential growth) ----------
-function nextStepForLevel(level) {
-    // XP needed to go from (level) -> (level+1). L1->L2=100, grows 25%/level.
-    return Math.round(100 * Math.pow(1.25, Math.max(0, level - 1)));
+function createHttpError(statusCode, message) {
+    const err = new Error(message);
+    err.statusCode = statusCode;
+    return err;
 }
-function computeLevelFromXp(totalXp) {
-    let lvl = 1;
-    let xpLeft = Math.max(0, Number(totalXp) || 0);
 
-    while (true) {
-        const step = nextStepForLevel(lvl);
-        if (xpLeft < step) {
-            const current = xpLeft;
-            const needed = step;
-            const pct = needed > 0 ? current / needed : 1;
-            return {
-                level: lvl,
-                nextLevelXp: step,
-                levelProgress: { current, needed, pct },
-            };
-        }
-        xpLeft -= step;
-        lvl += 1;
-        if (lvl > 500) break; // hard safety cap
-    }
-    return { level: 500, nextLevelXp: nextStepForLevel(500), levelProgress: { current: 0, needed: nextStepForLevel(500), pct: 0 } };
+function isTransactionUnsupportedError(error) {
+    const msg = String(error?.message || '').toLowerCase();
+    return (
+        msg.includes('transaction numbers are only allowed on a replica set member') ||
+        msg.includes('this mongodb deployment does not support retryable writes') ||
+        (msg.includes('transaction') && msg.includes('replica set'))
+    );
 }
 
 /**
  * POST /api/activity/complete
  * body: { kind, tech, itemId?, source?, durationMin?, xp? }
  * - Logs an ActivityEvent
- * - Awards XP only once per (userId, dayUTC, kind) via XpCredit
+ * - Awards XP only once per (userId, kind, itemId) via FirstCompletionCredit
+ * - Persists event + aggregates transactionally when transactions are available
  */
 router.post('/complete', requireAuth, async (req, res) => {
     try {
-        const user = await User.findById(req.auth.userId);
-        if (!user) return res.status(404).json({ error: 'User not found' });
-
         const { kind, tech, itemId, source = 'tech', durationMin = 0, difficulty } = req.body || {};
         if (!kind || !tech) return res.status(400).json({ error: 'Missing kind or tech' });
         if (!['coding', 'trivia', 'debug'].includes(kind)) return res.status(400).json({ error: 'Invalid kind' });
         if (!VALID_TECHS.includes(tech)) return res.status(400).json({ error: 'Invalid tech' });
 
         const durationMinSafe = Math.min(Math.max(Number(durationMin) || 0, 0), 24 * 60);
-        const prevLevel = computeLevel(user.stats?.xpTotal || 0).level;
         const questionMeta = getQuestionMeta({ kind, itemId: String(itemId || '') });
         const resolvedDifficulty = normalizeDifficulty(
             difficulty
@@ -81,90 +71,157 @@ router.post('/complete', requireAuth, async (req, res) => {
 
         const completedAt = new Date();
         const dayUTC = utcDayStr(completedAt);
-
-        // Legacy daily credit record (kept for old summary widgets).
-        try { await XpCredit.create({ userId: String(user._id), dayUTC, kind }); } catch (e) {
-            if (!(e && e.code === 11000)) throw e;
-        }
-
-        // MVP gamification XP: award on first solve per (kind + itemId), deterministic by difficulty.
-        let awardedXp = 0;
         const itemIdText = typeof itemId === 'string' ? itemId.trim() : '';
-        if (itemIdText) {
-            const firstCompletion = !(await ActivityEvent.exists({
+
+        const runCompletion = async (session = null) => {
+            const userQuery = User.findById(req.auth.userId);
+            if (session) userQuery.session(session);
+            const user = await userQuery;
+            if (!user) throw createHttpError(404, 'User not found');
+
+            const prevLevel = computeLevel(user.stats?.xpTotal || 0).level;
+
+            // Legacy daily credit record (kept for old summary widgets).
+            try {
+                const legacyCredit = { userId: String(user._id), dayUTC, kind };
+                if (session) {
+                    await XpCredit.create([legacyCredit], { session });
+                } else {
+                    await XpCredit.create(legacyCredit);
+                }
+            } catch (e) {
+                if (!(e && e.code === 11000)) throw e;
+            }
+
+            // Award XP atomically on first solve per (user + kind + itemId).
+            let awardedXp = 0;
+            if (itemIdText) {
+                const firstCreditResult = await FirstCompletionCredit.updateOne(
+                    { userId: user._id, kind, itemId: itemIdText },
+                    { $setOnInsert: { userId: user._id, kind, itemId: itemIdText, firstCompletedAt: completedAt } },
+                    session ? { upsert: true, session } : { upsert: true }
+                );
+                if ((firstCreditResult?.upsertedCount || 0) > 0) {
+                    awardedXp = xpForCompletion({ kind, difficulty: resolvedDifficulty });
+                }
+            }
+
+            // Log event (with awardedXp — may be 0 on repeats)
+            const eventDoc = {
                 userId: user._id,
                 kind,
-                itemId: itemIdText,
-            }));
-            if (firstCompletion) {
-                awardedXp = xpForCompletion({ kind, difficulty: resolvedDifficulty });
+                tech,
+                itemId: itemIdText || undefined,
+                source,
+                durationMin: durationMinSafe,
+                xp: awardedXp,
+                completedAt,
+                dayUTC,
+            };
+            let event;
+            if (session) {
+                [event] = await ActivityEvent.create([eventDoc], { session });
+            } else {
+                event = await ActivityEvent.create(eventDoc);
             }
+
+            // Build updated stats in-memory first (needed for streak + weekly bonus logic).
+            user.stats = user.stats || {};
+            user.stats.xpTotal = (user.stats.xpTotal || 0) + awardedXp;
+            user.stats.completedTotal = (user.stats.completedTotal || 0) + 1;
+
+            // Streak (UTC)
+            user.stats.streak = user.stats.streak || { current: 0, longest: 0, lastActiveUTCDate: null };
+            const last = user.stats.streak.lastActiveUTCDate;
+            const diff = dayDiffUTC(last, dayUTC);
+            if (diff === 1) user.stats.streak.current = (user.stats.streak.current || 0) + 1;
+            else if (diff !== 0) user.stats.streak.current = 1;
+            user.stats.streak.longest = Math.max(user.stats.streak.longest || 0, user.stats.streak.current || 0);
+            user.stats.streak.lastActiveUTCDate = dayUTC;
+
+            const weekly = await awardWeeklyGoalBonusIfEligible(user, session ? { session } : {});
+            const totalXpIncrement = awardedXp + weekly.bonusXp;
+
+            const aggregateUpdate = {
+                $inc: {
+                    'stats.xpTotal': totalXpIncrement,
+                    'stats.completedTotal': 1,
+                    [`stats.perTech.${tech}.xp`]: awardedXp,
+                    [`stats.perTech.${tech}.completed`]: 1,
+                },
+                $set: {
+                    'stats.streak.current': user.stats.streak.current || 0,
+                    'stats.streak.longest': user.stats.streak.longest || 0,
+                    'stats.streak.lastActiveUTCDate': dayUTC,
+                },
+            };
+            const aggregateUpdateQuery = User.updateOne({ _id: user._id }, aggregateUpdate);
+            if (session) aggregateUpdateQuery.session(session);
+            await aggregateUpdateQuery;
+
+            const updatedUserQuery = User.findById(user._id).select('stats');
+            if (session) updatedUserQuery.session(session);
+            const updatedUser = await updatedUserQuery;
+            if (!updatedUser) throw createHttpError(404, 'User not found');
+
+            const nextLevel = computeLevel(updatedUser.stats?.xpTotal || 0).level;
+            const levelUp = nextLevel > prevLevel;
+
+            const recentQuery = ActivityEvent.find({ userId: user._id }).sort({ completedAt: -1 }).limit(10);
+            if (session) recentQuery.session(session);
+            const recent = await recentQuery.lean();
+
+            return {
+                stats: updatedUser.stats,
+                event,
+                recent,
+                xpAwarded: totalXpIncrement,
+                levelUp,
+                weeklyGoal: {
+                    completed: weekly.weeklyCompleted,
+                    target: weekly.settings.target,
+                    reached: weekly.reached,
+                    bonusGranted: weekly.awarded || weekly.bonusAlreadyGranted,
+                },
+            };
+        };
+
+        let payload = null;
+        const txSession = await mongoose.startSession();
+        try {
+            try {
+                await txSession.withTransaction(async () => {
+                    payload = await runCompletion(txSession);
+                });
+            } catch (txErr) {
+                if (!isTransactionUnsupportedError(txErr)) throw txErr;
+                console.warn('[activity] Transactions are unavailable. Falling back to non-transactional completion.');
+                payload = await runCompletion(null);
+            }
+        } finally {
+            await txSession.endSession();
         }
 
-        // Log event (with awardedXp — may be 0 on repeats)
-        const event = await ActivityEvent.create({
-            userId: user._id,
-            kind,
-            tech,
-            itemId: itemIdText || undefined,
-            source,
-            durationMin: durationMinSafe,
-            xp: awardedXp,
-            completedAt,
-            dayUTC,
-        });
-
-        // Update aggregates
-        user.stats = user.stats || {};
-        user.stats.xpTotal = (user.stats.xpTotal || 0) + awardedXp;
-        user.stats.completedTotal = (user.stats.completedTotal || 0) + 1;
-
-        user.stats.perTech = user.stats.perTech || {};
-        user.stats.perTech[tech] = user.stats.perTech[tech] || { xp: 0, completed: 0 };
-        user.stats.perTech[tech].xp += awardedXp;
-        user.stats.perTech[tech].completed += 1;
-
-        // Streak (UTC)
-        user.stats.streak = user.stats.streak || { current: 0, longest: 0, lastActiveUTCDate: null };
-        const last = user.stats.streak.lastActiveUTCDate;
-        const diff = dayDiffUTC(last, dayUTC);
-        if (diff === 1) user.stats.streak.current = (user.stats.streak.current || 0) + 1;
-        else if (diff !== 0) user.stats.streak.current = 1;
-        user.stats.streak.longest = Math.max(user.stats.streak.longest || 0, user.stats.streak.current || 0);
-        user.stats.streak.lastActiveUTCDate = dayUTC;
-
-        const weekly = await awardWeeklyGoalBonusIfEligible(user);
-        await user.save();
-        const nextLevel = computeLevel(user.stats?.xpTotal || 0).level;
-        const levelUp = nextLevel > prevLevel;
-
-        const recent = await ActivityEvent.find({ userId: user._id }).sort({ completedAt: -1 }).limit(10).lean();
-        res.json({
-            stats: user.stats,
-            event,
-            recent,
-            xpAwarded: awardedXp + weekly.bonusXp,
-            levelUp,
-            weeklyGoal: {
-                completed: weekly.weeklyCompleted,
-                target: weekly.settings.target,
-                reached: weekly.reached,
-                bonusGranted: weekly.awarded || weekly.bonusAlreadyGranted,
-            },
-        });
+        if (!payload) throw new Error('Activity completion failed without a result.');
+        return res.json(payload);
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        if (e?.statusCode) return res.status(e.statusCode).json({ error: e.message });
+        return res.status(500).json({ error: e.message });
     }
 });
 
-/** GET /api/activity/recent?limit=20&since=YYYY-MM-DD (limit=0 → no limit) */
+/** GET /api/activity/recent?limit=20&since=YYYY-MM-DD (all=1/limit=0 => capped max) */
 router.get('/recent', requireAuth, async (req, res) => {
     try {
-        const rawLimit = parseInt(req.query.limit ?? '20', 10);
-        const unlimited = req?.query?.limit === '0' || req?.query?.all === '1';
-        const limit = unlimited
-            ? 0
-            : Math.min(Math.max(isNaN(rawLimit) ? 20 : rawLimit, 1), 1000);
+        const wantsAll = req?.query?.limit === '0' || req?.query?.all === '1';
+        const rawLimit = parseInt(
+            wantsAll ? String(MAX_RECENT_LIMIT) : String(req.query.limit ?? DEFAULT_RECENT_LIMIT),
+            10
+        );
+        const limit = Math.min(
+            Math.max(Number.isNaN(rawLimit) ? DEFAULT_RECENT_LIMIT : rawLimit, 1),
+            MAX_RECENT_LIMIT
+        );
         const since = req.query.since; // optional 'YYYY-MM-DD'
         const match = { userId: req.auth.userId };
 
@@ -175,8 +232,7 @@ router.get('/recent', requireAuth, async (req, res) => {
             }
         }
 
-        const query = ActivityEvent.find(match).sort({ completedAt: -1 });
-        if (!unlimited) query.limit(limit);
+        const query = ActivityEvent.find(match).sort({ completedAt: -1 }).limit(limit);
 
         const recent = await query.lean();
         res.json(recent);
@@ -185,16 +241,20 @@ router.get('/recent', requireAuth, async (req, res) => {
     }
 });
 
-/** GET /api/activity/summary  (credit-based Today/Weekly + leveling) */
+/** GET /api/activity/summary */
 router.get('/summary', requireAuth, async (req, res) => {
     try {
-        const user = await User.findById(req.auth.userId).select('stats');
+        const user = await User.findById(req.auth.userId).select('stats prefs');
         if (!user) return res.status(404).json({ error: 'User not found' });
 
         const totalXp = user.stats?.xpTotal ?? 0;
 
-        // Level from total XP
-        const { level, nextLevelXp, levelProgress } = computeLevelFromXp(totalXp);
+        const xpLevel = computeLevel(totalXp);
+        const levelProgress = {
+            current: xpLevel.currentLevelXp,
+            needed: xpLevel.levelStepXp,
+            pct: xpLevel.progress,
+        };
 
         const todayStr = utcDayStr();
         // Streaks
@@ -212,21 +272,16 @@ router.get('/summary', requireAuth, async (req, res) => {
         const todayTotal = 3; // coding + trivia + debug
         const todayProgress = Math.min(1, todayTotal ? todayCompleted / todayTotal : 1);
 
-        // Weekly credits (last 7 days, inclusive)
-        const start = new Date();
-        start.setUTCDate(start.getUTCDate() - 6); // 6 days back + today = 7
-        const startStr = utcDayStr(start);
-        const weeklyCompleted = await XpCredit.countDocuments({
-            userId: String(req.auth.userId),
-            dayUTC: { $gte: startStr, $lte: todayStr },
-        });
-        const weeklyTarget = parseInt(process.env.WEEKLY_TARGET || '5', 10);
+        const weeklyGoalSettings = readWeeklyGoalSettings(user);
+        const weekBounds = currentWeekBounds();
+        const weeklyCompleted = await countWeeklySolvedUnique(user._id, weekBounds);
+        const weeklyTarget = weeklyGoalSettings.target;
         const weeklyProgress = weeklyTarget > 0 ? Math.min(1, weeklyCompleted / weeklyTarget) : 1;
 
         res.json({
             totalXp,
-            level,
-            nextLevelXp,
+            level: xpLevel.level,
+            nextLevelXp: xpLevel.nextLevelXp,
             levelProgress,                 // { current, needed, pct }
             freezeTokens,
             streak: { current, best },

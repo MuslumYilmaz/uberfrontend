@@ -29,7 +29,7 @@ export interface PerTech { xp: number; completed: number; }
 export interface UserStats {
   xpTotal: number;
   completedTotal: number;
-  perTech: { javascript: PerTech; angular: PerTech };
+  perTech: Record<string, PerTech>;
   streak: Streak;
 }
 

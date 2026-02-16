@@ -89,10 +89,7 @@ const UserSchema = new mongoose.Schema(
     stats: {
       xpTotal: { type: Number, default: 0 },
       completedTotal: { type: Number, default: 0 },
-      perTech: {
-        javascript: { type: PerTechSchema, default: () => ({}) },
-        angular: { type: PerTechSchema, default: () => ({}) },
-      },
+      perTech: { type: Map, of: PerTechSchema, default: () => ({}) },
       streak: {
         current: { type: Number, default: 0 },
         longest: { type: Number, default: 0 },

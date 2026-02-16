@@ -4,10 +4,10 @@ const { readWeeklyGoalSettings } = require('./engine');
 const { currentWeekBounds } = require('./timezone');
 const { countWeeklySolvedUnique } = require('./dashboard');
 
-async function awardWeeklyGoalBonusIfEligible(user, { timeZone = APP_TIMEZONE } = {}) {
+async function awardWeeklyGoalBonusIfEligible(user, { timeZone = APP_TIMEZONE, session = null } = {}) {
   const settings = readWeeklyGoalSettings(user);
   const weekBounds = currentWeekBounds(timeZone);
-  const weeklyCompleted = await countWeeklySolvedUnique(user._id, weekBounds, { timeZone });
+  const weeklyCompleted = await countWeeklySolvedUnique(user._id, weekBounds, { timeZone, session });
   const reached = settings.enabled && weeklyCompleted >= settings.target;
 
   let awarded = false;
@@ -15,11 +15,16 @@ async function awardWeeklyGoalBonusIfEligible(user, { timeZone = APP_TIMEZONE } 
 
   if (reached) {
     try {
-      await WeeklyGoalBonusCredit.create({
+      const bonusDoc = {
         userId: user._id,
         weekKey: weekBounds.weekKey,
         xp: WEEKLY_GOAL_BONUS_XP,
-      });
+      };
+      if (session) {
+        await WeeklyGoalBonusCredit.create([bonusDoc], { session });
+      } else {
+        await WeeklyGoalBonusCredit.create(bonusDoc);
+      }
       user.stats = user.stats || {};
       user.stats.xpTotal = Number(user.stats.xpTotal || 0) + WEEKLY_GOAL_BONUS_XP;
       awarded = true;
@@ -29,10 +34,12 @@ async function awardWeeklyGoalBonusIfEligible(user, { timeZone = APP_TIMEZONE } 
     }
   }
 
-  const bonusAlreadyGranted = await WeeklyGoalBonusCredit.exists({
+  const bonusAlreadyGrantedQuery = WeeklyGoalBonusCredit.exists({
     userId: user._id,
     weekKey: weekBounds.weekKey,
   });
+  if (session) bonusAlreadyGrantedQuery.session(session);
+  const bonusAlreadyGranted = await bonusAlreadyGrantedQuery;
 
   return {
     settings,
