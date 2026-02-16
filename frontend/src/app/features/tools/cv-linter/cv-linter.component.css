@@ -28,6 +28,19 @@
   gap: 8px;
 }
 
+.tooldirs-badge {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tooldirs-badge img {
+  display: block;
+  max-width: min(200px, 100%);
+  height: auto;
+}
+
 .flow-steps {
   display: flex;
   flex-wrap: wrap;
@@ -955,6 +968,7 @@ textarea {
 }
 
 button:focus-visible,
+.tooldirs-badge:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 input:focus-visible,
