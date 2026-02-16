@@ -61,6 +61,7 @@ type VisibleEntry = {
             <button class="fah-avatar" data-testid="header-profile-button"
                     (click)="toggleProfileMenu()"
                     aria-haspopup="menu"
+                    [attr.aria-label]="profileOpen() ? 'Close account menu' : 'Open account menu'"
                     [attr.aria-expanded]="profileOpen()">
               <i class="pi pi-user"></i>
             </button>

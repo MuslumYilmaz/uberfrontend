@@ -17,6 +17,7 @@ import { buildLockedPreviewForSystemDesign, LockedPreviewData } from '../../../c
 import { buildSystemDesignGuideRoute } from './system-design-guide-link.util';
 import { OnboardingService } from '../../../core/services/onboarding.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { SystemDesignDetailResolved } from '../../../core/resolvers/question-detail.resolver';
 import {
   freeChallengeForFramework,
   frameworkLabel,
@@ -322,16 +323,17 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
 
   // ---- lifecycle ----
   ngOnInit(): void {
-    // Load list once; then resolve current id
-    this.qs.loadSystemDesign().subscribe((list) => {
-      this.all = list as SDQuestion[];
-      const id = this.route.snapshot.paramMap.get('id')!;
-      this.setCurrentById(id, /*allowPending*/ false);
-    });
+    const initial = this.route.snapshot.data['systemDesignDetail'] as SystemDesignDetailResolved | undefined;
+    if (initial) this.applyResolvedSystemDesign(initial);
 
-    // React to id changes (e.g., next/prev navigation)
-    this.route.paramMap.subscribe(pm => {
-      const id = pm.get('id');
+    this.route.data.subscribe((data) => {
+      const resolved = data['systemDesignDetail'] as SystemDesignDetailResolved | undefined;
+      if (resolved) {
+        this.applyResolvedSystemDesign(resolved);
+        return;
+      }
+
+      const id = this.route.snapshot.paramMap.get('id');
       if (id) this.setCurrentById(id, /*allowPending*/ true);
     });
   }
@@ -467,24 +469,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
           access: (meta as any).access ?? 'free',
         };
 
-        this.q.set(merged);
-        this.updateSeo(merged);
-
-        // “continue where you left off” için
-        if (this.isBrowser) {
-          try {
-          localStorage.setItem('fa:lastVisited', JSON.stringify({
-            to: ['/system-design', merged.id],
-            label: merged.title ?? 'System design'
-          }));
-          } catch { }
-        }
-
-        // default aktif section: ilk section
-        const secs = this.sections();
-        this.activeKey.set(secs[0]?.key ?? null);
-
-        setTimeout(() => this.updateActiveFromPositions(), 0);
+        this.applyResolvedQuestion(merged);
       });
 
       return;
@@ -518,13 +503,49 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
         ...(detail as Partial<SDQuestion>),
       };
 
-      this.q.set(merged);
-      this.updateSeo(merged);
-
-      const secs = this.sections();
-      this.activeKey.set(secs[0]?.key ?? null);
-      setTimeout(() => this.updateActiveFromPositions(), 0);
+      this.applyResolvedQuestion(merged);
     });
+  }
+
+  private applyResolvedSystemDesign(resolved: SystemDesignDetailResolved): void {
+    const routeId = this.route.snapshot.paramMap.get('id') || resolved?.id || '';
+    this.all = (resolved?.list || []) as SDQuestion[];
+    this.forceListRefreshTried = false;
+
+    if (resolved?.question) {
+      this.idx = Math.max(0, this.all.findIndex((item) => item.id === resolved.question?.id));
+      this.applyResolvedQuestion(resolved.question as SDQuestion);
+      return;
+    }
+
+    if (routeId) {
+      this.setCurrentById(routeId, /*allowPending*/ true);
+    }
+  }
+
+  private applyResolvedQuestion(question: SDQuestion): void {
+    this.mountedCodes.set(new Set());
+    this.activeKey.set(null);
+    this.q.set(question);
+    this.updateSeo(question);
+
+    if (this.isBrowser) {
+      try {
+        localStorage.setItem(
+          'fa:lastVisited',
+          JSON.stringify({
+            to: ['/system-design', question.id],
+            label: question.title ?? 'System design',
+          }),
+        );
+      } catch {
+        // ignore localStorage errors
+      }
+    }
+
+    const secs = this.sections();
+    this.activeKey.set(secs[0]?.key ?? null);
+    setTimeout(() => this.updateActiveFromPositions(), 0);
   }
 
   /** Send the user to the NotFound page with the missing URL preserved. */
@@ -845,7 +866,7 @@ export class SystemDesignDetailComponent implements OnInit, AfterViewInit, OnDes
   private navToIndex(index: number) {
     const target = this.all[index];
     if (!target) return;
-    // this triggers route change -> paramMap subscription -> setCurrentById
+    // Route resolver refreshes detail data before rendering the new question.
     this.router.navigate(['/system-design', target.id]);
   }
 

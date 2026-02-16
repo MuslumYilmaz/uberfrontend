@@ -57,6 +57,7 @@
                         *ngIf="!codeEditorReady()"
                         class="lite-editor editor-fill lite-overlay"
                         data-testid="js-code-editor-lite"
+                        aria-label="Code editor"
                         [value]="editorContent()"
                         [attr.spellcheck]="false"
                         (input)="onCodeChange($any($event.target).value)"></textarea>
@@ -64,6 +65,7 @@
                 <ng-template #liteCodeEditor>
                     <textarea
                         class="lite-editor editor-fill"
+                        aria-label="Code editor"
                         [value]="editorContent()"
                         [attr.spellcheck]="false"
                         (input)="onCodeChange($any($event.target).value)"></textarea>
@@ -81,6 +83,7 @@
                         *ngIf="!testsEditorReady()"
                         class="lite-editor editor-fill lite-overlay"
                         data-testid="js-tests-editor-lite"
+                        aria-label="Tests editor"
                         [value]="testCode()"
                         [attr.spellcheck]="false"
                         (input)="onTestsChange($any($event.target).value)"></textarea>
@@ -89,6 +92,7 @@
                     <textarea
                         class="lite-editor editor-fill"
                         data-testid="js-tests-editor"
+                        aria-label="Tests editor"
                         [value]="testCode()"
                         [attr.spellcheck]="false"
                         (input)="onTestsChange($any($event.target).value)"></textarea>

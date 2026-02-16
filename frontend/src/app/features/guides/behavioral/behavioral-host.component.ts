@@ -1,8 +1,8 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import { Component, OnDestroy, PLATFORM_ID, Type, ViewChild, ViewContainerRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { BEHAVIORAL, BEHAVIORAL_GROUPS, GuideEntry } from '../../../shared/guides/guide.registry';
 import { OfflineBannerComponent } from "../../../shared/components/offline-banner/offline-banner";
 import { SeoService } from '../../../core/services/seo.service';
@@ -20,7 +20,22 @@ type GuideArticleInputs = {
 @Component({
     standalone: true,
     imports: [CommonModule, RouterModule, OfflineBannerComponent],
+    styles: [`
+      .guide-ssr-shell {
+        padding: 20px 16px 8px;
+      }
+      .guide-ssr-shell__title {
+        margin: 0;
+        font-size: clamp(1.7rem, 3vw, 2.1rem);
+        font-weight: 800;
+        line-height: 1.2;
+        color: var(--uf-text-primary);
+      }
+    `],
     template: `
+        <section class="guide-ssr-shell" *ngIf="showShellHeading()">
+          <h1 class="guide-ssr-shell__title">{{ shellHeading() }}</h1>
+        </section>
         <ng-container #vc></ng-container>
         <app-offline-banner></app-offline-banner>`
 })
@@ -32,11 +47,19 @@ export class BehavioralHostComponent implements OnDestroy {
     private seo = inject(SeoService);
     private sub?: Subscription;
     private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+    protected readonly showShellHeading = signal(true);
+    protected readonly shellHeading = signal('');
 
     ngOnInit() {
         this.sub = this.route.paramMap
-            .pipe(map(p => p.get('slug') || ''), distinctUntilChanged())
-            .subscribe(slug => this.load(slug));
+            .pipe(
+                startWith(this.route.snapshot.paramMap),
+                map(p => p.get('slug') || ''),
+                distinctUntilChanged(),
+            )
+            .subscribe(slug => {
+                void this.load(slug);
+            });
     }
     ngOnDestroy() { this.sub?.unsubscribe(); }
 
@@ -45,6 +68,9 @@ export class BehavioralHostComponent implements OnDestroy {
     }
 
     private async load(slug: string) {
+        this.showShellHeading.set(true);
+        this.shellHeading.set(this.toTitle(slug));
+
         const idx = BEHAVIORAL.findIndex(e => e.slug === slug);
         const current: GuideEntry | undefined = idx >= 0 ? BEHAVIORAL[idx] : undefined;
 
@@ -68,6 +94,7 @@ export class BehavioralHostComponent implements OnDestroy {
         };
 
         if (!current) { this.go404(); return; }
+        this.shellHeading.set(current.title || this.toTitle(slug));
 
         const prev = idx > 0 ? ['/', 'guides', 'behavioral', BEHAVIORAL[idx - 1].slug] : null;
         const next = idx < BEHAVIORAL.length - 1 ? ['/', 'guides', 'behavioral', BEHAVIORAL[idx + 1].slug] : null;
@@ -83,6 +110,7 @@ export class BehavioralHostComponent implements OnDestroy {
             ref.instance.prev = prev;
             ref.instance.next = next;
             ref.instance.leftNav = leftNav;
+            this.showShellHeading.set(false);
         } catch {
             // module failed to load -> treat as 404
             this.go404();

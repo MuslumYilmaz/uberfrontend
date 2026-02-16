@@ -12,6 +12,10 @@
   overflow-y: visible;
 }
 
+.main--full {
+  min-height: calc(100vh - var(--header-h));
+}
+
 @supports not (overflow: clip) {
   .main {
     overflow-x: hidden;

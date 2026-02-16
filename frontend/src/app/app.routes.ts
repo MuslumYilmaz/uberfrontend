@@ -12,6 +12,7 @@ import { adminGuard, adminMatchGuard } from './core/guards/admin.guard';
 import { premiumGuard } from './core/guards/premium.guard';
 import {
   codingDetailResolver,
+  systemDesignDetailResolver,
   triviaDetailResolver,
 } from './core/resolvers/question-detail.resolver';
 import { globalCodingListResolver } from './core/resolvers/question-list.resolver';
@@ -494,6 +495,9 @@ export const routes: Routes = [
           import('./features/system-design-list/system-design-detail/system-design-detail.component').then(
             (m) => m.SystemDesignDetailComponent,
           ),
+        resolve: {
+          systemDesignDetail: systemDesignDetailResolver,
+        },
         data: {
           seo: {
             title: 'System design scenario',

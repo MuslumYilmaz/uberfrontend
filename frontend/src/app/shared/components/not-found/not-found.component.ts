@@ -83,7 +83,7 @@ import { Router, RouterLink } from '@angular/router';
       <div class="card">
         <span class="kicker">Not found</span>
         <div class="big">404</div>
-        <div class="subtitle">This page doesn’t exist.</div>
+        <h1 class="subtitle">This page doesn’t exist.</h1>
 
         <p class="p">It may have been moved, or the URL is mistyped.</p>
 

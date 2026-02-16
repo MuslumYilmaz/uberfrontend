@@ -101,6 +101,7 @@
                     <textarea
                         *ngIf="!editorReady()"
                         class="lite-editor editor-fill lite-overlay"
+                        aria-label="Framework code editor"
                         [value]="editorContent()"
                         [attr.spellcheck]="false"
                         (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
@@ -108,6 +109,7 @@
                 <ng-template #liteFrameworkEditor>
                     <textarea
                         class="lite-editor editor-fill"
+                        aria-label="Framework code editor"
                         [value]="editorContent()"
                         [attr.spellcheck]="false"
                         (input)="onFrameworkCodeChange($any($event.target).value)"></textarea>
@@ -142,7 +144,7 @@
                 No preview yet. Click “Rebuild preview”.
             </div>
 
-            <iframe #previewFrame class="preview-frame absolute inset-0 w-full h-full border-0" referrerpolicy="no-referrer"
+            <iframe #previewFrame class="preview-frame absolute inset-0 w-full h-full border-0" title="Framework live preview" referrerpolicy="no-referrer"
                 [class.is-loading]="loadingPreview()"
                 sandbox="allow-scripts">
             </iframe>

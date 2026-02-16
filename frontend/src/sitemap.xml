@@ -196,6 +196,9 @@
     <loc>https://frontendatlas.com/angular/trivia/rxjs-switchmap-mergemap-exhaustmap-concatmap-angular-when-to-use</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/changelog</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/coding</loc>
   </url>
   <url>
@@ -325,6 +328,9 @@
     <loc>https://frontendatlas.com/focus-areas</loc>
   </url>
   <url>
+    <loc>https://frontendatlas.com/guides</loc>
+  </url>
+  <url>
     <loc>https://frontendatlas.com/guides/behavioral</loc>
   </url>
   <url>
@@ -356,6 +362,18 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/framework-prep</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/framework-prep/angular-prep-path</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/framework-prep/javascript-prep-path</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/framework-prep/react-prep-path</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/guides/framework-prep/vue-prep-path</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/guides/interview-blueprint</loc>
@@ -1004,6 +1022,9 @@
   </url>
   <url>
     <loc>https://frontendatlas.com/legal/cookies</loc>
+  </url>
+  <url>
+    <loc>https://frontendatlas.com/legal/editorial-policy</loc>
   </url>
   <url>
     <loc>https://frontendatlas.com/legal/privacy</loc>

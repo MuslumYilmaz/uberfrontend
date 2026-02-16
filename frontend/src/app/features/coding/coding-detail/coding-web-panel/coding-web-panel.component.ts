@@ -226,6 +226,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
               <textarea
                 class="lite-editor editor-fill"
                 data-testid="web-html-editor"
+                aria-label="HTML editor"
                 [value]="webHtml()"
                 [attr.spellcheck]="false"
                 (input)="onHtmlChange($any($event.target).value)"></textarea>
@@ -249,6 +250,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
               <textarea
                 class="lite-editor editor-fill"
                 data-testid="web-css-editor"
+                aria-label="CSS editor"
                 [value]="webCss()"
                 [attr.spellcheck]="false"
                 (input)="onCssChange($any($event.target).value)"></textarea>
@@ -289,6 +291,7 @@ import { ConsoleEntry, ConsoleLoggerComponent, LogLevel, TestResult } from '../.
 	          </div>
 
 	          <iframe #previewFrame class="absolute inset-0 w-full h-full border-0 bg-white" data-testid="web-preview-iframe"
+	                  title="Web live preview"
 	                  referrerpolicy="no-referrer"
 	                  sandbox="allow-scripts">
 	          </iframe>

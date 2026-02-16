@@ -95,8 +95,11 @@ function getAllSitemapPaths(fileNames) {
 function assertGuideDetailCoverage(paths) {
   if (!fs.existsSync(GUIDE_REGISTRY_PATH)) return;
   const registrySource = readXml(GUIDE_REGISTRY_PATH);
+  const playbook = extractGuideSlugs(registrySource, 'PLAYBOOK');
+  const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
   const expected = [
-    ...extractGuideSlugs(registrySource, 'PLAYBOOK').map((slug) => `/guides/interview-blueprint/${slug}`),
+    ...playbook.map((slug) => `/guides/interview-blueprint/${slug}`),
+    ...frameworkPrep.map((slug) => `/guides/framework-prep/${slug}`),
     ...extractGuideSlugs(registrySource, 'SYSTEM').map((slug) => `/guides/system-design-blueprint/${slug}`),
     ...extractGuideSlugs(registrySource, 'BEHAVIORAL').map((slug) => `/guides/behavioral/${slug}`),
   ];
@@ -108,8 +111,23 @@ function assertGuideDetailCoverage(paths) {
   }
 }
 
+function assertCoreIndexableCoverage(paths) {
+  const core = [
+    '/changelog',
+    '/guides',
+    '/legal/editorial-policy',
+  ];
+
+  const missing = core.filter((route) => !paths.has(normalizePath(route)));
+  if (missing.length) {
+    throw new Error(`Sitemap missing core indexable routes: ${missing.join(', ')}`);
+  }
+}
+
 const sitemapFiles = getSitemapFileNames();
 sitemapFiles.forEach((fileName) => assertSitemapWithinLimit(fileName));
-assertGuideDetailCoverage(getAllSitemapPaths(sitemapFiles));
+const paths = getAllSitemapPaths(sitemapFiles);
+assertGuideDetailCoverage(paths);
+assertCoreIndexableCoverage(paths);
 
 console.log('Sitemap size check passed.');

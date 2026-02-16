@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -21,6 +21,7 @@ import { sanitizeRedirectTarget } from '../../../core/utils/redirect.util';
 })
 export class OAuthCallbackComponent implements OnInit {
   error = '';
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +31,8 @@ export class OAuthCallbackComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if (!this.isBrowser) return;
+
     const qp = this.route.snapshot.queryParams || {};
     const queryRedirect = sanitizeRedirectTarget(this.route.snapshot.queryParamMap.get('redirectTo'));
     const oauthMode = this.auth.consumeOAuthMode();

@@ -5,7 +5,16 @@ const SRC_DIR = path.resolve('src');
 const ASSETS_DIR = path.join(SRC_DIR, 'assets');
 const QUESTIONS_DIR = path.join(ASSETS_DIR, 'questions');
 const SYSTEM_DESIGN_INDEX = path.join(QUESTIONS_DIR, 'system-design', 'index.json');
+const TRACK_REGISTRY = path.join(QUESTIONS_DIR, 'track-registry.json');
 const GUIDE_REGISTRY = path.join(SRC_DIR, 'app', 'shared', 'guides', 'guide.registry.ts');
+const COMPANY_INDEX_COMPONENT = path.join(
+  SRC_DIR,
+  'app',
+  'features',
+  'company',
+  'company-index',
+  'company-index.component.ts',
+);
 const OUT_PATH = path.join(SRC_DIR, 'prerender.routes.txt');
 
 function normalizeRoute(route) {
@@ -51,6 +60,49 @@ function listTechDirs() {
     });
 }
 
+function normalizeSlug(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return normalized;
+}
+
+function addCompanySlugs(out, list) {
+  if (!Array.isArray(list)) return;
+  list.forEach((item) => {
+    if (!Array.isArray(item?.companies)) return;
+    item.companies.forEach((company) => {
+      const slug = normalizeSlug(company);
+      if (slug) out.add(slug);
+    });
+  });
+}
+
+function readTrackPreviewSlugs() {
+  if (!fs.existsSync(TRACK_REGISTRY)) return [];
+  const payload = readJson(TRACK_REGISTRY);
+  if (!Array.isArray(payload?.tracks)) return [];
+  return payload.tracks
+    .filter((track) => !track?.hidden)
+    .map((track) => normalizeSlug(track?.slug))
+    .filter(Boolean);
+}
+
+function readSeedCompanySlugs() {
+  if (!fs.existsSync(COMPANY_INDEX_COMPONENT)) return [];
+  const source = fs.readFileSync(COMPANY_INDEX_COMPONENT, 'utf8');
+  const out = [];
+  const re = /slug:\s*['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = re.exec(source))) {
+    const slug = normalizeSlug(match[1]);
+    if (slug) out.push(slug);
+  }
+  return out;
+}
+
 function extractGuideSlugs(content, exportName) {
   const marker = `export const ${exportName}`;
   const start = content.indexOf(marker);
@@ -70,21 +122,35 @@ function extractGuideSlugs(content, exportName) {
 
 function buildRoutes() {
   const routes = new Set();
+  const companyPreviewSlugs = new Set(readSeedCompanySlugs());
 
   [
     '/',
+    '/404',
+    '/auth/login',
+    '/auth/signup',
+    '/auth/callback',
+    '/dashboard',
+    '/profile',
+    '/onboarding/quick-start',
+    '/billing/success',
+    '/billing/cancel',
+    '/admin/users',
+    '/changelog',
     '/coding',
     '/pricing',
     '/guides/framework-prep',
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',
+    '/guides',
     '/tracks',
     '/focus-areas',
     '/companies',
     '/system-design',
     '/tools/cv',
     '/legal',
+    '/legal/editorial-policy',
     '/legal/terms',
     '/legal/privacy',
     '/legal/refund',
@@ -97,7 +163,9 @@ function buildRoutes() {
     const triviaPath = path.join(QUESTIONS_DIR, tech, 'trivia.json');
     const debugPath = path.join(QUESTIONS_DIR, tech, 'debug.json');
     if (fs.existsSync(codingPath)) {
-      addQuestionUrls(routes, tech, 'coding', readJson(codingPath));
+      const codingList = readJson(codingPath);
+      addQuestionUrls(routes, tech, 'coding', codingList);
+      addCompanySlugs(companyPreviewSlugs, codingList);
     }
     if (fs.existsSync(triviaPath)) {
       const list = readJson(triviaPath);
@@ -106,10 +174,13 @@ function buildRoutes() {
           if (!q?.id) return;
           addRoute(routes, `/${tech}/trivia/${q.id}`);
         });
+        addCompanySlugs(companyPreviewSlugs, list);
       }
     }
     if (fs.existsSync(debugPath)) {
-      addQuestionUrls(routes, tech, 'debug', readJson(debugPath));
+      const debugList = readJson(debugPath);
+      addQuestionUrls(routes, tech, 'debug', debugList);
+      addCompanySlugs(companyPreviewSlugs, debugList);
     }
   });
 
@@ -121,8 +192,14 @@ function buildRoutes() {
         if (!q?.id) return;
         addRoute(routes, `/system-design/${q.id}`);
       });
+      addCompanySlugs(companyPreviewSlugs, items);
     }
   }
+
+  readTrackPreviewSlugs().forEach((slug) => addRoute(routes, `/tracks/${slug}/preview`));
+  Array.from(companyPreviewSlugs)
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((slug) => addRoute(routes, `/companies/${slug}/preview`));
 
   // Guide detail routes
   if (fs.existsSync(GUIDE_REGISTRY)) {
@@ -130,8 +207,10 @@ function buildRoutes() {
     const playbook = extractGuideSlugs(registrySource, 'PLAYBOOK');
     const system = extractGuideSlugs(registrySource, 'SYSTEM');
     const behavioral = extractGuideSlugs(registrySource, 'BEHAVIORAL');
+    const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
 
     playbook.forEach((slug) => addRoute(routes, `/guides/interview-blueprint/${slug}`));
+    frameworkPrep.forEach((slug) => addRoute(routes, `/guides/framework-prep/${slug}`));
     system.forEach((slug) => addRoute(routes, `/guides/system-design-blueprint/${slug}`));
     behavioral.forEach((slug) => addRoute(routes, `/guides/behavioral/${slug}`));
   }

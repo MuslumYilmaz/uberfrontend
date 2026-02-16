@@ -117,7 +117,10 @@ To safely handle “CDN updates a question (same id) while users have local draf
 - Output Directory: `dist/frontendatlas/browser`
 
 Notes:
-- The app uses client-side routing, so ensure your hosting has an SPA fallback to `index.html` (Vercel’s Angular preset handles this automatically).
+- Do not use a global catch-all SPA rewrite to `index.html`.
+- Use filesystem-first routing so prerendered routes are served as static HTML.
+- Apply targeted rewrites only for private CSR paths (for this repo: `/dashboard`, `/profile`, `/admin/*`, `/billing/*`, `/onboarding/*`, premium `/tracks/:slug`, premium `/companies/:slug/*`).
+- Keep unknown URLs as real `404` responses.
 
 ## Further help
 

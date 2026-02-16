@@ -3,7 +3,9 @@
 
   <!-- Full-bleed layout for auth or guide detail -->
   <ng-container *ngIf="isAuthRoute() || hideSidebar(); else regularLayout">
-    <router-outlet></router-outlet>
+    <main class="main main--full">
+      <router-outlet></router-outlet>
+    </main>
   </ng-container>
 
   <!-- Regular app pages -->

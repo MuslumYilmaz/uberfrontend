@@ -75,7 +75,7 @@ type CtaMode = 'emit' | 'navigatePricing';
       </ng-container>
 
       <div class="included-box">
-        <h4>Included in all plans</h4>
+        <h3>Included in all plans</h3>
         <ul>
           <li>Access to coding + UI-first question sets</li>
           <li>Live preview workflow (where available)</li>
@@ -127,7 +127,7 @@ type CtaMode = 'emit' | 'navigatePricing';
             <div class="feature-ico" aria-hidden="true">
               <i [class]="f.icon"></i>
             </div>
-            <h4 class="feature-title">{{ f.title }}</h4>
+            <h3 class="feature-title">{{ f.title }}</h3>
             <p class="feature-desc">{{ f.desc }}</p>
           </article>
         </div>

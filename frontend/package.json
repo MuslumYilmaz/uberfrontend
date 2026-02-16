@@ -31,7 +31,11 @@
     "e2e:perf": "playwright test e2e/perf --project=chromium",
     "postinstall": "patch-package",
     "postbuild": "node scripts/sentry-release.mjs",
-    "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs"
+    "seo:sitemap-sample": "node scripts/sitemap-sample-audit.mjs",
+    "seo:meta-check": "node scripts/seo-meta-check.mjs",
+    "seo:smoke": "node scripts/seo-smoke.mjs",
+    "seo:lighthouse": "node scripts/seo-lighthouse.mjs",
+    "seo:links": "node scripts/seo-links.mjs"
   },
   "private": true,
   "dependencies": {

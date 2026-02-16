@@ -66,6 +66,7 @@ function buildUrls() {
 
   const staticPaths = [
     '/',
+    '/changelog',
     '/pricing',
     '/coding',
     '/tracks',
@@ -77,7 +78,9 @@ function buildUrls() {
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',
+    '/guides',
     '/legal',
+    '/legal/editorial-policy',
     '/legal/terms',
     '/legal/privacy',
     '/legal/refund',
@@ -117,8 +120,10 @@ function buildUrls() {
     const playbook = extractGuideSlugs(registrySource, 'PLAYBOOK');
     const system = extractGuideSlugs(registrySource, 'SYSTEM');
     const behavioral = extractGuideSlugs(registrySource, 'BEHAVIORAL');
+    const frameworkPrep = playbook.filter((slug) => slug.endsWith('-prep-path'));
 
     playbook.forEach((slug) => urls.add(toUrl(`/guides/interview-blueprint/${slug}`)));
+    frameworkPrep.forEach((slug) => urls.add(toUrl(`/guides/framework-prep/${slug}`)));
     system.forEach((slug) => urls.add(toUrl(`/guides/system-design-blueprint/${slug}`)));
     behavioral.forEach((slug) => urls.add(toUrl(`/guides/behavioral/${slug}`)));
   }

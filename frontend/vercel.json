@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "^/(dashboard|profile)(?:/.*)?$", "dest": "/index.html" },
+    { "src": "^/admin(?:/.*)?$", "dest": "/index.html" },
+    { "src": "^/billing(?:/.*)?$", "dest": "/index.html" },
+    { "src": "^/onboarding(?:/.*)?$", "dest": "/index.html" },
+    { "src": "^/track/[^/]+$", "dest": "/index.html" },
+    { "src": "^/tracks/[^/]+$", "dest": "/index.html" },
+    { "src": "^/companies/[^/]+(?:/(?:all|coding|trivia|system))?$", "dest": "/index.html" },
+    { "src": "^/.*$", "status": 404, "dest": "/404/index.html" }
+  ]
+}
