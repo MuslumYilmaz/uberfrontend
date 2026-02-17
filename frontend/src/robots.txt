@@ -4,10 +4,10 @@ Disallow: /auth/
 Disallow: /dashboard
 Disallow: /profile
 Disallow: /admin
-Allow: /tracks
 Disallow: /tracks/
-Allow: /companies
+Allow: /tracks/*/preview$
 Disallow: /companies/
+Allow: /companies/*/preview$
 Disallow: /coding?
 
 Sitemap: https://frontendatlas.com/sitemap-index.xml

@@ -114,7 +114,7 @@ function assertGuideDetailCoverage(paths) {
 function assertCoreIndexableCoverage(paths) {
   const core = [
     '/changelog',
-    '/guides',
+    '/guides/interview-blueprint',
     '/legal/editorial-policy',
   ];
 

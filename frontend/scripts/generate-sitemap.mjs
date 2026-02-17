@@ -78,7 +78,6 @@ function buildUrls() {
     '/guides/interview-blueprint',
     '/guides/system-design-blueprint',
     '/guides/behavioral',
-    '/guides',
     '/legal',
     '/legal/editorial-policy',
     '/legal/terms',

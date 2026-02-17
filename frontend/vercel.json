@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "redirects": [
+    { "source": "/:path+/", "destination": "/:path+", "permanent": true }
+  ],
   "routes": [
     { "handle": "filesystem" },
     { "src": "^/(dashboard|profile)(?:/.*)?$", "dest": "/index.html" },
